@@ -24,7 +24,6 @@ from .utils import parse_cai_results
 CAI_URL = ('https://content-cloudasset.googleapis.com/v1'
            '/organizations/{organization}/assets'
            '?contentType=RESOURCE&{asset_types}&pageSize=500')
-PLUGIN_NAME = 'discovery-cai-compute'
 TYPES = {
     'networks': 'Network',
     'subnetworks': 'Subnetwork',
@@ -158,7 +157,7 @@ def _url(resources):
   return CAI_URL.format(organization=organization, asset_types=asset_types)
 
 
-@register(PLUGIN_NAME, Phase.INIT, Step.START)
+@register(Phase.INIT, Step.START)
 def init(resources):
   'Prepare the shared datastructures for asset types managed here.'
   for name in TYPES:
@@ -166,14 +165,14 @@ def init(resources):
       resources[name] = {}
 
 
-@register(PLUGIN_NAME, Phase.DISCOVER, Step.START, Level.PRIMARY, 10)
+@register(Phase.DISCOVER, Step.START, Level.PRIMARY, 10)
 def start_discovery(resources):
   'Start discovery by returning the asset list URL for asset types.'
   logging.info('discovery compute start')
   yield HTTPRequest(_url(resources), {}, None)
 
 
-@register(PLUGIN_NAME, Phase.DISCOVER, Step.END)
+@register(Phase.DISCOVER, Step.END)
 def end_discovery(resources, response):
   'Process discovery data.'
   request = response.request
@@ -182,7 +181,7 @@ def end_discovery(resources, response):
   except json.decoder.JSONDecodeError as e:
     logging.critical(f'error decoding URL {request.url}: {e.args[0]}')
     return {}
-  for result in parse_cai_results(data, PLUGIN_NAME, method='list'):
+  for result in parse_cai_results(data, 'cai-compute', method='list'):
     resource = {}
     resource_data = result['resource']
     resource_name = NAMES[resource_data['discoveryName']]

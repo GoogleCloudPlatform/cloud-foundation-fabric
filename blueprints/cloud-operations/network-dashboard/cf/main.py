@@ -33,17 +33,20 @@ Result = collections.namedtuple('Result', 'phase resource data')
 def do_discovery():
   phase = plugins.Phase.DISCOVER
   data_handlers = {
-      p.resource: p.func for p in plugins.get_plugins(phase, plugins.Step.END)
+      p.func.__module__: p.func
+      for p in plugins.get_plugins(phase, plugins.Step.END)
   }
   for plugin in plugins.get_plugins(phase, plugins.Step.START):
-    logging.info(f'discovery {plugin.resource}')
-    data_handler = data_handlers.get(plugin.resource)
+    plugin_name = plugin.func.__module__
+    logging.info(f'discovery {plugin_name}')
+    data_handler = data_handlers.get(plugin_name)
     requests = collections.deque(plugin.func(RESOURCES))
     while requests:
       request = requests.popleft()
       response = fetch(request)
       if not data_handler:
-        logging.warn(f'no discovery data handler for {plugin.resource}')
+        logging.warn(f'no discovery data handler for {plugin_name}')
+        continue
       for next_request in data_handler(RESOURCES, response):
         if not next_request:
           continue

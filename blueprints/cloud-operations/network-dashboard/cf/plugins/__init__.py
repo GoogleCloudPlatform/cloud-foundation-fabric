@@ -29,8 +29,7 @@ _PLUGINS = []
 HTTPRequest = collections.namedtuple('HTTPRequest', 'url headers data')
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
 Phase = enum.IntEnum('Phase', 'INIT DISCOVER EXTEND AGGREGATE')
-Plugin = collections.namedtuple('Plugin',
-                                'phase step level priority resource func')
+Plugin = collections.namedtuple('Plugin', 'phase step level priority func')
 Resource = collections.namedtuple('Resource', 'id data')
 Step = enum.IntEnum('Step', 'START END')
 
@@ -44,10 +43,10 @@ def get_plugins(phase, step=None):
   return itertools.filterfalse(pred, _PLUGINS)
 
 
-def register(resource, phase, step, level=Level.PRIMARY, priority=99):
+def register(phase, step, level=Level.PRIMARY, priority=99):
 
   def outer(fn):
-    _PLUGINS.append(Plugin(phase, step, level, priority, resource, fn))
+    _PLUGINS.append(Plugin(phase, step, level, priority, fn))
     return fn
 
   return outer
@@ -58,4 +57,4 @@ _plugins_path = str(pathlib.Path(__file__).parent)
 for mod_info in pkgutil.iter_modules([_plugins_path], 'plugins.'):
   importlib.import_module(mod_info.name)
 
-_PLUGINS.sort()
+_PLUGINS.sort(key=lambda i: i[:-1])
