@@ -24,6 +24,7 @@ from .utils import parse_cai_results
 CAI_URL = ('https://content-cloudasset.googleapis.com/v1'
            '/organizations/{organization}/assets'
            '?contentType=RESOURCE&{asset_types}&pageSize=500')
+LOGGER = logging.getLogger('net-dash.discovery.cai-compute')
 TYPES = {
     'networks': 'Network',
     'subnetworks': 'Subnetwork',
@@ -43,10 +44,11 @@ class Skip(Exception):
 def _handle_discovery(resources, response):
   'Process discovery data.'
   request = response.request
+  LOGGER.info('discovery handle request')
   try:
     data = response.json()
   except json.decoder.JSONDecodeError as e:
-    logging.critical(f'error decoding URL {request.url}: {e.args[0]}')
+    LOGGER.critical(f'error decoding URL {request.url}: {e.args[0]}')
     return {}
   for result in parse_cai_results(data, 'cai-compute', method='list'):
     resource = {}
@@ -54,7 +56,7 @@ def _handle_discovery(resources, response):
     resource_name = NAMES[resource_data['discoveryName']]
     parent = resource_data['parent']
     if not _set_parent(resource, parent, resources):
-      logging.info(f'{result["name"]} outside perimeter')
+      LOGGER.info(f'{result["name"]} outside perimeter')
       continue
     extend_func = globals().get(f'_handle_{resource_name}')
     if not callable(extend_func):
@@ -66,7 +68,7 @@ def _handle_discovery(resources, response):
     resources[resource_name][resource['self_link']] = resource
   page_token = data.get('nextPageToken')
   if page_token:
-    logging.info('requesting next page')
+    LOGGER.info('requesting next page')
     url = _url(resources)
     yield HTTPRequest(f'{url}&pageToken={page_token}', {}, None)
 
@@ -188,9 +190,10 @@ def _url(resources):
   return CAI_URL.format(organization=organization, asset_types=asset_types)
 
 
-@register_init()
+@register_init
 def init(resources):
   'Prepare the shared datastructures for asset types managed here.'
+  LOGGER.info('init')
   for name in TYPES:
     if name not in resources:
       resources[name] = {}
@@ -199,5 +202,5 @@ def init(resources):
 @register_discovery(_handle_discovery, Level.PRIMARY, 10)
 def start_discovery(resources):
   'Start discovery by returning the asset list URL for asset types.'
-  logging.info('discovery compute start')
+  LOGGER.info('discovery start')
   yield HTTPRequest(_url(resources), {}, None)

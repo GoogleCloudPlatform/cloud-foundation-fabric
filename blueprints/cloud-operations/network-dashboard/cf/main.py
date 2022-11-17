@@ -24,6 +24,7 @@ import plugins
 from google.auth.transport.requests import AuthorizedSession
 
 HTTP = AuthorizedSession(google.auth.default()[0])
+LOGGER = logging.getLogger('net-dash')
 Q_COLLECTION = collections.deque()
 RESOURCES = {}
 
@@ -31,16 +32,17 @@ Result = collections.namedtuple('Result', 'phase resource data')
 
 
 def do_discovery():
+  LOGGER.info('discovery start')
   for plugin in plugins.get_discovery_plugins():
-    logging.info(f'discovery {plugin.name}')
     requests = collections.deque(plugin.func(RESOURCES))
+    LOGGER.info(f'discovery {plugin.name} ({len(requests)})')
     while requests:
       request = requests.popleft()
       response = fetch(request)
       for next_request in plugin.handler(RESOURCES, response):
         if not next_request:
           continue
-        logging.info(f'next request {next_request}')
+        LOGGER.info(f'discovery {plugin.name} (+1)')
         requests.append(next_request)
 
 
@@ -57,7 +59,7 @@ def do_init(organization, folder, project):
 
 def fetch(request):
   # try
-  logging.info(f'fetch {request.url}')
+  LOGGER.info(f'fetch {request.url}')
   if not request.data:
     response = HTTP.get(request.url, headers=request.headers)
   else:
@@ -65,7 +67,7 @@ def fetch(request):
                          data=request.data)
   if response.status_code != 200:
     # TODO: handle this
-    logging.critical(
+    LOGGER.critical(
         f'response code {response.status_code} for URL {request.url}')
     print(request.url)
     print(request.headers)
@@ -91,8 +93,10 @@ def main(organization=None, op_project=None, project=None, folder=None):
 
   do_discovery()
 
-  import icecream
-  icecream.ic(RESOURCES)
+  LOGGER.info({k: len(v) for k, v in RESOURCES.items()})
+
+  # import icecream
+  # icecream.ic(RESOURCES)
 
 
 if __name__ == '__main__':

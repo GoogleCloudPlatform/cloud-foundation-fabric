@@ -17,13 +17,15 @@ import logging
 from . import Level, register_init, register_discovery
 from .utils import dirty_mp_request, dirty_mp_response
 
-NAME = 'project-quota'
+LOGGER = logging.getLogger('net-dash.discovery.compute-quota')
+NAME = 'quota'
 
 API_GLOBAL_URL = '/compute/v1/projects/{}'
 API_REGION_URL = '/compute/v1/projects/{}/regions/{}'
 
 
 def _handle_discovery(resources, response):
+  LOGGER.info('discovery handle request')
   content_type = response.headers['content-type']
   for part in dirty_mp_response(content_type, response.content):
     kind = part.get('kind')
@@ -43,13 +45,15 @@ def _handle_discovery(resources, response):
   yield
 
 
-@register_init()
+@register_init
 def init(resources):
+  LOGGER.info('init')
   if NAME not in resources:
     resources[NAME] = {}
 
 
 @register_discovery(_handle_discovery, Level.DERIVED, 0)
 def start_discovery(resources):
+  LOGGER.info('discovery start')
   yield dirty_mp_request(
       [API_GLOBAL_URL.format(p) for p in resources['projects']])

@@ -15,9 +15,9 @@
 import collections
 import enum
 import importlib
-import itertools
 import pathlib
 import pkgutil
+import types
 
 __all__ = [
     'HTTPRequest', 'Level', 'PluginError', 'Resource', 'get_discovery_plugins',
@@ -58,8 +58,11 @@ def register_discovery(handler_func, level=Level.PRIMARY, priority=99):
   return outer
 
 
-def register_init():
-  # TODO: make decorator work without args
+def register_init(*args):
+
+  if args and type(args[0]) == types.FunctionType:
+    _PLUGINS_INIT.append(Plugin(args[0], args[0].__module__))
+    return
 
   def outer(func):
     _PLUGINS_INIT.append(Plugin(func, func.__module__))

@@ -18,6 +18,7 @@ import logging
 from . import HTTPRequest, Level, register_init, register_discovery
 from .utils import parse_cai_page_token, parse_cai_results
 
+LOGGER = logging.getLogger('net-dash.discovery.cai-projects')
 NAME = 'projects'
 TYPE = 'cloudresourcemanager.googleapis.com/Project'
 
@@ -28,11 +29,12 @@ CAI_URL = (
 
 
 def _handle_discovery(resources, response):
+  LOGGER.info('discovery handle request')
   request = response.request
   try:
     data = response.json()
   except json.decoder.JSONDecodeError as e:
-    logging.critical(f'error decoding URL {request.url}: {e.args[0]}')
+    LOGGER.critical(f'error decoding URL {request.url}: {e.args[0]}')
     return {}
   for result in parse_cai_results(data, NAME, TYPE):
     number = result['project'].split('/')[1]
@@ -41,11 +43,13 @@ def _handle_discovery(resources, response):
     resources['projects:number'][number] = project_id
   next_url = parse_cai_page_token(data, request.url)
   if next_url:
+    LOGGER.info('discovery next url')
     yield HTTPRequest(next_url, {}, None)
 
 
-@register_init()
+@register_init
 def init(resources):
+  LOGGER.info('init')
   if NAME not in resources:
     resources[NAME] = {}
   if 'project:numbers' not in resources:
@@ -54,7 +58,7 @@ def init(resources):
 
 @register_discovery(_handle_discovery, Level.CORE, 0)
 def start_discovery(resources):
-  logging.info('discovery projects start')
+  LOGGER.info('discovery start')
   for resource_type in (NAME, 'folders'):
     for k in resources.get(resource_type, []):
       yield HTTPRequest(CAI_URL.format(f'{resource_type}/{k}'), {}, None)
