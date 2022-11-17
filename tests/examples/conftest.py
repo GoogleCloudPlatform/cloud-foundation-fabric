@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import collections
+import re
 from pathlib import Path
 
 import marko
@@ -20,6 +22,11 @@ import pytest
 FABRIC_ROOT = Path(__file__).parents[2]
 MODULES_PATH = FABRIC_ROOT / 'modules/'
 BLUEPRINTS_PATH = FABRIC_ROOT / 'blueprints/'
+
+FILE_TEST_RE = re.compile(r'# tftest file (\w+) ([\S]+)')
+
+Example = collections.namedtuple('Example', 'code files')
+File = collections.namedtuple('File', 'path content')
 
 
 def pytest_generate_tests(metafunc):
@@ -37,15 +44,25 @@ def pytest_generate_tests(metafunc):
       doc = marko.parse(readme.read_text())
       index = 0
       last_header = None
-      mark = pytest.mark.xdist_group(name=module.name)
+      files = {}
+
+      #first pass: collect all tftest tagged files
+      for child in doc.children:
+        if isinstance(child, marko.block.FencedCode):
+          code = child.children[0].children
+          match = FILE_TEST_RE.search(code)
+          if match:
+            name, path = match.groups()
+            files[name] = File(path, code)
+
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode):
           index += 1
           code = child.children[0].children
           if 'tftest skip' in code:
             continue
-          if child.lang == 'hcl' or 'tftest file' in code:
-            examples.append(pytest.param(code, marks=mark))
+          if child.lang == 'hcl':
+            examples.append(Example(code, files))
             path = module.relative_to(FABRIC_ROOT)
             name = f'{path}:{last_header}'
             if index > 1:

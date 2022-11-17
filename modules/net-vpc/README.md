@@ -233,11 +233,11 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 file=subnets
 ```
 
 ```yaml
-# ./config/subnets/subnet-name.yaml
+# tftest file subnets ./config/subnets/subnet-name.yaml
 region: europe-west1
 description: Sample description
 ip_cidr_range: 10.0.0.0/24

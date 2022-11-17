@@ -97,11 +97,11 @@ module "folder" {
     factory-policy = module.folder.firewall_policy_id["factory"]
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 files=cidrs,rules
 ```
 
 ```yaml
-# tftest file configs/firewall-policies/cidrs.yaml
+# tftest file cidrs configs/firewall-policies/cidrs.yaml
 rfc1918:
   - 10.0.0.0/8
   - 172.16.0.0/12
@@ -109,7 +109,7 @@ rfc1918:
 ```
 
 ```yaml
-# tftest file configs/firewall-policies/rules.yaml
+# tftest file rules configs/firewall-policies/rules.yaml
 allow-admins:
   description: Access from the admin subnet to all subnets
   direction: INGRESS

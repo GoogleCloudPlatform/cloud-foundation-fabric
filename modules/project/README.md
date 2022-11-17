@@ -226,11 +226,11 @@ module "folder" {
   name                   = "Folder name"
   org_policies_data_path = "configs/org-policies/"
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=6 files=boolean,list
 ```
 
 ```yaml
-# tftest file configs/org-policies/boolean.yaml
+# tftest file boolean configs/org-policies/boolean.yaml
 iam.disableServiceAccountKeyCreation:
   enforce: true
 
@@ -246,7 +246,7 @@ iam.disableServiceAccountKeyUpload:
 ```
 
 ```yaml
-# tftest file configs/org-policies/list.yaml
+# tftest file list configs/org-policies/list.yaml
 compute.vmExternalIpAccess:
   deny:
     all: true
