@@ -15,18 +15,20 @@
 name: "Docker"
 
 on:
-  workflow_call:
-    inputs:
-      path:
-        required: true
-        type: string
+  push:
+    branches:
+      - master
+    paths:
+      - 'modules/cloud-config-container/squid/docker/**'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'modules/cloud-config-container/squid/docker/**'
 
 jobs:
-  linting:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: hadolint/hadolint-action@v2.1.0
-        with:
-          dockerfile: ${{ inputs.path }}/Dockerfile
+  call-workflow-2-in-local-repo:
+    uses: ./.github/workflows/docker.yml
+    with:
+      path: modules/cloud-config-container/squid/docker/
+      #action: ${{ github.event_name == 'pull_request' && github.event.action == 'opened' }}
