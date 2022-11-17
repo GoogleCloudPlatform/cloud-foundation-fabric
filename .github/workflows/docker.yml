@@ -44,7 +44,7 @@ jobs:
 
       - name: Update Pull Request
         uses: actions/github-script@v6
-        if: input.event_name == 'pull_request'
+        if: inputs.event_name == 'pull_request'
         with:
           script: |
             const output = `
