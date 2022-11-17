@@ -27,7 +27,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: hadolint/hadolint-action@v3.0.0
+      - name: Build and push
+        uses: docker/build-push-action@v3
         with:
-          dockerfile: ${{ inputs.path }}/Dockerfile
-          verbose: true
+          context: ${{ inputs.path }}
+          push: false
+          tags: user/app:latest
+
+      # - uses: hadolint/hadolint-action@v3.0.0
+      #   with:
+      #     dockerfile: ${{ inputs.path }}/Dockerfile
+      #     verbose: true
