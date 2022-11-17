@@ -55,5 +55,6 @@ def init(resources):
 @register_discovery(_handle_discovery, Level.DERIVED, 0)
 def start_discovery(resources):
   LOGGER.info('discovery start')
+  # TODO: split in batches
   yield dirty_mp_request(
       [API_GLOBAL_URL.format(p) for p in resources['projects']])

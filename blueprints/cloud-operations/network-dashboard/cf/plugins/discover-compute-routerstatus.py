@@ -63,6 +63,7 @@ def init(resources):
 @register_discovery(_handle_discovery, Level.DERIVED)
 def start_discovery(resources):
   LOGGER.info('discovery start')
+  # TODO: split in batches
   urls = [
       API_URL.format(r['project_id'], r['region'], r['name'])
       for r in resources['routers'].values()
