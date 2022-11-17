@@ -30,5 +30,6 @@ jobs:
   call-workflow-2-in-local-repo:
     uses: ./.github/workflows/docker.yml
     with:
-      path: modules/cloud-config-container/squid/docker
+      image_name: squid
+      context: modules/cloud-config-container/squid/docker
       #action: ${{ github.event_name == 'pull_request' && github.event.action == 'opened' }}

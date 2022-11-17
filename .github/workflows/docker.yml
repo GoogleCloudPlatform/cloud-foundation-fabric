@@ -17,7 +17,10 @@ name: "Docker"
 on:
   workflow_call:
     inputs:
-      path:
+      image_name:
+        required: true
+        type: string
+      context:
         required: true
         type: string
 
@@ -30,11 +33,13 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:${{ inputs.path }}"
+          context: ${{ inputs.context }}
           push: false
-          tags: user/app:latest
+          tags: |
+            ${{ inputs.image_name }}:latest
+            ${{ inputs.image_name }}:${{ steps.date.outputs.date }}
 
       # - uses: hadolint/hadolint-action@v3.0.0
       #   with:
-      #     dockerfile: ${{ inputs.path }}/Dockerfile
+      #     dockerfile: ${{ inputs.context }}/Dockerfile
       #     verbose: true
