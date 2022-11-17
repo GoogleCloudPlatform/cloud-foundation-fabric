@@ -24,7 +24,7 @@ module "bq" {
   views      = try(each.value.views, null)
   tables     = try(each.value.tables, null)
 }
-# tftest modules=1 resources=
+# tftest skip
 ```
 
 ### Configuration Structure
