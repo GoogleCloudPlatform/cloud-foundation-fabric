@@ -16,7 +16,7 @@ import json
 import logging
 import urllib.parse
 
-from . import Level, Phase, HTTPRequest, Step, register
+from . import HTTPRequest, Level, register_init, register_discovery
 from .utils import parse_cai_results
 
 # https://content-cloudasset.googleapis.com/v1/organizations/436789450919/assets?contentType=RESOURCE&assetTypes=compute.googleapis.com/Network
@@ -40,9 +40,35 @@ class Skip(Exception):
   pass
 
 
-def _self_link(s):
-  'Remove initial part from self links.'
-  return s.replace('https://www.googleapis.com/compute/v1/', '')
+def _handle_discovery(resources, response):
+  'Process discovery data.'
+  request = response.request
+  try:
+    data = response.json()
+  except json.decoder.JSONDecodeError as e:
+    logging.critical(f'error decoding URL {request.url}: {e.args[0]}')
+    return {}
+  for result in parse_cai_results(data, 'cai-compute', method='list'):
+    resource = {}
+    resource_data = result['resource']
+    resource_name = NAMES[resource_data['discoveryName']]
+    parent = resource_data['parent']
+    if not _set_parent(resource, parent, resources):
+      logging.info(f'{result["name"]} outside perimeter')
+      continue
+    extend_func = globals().get(f'_handle_{resource_name}')
+    if not callable(extend_func):
+      raise SystemExit(f'specialized function missing for {resource_name}')
+    try:
+      extend_func(resource, resource_data['data'])
+    except Skip:
+      continue
+    resources[resource_name][resource['self_link']] = resource
+  page_token = data.get('nextPageToken')
+  if page_token:
+    logging.info('requesting next page')
+    url = _url(resources)
+    yield HTTPRequest(f'{url}&pageToken={page_token}', {}, None)
 
 
 def _handle_networks(resource, data):
@@ -129,6 +155,11 @@ def _handle_routers(resource, data):
   resource['region'] = data['region'].split('/')[-1]
 
 
+def _self_link(s):
+  'Remove initial part from self links.'
+  return s.replace('https://www.googleapis.com/compute/v1/', '')
+
+
 def _set_parent(resource, parent, resources):
   'Extract and set resource parent.'
   parent_type, parent_id = parent.split('/')[-2:]
@@ -157,7 +188,7 @@ def _url(resources):
   return CAI_URL.format(organization=organization, asset_types=asset_types)
 
 
-@register(Phase.INIT, Step.START)
+@register_init()
 def init(resources):
   'Prepare the shared datastructures for asset types managed here.'
   for name in TYPES:
@@ -165,40 +196,8 @@ def init(resources):
       resources[name] = {}
 
 
-@register(Phase.DISCOVER, Step.START, Level.PRIMARY, 10)
+@register_discovery(_handle_discovery, Level.PRIMARY, 10)
 def start_discovery(resources):
   'Start discovery by returning the asset list URL for asset types.'
   logging.info('discovery compute start')
   yield HTTPRequest(_url(resources), {}, None)
-
-
-@register(Phase.DISCOVER, Step.END)
-def end_discovery(resources, response):
-  'Process discovery data.'
-  request = response.request
-  try:
-    data = response.json()
-  except json.decoder.JSONDecodeError as e:
-    logging.critical(f'error decoding URL {request.url}: {e.args[0]}')
-    return {}
-  for result in parse_cai_results(data, 'cai-compute', method='list'):
-    resource = {}
-    resource_data = result['resource']
-    resource_name = NAMES[resource_data['discoveryName']]
-    parent = resource_data['parent']
-    if not _set_parent(resource, parent, resources):
-      logging.info(f'{result["name"]} outside perimeter')
-      continue
-    extend_func = globals().get(f'_handle_{resource_name}')
-    if not callable(extend_func):
-      raise SystemExit(f'specialized function missing for {resource_name}')
-    try:
-      extend_func(resource, resource_data['data'])
-    except Skip:
-      continue
-    resources[resource_name][resource['self_link']] = resource
-  page_token = data.get('nextPageToken')
-  if page_token:
-    logging.info('requesting next page')
-    url = _url(resources)
-    yield HTTPRequest(f'{url}&pageToken={page_token}', {}, None)

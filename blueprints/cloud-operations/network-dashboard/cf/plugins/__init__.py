@@ -20,34 +20,50 @@ import pathlib
 import pkgutil
 
 __all__ = [
-    'HTTPRequest', 'Level', 'Phase', 'PluginError', 'Resource', 'Step',
-    'get_plugins', 'register'
+    'HTTPRequest', 'Level', 'PluginError', 'Resource', 'get_discovery_plugins',
+    'get_init_plugins', 'register_discovery', 'register_init'
 ]
 
-_PLUGINS = []
+_PLUGINS_INIT = []
+_PLUGINS_DISCOVERY = []
 
 HTTPRequest = collections.namedtuple('HTTPRequest', 'url headers data')
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
-Phase = enum.IntEnum('Phase', 'INIT DISCOVER EXTEND AGGREGATE')
-Plugin = collections.namedtuple('Plugin', 'phase step level priority func')
+Plugin = collections.namedtuple('Plugin', 'func name level priority handler',
+                                defaults=[None, None, None])
 Resource = collections.namedtuple('Resource', 'id data')
-Step = enum.IntEnum('Step', 'START END')
 
 
 class PluginError(Exception):
   pass
 
 
-def get_plugins(phase, step=None):
-  pred = lambda p: not (p.phase == phase and (step is None or p.step == step))
-  return itertools.filterfalse(pred, _PLUGINS)
+def get_discovery_plugins():
+  for p in _PLUGINS_DISCOVERY:
+    yield p
 
 
-def register(phase, step, level=Level.PRIMARY, priority=99):
+def get_init_plugins():
+  for p in _PLUGINS_INIT:
+    yield p
 
-  def outer(fn):
-    _PLUGINS.append(Plugin(phase, step, level, priority, fn))
-    return fn
+
+def register_discovery(handler_func, level=Level.PRIMARY, priority=99):
+
+  def outer(func):
+    _PLUGINS_DISCOVERY.append(
+        Plugin(func, func.__module__, level, priority, handler_func))
+    return func
+
+  return outer
+
+
+def register_init():
+  # TODO: make decorator work without args
+
+  def outer(func):
+    _PLUGINS_INIT.append(Plugin(func, func.__module__))
+    return func
 
   return outer
 
@@ -57,4 +73,4 @@ _plugins_path = str(pathlib.Path(__file__).parent)
 for mod_info in pkgutil.iter_modules([_plugins_path], 'plugins.'):
   importlib.import_module(mod_info.name)
 
-_PLUGINS.sort(key=lambda i: i[:-1])
+_PLUGINS_DISCOVERY.sort(key=lambda i: i[2:-1])

@@ -15,7 +15,7 @@
 import json
 import logging
 
-from . import Level, Phase, HTTPRequest, Step, register
+from . import HTTPRequest, Level, register_init, register_discovery
 from .utils import parse_cai_page_token, parse_cai_results
 
 NAME = 'projects'
@@ -27,24 +27,7 @@ CAI_URL = (
     f'?assetTypes=cloudresourcemanager.googleapis.com%2FProject&pageSize=500')
 
 
-@register(Phase.INIT, Step.START)
-def init(resources):
-  if NAME not in resources:
-    resources[NAME] = {}
-  if 'project:numbers' not in resources:
-    resources['projects:number'] = {}
-
-
-@register(Phase.DISCOVER, Step.START, Level.CORE, 0)
-def start_discovery(resources):
-  logging.info('discovery projects start')
-  for resource_type in (NAME, 'folders'):
-    for k in resources.get(resource_type, []):
-      yield HTTPRequest(CAI_URL.format(f'{resource_type}/{k}'), {}, None)
-
-
-@register(Phase.DISCOVER, Step.END)
-def end_discovery(resources, response):
+def _handle_discovery(resources, response):
   request = response.request
   try:
     data = response.json()
@@ -59,3 +42,19 @@ def end_discovery(resources, response):
   next_url = parse_cai_page_token(data, request.url)
   if next_url:
     yield HTTPRequest(next_url, {}, None)
+
+
+@register_init()
+def init(resources):
+  if NAME not in resources:
+    resources[NAME] = {}
+  if 'project:numbers' not in resources:
+    resources['projects:number'] = {}
+
+
+@register_discovery(_handle_discovery, Level.CORE, 0)
+def start_discovery(resources):
+  logging.info('discovery projects start')
+  for resource_type in (NAME, 'folders'):
+    for k in resources.get(resource_type, []):
+      yield HTTPRequest(CAI_URL.format(f'{resource_type}/{k}'), {}, None)

@@ -31,23 +31,13 @@ Result = collections.namedtuple('Result', 'phase resource data')
 
 
 def do_discovery():
-  phase = plugins.Phase.DISCOVER
-  data_handlers = {
-      p.func.__module__: p.func
-      for p in plugins.get_plugins(phase, plugins.Step.END)
-  }
-  for plugin in plugins.get_plugins(phase, plugins.Step.START):
-    plugin_name = plugin.func.__module__
-    logging.info(f'discovery {plugin_name}')
-    data_handler = data_handlers.get(plugin_name)
+  for plugin in plugins.get_discovery_plugins():
+    logging.info(f'discovery {plugin.name}')
     requests = collections.deque(plugin.func(RESOURCES))
     while requests:
       request = requests.popleft()
       response = fetch(request)
-      if not data_handler:
-        logging.warn(f'no discovery data handler for {plugin_name}')
-        continue
-      for next_request in data_handler(RESOURCES, response):
+      for next_request in plugin.handler(RESOURCES, response):
         if not next_request:
           continue
         logging.info(f'next request {next_request}')
@@ -61,8 +51,7 @@ def do_init(organization, folder, project):
     RESOURCES['folders'] = {f: {} for f in folder}
   if project:
     RESOURCES['projects'] = {p: {} for p in project}
-  phase = plugins.Phase.INIT
-  for plugin in plugins.get_plugins(phase):
+  for plugin in plugins.get_init_plugins():
     plugin.func(RESOURCES)
 
 

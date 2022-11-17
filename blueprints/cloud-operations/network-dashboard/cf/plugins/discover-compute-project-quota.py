@@ -14,7 +14,7 @@
 
 import logging
 
-from . import Level, Phase, PluginError, Step, register
+from . import Level, register_init, register_discovery
 from .utils import dirty_mp_request, dirty_mp_response
 
 NAME = 'project-quota'
@@ -23,20 +23,7 @@ API_GLOBAL_URL = '/compute/v1/projects/{}'
 API_REGION_URL = '/compute/v1/projects/{}/regions/{}'
 
 
-@register(Phase.INIT, Step.START)
-def init(resources):
-  if NAME not in resources:
-    resources[NAME] = {}
-
-
-@register(Phase.DISCOVER, Step.START, Level.DERIVED, 0)
-def start_discovery(resources):
-  yield dirty_mp_request(
-      [API_GLOBAL_URL.format(p) for p in resources['projects']])
-
-
-@register(Phase.DISCOVER, Step.END)
-def end_discovery(resources, response):
+def _handle_discovery(resources, response):
   content_type = response.headers['content-type']
   for part in dirty_mp_response(content_type, response.content):
     kind = part.get('kind')
@@ -54,3 +41,15 @@ def end_discovery(resources, response):
     project_quota = resources[NAME].setdefault(project_id, {})
     project_quota[region] = quota
   yield
+
+
+@register_init()
+def init(resources):
+  if NAME not in resources:
+    resources[NAME] = {}
+
+
+@register_discovery(_handle_discovery, Level.DERIVED, 0)
+def start_discovery(resources):
+  yield dirty_mp_request(
+      [API_GLOBAL_URL.format(p) for p in resources['projects']])
