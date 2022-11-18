@@ -66,6 +66,8 @@ resource "google_compute_forwarding_rule" "default" {
   subnetwork            = var.vpc_config.subnetwork
   labels                = var.labels
   target                = local.fwd_rule_target
+  # enable once in preview
+  # allow_global_access   = var.global_access
   # service_directory_registrations
 }
 

@@ -26,6 +26,13 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+# enable once in preview
+# variable "global_access" {
+#   description = "Allow client access from all regions."
+#   type        = bool
+#   default     = null
+# }
+
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
@@ -52,9 +59,9 @@ variable "name" {
 variable "neg_configs" {
   description = "Optional network endpoint groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
-    project_id = optional(string)
     cloudrun = optional(object({
-      region = string
+      region     = string
+      project_id = optional(string)
       target_service = optional(object({
         name = string
         tag  = optional(string)
@@ -65,6 +72,7 @@ variable "neg_configs" {
       zone = string
       # default_port = optional(number)
       network    = optional(string)
+      project_id = optional(string)
       subnetwork = optional(string)
       endpoints = optional(list(object({
         instance   = string
@@ -74,8 +82,9 @@ variable "neg_configs" {
 
     }))
     hybrid = optional(object({
-      zone    = string
-      network = optional(string)
+      zone       = string
+      network    = optional(string)
+      project_id = optional(string)
       # re-enable once provider properly support this
       # default_port = optional(number)
       endpoints = optional(list(object({
