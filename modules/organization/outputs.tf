@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 output "custom_role_id" {
   description = "Map of custom role IDs created in the organization."
   value = {
@@ -41,6 +40,21 @@ output "firewall_policies" {
 output "firewall_policy_id" {
   description = "Map of firewall policy ids created in the organization."
   value       = { for k, v in google_compute_firewall_policy.policy : k => v.id }
+}
+
+output "network_tag_keys" {
+  description = "Tag key resources."
+  value = {
+    for k, v in google_tags_tag_key.default : k => v if v.purpose != null
+  }
+}
+
+output "network_tag_values" {
+  description = "Tag value resources."
+  value = {
+    for k, v in google_tags_tag_value.default
+    : k => v if google_tags_tag_key.default[split("/", k)[0]].purpose != null
+  }
 }
 
 output "organization_id" {
@@ -80,20 +94,5 @@ output "tag_values" {
   value = {
     for k, v in google_tags_tag_value.default
     : k => v if google_tags_tag_key.default[split("/", k)[0]].purpose == null
-  }
-}
-
-output "network_tag_keys" {
-  description = "Tag key resources."
-  value = {
-    for k, v in google_tags_tag_key.default : k => v if v.purpose != null
-  }
-}
-
-output "network_tag_values" {
-  description = "Tag value resources."
-  value = {
-    for k, v in google_tags_tag_value.default
-    : k => v if google_tags_tag_key.default[split("/", k)[0]].purpose != null
   }
 }
