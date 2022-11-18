@@ -197,13 +197,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "stateful_disks" {
-  description = "Stateful disk configuration applied at the MIG level to all instances, in device name => on permanent instance delete rule as boolean."
-  type        = map(bool)
-  default     = {}
-  nullable    = false
-}
-
 variable "stateful_config" {
   description = "Stateful configuration for individual instances."
   type = map(object({
@@ -221,6 +214,13 @@ variable "stateful_config" {
   }))
   default  = {}
   nullable = false
+}
+
+variable "stateful_disks" {
+  description = "Stateful disk configuration applied at the MIG level to all instances, in device name => on permanent instance delete rule as boolean."
+  type        = map(bool)
+  default     = {}
+  nullable    = false
 }
 
 variable "target_pools" {

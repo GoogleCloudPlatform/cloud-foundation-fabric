@@ -32,6 +32,8 @@ BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 
 State = enum.Enum('State', 'OK FAIL SKIP')
 
+from icecream import ic
+
 
 def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
   'Invoke tfdoc on folder, using the relevant options.'
@@ -39,6 +41,7 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
   for readme_path in sorted(dir_path.glob('**/README.md')):
     if '.terraform' in str(readme_path):
       continue
+
     diff = None
     readme = readme_path.read_text()
     mod_name = str(readme_path.relative_to(dir_path).parent)
@@ -54,8 +57,15 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
       except SystemExit:
         state = state.SKIP
       else:
-        if new_doc.content == result['doc']:
-          state = State.OK
+        state = State.OK
+
+        if new_doc.content != result['doc']:
+          state = State.FAIL
+          header = f'----- {mod_name} diff -----\n'
+          ndiff = difflib.ndiff(result['doc'].split('\n'),
+                                new_doc.content.split('\n'))
+          diff = '\n'.join([header] + list(ndiff))
+
         elif variables != sorted(variables):
           state = state.FAIL
           diff = "\n".join([
@@ -63,6 +73,7 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
               f'variables should be in this order: ',
               ', '.join(sorted(variables)),
           ])
+
         elif outputs != sorted(outputs):
           state = state.FAIL
           diff = "\n".join([
@@ -70,12 +81,7 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
               f'outputs should be in this order: ',
               ', '.join(sorted(outputs)),
           ])
-        else:
-          state = State.FAIL
-          header = f'----- {mod_name} diff -----\n'
-          ndiff = difflib.ndiff(result['doc'].split('\n'),
-                                new_doc.content.split('\n'))
-          diff = '\n'.join([header] + list(ndiff))
+
     yield mod_name, state, diff
 
 

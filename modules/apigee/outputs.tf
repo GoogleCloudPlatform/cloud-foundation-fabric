@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-output "organization" {
-  description = "Organization."
-  value       = try(google_apigee_organization.organization[0], null)
-}
-
-output "org_id" {
-  description = "Organization ID."
-  value       = local.org_id
-}
-
-output "org_name" {
-  description = "Organization name."
-  value       = try(google_apigee_organization.organization[0].name, var.project_id)
-}
-
 output "envgroups" {
   description = "Environment groups."
   value       = try(google_apigee_envgroup.envgroups, null)
@@ -42,6 +27,21 @@ output "environments" {
 output "instances" {
   description = "Instances"
   value       = try(google_apigee_instance.instances, null)
+}
+
+output "org_id" {
+  description = "Organization ID."
+  value       = local.org_id
+}
+
+output "org_name" {
+  description = "Organization name."
+  value       = try(google_apigee_organization.organization[0].name, var.project_id)
+}
+
+output "organization" {
+  description = "Organization."
+  value       = try(google_apigee_organization.organization[0], null)
 }
 
 output "service_attachments" {
