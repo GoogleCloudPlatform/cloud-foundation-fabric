@@ -17,14 +17,10 @@
 # tfdoc:file:description Folder-level organization policies.
 
 locals {
-  _factory_data_raw = (
-    var.org_policies_data_path == null
-    ? tomap({})
-    : merge([
-      for f in fileset(var.org_policies_data_path, "*.yaml") :
-      yamldecode(file("${var.org_policies_data_path}/${f}"))
-    ]...)
-  )
+  _factory_data_raw = merge([
+    for f in try(fileset(var.org_policies_data_path, "*.yaml"), []) :
+    yamldecode(file("${var.org_policies_data_path}/${f}"))
+  ]...)
 
   # simulate applying defaults to data coming from yaml files
   _factory_data = {

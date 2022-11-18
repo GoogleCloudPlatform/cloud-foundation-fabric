@@ -137,16 +137,15 @@ module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   
-  org_policy_custom_constraints_data_path = "/my/path"
-
+  org_policy_custom_constraints_data_path = "configs/custom-constraints"
 }
-# tftest skip
+# tftest modules=1 resources=3 files=gke,dataproc
 ```
 
 ```yaml
-# /my/path/gke.yaml
+# tftest file gke configs/custom-constraints/gke.yaml
 custom.gkeEnableLogging:
-  resource_types: 
+  resource_types:
   - container.googleapis.com/Cluster
   method_types:
   - CREATE
@@ -155,7 +154,7 @@ custom.gkeEnableLogging:
   action_type: DENY
   display_name: Do not disable Cloud Logging
 custom.gkeEnableAutoUpgrade:
-  resource_types: 
+  resource_types:
   - container.googleapis.com/NodePool
   method_types:
   - CREATE
@@ -166,10 +165,9 @@ custom.gkeEnableAutoUpgrade:
 ```
 
 ```yaml
-# /my/path/dataproc.yaml
-
-custom.dataprocNoMoreThan10Workers
-  resource_types: 
+# tftest file dataproc configs/custom-constraints/dataproc.yaml
+custom.dataprocNoMoreThan10Workers:
+  resource_types:
   - dataproc.googleapis.com/Cluster
   method_types:
   - CREATE
@@ -228,20 +226,19 @@ module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   firewall_policy_factory = {
-    cidr_file   = "data/cidrs.yaml"
+    cidr_file   = "configs/firewall-policies/cidrs.yaml"
     policy_name = null
-    rules_file  = "data/rules.yaml"
+    rules_file  = "configs/firewall-policies/rules.yaml"
   }
   firewall_policy_association = {
     factory-policy = module.org.firewall_policy_id["factory"]
   }
 }
-# tftest skip
+# tftest modules=1 resources=4 files=cidrs,rules
 ```
 
 ```yaml
-# cidrs.yaml
-
+# tftest file cidrs configs/firewall-policies/cidrs.yaml
 rfc1918:
   - 10.0.0.0/8
   - 172.16.0.0/12
@@ -249,8 +246,7 @@ rfc1918:
 ```
 
 ```yaml
-# rules.yaml
-
+# tftest file rules configs/firewall-policies/rules.yaml
 allow-admins:
   description: Access from the admin subnet to all subnets
   direction: INGRESS

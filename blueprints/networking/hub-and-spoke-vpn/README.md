@@ -35,7 +35,7 @@ You can easily create such a project by commenting turning on project creation i
 
 ```hcl
 module "project" {
-  source           = "../../..//modules/project"
+  source           = "../../../modules/project"
   name             = var.project_id
   # comment or remove this line to enable project creation
   # project_create = false
