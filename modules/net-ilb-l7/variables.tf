@@ -32,6 +32,7 @@ variable "group_configs" {
     zone        = string
     instances   = optional(list(string), [])
     named_ports = optional(map(number), {})
+    project_id  = optional(string)
   }))
   default  = {}
   nullable = false

@@ -98,8 +98,12 @@ resource "google_compute_region_target_https_proxy" "default" {
 }
 
 resource "google_compute_instance_group" "default" {
-  for_each    = var.group_configs
-  project     = var.project_id
+  for_each = var.group_configs
+  project = (
+    each.value.project_id == null
+    ? var.project_id
+    : each.value.project_id
+  )
   zone        = each.value.zone
   name        = "${var.name}-${each.key}"
   description = var.description
