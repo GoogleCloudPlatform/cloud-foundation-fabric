@@ -26,12 +26,12 @@ variable "description" {
   default     = "Terraform managed."
 }
 
-# enable once in preview
-# variable "global_access" {
-#   description = "Allow client access from all regions."
-#   type        = bool
-#   default     = null
-# }
+# during the preview phase you cannot change this attribute on an existing rule
+variable "global_access" {
+  description = "Allow client access from all regions."
+  type        = bool
+  default     = null
+}
 
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
@@ -59,9 +59,9 @@ variable "name" {
 variable "neg_configs" {
   description = "Optional network endpoint groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
+    project_id = optional(string)
     cloudrun = optional(object({
-      region     = string
-      project_id = optional(string)
+      region = string
       target_service = optional(object({
         name = string
         tag  = optional(string)
@@ -72,7 +72,6 @@ variable "neg_configs" {
       zone = string
       # default_port = optional(number)
       network    = optional(string)
-      project_id = optional(string)
       subnetwork = optional(string)
       endpoints = optional(list(object({
         instance   = string
@@ -82,9 +81,8 @@ variable "neg_configs" {
 
     }))
     hybrid = optional(object({
-      zone       = string
-      network    = optional(string)
-      project_id = optional(string)
+      zone    = string
+      network = optional(string)
       # re-enable once provider properly support this
       # default_port = optional(number)
       endpoints = optional(list(object({
@@ -152,6 +150,15 @@ variable "protocol" {
 variable "region" {
   description = "The region where to allocate the ILB resources."
   type        = string
+}
+
+variable "service_directory_registration" {
+  description = "Service directory namespace and service used to register this load balancer."
+  type = object({
+    namespace = string
+    service   = string
+  })
+  default = null
 }
 
 variable "ssl_certificates" {

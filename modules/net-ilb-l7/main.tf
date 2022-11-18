@@ -33,13 +33,15 @@ locals {
     "${v.neg}-${v.ip_address}-${coalesce(v.port, "none")}" => v
   }
   neg_regional = {
-    for k, v in var.neg_configs : k => v.cloudrun if v.cloudrun != null
+    for k, v in var.neg_configs :
+    k => merge(v.cloudrun, { project_id = v.project_id }) if v.cloudrun != null
   }
   neg_zonal = {
     # we need to rebuild new objects as we cannot merge different types
     for k, v in var.neg_configs : k => {
       endpoints  = v.gce != null ? v.gce.endpoints : v.hybrid.endpoints
       network    = v.gce != null ? v.gce.network : v.hybrid.network
+      project_id = v.project_id
       subnetwork = v.gce != null ? v.gce.subnetwork : null
       type       = v.gce != null ? "GCE_VM_IP_PORT" : "NON_GCP_PRIVATE_IP_PORT"
       zone       = v.gce != null ? v.gce.zone : v.hybrid.zone
@@ -66,9 +68,15 @@ resource "google_compute_forwarding_rule" "default" {
   subnetwork            = var.vpc_config.subnetwork
   labels                = var.labels
   target                = local.fwd_rule_target
-  # enable once in preview
-  # allow_global_access   = var.global_access
-  # service_directory_registrations
+  # during the preview phase you cannot change this attribute on an existing rule
+  allow_global_access = var.global_access
+  dynamic "service_directory_registrations" {
+    for_each = var.service_directory_registration == null ? [] : [""]
+    content {
+      namespace = var.service_directory_registration.namespace
+      service   = var.service_directory_registration.service
+    }
+  }
 }
 
 resource "google_compute_region_ssl_certificate" "default" {
