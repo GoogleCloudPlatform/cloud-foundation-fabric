@@ -31,9 +31,13 @@ locals {
 }
 
 resource "google_compute_region_backend_service" "default" {
-  provider                        = google-beta
-  for_each                        = var.backend_service_configs
-  project                         = var.project_id
+  provider = google-beta
+  for_each = var.backend_service_configs
+  project = (
+    each.value.project_id == null
+    ? var.project_id
+    : each.value.project_id
+  )
   region                          = var.region
   name                            = "${var.name}-${each.key}"
   description                     = var.description

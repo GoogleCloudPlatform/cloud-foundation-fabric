@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#984](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/984)] **incompatible change:** Apigee module and blueprint ([apichick](https://github.com/apichick)) <!-- 2022-11-17 16:20:27+00:00 -->
+- [[#980](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/980)] Have Squid log to /dev/stdout to stream logs to Cloud Logging ([kunzese](https://github.com/kunzese)) <!-- 2022-11-16 13:41:26+00:00 -->
+- [[#929](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/929)] Updated list of enabled APIs for network dashboard ([maunope](https://github.com/maunope)) <!-- 2022-11-16 09:27:44+00:00 -->
 - [[#968](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/968)] Enforce PROXY protocol in `filtering-proxy-psc` blueprint ([kunzese](https://github.com/kunzese)) <!-- 2022-11-15 07:18:58+00:00 -->
 - [[#962](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/962)] Add filtering-proxy-psc blueprint ([kunzese](https://github.com/kunzese)) <!-- 2022-11-11 10:24:38+00:00 -->
 - [[#913](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/913)] Adding support for PSA ranges, starting with Redis instances. ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2022-11-09 11:07:41+00:00 -->
@@ -99,6 +102,14 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#991](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/991)] Allow cross-project backend services in ILB L7 module ([ludoo](https://github.com/ludoo)) <!-- 2022-11-18 08:48:41+00:00 -->
+- [[#984](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/984)] **incompatible change:** Apigee module and blueprint ([apichick](https://github.com/apichick)) <!-- 2022-11-17 16:20:27+00:00 -->
+- [[#988](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/988)] Merge cloud function v1 and v2 tests ([juliocc](https://github.com/juliocc)) <!-- 2022-11-17 10:18:57+00:00 -->
+- [[#965](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/965)] **incompatible change:** Add triggers to Cloud Functions v2 ([wiktorn](https://github.com/wiktorn)) <!-- 2022-11-16 16:00:03+00:00 -->
+- [[#980](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/980)] Have Squid log to /dev/stdout to stream logs to Cloud Logging ([kunzese](https://github.com/kunzese)) <!-- 2022-11-16 13:41:26+00:00 -->
+- [[#983](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/983)] **incompatible change:** Add support for serverless NEGs to ILB L7 module ([ludoo](https://github.com/ludoo)) <!-- 2022-11-16 13:14:05+00:00 -->
+- [[#978](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/978)] Worker pool support for `cloud-function` ([maunope](https://github.com/maunope)) <!-- 2022-11-15 16:38:42+00:00 -->
+- [[#977](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/977)] Replace Docker's `gcplogs` driver with the GCP COS logging agent ([kunzese](https://github.com/kunzese)) <!-- 2022-11-15 12:19:52+00:00 -->
 - [[#975](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/975)] Add validation for health check port specification to ILB L7 module ([ludoo](https://github.com/ludoo)) <!-- 2022-11-14 15:20:01+00:00 -->
 - [[#974](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/974)] **incompatible change:** Refactor net-ilb-l7 module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-14 13:39:00+00:00 -->
 - [[#970](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/970)] Update logging sinks to tf1.3 in resman modules ([juliocc](https://github.com/juliocc)) <!-- 2022-11-12 18:36:59+00:00 -->

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-variable "analytics_region" {
-  type    = string
-  default = "europe-west1"
-}
-
-variable "network" {
-  type    = string
-  default = "apigee-vpc"
+module "test" {
+  source       = "../../../../modules/apigee"
+  project_id   = var.project_id
+  organization = var.organization
+  envgroups    = var.envgroups
+  environments = var.environments
+  instances    = var.instances
 }

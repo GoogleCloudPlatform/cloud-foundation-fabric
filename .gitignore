@@ -37,3 +37,8 @@ examples/cloud-operations/adfs/ansible/gssh.sh
 examples/cloud-operations/multi-cluster-mesh-gke-fleet-api/ansible/vars.yaml
 examples/cloud-operations/multi-cluster-mesh-gke-fleet-api/ansible/gssh.sh
 blueprints/cloud-operations/network-dashboard/cloud-function.zip
+blueprints/cloud-operations/apigee/bundle-export.zip
+blueprints/cloud-operations/apigee/bundle-gcs2bq.zip
+blueprints/cloud-operations/apigee/apiproxy.zip
+blueprints/cloud-operations/apigee/create-datastore.sh
+blueprints/cloud-operations/apigee/deploy-apiproxy.sh
