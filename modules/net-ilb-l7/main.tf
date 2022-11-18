@@ -119,9 +119,13 @@ resource "google_compute_instance_group" "default" {
 
 resource "google_compute_network_endpoint_group" "default" {
   for_each = local.neg_zonal
-  project  = var.project_id
-  zone     = each.value.zone
-  name     = "${var.name}-${each.key}"
+  project = (
+    each.value.project_id == null
+    ? var.project_id
+    : each.value.project_id
+  )
+  zone = each.value.zone
+  name = "${var.name}-${each.key}"
   # re-enable once provider properly supports this
   # default_port = each.value.default_port
   description           = var.description
@@ -138,7 +142,9 @@ resource "google_compute_network_endpoint_group" "default" {
 
 resource "google_compute_network_endpoint" "default" {
   for_each = local.neg_endpoints
-  project  = var.project_id
+  project = (
+    google_compute_network_endpoint_group.default[each.value.neg].project
+  )
   network_endpoint_group = (
     google_compute_network_endpoint_group.default[each.value.neg].name
   )
@@ -149,8 +155,12 @@ resource "google_compute_network_endpoint" "default" {
 }
 
 resource "google_compute_region_network_endpoint_group" "default" {
-  for_each              = local.neg_regional
-  project               = var.project_id
+  for_each = local.neg_regional
+  project = (
+    each.value.project_id == null
+    ? var.project_id
+    : each.value.project_id
+  )
   region                = each.value.region
   name                  = "${var.name}-${each.key}"
   description           = var.description
