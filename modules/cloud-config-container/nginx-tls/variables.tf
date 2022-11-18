@@ -20,12 +20,6 @@ variable "nginx_image" {
   default     = "nginx:1.23.1"
 }
 
-variable "docker_logging" {
-  description = "Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead."
-  type        = bool
-  default     = true
-}
-
 variable "runcmd_pre" {
   description = "Extra commands to run before starting nginx."
   type        = list(string)

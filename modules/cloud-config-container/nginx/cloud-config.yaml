@@ -59,9 +59,6 @@ write_files:
       Environment="HOME=/home/nginx"
       ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
       ExecStart=/usr/bin/docker run --rm --name=nginx  \
-        %{~ if docker_logging ~}
-        --log-driver=gcplogs \
-        %{~ endif ~}
         --network host \
         %{~ if etc_mount ~}
         -v /etc/nginx/conf.d:/etc/nginx/conf.d \

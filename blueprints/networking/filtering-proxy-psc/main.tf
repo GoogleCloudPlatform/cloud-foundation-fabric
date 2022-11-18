@@ -27,7 +27,8 @@ module "project" {
   services = [
     "dns.googleapis.com",
     "compute.googleapis.com",
-    "logging.googleapis.com"
+    "logging.googleapis.com",
+    "monitoring.googleapis.com"
   ]
 }
 
@@ -151,7 +152,8 @@ module "squid-vm" {
   service_account        = module.service-account-squid.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   metadata = {
-    user-data = module.cos-squid.cloud_config
+    user-data              = module.cos-squid.cloud_config
+    google-logging-enabled = true
   }
 }
 

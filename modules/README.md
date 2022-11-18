@@ -78,8 +78,7 @@ These modules are used in the examples included in this repository. If you are u
 ## Development
 
 - [API Gateway](./api-gateway)
-- [Apigee Organization](./apigee-organization)
-- [Apigee X Instance](./apigee-x-instance)
+- [Apigee](./apigee)
 - [Artifact Registry](./artifact-registry)
 - [Container Registry](./container-registry)
 - [Cloud Source Repository](./source-repository)

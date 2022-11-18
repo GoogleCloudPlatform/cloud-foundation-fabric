@@ -16,7 +16,6 @@
 
 locals {
   cloud_config = templatefile(local.template, merge(var.config_variables, {
-    docker_logging  = var.docker_logging
     image           = var.image
     kms_config      = var.kms_config
     mysql_config    = var.mysql_config

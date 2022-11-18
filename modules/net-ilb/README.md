@@ -65,9 +65,9 @@ module "cos-nginx" {
 
 module "instance-group" {
   source     = "./fabric/modules/compute-vm"
-  for_each = toset(["b", "c"])
+  for_each   = toset(["b", "c"])
   project_id = var.project_id
-  zone     = "europe-west1-${each.key}"
+  zone       = "europe-west1-${each.key}"
   name       = "ilb-test-${each.key}"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -97,7 +97,7 @@ module "ilb" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
     }
-  ports         = [80]
+  ports = [80]
   backends = [
     for z, mod in module.instance-group : {
       group          = mod.group.self_link

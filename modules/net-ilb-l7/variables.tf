@@ -26,12 +26,20 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+# during the preview phase you cannot change this attribute on an existing rule
+variable "global_access" {
+  description = "Allow client access from all regions."
+  type        = bool
+  default     = null
+}
+
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
     zone        = string
     instances   = optional(list(string), [])
     named_ports = optional(map(number), {})
+    project_id  = optional(string)
   }))
   default  = {}
   nullable = false
@@ -51,22 +59,61 @@ variable "name" {
 variable "neg_configs" {
   description = "Optional network endpoint groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
-    zone = string
-    # re-enable once provider properly support this
-    # default_port = optional(number)
-    is_hybrid = optional(bool, false)
-    endpoints = optional(list(object({
-      ip_address = string
-      instance   = optional(string)
-      port       = optional(number)
-    })))
-    vpc_config = optional(object({
+    project_id = optional(string)
+    cloudrun = optional(object({
+      region = string
+      target_service = optional(object({
+        name = string
+        tag  = optional(string)
+      }))
+      target_urlmask = optional(string)
+    }))
+    gce = optional(object({
+      zone = string
+      # default_port = optional(number)
       network    = optional(string)
       subnetwork = optional(string)
+      endpoints = optional(list(object({
+        instance   = string
+        ip_address = string
+        port       = number
+      })))
+
     }))
+    hybrid = optional(object({
+      zone    = string
+      network = optional(string)
+      # re-enable once provider properly support this
+      # default_port = optional(number)
+      endpoints = optional(list(object({
+        ip_address = string
+        port       = number
+      })))
+    }))
+    # psc = optional(object({}))
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.neg_configs : (
+        (try(v.cloudrun, null) == null ? 0 : 1) +
+        (try(v.gce, null) == null ? 0 : 1) +
+        (try(v.hybrid, null) == null ? 0 : 1) == 1
+      )
+    ])
+    error_message = "Only one type of neg can be configured at a time."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.neg_configs : (
+        v.cloudrun == null
+        ? true
+        : v.cloudrun.target_urlmask != null || v.cloudrun.target_service != null
+      )
+    ])
+    error_message = "Cloud Run negs need either target type or target urlmask defined."
+  }
 }
 
 variable "network_tier_premium" {
@@ -103,6 +150,15 @@ variable "protocol" {
 variable "region" {
   description = "The region where to allocate the ILB resources."
   type        = string
+}
+
+variable "service_directory_registration" {
+  description = "Service directory namespace and service used to register this load balancer."
+  type = object({
+    namespace = string
+    service   = string
+  })
+  default = null
 }
 
 variable "ssl_certificates" {

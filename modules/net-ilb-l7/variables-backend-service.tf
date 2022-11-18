@@ -25,6 +25,7 @@ variable "backend_service_configs" {
     locality_lb_policy              = optional(string)
     log_sample_rate                 = optional(number)
     port_name                       = optional(string)
+    project_id                      = optional(string)
     protocol                        = optional(string)
     session_affinity                = optional(string)
     timeout_sec                     = optional(number)

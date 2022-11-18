@@ -25,6 +25,7 @@ locals {
     "dataflow" : ["dataflow", "compute"]
   }
   _service_accounts_robot_services = {
+    apigee            = "service-%s@gcp-sa-apigee"
     artifactregistry  = "service-%s@gcp-sa-artifactregistry"
     bq                = "bq-%s@bigquery-encryption"
     cloudasset        = "service-%s@gcp-sa-cloudasset"
@@ -67,6 +68,7 @@ locals {
     }
   )
   service_accounts_jit_services = [
+    "apigee.googleapis.com",
     "artifactregistry.googleapis.com",
     "cloudasset.googleapis.com",
     "gkehub.googleapis.com",

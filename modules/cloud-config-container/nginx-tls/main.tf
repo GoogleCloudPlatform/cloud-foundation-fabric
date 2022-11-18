@@ -59,8 +59,6 @@ module "cos-envoy-td" {
 
   files = local.files
 
-  gcp_logging = var.docker_logging
-
   run_commands = concat(var.runcmd_pre, [
     "iptables -I INPUT 1 -p tcp -m tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT",
     "iptables -I INPUT 1 -p tcp -m tcp --dport 443 -m state --state NEW,ESTABLISHED -j ACCEPT",
