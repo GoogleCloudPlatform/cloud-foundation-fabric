@@ -91,7 +91,7 @@ def parse_cai_results(data, name, resource_type=None, method='search'):
     yield result
 
 
-def parse_cai_page_token(data, url):
+def parse_page_token(data, url):
   'Detect next page token in result and return next page URL.'
   page_token = data.get('nextPageToken')
   if page_token:

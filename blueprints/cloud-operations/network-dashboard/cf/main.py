@@ -46,13 +46,14 @@ def do_discovery():
         requests.append(next_request)
 
 
-def do_init(organization, folder, project):
-  if organization:
-    RESOURCES['organization'] = {'id': organization}
+def do_init(organization, folder, project, op_project):
+  RESOURCES['organization'] = str(organization)
+  RESOURCES['monitoring_project'] = op_project
   if folder:
     RESOURCES['folders'] = {f: {} for f in folder}
   if project:
     RESOURCES['projects'] = {p: {} for p in project}
+
   for plugin in plugins.get_init_plugins():
     plugin.func(RESOURCES)
 
@@ -69,11 +70,6 @@ def fetch(request):
     # TODO: handle this
     LOGGER.critical(
         f'response code {response.status_code} for URL {request.url}')
-    print(request.url)
-    print(request.headers)
-    print(request.data)
-    print(response.headers)
-    print(response.content)
   return response
 
 
@@ -89,11 +85,12 @@ def fetch(request):
 def main(organization=None, op_project=None, project=None, folder=None):
   logging.basicConfig(level=logging.INFO)
 
-  do_init(organization, folder, project)
+  do_init(organization, folder, project, op_project)
 
   do_discovery()
 
-  LOGGER.info({k: len(v) for k, v in RESOURCES.items()})
+  LOGGER.info(
+      {k: len(v) for k, v in RESOURCES.items() if not isinstance(v, str)})
 
   # import icecream
   # icecream.ic(RESOURCES)

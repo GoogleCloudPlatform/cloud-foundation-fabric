@@ -39,10 +39,6 @@ TYPES = {
 NAMES = {v: k for k, v in TYPES.items()}
 
 
-class Skip(Exception):
-  pass
-
-
 def _handle_discovery(resources, response):
   'Process discovery data.'
   request = response.request
@@ -53,21 +49,7 @@ def _handle_discovery(resources, response):
     LOGGER.critical(f'error decoding URL {request.url}: {e.args[0]}')
     return {}
   for result in parse_cai_results(data, 'cai-compute', method='list'):
-    resource = {}
-    resource_data = result['resource']
-    resource_name = NAMES[resource_data['discoveryName']]
-    parent = resource_data['parent']
-    if not _set_parent(resource, parent, resources):
-      LOGGER.info(f'{result["name"]} outside perimeter')
-      continue
-    extend_func = globals().get(f'_handle_{resource_name}')
-    if not callable(extend_func):
-      raise SystemExit(f'specialized function missing for {resource_name}')
-    try:
-      extend_func(resource, resource_data['data'])
-    except Skip:
-      continue
-    resources[resource_name][resource['self_link']] = resource
+    _handle_resource(resources, result['resource'])
   page_token = data.get('nextPageToken')
   if page_token:
     LOGGER.info('requesting next page')
@@ -75,119 +57,118 @@ def _handle_discovery(resources, response):
     yield HTTPRequest(f'{url}&pageToken={page_token}', {}, None)
 
 
+def _handle_resource(resources, data):
+  attrs = data['data']
+  resource_name = NAMES[data['discoveryName']]
+  resource = {
+      'id': attrs['id'],
+      'name': attrs['name'],
+      'self_link': _self_link(attrs['selfLink'])
+  }
+  parent_data = _get_parent(data['parent'], resources)
+  if not parent_data:
+    LOGGER.info(f'{resource["self_link"]} outside perimeter')
+    return
+  resource.update(parent_data)
+  func = globals().get(f'_handle_{resource_name}')
+  if not callable(func):
+    raise SystemExit(f'specialized function missing for {resource_name}')
+  extra_attrs = func(resource, attrs)
+  if not extra_attrs:
+    return
+  resource.update(extra_attrs)
+  resources[resource_name][resource['self_link']] = resource
+
+
 def _handle_addresses(resource, data):
   'Handle address type resource data.'
-  resource['id'] = data['id']
-  resource['name'] = data['name']
-  resource['self_link'] = _self_link(data['selfLink'])
-  resource['network'] = _self_link(
-      data['network']) if 'network' in data else None
-  resource['subnetwork'] = _self_link(
-      data['subnetwork']) if 'subnetwork' in data else None
-  resource['address'] = data['address']
-  resource['internal'] = data.get('addressType') == 'INTERNAL'
-  resource['purpose'] = data.get('purpose')
+  network = data.get('network')
+  subnet = data.get('subnetwork')
+  return {
+      'address': data['address'],
+      'purpose': data.get('purpose'),
+      'internal': data.get('addressType') == 'INTERNAL',
+      'network': None if not network else _self_link(network),
+      'subnet': None if not subnet else _self_link(subnet)
+  }
 
 
 def _handle_firewall_policies(resource, data):
   'Handle firewall policy type resource data.'
-  resource['id'] = data['id']
-  resource['name'] = data['name']
-  resource['self_link'] = _self_link(data['selfLink'])
-  resource['num_rules'] = len(data.get('rules', []))
-  resource['num_tuples'] = data.get('ruleTupleCount', 0)
+  return {
+      'num_rules': len(data.get('rules', [])),
+      'num_tuples': data.get('ruleTupleCount', 0)
+  }
 
 
 def _handle_firewalls(resource, data):
   'Handle firewall type resource data.'
-  resource['id'] = data['id']
-  resource['name'] = data['name']
-  resource['self_link'] = _self_link(data['selfLink'])
-  resource['network'] = _self_link(data['network'])
+  return {'network': _self_link(data['network'])}
 
 
 def _handle_forwarding_rules(resource, data):
   'Handle forwarding_rules type resource data.'
-  from icecream import ic
-  resource['id'] = data['id']
-  resource['name'] = data['name']
-  resource['self_link'] = _self_link(data['selfLink'])
-  resource['region'] = data['region'].split(
-      '/')[-1] if 'region' in data else None
-  resource['load_balancing_scheme'] = data['loadBalancingScheme']
-  resource['address'] = data['IPAddress'] if 'IPAddress' in data else None
-  resource['network'] = _self_link(
-      data['network']) if 'network' in data else None
-  resource['subnetwork'] = _self_link(
-      data['subnetwork']) if 'subnetwork' in data else None
-  resource['psc'] = True if data.get('pscConnectionStatus') else False
+  network = data.get('network')
+  region = data.get('region')
+  subnet = data.get('subnetwork')
+  return {
+      'address': data.get('IPAddress'),
+      'load_balancing_scheme': data['loadBalancingScheme'],
+      'network': None if not network else _self_link(network),
+      'region': None if not region else region.split('/')[-1],
+      'subnet': None if not subnet else _self_link(subnet)
+  }
 
 
 def _handle_instances(resource, data):
   'Handle instance type resource data.'
   if data['status'] != 'RUNNING':
-    raise Skip()
-  resource['id'] = data['id']
-  resource['name'] = data['name']
-  resource['self_link'] = _self_link(data['selfLink'])
-  resource['zone'] = data['zone']
-  resource['networks'] = []
-  for i in data.get('networkInterfaces', []):
-    resource['networks'].append({
-        'network': _self_link(i['network']),
-        'subnet': _self_link(i['subnetwork'])
-    })
+    return
+  networks = [{
+      'network': _self_link(i['network']),
+      'subnet': _self_link(i['subnetwork'])
+  } for i in data.get('networkInterfaces', [])]
+  return {'zone': data['zone'], 'networks': networks}
 
 
 def _handle_networks(resource, data):
   'Handle network type resource data.'
-  resource['id'] = data['id']
-  resource['name'] = data['name']
-  resource['self_link'] = _self_link(data['selfLink'])
-  resource['peerings'] = []
-  for p in data.get('peerings', []):
-    if p['state'] != 'ACTIVE':
-      continue
-    resource['peerings'].append({'name': p['name'], 'network': p['network']})
-  resource['subnets'] = [_self_link(s) for s in data.get('subnetworks', [])]
+  peerings = [{
+      'name': p['name'],
+      'network': _self_link(p['network'])
+  } for p in data.get('peerings', []) if p['state'] == 'ACTIVE']
+  subnets = [_self_link(s) for s in data.get('subnetworks', [])]
+  return {'peerings': peerings, 'subnets': subnets}
 
 
 def _handle_routers(resource, data):
   'Handle router type resource data.'
-  resource['id'] = data['id']
-  resource['name'] = data['name']
-  resource['self_link'] = _self_link(data['selfLink'])
-  resource['network'] = _self_link(data['network'])
-  resource['region'] = data['region'].split('/')[-1]
+  return {
+      'network': _self_link(data['network']),
+      'region': data['region'].split('/')[-1]
+  }
 
 
 def _handle_routes(resource, data):
   'Handle route type resource data.'
-  resource['id'] = data['id']
-  resource['name'] = data['name']
-  resource['self_link'] = _self_link(data['selfLink'])
-  resource['network'] = _self_link(data['network'])
   hop = [
       a.replace('nextHop', '').lower() for a in data if a.startswith('nextHop')
   ]
-  resource['next_hope_type'] = hop[0]
+  return {'next_hop_type': hop[0], 'network': _self_link(data['network'])}
 
 
 def _handle_subnetworks(resource, data):
   'Handle subnetwork type resource data.'
-  resource['id'] = data['id']
-  resource['name'] = data['name']
-  resource['self_link'] = _self_link(data['selfLink'])
-  resource['cidr_range'] = data['ipCidrRange']
-  resource['network'] = _self_link(data['network'])
-  resource['purpose'] = data.get('purpose')
-  resource['region'] = data['region']
-  resource['secondary_ranges'] = []
-  for s in data.get('secondaryIpRanges', []):
-    resource['secondary_ranges'].append({
-        'name': s['rangeName'],
-        'cidr_range': s['ipCidrRange']
-    })
+  secondary_ranges = [{
+      'name': s['rangeName'],
+      'cidr_range': s['ipCidrRange']
+  } for s in data.get('secondaryIpRanges', [])]
+  return {
+      'cidr_range': data['ipCidrRange'],
+      'network': _self_link(data['network']),
+      'purpose': data.get('purpose'),
+      'region': data['region']
+  }
 
 
 def _self_link(s):
@@ -195,28 +176,23 @@ def _self_link(s):
   return s.replace('https://www.googleapis.com/compute/v1/', '')
 
 
-def _set_parent(resource, parent, resources):
-  'Extract and set resource parent.'
+def _get_parent(parent, resources):
+  'Extract and return resource parent.'
   parent_type, parent_id = parent.split('/')[-2:]
-  update = None
   if parent_type == 'projects':
     project_id = resources['projects:number'].get(parent_id)
     if project_id:
-      update = {'project_id': project_id, 'project_number': parent_id}
-  elif parent_type == 'folders':
+      return {'project_id': project_id, 'project_number': parent_id}
+  if parent_type == 'folders':
     if int(parent_id) in resources['folders']:
-      update = {'parent': f'{parent_type}/{parent_id}'}
-  elif parent_type == 'organizations':
-    if resources['organization']['id'] == int(parent_id):
-      update = {'parent': f'{parent_type}/{parent_id}'}
-  if update:
-    resource.update(update)
-  return update is not None
+      return {'parent': f'{parent_type}/{parent_id}'}
+  if resources['organization'] == int(parent_id):
+    return {'parent': f'{parent_type}/{parent_id}'}
 
 
 def _url(resources):
   'Return discovery URL'
-  organization = resources['organization']['id']
+  organization = resources['organization']
   asset_types = '&'.join(
       'assetTypes=compute.googleapis.com/{}'.format(urllib.parse.quote(t))
       for t in TYPES.values())
