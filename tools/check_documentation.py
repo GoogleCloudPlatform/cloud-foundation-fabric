@@ -32,8 +32,6 @@ BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 
 State = enum.Enum('State', 'OK FAIL SKIP')
 
-from icecream import ic
-
 
 def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
   'Invoke tfdoc on folder, using the relevant options.'
