@@ -48,10 +48,113 @@ locals {
 }
 
 resource "google_compute_health_check" "health_check" {
-  for_each            = local.health_checks_config
+  for_each            = var.region == null ? local.health_checks_config : {}
   provider            = google-beta
   name                = "${var.name}-${each.key}"
   project             = var.project_id
+  description         = "Terraform managed."
+  check_interval_sec  = try(each.value.options.check_interval_sec, null)
+  healthy_threshold   = try(each.value.options.healthy_threshold, null)
+  timeout_sec         = try(each.value.options.timeout_sec, null)
+  unhealthy_threshold = try(each.value.options.unhealthy_threshold, null)
+
+  dynamic "http_health_check" {
+    for_each = (
+      try(each.value.type, null) == "http" || try(each.value.type, null) == null
+      ? { 1 = 1 }
+      : {}
+    )
+    content {
+      host               = try(each.value.check.host, null)
+      port               = try(each.value.check.port, null)
+      port_name          = try(each.value.check.port_name, null)
+      port_specification = try(each.value.check.port_specification, null)
+      proxy_header       = try(each.value.check.proxy_header, null)
+      request_path       = try(each.value.check.request_path, null)
+      response           = try(each.value.check.response, null)
+    }
+  }
+
+  dynamic "https_health_check" {
+    for_each = (
+      try(each.value.type, null) == "https" || try(each.value.type, null) == null
+      ? { 1 = 1 }
+      : {}
+    )
+    content {
+      host               = try(each.value.check.host, null)
+      port               = try(each.value.check.port, null)
+      port_name          = try(each.value.check.port_name, null)
+      port_specification = try(each.value.check.port_specification, null)
+      proxy_header       = try(each.value.check.proxy_header, null)
+      request_path       = try(each.value.check.request_path, null)
+      response           = try(each.value.check.response, null)
+    }
+  }
+
+  dynamic "tcp_health_check" {
+    for_each = (
+      try(each.value.type, null) == "tcp" || try(each.value.type, null) == null
+      ? { 1 = 1 }
+      : {}
+    )
+    content {
+      port               = try(each.value.check.port, null)
+      port_name          = try(each.value.check.port_name, null)
+      port_specification = try(each.value.check.port_specification, null)
+      proxy_header       = try(each.value.check.proxy_header, null)
+      request            = try(each.value.check.request, null)
+      response           = try(each.value.check.response, null)
+    }
+  }
+
+  dynamic "ssl_health_check" {
+    for_each = (
+      try(each.value.type, null) == "ssl" || try(each.value.type, null) == null
+      ? { 1 = 1 }
+      : {}
+    )
+    content {
+      port               = try(each.value.check.port, null)
+      port_name          = try(each.value.check.port_name, null)
+      port_specification = try(each.value.check.port_specification, null)
+      proxy_header       = try(each.value.check.proxy_header, null)
+      request            = try(each.value.check.request, null)
+      response           = try(each.value.check.response, null)
+    }
+  }
+
+  dynamic "http2_health_check" {
+    for_each = (
+      try(each.value.type, null) == "http2" || try(each.value.type, null) == null
+      ? { 1 = 1 }
+      : {}
+    )
+    content {
+      host               = try(each.value.check.host, null)
+      port               = try(each.value.check.port, null)
+      port_name          = try(each.value.check.port_name, null)
+      port_specification = try(each.value.check.port_specification, null)
+      proxy_header       = try(each.value.check.proxy_header, null)
+      request_path       = try(each.value.check.request_path, null)
+      response           = try(each.value.check.response, null)
+    }
+  }
+
+  dynamic "log_config" {
+    for_each = try(each.value.logging, false) ? { 0 = 0 } : {}
+    content {
+      enable = true
+    }
+  }
+}
+
+resource "google_compute_region_health_check" "health_check" {
+  for_each            = var.region != null ? local.health_checks_config : {}
+  provider            = google-beta
+  name                = "${var.name}-${each.key}"
+  project             = var.project_id
+  region              = var.region
   description         = "Terraform managed."
   check_interval_sec  = try(each.value.options.check_interval_sec, null)
   healthy_threshold   = try(each.value.options.healthy_threshold, null)

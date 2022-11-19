@@ -16,19 +16,14 @@
 
 module "test" {
   source                      = "../../../../modules/net-vpc"
-  project_id                  = var.project_id
-  name                        = var.name
-  iam                         = var.iam
-  log_configs                 = var.log_configs
-  log_config_defaults         = var.log_config_defaults
+  project_id                  = "test-project"
+  name                        = "test"
   peering_config              = var.peering_config
   routes                      = var.routes
   shared_vpc_host             = var.shared_vpc_host
   shared_vpc_service_projects = var.shared_vpc_service_projects
+  subnet_iam                  = var.subnet_iam
   subnets                     = var.subnets
-  subnet_descriptions         = var.subnet_descriptions
-  subnet_flow_logs            = var.subnet_flow_logs
-  subnet_private_access       = var.subnet_private_access
   auto_create_subnetworks     = var.auto_create_subnetworks
   psa_config                  = var.psa_config
   data_folder                 = var.data_folder

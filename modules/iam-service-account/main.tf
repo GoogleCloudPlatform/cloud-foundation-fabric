@@ -21,7 +21,7 @@ locals {
     ? google_service_account_key.key["1"]
     : map("", null)
   , {})
-  prefix                = var.prefix != null ? "${var.prefix}-" : ""
+  prefix                = var.prefix == null ? "" : "${var.prefix}-"
   resource_email_static = "${local.prefix}${var.name}@${var.project_id}.iam.gserviceaccount.com"
   resource_iam_email = (
     local.service_account != null
@@ -29,6 +29,7 @@ locals {
     : local.resource_iam_email_static
   )
   resource_iam_email_static = "serviceAccount:${local.resource_email_static}"
+  service_account_id_static = "projects/${var.project_id}/serviceAccounts/${local.resource_email_static}"
   service_account = (
     var.service_account_create
     ? try(google_service_account.service_account.0, null)

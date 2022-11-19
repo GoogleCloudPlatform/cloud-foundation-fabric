@@ -20,5 +20,6 @@ module "test" {
   display_name = var.display_name
   description  = var.description
   customer_id  = var.customer_id
+  managers     = var.managers
   members      = var.members
 }

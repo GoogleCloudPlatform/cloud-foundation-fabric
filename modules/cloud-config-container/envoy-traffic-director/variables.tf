@@ -17,11 +17,5 @@
 variable "envoy_image" {
   description = "Envoy Proxy container image to use."
   type        = string
-  default     = "envoyproxy/envoy:v1.14.1"
-}
-
-variable "docker_logging" {
-  description = "Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead."
-  type        = bool
-  default     = true
+  default     = "envoyproxy/envoy:v1.15.5"
 }

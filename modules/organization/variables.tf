@@ -127,25 +127,120 @@ variable "logging_exclusions" {
 }
 
 variable "logging_sinks" {
-  description = "Logging sinks to create for this organization."
+  description = "Logging sinks to create for the organization."
   type = map(object({
+    bq_partitioned_table = optional(bool)
+    description          = optional(string)
     destination          = string
-    type                 = string
+    disabled             = optional(bool, false)
+    exclusions           = optional(map(string), {})
     filter               = string
-    include_children     = bool
-    bq_partitioned_table = bool
-    # TODO exclusions also support description and disabled
-    exclusions = map(string)
+    include_children     = optional(bool, true)
+    type                 = string
   }))
+  default  = {}
+  nullable = false
   validation {
     condition = alltrue([
-      for k, v in(var.logging_sinks == null ? {} : var.logging_sinks) :
+      for k, v in var.logging_sinks :
       contains(["bigquery", "logging", "pubsub", "storage"], v.type)
     ])
     error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.logging_sinks :
+      v.bq_partitioned_table != true || v.type == "bigquery"
+    ])
+    error_message = "Can only set bq_partitioned_table when type is `bigquery`."
+  }
+}
+
+variable "network_tags" {
+  description = "Network tags by key name. The `iam` attribute behaves like the similarly named one at module level."
+  type = map(object({
+    description = optional(string, "Managed by the Terraform organization module.")
+    iam         = optional(map(list(string)), {})
+    network     = string # project_id/vpc_name
+    values = optional(map(object({
+      description = optional(string, "Managed by the Terraform organization module.")
+      iam         = optional(map(list(string)), {})
+    })), {})
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.network_tags : v != null
+    ])
+    error_message = "Use an empty map instead of null as value."
+  }
+}
+
+variable "org_policies" {
+  description = "Organization policies applied to this organization keyed by policy name."
+  type = map(object({
+    inherit_from_parent = optional(bool) # for list policies only.
+    reset               = optional(bool)
+
+    # default (unconditional) values
+    allow = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
+    }))
+    deny = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
+    }))
+    enforce = optional(bool, true) # for boolean policies only.
+
+    # conditional values
+    rules = optional(list(object({
+      allow = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      deny = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      enforce = optional(bool, true) # for boolean policies only.
+      condition = object({
+        description = optional(string)
+        expression  = optional(string)
+        location    = optional(string)
+        title       = optional(string)
+      })
+    })), [])
+  }))
   default  = {}
   nullable = false
+}
+
+variable "org_policies_data_path" {
+  description = "Path containing org policies in YAML format."
+  type        = string
+  default     = null
+}
+
+variable "org_policy_custom_constraints" {
+  description = "Organization policiy custom constraints keyed by constraint name."
+  type = map(object({
+    display_name   = optional(string)
+    description    = optional(string)
+    action_type    = string
+    condition      = string
+    method_types   = list(string)
+    resource_types = list(string)
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "org_policy_custom_constraints_data_path" {
+  description = "Path containing org policy custom constraints in YAML format."
+  type        = string
+  default     = null
 }
 
 variable "organization_id" {
@@ -157,40 +252,28 @@ variable "organization_id" {
   }
 }
 
-variable "policy_boolean" {
-  description = "Map of boolean org policies and enforcement value, set value to null for policy restore."
-  type        = map(bool)
-  default     = {}
-  nullable    = false
-}
-
-variable "policy_list" {
-  description = "Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny."
+variable "tags" {
+  description = "Tags by key name. The `iam` attribute behaves like the similarly named one at module level."
   type = map(object({
-    inherit_from_parent = bool
-    suggested_value     = string
-    status              = bool
-    values              = list(string)
+    description = optional(string, "Managed by the Terraform organization module.")
+    iam         = optional(map(list(string)), {})
+    values = optional(map(object({
+      description = optional(string, "Managed by the Terraform organization module.")
+      iam         = optional(map(list(string)), {})
+    })), {})
   }))
-  default  = {}
   nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.tags : v != null
+    ])
+    error_message = "Use an empty map instead of null as value."
+  }
 }
 
 variable "tag_bindings" {
   description = "Tag bindings for this organization, in key => tag value id format."
   type        = map(string)
   default     = null
-}
-
-variable "tags" {
-  description = "Tags by key name. The `iam` attribute behaves like the similarly named one at module level."
-  type = map(object({
-    description = string
-    iam         = map(list(string))
-    values = map(object({
-      description = string
-      iam         = map(list(string))
-    }))
-  }))
-  default = null
 }

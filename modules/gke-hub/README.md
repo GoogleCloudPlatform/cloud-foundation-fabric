@@ -4,28 +4,26 @@ This module allows simplified creation and management of a GKE Hub object and it
 
 To use this module you must ensure the following APIs are enabled in the target project:
 
-```
-"gkehub.googleapis.com"
-"gkeconnect.googleapis.com"
-"anthosconfigmanagement.googleapis.com"
-"multiclusteringress.googleapis.com"
-"multiclusterservicediscovery.googleapis.com"
-"mesh.googleapis.com"
-```
+- `gkehub.googleapis.com`
+- `gkeconnect.googleapis.com`
+- `anthosconfigmanagement.googleapis.com`
+- `multiclusteringress.googleapis.com`
+- `multiclusterservicediscovery.googleapis.com`
+- `mesh.googleapis.com`
 
 ## Full GKE Hub example
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "gkehub-test"
   parent          = "folders/12345"
   services = [
-    "container.googleapis.com",
-    "gkehub.googleapis.com",
-    "gkeconnect.googleapis.com",
     "anthosconfigmanagement.googleapis.com",
+    "container.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
     "multiclusteringress.googleapis.com",
     "multiclusterservicediscovery.googleapis.com",
     "mesh.googleapis.com"
@@ -33,7 +31,7 @@ module "project" {
 }
 
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = module.project.project_id
   name       = "network"
   subnets = [{
@@ -48,26 +46,30 @@ module "vpc" {
 }
 
 module "cluster_1" {
-  source                   = "./modules/gke-cluster"
-  project_id               = module.project.project_id
-  name                     = "cluster-1"
-  location                 = "europe-west1-b"
-  network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-west1/cluster-1"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
-  enable_dataplane_v2      = true
-  master_authorized_ranges = { rfc1918_10_8 = "10.0.0.0/8" }
-  private_cluster_config = {
-    enable_private_nodes    = true
-    enable_private_endpoint = true
+  source     = "./fabric/modules/gke-cluster"
+  project_id = module.project.project_id
+  name       = "cluster-1"
+  location   = "europe-west1"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["europe-west1/cluster-1"]
+    master_authorized_ranges = {
+      fc1918_10_8 = "10.0.0.0/8"
+    }
     master_ipv4_cidr_block  = "192.168.0.0/28"
+  }
+  enable_features = {
+    dataplane_v2      = true
+    workload_identity = true
+  }
+  private_cluster_config = {
+    enable_private_endpoint = true
     master_global_access    = false
   }
 }
 
 module "hub" {
-  source     = "./modules/gke-hub"
+  source     = "./fabric/modules/gke-hub"
   project_id = module.project.project_id
   clusters = {
     cluster-1 = module.cluster_1.id
@@ -124,7 +126,7 @@ module "hub" {
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = "123-456-789"
   name            = "gkehub-test"
   parent          = "folders/12345"
@@ -140,7 +142,7 @@ module "project" {
 }
 
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = module.project.project_id
   name       = "vpc"
   mtu        = 1500
@@ -173,138 +175,107 @@ module "vpc" {
 }
 
 module "firewall" {
-  source     = "./modules/net-vpc-firewall"
+  source     = "./fabric/modules/net-vpc-firewall"
   project_id = module.project.project_id
   network    = module.vpc.name
-  custom_rules = { 
+  ingress_rules = {
     allow-mesh = {
-      description          = "Allow mesh"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = ["10.1.0.0/16", "10.3.0.0/16"]
-      targets              = ["cluster-1-node", "cluster-2-node"]
-      use_service_accounts = false
-      rules = [{ protocol = "tcp", ports = null },
-        { protocol = "udp", ports = null },
-        { protocol = "icmp", ports = null },
-        { protocol = "esp", ports = null },
-        { protocol = "ah", ports = null },
-      { protocol = "sctp", ports = null }]
-      extra_attributes = {
-        priority = 900
-      }
-    }, 
+      description   = "Allow mesh"
+      priority      = 900
+      source_ranges = ["10.1.0.0/16", "10.3.0.0/16"]
+      targets       = ["cluster-1-node", "cluster-2-node"]
+    },
     "allow-cluster-1-istio" = {
-      description          = "Allow istio sidecar injection, istioctl version and istioctl ps"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = [ "192.168.1.0/28" ]
-      targets              = ["cluster-1-node"]
-      use_service_accounts = false
-      rules                = [{ protocol = "tcp", ports = [8080, 15014, 15017] }]
-      extra_attributes = {
-        priority = 1000
-      }
+      description   = "Allow istio sidecar injection, istioctl version and istioctl ps"
+      source_ranges = ["192.168.1.0/28"]
+      targets       = ["cluster-1-node"]
+      rules = [
+        { protocol = "tcp", ports = [8080, 15014, 15017] }
+      ]
     },
     "allow-cluster-2-istio" = {
-      description          = "Allow istio sidecar injection, istioctl version and istioctl ps"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = [ "192.168.2.0/28" ]
-      targets              = ["cluster-2-node"]
-      use_service_accounts = false
-      rules                = [{ protocol = "tcp", ports = [8080, 15014, 15017] }]
-      extra_attributes = {
-        priority = 1000
-      }
+      description   = "Allow istio sidecar injection, istioctl version and istioctl ps"
+      source_ranges = ["192.168.2.0/28"]
+      targets       = ["cluster-2-node"]
+      rules = [
+        { protocol = "tcp", ports = [8080, 15014, 15017] }
+      ]
     }
   }
 }
 
 module "cluster_1" {
-  source                   = "./modules/gke-cluster"
-  project_id               = module.project.project_id
-  name                     = "cluster-1"
-  location                 = "europe-wes1"
-  network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-west1/subnet-cluster-1"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
-  private_cluster_config = {
-    enable_private_nodes    = true
-    enable_private_endpoint = false
+  source     = "./fabric/modules/gke-cluster"
+  project_id = module.project.project_id
+  name       = "cluster-1"
+  location   = "europe-west1"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["europe-west1/subnet-cluster-1"]
+    master_authorized_ranges = {
+      mgmt           = "10.0.0.0/28"
+      pods-cluster-1 = "10.3.0.0/16"
+    }
     master_ipv4_cidr_block  = "192.168.1.0/28"
+  }
+  private_cluster_config = {
+    enable_private_endpoint = false
     master_global_access    = true
   }
-  master_authorized_ranges = {
-    mgmt           = "10.0.0.0/28"
-    pods-cluster-1 =  "10.3.0.0/16"
-  }
-  enable_autopilot  = false
-  release_channel   = "REGULAR"
-  workload_identity = true
+  release_channel = "REGULAR"
   labels = {
     mesh_id = "proj-${module.project.number}"
   }
 }
 
 module "cluster_1_nodepool" {
-  source                      = "./modules/gke-nodepool"
-  project_id                  = module.project.project_id
-  cluster_name                = module.cluster_1.name
-  location                    = "europe-west1"
-  name                        = "nodepool"
-  node_service_account_create = true
-  initial_node_count          = 1
-  node_machine_type           = "e2-standard-4"
-  node_tags                   = ["cluster-1-node"]
+  source          = "./fabric/modules/gke-nodepool"
+  project_id      = module.project.project_id
+  cluster_name    = module.cluster_1.name
+  location        = "europe-west1"
+  name            = "nodepool"
+  node_count      = { initial = 1 }
+  service_account = { create = true }
+  tags            = ["cluster-1-node"]
 }
 
 module "cluster_2" {
-  source                   = "./modules/gke-cluster"
+  source                   = "./fabric/modules/gke-cluster"
   project_id               = module.project.project_id
-  name                     = "cluster-1"
-  location                 = "europe-wes1"
-  network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-west4/subnet-cluster-2"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
-  private_cluster_config = {
-    enable_private_nodes    = true
-    enable_private_endpoint = false
+  name                     = "cluster-2"
+  location                 = "europe-west4"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["europe-west4/subnet-cluster-2"]
+    master_authorized_ranges = {
+      mgmt           = "10.0.0.0/28"
+      pods-cluster-1 = "10.3.0.0/16"
+    }
     master_ipv4_cidr_block  = "192.168.2.0/28"
+  }
+  private_cluster_config = {
+    enable_private_endpoint = false
     master_global_access    = true
   }
-  master_authorized_ranges = {
-    mgmt           = "10.0.0.0/28"
-    pods-cluster-1 = "10.1.0.0/16"
-  }
-  enable_autopilot  = false
-  release_channel   = "REGULAR"
-  workload_identity = true
+  release_channel = "REGULAR"
   labels = {
     mesh_id = "proj-${module.project.number}"
   }
 }
 
 module "cluster_2_nodepool" {
-  source                      = "./modules/gke-nodepool"
+  source                      = "./fabric/modules/gke-nodepool"
   project_id                  = module.project.project_id
   cluster_name                = module.cluster_2.name
   location                    = "europe-west4"
   name                        = "nodepool"
-  node_service_account_create = true
-  initial_node_count          = 1
-  node_machine_type           = "e2-standard-4"
-  node_tags                   = ["cluster-2-node"]
+  node_count      = { initial = 1 }
+  service_account = { create = true }
+  tags            = ["cluster-2-node"]
 }
 
-
 module "hub" {
-  source     = "./modules/gke-hub"
+  source     = "./fabric/modules/gke-hub"
   project_id = module.project.project_id
   clusters = { 
     cluster-1 = module.cluster_1.id
@@ -323,8 +294,10 @@ module "hub" {
     "cluster-2"
   ]
 }
+
 # tftest modules=8 resources=28
 ```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

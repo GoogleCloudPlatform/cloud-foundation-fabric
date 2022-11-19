@@ -12,47 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from .validate_policies import validate_policy_boolean, validate_policy_list
+
+
 def test_policy_boolean(plan_runner):
   "Test boolean org policy."
-  policy_boolean = '{policy-a = true, policy-b = false, policy-c = null}'
-  _, resources = plan_runner(policy_boolean=policy_boolean)
-  assert len(resources) == 7
-  resources = [r for r in resources if r['type']
-               == 'google_project_organization_policy']
-  assert sorted([r['index'] for r in resources]) == [
-      'policy-a', 'policy-b', 'policy-c'
-  ]
-  policy_values = []
-  for resource in resources:
-    for policy in ('boolean_policy', 'restore_policy'):
-      value = resource['values'][policy]
-      if value:
-        policy_values.append((policy,) + value[0].popitem())
-  assert sorted(policy_values) == [
-      ('boolean_policy', 'enforced', False),
-      ('boolean_policy', 'enforced', True),
-      ('restore_policy', 'default', True)
-  ]
+  tfvars = 'test.orgpolicies-boolean.tfvars'
+  _, resources = plan_runner(tf_var_file=tfvars)
+  validate_policy_boolean(resources)
 
 
 def test_policy_list(plan_runner):
   "Test list org policy."
-  policy_list = (
-      '{'
-      'policy-a = {inherit_from_parent = true, suggested_value = null, status = true, values = []}, '
-      'policy-b = {inherit_from_parent = null, suggested_value = "foo", status = false, values = ["bar"]}, '
-      'policy-c = {inherit_from_parent = null, suggested_value = true, status = null, values = null}'
-      '}'
-  )
-  _, resources = plan_runner(policy_list=policy_list)
-  assert len(resources) == 7
-  values = [r['values'] for r in resources if r['type']
-            == 'google_project_organization_policy']
-  assert [r['constraint'] for r in values] == [
-      'policy-a', 'policy-b', 'policy-c'
-  ]
-  assert values[0]['list_policy'][0]['allow'] == [
-      {'all': True, 'values': None}]
-  assert values[1]['list_policy'][0]['deny'] == [
-      {'all': False, 'values': ["bar"]}]
-  assert values[2]['restore_policy'] == [{'default': True}]
+  tfvars = 'test.orgpolicies-list.tfvars'
+  _, resources = plan_runner(tf_var_file=tfvars)
+  validate_policy_list(resources)
+
+
+def test_factory_policy_boolean(plan_runner, tfvars_to_yaml, tmp_path):
+  dest = tmp_path / 'policies.yaml'
+  tfvars_to_yaml('test.orgpolicies-boolean.tfvars', dest, 'org_policies')
+  _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
+  validate_policy_boolean(resources)
+
+
+def test_factory_policy_list(plan_runner, tfvars_to_yaml, tmp_path):
+  dest = tmp_path / 'policies.yaml'
+  tfvars_to_yaml('test.orgpolicies-list.tfvars', dest, 'org_policies')
+  _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
+  validate_policy_list(resources)

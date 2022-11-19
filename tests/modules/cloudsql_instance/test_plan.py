@@ -90,6 +90,17 @@ def test_mysql_replicas_enables_backup(plan_runner):
   assert backup_config['binary_log_enabled']
 
 
+def test_mysql_binary_log_for_regional(plan_runner):
+  "Test that the binary log will be enabled for regional MySQL DBs."
+
+  _, resources = plan_runner(database_version="MYSQL_8_0", availability_type="REGIONAL")
+  assert len(resources) == 1
+  primary = [r for r in resources if r['name'] == 'primary'][0]
+  backup_config = primary['values']['settings'][0]['backup_configuration'][0]
+  assert backup_config['enabled']
+  assert backup_config['binary_log_enabled']
+
+
 def test_users(plan_runner):
   "Test user creation."
 

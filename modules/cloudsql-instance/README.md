@@ -12,7 +12,7 @@ This example shows how to setup a project, VPC and a standalone Cloud SQL instan
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   parent          = var.organization_id
   name            = "my-db-project"
@@ -22,7 +22,7 @@ module "project" {
 }
 
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = module.project.project_id
   name       = "my-network"
   psa_config = {
@@ -32,7 +32,7 @@ module "vpc" {
 }
 
 module "db" {
-  source           = "./modules/cloudsql-instance"
+  source           = "./fabric/modules/cloudsql-instance"
   project_id       = module.project.project_id
   network          = module.vpc.self_link
   name             = "db"
@@ -47,7 +47,7 @@ module "db" {
 
 ```hcl
 module "db" {
-  source           = "./modules/cloudsql-instance"
+  source           = "./fabric/modules/cloudsql-instance"
   project_id       = var.project_id
   network          = var.vpc.self_link
   name             = "db"
@@ -67,7 +67,7 @@ module "db" {
 
 ```hcl
 module "db" {
-  source           = "./modules/cloudsql-instance"
+  source           = "./fabric/modules/cloudsql-instance"
   project_id       = var.project_id
   network          = var.vpc.self_link
   name             = "db"
@@ -98,7 +98,7 @@ module "db" {
 ```hcl
 
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   parent          = var.organization_id
   name            = "my-db-project"
@@ -109,7 +109,7 @@ module "project" {
 }
 
 module "kms" {
-  source     = "./modules/kms"
+  source     = "./fabric/modules/kms"
   project_id = module.project.project_id
   keyring = {
     name     = "keyring"
@@ -128,7 +128,7 @@ module "kms" {
 }
 
 module "db" {
-  source              = "./modules/cloudsql-instance"
+  source              = "./fabric/modules/cloudsql-instance"
   project_id          = module.project.project_id
   encryption_key_name = module.kms.keys["key-sql"].id
   network             = var.vpc.self_link
@@ -149,9 +149,9 @@ module "db" {
 | [database_version](variables.tf#L50) | Database type and version to create. | <code>string</code> | ✓ |  |
 | [name](variables.tf#L97) | Name of primary instance. | <code>string</code> | ✓ |  |
 | [network](variables.tf#L102) | VPC self link where the instances will be deployed. Private Service Networking must be enabled and configured in this VPC. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L113) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L118) | Region of the primary instance. | <code>string</code> | ✓ |  |
-| [tier](variables.tf#L132) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L117) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L122) | Region of the primary instance. | <code>string</code> | ✓ |  |
+| [tier](variables.tf#L142) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
 | [authorized_networks](variables.tf#L17) | Map of NAME=>CIDR_RANGE to allow to connect to the database(s). | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [availability_type](variables.tf#L23) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;ZONAL&#34;</code> |
 | [backup_configuration](variables.tf#L29) | Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas. | <code title="object&#40;&#123;&#10;  enabled            &#61; bool&#10;  binary_log_enabled &#61; bool&#10;  start_time         &#61; string&#10;  location           &#61; string&#10;  log_retention_days &#61; number&#10;  retention_count    &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enabled            &#61; false&#10;  binary_log_enabled &#61; false&#10;  start_time         &#61; &#34;23:00&#34;&#10;  location           &#61; null&#10;  log_retention_days &#61; 7&#10;  retention_count    &#61; 7&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -161,11 +161,12 @@ module "db" {
 | [disk_type](variables.tf#L73) | The type of data disk: `PD_SSD` or `PD_HDD`. | <code>string</code> |  | <code>&#34;PD_SSD&#34;</code> |
 | [encryption_key_name](variables.tf#L79) | The full path to the encryption key used for the CMEK disk encryption of the primary instance. | <code>string</code> |  | <code>null</code> |
 | [flags](variables.tf#L85) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [ipv4_enabled](variables.tf#L143) | Add a public IP address to database instance. | <code>bool</code> |  | <code>false</code> |
+| [ipv4_enabled](variables.tf#L153) | Add a public IP address to database instance. | <code>bool</code> |  | <code>false</code> |
 | [labels](variables.tf#L91) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [prefix](variables.tf#L107) | Prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [replicas](variables.tf#L123) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [users](variables.tf#L137) | Map of users to create in the primary instance (and replicated to other replicas) in the format USER=>PASSWORD. For MySQL, anything afterr the first `@` (if persent) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L107) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
+| [replicas](variables.tf#L127) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [root_password](variables.tf#L136) | Root password of the Cloud SQL instance. Required for MS SQL Server | <code>string</code> |  | <code>null</code> |
+| [users](variables.tf#L147) | Map of users to create in the primary instance (and replicated to other replicas) in the format USER=>PASSWORD. For MySQL, anything afterr the first `@` (if persent) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

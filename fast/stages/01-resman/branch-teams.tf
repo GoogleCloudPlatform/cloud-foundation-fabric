@@ -16,11 +16,6 @@
 
 # tfdoc:file:description Team stage resources.
 
-moved {
-  from = module.branch-teams-folder
-  to   = module.branch-teams-folder.0
-}
-
 # TODO(ludo): add support for CI/CD
 
 ############### top-level Teams branch and automation resources ###############
@@ -45,24 +40,26 @@ module "branch-teams-folder" {
 }
 
 module "branch-teams-sa" {
-  source      = "../../../modules/iam-service-account"
-  count       = var.fast_features.teams ? 1 : 0
-  project_id  = var.automation.project_id
-  name        = "prod-resman-teams-0"
-  description = "Terraform resman teams service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.teams ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "prod-resman-teams-0"
+  display_name = "Terraform resman teams service account."
+  prefix       = var.prefix
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }
 }
 
 module "branch-teams-gcs" {
-  source     = "../../../modules/gcs"
-  count      = var.fast_features.teams ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "prod-resman-teams-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.teams ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "prod-resman-teams-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-teams-sa.0.iam_email]
   }
@@ -86,12 +83,12 @@ module "branch-teams-team-folder" {
 }
 
 module "branch-teams-team-sa" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = var.fast_features.teams ? coalesce(var.team_folders, {}) : {}
-  project_id  = var.automation.project_id
-  name        = "prod-teams-${each.key}-0"
-  description = "Terraform team ${each.key} service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  for_each     = var.fast_features.teams ? coalesce(var.team_folders, {}) : {}
+  project_id   = var.automation.project_id
+  name         = "prod-teams-${each.key}-0"
+  display_name = "Terraform team ${each.key} service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = (
       each.value.impersonation_groups == null
@@ -102,12 +99,14 @@ module "branch-teams-team-sa" {
 }
 
 module "branch-teams-team-gcs" {
-  source     = "../../../modules/gcs"
-  for_each   = var.fast_features.teams ? coalesce(var.team_folders, {}) : {}
-  project_id = var.automation.project_id
-  name       = "prod-teams-${each.key}-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  for_each      = var.fast_features.teams ? coalesce(var.team_folders, {}) : {}
+  project_id    = var.automation.project_id
+  name          = "prod-teams-${each.key}-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-teams-team-sa[each.key].iam_email]
   }

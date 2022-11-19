@@ -65,12 +65,6 @@ variable "docker_args" {
   default     = null
 }
 
-variable "docker_logging" {
-  description = "Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead."
-  type        = bool
-  default     = true
-}
-
 variable "file_defaults" {
   description = "Default owner and permissions for files."
   type = object({
@@ -93,12 +87,6 @@ variable "files" {
   default = {}
 }
 
-variable "gcp_logging" {
-  description = "Should container logs be sent to Google Cloud Logging."
-  type        = bool
-  default     = true
-}
-
 variable "run_commands" {
   description = "List of cloud-init `runcmd`s."
   type        = list(string)
@@ -113,6 +101,12 @@ variable "users" {
   }))
   default = [
   ]
+}
+
+variable "run_as_first_user" {
+  description = "Run as the first user if users are specified."
+  type        = bool
+  default     = true
 }
 
 variable "authenticate_gcr" {

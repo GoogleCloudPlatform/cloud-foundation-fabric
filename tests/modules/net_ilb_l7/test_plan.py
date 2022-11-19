@@ -12,173 +12,109 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-_BACKEND_SVC_CONFIG = '''{
-  my-group = {
-    backends = [
-      {
-        group   = "my_group",
-        options = null
-      }
-    ],
-    health_checks = []
-    log_config    = null
-    options       = null
+import collections
+
+
+def test_defaults(plan_runner):
+  "Test with default values."
+  _, resources = plan_runner(tf_var_file='test.defaults.tfvars')
+  counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
+  assert counts == {
+      'google_compute_forwarding_rule.default': 1,
+      'google_compute_health_check.default': 1,
+      'google_compute_region_backend_service.default': 1,
+      'google_compute_region_target_http_proxy.default': 1,
+      'google_compute_region_url_map.default': 1
   }
-}'''
 
-_BACKEND_SVC_CONFIG_HC = '''{
-  my-group = {
-    backends = [
-      {
-        group   = "my_group",
-        options = null
-      }
-    ],
-    health_checks = ["hc_1"]
-    log_config    = null
-    options       = null
+
+def test_groups(plan_runner):
+  "Test groups."
+  _, resources = plan_runner(tf_var_file='test.groups.tfvars')
+  counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
+  assert counts == {
+      'google_compute_forwarding_rule.default': 1,
+      'google_compute_health_check.default': 1,
+      'google_compute_instance_group.default': 1,
+      'google_compute_region_backend_service.default': 1,
+      'google_compute_region_target_http_proxy.default': 1,
+      'google_compute_region_url_map.default': 1
   }
-}'''
 
-_NAME = 'ilb-l7-test'
 
-_RESERVED_IP_CONFIG = '''{
-  reserve = true
-  options = null
-}'''
-
-_SSL_CERTIFICATES_CONFIG = '''{
-  my-domain = {
-    domains = [
-      "my-domain.com"
-    ],
-    tls_private_key      = "my-key"
-    tls_self_signed_cert = "my-cert"
+def test_health_checks_external(plan_runner):
+  "Test external health check."
+  _, resources = plan_runner(tf_var_file='test.health-checks-external.tfvars')
+  counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
+  assert counts == {
+      'google_compute_forwarding_rule.default': 1,
+      'google_compute_region_backend_service.default': 1,
+      'google_compute_region_target_http_proxy.default': 1,
+      'google_compute_region_url_map.default': 1
   }
-}'''
-
-_TARGET_PROXY_HTTPS_CONFIG = '''{
-  ssl_certificates = [
-    "my-domain"
-  ]
-}'''
 
 
-def test_group_default_hc(plan_runner):
-  "Tests a group backend service with no HC specified."
-  _, resources = plan_runner(backend_services_config=_BACKEND_SVC_CONFIG)
-  assert len(resources) == 5
-  resources = dict((r['type'], r['values']) for r in resources)
-
-  fwd_rule = resources['google_compute_forwarding_rule']
-  assert fwd_rule['load_balancing_scheme'] == 'INTERNAL_MANAGED'
-  assert fwd_rule['port_range'] == '80'
-  assert fwd_rule['ip_protocol'] == 'TCP'
-
-  group = resources['google_compute_region_backend_service']
-  assert len(group['backend']) == 1
-  assert group['backend'][0]['group'] == 'my_group'
-
-  health_check = resources['google_compute_region_health_check']
-  assert health_check['name'] == _NAME + '-default'
-  assert len(health_check['http_health_check']) > 0
-  assert len(health_check['https_health_check']) == 0
-  assert len(health_check['http2_health_check']) == 0
-  assert len(health_check['tcp_health_check']) == 0
-  assert health_check['http_health_check'][0]['port_specification'] == 'USE_SERVING_PORT'
-  assert health_check['http_health_check'][0]['proxy_header'] == 'NONE'
-  assert health_check['http_health_check'][0]['request_path'] == '/'
-
-  assert 'google_compute_region_target_http_proxy' in resources
-  assert 'google_compute_region_target_https_proxy' not in resources
-  assert 'google_compute_region_url_map' in resources
+def test_health_checks_custom(plan_runner):
+  "Test custom health check."
+  _, resources = plan_runner(tf_var_file='test.health-checks-custom.tfvars')
+  counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
+  assert counts == {
+      'google_compute_forwarding_rule.default': 1,
+      'google_compute_health_check.default': 1,
+      'google_compute_region_backend_service.default': 1,
+      'google_compute_region_target_http_proxy.default': 1,
+      'google_compute_region_url_map.default': 1
+  }
 
 
-def test_group_no_hc(plan_runner):
-  "Tests a group backend service without HCs (including no default HC)."
-  _, resources = plan_runner(backend_services_config=_BACKEND_SVC_CONFIG,
-                             health_checks_config_defaults='null')
-
-  assert len(resources) == 4
-  resources = dict((r['type'], r['values']) for r in resources)
-
-  assert 'google_compute_region_backend_service' in resources
-  assert 'google_compute_region_health_check' not in resources
-  assert 'google_compute_region_target_http_proxy' in resources
-  assert 'google_compute_region_target_https_proxy' not in resources
-  assert 'google_compute_region_url_map' in resources
-  assert 'google_compute_forwarding_rule' in resources
+def test_https(plan_runner):
+  "Test HTTPS load balancer."
+  _, resources = plan_runner(tf_var_file='test.https.tfvars')
+  counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
+  assert counts == {
+      'google_compute_forwarding_rule.default': 1,
+      'google_compute_health_check.default': 1,
+      'google_compute_region_target_https_proxy.default': 1,
+      'google_compute_region_url_map.default': 1
+  }
 
 
-def test_group_existing_hc(plan_runner):
-  "Tests a group backend service with referencing an existing HC."
-  _, resources = plan_runner(backend_services_config=_BACKEND_SVC_CONFIG_HC)
-  assert len(resources) == 4
-  resources = dict((r['type'], r['values']) for r in resources)
-
-  assert 'google_compute_region_backend_service' in resources
-  assert 'google_compute_region_health_check' not in resources
-  assert 'google_compute_region_target_http_proxy' in resources
-  assert 'google_compute_region_target_https_proxy' not in resources
-  assert 'google_compute_region_url_map' in resources
-  assert 'google_compute_forwarding_rule' in resources
-
-
-def test_reserved_ip(plan_runner):
-  "Tests an IP reservation with a group backend service."
-  _, resources = plan_runner(
-    backend_services_config=_BACKEND_SVC_CONFIG,
-    static_ip_config=_RESERVED_IP_CONFIG
-  )
-  assert len(resources) == 6
-  resources = dict((r['type'], r['values']) for r in resources)
-
-  assert 'google_compute_region_backend_service' in resources
-  assert 'google_compute_region_target_http_proxy' in resources
-  assert 'google_compute_region_target_https_proxy' not in resources
-  assert 'google_compute_region_url_map' in resources
-  assert 'google_compute_address' in resources
-  assert 'google_compute_forwarding_rule' in resources
+def test_negs(plan_runner):
+  "Test negs."
+  _, resources = plan_runner(tf_var_file='test.negs.tfvars')
+  counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
+  assert counts == {
+      'google_compute_forwarding_rule.default': 1,
+      'google_compute_health_check.default': 1,
+      'google_compute_network_endpoint.default': 1,
+      'google_compute_network_endpoint_group.default': 1,
+      'google_compute_region_backend_service.default': 1,
+      'google_compute_region_target_http_proxy.default': 1,
+      'google_compute_region_url_map.default': 1
+  }
 
 
-def test_ssl(plan_runner):
-  "Tests HTTPS and SSL certificates."
-  _, resources = plan_runner(
-    backend_services_config=_BACKEND_SVC_CONFIG,
-    https="true",
-    ssl_certificates_config=_SSL_CERTIFICATES_CONFIG,
-    target_proxy_https_config=_TARGET_PROXY_HTTPS_CONFIG
-  )
-  assert len(resources) == 6
-  resources = dict((r['type'], r['values']) for r in resources)
-
-  fwd_rule = resources['google_compute_forwarding_rule']
-  assert fwd_rule['port_range'] == '443'
-
-  assert 'google_compute_region_backend_service' in resources
-  assert 'google_compute_region_ssl_certificate' in resources
-  assert 'google_compute_region_target_http_proxy' not in resources
-  assert 'google_compute_region_target_https_proxy' in resources
-  assert 'google_compute_region_url_map' in resources
-  assert 'google_compute_forwarding_rule' in resources
+def test_ssl_certificates(plan_runner):
+  "Test HTTPS load balancer with SSL certificates."
+  _, resources = plan_runner(tf_var_file='test.ssl.tfvars')
+  counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
+  assert counts == {
+      'google_compute_forwarding_rule.default': 1,
+      'google_compute_health_check.default': 1,
+      'google_compute_region_ssl_certificate.default': 1,
+      'google_compute_region_target_https_proxy.default': 1,
+      'google_compute_region_url_map.default': 1
+  }
 
 
-def test_ssl_existing_cert(plan_runner):
-  "Tests HTTPS and SSL existing certificate."
-  _, resources = plan_runner(
-    backend_services_config=_BACKEND_SVC_CONFIG,
-    https="true",
-    target_proxy_https_config=_TARGET_PROXY_HTTPS_CONFIG
-  )
-  assert len(resources) == 5
-  resources = dict((r['type'], r['values']) for r in resources)
-
-  fwd_rule = resources['google_compute_forwarding_rule']
-  assert fwd_rule['port_range'] == '443'
-
-  assert 'google_compute_region_backend_service' in resources
-  assert 'google_compute_region_ssl_certificate' not in resources
-  assert 'google_compute_region_target_http_proxy' not in resources
-  assert 'google_compute_region_target_https_proxy' in resources
-  assert 'google_compute_region_url_map' in resources
-  assert 'google_compute_forwarding_rule' in resources
+def test_urlmaps(plan_runner):
+  "Test URL maps."
+  _, resources = plan_runner(tf_var_file='test.urlmaps.tfvars')
+  counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
+  assert counts == {
+      'google_compute_forwarding_rule.default': 1,
+      'google_compute_health_check.default': 1,
+      'google_compute_region_backend_service.default': 2,
+      'google_compute_region_target_http_proxy.default': 1,
+      'google_compute_region_url_map.default': 1
+  }

@@ -10,7 +10,7 @@ A good usage pattern would be when we want all the projects under a specific fol
 
 ```hcl
 module "my-org" {
-  source     = "./modules/projects-data-source"
+  source     = "./fabric/modules/projects-data-source"
   parent     = "organizations/123456789"
 }
 
@@ -22,14 +22,14 @@ output "folders" {
   value = module.my-org.folders
 }
 
-# tftest skip
+# tftest skip (uses data sources)
 ```
 
 ### My dev projects based on parent and label
 
 ```hcl
 module "my-dev" {
-  source = "./modules/projects-data-source"
+  source = "./fabric/modules/projects-data-source"
   parent = "folders/123456789"
   filter = "labels.env:DEV lifecycleState:ACTIVE"   
 }
@@ -42,7 +42,7 @@ output "dev-folders" {
   value = module.my-dev.folders
 }
 
-# tftest skip
+# tftest skip (uses data sources)
 ```
 <!-- BEGIN TFDOC -->
 

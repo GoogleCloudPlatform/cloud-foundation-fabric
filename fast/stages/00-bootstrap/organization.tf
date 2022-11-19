@@ -34,13 +34,17 @@ locals {
       [module.automation-tf-bootstrap-sa.iam_email],
       local._iam_bootstrap_user
     )
-    "roles/resourcemanager.organizationViewer" = [
-      "domain:${var.organization.domain}"
-    ]
+    # the following is useful if roles/browser is not desirable
+    # "roles/resourcemanager.organizationViewer" = [
+    #   "domain:${var.organization.domain}"
+    # ]
     "roles/resourcemanager.projectCreator" = concat(
       [module.automation-tf-bootstrap-sa.iam_email],
       local._iam_bootstrap_user
     )
+    "roles/resourcemanager.projectMover" = [
+      module.automation-tf-bootstrap-sa.iam_email
+    ]
     "roles/resourcemanager.tagAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
@@ -170,6 +174,13 @@ module "organization" {
     ]
     (var.custom_role_names.service_project_network_admin) = [
       "compute.globalOperations.get",
+      # compute.networks.updatePeering and compute.networks.get are
+      # used by automation service accounts who manage service
+      # projects where peering creation might be needed (e.g. GKE). If
+      # you remove them your network administrators should create
+      # peerings for service projects
+      "compute.networks.updatePeering",
+      "compute.networks.get",
       "compute.organizations.disableXpnResource",
       "compute.organizations.enableXpnResource",
       "compute.projects.get",
@@ -183,10 +194,7 @@ module "organization" {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
       destination          = local.log_sink_destinations[name].id
-      exclusions           = {}
       filter               = attrs.filter
-      iam                  = true
-      include_children     = true
       type                 = attrs.type
     }
   }

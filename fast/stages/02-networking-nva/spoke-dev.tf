@@ -22,10 +22,6 @@ module "dev-spoke-project" {
   name            = "dev-net-spoke-0"
   parent          = var.folder_ids.networking-dev
   prefix          = var.prefix
-  service_config = {
-    disable_on_destroy         = false
-    disable_dependent_services = false
-  }
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",
@@ -35,13 +31,13 @@ module "dev-spoke-project" {
     "stackdriver.googleapis.com",
   ]
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
     "roles/dns.admin" = compact([
-      try(local.service_accounts.project-factory-dev, null)
+      try(local.service_accounts.gke-dev, null),
+      try(local.service_accounts.project-factory-dev, null),
     ])
   }
 }
@@ -60,14 +56,12 @@ module "dev-spoke-vpc" {
     private-googleapis = {
       dest_range    = "199.36.153.8/30"
       priority      = 999
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
     restricted-googleapis = {
       dest_range    = "199.36.153.4/30"
       priority      = 999
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
@@ -76,42 +70,43 @@ module "dev-spoke-vpc" {
       priority      = 1000
       tags          = ["ew1"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
     }
     nva-ew4-to-ew4 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       tags          = ["ew4"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted-ew4.forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
     }
     nva-ew1-to-ew4 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = ["ew1"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted-ew4.forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
     }
     nva-ew4-to-ew1 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = ["ew4"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
     }
   }
 }
 
 module "dev-spoke-firewall" {
-  source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.dev-spoke-project.project_id
-  network             = module.dev-spoke-vpc.name
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/dev"
-  cidr_template_file  = "${var.data_dir}/cidrs.yaml"
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.dev-spoke-project.project_id
+  network    = module.dev-spoke-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.data_dir}/firewall-rules/dev"
+  }
 }
 
 module "peering-dev" {
@@ -128,6 +123,7 @@ resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
   members = compact([
     try(local.service_accounts.data-platform-dev, null),
     try(local.service_accounts.project-factory-dev, null),
+    try(local.service_accounts.gke-dev, null),
   ])
   condition {
     title       = "dev_stage3_sa_delegated_grants"

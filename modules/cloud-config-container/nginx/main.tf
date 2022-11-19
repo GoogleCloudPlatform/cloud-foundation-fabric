@@ -16,18 +16,20 @@
 
 locals {
   cloud_config = templatefile(local.template, merge(var.config_variables, {
-    docker_logging = var.docker_logging
     etc_mount = (
       var.nginx_config != null || length([
         for name in keys(var.files) :
         name if substr(name, 0, 18) == "/etc/nginx/conf.d/"
-      ]) > 1
+      ]) > 0
     )
     files = local.files
+    users = var.users
     image = var.image
     nginx_config = (var.nginx_config == null ? null : templatefile(
       var.nginx_config, var.config_variables
     ))
+    runcmd_pre  = var.runcmd_pre
+    runcmd_post = var.runcmd_post
   }))
   files = {
     for path, attrs in var.files : path => {

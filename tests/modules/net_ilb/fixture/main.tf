@@ -15,21 +15,21 @@
  */
 
 module "test" {
-  source              = "../../../../modules/net-ilb"
-  project_id          = "my-project"
-  region              = "europe-west1"
-  network             = "default"
-  subnetwork          = "default"
-  name                = "ilb-test"
-  labels              = {}
-  address             = var.address
-  backends            = var.backends
-  backend_config      = var.backend_config
-  failover_config     = var.failover_config
-  global_access       = var.global_access
-  health_check        = var.health_check
-  health_check_config = var.health_check_config
-  ports               = var.ports
-  protocol            = var.protocol
-  service_label       = var.service_label
+  source     = "../../../../modules/net-ilb"
+  project_id = "my-project"
+  region     = "europe-west1"
+  name       = "ilb-test"
+  vpc_config = {
+    network    = "default"
+    subnetwork = "default"
+  }
+  address                = var.address
+  backend_service_config = var.backend_service_config
+  backends               = var.backends
+  description            = var.description
+  global_access          = var.global_access
+  group_configs          = var.group_configs
+  ports                  = var.ports
+  protocol               = var.protocol
+  service_label          = var.service_label
 }

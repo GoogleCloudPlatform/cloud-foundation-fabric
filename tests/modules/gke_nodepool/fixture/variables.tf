@@ -14,19 +14,73 @@
  * limitations under the License.
  */
 
-variable "node_service_account" {
+variable "gke_version" {
   type    = string
   default = null
 }
 
-variable "node_service_account_create" {
+variable "labels" {
+  type     = map(string)
+  default  = {}
+  nullable = false
+}
+
+variable "max_pods_per_node" {
+  type    = number
+  default = null
+}
+
+variable "node_config" {
+  type = any
+  default = {
+    disk_type = "pd-balanced"
+  }
+}
+
+variable "node_count" {
+  type = any
+  default = {
+    initial = 1
+  }
+  nullable = false
+}
+
+variable "node_locations" {
+  type    = list(string)
+  default = null
+}
+
+variable "nodepool_config" {
+  type    = any
+  default = null
+}
+
+variable "pod_range" {
+  type    = any
+  default = null
+}
+
+variable "reservation_affinity" {
+  type    = any
+  default = null
+}
+
+variable "service_account_create" {
   type    = bool
   default = false
 }
 
-# scopes and scope aliases list
-# https://cloud.google.com/sdk/gcloud/reference/compute/instances/create#--scopes
-variable "node_service_account_scopes" {
+variable "sole_tenant_nodegroup" {
+  type    = string
+  default = null
+}
+
+variable "tags" {
   type    = list(string)
-  default = []
+  default = null
+}
+
+variable "taints" {
+  type    = any
+  default = null
 }

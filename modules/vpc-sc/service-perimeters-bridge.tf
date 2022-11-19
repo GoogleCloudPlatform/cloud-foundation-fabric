@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Bridge service perimeter resources.
+
 # this code implements "additive" service perimeters, if "authoritative"
 # service perimeters are needed, switch to the
 # google_access_context_manager_service_perimeters resource

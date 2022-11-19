@@ -30,7 +30,7 @@ env:
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   TF_PROVIDERS_FILE: ${tf_providers_file}
   TF_VAR_FILES: ${tf_var_files == [] ? "''" : join("\n    ", tf_var_files)}
-  TF_VERSION: 1.1.7
+  TF_VERSION: 1.3.2
 
 jobs:
   fast-pr:
@@ -81,7 +81,7 @@ jobs:
 
       - id: tf-setup
         name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_version: $${{ env.TF_VERSION }}
 
@@ -102,7 +102,7 @@ jobs:
           terraform plan -input=false -out ../plan.out -no-color
 
       - id: tf-apply
-        if: github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == true && success()
         name: Terraform apply
         continue-on-error: true
         run: |
@@ -110,14 +110,17 @@ jobs:
 
       - id: pr-comment
         name: Post comment to Pull Request
+        continue-on-error: true
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
-          PLAN: terraform\n$${{ steps.tf-plan.outputs.stdout }}
+          PLAN: $${{ steps.tf-plan.outputs.stdout }}\n$${{ steps.tf-plan.outputs.stderr }}
         with:
           script: |
-            const output = `#### Terraform Initialization ⚙️\`$${{ steps.tf-init.outcome }}\`
-            #### Terraform Validation 🤖\`$${{ steps.tf-validate.outcome }}\`
+            const output = `### Terraform Initialization \`$${{ steps.tf-init.outcome }}\`
+
+            ### Terraform Validation \`$${{ steps.tf-validate.outcome }}\`
+
             <details><summary>Validation Output</summary>
 
             \`\`\`\n
@@ -126,17 +129,17 @@ jobs:
 
             </details>
 
-            #### Terraform Plan 📖\`$${{ steps.tf-plan.outcome }}\`
+            ### Terraform Plan \`$${{ steps.tf-plan.outcome }}\`
 
             <details><summary>Show Plan</summary>
 
             \`\`\`\n
-            $${process.env.PLAN}
+            $${process.env.PLAN.split('\n').filter(l => l.match(/^([A-Z\s].*|)$$/)).join('\n')}
             \`\`\`
 
             </details>
 
-            #### Terraform Apply 📖\`$${{ steps.tf-apply.outcome }}\`
+            ### Terraform Apply \`$${{ steps.tf-apply.outcome }}\`
 
             *Pusher: @$${{ github.actor }}, Action: \`$${{ github.event_name }}\`, Working Directory: \`$${{ env.tf_actions_working_dir }}\`, Workflow: \`$${{ github.workflow }}\`*`;
 
@@ -147,4 +150,37 @@ jobs:
               body: output
             })
 
-      # jq -j -r '.resource_changes[] | (.change.actions | join(",")), " ", .address, "\n" ' foo.json
+      - id: pr-short-comment
+        name: Post comment to Pull Request
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request' && steps.pr-comment.outcome != 'success'
+        with:
+          script: |
+            const output = `### Terraform Initialization \`$${{ steps.tf-init.outcome }}\`
+
+            ### Terraform Validation \`$${{ steps.tf-validate.outcome }}\`
+
+            ### Terraform Plan \`$${{ steps.tf-plan.outcome }}\`
+
+            Plan output is in the action log.
+
+            ### Terraform Apply \`$${{ steps.tf-apply.outcome }}\`
+
+            *Pusher: @$${{ github.actor }}, Action: \`$${{ github.event_name }}\`, Working Directory: \`$${{ env.tf_actions_working_dir }}\`, Workflow: \`$${{ github.workflow }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - id: check-plan
+        name: Check plan failure
+        if: steps.tf-plan.outcome != 'success'
+        run: exit 1
+
+      - id: check-apply
+        name: Check apply failure
+        if: github.event.pull_request.merged == true && steps.tf-apply.outcome != 'success'
+        run: exit 1

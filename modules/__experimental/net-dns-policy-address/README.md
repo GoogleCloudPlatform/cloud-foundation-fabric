@@ -8,11 +8,11 @@ Since it's currently impossible to fetch those addresses using a GCP data source
 
 ```hcl
 module "dns-policy-addresses" {
-  source     = "./modules/__experimental/net-dns-policy-addresses"
+  source     = "./fabric/modules/__experimental/net-dns-policy-addresses"
   project_id = "myproject"
   regions    = ["europe-west1", "europe-west3"]
 }
-# tftest skip
+# tftest skip (uses data sources)
 ```
 
 The output is a map with lists of addresses of type `DNS_RESOLVER` for each region specified in variables.

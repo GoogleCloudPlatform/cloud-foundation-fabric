@@ -17,6 +17,7 @@
 resource "google_cloud_identity_group" "group" {
   display_name = var.display_name
   parent       = var.customer_id
+  description  = var.description
 
   group_key {
     id = var.name
@@ -36,17 +37,18 @@ resource "google_cloud_identity_group" "group" {
 #   roles { name = "MANAGER" }
 # }
 
-# resource "google_cloud_identity_group_membership" "managers" {
-#   group    = google_cloud_identity_group.group.id
-#   for_each = toset(var.managers)
-#   preferred_member_key { id = each.key }
-#   roles { name = "MEMBER" }
-#   roles { name = "MANAGER" }
-# }
+resource "google_cloud_identity_group_membership" "managers" {
+  group    = google_cloud_identity_group.group.id
+  for_each = toset(var.managers)
+  preferred_member_key { id = each.key }
+  roles { name = "MEMBER" }
+  roles { name = "MANAGER" }
+}
 
 resource "google_cloud_identity_group_membership" "members" {
   group    = google_cloud_identity_group.group.id
   for_each = toset(var.members)
   preferred_member_key { id = each.key }
   roles { name = "MEMBER" }
+  depends_on = [google_cloud_identity_group_membership.managers]
 }

@@ -22,10 +22,10 @@ module "test" {
   iam                         = var.iam
   iam_additive                = var.iam_additive
   iam_additive_members        = var.iam_additive_members
-  policy_boolean              = var.policy_boolean
-  policy_list                 = var.policy_list
   firewall_policies           = var.firewall_policies
   firewall_policy_association = var.firewall_policy_association
   logging_sinks               = var.logging_sinks
   logging_exclusions          = var.logging_exclusions
+  org_policies                = var.org_policies
+  org_policies_data_path      = var.org_policies_data_path
 }

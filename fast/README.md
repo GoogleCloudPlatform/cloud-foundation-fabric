@@ -36,7 +36,7 @@ FAST uses YAML-based factories to deploy subnets and firewall rules and, as its 
 
 ### CI/CD
 
-One of our objectives with FAST is to provide a lightweight reference design for the IaC repositories, and a built-in implementation for running our code in automated pipelines. Our CI/CD approach leverages [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation), and provides sample workflow configurations for several major providers. Refer to the [CI/CD section in the bootstrap stage](stages/00-bootstrap/README.md#cicd) for more details.
+One of our objectives with FAST is to provide a lightweight reference design for the IaC repositories, and a built-in implementation for running our code in automated pipelines. Our CI/CD approach leverages [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation), and provides sample workflow configurations for several major providers. Refer to the [CI/CD section in the bootstrap stage](stages/00-bootstrap/README.md#cicd) for more details. We also provide separate [optional small stages](./extras/) to help you configure your CI/CD provider.
 
 ## Implementation
 

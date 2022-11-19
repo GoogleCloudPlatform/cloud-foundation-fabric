@@ -37,16 +37,10 @@ variable "internal_addresses" {
   type = map(object({
     region     = string
     subnetwork = string
-  }))
-  default = {}
-}
-
-variable "internal_addresses_config" {
-  description = "Optional configuration for internal addresses, keyed by name. Unused options can be set to null."
-  type = map(object({
-    address = string
-    purpose = string
-    tier    = string
+    address    = optional(string)
+    labels     = optional(map(string))
+    purpose    = optional(string)
+    tier       = optional(string)
   }))
   default = {}
 }

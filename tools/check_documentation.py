@@ -49,15 +49,32 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
       try:
         new_doc = tfdoc.create_doc(readme_path.parent, files, show_extra,
                                    exclude_files, readme)
+        variables = [v.name for v in new_doc.variables]
+        outputs = [v.name for v in new_doc.outputs]
       except SystemExit:
         state = state.SKIP
       else:
-        if new_doc == result['doc']:
+        if new_doc.content == result['doc']:
           state = State.OK
+        elif variables != sorted(variables):
+          state = state.FAIL
+          diff = "\n".join([
+              f'----- {mod_name} variables -----',
+              f'variables should be in this order: ',
+              ', '.join(sorted(variables)),
+          ])
+        elif outputs != sorted(outputs):
+          state = state.FAIL
+          diff = "\n".join([
+              f'----- {mod_name} outputs -----',
+              f'outputs should be in this order: ',
+              ', '.join(sorted(outputs)),
+          ])
         else:
           state = State.FAIL
           header = f'----- {mod_name} diff -----\n'
-          ndiff = difflib.ndiff(result['doc'].split('\n'), new_doc.split('\n'))
+          ndiff = difflib.ndiff(result['doc'].split('\n'),
+                                new_doc.content.split('\n'))
           diff = '\n'.join([header] + list(ndiff))
     yield mod_name, state, diff
 
@@ -73,7 +90,7 @@ def main(dirs, exclude_file=None, files=False, show_diffs=False,
   'Cycle through modules and ensure READMEs are up-to-date.'
   print(f'files: {files}, extra: {show_extra}, diffs: {show_diffs}\n')
   errors = []
-  state_labels = {State.FAIL: '✗', State.OK: '✓', State.SKIP: '?'}
+  state_labels = {State.FAIL: '✗', State.OK: '✓', State.SKIP: ' '}
   for dir_name in dirs:
     print(f'----- {dir_name} -----')
     for mod_name, state, diff in _check_dir(dir_name, exclude_file, files,

@@ -103,10 +103,15 @@ variable "notification_config" {
   })
   default = null
 }
+
 variable "prefix" {
-  description = "Prefix used to generate the bucket name."
+  description = "Optional prefix used to generate the bucket name."
   type        = string
   default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
+  }
 }
 
 variable "project_id" {

@@ -16,11 +16,6 @@
 
 # tfdoc:file:description Data Platform stages resources.
 
-moved {
-  from = module.branch-dp-folder
-  to   = module.branch-dp-folder.0
-}
-
 module "branch-dp-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.data_platform ? 1 : 0
@@ -31,11 +26,6 @@ module "branch-dp-folder" {
       module.organization.tag_values["${var.tag_names.context}/data"].id, null
     )
   }
-}
-
-moved {
-  from = module.branch-dp-dev-folder
-  to   = module.branch-dp-dev-folder.0
 }
 
 module "branch-dp-dev-folder" {
@@ -56,14 +46,10 @@ module "branch-dp-dev-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.environment}/development"].id, null
+      module.organization.tag_values["${var.tag_names.environment}/development"].id,
+      null
     )
   }
-}
-
-moved {
-  from = module.branch-dp-prod-folder
-  to   = module.branch-dp-prod-folder.0
 }
 
 module "branch-dp-prod-folder" {
@@ -82,25 +68,21 @@ module "branch-dp-prod-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.environment}/production"].id, null
+      module.organization.tag_values["${var.tag_names.environment}/production"].id,
+      null
     )
   }
 }
 
 # automation service accounts and buckets
 
-moved {
-  from = module.branch-dp-dev-sa
-  to   = module.branch-dp-dev-sa.0
-}
-
 module "branch-dp-dev-sa" {
-  source      = "../../../modules/iam-service-account"
-  count       = var.fast_features.data_platform ? 1 : 0
-  project_id  = var.automation.project_id
-  name        = "dev-resman-dp-0"
-  description = "Terraform data platform development service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.data_platform ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "dev-resman-dp-0"
+  display_name = "Terraform data platform development service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-dp-dev-sa-cicd.0.iam_email, null)
@@ -111,18 +93,13 @@ module "branch-dp-dev-sa" {
   }
 }
 
-moved {
-  from = module.branch-dp-prod-sa
-  to   = module.branch-dp-prod-sa.0
-}
-
 module "branch-dp-prod-sa" {
-  source      = "../../../modules/iam-service-account"
-  count       = var.fast_features.data_platform ? 1 : 0
-  project_id  = var.automation.project_id
-  name        = "prod-resman-dp-0"
-  description = "Terraform data platform production service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.data_platform ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "prod-resman-dp-0"
+  display_name = "Terraform data platform production service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-dp-prod-sa-cicd.0.iam_email, null)
@@ -133,35 +110,29 @@ module "branch-dp-prod-sa" {
   }
 }
 
-moved {
-  from = module.branch-dp-dev-gcs
-  to   = module.branch-dp-dev-gcs.0
-}
-
 module "branch-dp-dev-gcs" {
-  source     = "../../../modules/gcs"
-  count      = var.fast_features.data_platform ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "dev-resman-dp-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.data_platform ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "dev-resman-dp-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-dp-dev-sa.0.iam_email]
   }
 }
 
-moved {
-  from = module.branch-dp-prod-gcs
-  to   = module.branch-dp-prod-gcs.0
-}
-
 module "branch-dp-prod-gcs" {
-  source     = "../../../modules/gcs"
-  count      = var.fast_features.data_platform ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "prod-resman-dp-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.data_platform ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "prod-resman-dp-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-dp-prod-sa.0.iam_email]
   }

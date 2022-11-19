@@ -64,6 +64,16 @@ variable "lien_reason" {
   default = ""
 }
 
+variable "org_policies" {
+  type    = any
+  default = {}
+}
+
+variable "org_policies_data_path" {
+  type    = any
+  default = null
+}
+
 variable "oslogin" {
   type    = bool
   default = false
@@ -84,21 +94,6 @@ variable "parent" {
   default = null
 }
 
-variable "policy_boolean" {
-  type    = map(bool)
-  default = {}
-}
-
-variable "policy_list" {
-  type = map(object({
-    inherit_from_parent = bool
-    suggested_value     = string
-    status              = bool
-    values              = list(string)
-  }))
-  default = {}
-}
-
 variable "prefix" {
   type    = string
   default = null
@@ -115,14 +110,7 @@ variable "services" {
 }
 
 variable "logging_sinks" {
-  type = map(object({
-    destination   = string
-    type          = string
-    filter        = string
-    iam           = bool
-    exclusions    = map(string)
-    unique_writer = bool
-  }))
+  type    = any
   default = {}
 }
 

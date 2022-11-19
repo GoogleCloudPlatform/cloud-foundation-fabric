@@ -44,7 +44,11 @@ variable "peer_network" {
 }
 
 variable "prefix" {
-  description = "Name prefix for the network peerings."
+  description = "Optional name prefix for the network peerings."
   type        = string
-  default     = "network-peering"
+  default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
+  }
 }

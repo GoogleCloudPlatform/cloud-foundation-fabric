@@ -28,13 +28,21 @@ locals {
 }
 
 resource "google_logging_folder_sink" "sink" {
-  for_each = var.logging_sinks
-  name     = each.key
-  #description = "${each.key} (Terraform-managed)."
+  for_each         = var.logging_sinks
+  name             = each.key
+  description      = coalesce(each.value.description, "${each.key} (Terraform-managed).")
   folder           = local.folder.name
   destination      = "${each.value.type}.googleapis.com/${each.value.destination}"
   filter           = each.value.filter
   include_children = each.value.include_children
+  disabled         = each.value.disabled
+
+  dynamic "bigquery_options" {
+    for_each = each.value.bq_partitioned_table != null ? [""] : []
+    content {
+      use_partitioned_tables = each.value.bq_partitioned_table
+    }
+  }
 
   dynamic "exclusions" {
     for_each = each.value.exclusions
@@ -78,8 +86,12 @@ resource "google_project_iam_member" "bucket-sinks-binding" {
   project  = split("/", each.value.destination)[1]
   role     = "roles/logging.bucketWriter"
   member   = google_logging_folder_sink.sink[each.key].writer_identity
-  # TODO(jccb): use a condition to limit writer-identity only to this
-  # bucket
+
+  condition {
+    title       = "${each.key} bucket writer"
+    description = "Grants bucketWriter to ${google_logging_folder_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${local.folder.id}"
+    expression  = "resource.name.endsWith('${each.value.destination}')"
+  }
 }
 
 resource "google_logging_folder_exclusion" "logging-exclusion" {

@@ -33,8 +33,8 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 - [Security](02-security/README.md)  
   Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.\
   Exports: KMS key ids
-- Networking ([VPN](02-networking-vpn/README.md)/[NVA](02-networking-nva/README.md)/[Peering](02-networking-peering/README.md))  
-  Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, and includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets. It's currently available in three flavors: [spokes connected via VPN](02-networking-vpn/README.md), [and spokes connected via appliances](02-networking-nva/README.md), and [and spokes connected via VPC peering](02-networking-peering/README.md).\
+- Networking ([VPN](02-networking-vpn/README.md)/[NVA](02-networking-nva/README.md)/[Peering](02-networking-separate-envs/README.md)/[Separate environments](02-networking-separate-envs/README.md))  
+  Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, and includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets. It's currently available in four flavors: [spokes connected via VPN](02-networking-vpn/README.md), [and spokes connected via appliances](02-networking-nva/README.md),  [spokes connected via VPC peering](02-networking-peering/README.md), and [separated network environments](02-networking-separate-envs/README.md).\
   Exports: host project ids and numbers, vpc self links
 
 ## Environment-level resources (03)
@@ -42,5 +42,5 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 - [Project Factory](03-project-factory/dev/)  
   YAML-based fatory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
 - [Data Platform](03-data-platform/dev/)
-- GKE Multitenant (in development)
+- [GKE Multitenant](03-gke-multitenant/dev/)
 - GCE Migration (in development)

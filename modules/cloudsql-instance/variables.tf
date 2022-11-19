@@ -105,9 +105,13 @@ variable "network" {
 }
 
 variable "prefix" {
-  description = "Prefix used to generate instance names."
+  description = "Optional prefix used to generate instance names."
   type        = string
   default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
+  }
 }
 
 variable "project_id" {
@@ -127,6 +131,12 @@ variable "replicas" {
     encryption_key_name = string
   }))
   default = {}
+}
+
+variable "root_password" {
+  description = "Root password of the Cloud SQL instance. Required for MS SQL Server"
+  type        = string
+  default     = null
 }
 
 variable "tier" {

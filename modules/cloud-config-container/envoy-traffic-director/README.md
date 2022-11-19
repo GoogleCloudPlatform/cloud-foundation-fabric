@@ -13,14 +13,14 @@ This module depends on the [`cos-generic-metadata` module](../cos-generic-metada
 ```hcl
 # Envoy TD config
 module "cos-envoy-td" {
-  source = "./modules/cloud-config-container/envoy-traffic-director"
+  source = "./fabric/modules/cloud-config-container/envoy-traffic-director"
 }
 
 # COS VM
 module "vm-cos" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = local.project_id
-  region     = local.region
+  zone       = local.zone
   name       = "cos-envoy-td"
   network_interfaces = [{
     network    = local.vpc.self_link,
@@ -28,11 +28,11 @@ module "vm-cos" {
     nat        = false,
     addresses  = null
   }]
-  instance_count = 1
-  tags           = ["ssh", "http"]
+  tags = ["ssh", "http"]
 
   metadata = {
-    user-data = module.cos-envoy-td.cloud_config
+    user-data              = module.cos-envoy-td.cloud_config
+    google-logging-enabled = true
   }
 
   boot_disk = {
@@ -50,8 +50,7 @@ module "vm-cos" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [docker_logging](variables.tf#L23) | Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead. | <code>bool</code> |  | <code>true</code> |
-| [envoy_image](variables.tf#L17) | Envoy Proxy container image to use. | <code>string</code> |  | <code>&#34;envoyproxy&#47;envoy:v1.14.1&#34;</code> |
+| [envoy_image](variables.tf#L17) | Envoy Proxy container image to use. | <code>string</code> |  | <code>&#34;envoyproxy&#47;envoy:v1.15.5&#34;</code> |
 
 ## Outputs
 
