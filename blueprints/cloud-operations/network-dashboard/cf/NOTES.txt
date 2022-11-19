@@ -1,5 +1,72 @@
 # Notes
 
+- get projects
+  get_monitored_projects_list
+- set monitoring interval
+  monitoring_interval
+- read metrics and limits from yaml and create descriptors
+  metrics.create_metrics
+- get project quota
+  limits.get_quota_project_limit
+- get firewall rules from CAI
+  vpc_firewalls.get_firewalls_dict
+- get firewall policies from CAI
+  firewall_policies.get_firewall_policies_dict
+- get and store subnet metrics
+  subnets.get_subnets
+  - get subnets
+    get_all_subnets
+  - calculate subnet utilization
+    compute_subnet_utilization
+    - get instances
+      compute_subnet_utilization_vms
+    - get forwarding rules
+      compute_subnet_utilization_ilbs
+    - get addresses
+      compute_subnet_utilization_addresses
+    - get redis instances
+      compute_subnet_utilization_redis
+  - store metrics
+- get instances
+  instances.get_gce_instance_dict
+- get forwarding rules for L4 ILB
+  ilb_fwrules.get_forwarding_rules_dict
+- get forwarding rules for L7 ILB
+  ilb_fwrules.get_forwarding_rules_dict
+- get subnets and secondary ranges
+  networks.get_subnet_ranges_dict
+- get static routes
+  routes.get_static_routes_dict
+- get dynamic routes
+  routes.get_dynamic_routes
+  - get routers
+    routers.get_routers
+  - get networks
+    networks.get_networks
+  - get router status
+    get_routes_for_network
+    get_routes_for_router
+- calculate and store firewall rule metrics
+  vpc_firewalls.get_firewalls_data
+- calculate and store firewall policy metrics
+  firewall_policies.get_firewal_policies_data
+- calculate and store instance per network metrics
+  instances.get_gce_instances_data
+- calculate and store L4 forwarding rule metrics
+  ilb_fwrules.get_forwarding_rules_data
+- calculate and store L7 forwarding rule metrics
+  ilb_fwrules.get_forwarding_rules_data
+- calculate and store static routes metrics
+  routes.get_static_routes_data
+- calculate and store peering metrics
+  peerings.get_vpc_peering_data
+- calculate and store peering group metrics
+  metrics.get_pgg_data
+  routes.get_routes_ppg
+- write buffered timeseries
+  metrics.flush_series_buffer
+
+
 ## Inputs
 
 direct inputs
