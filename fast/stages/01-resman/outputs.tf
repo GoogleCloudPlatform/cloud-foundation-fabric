@@ -224,6 +224,27 @@ output "dataplatform" {
   }
 }
 
+output "gke_multitenant" {
+  # tfdoc:output:consumers 03-gke-multitenant
+  description = "Data for the GKE multitenant stage."
+  value = (
+    var.fast_features.gke
+    ? {
+      "dev" = {
+        folder          = module.branch-gke-dev-folder.0.id
+        gcs_bucket      = module.branch-gke-dev-gcs.0.name
+        service_account = module.branch-gke-dev-sa.0.email
+      }
+      "prod" = {
+        folder          = module.branch-gke-prod-folder.0.id
+        gcs_bucket      = module.branch-gke-prod-gcs.0.name
+        service_account = module.branch-gke-prod-sa.0.email
+      }
+    }
+    : {}
+  )
+}
+
 output "networking" {
   description = "Data for the networking stage."
   value = {
@@ -248,7 +269,6 @@ output "project_factories" {
 }
 
 # ready to use provider configurations for subsequent stages
-
 output "providers" {
   # tfdoc:output:consumers 02-networking 02-security 03-dataplatform xx-sandbox xx-teams
   description = "Terraform provider files for this stage and dependent stages."
@@ -280,27 +300,6 @@ output "security" {
   }
 }
 
-output "gke_multitenant" {
-  # tfdoc:output:consumers 03-gke-multitenant
-  description = "Data for the GKE multitenant stage."
-  value = (
-    var.fast_features.gke
-    ? {
-      "dev" = {
-        folder          = module.branch-gke-dev-folder.0.id
-        gcs_bucket      = module.branch-gke-dev-gcs.0.name
-        service_account = module.branch-gke-dev-sa.0.email
-      }
-      "prod" = {
-        folder          = module.branch-gke-prod-folder.0.id
-        gcs_bucket      = module.branch-gke-prod-gcs.0.name
-        service_account = module.branch-gke-prod-sa.0.email
-      }
-    }
-    : {}
-  )
-}
-
 output "teams" {
   description = "Data for the teams stage."
   value = {
@@ -313,7 +312,6 @@ output "teams" {
 }
 
 # ready to use variable values for subsequent stages
-
 output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true

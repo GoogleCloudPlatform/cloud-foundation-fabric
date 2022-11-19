@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "service_encryption_keys" {
-  description = "Cloud KMS keys to use to encrypt resources. Provide a key for each reagion configured."
-  type        = map(string)
-  default     = null
-}
-
 variable "data_eng_principals" {
   description = "Groups with Service Account Token creator role on service accounts in IAM format, only user supported on CloudSQL, eg 'user@domain.com'."
   type        = list(string)
@@ -37,15 +31,15 @@ variable "network_config" {
   default = null
 }
 
-variable "postgres_user_password" {
-  description = "`postgres` user password."
-  type        = string
-}
-
 variable "postgres_database" {
   description = "`postgres` database."
   type        = string
   default     = "guestbook"
+}
+
+variable "postgres_user_password" {
+  description = "`postgres` user password."
+  type        = string
 }
 
 variable "prefix" {
@@ -80,6 +74,11 @@ variable "regions" {
   }
 }
 
+variable "service_encryption_keys" {
+  description = "Cloud KMS keys to use to encrypt resources. Provide a key for each reagion configured."
+  type        = map(string)
+  default     = null
+}
 
 variable "sql_configuration" {
   description = "Cloud SQL configuration"

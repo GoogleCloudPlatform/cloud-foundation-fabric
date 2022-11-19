@@ -52,7 +52,10 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
       try:
         new_doc = tfdoc.create_doc(readme_path.parent, files, show_extra,
                                    exclude_files, readme)
-        variables = [v.name for v in new_doc.variables]
+        # TODO: support variables in multiple files
+        variables = [
+            v.name for v in new_doc.variables if v.file == "variables.tf"
+        ]
         outputs = [v.name for v in new_doc.outputs]
       except SystemExit:
         state = state.SKIP

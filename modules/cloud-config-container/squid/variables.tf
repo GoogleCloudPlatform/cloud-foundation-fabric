@@ -55,16 +55,6 @@ variable "deny" {
   default     = []
 }
 
-variable "files" {
-  description = "Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null."
-  type = map(object({
-    content     = string
-    owner       = string
-    permissions = string
-  }))
-  default = {}
-}
-
 variable "file_defaults" {
   description = "Default owner and permissions for files."
   type = object({
@@ -75,6 +65,16 @@ variable "file_defaults" {
     owner       = "root"
     permissions = "0644"
   }
+}
+
+variable "files" {
+  description = "Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null."
+  type = map(object({
+    content     = string
+    owner       = string
+    permissions = string
+  }))
+  default = {}
 }
 
 variable "squid_config" {

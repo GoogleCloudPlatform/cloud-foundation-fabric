@@ -491,8 +491,8 @@ The remaining configuration is manual, as it regards the repositories themselves
 | [federated_identity](outputs.tf#L116) | Workload Identity Federation pool and providers. |  |  |
 | [outputs_bucket](outputs.tf#L126) | GCS bucket where generated output files are stored. |  |  |
 | [project_ids](outputs.tf#L131) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L151) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L140) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L160) | Terraform variable files for the following stages. | ✓ |  |
+| [providers](outputs.tf#L141) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L148) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L158) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

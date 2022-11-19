@@ -23,13 +23,8 @@ variable "allowed_ranges" {
 variable "cluster_name" {
   description = "Name used for the cluster and DNS zone."
   type        = string
-}
 
-variable "domain" {
-  description = "Domain name used to derive the DNS zone."
-  type        = string
 }
-
 variable "disk_encryption_key" {
   description = "Optional CMEK for disk encryption."
   type = object({
@@ -39,6 +34,22 @@ variable "disk_encryption_key" {
     project_id = string
   })
   default = null
+}
+
+variable "domain" {
+  description = "Domain name used to derive the DNS zone."
+  type        = string
+}
+
+variable "fs_paths" {
+  description = "Filesystem paths for commands and data, supports home path expansion."
+  type = object({
+    credentials       = string
+    config_dir        = string
+    openshift_install = string
+    pull_secret       = string
+    ssh_key           = string
+  })
 }
 
 variable "host_project" {
@@ -84,16 +95,6 @@ variable "install_config_params" {
   }
 }
 
-variable "fs_paths" {
-  description = "Filesystem paths for commands and data, supports home path expansion."
-  type = object({
-    credentials       = string
-    config_dir        = string
-    openshift_install = string
-    pull_secret       = string
-    ssh_key           = string
-  })
-}
 
 # oc -n openshift-cloud-credential-operator get CredentialsRequest \
 #   openshift-machine-api-gcp \

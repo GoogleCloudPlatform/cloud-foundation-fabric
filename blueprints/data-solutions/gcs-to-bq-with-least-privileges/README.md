@@ -208,10 +208,10 @@ The above command will delete the associated resources so there will be no billa
 |---|---|:---:|
 | [bq_tables](outputs.tf#L15) | Bigquery Tables. |  |
 | [buckets](outputs.tf#L20) | GCS bucket Cloud KMS crypto keys. |  |
-| [command_01_gcs](outputs.tf#L43) | gcloud command to copy data into the created bucket impersonating the service account. |  |
-| [command_02_dataflow](outputs.tf#L48) | Command to run Dataflow template impersonating the service account. |  |
-| [command_03_bq](outputs.tf#L69) | BigQuery command to query imported data. |  |
-| [project_id](outputs.tf#L28) | Project id. |  |
-| [service_accounts](outputs.tf#L33) | Service account. |  |
+| [command_01_gcs](outputs.tf#L28) | gcloud command to copy data into the created bucket impersonating the service account. |  |
+| [command_02_dataflow](outputs.tf#L33) | Command to run Dataflow template impersonating the service account. |  |
+| [command_03_bq](outputs.tf#L54) | BigQuery command to query imported data. |  |
+| [project_id](outputs.tf#L64) | Project id. |  |
+| [service_accounts](outputs.tf#L69) | Service account. |  |
 
 <!-- END TFDOC -->
