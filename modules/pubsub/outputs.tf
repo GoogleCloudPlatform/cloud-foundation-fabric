@@ -47,3 +47,19 @@ output "topic" {
     google_pubsub_topic_iam_binding.default
   ]
 }
+
+output "schema_id" {
+  description = "Schema resource id."
+  value       = google_pubsub_schema.default[0].id
+  depends_on = [
+    google_pubsub_schema.default
+  ]
+}
+
+output "schema" {
+  description = "Schema resource."
+  value       = google_pubsub_schema.default[0]
+  depends_on = [
+    google_pubsub_schema.default
+  ]
+}

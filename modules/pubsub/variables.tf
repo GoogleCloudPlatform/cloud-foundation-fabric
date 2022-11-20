@@ -114,3 +114,13 @@ variable "subscriptions" {
   }))
   default = {}
 }
+
+variable "schema" {
+  description = "Topic schema. If set, all messages in this topic should follow this schema."
+  type = object({
+    schema_type  = string
+    definition   = string
+    msg_encoding = optional(string, "ENCODING_UNSPECIFIED")
+  })
+  default = null
+}
