@@ -14,7 +14,7 @@
 
 import logging
 
-from . import Level, register_init, register_discovery
+from . import Level, Resource, register_init, register_discovery
 from .utils import batched, dirty_mp_request, dirty_mp_response
 
 LOGGER = logging.getLogger('net-dash.discovery.compute-routes-dynamic')
@@ -48,8 +48,9 @@ def _handle_discovery(resources, response):
       continue
     num_learned_routes = sum(
         int(p.get('numLearnedRoutes', 0)) for p in bgp_peer_status)
-    resources[NAME][router['network']] = resources[NAME].get(
-        router['network'], 0) + num_learned_routes
+    yield Resource(
+        NAME, router['network'],
+        resources[NAME].get(router['network'], 0) + num_learned_routes)
   yield
 
 
@@ -60,14 +61,18 @@ def init(resources):
     resources[NAME] = {}
 
 
-@register_discovery(_handle_discovery, Level.DERIVED)
-def start_discovery(resources):
-  LOGGER.info('discovery start')
-  urls = [
-      API_URL.format(r['project_id'], r['region'], r['name'])
-      for r in resources['routers'].values()
-  ]
-  if not urls:
-    return
-  for batch in batched(urls, 10):
-    yield dirty_mp_request(batch)
+@register_discovery(Level.DERIVED)
+def start_discovery(resources, response=None):
+  LOGGER.info(f'discovery (has response: {response is not None})')
+  if not response:
+    urls = [
+        API_URL.format(r['project_id'], r['region'], r['name'])
+        for r in resources['routers'].values()
+    ]
+    if not urls:
+      return
+    for batch in batched(urls, 10):
+      yield dirty_mp_request(batch)
+  else:
+    for result in _handle_discovery(resources, response):
+      yield result

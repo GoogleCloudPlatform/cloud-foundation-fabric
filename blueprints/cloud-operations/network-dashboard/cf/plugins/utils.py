@@ -55,7 +55,7 @@ def dirty_mp_request(urls, boundary='1234567890'):
   data.append('--\n')
   headers = {'content-type': f'multipart/mixed; boundary={boundary[2:]}'}
   return HTTPRequest('https://compute.googleapis.com/batch/compute/v1', headers,
-                     ''.join(data))
+                     ''.join(data), False)
 
 
 def dirty_mp_response(content_type, content):

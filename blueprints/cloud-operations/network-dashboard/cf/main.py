@@ -23,7 +23,10 @@ import plugins
 
 from google.auth.transport.requests import AuthorizedSession
 
-HTTP = AuthorizedSession(google.auth.default()[0])
+try:
+  HTTP = AuthorizedSession(google.auth.default()[0])
+except google.auth.exceptions.RefreshError as e:
+  raise SystemExit(e.args[0])
 LOGGER = logging.getLogger('net-dash')
 Q_COLLECTION = collections.deque()
 RESOURCES = {}
@@ -32,18 +35,30 @@ Result = collections.namedtuple('Result', 'phase resource data')
 
 
 def do_discovery():
-  LOGGER.info('discovery start')
+  LOGGER.info(f'discovery start')
   for plugin in plugins.get_discovery_plugins():
-    requests = collections.deque(plugin.func(RESOURCES))
-    LOGGER.info(f'discovery {plugin.name} ({len(requests)})')
-    while requests:
-      request = requests.popleft()
-      response = fetch(request)
-      for next_request in plugin.handler(RESOURCES, response):
-        if not next_request:
+    q = collections.deque(plugin.func(RESOURCES))
+    while q:
+      result = q.popleft()
+      if isinstance(result, plugins.HTTPRequest):
+        response = fetch(result)
+        if not response:
           continue
-        LOGGER.info(f'discovery {plugin.name} (+1)')
-        requests.append(next_request)
+        if result.json:
+          try:
+            results = plugin.func(RESOURCES, response, response.json())
+          except json.decoder.JSONDecodeError as e:
+            LOGGER.critical(
+                f'error decoding JSON for {result.url}: {e.args[0]}')
+            continue
+        else:
+          results = plugin.func(RESOURCES, response)
+        q += collections.deque(results)
+      elif isinstance(result, plugins.Resource):
+        if result.key:
+          RESOURCES[result.type][result.id][result.key] = result.data
+        else:
+          RESOURCES[result.type][result.id] = result.data
 
 
 def do_init(organization, folder, project, op_project):
@@ -67,9 +82,9 @@ def fetch(request):
     response = HTTP.post(request.url, headers=request.headers,
                          data=request.data)
   if response.status_code != 200:
-    # TODO: handle this
     LOGGER.critical(
         f'response code {response.status_code} for URL {request.url}')
+    return
   return response
 
 
@@ -78,17 +93,14 @@ def fetch(request):
               help='GCP organization id')
 @click.option('--op-project', '-op', required=True, type=str,
               help='GCP monitoring project where metrics will be stored')
-@click.option('--project', '-p', required=False, type=str, multiple=True,
+@click.option('--project', '-p', type=str, multiple=True,
               help='GCP project id, can be specified multiple times')
-@click.option('--folder', '-p', required=False, type=int, multiple=True,
+@click.option('--folder', '-p', type=int, multiple=True,
               help='GCP folder id, can be specified multiple times')
 def main(organization=None, op_project=None, project=None, folder=None):
   logging.basicConfig(level=logging.INFO)
-
   do_init(organization, folder, project, op_project)
-
   do_discovery()
-
   LOGGER.info(
       {k: len(v) for k, v in RESOURCES.items() if not isinstance(v, str)})
 

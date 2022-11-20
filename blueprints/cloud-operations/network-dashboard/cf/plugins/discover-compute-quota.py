@@ -14,7 +14,7 @@
 
 import logging
 
-from . import Level, register_init, register_discovery
+from . import Level, Resource, register_init, register_discovery
 from .utils import batched, dirty_mp_request, dirty_mp_response
 
 LOGGER = logging.getLogger('net-dash.discovery.compute-quota')
@@ -29,7 +29,12 @@ def _handle_discovery(resources, response):
   content_type = response.headers['content-type']
   for part in dirty_mp_response(content_type, response.content):
     kind = part.get('kind')
-    quota = part.get('quotas')
+    quota = {
+        q['metric']: {
+            'limit': q['limit'],
+            'usage': q['usage']
+        } for q in part.get('quotas', [])
+    }
     self_link = part.get('selfLink')
     if not self_link:
       logging.warn('invalid quota response')
@@ -40,9 +45,9 @@ def _handle_discovery(resources, response):
     elif kind == 'compute#region':
       project_id = self_link[-3]
       region = self_link[-1]
-    project_quota = resources[NAME].setdefault(project_id, {})
-    project_quota[region] = quota
-  yield
+    if project_id not in resources[NAME]:
+      resources[NAME][project_id] = {}
+    yield Resource(NAME, project_id, quota, region)
 
 
 @register_init
@@ -52,11 +57,16 @@ def init(resources):
     resources[NAME] = {}
 
 
-@register_discovery(_handle_discovery, Level.DERIVED, 0)
-def start_discovery(resources):
-  LOGGER.info('discovery start')
-  urls = [API_GLOBAL_URL.format(p) for p in resources['projects']]
-  if not urls:
-    return
-  for batch in batched(urls, 10):
-    yield dirty_mp_request(batch)
+@register_discovery(Level.DERIVED, 0)
+def start_discovery(resources, response=None):
+  LOGGER.info(f'discovery (has response: {response is not None})')
+  if response is None:
+    # TODO: regions
+    urls = [API_GLOBAL_URL.format(p) for p in resources['projects']]
+    if not urls:
+      return
+    for batch in batched(urls, 10):
+      yield dirty_mp_request(batch)
+  else:
+    for result in _handle_discovery(resources, response):
+      yield result

@@ -16,7 +16,7 @@ import json
 import logging
 import urllib.parse
 
-from . import HTTPRequest, Level, register_init, register_discovery
+from . import HTTPRequest, Level, Resource, register_init, register_discovery
 from .utils import parse_page_token, parse_cai_results
 
 LOGGER = logging.getLogger('net-dash.discovery.metrics')
@@ -29,21 +29,15 @@ URL = (
     '&pageSize=500')
 
 
-def _handle_discovery(resources, response):
+def _handle_discovery(resources, response, data):
   LOGGER.info('discovery handle request')
-  request = response.request
-  try:
-    data = response.json()
-  except json.decoder.JSONDecodeError as e:
-    LOGGER.critical(f'error decoding URL {request.url}: {e.args[0]}')
-    return {}
   descriptors = data.get('metricDescriptors')
   if not descriptors:
     LOGGER.info('no descriptors found')
     return
   for d in descriptors:
-    resources['metrics'].append(d['type'])
-  next_url = parse_page_token(data, request.url)
+    yield Resource('metrics', d['type'], {})
+  next_url = parse_page_token(data, response.request.url)
   if next_url:
     LOGGER.info('discovery next url')
     yield HTTPRequest(next_url, {}, None)
@@ -53,12 +47,16 @@ def _handle_discovery(resources, response):
 def init(resources):
   LOGGER.info('init')
   if 'metrics' not in resources:
-    resources['metrics'] = []
+    resources['metrics'] = {}
 
 
-@register_discovery(_handle_discovery, Level.CORE, 0)
-def start_discovery(resources):
-  LOGGER.info('discovery start')
-  yield HTTPRequest(
-      URL.format(urllib.parse.quote_plus(resources['monitoring_project'])), {},
-      None)
+@register_discovery(Level.CORE, 0)
+def start_discovery(resources, response=None, data=None):
+  LOGGER.info(f'discovery (has response: {response is not None})')
+  if response is None:
+    yield HTTPRequest(
+        URL.format(urllib.parse.quote_plus(resources['monitoring_project'])),
+        {}, None)
+  else:
+    for result in _handle_discovery(resources, response, data):
+      yield result

@@ -15,7 +15,7 @@
 import json
 import logging
 
-from . import HTTPRequest, Level, register_init, register_discovery
+from . import HTTPRequest, Level, Resource, register_init, register_discovery
 from .utils import parse_page_token, parse_cai_results
 
 LOGGER = logging.getLogger('net-dash.discovery.cai-projects')
@@ -28,20 +28,16 @@ CAI_URL = (
     f'?assetTypes=cloudresourcemanager.googleapis.com%2FProject&pageSize=500')
 
 
-def _handle_discovery(resources, response):
+def _handle_discovery(resources, response, data):
   LOGGER.info('discovery handle request')
-  request = response.request
-  try:
-    data = response.json()
-  except json.decoder.JSONDecodeError as e:
-    LOGGER.critical(f'error decoding URL {request.url}: {e.args[0]}')
-    return {}
   for result in parse_cai_results(data, NAME, TYPE):
-    number = result['project'].split('/')[1]
-    project_id = result['displayName']
-    resources[NAME][project_id] = {'number': number}
-    resources['projects:number'][number] = project_id
-  next_url = parse_page_token(data, request.url)
+    data = {
+        'number': result['project'].split('/')[1],
+        'project_id': result['displayName']
+    }
+    yield Resource('projects', data['project_id'], data)
+    yield Resource('projects:number', data['number'], data)
+  next_url = parse_page_token(data, response.request.url)
   if next_url:
     LOGGER.info('discovery next url')
     yield HTTPRequest(next_url, {}, None)
@@ -56,9 +52,13 @@ def init(resources):
     resources['projects:number'] = {}
 
 
-@register_discovery(_handle_discovery, Level.CORE, 0)
-def start_discovery(resources):
-  LOGGER.info('discovery start')
-  for resource_type in (NAME, 'folders'):
-    for k in resources.get(resource_type, []):
-      yield HTTPRequest(CAI_URL.format(f'{resource_type}/{k}'), {}, None)
+@register_discovery(Level.CORE, 0)
+def start_discovery(resources, response=None, data=None):
+  LOGGER.info(f'discovery (has response: {response is not None})')
+  if response is None:
+    for resource_type in (NAME, 'folders'):
+      for k in resources.get(resource_type, []):
+        yield HTTPRequest(CAI_URL.format(f'{resource_type}/{k}'), {}, None)
+  else:
+    for result in _handle_discovery(resources, response, data):
+      yield result

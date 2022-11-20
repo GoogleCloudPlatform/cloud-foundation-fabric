@@ -29,11 +29,13 @@ _PLUGINS_DISCOVERY = []
 _PLUGINS_INIT = []
 _PLUGINS_SERIES = []
 
-HTTPRequest = collections.namedtuple('HTTPRequest', 'url headers data')
+HTTPRequest = collections.namedtuple('HTTPRequest', 'url headers data json',
+                                     defaults=[True])
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
-Plugin = collections.namedtuple('Plugin', 'func name level priority handler',
+Plugin = collections.namedtuple('Plugin', 'func name level priority',
                                 defaults=[None, None, None])
-Resource = collections.namedtuple('Resource', 'id data')
+Resource = collections.namedtuple('Resource', 'type id data key',
+                                  defaults=[None])
 
 
 class PluginError(Exception):
@@ -64,11 +66,11 @@ def _register(collection, func, *args):
   collection.append(Plugin(func, name, *args))
 
 
-def register_discovery(handler_func, level=Level.PRIMARY, priority=99):
+def register_discovery(level=Level.PRIMARY, priority=99):
   'Register plugins that discover data.'
 
   def outer(func):
-    _register(_PLUGINS_DISCOVERY, func, level, priority, handler_func)
+    _register(_PLUGINS_DISCOVERY, func, level, priority)
     return func
 
   return outer

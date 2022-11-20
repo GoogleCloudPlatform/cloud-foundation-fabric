@@ -16,7 +16,7 @@ import json
 import logging
 import urllib.parse
 
-from . import HTTPRequest, Level, register_init, register_discovery
+from . import HTTPRequest, Level, Resource, register_init, register_discovery
 from .utils import parse_cai_results
 
 # https://content-cloudasset.googleapis.com/v1/organizations/436789450919/assets?contentType=RESOURCE&assetTypes=compute.googleapis.com/Network
@@ -39,17 +39,14 @@ TYPES = {
 NAMES = {v: k for k, v in TYPES.items()}
 
 
-def _handle_discovery(resources, response):
+def _handle_discovery(resources, response, data):
   'Process discovery data.'
-  request = response.request
   LOGGER.info('discovery handle request')
-  try:
-    data = response.json()
-  except json.decoder.JSONDecodeError as e:
-    LOGGER.critical(f'error decoding URL {request.url}: {e.args[0]}')
-    return {}
   for result in parse_cai_results(data, 'cai-compute', method='list'):
-    _handle_resource(resources, result['resource'])
+    resource = _handle_resource(resources, result['resource'])
+    if not resource:
+      continue
+    yield resource
   page_token = data.get('nextPageToken')
   if page_token:
     LOGGER.info('requesting next page')
@@ -77,7 +74,7 @@ def _handle_resource(resources, data):
   if not extra_attrs:
     return
   resource.update(extra_attrs)
-  resources[resource_name][resource['self_link']] = resource
+  return Resource(resource_name, resource['self_link'], resource)
 
 
 def _handle_addresses(resource, data):
@@ -180,9 +177,9 @@ def _get_parent(parent, resources):
   'Extract and return resource parent.'
   parent_type, parent_id = parent.split('/')[-2:]
   if parent_type == 'projects':
-    project_id = resources['projects:number'].get(parent_id)
-    if project_id:
-      return {'project_id': project_id, 'project_number': parent_id}
+    project = resources['projects:number'].get(parent_id)
+    if project:
+      return {'project_id': project['project_id'], 'project_number': parent_id}
   if parent_type == 'folders':
     if int(parent_id) in resources['folders']:
       return {'parent': f'{parent_type}/{parent_id}'}
@@ -208,8 +205,12 @@ def init(resources):
       resources[name] = {}
 
 
-@register_discovery(_handle_discovery, Level.PRIMARY, 10)
-def start_discovery(resources):
+@register_discovery(Level.PRIMARY, 10)
+def start_discovery(resources, response=None, data=None):
   'Start discovery by returning the asset list URL for asset types.'
-  LOGGER.info('discovery start')
-  yield HTTPRequest(_url(resources), {}, None)
+  LOGGER.info(f'discovery (has response: {response is not None})')
+  if response is None:
+    yield HTTPRequest(_url(resources), {}, None)
+  else:
+    for result in _handle_discovery(resources, response, data):
+      yield result
