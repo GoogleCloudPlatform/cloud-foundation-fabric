@@ -35,6 +35,14 @@ locals {
   }
 }
 
+resource "google_pubsub_schema" "default" {
+  count      = var.schema == null ? 0 : 1
+  name       = "{$var.name}-schema"
+  type       = var.schema.schema_type
+  definition = var.schema.definition
+  project    = var.project_id
+}
+
 resource "google_pubsub_topic" "default" {
   project                    = var.project_id
   name                       = var.name
@@ -46,6 +54,14 @@ resource "google_pubsub_topic" "default" {
     for_each = length(var.regions) > 0 ? [var.regions] : []
     content {
       allowed_persistence_regions = var.regions
+    }
+  }
+
+  dynamic "schema_settings" {
+    for_each = var.schema == null ? [] : [""]
+    content {
+      schema   = google_pubsub_schema.default[0].id
+      encoding = var.schema.msg_encoding
     }
   }
 }

@@ -1,6 +1,6 @@
 # Google Cloud Pub/Sub Module
 
-This module allows managing a single Pub/Sub topic, including multiple subscriptions and IAM bindings at the topic and subscriptions levels.
+This module allows managing a single Pub/Sub topic, including multiple subscriptions and IAM bindings at the topic and subscriptions levels, as well as schemas.
 
 
 ## Examples
@@ -18,6 +18,38 @@ module "pubsub" {
   }
 }
 # tftest modules=1 resources=3
+```
+
+### Topic with schema
+
+```hcl
+module "topic_with_schema" {
+  source     = "./fabric/modules/pubsub"
+  project_id = "my-project"
+  name       = "my-topic"
+  schema = {
+    msg_encoding = "JSON"
+    schema_type = "AVRO"
+    definition = jsonencode({
+      "type" = "record",
+      "name" = "Avro",
+      "fields" = [{
+        "name" = "StringField",
+        "type" = "string"
+        },
+        {
+          "name" = "FloatField",
+          "type" = "float"
+        },
+        {
+          "name" = "BooleanField",
+          "type" = "boolean"
+        },
+      ]
+    })
+  }
+}
+# tftest modules=1 resources=2
 ```
 
 ### Subscriptions
@@ -104,16 +136,19 @@ module "pubsub" {
 | [message_retention_duration](variables.tf#L62) | Minimum duration to retain a message after it is published to the topic. | <code>string</code> |  | <code>null</code> |
 | [push_configs](variables.tf#L78) | Push subscription configurations. | <code title="map&#40;object&#40;&#123;&#10;  attributes &#61; map&#40;string&#41;&#10;  endpoint   &#61; string&#10;  oidc_token &#61; object&#40;&#123;&#10;    audience              &#61; string&#10;    service_account_email &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [regions](variables.tf#L91) | List of regions used to set persistence policy. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subscription_iam](variables.tf#L97) | IAM bindings for subscriptions in {SUBSCRIPTION => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subscriptions](variables.tf#L103) | Topic subscriptions. Also define push configs for push subscriptions. If options is set to null subscription defaults will be used. Labels default to topic labels if set to null. | <code title="map&#40;object&#40;&#123;&#10;  labels &#61; map&#40;string&#41;&#10;  options &#61; object&#40;&#123;&#10;    ack_deadline_seconds       &#61; number&#10;    message_retention_duration &#61; string&#10;    retain_acked_messages      &#61; bool&#10;    expiration_policy_ttl      &#61; string&#10;    filter                     &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [schema](variables.tf#L97) | Topic schema. If set, all messages in this topic should follow this schema. | <code title="object&#40;&#123;&#10;  definition   &#61; string&#10;  msg_encoding &#61; optional&#40;string, &#34;ENCODING_UNSPECIFIED&#34;&#41;&#10;  schema_type  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [subscription_iam](variables.tf#L107) | IAM bindings for subscriptions in {SUBSCRIPTION => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [subscriptions](variables.tf#L113) | Topic subscriptions. Also define push configs for push subscriptions. If options is set to null subscription defaults will be used. Labels default to topic labels if set to null. | <code title="map&#40;object&#40;&#123;&#10;  labels &#61; map&#40;string&#41;&#10;  options &#61; object&#40;&#123;&#10;    ack_deadline_seconds       &#61; number&#10;    message_retention_duration &#61; string&#10;    retain_acked_messages      &#61; bool&#10;    expiration_policy_ttl      &#61; string&#10;    filter                     &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L17) | Topic id. |  |
+| [schema](outputs.tf#L43) | Schema resource. |  |
+| [schema_id](outputs.tf#L48) | Schema resource id. |  |
 | [subscription_id](outputs.tf#L25) | Subscription ids. |  |
 | [subscriptions](outputs.tf#L35) | Subscription resources. |  |
-| [topic](outputs.tf#L43) | Topic resource. |  |
+| [topic](outputs.tf#L53) | Topic resource. |  |
 
 <!-- END TFDOC -->
