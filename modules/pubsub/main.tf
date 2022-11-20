@@ -37,7 +37,7 @@ locals {
 
 resource "google_pubsub_schema" "default" {
   count      = var.schema == null ? 0 : 1
-  name       = format("%s-%s", var.name, "schema")
+  name       = "{$var.name}-schema"
   type       = var.schema.schema_type
   definition = var.schema.definition
   project    = var.project_id
@@ -57,7 +57,6 @@ resource "google_pubsub_topic" "default" {
     }
   }
 
-  depends_on = [google_pubsub_schema.default]
   dynamic "schema_settings" {
     for_each = var.schema == null ? [] : [""]
     content {

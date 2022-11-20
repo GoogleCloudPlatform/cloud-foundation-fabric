@@ -40,6 +40,16 @@ output "subscriptions" {
   ]
 }
 
+output "schema" {
+  description = "Schema resource."
+  value       = try(google_pubsub_schema.default[0], null)
+}
+
+output "schema_id" {
+  description = "Schema resource id."
+  value       = try(google_pubsub_schema.default[0].id, null)
+}
+
 output "topic" {
   description = "Topic resource."
   value       = google_pubsub_topic.default
@@ -51,15 +61,5 @@ output "topic" {
 output "schema_id" {
   description = "Schema resource id."
   value       = google_pubsub_schema.default[0].id
-  depends_on = [
-    google_pubsub_schema.default
-  ]
 }
 
-output "schema" {
-  description = "Schema resource."
-  value       = google_pubsub_schema.default[0]
-  depends_on = [
-    google_pubsub_schema.default
-  ]
-}
