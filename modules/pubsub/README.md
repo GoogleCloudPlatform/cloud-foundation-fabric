@@ -33,7 +33,7 @@ module "topic_with_schema" {
     definition = jsonencode({
       "type" = "record",
       "name" = "Avro",
-      "fields" : [{
+      "fields" = [{
         "name" = "StringField",
         "type" = "string"
         },
