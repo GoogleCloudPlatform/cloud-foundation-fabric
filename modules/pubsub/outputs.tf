@@ -58,8 +58,3 @@ output "topic" {
   ]
 }
 
-output "schema_id" {
-  description = "Schema resource id."
-  value       = google_pubsub_schema.default[0].id
-}
-
