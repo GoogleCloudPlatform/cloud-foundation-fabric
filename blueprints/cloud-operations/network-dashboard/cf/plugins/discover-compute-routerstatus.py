@@ -48,9 +48,9 @@ def _handle_discovery(resources, response):
       continue
     num_learned_routes = sum(
         int(p.get('numLearnedRoutes', 0)) for p in bgp_peer_status)
-    yield Resource(
-        NAME, router['network'],
-        resources[NAME].get(router['network'], 0) + num_learned_routes)
+    if router['network'] not in resources[NAME]:
+      resources[NAME][router['network']] = {}
+    yield Resource(NAME, router['network'], num_learned_routes, router['name'])
   yield
 
 

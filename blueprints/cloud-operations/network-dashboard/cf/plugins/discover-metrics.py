@@ -36,7 +36,7 @@ def _handle_discovery(resources, response, data):
     LOGGER.info('no descriptors found')
     return
   for d in descriptors:
-    yield Resource('metrics', d['type'], {})
+    yield Resource(NAME, d['type'], {})
   next_url = parse_page_token(data, response.request.url)
   if next_url:
     LOGGER.info('discovery next url')
@@ -46,8 +46,8 @@ def _handle_discovery(resources, response, data):
 @register_init
 def init(resources):
   LOGGER.info('init')
-  if 'metrics' not in resources:
-    resources['metrics'] = {}
+  if NAME not in resources:
+    resources[NAME] = {}
 
 
 @register_discovery(Level.CORE, 0)

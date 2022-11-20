@@ -97,15 +97,19 @@ def fetch(request):
               help='GCP project id, can be specified multiple times')
 @click.option('--folder', '-p', type=int, multiple=True,
               help='GCP folder id, can be specified multiple times')
-def main(organization=None, op_project=None, project=None, folder=None):
+@click.option('--dump', type=click.File('w'),
+              help='Export JSON representation of resources to file.')
+def main(organization=None, op_project=None, project=None, folder=None,
+         dump=False):
   logging.basicConfig(level=logging.INFO)
   do_init(organization, folder, project, op_project)
   do_discovery()
   LOGGER.info(
       {k: len(v) for k, v in RESOURCES.items() if not isinstance(v, str)})
 
-  # import icecream
-  # icecream.ic(RESOURCES)
+  if dump:
+    import json
+    json.dump(RESOURCES, dump, indent=2)
 
 
 if __name__ == '__main__':
