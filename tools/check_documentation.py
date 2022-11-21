@@ -56,7 +56,7 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
         variables = [
             v.name for v in new_doc.variables if v.file == "variables.tf"
         ]
-        outputs = [v.name for v in new_doc.outputs]
+        outputs = [o.name for o in new_doc.outputs if o.file == "outputs.tf"]
       except SystemExit:
         state = state.SKIP
       else:
