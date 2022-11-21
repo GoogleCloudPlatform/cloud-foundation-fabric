@@ -26,5 +26,5 @@ jobs:
   build-push-strongswan-container-image:
     uses: ./.github/workflows/container-image.yml
     with:
-      image_name: strongswan
+      image_name: fabric-strongswan
       docker_context: modules/cloud-config-container/onprem/docker-images/strongswan

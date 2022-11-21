@@ -26,5 +26,5 @@ jobs:
   build-push-squid-container-image:
     uses: ./.github/workflows/container-image.yml
     with:
-      image_name: squid
+      image_name: fabric-squid
       docker_context: modules/cloud-config-container/squid/docker

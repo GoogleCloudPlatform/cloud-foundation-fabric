@@ -26,5 +26,5 @@ jobs:
   build-push-toolbox-container-image:
     uses: ./.github/workflows/container-image.yml
     with:
-      image_name: toolbox
+      image_name: fabric-toolbox
       docker_context: modules/cloud-config-container/onprem/docker-images/toolbox
