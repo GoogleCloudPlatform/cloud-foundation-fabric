@@ -69,21 +69,21 @@ def subnet_timeseries(resources):
       k: ipaddress.ip_network(v['cidr_range'])
       for k, v in resources['subnetworks'].items()
   }
-  series = {k: 0 for k in resources['subnetworks']}
+  subnet_counts = {k: 0 for k in resources['subnetworks']}
   # TODO: PSA
   counters = itertools.chain(_subnet_addresses(resources),
                              _subnet_forwarding_rules(resources, subnet_nets),
                              _subnet_instances(resources))
   for subnet_self_link, count in counters:
-    series[subnet_self_link] += count
-  for subnet_self_link, count in series.items():
+    subnet_counts[subnet_self_link] += count
+  for subnet_self_link, count in subnet_counts.items():
+    max_ips = subnet_nets[subnet_self_link].num_addresses - 4
     subnet = resources['subnetworks'][subnet_self_link]
     labels = {
         'network': _self_link(subnet['network']),
         'project': subnet['project_id'],
         'subnetwork': _self_link(subnet['id'])
     }
-    max_ips = subnet_nets[subnet_self_link].num_addresses - 4
     yield TimeSeries('subnets/available_addresses', max_ips, labels)
     yield TimeSeries('subnets/used_addresses', count, labels)
     yield TimeSeries('subnets/used_addresses_ratio',

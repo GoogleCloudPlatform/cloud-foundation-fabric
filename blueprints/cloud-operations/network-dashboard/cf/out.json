@@ -238,6 +238,14 @@
       "project_number": "64297462517",
       "network": "projects/tf-playground-simple/global/networks/default"
     },
+    "projects/tf-playground-simple/global/firewalls/test-allow-icmp": {
+      "id": "7916104499034728911",
+      "name": "test-allow-icmp",
+      "self_link": "projects/tf-playground-simple/global/firewalls/test-allow-icmp",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "network": "projects/tf-playground-simple/global/networks/test"
+    },
     "projects/ludo-prod-net-landing-0/global/firewalls/allow-onprem-probes-example": {
       "id": "7090352733815889570",
       "name": "allow-onprem-probes-example",
@@ -488,6 +496,17 @@
         "projects/tf-playground-simple/regions/europe-west8/subnetworks/default"
       ]
     },
+    "projects/tf-playground-simple/global/networks/test": {
+      "id": "3222287547582786016",
+      "name": "test",
+      "self_link": "projects/tf-playground-simple/global/networks/test",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "peerings": [],
+      "subnetworks": [
+        "projects/tf-playground-simple/regions/europe-west8/subnetworks/test-default"
+      ]
+    },
     "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0": {
       "id": "2315184905594658556",
       "name": "prod-spoke-0",
@@ -622,6 +641,17 @@
       "project_number": "64297462517",
       "cidr_range": "10.24.33.0/24",
       "network": "projects/tf-playground-simple/global/networks/default",
+      "purpose": "PRIVATE",
+      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-simple/regions/europe-west8"
+    },
+    "projects/tf-playground-simple/regions/europe-west8/subnetworks/test-default": {
+      "id": "3192067775436040655",
+      "name": "test-default",
+      "self_link": "projects/tf-playground-simple/regions/europe-west8/subnetworks/test-default",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "cidr_range": "10.0.0.0/24",
+      "network": "projects/tf-playground-simple/global/networks/test",
       "purpose": "PRIVATE",
       "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-simple/regions/europe-west8"
     },
@@ -1093,6 +1123,15 @@
     }
   },
   "routes": {
+    "projects/tf-playground-simple/global/routes/default-route-1e14cf2fe4b89f0b": {
+      "id": "1065219576982546940",
+      "name": "default-route-1e14cf2fe4b89f0b",
+      "self_link": "projects/tf-playground-simple/global/routes/default-route-1e14cf2fe4b89f0b",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "next_hop_type": "gateway",
+      "network": "projects/tf-playground-simple/global/networks/test"
+    },
     "projects/tf-playground-simple/global/routes/default-route-709ad165b8383d89": {
       "id": "1159999789989296547",
       "name": "default-route-709ad165b8383d89",
@@ -1110,6 +1149,15 @@
       "project_number": "64297462517",
       "next_hop_type": "network",
       "network": "projects/tf-playground-simple/global/networks/default"
+    },
+    "projects/tf-playground-simple/global/routes/default-route-94ba9f38b7d02917": {
+      "id": "6942400975983749580",
+      "name": "default-route-94ba9f38b7d02917",
+      "self_link": "projects/tf-playground-simple/global/routes/default-route-94ba9f38b7d02917",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "next_hop_type": "network",
+      "network": "projects/tf-playground-simple/global/networks/test"
     },
     "projects/ludo-prod-net-spoke-0/global/routes/default-route-40f9b3cd9946750d": {
       "id": "899011966177939471",
@@ -1958,11 +2006,11 @@
         },
         "NETWORKS": {
           "limit": 15,
-          "usage": 1
+          "usage": 2
         },
         "FIREWALLS": {
           "limit": 200,
-          "usage": 1
+          "usage": 2
         },
         "IMAGES": {
           "limit": 2000,
@@ -1974,7 +2022,7 @@
         },
         "ROUTES": {
           "limit": 250,
-          "usage": 1
+          "usage": 2
         },
         "FORWARDING_RULES": {
           "limit": 45,
@@ -4139,6 +4187,27 @@
     "projects/tf-playground-svpc-net/global/networks/shared-vpc": {
       "vpn-home": 1
     }
+  },
+  "networks:project": {
+    "tf-playground-simple": [
+      "projects/tf-playground-simple/global/networks/default",
+      "projects/tf-playground-simple/global/networks/test"
+    ],
+    "ludo-prod-net-spoke-0": [
+      "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0"
+    ],
+    "ludo-prod-net-landing-0": [
+      "projects/ludo-prod-net-landing-0/global/networks/prod-landing-0"
+    ],
+    "tf-playground-svpc-net-dr": [
+      "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc"
+    ],
+    "ludo-dev-net-spoke-0": [
+      "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0"
+    ],
+    "tf-playground-svpc-net": [
+      "projects/tf-playground-svpc-net/global/networks/shared-vpc"
+    ]
   },
   "metrics": {}
 }

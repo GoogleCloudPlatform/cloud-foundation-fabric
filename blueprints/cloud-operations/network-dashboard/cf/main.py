@@ -124,8 +124,8 @@ def main(organization=None, op_project=None, project=None, folder=None,
   if dump_file:
     json.dump(resources, dump_file, indent=2)
 
-  from icecream import ic
-  ic(timeseries)
+  # from icecream import ic
+  # ic(timeseries)
 
 
 if __name__ == '__main__':
