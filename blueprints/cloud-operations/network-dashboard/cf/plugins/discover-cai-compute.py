@@ -28,7 +28,7 @@ LOGGER = logging.getLogger('net-dash.discovery.cai-compute')
 TYPES = {
     'addresses': 'Address',
     'firewall_policies': 'FirewallPolicy',
-    'firewalls': 'Firewall',
+    'firewall_rules': 'Firewall',
     'forwarding_rules': 'ForwardingRule',
     'instances': 'Instance',
     'networks': 'Network',
@@ -99,7 +99,7 @@ def _handle_firewall_policies(resource, data):
   }
 
 
-def _handle_firewalls(resource, data):
+def _handle_firewall_rules(resource, data):
   'Handle firewall type resource data.'
   return {'network': _self_link(data['network'])}
 

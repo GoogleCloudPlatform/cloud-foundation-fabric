@@ -84,7 +84,7 @@ def subnet_timeseries(resources):
         'project': subnet['project_id'],
         'subnetwork': _self_link(subnet['id'])
     }
-    yield TimeSeries('subnets/available_addresses', max_ips, labels)
-    yield TimeSeries('subnets/used_addresses', count, labels)
-    yield TimeSeries('subnets/used_addresses_ratio',
+    yield TimeSeries('subnetworks/addresses/available', max_ips, labels)
+    yield TimeSeries('subnetworks/addresses/used', count, labels)
+    yield TimeSeries('subnetworks/addresses/ratio',
                      0 if count == 0 else count / max_ips, labels)

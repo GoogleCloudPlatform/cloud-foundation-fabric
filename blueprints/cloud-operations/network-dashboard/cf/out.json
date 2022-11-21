@@ -229,7 +229,7 @@
       "num_tuples": 24
     }
   },
-  "firewalls": {
+  "firewall_rules": {
     "projects/tf-playground-simple/global/firewalls/default-allow-icmp": {
       "id": "9189037418640505268",
       "name": "default-allow-icmp",
