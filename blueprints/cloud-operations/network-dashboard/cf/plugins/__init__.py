@@ -14,6 +14,7 @@
 
 import collections
 import enum
+import functools
 import importlib
 import pathlib
 import pkgutil
@@ -24,83 +25,44 @@ __all__ = [
     'get_init_plugins', 'register_discovery', 'register_init'
 ]
 
-_PLUGINS_SERIES = []
 _PLUGINS_DISCOVERY = []
 _PLUGINS_INIT = []
-_PLUGINS_SERIES = []
+_PLUGINS_TIMESERIES = []
 
 HTTPRequest = collections.namedtuple('HTTPRequest', 'url headers data json',
                                      defaults=[True])
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
 Plugin = collections.namedtuple('Plugin', 'func name level priority',
-                                defaults=[None, None, None])
+                                defaults=[Level.PRIMARY, 99])
 Resource = collections.namedtuple('Resource', 'type id data key',
                                   defaults=[None])
+TimeSeries = collections.namedtuple('TimeSeries', 'metric value labels')
 
 
 class PluginError(Exception):
   pass
 
 
-def get_discovery_plugins():
-  'Return discovery plugins.'
-  for p in _PLUGINS_DISCOVERY:
-    yield p
-
-
-def get_init_plugins():
-  'Return init plugins.'
-  for p in _PLUGINS_INIT:
-    yield p
-
-
-def get_series_plugins():
-  'Return metrics plugins.'
-  for p in _PLUGINS_SERIES:
-    yield p
-
-
-def _register(collection, func, *args):
+def _register_plugin(collection, *args):
   'Derive plugin name from function and add to its collection.'
-  name = f'{func.__module__}.{func.__name__}'
-  collection.append(Plugin(func, name, *args))
-
-
-def register_discovery(level=Level.PRIMARY, priority=99):
-  'Register plugins that discover data.'
-
-  def outer(func):
-    _register(_PLUGINS_DISCOVERY, func, level, priority)
-    return func
-
-  return outer
-
-
-def register_init(*args):
-  'Register plugins that prepare the shared data structure.'
   if args and type(args[0]) == types.FunctionType:
-    _register(_PLUGINS_INIT, args[0])
+    collection.append(
+        Plugin(args[0], f'{args[0].__module__}.{args[0].__name__}'))
     return
 
   def outer(func):
-    _register(_PLUGINS_INIT, func)
+    collection.append(Plugin(func, f'{func.__module__}.{func.__name__}', *args))
     return func
 
   return outer
 
 
-def register_series(*args):
-  'Register plugins that derive metrics series from data.'
-  if args and type(args[0]) == types.FunctionType:
-    _register(_PLUGINS_SERIES, args[0])
-    return
-
-  def outer(func):
-    _register(_PLUGINS_SERIES, func)
-    return func
-
-  return outer
-
+get_discovery_plugins = lambda: iter(_PLUGINS_DISCOVERY)
+get_init_plugins = lambda: iter(_PLUGINS_INIT)
+get_timeseries_plugins = lambda: iter(_PLUGINS_TIMESERIES)
+register_discovery = functools.partial(_register_plugin, _PLUGINS_DISCOVERY)
+register_init = functools.partial(_register_plugin, _PLUGINS_INIT)
+register_timeseries = functools.partial(_register_plugin, _PLUGINS_TIMESERIES)
 
 _plugins_path = str(pathlib.Path(__file__).parent)
 

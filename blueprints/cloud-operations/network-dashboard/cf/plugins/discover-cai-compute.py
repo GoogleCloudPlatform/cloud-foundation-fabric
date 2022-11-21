@@ -86,7 +86,7 @@ def _handle_addresses(resource, data):
       'purpose': data.get('purpose'),
       'internal': data.get('addressType') == 'INTERNAL',
       'network': None if not network else _self_link(network),
-      'subnet': None if not subnet else _self_link(subnet)
+      'subnetwork': None if not subnet else _self_link(subnet)
   }
 
 
@@ -113,7 +113,7 @@ def _handle_forwarding_rules(resource, data):
       'load_balancing_scheme': data['loadBalancingScheme'],
       'network': None if not network else _self_link(network),
       'region': None if not region else region.split('/')[-1],
-      'subnet': None if not subnet else _self_link(subnet)
+      'subnetwork': None if not subnet else _self_link(subnet)
   }
 
 
@@ -123,7 +123,7 @@ def _handle_instances(resource, data):
     return
   networks = [{
       'network': _self_link(i['network']),
-      'subnet': _self_link(i['subnetwork'])
+      'subnetwork': _self_link(i['subnetwork'])
   } for i in data.get('networkInterfaces', [])]
   return {'zone': data['zone'], 'networks': networks}
 
@@ -135,7 +135,7 @@ def _handle_networks(resource, data):
       'network': _self_link(p['network'])
   } for p in data.get('peerings', []) if p['state'] == 'ACTIVE']
   subnets = [_self_link(s) for s in data.get('subnetworks', [])]
-  return {'peerings': peerings, 'subnets': subnets}
+  return {'peerings': peerings, 'subnetworks': subnets}
 
 
 def _handle_routers(resource, data):

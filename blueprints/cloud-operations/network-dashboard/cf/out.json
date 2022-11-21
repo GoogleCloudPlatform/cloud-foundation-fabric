@@ -71,7 +71,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/ludo-prod-net-landing-0/regions/europe-west1/subnetworks/landing-default-ew1"
+      "subnetwork": "projects/ludo-prod-net-landing-0/regions/europe-west1/subnetworks/landing-default-ew1"
     },
     "projects/tf-playground-svpc-net/regions/europe-west1/addresses/dns-forwarding-172afd5c9074083e": {
       "id": "7127118736212042670",
@@ -83,7 +83,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/net"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/net"
     },
     "projects/tf-playground-svpc-net/regions/europe-west1/addresses/dns-forwarding-54cb61094a666746": {
       "id": "7222063742818919342",
@@ -95,7 +95,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gke"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gke"
     },
     "projects/tf-playground-svpc-net/regions/europe-west1/addresses/dns-forwarding-bd1b9d6abb188fe6": {
       "id": "1333839437438854061",
@@ -107,7 +107,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gce"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gce"
     },
     "projects/tf-playground-svpc-net/regions/europe-west1/addresses/dns-forwarding-df6066a8d47814f0": {
       "id": "4253770329399436206",
@@ -119,7 +119,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gke-vip"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gke-vip"
     },
     "projects/tf-playground-svpc-net/regions/europe-west3/addresses/dns-forwarding-79dc52791ec64c76": {
       "id": "6033180111970444205",
@@ -131,7 +131,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west3/subnetworks/net"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west3/subnetworks/net"
     },
     "projects/tf-playground-svpc-net/regions/europe-west3/addresses/dns-forwarding-daf734e63a98deae": {
       "id": "569155647513502637",
@@ -143,7 +143,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west3/subnetworks/gce"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west3/subnetworks/gce"
     },
     "projects/tf-playground-svpc-net/regions/europe-west4/addresses/dns-forwarding-967ac4c986c1c5c3": {
       "id": "5851821467174642606",
@@ -155,7 +155,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west4/subnetworks/gce"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west4/subnetworks/gce"
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/addresses/bastion-wg": {
       "id": "9106472427605818326",
@@ -167,7 +167,7 @@
       "purpose": null,
       "internal": false,
       "network": null,
-      "subnet": null
+      "subnetwork": null
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/addresses/dns-forwarding-b295f9019fda5f74": {
       "id": "42185983700394876",
@@ -179,7 +179,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/addresses/dns-forwarding-b317a059abd2811d": {
       "id": "1218744583122739717",
@@ -191,7 +191,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/l7ilb"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/l7ilb"
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/addresses/dns-forwarding-e1617ac9a49c0ec7": {
       "id": "4510536153047654869",
@@ -203,7 +203,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/net"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/net"
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/addresses/nat-auto-ip-8742544-2-1664893602541039": {
       "id": "4146356766404377677",
@@ -215,7 +215,7 @@
       "purpose": "NAT_AUTO",
       "internal": false,
       "network": null,
-      "subnet": null
+      "subnetwork": null
     },
     "projects/tf-playground-svpc-net/regions/us-central1/addresses/dns-forwarding-8aa1f3dca28ea24f": {
       "id": "2504084894438347729",
@@ -227,7 +227,7 @@
       "purpose": "DNS_RESOLVER",
       "internal": true,
       "network": null,
-      "subnet": "projects/tf-playground-svpc-net/regions/us-central1/subnetworks/gke"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/us-central1/subnetworks/gke"
     }
   },
   "firewall_policies": {
@@ -405,7 +405,7 @@
       "load_balancing_scheme": "EXTERNAL",
       "network": null,
       "region": "europe-west8",
-      "subnet": null
+      "subnetwork": null
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/forwardingRules/ilb-test": {
       "id": "697628543187352862",
@@ -417,7 +417,7 @@
       "load_balancing_scheme": "INTERNAL_MANAGED",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "region": "europe-west8",
-      "subnet": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
     }
   },
   "instances": {
@@ -431,7 +431,7 @@
       "networks": [
         {
           "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
-          "subnet": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
+          "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
         }
       ]
     },
@@ -445,7 +445,7 @@
       "networks": [
         {
           "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
-          "subnet": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
+          "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
         }
       ]
     },
@@ -459,7 +459,7 @@
       "networks": [
         {
           "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
-          "subnet": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/net"
+          "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/net"
         }
       ]
     }
@@ -485,7 +485,7 @@
           "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0"
         }
       ],
-      "subnets": [
+      "subnetworks": [
         "projects/ludo-prod-net-spoke-0/regions/europe-west4/subnetworks/prod-default-ew4",
         "projects/ludo-prod-net-spoke-0/regions/europe-west1/subnetworks/prod-default-ew1",
         "projects/ludo-prod-net-spoke-0/regions/europe-west4/subnetworks/prod-l7ilb-europe-west4",
@@ -508,7 +508,7 @@
           "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0"
         }
       ],
-      "subnets": [
+      "subnetworks": [
         "projects/ludo-prod-net-landing-0/regions/europe-west1/subnetworks/landing-default-ew1"
       ]
     },
@@ -519,7 +519,7 @@
       "project_id": "tf-playground-svpc-net-dr",
       "project_number": "697669426824",
       "peerings": [],
-      "subnets": [
+      "subnetworks": [
         "projects/tf-playground-svpc-net-dr/regions/europe-west8/subnetworks/l7ilb",
         "projects/tf-playground-svpc-net-dr/regions/europe-west1/subnetworks/net",
         "projects/tf-playground-svpc-net-dr/regions/europe-west1/subnetworks/gke-vip",
@@ -553,7 +553,7 @@
           "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0"
         }
       ],
-      "subnets": [
+      "subnetworks": [
         "projects/ludo-dev-net-spoke-0/regions/europe-west1/subnetworks/dev-default-ew1",
         "projects/ludo-dev-net-spoke-0/regions/europe-west8/subnetworks/ludo-dev-default-ew8",
         "projects/ludo-dev-net-spoke-0/regions/europe-west4/subnetworks/dev-l7ilb-europe-west4",
@@ -574,7 +574,7 @@
           "network": "projects/a2fed18bfde5785bdp-tp/global/networks/servicenetworking"
         }
       ],
-      "subnets": [
+      "subnetworks": [
         "projects/tf-playground-svpc-net/regions/europe-west3/subnetworks/gce",
         "projects/tf-playground-svpc-net/regions/us-central1/subnetworks/gke",
         "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/net",
@@ -4013,6 +4013,5 @@
       "vpn-home": 1
     }
   },
-  "metrics": {},
-  "peering-groups": {}
+  "metrics": {}
 }

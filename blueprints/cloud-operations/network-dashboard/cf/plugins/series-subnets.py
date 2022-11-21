@@ -11,3 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import itertools
+import logging
+
+from . import TimeSeries, register_timeseries
+
+LOGGER = logging.getLogger('net-dash.timeseries.subnets')
+
+
+@register_timeseries
+def subnet_timeseries(resources, series):
+  series = {k: 0 for k, v in resources['subnets']}
+  vm_networks = itertools.chain.from_iterable(
+      i['networks'] for i in resources['instances'].values())
+  for v in vm_networks:
+    series[v['subnetwork']] += 1

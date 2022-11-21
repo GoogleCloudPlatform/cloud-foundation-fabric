@@ -28,8 +28,8 @@ try:
 except google.auth.exceptions.RefreshError as e:
   raise SystemExit(e.args[0])
 LOGGER = logging.getLogger('net-dash')
-Q_COLLECTION = collections.deque()
 RESOURCES = {}
+TIMESERIES = []
 
 Result = collections.namedtuple('Result', 'phase resource data')
 
@@ -62,15 +62,24 @@ def do_discovery():
 
 
 def do_init(organization, folder, project, op_project):
+  LOGGER.info(f'init start')
   RESOURCES['organization'] = str(organization)
   RESOURCES['monitoring_project'] = op_project
   if folder:
     RESOURCES['folders'] = {f: {} for f in folder}
   if project:
     RESOURCES['projects'] = {p: {} for p in project}
-
   for plugin in plugins.get_init_plugins():
     plugin.func(RESOURCES)
+
+
+def do_timeseries():
+  LOGGER.info(f'timeseries start')
+  for plugin in plugins.get_timeseries_plugins():
+    for result in plugin.func(RESOURCES):
+      if not result:
+        continue
+      TIMESERIES.append(result)
 
 
 def fetch(request):

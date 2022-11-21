@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import logging
 import urllib.parse
 
 from . import HTTPRequest, Level, Resource, register_init, register_discovery
-from .utils import parse_page_token, parse_cai_results
+from .utils import parse_page_token
 
 LOGGER = logging.getLogger('net-dash.discovery.metrics')
 NAME = 'metrics'
