@@ -31,19 +31,19 @@
   - get router status
     `get_routes_for_network`
     `get_routes_for_router`
-- [ ] get and store subnet metrics
+- [x] get and store subnet metrics
   `subnets.get_subnets`
   - get subnets
     `get_all_subnets`
   - calculate subnet utilization
     `compute_subnet_utilization`
-    - get instances
+    - [x] get instances
       `compute_subnet_utilization_vms`
-    - get forwarding rules
+    - [x] get forwarding rules
       `compute_subnet_utilization_ilbs`
-    - get addresses
+    - [x] get addresses
       `compute_subnet_utilization_addresses`
-    - get redis instances
+    - [ ] get redis instances
       `compute_subnet_utilization_redis`
   - store metrics
 - [ ]calculate and store firewall rule metrics
@@ -65,7 +65,6 @@
   `routes.get_routes_ppg`
 - [ ] write buffered timeseries
   `metrics.flush_series_buffer`
-
 
 ## Inputs
 
@@ -114,20 +113,15 @@ resources
 - dynamic routes via routers
   - computed metrics: routes per project (usage, limit, utilization)
 
-
-
 ## Resources and data
 
 - projects
   - quotas
 
-
 ## Metrics
-
 
 ## Clients
 
 - compute
 - asset inventory
 - momnitoring
-

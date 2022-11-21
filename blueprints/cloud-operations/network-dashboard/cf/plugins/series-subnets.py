@@ -22,6 +22,11 @@ from . import TimeSeries, register_timeseries
 LOGGER = logging.getLogger('net-dash.timeseries.subnets')
 
 
+def _self_link(s):
+  'Add initial part to self links.'
+  return f'https://www.googleapis.com/compute/v1/{s}'
+
+
 def _subnet_addresses(resources):
   'Return partial counts of addresses per subnetwork.'
   for v in resources['addresses'].values():
@@ -31,7 +36,7 @@ def _subnet_addresses(resources):
       yield v['subnetwork'], 1
 
 
-def _subnet_forwarding_rules(resources):
+def _subnet_forwarding_rules(resources, subnet_nets):
   'Return partial counts of forwarding rules per subnetwork.'
   for v in resources['forwarding_rules'].values():
     if v['load_balancing_scheme'].startswith('INTERNAL'):
@@ -44,9 +49,7 @@ def _subnet_forwarding_rules(resources):
         continue
       address = ipaddress.ip_address(v['address'])
       for subnet_self_link in network['subnetworks']:
-        subnet = resources['subnetworks'][subnet_self_link]
-        cidr_range = ipaddress.ip_network(subnet['cidr_range'])
-        if address in cidr_range:
+        if address in subnet_nets[subnet_self_link]:
           yield subnet_self_link, 1
           break
       continue
@@ -62,13 +65,26 @@ def _subnet_instances(resources):
 @register_timeseries
 def subnet_timeseries(resources):
   LOGGER.info('timeseries')
+  subnet_nets = {
+      k: ipaddress.ip_network(v['cidr_range'])
+      for k, v in resources['subnetworks'].items()
+  }
   series = {k: 0 for k in resources['subnetworks']}
+  # TODO: PSA
   counters = itertools.chain(_subnet_addresses(resources),
-                             _subnet_forwarding_rules(resources),
+                             _subnet_forwarding_rules(resources, subnet_nets),
                              _subnet_instances(resources))
-  for subnet, count in counters:
-    series[subnet] += count
-  from icecream import ic
-  ic(series)
-  return
-  yield
+  for subnet_self_link, count in counters:
+    series[subnet_self_link] += count
+  for subnet_self_link, count in series.items():
+    subnet = resources['subnetworks'][subnet_self_link]
+    labels = {
+        'network': _self_link(subnet['network']),
+        'project': subnet['project_id'],
+        'subnetwork': _self_link(subnet['id'])
+    }
+    max_ips = subnet_nets[subnet_self_link].num_addresses - 4
+    yield TimeSeries('subnets/available_addresses', max_ips, labels)
+    yield TimeSeries('subnets/used_addresses', count, labels)
+    yield TimeSeries('subnets/used_addresses_ratio',
+                     0 if count == 0 else count / max_ips, labels)
