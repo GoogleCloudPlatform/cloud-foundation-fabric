@@ -30,7 +30,9 @@ import tfdoc
 
 BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 
-State = enum.Enum('State', 'OK FAIL SKIP')
+State = enum.Enum(
+    'State',
+    'OK FAIL_STALE_README FAIL_UNSORTED_VARS FAIL_UNSORTED_OUTPUTS SKIP')
 
 
 def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
@@ -61,14 +63,14 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
         state = State.OK
 
         if new_doc.content != result['doc']:
-          state = State.FAIL
+          state = State.FAIL_STALE_README
           header = f'----- {mod_name} diff -----\n'
           ndiff = difflib.ndiff(result['doc'].split('\n'),
                                 new_doc.content.split('\n'))
           diff = '\n'.join([header] + list(ndiff))
 
         elif variables != sorted(variables):
-          state = state.FAIL
+          state = state.FAIL_UNSORTED_VARS
           diff = "\n".join([
               f'----- {mod_name} variables -----',
               f'variables should be in this order: ',
@@ -76,7 +78,7 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
           ])
 
         elif outputs != sorted(outputs):
-          state = state.FAIL
+          state = state.FAIL_UNSORTED_OUTPUTS
           diff = "\n".join([
               f'----- {mod_name} outputs -----',
               f'outputs should be in this order: ',
@@ -97,12 +99,21 @@ def main(dirs, exclude_file=None, files=False, show_diffs=False,
   'Cycle through modules and ensure READMEs are up-to-date.'
   print(f'files: {files}, extra: {show_extra}, diffs: {show_diffs}\n')
   errors = []
-  state_labels = {State.FAIL: '✗', State.OK: '✓', State.SKIP: ' '}
+  state_labels = {
+      State.FAIL_STALE_README: '✗R',
+      State.FAIL_UNSORTED_VARS: '✗V',
+      State.FAIL_UNSORTED_OUTPUTS: '✗O',
+      State.OK: '✓ ',
+      State.SKIP: '  ',
+  }
   for dir_name in dirs:
     print(f'----- {dir_name} -----')
     for mod_name, state, diff in _check_dir(dir_name, exclude_file, files,
                                             show_extra):
-      if state == State.FAIL:
+      if state in [
+          State.FAIL_STALE_README, State.FAIL_UNSORTED_VARS,
+          State.FAIL_UNSORTED_OUTPUTS
+      ]:
         errors.append((mod_name, diff))
       print(f'[{state_labels[state]}] {mod_name}')
   if errors:
