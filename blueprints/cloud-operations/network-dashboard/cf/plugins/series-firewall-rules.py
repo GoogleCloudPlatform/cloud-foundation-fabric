@@ -38,6 +38,7 @@ def subnet_timeseries(resources):
     count = len(list(rules))
     limit = int(resources['quota'][project_id]['global']['FIREWALLS']['limit'])
     labels = {'project_id': project_id}
-    yield TimeSeries('project/firewalls/used', count, labels)
-    yield TimeSeries('project/firewalls/available', limit, labels)
-    yield TimeSeries('project/firewalls/ratio', count / limit, labels)
+    yield TimeSeries('project/firewall_rules_used', count, labels)
+    yield TimeSeries('project/firewalls_rules_available', limit, labels)
+    yield TimeSeries('project/firewalls_rules_used_ratio', count / limit,
+                     labels)
