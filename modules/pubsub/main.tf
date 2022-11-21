@@ -116,6 +116,16 @@ resource "google_pubsub_subscription" "default" {
       }
     }
   }
+
+  dynamic "bigquery_config" {
+    for_each = try(var.bigquery_subscription_configs[each.key], null) == null ? [] : [""]
+    content {
+      table               = var.bigquery_subscription_configs[each.key].table
+      use_topic_schema    = var.bigquery_subscription_configs[each.key].use_topic_schema
+      write_metadata      = var.bigquery_subscription_configs[each.key].write_metadata
+      drop_unknown_fields = var.bigquery_subscription_configs[each.key].drop_unknown_fields
+    }
+  }
 }
 
 resource "google_pubsub_subscription_iam_binding" "default" {
