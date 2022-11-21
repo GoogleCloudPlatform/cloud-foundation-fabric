@@ -27,13 +27,12 @@ By changing the `restricted_role_grant`, the blueprint can be used to grant admi
 
 You can easily configure the blueprint for this use case:
 
-```hcl
+```tfvars
 # terraform.tfvars
 
 delegated_role_grants = ["roles/compute.networkUser"]
-direct_role_grants = []
+direct_role_grants    = []
 restricted_role_grant = "roles/compute.networkAdmin"
-# tftest skip
 ```
 
 This diagram shows the resources and expected behaviour:

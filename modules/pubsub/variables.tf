@@ -94,6 +94,16 @@ variable "regions" {
   default     = []
 }
 
+variable "schema" {
+  description = "Topic schema. If set, all messages in this topic should follow this schema."
+  type = object({
+    definition   = string
+    msg_encoding = optional(string, "ENCODING_UNSPECIFIED")
+    schema_type  = string
+  })
+  default = null
+}
+
 variable "subscription_iam" {
   description = "IAM bindings for subscriptions in {SUBSCRIPTION => {ROLE => [MEMBERS]}} format."
   type        = map(map(list(string)))

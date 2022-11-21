@@ -61,11 +61,6 @@ output "dev_cloud_dns_inbound_policy" {
   value       = [for s in module.dev-spoke-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
 }
 
-output "prod_cloud_dns_inbound_policy" {
-  description = "IP Addresses for Cloud DNS inbound policy for the prod environment."
-  value       = [for s in module.prod-spoke-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
-}
-
 output "host_project_ids" {
   description = "Network project ids."
   value       = local.host_project_ids
@@ -76,9 +71,20 @@ output "host_project_numbers" {
   value       = local.host_project_numbers
 }
 
+output "prod_cloud_dns_inbound_policy" {
+  description = "IP Addresses for Cloud DNS inbound policy for the prod environment."
+  value       = [for s in module.prod-spoke-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
+}
+
 output "shared_vpc_self_links" {
   description = "Shared VPC host projects."
   value       = local.vpc_self_links
+}
+
+output "tfvars" {
+  description = "Terraform variables file for the following stages."
+  sensitive   = true
+  value       = local.tfvars
 }
 
 output "vpn_gateway_endpoints" {
@@ -93,10 +99,4 @@ output "vpn_gateway_endpoints" {
       v.id => v.ip_address
     }
   }
-}
-
-output "tfvars" {
-  description = "Terraform variables file for the following stages."
-  sensitive   = true
-  value       = local.tfvars
 }

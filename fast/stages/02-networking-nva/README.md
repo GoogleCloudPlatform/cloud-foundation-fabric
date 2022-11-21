@@ -396,7 +396,7 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [host_project_ids](outputs.tf#L58) | Network project ids. |  |  |
 | [host_project_numbers](outputs.tf#L63) | Network project numbers. |  |  |
 | [shared_vpc_self_links](outputs.tf#L68) | Shared VPC host projects. |  |  |
-| [tfvars](outputs.tf#L87) | Terraform variables file for the following stages. | ✓ |  |
-| [vpn_gateway_endpoints](outputs.tf#L73) | External IP Addresses for the GCP VPN gateways. |  |  |
+| [tfvars](outputs.tf#L73) | Terraform variables file for the following stages. | ✓ |  |
+| [vpn_gateway_endpoints](outputs.tf#L79) | External IP Addresses for the GCP VPN gateways. |  |  |
 
 <!-- END TFDOC -->

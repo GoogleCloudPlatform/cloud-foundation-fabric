@@ -44,6 +44,11 @@ output "bigquery_datasets" {
   value       = module.data-platform.bigquery-datasets
 }
 
+output "demo_commands" {
+  description = "Demo commands."
+  value       = module.data-platform.demo_commands
+}
+
 output "gcs_buckets" {
   description = "GCS buckets."
   value       = module.data-platform.gcs-buckets
@@ -67,9 +72,4 @@ output "vpc_network" {
 output "vpc_subnet" {
   description = "VPC subnetworks."
   value       = module.data-platform.vpc_subnet
-}
-
-output "demo_commands" {
-  description = "Demo commands."
-  value       = module.data-platform.demo_commands
 }

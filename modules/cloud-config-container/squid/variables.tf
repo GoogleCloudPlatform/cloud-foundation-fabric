@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+
+variable "allow" {
+  description = "List of domains Squid will allow connections to."
+  type        = list(string)
+  default     = []
+}
+
+variable "clients" {
+  description = "List of CIDR ranges from which Squid will allow connections."
+  type        = list(string)
+  default     = []
+}
+
 variable "cloud_config" {
   description = "Cloud config template path. If null default will be used."
   type        = string
@@ -26,10 +39,20 @@ variable "config_variables" {
   default     = {}
 }
 
-variable "squid_config" {
-  description = "Squid configuration path, if null default will be used."
+variable "default_action" {
+  description = "Default action for domains not matching neither the allow or deny lists."
   type        = string
-  default     = null
+  default     = "deny"
+  validation {
+    condition     = var.default_action == "deny" || var.default_action == "allow"
+    error_message = "Default action must be allow or deny."
+  }
+}
+
+variable "deny" {
+  description = "List of domains Squid will deny connections to."
+  type        = list(string)
+  default     = []
 }
 
 variable "file_defaults" {
@@ -54,30 +77,8 @@ variable "files" {
   default = {}
 }
 
-variable "allow" {
-  description = "List of domains Squid will allow connections to."
-  type        = list(string)
-  default     = []
-}
-
-variable "deny" {
-  description = "List of domains Squid will deny connections to."
-  type        = list(string)
-  default     = []
-}
-
-variable "clients" {
-  description = "List of CIDR ranges from which Squid will allow connections."
-  type        = list(string)
-  default     = []
-}
-
-variable "default_action" {
-  description = "Default action for domains not matching neither the allow or deny lists."
+variable "squid_config" {
+  description = "Squid configuration path, if null default will be used."
   type        = string
-  default     = "deny"
-  validation {
-    condition     = var.default_action == "deny" || var.default_action == "allow"
-    error_message = "Default action must be allow or deny."
-  }
+  default     = null
 }

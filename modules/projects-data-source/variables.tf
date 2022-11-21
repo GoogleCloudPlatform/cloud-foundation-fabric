@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "filter" {
+  description = "A string filter as defined in the [REST API](https://cloud.google.com/resource-manager/reference/rest/v1/projects/list#query-parameters)."
+  type        = string
+  default     = "lifecycleState:ACTIVE"
+}
+
 variable "parent" {
   description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
   type        = string
@@ -21,10 +27,4 @@ variable "parent" {
     condition     = can(regex("(organizations|folders)/[0-9]+", var.parent))
     error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
   }
-}
-
-variable "filter" {
-  description = "A string filter as defined in the [REST API](https://cloud.google.com/resource-manager/reference/rest/v1/projects/list#query-parameters)."
-  type        = string
-  default     = "lifecycleState:ACTIVE"
 }

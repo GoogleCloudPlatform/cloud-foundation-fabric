@@ -69,6 +69,11 @@ variable "logging_exclusions" {
   default = {}
 }
 
+variable "network_tags" {
+  type    = any
+  default = null
+}
+
 variable "org_policies" {
   type    = any
   default = {}
