@@ -30,9 +30,27 @@ import tfdoc
 
 BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 
-State = enum.Enum(
-    'State',
-    'OK FAIL_STALE_README FAIL_UNSORTED_VARS FAIL_UNSORTED_OUTPUTS SKIP')
+
+class State(enum.IntEnum):
+  SKIP = enum.auto()
+  OK = enum.auto()
+  FAIL_STALE_README = enum.auto()
+  FAIL_UNSORTED_VARS = enum.auto()
+  FAIL_UNSORTED_OUTPUTS = enum.auto()
+
+  @property
+  def failed(self):
+    return self.value > State.OK
+
+  @property
+  def label(self):
+    return {
+        State.SKIP: '  ',
+        State.OK: '✓ ',
+        State.FAIL_STALE_README: '✗R',
+        State.FAIL_UNSORTED_VARS: '✗V',
+        State.FAIL_UNSORTED_OUTPUTS: '✗O',
+    }[self.value]
 
 
 def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
@@ -99,26 +117,18 @@ def main(dirs, exclude_file=None, files=False, show_diffs=False,
   'Cycle through modules and ensure READMEs are up-to-date.'
   print(f'files: {files}, extra: {show_extra}, diffs: {show_diffs}\n')
   errors = []
-  state_labels = {
-      State.FAIL_STALE_README: '✗R',
-      State.FAIL_UNSORTED_VARS: '✗V',
-      State.FAIL_UNSORTED_OUTPUTS: '✗O',
-      State.OK: '✓ ',
-      State.SKIP: '  ',
-  }
   for dir_name in dirs:
     print(f'----- {dir_name} -----')
-    for mod_name, state, diff in _check_dir(dir_name, exclude_file, files,
-                                            show_extra):
-      if state in [
-          State.FAIL_STALE_README, State.FAIL_UNSORTED_VARS,
-          State.FAIL_UNSORTED_OUTPUTS
-      ]:
+    result = _check_dir(dir_name, exclude_file, files, show_extra)
+    for mod_name, state, diff in result:
+      if state.failed:
         errors.append((mod_name, diff))
-      print(f'[{state_labels[state]}] {mod_name}')
+      print(f'[{state.label}] {mod_name}')
+
   if errors:
     if show_diffs:
       print('Errored diffs:')
+      print(errors)
       print('\n'.join([e[1] for e in errors]))
     else:
       print('Errored modules:')
