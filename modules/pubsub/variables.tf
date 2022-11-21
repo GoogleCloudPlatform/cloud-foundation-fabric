@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+variable "bigquery_subscription_configs" {
+  description = "Configuration parameters for BigQuery subscriptions."
+  type = map(object({
+    table               = string
+    use_topic_schema    = bool
+    write_metadata      = bool
+    drop_unknown_fields = bool
+  }))
+  default = {}
+}
+
 variable "dead_letter_configs" {
   description = "Per-subscription dead letter policy configuration."
   type = map(object({
