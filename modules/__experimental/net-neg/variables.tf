@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "NEG project id."
-  type        = string
+variable "endpoints" {
+  description = "List of (instance, port, address) of the NEG."
+  type = list(object({
+    instance   = string
+    port       = number
+    ip_address = string
+  }))
 }
 
 variable "name" {
@@ -29,6 +33,11 @@ variable "network" {
   type        = string
 }
 
+variable "project_id" {
+  description = "NEG project id."
+  type        = string
+}
+
 variable "subnetwork" {
   description = "VPC subnetwork name or self link."
   type        = string
@@ -37,13 +46,4 @@ variable "subnetwork" {
 variable "zone" {
   description = "NEG zone."
   type        = string
-}
-
-variable "endpoints" {
-  description = "List of (instance, port, address) of the NEG."
-  type = list(object({
-    instance   = string
-    port       = number
-    ip_address = string
-  }))
 }

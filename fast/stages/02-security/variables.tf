@@ -77,17 +77,6 @@ variable "kms_keys" {
   default = {}
 }
 
-variable "service_accounts" {
-  # tfdoc:variable:source 01-resman
-  description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
-  type = object({
-    data-platform-dev    = string
-    data-platform-prod   = string
-    project-factory-dev  = string
-    project-factory-prod = string
-  })
-}
-
 variable "organization" {
   # tfdoc:variable:source 00-bootstrap
   description = "Organization details."
@@ -113,6 +102,17 @@ variable "prefix" {
     condition     = try(length(var.prefix), 0) < 10
     error_message = "Use a maximum of 9 characters for prefix."
   }
+}
+
+variable "service_accounts" {
+  # tfdoc:variable:source 01-resman
+  description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
+  type = object({
+    data-platform-dev    = string
+    data-platform-prod   = string
+    project-factory-dev  = string
+    project-factory-prod = string
+  })
 }
 
 variable "vpc_sc_access_levels" {

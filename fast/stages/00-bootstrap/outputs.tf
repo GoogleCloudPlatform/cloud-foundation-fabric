@@ -137,6 +137,14 @@ output "project_ids" {
   }
 }
 
+# ready to use provider configurations for subsequent stages when not using files
+output "providers" {
+  # tfdoc:output:consumers stage-01
+  description = "Terraform provider files for this stage and dependent stages."
+  sensitive   = true
+  value       = local.providers
+}
+
 output "service_accounts" {
   description = "Automation service accounts created by this stage."
   value = {
@@ -146,17 +154,7 @@ output "service_accounts" {
   }
 }
 
-# ready to use provider configurations for subsequent stages when not using files
-
-output "providers" {
-  # tfdoc:output:consumers stage-01
-  description = "Terraform provider files for this stage and dependent stages."
-  sensitive   = true
-  value       = local.providers
-}
-
 # ready to use variable values for subsequent stages
-
 output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true

@@ -57,6 +57,15 @@ variable "egress_rules" {
   nullable = false
 }
 
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    cidr_tpl_file = optional(string)
+    rules_folder  = string
+  })
+  default = null
+}
+
 variable "ingress_rules" {
   description = "List of ingress rule definitions, default to allow action."
   type = map(object({
@@ -78,15 +87,6 @@ variable "ingress_rules" {
   }))
   default  = {}
   nullable = false
-}
-
-variable "factories_config" {
-  description = "Paths to data files and folders that enable factory functionality."
-  type = object({
-    cidr_tpl_file = optional(string)
-    rules_folder  = string
-  })
-  default = null
 }
 
 variable "named_ranges" {

@@ -19,8 +19,8 @@ variable "location" {
   default     = "EU"
 }
 
-variable "project_id" {
-  description = "Project id, references existing project if `project_create` is null."
+variable "prefix" {
+  description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string
 }
 
@@ -33,8 +33,8 @@ variable "project_create" {
   default = null
 }
 
-variable "prefix" {
-  description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
+variable "project_id" {
+  description = "Project id, references existing project if `project_create` is null."
   type        = string
 }
 

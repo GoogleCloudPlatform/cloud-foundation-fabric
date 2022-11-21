@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "Project ID."
-  type        = string
-}
-
-variable "organization" {
-  description = "Apigee organization. If set to null the organization must already exist."
-  type = object({
-    display_name            = optional(string)
-    description             = optional(string, "Terraform-managed")
-    authorized_network      = optional(string)
-    runtime_type            = optional(string, "CLOUD")
-    billing_type            = optional(string)
-    database_encryption_key = optional(string)
-    analytics_region        = optional(string, "europe-west1")
-  })
-  default = null
-}
 
 variable "envgroups" {
   description = "Environment groups (NAME => [HOSTNAMES])."
@@ -67,4 +49,23 @@ variable "instances" {
     consumer_accept_list = optional(list(string))
   }))
   default = null
+}
+
+variable "organization" {
+  description = "Apigee organization. If set to null the organization must already exist."
+  type = object({
+    display_name            = optional(string)
+    description             = optional(string, "Terraform-managed")
+    authorized_network      = optional(string)
+    runtime_type            = optional(string, "CLOUD")
+    billing_type            = optional(string)
+    database_encryption_key = optional(string)
+    analytics_region        = optional(string, "europe-west1")
+  })
+  default = null
+}
+
+variable "project_id" {
+  description = "Project ID."
+  type        = string
 }

@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "The ID of the project where this VPC will be created."
-  type        = string
-}
-
 variable "name" {
   description = "Name of the resources created."
-  type        = string
-}
-
-variable "region" {
-  description = "Region where resources will be created."
   type        = string
 }
 
@@ -34,12 +24,22 @@ variable "network" {
   type        = string
 }
 
-variable "subnet" {
-  description = "Subnetwork id where resources will be associated."
+variable "project_id" {
+  description = "The ID of the project where this VPC will be created."
+  type        = string
+}
+
+variable "region" {
+  description = "Region where resources will be created."
   type        = string
 }
 
 variable "sa_id" {
   description = "PSC producer service attachment id."
+  type        = string
+}
+
+variable "subnet" {
+  description = "Subnetwork id where resources will be associated."
   type        = string
 }
