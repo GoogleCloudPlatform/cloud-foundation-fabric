@@ -83,8 +83,9 @@ def _handle_addresses(resource, data):
   subnet = data.get('subnetwork')
   return {
       'address': data['address'],
-      'purpose': data.get('purpose'),
       'internal': data.get('addressType') == 'INTERNAL',
+      'purpose': data.get('purpose', ''),
+      'status': data.get('status', ''),
       'network': None if not network else _self_link(network),
       'subnetwork': None if not subnet else _self_link(subnet)
   }
@@ -110,8 +111,9 @@ def _handle_forwarding_rules(resource, data):
   subnet = data.get('subnetwork')
   return {
       'address': data.get('IPAddress'),
-      'load_balancing_scheme': data['loadBalancingScheme'],
+      'load_balancing_scheme': data.get('loadBalancingScheme', ''),
       'network': None if not network else _self_link(network),
+      'psc_accepted': data.get('pscConnectionStatus') == 'ACCEPTED',
       'region': None if not region else region.split('/')[-1],
       'subnetwork': None if not subnet else _self_link(subnet)
   }
@@ -181,7 +183,7 @@ def _get_parent(parent, resources):
     if project:
       return {'project_id': project['project_id'], 'project_number': parent_id}
   if parent_type == 'folders':
-    if int(parent_id) in resources['folders']:
+    if parent_id in resources['config:folders']:
       return {'parent': f'{parent_type}/{parent_id}'}
   if resources['organization'] == int(parent_id):
     return {'parent': f'{parent_type}/{parent_id}'}
@@ -189,7 +191,7 @@ def _get_parent(parent, resources):
 
 def _url(resources):
   'Return discovery URL'
-  organization = resources['organization']
+  organization = resources['config:organization']
   asset_types = '&'.join(
       'assetTypes=compute.googleapis.com/{}'.format(urllib.parse.quote(t))
       for t in TYPES.values())

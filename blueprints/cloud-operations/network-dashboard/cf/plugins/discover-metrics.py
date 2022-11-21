@@ -53,9 +53,9 @@ def init(resources):
 def start_discovery(resources, response=None, data=None):
   LOGGER.info(f'discovery (has response: {response is not None})')
   if response is None:
-    yield HTTPRequest(
-        URL.format(urllib.parse.quote_plus(resources['monitoring_project'])),
-        {}, None)
+    monitoring_project = resources['config:monitoring_project']
+    yield HTTPRequest(URL.format(urllib.parse.quote_plus(monitoring_project)),
+                      {}, None)
   else:
     for result in _handle_discovery(resources, response, data):
       yield result

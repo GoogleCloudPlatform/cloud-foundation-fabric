@@ -1,66 +1,28 @@
 {
-  "organization": "436789450919",
-  "monitoring_project": "google.com:ludo-sce-test",
-  "folders": {
-    "821058723541": {},
-    "949988871993": {},
-    "321477570496": {}
-  },
-  "projects": {
-    "tf-playground-simple": {
-      "number": "64297462517",
-      "project_id": "tf-playground-simple"
-    },
-    "ludo-dev-net-spoke-0": {
-      "number": "759592912116",
-      "project_id": "ludo-dev-net-spoke-0"
-    },
-    "ludo-prod-net-landing-0": {
-      "number": "233262889141",
-      "project_id": "ludo-prod-net-landing-0"
-    },
-    "ludo-prod-net-spoke-0": {
-      "number": "195159130008",
-      "project_id": "ludo-prod-net-spoke-0"
-    },
-    "ludo-dev-sec-core-0": {
-      "number": "971935141727",
-      "project_id": "ludo-dev-sec-core-0"
-    },
-    "ludo-prod-sec-core-0": {
-      "number": "990827422843",
-      "project_id": "ludo-prod-sec-core-0"
-    },
-    "tf-playground-gcs-test-0": {
-      "number": "833078410166",
-      "project_id": "tf-playground-gcs-test-0"
-    },
-    "tf-playground-svpc-gce-dr": {
-      "number": "433746214138",
-      "project_id": "tf-playground-svpc-gce-dr"
-    },
-    "tf-playground-svpc-net-dr": {
-      "number": "697669426824",
-      "project_id": "tf-playground-svpc-net-dr"
-    },
-    "tf-playground-svpc-openshift": {
-      "number": "515444627958",
-      "project_id": "tf-playground-svpc-openshift"
-    },
-    "tf-playground-svpc-gce": {
-      "number": "783093469136",
-      "project_id": "tf-playground-svpc-gce"
-    },
-    "tf-playground-svpc-net": {
-      "number": "1079408472053",
-      "project_id": "tf-playground-svpc-net"
-    },
-    "tf-playground-svpc-gke": {
-      "number": "1043465648801",
-      "project_id": "tf-playground-svpc-gke"
-    }
-  },
+  "config:organization": "436789450919",
+  "config:monitoring_project": "google.com:ludo-sce-test",
+  "config:folders": [
+    "821058723541",
+    "949988871993",
+    "321477570496"
+  ],
+  "config:projects": [
+    "tf-playground-simple"
+  ],
   "addresses": {
+    "projects/tf-playground-simple/regions/europe-west8/addresses/psc-home-hello": {
+      "id": "2569728380045293941",
+      "name": "psc-home-hello",
+      "self_link": "projects/tf-playground-simple/regions/europe-west8/addresses/psc-home-hello",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "address": "10.24.33.2",
+      "internal": true,
+      "purpose": "GCE_ENDPOINT",
+      "status": "RESERVED",
+      "network": null,
+      "subnetwork": "projects/tf-playground-simple/regions/europe-west8/subnetworks/default"
+    },
     "projects/ludo-prod-net-landing-0/regions/europe-west1/addresses/dns-forwarding-3bfb2285cc42c149": {
       "id": "1086509377706319543",
       "name": "dns-forwarding-3bfb2285cc42c149",
@@ -68,8 +30,9 @@
       "project_id": "ludo-prod-net-landing-0",
       "project_number": "233262889141",
       "address": "10.128.0.2",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/ludo-prod-net-landing-0/regions/europe-west1/subnetworks/landing-default-ew1"
     },
@@ -80,8 +43,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.0.0.57",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/net"
     },
@@ -92,8 +56,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.0.8.212",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gke"
     },
@@ -104,8 +69,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.0.32.4",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gce"
     },
@@ -116,8 +82,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.0.16.6",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gke-vip"
     },
@@ -128,8 +95,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.8.0.3",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west3/subnetworks/net"
     },
@@ -140,8 +108,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.8.32.4",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west3/subnetworks/gce"
     },
@@ -152,8 +121,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.16.32.3",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west4/subnetworks/gce"
     },
@@ -164,8 +134,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "34.154.198.58",
-      "purpose": null,
       "internal": false,
+      "purpose": "",
+      "status": "IN_USE",
       "network": null,
       "subnetwork": null
     },
@@ -176,8 +147,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.24.32.2",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
     },
@@ -188,8 +160,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.255.2.2",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/l7ilb"
     },
@@ -200,8 +173,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.24.0.2",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/net"
     },
@@ -212,10 +186,24 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "34.154.124.197",
-      "purpose": "NAT_AUTO",
       "internal": false,
+      "purpose": "NAT_AUTO",
+      "status": "IN_USE",
       "network": null,
       "subnetwork": null
+    },
+    "projects/tf-playground-svpc-net/regions/europe-west8/addresses/nat-ingress-ip-1510-1968901406393301314": {
+      "id": "9125076950352066911",
+      "name": "nat-ingress-ip-1510-1968901406393301314",
+      "self_link": "projects/tf-playground-svpc-net/regions/europe-west8/addresses/nat-ingress-ip-1510-1968901406393301314",
+      "project_id": "tf-playground-svpc-net",
+      "project_number": "1079408472053",
+      "address": "172.16.255.2",
+      "internal": true,
+      "purpose": "PSC_PRODUCER_NAT_IP",
+      "status": "RESERVED",
+      "network": null,
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/psc"
     },
     "projects/tf-playground-svpc-net/regions/us-central1/addresses/dns-forwarding-8aa1f3dca28ea24f": {
       "id": "2504084894438347729",
@@ -224,8 +212,9 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "address": "10.0.9.2",
-      "purpose": "DNS_RESOLVER",
       "internal": true,
+      "purpose": "DNS_RESOLVER",
+      "status": "RESERVED",
       "network": null,
       "subnetwork": "projects/tf-playground-svpc-net/regions/us-central1/subnetworks/gke"
     }
@@ -241,6 +230,14 @@
     }
   },
   "firewalls": {
+    "projects/tf-playground-simple/global/firewalls/default-allow-icmp": {
+      "id": "9189037418640505268",
+      "name": "default-allow-icmp",
+      "self_link": "projects/tf-playground-simple/global/firewalls/default-allow-icmp",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "network": "projects/tf-playground-simple/global/networks/default"
+    },
     "projects/ludo-prod-net-landing-0/global/firewalls/allow-onprem-probes-example": {
       "id": "7090352733815889570",
       "name": "allow-onprem-probes-example",
@@ -395,6 +392,19 @@
     }
   },
   "forwarding_rules": {
+    "projects/tf-playground-simple/regions/europe-west8/forwardingRules/home-hello": {
+      "id": "1968901406393301314",
+      "name": "home-hello",
+      "self_link": "projects/tf-playground-simple/regions/europe-west8/forwardingRules/home-hello",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "address": "10.24.33.2",
+      "load_balancing_scheme": "",
+      "network": "projects/tf-playground-simple/global/networks/default",
+      "psc_accepted": true,
+      "region": "europe-west8",
+      "subnetwork": null
+    },
     "projects/tf-playground-svpc-net/regions/europe-west8/forwardingRules/bastion-wg": {
       "id": "4724174290265929790",
       "name": "bastion-wg",
@@ -404,6 +414,7 @@
       "address": "34.154.198.58",
       "load_balancing_scheme": "EXTERNAL",
       "network": null,
+      "psc_accepted": false,
       "region": "europe-west8",
       "subnetwork": null
     },
@@ -416,6 +427,7 @@
       "address": "10.24.32.29",
       "load_balancing_scheme": "INTERNAL_MANAGED",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
+      "psc_accepted": false,
       "region": "europe-west8",
       "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
     }
@@ -465,6 +477,17 @@
     }
   },
   "networks": {
+    "projects/tf-playground-simple/global/networks/default": {
+      "id": "8227259653970917801",
+      "name": "default",
+      "self_link": "projects/tf-playground-simple/global/networks/default",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "peerings": [],
+      "subnetworks": [
+        "projects/tf-playground-simple/regions/europe-west8/subnetworks/default"
+      ]
+    },
     "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0": {
       "id": "2315184905594658556",
       "name": "prod-spoke-0",
@@ -580,6 +603,7 @@
         "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/net",
         "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gce",
         "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/net",
+        "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/psc",
         "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gke",
         "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/l7ilb",
         "projects/tf-playground-svpc-net/regions/europe-west3/subnetworks/net",
@@ -590,6 +614,17 @@
     }
   },
   "subnetworks": {
+    "projects/tf-playground-simple/regions/europe-west8/subnetworks/default": {
+      "id": "521276777991436721",
+      "name": "default",
+      "self_link": "projects/tf-playground-simple/regions/europe-west8/subnetworks/default",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "cidr_range": "10.24.33.0/24",
+      "network": "projects/tf-playground-simple/global/networks/default",
+      "purpose": "PRIVATE",
+      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-simple/regions/europe-west8"
+    },
     "projects/ludo-prod-net-spoke-0/regions/europe-west1/subnetworks/prod-default-ew1": {
       "id": "4645967677499694788",
       "name": "prod-default-ew1",
@@ -942,6 +977,17 @@
       "purpose": "PRIVATE",
       "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west8"
     },
+    "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/psc": {
+      "id": "1816076316698934074",
+      "name": "psc",
+      "self_link": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/psc",
+      "project_id": "tf-playground-svpc-net",
+      "project_number": "1079408472053",
+      "cidr_range": "172.16.255.0/25",
+      "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
+      "purpose": "PRIVATE_SERVICE_CONNECT",
+      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west8"
+    },
     "projects/tf-playground-svpc-net/regions/us-central1/subnetworks/gke": {
       "id": "440151099218547687",
       "name": "gke",
@@ -1047,6 +1093,24 @@
     }
   },
   "routes": {
+    "projects/tf-playground-simple/global/routes/default-route-709ad165b8383d89": {
+      "id": "1159999789989296547",
+      "name": "default-route-709ad165b8383d89",
+      "self_link": "projects/tf-playground-simple/global/routes/default-route-709ad165b8383d89",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "next_hop_type": "gateway",
+      "network": "projects/tf-playground-simple/global/networks/default"
+    },
+    "projects/tf-playground-simple/global/routes/default-route-8706754714306526": {
+      "id": "1359944480556775819",
+      "name": "default-route-8706754714306526",
+      "self_link": "projects/tf-playground-simple/global/routes/default-route-8706754714306526",
+      "project_id": "tf-playground-simple",
+      "project_number": "64297462517",
+      "next_hop_type": "network",
+      "network": "projects/tf-playground-simple/global/networks/default"
+    },
     "projects/ludo-prod-net-spoke-0/global/routes/default-route-40f9b3cd9946750d": {
       "id": "899011966177939471",
       "name": "default-route-40f9b3cd9946750d",
@@ -1668,6 +1732,15 @@
       "next_hop_type": "network",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc"
     },
+    "projects/tf-playground-svpc-net/global/routes/default-route-648effc960cb3912": {
+      "id": "3109902933644737334",
+      "name": "default-route-648effc960cb3912",
+      "self_link": "projects/tf-playground-svpc-net/global/routes/default-route-648effc960cb3912",
+      "project_id": "tf-playground-svpc-net",
+      "project_number": "1079408472053",
+      "next_hop_type": "network",
+      "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc"
+    },
     "projects/tf-playground-svpc-net/global/routes/default-route-6d41e89bfb9eb2f6": {
       "id": "1628999936569849356",
       "name": "default-route-6d41e89bfb9eb2f6",
@@ -1768,6 +1841,60 @@
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc"
     }
   },
+  "projects": {
+    "tf-playground-simple": {
+      "number": "64297462517",
+      "project_id": "tf-playground-simple"
+    },
+    "ludo-dev-net-spoke-0": {
+      "number": "759592912116",
+      "project_id": "ludo-dev-net-spoke-0"
+    },
+    "ludo-prod-net-landing-0": {
+      "number": "233262889141",
+      "project_id": "ludo-prod-net-landing-0"
+    },
+    "ludo-prod-net-spoke-0": {
+      "number": "195159130008",
+      "project_id": "ludo-prod-net-spoke-0"
+    },
+    "ludo-dev-sec-core-0": {
+      "number": "971935141727",
+      "project_id": "ludo-dev-sec-core-0"
+    },
+    "ludo-prod-sec-core-0": {
+      "number": "990827422843",
+      "project_id": "ludo-prod-sec-core-0"
+    },
+    "tf-playground-gcs-test-0": {
+      "number": "833078410166",
+      "project_id": "tf-playground-gcs-test-0"
+    },
+    "tf-playground-svpc-gce-dr": {
+      "number": "433746214138",
+      "project_id": "tf-playground-svpc-gce-dr"
+    },
+    "tf-playground-svpc-net-dr": {
+      "number": "697669426824",
+      "project_id": "tf-playground-svpc-net-dr"
+    },
+    "tf-playground-svpc-openshift": {
+      "number": "515444627958",
+      "project_id": "tf-playground-svpc-openshift"
+    },
+    "tf-playground-svpc-gce": {
+      "number": "783093469136",
+      "project_id": "tf-playground-svpc-gce"
+    },
+    "tf-playground-svpc-net": {
+      "number": "1079408472053",
+      "project_id": "tf-playground-svpc-net"
+    },
+    "tf-playground-svpc-gke": {
+      "number": "1043465648801",
+      "project_id": "tf-playground-svpc-gke"
+    }
+  },
   "projects:number": {
     "64297462517": {
       "number": "64297462517",
@@ -1831,11 +1958,11 @@
         },
         "NETWORKS": {
           "limit": 15,
-          "usage": 0
+          "usage": 1
         },
         "FIREWALLS": {
           "limit": 200,
-          "usage": 0
+          "usage": 1
         },
         "IMAGES": {
           "limit": 2000,
@@ -1847,7 +1974,7 @@
         },
         "ROUTES": {
           "limit": 250,
-          "usage": 0
+          "usage": 1
         },
         "FORWARDING_RULES": {
           "limit": 45,

@@ -56,9 +56,10 @@ def init(resources):
 def start_discovery(resources, response=None, data=None):
   LOGGER.info(f'discovery (has response: {response is not None})')
   if response is None:
-    for resource_type in (NAME, 'folders'):
-      for k in resources.get(resource_type, []):
-        yield HTTPRequest(CAI_URL.format(f'{resource_type}/{k}'), {}, None)
+    for v in resources['config:projects']:
+      yield HTTPRequest(CAI_URL.format(f'projects/{v}'), {}, None)
+    for v in resources['config:folders']:
+      yield HTTPRequest(CAI_URL.format(f'folders/{v}'), {}, None)
   else:
     for result in _handle_discovery(resources, response, data):
       yield result

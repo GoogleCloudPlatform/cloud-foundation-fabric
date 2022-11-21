@@ -59,14 +59,12 @@ def do_discovery(resources):
           resources[result.type][result.id] = result.data
 
 
-def do_init(resources, organization, folder, project, op_project):
+def do_init(resources, organization, op_project, folders=None, projects=None):
   LOGGER.info(f'init start')
-  resources['organization'] = str(organization)
-  resources['monitoring_project'] = op_project
-  if folder:
-    resources['folders'] = {f: {} for f in folder}
-  if project:
-    resources['projects'] = {p: {} for p in project}
+  resources['config:organization'] = str(organization)
+  resources['config:monitoring_project'] = op_project
+  resources['config:folders'] = [str(f) for f in folders or []]
+  resources['config:projects'] = projects or []
   for plugin in plugins.get_init_plugins():
     plugin.func(resources)
 
@@ -116,7 +114,7 @@ def main(organization=None, op_project=None, project=None, folder=None,
     resources = json.load(load_file)
   else:
     resources = {}
-    do_init(resources, organization, folder, project, op_project)
+    do_init(resources, organization, op_project, folder, project)
     do_discovery(resources)
   do_timeseries(resources, timeseries)
   LOGGER.info(
