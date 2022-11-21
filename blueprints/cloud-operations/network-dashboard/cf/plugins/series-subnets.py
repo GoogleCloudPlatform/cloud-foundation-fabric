@@ -21,9 +21,12 @@ LOGGER = logging.getLogger('net-dash.timeseries.subnets')
 
 
 @register_timeseries
-def subnet_timeseries(resources, series):
-  series = {k: 0 for k, v in resources['subnets']}
+def subnet_timeseries(resources):
+  LOGGER.info('timeseries')
+  series = {k: 0 for k in resources['subnetworks']}
   vm_networks = itertools.chain.from_iterable(
       i['networks'] for i in resources['instances'].values())
   for v in vm_networks:
     series[v['subnetwork']] += 1
+  return
+  yield

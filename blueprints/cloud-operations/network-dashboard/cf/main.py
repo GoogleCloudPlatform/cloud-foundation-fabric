@@ -28,16 +28,14 @@ try:
 except google.auth.exceptions.RefreshError as e:
   raise SystemExit(e.args[0])
 LOGGER = logging.getLogger('net-dash')
-RESOURCES = {}
-TIMESERIES = []
 
 Result = collections.namedtuple('Result', 'phase resource data')
 
 
-def do_discovery():
+def do_discovery(resources):
   LOGGER.info(f'discovery start')
   for plugin in plugins.get_discovery_plugins():
-    q = collections.deque(plugin.func(RESOURCES))
+    q = collections.deque(plugin.func(resources))
     while q:
       result = q.popleft()
       if isinstance(result, plugins.HTTPRequest):
@@ -46,40 +44,40 @@ def do_discovery():
           continue
         if result.json:
           try:
-            results = plugin.func(RESOURCES, response, response.json())
+            results = plugin.func(resources, response, response.json())
           except json.decoder.JSONDecodeError as e:
             LOGGER.critical(
                 f'error decoding JSON for {result.url}: {e.args[0]}')
             continue
         else:
-          results = plugin.func(RESOURCES, response)
+          results = plugin.func(resources, response)
         q += collections.deque(results)
       elif isinstance(result, plugins.Resource):
         if result.key:
-          RESOURCES[result.type][result.id][result.key] = result.data
+          resources[result.type][result.id][result.key] = result.data
         else:
-          RESOURCES[result.type][result.id] = result.data
+          resources[result.type][result.id] = result.data
 
 
-def do_init(organization, folder, project, op_project):
+def do_init(resources, organization, folder, project, op_project):
   LOGGER.info(f'init start')
-  RESOURCES['organization'] = str(organization)
-  RESOURCES['monitoring_project'] = op_project
+  resources['organization'] = str(organization)
+  resources['monitoring_project'] = op_project
   if folder:
-    RESOURCES['folders'] = {f: {} for f in folder}
+    resources['folders'] = {f: {} for f in folder}
   if project:
-    RESOURCES['projects'] = {p: {} for p in project}
+    resources['projects'] = {p: {} for p in project}
   for plugin in plugins.get_init_plugins():
-    plugin.func(RESOURCES)
+    plugin.func(resources)
 
 
-def do_timeseries():
+def do_timeseries(resources, timeseries):
   LOGGER.info(f'timeseries start')
   for plugin in plugins.get_timeseries_plugins():
-    for result in plugin.func(RESOURCES):
+    for result in plugin.func(resources):
       if not result:
         continue
-      TIMESERIES.append(result)
+      timeseries.append(result)
 
 
 def fetch(request):
@@ -106,19 +104,27 @@ def fetch(request):
               help='GCP project id, can be specified multiple times')
 @click.option('--folder', '-p', type=int, multiple=True,
               help='GCP folder id, can be specified multiple times')
-@click.option('--dump', type=click.File('w'),
+@click.option('--dump-file', type=click.File('w'),
               help='Export JSON representation of resources to file.')
+@click.option('--load-file', type=click.File('r'),
+              help='Load JSON resources from file, skips init and discovery.')
 def main(organization=None, op_project=None, project=None, folder=None,
-         dump=False):
+         dump_file=None, load_file=None):
   logging.basicConfig(level=logging.INFO)
-  do_init(organization, folder, project, op_project)
-  do_discovery()
+  timeseries = []
+  if load_file:
+    resources = json.load(load_file)
+  else:
+    resources = {}
+    do_init(resources, organization, folder, project, op_project)
+    do_discovery(resources)
+  do_timeseries(resources, timeseries)
   LOGGER.info(
-      {k: len(v) for k, v in RESOURCES.items() if not isinstance(v, str)})
+      {k: len(v) for k, v in resources.items() if not isinstance(v, str)})
+  LOGGER.info(f'{len(timeseries)} timeseries')
 
-  if dump:
-    import json
-    json.dump(RESOURCES, dump, indent=2)
+  if dump_file:
+    json.dump(resources, dump_file, indent=2)
 
 
 if __name__ == '__main__':
