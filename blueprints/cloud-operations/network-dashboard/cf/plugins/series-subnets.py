@@ -22,11 +22,6 @@ from . import TimeSeries, register_timeseries
 LOGGER = logging.getLogger('net-dash.timeseries.subnets')
 
 
-def _self_link(s):
-  'Add initial part to self links.'
-  return f'https://www.googleapis.com/compute/v1/{s}'
-
-
 def _subnet_addresses(resources):
   'Return partial counts of addresses per subnetwork.'
   for v in resources['addresses'].values():
@@ -80,9 +75,9 @@ def subnet_timeseries(resources):
     max_ips = subnet_nets[subnet_self_link].num_addresses - 4
     subnet = resources['subnetworks'][subnet_self_link]
     labels = {
-        'network': _self_link(subnet['network']),
+        'network': resources['networks'][subnet['network']]['name'],
         'project': subnet['project_id'],
-        'subnetwork': _self_link(subnet['id'])
+        'subnetwork': subnet['name']
     }
     yield TimeSeries('subnetworks/addresses/available', max_ips, labels)
     yield TimeSeries('subnetworks/addresses/used', count, labels)

@@ -46,7 +46,7 @@
     - [ ] get redis instances
       `compute_subnet_utilization_redis`
   - store metrics
-- [ ]calculate and store firewall rule metrics
+- [x]calculate and store firewall rule metrics
   `vpc_firewalls.get_firewalls_data`
 - [ ] calculate and store firewall policy metrics
   `firewall_policies.get_firewal_policies_data`
