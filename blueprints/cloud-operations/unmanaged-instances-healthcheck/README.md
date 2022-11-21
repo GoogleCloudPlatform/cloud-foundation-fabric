@@ -99,13 +99,13 @@ gcloud compute ssh --zone europe-west1-b  nginx-test -- 'uptime'
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [billing_account](variables.tf#L16) | Billing account id used as default for new projects. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L33) | Project id to create a project when `project_create` is `true`, or to be used when `false`. | <code>string</code> | ✓ |  |
-| [grace_period](variables.tf#L56) | Grace period for an instance startup. | <code>string</code> |  | <code>&#34;180s&#34;</code> |
-| [location](variables.tf#L21) | App Engine location used in the example (required for CloudFunctions). | <code>string</code> |  | <code>&#34;europe-west&#34;</code> |
-| [project_create](variables.tf#L27) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
-| [region](variables.tf#L38) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [root_node](variables.tf#L44) | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
-| [schedule](variables.tf#L50) | Cron schedule for executing compute instances healthcheck. | <code>string</code> |  | <code>&#34;&#42;&#47;5 &#42; &#42; &#42; &#42;&#34; &#35; every five minutes&#34;</code> |
+| [project_id](variables.tf#L39) | Project id to create a project when `project_create` is `true`, or to be used when `false`. | <code>string</code> | ✓ |  |
+| [grace_period](variables.tf#L21) | Grace period for an instance startup. | <code>string</code> |  | <code>&#34;180s&#34;</code> |
+| [location](variables.tf#L27) | App Engine location used in the example (required for CloudFunctions). | <code>string</code> |  | <code>&#34;europe-west&#34;</code> |
+| [project_create](variables.tf#L33) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
+| [region](variables.tf#L44) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [root_node](variables.tf#L50) | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
+| [schedule](variables.tf#L56) | Cron schedule for executing compute instances healthcheck. | <code>string</code> |  | <code>&#34;&#42;&#47;5 &#42; &#42; &#42; &#42;&#34; &#35; every five minutes&#34;</code> |
 | [tcp_port](variables.tf#L62) | TCP port to run healthcheck against. | <code>string</code> |  | <code>&#34;80&#34; &#35;http&#34;</code> |
 | [timeout](variables.tf#L68) | TCP probe timeout. | <code>string</code> |  | <code>&#34;1000ms&#34;</code> |
 

@@ -170,6 +170,12 @@ variable "trigger_config" {
   }
 }
 
+variable "v2" {
+  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen."
+  type        = bool
+  default     = false
+}
+
 variable "vpc_connector" {
   description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created."
   type = object({
@@ -187,12 +193,6 @@ variable "vpc_connector_config" {
     network       = string
   })
   default = null
-}
-
-variable "v2" {
-  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen."
-  type        = bool
-  default     = false
 }
 
 

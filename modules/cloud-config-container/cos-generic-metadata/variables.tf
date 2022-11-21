@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "authenticate_gcr" {
+  description = "Setup docker to pull images from private GCR. Requires at least one user since the token is stored in the home of the first user defined."
+  type        = bool
+  default     = false
+}
+
 variable "boot_commands" {
   description = "List of cloud-init `bootcmd`s."
   type        = list(string)
@@ -37,7 +43,6 @@ variable "container_args" {
   type        = string
   default     = ""
 }
-
 
 variable "container_image" {
   description = "Container image."
@@ -87,6 +92,12 @@ variable "files" {
   default = {}
 }
 
+variable "run_as_first_user" {
+  description = "Run as the first user if users are specified."
+  type        = bool
+  default     = true
+}
+
 variable "run_commands" {
   description = "List of cloud-init `runcmd`s."
   type        = list(string)
@@ -101,16 +112,4 @@ variable "users" {
   }))
   default = [
   ]
-}
-
-variable "run_as_first_user" {
-  description = "Run as the first user if users are specified."
-  type        = bool
-  default     = true
-}
-
-variable "authenticate_gcr" {
-  description = "Setup docker to pull images from private GCR. Requires at least one user since the token is stored in the home of the first user defined."
-  type        = bool
-  default     = false
 }

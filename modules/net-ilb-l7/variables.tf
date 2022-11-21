@@ -123,15 +123,15 @@ variable "network_tier_premium" {
   nullable    = false
 }
 
-variable "project_id" {
-  description = "Project id."
-  type        = string
-}
-
 variable "ports" {
   description = "Optional ports for HTTP load balancer, valid ports are 80 and 8080."
   type        = list(string)
   default     = null
+}
+
+variable "project_id" {
+  description = "Project id."
+  type        = string
 }
 
 variable "protocol" {

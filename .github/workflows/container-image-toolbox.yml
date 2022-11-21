@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     https://www.apache.org/licenses/LICENSE-2.0
+#      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,18 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+name: "Build and push the Toolbox container image"
 
-variable "impersonate_service_account_email" {
-  description = "Service account to be impersonated by workload identity."
-  type        = string
-}
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - 'modules/cloud-config-container/onprem/docker-images/toolbox/**'
 
-variable "project_id" {
-  description = "GCP project ID."
-  type        = string
-}
-
-variable "workload_identity_pool_provider_id" {
-  description = "GCP workload identity pool provider ID."
-  type        = string
-}
+jobs:
+  build-push-toolbox-container-image:
+    uses: ./.github/workflows/container-image.yml
+    with:
+      image_name: fabric-toolbox
+      docker_context: modules/cloud-config-container/onprem/docker-images/toolbox
