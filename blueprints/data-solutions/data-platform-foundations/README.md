@@ -135,7 +135,6 @@ service_encryption_keys = {
     storage  = "KEY_URL_MULTIREGIONAL"
     pubsub   = "KEY_URL_MULTIREGIONAL"
 }
-# tftest skip
 ```
 
 This step is optional and depends on customer policies and security best practices.
@@ -198,8 +197,7 @@ billing_account_id  = "111111-222222-333333"
 older_id            = "folders/123456789012"
 organization_domain = "domain.com"
 prefix              = "myco"
-# tftest skip`
-``
+```
 
 For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration. Remember to create team groups described [below](#groups).
 
