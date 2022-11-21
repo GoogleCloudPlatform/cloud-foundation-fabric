@@ -19,12 +19,12 @@ output "folders" {
   value       = local.all_folders
 }
 
-output "projects" {
-  description = "Map of projects attributes keyed by projects id."
-  value       = local.projects
-}
-
 output "project_numbers" {
   description = "List of project numbers."
   value       = [for _, v in local.projects : v.number]
+}
+
+output "projects" {
+  description = "Map of projects attributes keyed by projects id."
+  value       = local.projects
 }

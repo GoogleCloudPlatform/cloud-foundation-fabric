@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "The ID of the project where this VPC will be created."
+variable "accepted_limits" {
+  description = "Incoming accepted projects with endpoints limit."
+  type        = map(number)
+}
+
+variable "dest_ip_address" {
+  description = "On-prem service destination IP address."
   type        = string
+}
+
+variable "dest_port" {
+  description = "On-prem service destination port."
+  type        = string
+  default     = "80"
 }
 
 variable "name" {
@@ -24,18 +35,18 @@ variable "name" {
   type        = string
 }
 
-variable "region" {
-  description = "Region where resources will be created."
-  type        = string
-}
-
-variable "zone" {
-  description = "Zone where resources will be created."
-  type        = string
-}
-
 variable "network" {
   description = "Producer network id."
+  type        = string
+}
+
+variable "project_id" {
+  description = "The ID of the project where this VPC will be created."
+  type        = string
+}
+
+variable "region" {
+  description = "Region where resources will be created."
   type        = string
 }
 
@@ -54,18 +65,7 @@ variable "subnets_psc" {
   type        = list(string)
 }
 
-variable "dest_ip_address" {
-  description = "On-prem service destination IP address."
+variable "zone" {
+  description = "Zone where resources will be created."
   type        = string
-}
-
-variable "dest_port" {
-  description = "On-prem service destination port."
-  type        = string
-  default     = "80"
-}
-
-variable "accepted_limits" {
-  description = "Incoming accepted projects with endpoints limit."
-  type        = map(number)
 }

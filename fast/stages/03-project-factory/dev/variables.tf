@@ -31,6 +31,12 @@ variable "data_dir" {
   default     = "data/projects"
 }
 
+variable "defaults_file" {
+  description = "Relative path for the file storing the project factory configuration."
+  type        = string
+  default     = "data/defaults.yaml"
+}
+
 variable "environment_dns_zone" {
   # tfdoc:variable:source 02-networking
   description = "DNS zone suffix for environment."
@@ -38,10 +44,13 @@ variable "environment_dns_zone" {
   default     = null
 }
 
-variable "defaults_file" {
-  description = "Relative path for the file storing the project factory configuration."
-  type        = string
-  default     = "data/defaults.yaml"
+variable "host_project_ids" {
+  # tfdoc:variable:source 02-networking
+  description = "Host project for the shared VPC."
+  type = object({
+    dev-spoke-0 = string
+  })
+  default = null
 }
 
 variable "prefix" {
@@ -58,15 +67,6 @@ variable "prefix" {
 variable "vpc_self_links" {
   # tfdoc:variable:source 02-networking
   description = "Self link for the shared VPC."
-  type = object({
-    dev-spoke-0 = string
-  })
-  default = null
-}
-
-variable "host_project_ids" {
-  # tfdoc:variable:source 02-networking
-  description = "Host project for the shared VPC."
   type = object({
     dev-spoke-0 = string
   })

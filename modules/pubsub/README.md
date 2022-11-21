@@ -145,10 +145,10 @@ module "pubsub" {
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L17) | Topic id. |  |
-| [schema](outputs.tf#L43) | Schema resource. |  |
-| [schema_id](outputs.tf#L48) | Schema resource id. |  |
-| [subscription_id](outputs.tf#L25) | Subscription ids. |  |
-| [subscriptions](outputs.tf#L35) | Subscription resources. |  |
+| [schema](outputs.tf#L25) | Schema resource. |  |
+| [schema_id](outputs.tf#L30) | Schema resource id. |  |
+| [subscription_id](outputs.tf#L35) | Subscription ids. |  |
+| [subscriptions](outputs.tf#L45) | Subscription resources. |  |
 | [topic](outputs.tf#L53) | Topic resource. |  |
 
 <!-- END TFDOC -->

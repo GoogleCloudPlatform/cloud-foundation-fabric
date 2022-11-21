@@ -266,12 +266,12 @@ You can find examples in the `[demo](./demo)` folder.
 | name | description | sensitive |
 |---|---|:---:|
 | [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
-| [demo_commands](outputs.tf#L93) | Demo commands. |  |
-| [gcs-buckets](outputs.tf#L28) | GCS buckets. |  |
-| [kms_keys](outputs.tf#L42) | Cloud MKS keys. |  |
-| [projects](outputs.tf#L47) | GCP Projects informations. |  |
-| [vpc_network](outputs.tf#L75) | VPC network. |  |
-| [vpc_subnet](outputs.tf#L84) | VPC subnetworks. |  |
+| [demo_commands](outputs.tf#L28) | Demo commands. |  |
+| [gcs-buckets](outputs.tf#L41) | GCS buckets. |  |
+| [kms_keys](outputs.tf#L55) | Cloud MKS keys. |  |
+| [projects](outputs.tf#L60) | GCP Projects informations. |  |
+| [vpc_network](outputs.tf#L88) | VPC network. |  |
+| [vpc_subnet](outputs.tf#L97) | VPC subnetworks. |  |
 
 <!-- END TFDOC -->
 ## TODOs

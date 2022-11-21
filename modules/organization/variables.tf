@@ -252,6 +252,12 @@ variable "organization_id" {
   }
 }
 
+variable "tag_bindings" {
+  description = "Tag bindings for this organization, in key => tag value id format."
+  type        = map(string)
+  default     = null
+}
+
 variable "tags" {
   description = "Tags by key name. The `iam` attribute behaves like the similarly named one at module level."
   type = map(object({
@@ -270,10 +276,4 @@ variable "tags" {
     ])
     error_message = "Use an empty map instead of null as value."
   }
-}
-
-variable "tag_bindings" {
-  description = "Tag bindings for this organization, in key => tag value id format."
-  type        = map(string)
-  default     = null
 }

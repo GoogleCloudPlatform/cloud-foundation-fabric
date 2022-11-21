@@ -27,9 +27,9 @@ provider "google-beta" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [impersonate_service_account_email](variables.tf#L22) | Service account to be impersonated by workload identity federation. | <code>string</code> | ✓ |  |
-| [workload_identity_pool_provider_id](variables.tf#L17) | GCP workload identity pool provider ID. | <code>string</code> | ✓ |  |
-| [tmp_oidc_token_path](variables.tf#L27) | Name of the temporary file where TFC OIDC token will be stored to authentificate terraform provider google. | <code>string</code> |  | <code>&#34;.oidc_token&#34;</code> |
+| [impersonate_service_account_email](variables.tf#L17) | Service account to be impersonated by workload identity federation. | <code>string</code> | ✓ |  |
+| [workload_identity_pool_provider_id](variables.tf#L28) | GCP workload identity pool provider ID. | <code>string</code> | ✓ |  |
+| [tmp_oidc_token_path](variables.tf#L22) | Name of the temporary file where TFC OIDC token will be stored to authentificate terraform provider google. | <code>string</code> |  | <code>&#34;.oidc_token&#34;</code> |
 
 ## Outputs
 

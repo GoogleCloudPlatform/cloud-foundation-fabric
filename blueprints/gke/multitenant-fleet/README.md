@@ -265,8 +265,8 @@ module "gke" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [cluster_ids](outputs.tf#L22) | Cluster ids. |  |
-| [clusters](outputs.tf#L17) | Cluster resources. |  |
+| [cluster_ids](outputs.tf#L17) | Cluster ids. |  |
+| [clusters](outputs.tf#L24) | Cluster resources. |  |
 | [project_id](outputs.tf#L29) | GKE project id. |  |
 
 <!-- END TFDOC -->
