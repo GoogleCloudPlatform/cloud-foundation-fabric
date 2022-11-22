@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import itertools
 import logging
 
 from . import TimeSeries, register_timeseries
@@ -22,7 +21,7 @@ TUPLE_LIMIT = 2000
 
 
 @register_timeseries
-def subnet_timeseries(resources):
+def timeseries(resources):
   LOGGER.info('timeseries')
   for v in resources['firewall_policies'].values():
     tuples = int(v['num_tuples'])

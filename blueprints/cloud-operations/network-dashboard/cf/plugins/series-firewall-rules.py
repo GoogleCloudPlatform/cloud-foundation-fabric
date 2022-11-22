@@ -21,7 +21,7 @@ LOGGER = logging.getLogger('net-dash.timeseries.firewall-rules')
 
 
 @register_timeseries
-def subnet_timeseries(resources):
+def timeseries(resources):
   LOGGER.info('timeseries')
   grouped = itertools.groupby(resources['firewall_rules'].values(),
                               lambda v: v['network'])
