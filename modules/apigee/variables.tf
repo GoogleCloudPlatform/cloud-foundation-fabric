@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+variable "endpoint_attachments" {
+  description = "Endpoint attachments."
+  type = map(object({
+    region             = string
+    service_attachment = string
+  }))
+  default = null
+}
 
 variable "envgroups" {
   description = "Environment groups (NAME => [HOSTNAMES])."
@@ -38,7 +46,7 @@ variable "environments" {
 }
 
 variable "instances" {
-  description = "Instance."
+  description = "Instances."
   type = map(object({
     display_name         = optional(string)
     description          = optional(string, "Terraform-managed")

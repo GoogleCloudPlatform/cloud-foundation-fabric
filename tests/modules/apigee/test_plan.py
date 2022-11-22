@@ -25,6 +25,7 @@ def test_all(plan_runner):
         'google_apigee_envgroup_attachment.envgroup_attachments': 2,
         'google_apigee_instance.instances': 2,
         'google_apigee_instance_attachment.instance_attachments': 2,
+        'google_apigee_endpoint_attachment.endpoint_attachments': 2,
         'google_apigee_environment_iam_binding.binding': 1
     }
 
@@ -60,6 +61,14 @@ def test_instance_only(plan_runner):
     assert counts == {
         'google_apigee_instance.instances': 1,
         'google_apigee_instance_attachment.instance_attachments': 1
+    }
+
+def test_endpoint_attachment_only(plan_runner):
+    "Test that creates only an instance."
+    _, resources = plan_runner(tf_var_file='test.endpoint_attachment_only.tfvars')
+    counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
+    assert counts == {
+        'google_apigee_endpoint_attachment.endpoint_attachments': 1,
     }
 
 def test_no_instances(plan_runner):
