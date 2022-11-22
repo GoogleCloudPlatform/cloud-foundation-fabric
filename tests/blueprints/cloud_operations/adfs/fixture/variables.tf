@@ -31,7 +31,10 @@ variable "project_create" {
     billing_account_id = string
     parent             = string
   })
-  default = null
+  default = {
+    billing_account_id = "12345-12345-12345"
+    parent             = "folders/123456789"
+  }
 }
 
 variable "project_id" {
