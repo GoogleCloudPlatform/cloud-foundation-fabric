@@ -48,7 +48,12 @@ resource "google_container_cluster" "cluster" {
   enable_autopilot = var.enable_features.autopilot ? true : null
 
   # the default nodepool is deleted here, use the gke-nodepool module instead
-  # node_config {}
+  node_config {
+    shielded_instance_config {
+      enable_secure_boot = var.enable_features.shielded_nodes ? true : null
+      enable_integrity_monitoring = var.enable_features.shielded_nodes ? true : null
+    }
+  }
 
   addons_config {
     dynamic "dns_cache_config" {

@@ -96,6 +96,13 @@ variable "enable_features" {
     }))
     vertical_pod_autoscaling = optional(bool, false)
     workload_identity        = optional(bool, false)
+    # node_config  = optional(object({
+    #   shielded_instance_config = optional(object({
+    #     enable_integrity_monitoring = optional(bool)
+    #     enable_secure_boot          = optional(bool)
+    # }))
+    # })) 
+
   })
   default = {
     workload_identity = true
