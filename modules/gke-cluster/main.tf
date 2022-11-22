@@ -50,7 +50,7 @@ resource "google_container_cluster" "cluster" {
   # the default nodepool is deleted here, use the gke-nodepool module instead
   node_config {
     shielded_instance_config {
-      enable_secure_boot = var.enable_features.shielded_nodes ? true : null
+      enable_secure_boot          = var.enable_features.shielded_nodes ? true : null
       enable_integrity_monitoring = var.enable_features.shielded_nodes ? true : null
     }
   }
