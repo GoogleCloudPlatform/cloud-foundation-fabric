@@ -35,10 +35,7 @@ output "function_name" {
   description = "Cloud function name."
   value       = local.function.name
 }
-output "uri" {
-  description = "Cloud function service uri."
-  value       = var.v2 ? google_cloudfunctions2_function.function[0].service_config[0].uri : null
-}
+
 output "service_account" {
   description = "Service account resource."
   value       = try(google_service_account.service_account[0], null)
@@ -55,6 +52,29 @@ output "service_account_iam_email" {
     "serviceAccount:",
     local.service_account_email == null ? "" : local.service_account_email
   ])
+}
+
+output "trigger_service_account" {
+  description = "Service account resource."
+  value       = try(google_service_account.trigger_service_account[0], null)
+}
+
+output "trigger_service_account_email" {
+  description = "Service account email."
+  value       = local.trigger_service_account_email
+}
+
+output "trigger_service_account_iam_email" {
+  description = "Service account email."
+  value = join("", [
+    "serviceAccount:",
+    local.trigger_service_account_email == null ? "" : local.trigger_service_account_email
+  ])
+}
+
+output "uri" {
+  description = "Cloud function service uri."
+  value       = var.v2 ? google_cloudfunctions2_function.function[0].service_config[0].uri : null
 }
 
 output "vpc_connector" {

@@ -33,13 +33,15 @@ locals {
     "${v.neg}-${v.ip_address}-${coalesce(v.port, "none")}" => v
   }
   neg_regional = {
-    for k, v in var.neg_configs : k => v.cloudrun if v.cloudrun != null
+    for k, v in var.neg_configs :
+    k => merge(v.cloudrun, { project_id = v.project_id }) if v.cloudrun != null
   }
   neg_zonal = {
     # we need to rebuild new objects as we cannot merge different types
     for k, v in var.neg_configs : k => {
       endpoints  = v.gce != null ? v.gce.endpoints : v.hybrid.endpoints
       network    = v.gce != null ? v.gce.network : v.hybrid.network
+      project_id = v.project_id
       subnetwork = v.gce != null ? v.gce.subnetwork : null
       type       = v.gce != null ? "GCE_VM_IP_PORT" : "NON_GCP_PRIVATE_IP_PORT"
       zone       = v.gce != null ? v.gce.zone : v.hybrid.zone
@@ -66,7 +68,15 @@ resource "google_compute_forwarding_rule" "default" {
   subnetwork            = var.vpc_config.subnetwork
   labels                = var.labels
   target                = local.fwd_rule_target
-  # service_directory_registrations
+  # during the preview phase you cannot change this attribute on an existing rule
+  allow_global_access = var.global_access
+  dynamic "service_directory_registrations" {
+    for_each = var.service_directory_registration == null ? [] : [""]
+    content {
+      namespace = var.service_directory_registration.namespace
+      service   = var.service_directory_registration.service
+    }
+  }
 }
 
 resource "google_compute_region_ssl_certificate" "default" {
@@ -98,8 +108,12 @@ resource "google_compute_region_target_https_proxy" "default" {
 }
 
 resource "google_compute_instance_group" "default" {
-  for_each    = var.group_configs
-  project     = var.project_id
+  for_each = var.group_configs
+  project = (
+    each.value.project_id == null
+    ? var.project_id
+    : each.value.project_id
+  )
   zone        = each.value.zone
   name        = "${var.name}-${each.key}"
   description = var.description
@@ -115,9 +129,13 @@ resource "google_compute_instance_group" "default" {
 
 resource "google_compute_network_endpoint_group" "default" {
   for_each = local.neg_zonal
-  project  = var.project_id
-  zone     = each.value.zone
-  name     = "${var.name}-${each.key}"
+  project = (
+    each.value.project_id == null
+    ? var.project_id
+    : each.value.project_id
+  )
+  zone = each.value.zone
+  name = "${var.name}-${each.key}"
   # re-enable once provider properly supports this
   # default_port = each.value.default_port
   description           = var.description
@@ -134,7 +152,9 @@ resource "google_compute_network_endpoint_group" "default" {
 
 resource "google_compute_network_endpoint" "default" {
   for_each = local.neg_endpoints
-  project  = var.project_id
+  project = (
+    google_compute_network_endpoint_group.default[each.value.neg].project
+  )
   network_endpoint_group = (
     google_compute_network_endpoint_group.default[each.value.neg].name
   )
@@ -145,8 +165,12 @@ resource "google_compute_network_endpoint" "default" {
 }
 
 resource "google_compute_region_network_endpoint_group" "default" {
-  for_each              = local.neg_regional
-  project               = var.project_id
+  for_each = local.neg_regional
+  project = (
+    each.value.project_id == null
+    ? var.project_id
+    : each.value.project_id
+  )
   region                = each.value.region
   name                  = "${var.name}-${each.key}"
   description           = var.description

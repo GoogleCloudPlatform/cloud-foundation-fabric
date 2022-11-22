@@ -259,11 +259,11 @@ You're now ready to run `terraform init` and `apply`.
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
 | [dev_cloud_dns_inbound_policy](outputs.tf#L59) | IP Addresses for Cloud DNS inbound policy for the dev environment. |  |  |
-| [host_project_ids](outputs.tf#L69) | Network project ids. |  |  |
-| [host_project_numbers](outputs.tf#L74) | Network project numbers. |  |  |
-| [prod_cloud_dns_inbound_policy](outputs.tf#L64) | IP Addresses for Cloud DNS inbound policy for the prod environment. |  |  |
+| [host_project_ids](outputs.tf#L64) | Network project ids. |  |  |
+| [host_project_numbers](outputs.tf#L69) | Network project numbers. |  |  |
+| [prod_cloud_dns_inbound_policy](outputs.tf#L74) | IP Addresses for Cloud DNS inbound policy for the prod environment. |  |  |
 | [shared_vpc_self_links](outputs.tf#L79) | Shared VPC host projects. |  |  |
-| [tfvars](outputs.tf#L98) | Terraform variables file for the following stages. | ✓ |  |
-| [vpn_gateway_endpoints](outputs.tf#L84) | External IP Addresses for the GCP VPN gateways. |  |  |
+| [tfvars](outputs.tf#L84) | Terraform variables file for the following stages. | ✓ |  |
+| [vpn_gateway_endpoints](outputs.tf#L90) | External IP Addresses for the GCP VPN gateways. |  |  |
 
 <!-- END TFDOC -->

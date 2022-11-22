@@ -55,10 +55,7 @@ locals {
   tag_values_iam = {
     for t in local._tag_values_iam : "${t.key}:${t.role}" => t
   }
-  tags = {
-    for k, v in coalesce(var.tags, {}) :
-    k => v == null ? { description = null, iam = {}, values = null } : v
-  }
+  tags = merge(var.tags, var.network_tags)
   tags_iam = {
     for t in local._tags_iam : "${t.tag}:${t.role}" => t
   }
@@ -67,13 +64,16 @@ locals {
 # keys
 
 resource "google_tags_tag_key" "default" {
-  for_each   = local.tags
-  parent     = var.organization_id
-  short_name = each.key
-  description = coalesce(
-    each.value.description,
-    "Managed by the Terraform organization module."
+  for_each = local.tags
+  parent   = var.organization_id
+  purpose = (
+    lookup(each.value, "network", null) == null ? null : "GCE_FIREWALL"
   )
+  purpose_data = (
+    lookup(each.value, "network", null) == null ? null : { network = each.value.network }
+  )
+  short_name  = each.key
+  description = each.value.description
   depends_on = [
     google_organization_iam_binding.authoritative,
     google_organization_iam_member.additive,
@@ -93,13 +93,10 @@ resource "google_tags_tag_key_iam_binding" "default" {
 # values
 
 resource "google_tags_tag_value" "default" {
-  for_each   = local.tag_values
-  parent     = google_tags_tag_key.default[each.value.tag].id
-  short_name = each.value.name
-  description = coalesce(
-    each.value.description,
-    "Managed by the Terraform organization module."
-  )
+  for_each    = local.tag_values
+  parent      = google_tags_tag_key.default[each.value.tag].id
+  short_name  = each.value.name
+  description = each.value.description
 }
 
 resource "google_tags_tag_value_iam_binding" "default" {

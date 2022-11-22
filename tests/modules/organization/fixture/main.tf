@@ -28,6 +28,7 @@ module "test" {
   iam_audit_config                        = var.iam_audit_config
   logging_sinks                           = var.logging_sinks
   logging_exclusions                      = var.logging_exclusions
+  network_tags                            = var.network_tags
   org_policies                            = var.org_policies
   org_policies_data_path                  = var.org_policies_data_path
   org_policy_custom_constraints           = var.org_policy_custom_constraints

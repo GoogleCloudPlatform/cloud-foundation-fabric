@@ -161,19 +161,19 @@ variable "group_iam" {
   nullable    = false
 }
 
-variable "iam" {
-  description = "Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "host_project_ids" {
   # tfdoc:variable:source 02-networking
   description = "Host project for the shared VPC."
   type = object({
     dev-spoke-0 = string
   })
+}
+
+variable "iam" {
+  description = "Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "labels" {

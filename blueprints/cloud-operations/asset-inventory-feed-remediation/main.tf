@@ -79,19 +79,18 @@ module "cf" {
   name        = var.name
   bucket_name = "${var.name}-${random_pet.random.id}"
   bucket_config = {
-    location             = var.region
-    lifecycle_delete_age = null
+    location = var.region
   }
   bundle_config = {
     source_dir  = "cf"
     output_path = var.bundle_path
-    excludes    = null
   }
   service_account = module.service-account.email
   trigger_config = {
-    event    = "google.pubsub.topic.publish"
-    resource = module.pubsub.topic.id
-    retry    = null
+    v1 = {
+      event    = "google.pubsub.topic.publish"
+      resource = module.pubsub.topic.id
+    }
   }
 }
 

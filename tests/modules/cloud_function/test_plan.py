@@ -16,19 +16,29 @@ import pytest
 
 
 @pytest.fixture
-def resources(plan_runner):
-  _, resources = plan_runner()
+def resources(plan_runner, version):
+  # convert `version` to a boolean suitable for the `v2` variable
+  v2 = {'v1': 'false', 'v2': 'true'}[version]
+  _, resources = plan_runner(v2=v2)
   return resources
 
 
+@pytest.mark.parametrize('version', ['v1', 'v2'])
 def test_resource_count(resources):
   "Test number of resources created."
   assert len(resources) == 3
 
 
-def test_iam(resources):
+@pytest.mark.parametrize('version', ['v1', 'v2'])
+def test_iam(resources, version):
   "Test IAM binding resources."
-  bindings = [r['values'] for r in resources if r['type']
-              == 'google_cloudfunctions_function_iam_binding']
+
+  types = {
+      'v1': 'google_cloudfunctions_function_iam_binding',
+      'v2': 'google_cloudfunctions2_function_iam_binding'
+  }
+
+  bindings = [r['values'] for r in resources if r['type'] == types[version]]
   assert len(bindings) == 1
   assert bindings[0]['role'] == 'roles/cloudfunctions.invoker'
+  assert bindings[0]['members'] == ['allUsers']

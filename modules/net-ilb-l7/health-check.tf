@@ -17,9 +17,13 @@
 # tfdoc:file:description Health check resource.
 
 resource "google_compute_health_check" "default" {
-  provider            = google-beta
-  for_each            = var.health_check_configs
-  project             = var.project_id
+  provider = google-beta
+  for_each = var.health_check_configs
+  project = (
+    each.value.project_id == null
+    ? var.project_id
+    : each.value.project_id
+  )
   name                = "${var.name}-${each.key}"
   description         = each.value.description
   check_interval_sec  = each.value.check_interval_sec

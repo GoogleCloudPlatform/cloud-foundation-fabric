@@ -185,13 +185,6 @@ variable "service_accounts_iam_additive" {
   nullable    = false
 }
 
-variable "services" {
-  description = "Services to be enabled for the project."
-  type        = list(string)
-  default     = []
-  nullable    = false
-}
-
 variable "service_identities_iam" {
   description = "Custom IAM settings for service identities in service => [role] format."
   type        = map(list(string))
@@ -203,6 +196,13 @@ variable "service_identities_iam_additive" {
   description = "Custom additive IAM settings for service identities in service => [role] format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
+}
+
+variable "services" {
+  description = "Services to be enabled for the project."
+  type        = list(string)
+  default     = []
   nullable    = false
 }
 

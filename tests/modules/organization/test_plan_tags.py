@@ -13,47 +13,9 @@
 # limitations under the License.
 
 
-def test_keys(plan_runner):
-  'Test tag keys.'
-  tags = '''{
-    foo = null
-    bar = {
-      description = null
-      iam         = null
-      values      = null
-    }
-    foobar = {
-      description = "Foobar tag."
-      iam = {
-        "roles/resourcemanager.tagAdmin" = [
-          "user:user1@example.com", "user:user2@example.com"
-        ]
-      }
-      values = {
-        one = null
-        two = {
-          description = "Foobar 2."
-          iam = {
-            "roles/resourcemanager.tagViewer" = [
-              "user:user3@example.com"
-            ]
-          }
-        }
-        three = {
-          description = "Foobar 3."
-          iam = {
-            "roles/resourcemanager.tagViewer" = [
-              "user:user3@example.com"
-            ]
-            "roles/resourcemanager.tagAdmin" = [
-              "user:user4@example.com"
-            ]
-          }
-        }
-      }
-    }
-  }'''
-  _, resources = plan_runner(tags=tags)
+def test_resource_tags(plan_runner):
+  'Test resource tags.'
+  _, resources = plan_runner(tf_var_file='test.resource_tags.tfvars')
   assert len(resources) == 10
   resource_values = {}
   for r in resources:
@@ -64,10 +26,23 @@ def test_keys(plan_runner):
       r['role'] for r in resource_values['google_tags_tag_value_iam_binding']
   ]
   expected = [
-      'roles/resourcemanager.tagAdmin', 'roles/resourcemanager.tagViewer',
+      'roles/resourcemanager.tagAdmin',
+      'roles/resourcemanager.tagViewer',
       'roles/resourcemanager.tagViewer'
   ]
   assert result == expected
+
+
+def test_network_tags(plan_runner):
+  'Test network tags.'
+  _, resources = plan_runner(tf_var_file='test.network_tags.tfvars')
+  assert len(resources) == 1
+  resource_values = {}
+  for r in resources:
+    resource_values.setdefault(r['type'], []).append(r['values'])
+  google_tags_tag_key = resource_values['google_tags_tag_key'][0]
+  assert google_tags_tag_key['purpose'] == "GCE_FIREWALL"
+  assert google_tags_tag_key['purpose_data']['network'] == "foobar"
 
 
 def test_bindings(plan_runner):

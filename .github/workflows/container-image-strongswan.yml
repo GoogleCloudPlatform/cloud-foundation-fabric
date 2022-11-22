@@ -11,3 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+name: "Build and push the strongSwan container image"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - 'modules/cloud-config-container/onprem/docker-images/strongswan/**'
+
+jobs:
+  build-push-strongswan-container-image:
+    uses: ./.github/workflows/container-image.yml
+    with:
+      image_name: fabric-strongswan
+      docker_context: modules/cloud-config-container/onprem/docker-images/strongswan

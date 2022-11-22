@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-variable "nginx_image" {
-  description = "Nginx container image to use."
-  type        = string
-  default     = "nginx:1.23.1"
-}
-
-variable "runcmd_pre" {
-  description = "Extra commands to run before starting nginx."
-  type        = list(string)
-  default     = []
-}
-
-variable "runcmd_post" {
-  description = "Extra commands to run after starting nginx."
-  type        = list(string)
-  default     = []
-}
-
 variable "files" {
   description = "Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null."
   type = map(object({
@@ -40,6 +22,24 @@ variable "files" {
     permissions = string
   }))
   default = null
+}
+
+variable "nginx_image" {
+  description = "Nginx container image to use."
+  type        = string
+  default     = "nginx:1.23.1"
+}
+
+variable "runcmd_post" {
+  description = "Extra commands to run after starting nginx."
+  type        = list(string)
+  default     = []
+}
+
+variable "runcmd_pre" {
+  description = "Extra commands to run before starting nginx."
+  type        = list(string)
+  default     = []
 }
 
 variable "users" {

@@ -26,12 +26,20 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+# during the preview phase you cannot change this attribute on an existing rule
+variable "global_access" {
+  description = "Allow client access from all regions."
+  type        = bool
+  default     = null
+}
+
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
     zone        = string
     instances   = optional(list(string), [])
     named_ports = optional(map(number), {})
+    project_id  = optional(string)
   }))
   default  = {}
   nullable = false
@@ -51,6 +59,7 @@ variable "name" {
 variable "neg_configs" {
   description = "Optional network endpoint groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
+    project_id = optional(string)
     cloudrun = optional(object({
       region = string
       target_service = optional(object({
@@ -114,15 +123,15 @@ variable "network_tier_premium" {
   nullable    = false
 }
 
-variable "project_id" {
-  description = "Project id."
-  type        = string
-}
-
 variable "ports" {
   description = "Optional ports for HTTP load balancer, valid ports are 80 and 8080."
   type        = list(string)
   default     = null
+}
+
+variable "project_id" {
+  description = "Project id."
+  type        = string
 }
 
 variable "protocol" {
@@ -141,6 +150,15 @@ variable "protocol" {
 variable "region" {
   description = "The region where to allocate the ILB resources."
   type        = string
+}
+
+variable "service_directory_registration" {
+  description = "Service directory namespace and service used to register this load balancer."
+  type = object({
+    namespace = string
+    service   = string
+  })
+  default = null
 }
 
 variable "ssl_certificates" {
