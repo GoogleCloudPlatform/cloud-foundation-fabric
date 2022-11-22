@@ -50,11 +50,11 @@
   `vpc_firewalls.get_firewalls_data`
 - [x] calculate and store firewall policy metrics
   `firewall_policies.get_firewal_policies_data`
-- [ ] calculate and store instance per network metrics
+- [x] calculate and store instance per network metrics
   `instances.get_gce_instances_data`
-- [ ] calculate and store L4 forwarding rule metrics
+- [x] calculate and store L4 forwarding rule metrics
   `ilb_fwrules.get_forwarding_rules_data`
-- [ ] calculate and store L7 forwarding rule metrics
+- [x] calculate and store L7 forwarding rule metrics
   `ilb_fwrules.get_forwarding_rules_data`
 - [ ] calculate and store static routes metrics
   `routes.get_static_routes_data`

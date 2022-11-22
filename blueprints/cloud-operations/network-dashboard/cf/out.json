@@ -19,7 +19,7 @@
       "address": "10.24.33.2",
       "internal": true,
       "purpose": "GCE_ENDPOINT",
-      "status": "RESERVED",
+      "status": "IN_USE",
       "network": null,
       "subnetwork": "projects/tf-playground-simple/regions/europe-west8/subnetworks/default"
     },
@@ -4183,9 +4183,9 @@
       }
     }
   },
-  "routes-dynamic": {
+  "routes_dynamic": {
     "projects/tf-playground-svpc-net/global/networks/shared-vpc": {
-      "vpn-home": 1
+      "projects/tf-playground-svpc-net/regions/europe-west8/routers/vpn-home": 1
     }
   },
   "networks:project": {

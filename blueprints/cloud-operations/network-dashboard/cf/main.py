@@ -23,10 +23,7 @@ import plugins
 
 from google.auth.transport.requests import AuthorizedSession
 
-try:
-  HTTP = AuthorizedSession(google.auth.default()[0])
-except google.auth.exceptions.RefreshError as e:
-  raise SystemExit(e.args[0])
+HTTP = AuthorizedSession(google.auth.default()[0])
 LOGGER = logging.getLogger('net-dash')
 
 Result = collections.namedtuple('Result', 'phase resource data')
@@ -69,9 +66,12 @@ def do_init(resources, organization, op_project, folders=None, projects=None):
     plugin.func(resources)
 
 
-def do_timeseries(resources, timeseries):
-  LOGGER.info(f'timeseries start')
+def do_timeseries(resources, timeseries, debug_plugin=None):
+  LOGGER.info(f'timeseries start (debug plugin: {debug_plugin})')
   for plugin in plugins.get_timeseries_plugins():
+    if debug_plugin and plugin.name != debug_plugin:
+      LOGGER.info(f'skipping {plugin.name}')
+      continue
     for result in plugin.func(resources):
       if not result:
         continue
@@ -81,11 +81,14 @@ def do_timeseries(resources, timeseries):
 def fetch(request):
   # try
   LOGGER.info(f'fetch {request.url}')
-  if not request.data:
-    response = HTTP.get(request.url, headers=request.headers)
-  else:
-    response = HTTP.post(request.url, headers=request.headers,
-                         data=request.data)
+  try:
+    if not request.data:
+      response = HTTP.get(request.url, headers=request.headers)
+    else:
+      response = HTTP.post(request.url, headers=request.headers,
+                           data=request.data)
+  except google.auth.exceptions.RefreshError as e:
+    raise SystemExit(e.args[0])
   if response.status_code != 200:
     LOGGER.critical(
         f'response code {response.status_code} for URL {request.url}')
@@ -106,8 +109,10 @@ def fetch(request):
               help='Export JSON representation of resources to file.')
 @click.option('--load-file', type=click.File('r'),
               help='Load JSON resources from file, skips init and discovery.')
+@click.option('--debug-plugin',
+              help='Run only core and specified timeseries plugin.')
 def main(organization=None, op_project=None, project=None, folder=None,
-         dump_file=None, load_file=None):
+         dump_file=None, load_file=None, debug_plugin=None):
   logging.basicConfig(level=logging.INFO)
   timeseries = []
   if load_file:
@@ -116,7 +121,7 @@ def main(organization=None, op_project=None, project=None, folder=None,
     resources = {}
     do_init(resources, organization, op_project, folder, project)
     do_discovery(resources)
-  do_timeseries(resources, timeseries)
+  do_timeseries(resources, timeseries, debug_plugin)
   LOGGER.info(
       {k: len(v) for k, v in resources.items() if not isinstance(v, str)})
   LOGGER.info(f'{len(timeseries)} timeseries')

@@ -18,7 +18,7 @@ from . import Level, Resource, register_init, register_discovery
 from .utils import batched, dirty_mp_request, dirty_mp_response
 
 LOGGER = logging.getLogger('net-dash.discovery.compute-routes-dynamic')
-NAME = 'routes-dynamic'
+NAME = 'routes_dynamic'
 
 API_URL = '/compute/v1/projects/{}/regions/{}/routers/{}/getRouterStatus'
 
@@ -50,7 +50,8 @@ def _handle_discovery(resources, response):
         int(p.get('numLearnedRoutes', 0)) for p in bgp_peer_status)
     if router['network'] not in resources[NAME]:
       resources[NAME][router['network']] = {}
-    yield Resource(NAME, router['network'], num_learned_routes, router['name'])
+    yield Resource(NAME, router['network'], num_learned_routes,
+                   router['self_link'])
   yield
 
 
