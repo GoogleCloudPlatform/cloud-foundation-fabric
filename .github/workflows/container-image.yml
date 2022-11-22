@@ -24,6 +24,9 @@ on:
         required: true
         type: string
 
+permissions:
+  packages: write
+
 env:
   REGISTRY: ghcr.io
 
