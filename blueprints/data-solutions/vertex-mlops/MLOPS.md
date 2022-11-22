@@ -1,5 +1,10 @@
 # MLOps with Vertex AI
 
+## Set up the experimentation notebook
+
+Once the environment have been deployed, first step is to open the Jupyter notebook available in the [Vertex Workbench section](https://console.cloud.google.com/vertex-ai/workbench/list/managed), under the sepecific region (i.e. europe-west4).
+Use the `OPEN JUPYTERLAB` command to launch the notebook. Once it is ready, you can use the menu option `Git -> Clone a Repository` to clone the Github repo.
+
 
 ## Set up the required tables
 
@@ -9,17 +14,17 @@ For the Vertex MLOps end2end example we will use the public dataset `bigquery-pu
 Andrea Dal Pozzolo, Olivier Caelen, Reid A. Johnson and Gianluca Bontempi. Calibrating Probability with Undersampling for Unbalanced Classification. In Symposium on Computational Intelligence and Data Mining (CIDM), IEEE, 2015
 ```
 
-If the destinatio dataset is located in a different region from the source dataset (US) you will need to copy the data to the desired region. You can use the Data Transfer Service or an extracing/load procedure such as the following one:
+If the destination dataset is located in a different region from the source dataset (US) you will need to copy the data to the desired region. You can use the Data Transfer Service or an extracing/load procedure such as the following one:
 
 ```
 #Set up env vars
 PROJECT=<your Project ID>
 SRC_TABLE=bigquery-public-data:ml_datasets.ulb_fraud_detection
-BQ_DATASET_NAME=credit_cards_pro_eu
+BQ_DATASET_NAME=creditcards
 BQ_SOURCE_TABLE=creditcards
 ML_TABLE=creditcards_ml
 DST_TABLE=$BQ_DATASET_NAME.$BQ_SOURCE_TABLE
-BUCKET=gs://$PROJECT-eu/data/credit_cards*
+BUCKET=gs://$PROJECT/data/credit_cards*
 
 #Extract & Load
 bq extract --project_id $PROJECT --destination_format PARQUET $SRC_TABLE  $BUCKET
@@ -94,6 +99,6 @@ curl -X POST \
 -d @request.json \
 "https://${ENDPOINT}/v1/projects/${PROJECT}/locations/${REGION}/datasets"
 
-
-
 ```
+
+

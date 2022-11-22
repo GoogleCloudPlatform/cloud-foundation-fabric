@@ -178,15 +178,14 @@ module "vpc-local" {
 }
 
 module "firewall" {
+  count      = var.vpc_local == null ? 0 : 1
   source              = "../../../../../modules/net-vpc-firewall"
   project_id          = module.project.project_id
   network             = module.vpc-local[0].name
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  #ssh_source_ranges   = [] #Allow IAP ssh access
-
-  custom_rules = {
+  default_rules_config = {
+    disabled = true
+  }
+  ingress_rules = {
     dataflow-ingress = {
       description          = "Dataflow service."
       direction            = "INGRESS"
@@ -199,10 +198,12 @@ module "firewall" {
       extra_attributes     = {}
     }
   }
+ 
 }
 
 
 module "nat-ew1" {
+  count      = var.vpc_local == null ? 0 : 1
   source                = "../../../../../modules/net-cloudnat"
   project_id            = module.project.project_id
   region                = "europe-west1"
@@ -227,9 +228,8 @@ module "project" {
   contacts                   = { for c in local.essential_contacts : c => ["ALL"] }
   iam                        = local.iam
   labels                     = local.labels
+  org_policies               = try(var.org_policies, {})
   parent                     = var.folder_id
-  policy_boolean             = try(var.org_policies.policy_boolean, {})
-  policy_list                = try(var.org_policies.policy_list, {})
   service_encryption_key_ids = var.kms_service_agents
   services                   = local.services
   shared_vpc_service_config = var.vpc == null ? null : {

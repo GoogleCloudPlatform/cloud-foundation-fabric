@@ -1,0 +1,68 @@
+# skip boilerplate check
+
+# [opt] Billing account id - overrides default if set
+#billing_account_id: 012345-67890A-BCDEF0
+
+# [opt] Contacts for billing alerts and important notifications
+#essential_contacts:
+#  - user@company.org
+
+# Folder: 
+folder_id: folders/999999999999
+
+# [opt] Authoritative IAM bindings in group => [roles] format
+group_iam:
+  gcp-ml-eng@company.org:
+    - roles/artifactregistry.admin
+    - roles/cloudbuild.builds.editor
+    - roles/iam.serviceAccountUser
+    - roles/logging.logWriter
+    - roles/logging.viewer
+    - roles/serviceusage.serviceUsageConsumer
+    - roles/storage.admin
+
+# [opt] Service account to create for the project and their roles on the project
+# in name => [roles] format
+# serviceUsageConsumer required for Cloud Build
+# https://cloud.google.com/build/docs/securing-builds/configure-access-to-resources#granting_permissions_to_run_gcloud_commands
+
+service_accounts:                      
+  sa-github:
+    - roles/cloudbuild.builds.editor
+    - roles/serviceusage.serviceUsageConsumer
+    - roles/storage.admin
+
+# [opt] IAM bindings on the service account resources.
+# in name => {role => [members]} format
+service_accounts_iam:
+
+
+# [opt] Authoritative IAM bindings in role => [principals] format
+# Generally used to grant roles to service accounts external to the project
+
+# [opt] Labels for the project - merged with the ones defined in defaults
+labels:
+
+# [opt] Org policy overrides defined at project level
+# org_policies:
+
+# [opt] APIs to enable on the project.
+services:
+    - artifactregistry.googleapis.com
+    - cloudbuild.googleapis.com
+    - iam.googleapis.com
+    - monitoring.googleapis.com
+
+buckets:
+  # Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘constraints/gcp.resourceLocations’"
+  # https://stackoverflow.com/questions/53206667/cloud-build-fails-with-resource-location-constraint
+  cicd_cloudbuild:
+    region: EU
+
+workload_identity:
+  identity_pool_claims: attribute.repository/<ORG>/<REPO>
+
+artifact_registry:
+  docker-repo:
+    format: DOCKER
+    region: europe-west4

@@ -25,19 +25,14 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
   }
 }
 
-module "service-account-gh" {
-  count                  = var.workload_identity == null ? 0 : 1
-  service_account_create = false
-  source                 = "../../../../../modules/iam-service-account"
-  project_id             = module.project.project_id
-  name                   = module.service-accounts["sa-github"].name
-  generate_key           = false
 
-  # authoritative roles granted *on* the service accounts to other identities
-  iam = {
-    "roles/iam.workloadIdentityUser" = ["principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool[0].name}/${var.workload_identity.identity_pool_claims}"]
-  }
+resource "google_service_account_iam_member" "sa-gh-roles" {
+  count                              = var.workload_identity == null ? 0 : 1
+  service_account_id = module.service-accounts["sa-github"].name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool[0].name}/${var.workload_identity.identity_pool_claims}"
 }
+
 
 module "artifact_registry" {
   for_each   = var.artifact_registry
