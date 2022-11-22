@@ -78,7 +78,7 @@ buckets:
     region: EU
   # Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘constraints/gcp.resourceLocations’"
   # https://stackoverflow.com/questions/53206667/cloud-build-fails-with-resource-location-constraint
-  creditcards_cloudbuild:
+  creditcards-dev_cloudbuild:
     region: EU
 
 datasets:
