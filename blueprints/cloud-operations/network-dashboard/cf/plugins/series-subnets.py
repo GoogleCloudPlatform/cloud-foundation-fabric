@@ -59,6 +59,7 @@ def _subnet_instances(resources):
 
 @register_timeseries
 def timeseries(resources):
+  'Derive and yield subnetwork timeseries for address utilization.'
   LOGGER.info('timeseries')
   subnet_nets = {
       k: ipaddress.ip_network(v['cidr_range'])

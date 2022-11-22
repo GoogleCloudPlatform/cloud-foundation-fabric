@@ -20,6 +20,7 @@ import logging
 import click
 import google.auth
 import plugins
+import yaml
 
 from google.auth.transport.requests import AuthorizedSession
 
@@ -56,12 +57,14 @@ def do_discovery(resources):
           resources[result.type][result.id] = result.data
 
 
-def do_init(resources, organization, op_project, folders=None, projects=None):
+def do_init(resources, organization, op_project, folders=None, projects=None,
+            custom_quota=None):
   LOGGER.info(f'init start')
   resources['config:organization'] = str(organization)
   resources['config:monitoring_project'] = op_project
   resources['config:folders'] = [str(f) for f in folders or []]
   resources['config:projects'] = projects or []
+  resources['config:custom_quota'] = custom_quota or {}
   for plugin in plugins.get_init_plugins():
     plugin.func(resources)
 
@@ -105,6 +108,8 @@ def fetch(request):
               help='GCP project id, can be specified multiple times')
 @click.option('--folder', '-p', type=int, multiple=True,
               help='GCP folder id, can be specified multiple times')
+@click.option('--custom-quota-file', type=click.File('r'),
+              help='Custom quota file in yaml format.')
 @click.option('--dump-file', type=click.File('w'),
               help='Export JSON representation of resources to file.')
 @click.option('--load-file', type=click.File('r'),
@@ -112,14 +117,21 @@ def fetch(request):
 @click.option('--debug-plugin',
               help='Run only core and specified timeseries plugin.')
 def main(organization=None, op_project=None, project=None, folder=None,
-         dump_file=None, load_file=None, debug_plugin=None):
+         custom_quota_file=None, dump_file=None, load_file=None,
+         debug_plugin=None):
   logging.basicConfig(level=logging.INFO)
   timeseries = []
   if load_file:
     resources = json.load(load_file)
   else:
+    custom_quota = {}
     resources = {}
-    do_init(resources, organization, op_project, folder, project)
+    if custom_quota_file:
+      try:
+        custom_quota = yaml.load(custom_quota_file, Loader=yaml.Loader)
+      except yaml.YAMLError as e:
+        raise SystemExit(f'Error decoding custom quota file: {e.args[0]}')
+    do_init(resources, organization, op_project, folder, project, custom_quota)
     do_discovery(resources)
   do_timeseries(resources, timeseries, debug_plugin)
   LOGGER.info(

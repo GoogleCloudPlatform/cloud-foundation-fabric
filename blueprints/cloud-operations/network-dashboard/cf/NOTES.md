@@ -56,12 +56,15 @@
   `ilb_fwrules.get_forwarding_rules_data`
 - [x] calculate and store L7 forwarding rule metrics
   `ilb_fwrules.get_forwarding_rules_data`
-- [ ] calculate and store static routes metrics
+- [x] calculate and store static routes metrics
   `routes.get_static_routes_data`
-- [ ] calculate and store peering metrics
+- [x] calculate and store peering metrics
   `peerings.get_vpc_peering_data`
 - [ ] calculate and store peering group metrics
   `metrics.get_pgg_data`
   `routes.get_routes_ppg`
 - [ ] write buffered timeseries
   `metrics.flush_series_buffer`
+- [x] add per-network and per-project hidden quota override
+  - [x] implement a custom quota override mechanism
+  - [x] use it in timeseries plugins

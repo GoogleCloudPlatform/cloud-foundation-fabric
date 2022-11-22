@@ -22,6 +22,7 @@ TUPLE_LIMIT = 2000
 
 @register_timeseries
 def timeseries(resources):
+  'Derive network timeseries for firewall policies.'
   LOGGER.info('timeseries')
   for v in resources['firewall_policies'].values():
     tuples = int(v['num_tuples'])

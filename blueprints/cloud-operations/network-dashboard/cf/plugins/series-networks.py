@@ -30,6 +30,7 @@ LOGGER = logging.getLogger('net-dash.timeseries.networks')
 
 
 def _group_timeseries(name, resources, grouped, limit_name):
+  'Derive and yield timeseries from grouped iterators and limits.'
   for network_id, elements in grouped:
     network = resources['networks'].get(network_id)
     if not network:
@@ -45,6 +46,7 @@ def _group_timeseries(name, resources, grouped, limit_name):
 
 
 def _forwarding_rules(resources):
+  'Derive network timeseries for forwarding rule utilization.'
   filter = lambda n, v: v['load_balancing_scheme'] != n
   forwarding_rules = resources['forwarding_rules'].values()
   forwarding_rules_l4 = itertools.filterfalse(
@@ -62,6 +64,7 @@ def _forwarding_rules(resources):
 
 
 def _instances(resources):
+  'Derive network timeseries for instance utilization.'
   instance_networks = functools.reduce(
       operator.add, [i['networks'] for i in resources['instances'].values()])
   grouped = itertools.groupby(instance_networks, lambda i: i['network'])
@@ -69,28 +72,8 @@ def _instances(resources):
                            'INSTANCES_PER_NETWORK_GLOBAL')
 
 
-def _routes(resources):
-  filter = lambda v: v['next_hop_type'] in ('peering', 'network')
-  grouped = itertools.groupby(resources['routes'].values(),
-                              lambda v: v['network'])
-  project_counts = {}
-  for network_id, elements in grouped:
-    network = resources['networks'].get(network_id)
-    count = len(list(elements))
-    labels = {'project': network['project_id'], 'network': network['name']}
-    yield TimeSeries('network/routes_static_used', count, labels)
-    project_counts[network['project_id']] = project_counts.get(
-        network['project_id'], 0) + count
-  for project_id, count in project_counts.items():
-    labels = {'project': project_id}
-    quota = resources['quota'][project_id]
-    limit = quota.get('ROUTES', LIMITS['ROUTES'])
-    yield TimeSeries('project/static_routes_used', count, labels)
-    yield TimeSeries('project/static_routes_available', limit, labels)
-    yield TimeSeries('project/static_routes_used_ratio', count / limit, labels)
-
-
 def _subnet_ranges(resources):
+  'Derive network timeseries for subnet range utilization.'
   grouped = itertools.groupby(resources['subnetworks'].values(),
                               lambda v: v['network'])
   return _group_timeseries('subnet', resources, grouped,
@@ -99,6 +82,7 @@ def _subnet_ranges(resources):
 
 @register_timeseries
 def timeseries(resources):
+  'Yield timeseries.'
   LOGGER.info('timeseries')
   return itertools.chain(_forwarding_rules(resources), _instances(resources),
-                         _routes(resources), _subnet_ranges(resources))
+                         _subnet_ranges(resources))
