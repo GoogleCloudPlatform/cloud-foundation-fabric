@@ -29,7 +29,7 @@ module "orch-sa-cmp-0" {
 resource "google_composer_environment" "orch-cmp-0" {
   provider = google-beta
   project  = module.orch-project.project_id
-  name     = "${var.prefix}-orc-cmp-0"
+  name     = "${local.prefix}orc-cmp-0"
   region   = var.region
   config {
     node_count = var.composer_config.node_count

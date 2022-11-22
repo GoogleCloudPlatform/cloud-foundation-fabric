@@ -15,7 +15,7 @@
  */
 
 locals {
-  prefix = (var.prefix == null || var.prefix == "") ? "" : "${var.prefix}-"
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
   k8s_ns = "apis"
   k8s_sa = "storage-api-sa"
   image = (

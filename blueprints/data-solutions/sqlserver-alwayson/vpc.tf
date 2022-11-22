@@ -137,8 +137,8 @@ module "listener-ilb" {
   for_each      = toset(var.always_on_groups)
   project_id    = var.project_id
   region        = var.region
-  name          = "${var.prefix}-${each.value}-ilb"
-  service_label = "${var.prefix}-${each.value}-ilb"
+  name          = "${local.prefix}${each.value}-ilb"
+  service_label = "${local.prefix}${each.value}-ilb"
   address       = local.internal_address_ips["${local.prefix}lb-${each.value}"]
   vpc_config = {
     network    = local.network

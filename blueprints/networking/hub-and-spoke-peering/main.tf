@@ -13,7 +13,7 @@
 # limitations under the License.
 
 locals {
-  prefix = var.prefix != null && var.prefix != "" ? "${var.prefix}-" : ""
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
   vm-instances = [
     module.vm-hub.instance,
     module.vm-spoke-1.instance,

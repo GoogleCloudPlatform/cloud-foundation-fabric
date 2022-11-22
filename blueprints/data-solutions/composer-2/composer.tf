@@ -23,7 +23,7 @@ module "comp-sa" {
 }
 
 resource "google_composer_environment" "env" {
-  name    = "${var.prefix}-composer"
+  name    = "${local.prefix}composer"
   project = module.project.project_id
   region  = var.region
   config {

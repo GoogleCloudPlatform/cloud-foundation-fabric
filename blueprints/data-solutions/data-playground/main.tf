@@ -16,6 +16,7 @@
 #                                   Project                                   #
 ###############################################################################
 locals {
+  prefix                  = var.prefix == null ? "" : "${var.prefix}-"
   service_encryption_keys = var.service_encryption_keys
 }
 
@@ -61,11 +62,11 @@ module "project" {
 module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = "${var.prefix}-vpc"
+  name       = "${local.prefix}vpc"
   subnets = [
     {
       ip_cidr_range = var.vpc_config.ip_cidr_range
-      name          = "${var.prefix}-subnet"
+      name          = "${local.prefix}subnet"
       region        = var.region
     }
   ]
@@ -80,7 +81,7 @@ module "vpc-firewall" {
   }
   ingress_rules = {
     #TODO Remove and rely on 'ssh' tag once terraform-provider-google/issues/9273 is fixed
-    ("${var.prefix}-iap") = {
+    ("${local.prefix}iap") = {
       description   = "Enable SSH from IAP on Notebooks."
       source_ranges = ["35.235.240.0/20"]
       targets       = ["notebook-instance"]
@@ -92,7 +93,7 @@ module "vpc-firewall" {
 module "cloudnat" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.project.project_id
-  name           = "${var.prefix}-default"
+  name           = "${local.prefix}default"
   region         = var.region
   router_network = module.vpc.name
 }
@@ -113,7 +114,7 @@ module "bucket" {
 module "dataset" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.project.project_id
-  id             = "${var.prefix}_data"
+  id             = "${replace(local.prefix, "-", "_")}data"
   encryption_key = try(local.service_encryption_keys.bq, null) # Example assignment of an encryption key
 }
 
@@ -139,7 +140,7 @@ module "service-account-notebook" {
 }
 
 resource "google_notebooks_instance" "playground" {
-  name         = "${var.prefix}-notebook"
+  name         = "${local.prefix}notebook"
   location     = format("%s-%s", var.region, "b")
   machine_type = "e2-medium"
   project      = module.project.project_id
@@ -159,7 +160,7 @@ resource "google_notebooks_instance" "playground" {
   no_proxy_access = false
 
   network = module.vpc.network.id
-  subnet  = module.vpc.subnets[format("%s/%s", var.region, "${var.prefix}-subnet")].id
+  subnet  = module.vpc.subnets[format("%s/%s", var.region, "${local.prefix}subnet")].id
 
   service_account = module.service-account-notebook.email
 

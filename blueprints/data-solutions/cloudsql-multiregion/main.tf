@@ -15,6 +15,8 @@
  */
 
 locals {
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
+
   data_eng_principals_iam = [
     for k in var.data_eng_principals :
     "user:${k}"
@@ -142,6 +144,6 @@ module "nat" {
   count          = local.use_shared_vpc ? 0 : 1
   project_id     = module.project.project_id
   region         = var.regions.primary
-  name           = "${var.prefix}-default"
+  name           = "${local.prefix}default"
   router_network = module.vpc.0.name
 }

@@ -18,7 +18,7 @@ module "db" {
   availability_type   = var.sql_configuration.availability_type
   encryption_key_name = var.service_encryption_keys != null ? try(var.service_encryption_keys[var.regions.primary], null) : null
   network             = local.vpc_self_link
-  name                = "${var.prefix}-db"
+  name                = "${local.prefix}db"
   region              = var.regions.primary
   database_version    = var.sql_configuration.database_version
   tier                = var.sql_configuration.tier
@@ -58,5 +58,5 @@ resource "google_sql_user" "service-account" {
 module "service-account-sql" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project.project_id
-  name       = "${var.prefix}-sql"
+  name       = "${local.prefix}sql"
 }

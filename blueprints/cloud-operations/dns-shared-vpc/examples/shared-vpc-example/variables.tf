@@ -50,8 +50,13 @@ variable "billing_account" {
 }
 
 variable "prefix" {
-  description = "Customer name to use as prefix for resources' naming."
-  default     = "test-dns"
+  description = "Optional prefix used for resource names."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix can not be empty, please use null instead."
+  }
 }
 
 variable "dns_domain" {

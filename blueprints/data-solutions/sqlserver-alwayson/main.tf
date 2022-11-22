@@ -39,7 +39,7 @@ locals {
       (local.witness_netbios_name) = local.zones[length(local.zones) - 1]
     }
   )
-  prefix = var.prefix != "" ? "${var.prefix}-" : ""
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
   subnetwork = (
     var.project_create != null
     ? module.vpc.subnet_self_links["${var.region}/${var.subnetwork}"]

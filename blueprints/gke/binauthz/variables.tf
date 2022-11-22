@@ -27,9 +27,13 @@ variable "pods_cidr_block" {
 }
 
 variable "prefix" {
-  description = "Prefix for resources created."
+  description = "Optional prefix used for resource names."
   type        = string
   default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix can not be empty, please use null instead."
+  }
 }
 
 variable "project_create" {

@@ -32,9 +32,13 @@ variable "ip_secondary_ranges" {
 }
 
 variable "prefix" {
-  description = "Arbitrary string used to prefix resource names."
+  description = "Optional prefix used for resource names."
   type        = string
   default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix can not be empty, please use null instead."
+  }
 }
 
 variable "private_service_ranges" {

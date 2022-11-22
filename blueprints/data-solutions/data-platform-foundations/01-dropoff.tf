@@ -109,7 +109,7 @@ module "drop-sa-ps-0" {
 module "drop-ps-0" {
   source     = "../../../modules/pubsub"
   project_id = module.drop-project.project_id
-  name       = "${var.prefix}-drp-ps-0"
+  name       = "${local.prefix}drp-ps-0"
   kms_key    = try(local.service_encryption_keys.pubsub, null)
 }
 
@@ -129,7 +129,7 @@ module "drop-sa-bq-0" {
 module "drop-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.drop-project.project_id
-  id             = "${replace(var.prefix, "-", "_")}_drp_bq_0"
+  id             = "${replace(local.prefix, "-", "_")}drp_bq_0"
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }

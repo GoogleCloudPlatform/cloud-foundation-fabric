@@ -13,7 +13,7 @@
 # limitations under the License.
 
 locals {
-  prefix = (var.prefix == null || var.prefix == "") ? "" : "${var.prefix}-"
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 module "project" {

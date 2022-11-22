@@ -118,7 +118,7 @@ module "orch-vpc" {
   source     = "../../../modules/net-vpc"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.orch-project.project_id
-  name       = "${var.prefix}-default"
+  name       = "${local.prefix}default"
   subnets = [
     {
       ip_cidr_range = "10.10.0.0/24"
@@ -146,7 +146,7 @@ module "orch-nat" {
   count          = local.use_shared_vpc ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.orch-project.project_id
-  name           = "${var.prefix}-default"
+  name           = "${local.prefix}default"
   region         = var.region
   router_network = module.orch-vpc.0.name
 }

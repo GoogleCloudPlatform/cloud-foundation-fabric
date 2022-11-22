@@ -15,7 +15,7 @@
  */
 
 locals {
-  prefix = coalesce(var.prefix, "") == "" ? "" : "${var.prefix}-"
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
   project_id = (
     var.project_create
     ? module.project.project_id
@@ -28,17 +28,17 @@ locals {
   )
   vpc_producer_main = (
     var.vpc_create
-    ? module.vpc_producer.subnets["${var.region}/${var.prefix}-main"].id
+    ? module.vpc_producer.subnets["${var.region}/${local.prefix}main"].id
     : var.vpc_config["producer"]["subnet_main_id"]
   )
   vpc_producer_proxy = (
     var.vpc_create
-    ? module.vpc_producer.subnets_proxy_only["${var.region}/${var.prefix}-proxy"].id
+    ? module.vpc_producer.subnets_proxy_only["${var.region}/${local.prefix}proxy"].id
     : var.vpc_config["producer"]["subnet_proxy_id"]
   )
   vpc_producer_psc = (
     var.vpc_create
-    ? module.vpc_producer.subnets_psc["${var.region}/${var.prefix}-psc"].id
+    ? module.vpc_producer.subnets_psc["${var.region}/${local.prefix}psc"].id
     : var.vpc_config["producer"]["subnet_psc_id"]
   )
   vpc_consumer_id = (
@@ -48,7 +48,7 @@ locals {
   )
   vpc_consumer_main = (
     var.vpc_create
-    ? module.vpc_consumer.subnets["${var.region}/${var.prefix}-consumer"].id
+    ? module.vpc_consumer.subnets["${var.region}/${local.prefix}consumer"].id
     : var.vpc_config["consumer"]["subnet_main_id"]
   )
 }
@@ -70,7 +70,7 @@ module "vpc_producer" {
   subnets = [
     {
       ip_cidr_range      = var.producer["subnet_main"]
-      name               = "${var.prefix}-main"
+      name               = "${local.prefix}main"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -95,7 +95,7 @@ module "vpc_producer" {
 module "psc_producer" {
   source          = "./psc-producer"
   project_id      = local.project_id
-  name            = var.prefix
+  name            = "${local.prefix}producer"
   dest_ip_address = var.dest_ip_address
   dest_port       = var.dest_port
   network         = local.vpc_producer_id

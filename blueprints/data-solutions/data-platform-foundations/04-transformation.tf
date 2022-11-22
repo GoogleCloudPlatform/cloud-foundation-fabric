@@ -131,7 +131,7 @@ module "transf-vpc" {
   source     = "../../../modules/net-vpc"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.transf-project.project_id
-  name       = "${var.prefix}-default"
+  name       = "${local.prefix}default"
   subnets = [
     {
       ip_cidr_range = "10.10.0.0/24"
@@ -155,7 +155,7 @@ module "transf-nat" {
   source         = "../../../modules/net-cloudnat"
   count          = local.use_shared_vpc ? 0 : 1
   project_id     = module.transf-project.project_id
-  name           = "${var.prefix}-default"
+  name           = "${local.prefix}default"
   region         = var.region
   router_network = module.transf-vpc.0.name
 }

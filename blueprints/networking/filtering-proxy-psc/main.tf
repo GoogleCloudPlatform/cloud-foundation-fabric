@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+locals {
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
+}
+
 ###############################################################################
 #                        Host project and VPC resources                       #
 ###############################################################################
@@ -35,7 +39,7 @@ module "project" {
 module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = "${var.prefix}-vpc"
+  name       = "${local.prefix}vpc"
   subnets = [
     {
       name          = "proxy"

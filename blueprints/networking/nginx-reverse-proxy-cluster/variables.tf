@@ -91,9 +91,13 @@ variable "ops_agent_image" {
 }
 
 variable "prefix" {
-  description = "Prefix used for resources that need unique names."
+  description = "Optional prefix used for resource names."
   type        = string
-  default     = ""
+  default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix can not be empty, please use null instead."
+  }
 }
 
 variable "project_create" {
@@ -127,4 +131,3 @@ variable "tls" {
   type        = bool
   default     = false
 }
-

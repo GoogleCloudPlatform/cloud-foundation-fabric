@@ -209,7 +209,7 @@ module "project" {
     ]
   }
   iam = {
-    "roles/editor" = [      
+    "roles/editor" = [
       "serviceAccount:${module.project.service_accounts.cloud_services}"
     ]
   }
@@ -236,7 +236,7 @@ module "project" {
   source          = "./modules/project"
   name            = "project-example"
   iam = {
-    "roles/editor" = [      
+    "roles/editor" = [
       "serviceAccount:${module.project.service_accounts.cloud_services}"
     ]
   }
@@ -551,7 +551,7 @@ variable "prefix" {
   type        = string
   default     = null
   validation {
-    condition = var.prefix != ""
+    condition     = var.prefix != ""
     error_message = "Prefix can not be empty, please use null instead."
   }
 }
