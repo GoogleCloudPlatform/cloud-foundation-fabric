@@ -38,7 +38,7 @@ def _group_timeseries(name, resources, grouped, limit_name):
       continue
     count = len(list(elements))
     labels = {'project': network['project_id'], 'network': network['name']}
-    quota = resources['quota'][network['project_id']]
+    quota = resources['quota'][network['project_id']]['global']
     limit = quota.get(limit_name, LIMITS[limit_name])
     yield TimeSeries(f'network/{name}_used', count, labels)
     yield TimeSeries(f'network/{name}_available', limit, labels)
@@ -72,6 +72,23 @@ def _instances(resources):
                            'INSTANCES_PER_NETWORK_GLOBAL')
 
 
+def _peerings(resources):
+  quota = resources['quota']
+  for network_id, network in resources['networks'].items():
+    labels = {'project': network['project_id'], 'network': network['name']}
+    limit = quota.get(network_id, {}).get('PEERINGS_PER_NETWORK', 250)
+    p_active = len([p for p in network['peerings'] if p['active']])
+    p_total = len(network['peerings'])
+    yield TimeSeries('network/peering_active_used', p_active, labels)
+    yield TimeSeries('network/peering_active_available', limit, labels)
+    yield TimeSeries('network/peering_active_used_ratio', p_active / limit,
+                     labels)
+    yield TimeSeries('network/peering_total_used', p_total, labels)
+    yield TimeSeries('network/peering_total_available', limit, labels)
+    yield TimeSeries('network/peering_total_used_ratio', p_total / limit,
+                     labels)
+
+
 def _subnet_ranges(resources):
   'Derive network timeseries for subnet range utilization.'
   grouped = itertools.groupby(resources['subnetworks'].values(),
@@ -85,4 +102,4 @@ def timeseries(resources):
   'Yield timeseries.'
   LOGGER.info('timeseries')
   return itertools.chain(_forwarding_rules(resources), _instances(resources),
-                         _subnet_ranges(resources))
+                         _peerings(resources), _subnet_ranges(resources))

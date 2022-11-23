@@ -12,7 +12,9 @@
   "config:custom_quota": {
     "projects": {
       "tf-playground-svpc-net": {
-        "INTERNAL_FORWARDING_RULES_PER_NETWORK": 750
+        "global": {
+          "INTERNAL_FORWARDING_RULES_PER_NETWORK": 750
+        }
       }
     },
     "networks": {
@@ -527,16 +529,24 @@
       "project_number": "195159130008",
       "peerings": [
         {
+          "active": true,
           "name": "prod-peering-0-prod-spoke-0-prod-landing-0",
           "network": "projects/ludo-prod-net-landing-0/global/networks/prod-landing-0"
         },
         {
+          "active": true,
           "name": "servicenetworking-googleapis-com",
           "network": "projects/r63cc730008bdfb49p-tp/global/networks/servicenetworking"
         },
         {
+          "active": true,
           "name": "to-dev-spoke-0",
           "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0"
+        },
+        {
+          "active": false,
+          "name": "to-test-public-gcs",
+          "network": "projects/186042149622/global/networks/default"
         }
       ],
       "subnetworks": [
@@ -554,10 +564,12 @@
       "project_number": "233262889141",
       "peerings": [
         {
+          "active": true,
           "name": "dev-peering-0-prod-landing-0-dev-spoke-0",
           "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0"
         },
         {
+          "active": true,
           "name": "prod-peering-0-prod-landing-0-prod-spoke-0",
           "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0"
         }
@@ -595,14 +607,32 @@
       "project_number": "759592912116",
       "peerings": [
         {
+          "active": false,
+          "name": "composer-474420912893-vpc-peering",
+          "network": "projects/474420912893/global/networks/composer-net"
+        },
+        {
+          "active": false,
+          "name": "composer-566526877645-vpc-peering",
+          "network": "projects/566526877645/global/networks/composer-net"
+        },
+        {
+          "active": true,
           "name": "dev-peering-0-dev-spoke-0-prod-landing-0",
           "network": "projects/ludo-prod-net-landing-0/global/networks/prod-landing-0"
         },
         {
+          "active": false,
+          "name": "gke-n0a46a71e52c28142071-9ca9-f42d-peer",
+          "network": "projects/gke-prod-europe-west1-b-4/global/networks/gke-n0a46a71e52c28142071-9ca9-32cb-net"
+        },
+        {
+          "active": true,
           "name": "servicenetworking-googleapis-com",
           "network": "projects/p10d8c97c9bd39799p-tp/global/networks/servicenetworking"
         },
         {
+          "active": true,
           "name": "to-prod-spoke-0",
           "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0"
         }
@@ -624,6 +654,7 @@
       "project_number": "1079408472053",
       "peerings": [
         {
+          "active": true,
           "name": "servicenetworking-googleapis-com",
           "network": "projects/a2fed18bfde5785bdp-tp/global/networks/servicenetworking"
         }
@@ -2012,2195 +2043,592 @@
   "quota": {
     "tf-playground-simple": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 2
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 2
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 1
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 2
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 2
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 1
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 0
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "ludo-dev-net-spoke-0": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 5
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 1
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 1
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 2
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 3
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 4
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "ludo-prod-net-landing-0": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 1
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 1
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 1
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 3
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 0
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "ludo-prod-net-spoke-0": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 0
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 1
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 1
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 1
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 3
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 0
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "ludo-dev-sec-core-0": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 0
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 0
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 0
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "ludo-prod-sec-core-0": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 0
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 0
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 0
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "tf-playground-gcs-test-0": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 0
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 0
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 0
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "tf-playground-svpc-gce-dr": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 0
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 0
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 0
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "tf-playground-svpc-net-dr": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 4
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 1
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 2
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 2
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "tf-playground-svpc-openshift": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 0
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 0
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 0
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "tf-playground-svpc-gce": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 9,
-          "usage": 1
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 0
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 1
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 1
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 0
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 0
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 9,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "tf-playground-svpc-net": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 1
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 9
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 3
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 1
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 1
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 1
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 1
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 6
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 3
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 2
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 1
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 1
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 1
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 1
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 1
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 2
-        },
-        "INTERNAL_FORWARDING_RULES_PER_NETWORK": {
-          "limit": 750
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000,
+        "INTERNAL_FORWARDING_RULES_PER_NETWORK": 750
       }
     },
     "tf-playground-svpc-gke": {
       "global": {
-        "BACKEND_BUCKETS": {
-          "limit": 9,
-          "usage": 0
-        },
-        "BACKEND_SERVICES": {
-          "limit": 75,
-          "usage": 0
-        },
-        "EXTERNAL_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "FIREWALLS": {
-          "limit": 200,
-          "usage": 0
-        },
-        "FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "GLOBAL_INTERNAL_ADDRESSES": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "HEALTH_CHECKS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "INSTANCE_TEMPLATES": {
-          "limit": 300,
-          "usage": 0
-        },
-        "INTERCONNECTS": {
-          "limit": 6,
-          "usage": 0
-        },
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": {
-          "limit": 45,
-          "usage": 0
-        },
-        "IN_USE_ADDRESSES": {
-          "limit": 69,
-          "usage": 0
-        },
-        "MACHINE_IMAGES": {
-          "limit": 2000,
-          "usage": 0
-        },
-        "NETWORKS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "NETWORK_ENDPOINT_GROUPS": {
-          "limit": 300,
-          "usage": 0
-        },
-        "NETWORK_FIREWALL_POLICIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "PACKET_MIRRORINGS": {
-          "limit": 45,
-          "usage": 0
-        },
-        "PUBLIC_ADVERTISED_PREFIXES": {
-          "limit": 1,
-          "usage": 0
-        },
-        "PUBLIC_DELEGATED_PREFIXES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTERS": {
-          "limit": 10,
-          "usage": 0
-        },
-        "ROUTES": {
-          "limit": 250,
-          "usage": 0
-        },
-        "SECURITY_POLICIES": {
-          "limit": 10,
-          "usage": 0
-        },
-        "SECURITY_POLICY_CEVAL_RULES": {
-          "limit": 20,
-          "usage": 0
-        },
-        "SECURITY_POLICY_RULES": {
-          "limit": 100,
-          "usage": 0
-        },
-        "SNAPSHOTS": {
-          "limit": 5000,
-          "usage": 0
-        },
-        "SSL_CERTIFICATES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "STATIC_ADDRESSES": {
-          "limit": 21,
-          "usage": 0
-        },
-        "STATIC_BYOIP_ADDRESSES": {
-          "limit": 1024,
-          "usage": 0
-        },
-        "SUBNETWORKS": {
-          "limit": 175,
-          "usage": 0
-        },
-        "TARGET_HTTPS_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_HTTP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_INSTANCES": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_POOLS": {
-          "limit": 150,
-          "usage": 0
-        },
-        "TARGET_SSL_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_TCP_PROXIES": {
-          "limit": 30,
-          "usage": 0
-        },
-        "TARGET_VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "URL_MAPS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "VPN_GATEWAYS": {
-          "limit": 15,
-          "usage": 0
-        },
-        "VPN_TUNNELS": {
-          "limit": 30,
-          "usage": 0
-        },
-        "XPN_SERVICE_PROJECTS": {
-          "limit": 1000,
-          "usage": 0
-        }
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "projects/tf-playground-svpc-net/global/networks/shared-vpc": {
-      "PEERINGS_PER_NETWORK": {
-        "limit": 40
-      }
+      "PEERINGS_PER_NETWORK": 40
     }
   },
   "routes_dynamic": {

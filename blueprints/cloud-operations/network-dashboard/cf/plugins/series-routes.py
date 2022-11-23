@@ -48,7 +48,7 @@ def _static(resources):
         network['project_id'], 0) + count
   for project_id, count in project_counts.items():
     labels = {'project': project_id}
-    quota = resources['quota'][project_id]
+    quota = resources['quota'][project_id]['global']
     limit = quota.get('ROUTES', LIMITS['ROUTES'])
     yield TimeSeries('project/routes_static_used', count, labels)
     yield TimeSeries('project/routes_static_available', limit, labels)

@@ -132,9 +132,10 @@ def _handle_instances(resource, data):
 def _handle_networks(resource, data):
   'Handle network type resource data.'
   peerings = [{
+      'active': p['state'] == 'ACTIVE',
       'name': p['name'],
       'network': _self_link(p['network'])
-  } for p in data.get('peerings', []) if p['state'] == 'ACTIVE']
+  } for p in data.get('peerings', [])]
   subnets = [_self_link(s) for s in data.get('subnetworks', [])]
   return {'peerings': peerings, 'subnetworks': subnets}
 

@@ -48,8 +48,10 @@ LOGGER = logging.getLogger('net-dash.timeseries.peerings')
 #     yield TimeSeries('project/routes_static_available', limit, labels)
 #     yield TimeSeries('project/routes_static_used_ratio', count / limit, labels)
 
-# @register_timeseries
-# def timeseries(resources):
-#   'Yield timeseries.'
-#   LOGGER.info('timeseries')
-#   return itertools.chain(_static(resources), _dynamic(resources))
+
+@register_timeseries
+def timeseries(resources):
+  'Yield timeseries.'
+  LOGGER.info('timeseries')
+  return
+  yield

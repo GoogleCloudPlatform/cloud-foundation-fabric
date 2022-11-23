@@ -37,7 +37,7 @@ def timeseries(resources):
                               lambda v: v['project_id'])
   for project_id, rules in grouped:
     count = len(list(rules))
-    limit = int(resources['quota'][project_id]['global']['FIREWALLS']['limit'])
+    limit = int(resources['quota'][project_id]['global']['FIREWALLS'])
     labels = {'project_id': project_id}
     yield TimeSeries('project/firewall_rules_used', count, labels)
     yield TimeSeries('project/firewalls_rules_available', limit, labels)

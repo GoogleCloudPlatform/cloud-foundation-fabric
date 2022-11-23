@@ -31,10 +31,8 @@ def _handle_discovery(resources, response):
   for part in dirty_mp_response(content_type, response.content):
     kind = part.get('kind')
     quota = {
-        q['metric']: {
-            'limit': q['limit'],
-            'usage': q['usage']
-        } for q in sorted(part.get('quotas', []), key=lambda v: v['metric'])
+        q['metric']: int(q['limit'])
+        for q in sorted(part.get('quotas', []), key=lambda v: v['metric'])
     }
     self_link = part.get('selfLink')
     if not self_link:
@@ -43,12 +41,12 @@ def _handle_discovery(resources, response):
     if kind == 'compute#project':
       project_id = self_link[-1]
       region = 'global'
-      for k, v in per_project_quota.get(project_id, {}).items():
-        metric = quota.setdefault(k, {})
-        metric['limit'] = v
     elif kind == 'compute#region':
       project_id = self_link[-3]
       region = self_link[-1]
+    # custom quota overrides
+    for k, v in per_project_quota.get(project_id, {}).get(region, {}).items():
+      quota[k] = int(v)
     if project_id not in resources[NAME]:
       resources[NAME][project_id] = {}
     yield Resource(NAME, project_id, quota, region)
@@ -56,6 +54,7 @@ def _handle_discovery(resources, response):
 
 @register_init
 def init(resources):
+  'Create the quota key in the shared resource map.'
   LOGGER.info('init')
   if NAME not in resources:
     resources[NAME] = {}
@@ -63,6 +62,7 @@ def init(resources):
 
 @register_discovery(Level.DERIVED, 0)
 def start_discovery(resources, response=None):
+  'Fetch and process quota for projects.'
   LOGGER.info(f'discovery (has response: {response is not None})')
   if response is None:
     # TODO: regions
@@ -74,7 +74,8 @@ def start_discovery(resources, response=None):
   else:
     for result in _handle_discovery(resources, response):
       yield result
+  # store custom network-level quota
   per_network_quota = resources['config:custom_quota'].get('networks', {})
   for network_id, overrides in per_network_quota.items():
-    quota = {k: {'limit': v} for k, v in overrides.items()}
+    quota = {k: int(v) for k, v in overrides.items()}
     yield Resource(NAME, network_id, quota)
