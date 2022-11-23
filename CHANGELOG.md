@@ -104,6 +104,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#999](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/999)] Default nodepool creation fix ([astianseb](https://github.com/astianseb)) <!-- 2022-11-22 18:17:58+00:00 -->
+- [[#1005](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1005)] Only set partitioned table when sink type is bigquery ([juliocc](https://github.com/juliocc)) <!-- 2022-11-22 16:13:53+00:00 -->
 - [[#997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/997)] Add BigQuery subcriptions to Pubsub module. ([iht](https://github.com/iht)) <!-- 2022-11-21 17:26:52+00:00 -->
 - [[#995](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/995)] Push container images to GitHub instead of Google Container Registry ([kunzese](https://github.com/kunzese)) <!-- 2022-11-21 14:53:52+00:00 -->
 - [[#994](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/994)] Add schemas to Pubsub topic module. ([iht](https://github.com/iht)) <!-- 2022-11-20 16:56:03+00:00 -->
@@ -174,6 +176,8 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1004](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1004)] Use `actions/labeler` to automatically label pull requests ([kunzese](https://github.com/kunzese)) <!-- 2022-11-22 14:42:47+00:00 -->
+- [[#998](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/998)] Add missing `write_package` permission ([kunzese](https://github.com/kunzese)) <!-- 2022-11-22 08:32:42+00:00 -->
 - [[#996](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/996)] Fix `repository name must be lowercase` on docker build ([kunzese](https://github.com/kunzese)) <!-- 2022-11-21 16:04:57+00:00 -->
 - [[#993](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/993)] Fix variable and output sort check ([juliocc](https://github.com/juliocc)) <!-- 2022-11-21 13:32:56+00:00 -->
 - [[#950](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/950)] Add a pytest fixture to convert tfvars to yaml ([ludoo](https://github.com/ludoo)) <!-- 2022-11-04 17:37:24+00:00 -->
