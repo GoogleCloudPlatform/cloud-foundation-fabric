@@ -25,4 +25,5 @@ labels:
 # [opt] Additional notification channels for billing
 notification_channels: []
 shared_vpc_self_link: projects/foo/networks/bar
+prefix: test
 vpc_host_project:

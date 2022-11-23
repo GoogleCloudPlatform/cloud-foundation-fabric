@@ -111,9 +111,12 @@ variable "node_name" {
 }
 
 variable "prefix" {
-  description = "Prefix used for resources (for multiple clusters in a project)"
+  description = "Prefix used for resource names."
   type        = string
-  default     = "aog"
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_create" {

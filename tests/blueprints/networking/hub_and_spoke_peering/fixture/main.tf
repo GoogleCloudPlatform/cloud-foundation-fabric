@@ -16,6 +16,7 @@
 
 module "test" {
   source = "../../../../../blueprints/networking/hub-and-spoke-peering"
+  prefix = var.prefix
   project_create = {
     billing_account = "123456-123456-123456"
     oslogin         = true

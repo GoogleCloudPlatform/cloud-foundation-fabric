@@ -19,7 +19,7 @@ locals {
     local.listeners,
     local.node_ips,
     {
-      "${local.prefix}cluster" = {
+      "${var.prefix}-cluster" = {
         region     = var.region
         subnetwork = local.subnetwork
       }
@@ -34,7 +34,7 @@ locals {
     k => v.address
   }
   listeners = {
-    for aog in var.always_on_groups : "${local.prefix}lb-${aog}" => {
+    for aog in var.always_on_groups : "${var.prefix}-lb-${aog}" => {
       region     = var.region
       subnetwork = local.subnetwork
     }
@@ -83,7 +83,7 @@ module "firewall" {
     disabled = true
   }
   ingress_rules = {
-    "${local.prefix}allow-all-between-wsfc-nodes" = {
+    "${var.prefix}-allow-all-between-wsfc-nodes" = {
       description          = "Allow all between WSFC nodes"
       sources              = [module.compute-service-account.email]
       targets              = [module.compute-service-account.email]
@@ -94,7 +94,7 @@ module "firewall" {
         { protocol = "icmp" }
       ]
     }
-    "${local.prefix}allow-all-between-wsfc-witness" = {
+    "${var.prefix}-allow-all-between-wsfc-witness" = {
       description          = "Allow all between WSFC witness nodes"
       sources              = [module.compute-service-account.email]
       targets              = [module.witness-service-account.email]
@@ -105,7 +105,7 @@ module "firewall" {
         { protocol = "icmp" }
       ]
     }
-    "${local.prefix}allow-sql-to-wsfc-nodes" = {
+    "${var.prefix}-allow-sql-to-wsfc-nodes" = {
       description          = "Allow SQL connections to WSFC nodes"
       targets              = [module.compute-service-account.email]
       ranges               = var.sql_client_cidrs
@@ -114,7 +114,7 @@ module "firewall" {
         { protocol = "tcp", ports = [1433] },
       ]
     }
-    "${local.prefix}allow-health-check-to-wsfc-nodes" = {
+    "${var.prefix}-allow-health-check-to-wsfc-nodes" = {
       description          = "Allow health checks to WSFC nodes"
       targets              = [module.compute-service-account.email]
       ranges               = var.health_check_ranges
@@ -139,7 +139,7 @@ module "listener-ilb" {
   region        = var.region
   name          = "${var.prefix}-${each.value}-ilb"
   service_label = "${var.prefix}-${each.value}-ilb"
-  address       = local.internal_address_ips["${local.prefix}lb-${each.value}"]
+  address       = local.internal_address_ips["${var.prefix}-lb-${each.value}"]
   vpc_config = {
     network    = local.network
     subnetwork = local.subnetwork

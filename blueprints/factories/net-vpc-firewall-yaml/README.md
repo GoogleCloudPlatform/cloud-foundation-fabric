@@ -1,6 +1,6 @@
 # Google Cloud VPC Firewall Factory
 
-This module allows creation and management of different types of firewall rules by defining them in well formatted `yaml` files. 
+This module allows creation and management of different types of firewall rules by defining them in well formatted `yaml` files.
 
 Yaml abstraction for FW rules can simplify users onboarding and also makes rules definition simpler and clearer comparing to HCL.
 
@@ -79,10 +79,10 @@ rule-name: # descriptive name, naming convention is adjusted by the module
   destination_ranges: # list of destination ranges, should be specified only for `EGRESS` rule
   - 0.0.0.0/0
   source_tags: ['some-tag'] # list of source tags,  should be specified only for `INGRESS` rule
-  source_service_accounts: # list of source service accounts, should be specified only for `INGRESS` rule, can not be specified together with `source_tags` or `target_tags`
+  source_service_accounts: # list of source service accounts, should be specified only for `INGRESS` rule, cannot be specified together with `source_tags` or `target_tags`
   - myapp@myproject-id.iam.gserviceaccount.com
   target_tags: ['some-tag'] # list of target tags
-  target_service_accounts: # list of target service accounts, , can not be specified together with `source_tags` or `target_tags`
+  target_service_accounts: # list of target service accounts, , cannot be specified together with `source_tags` or `target_tags`
   - myapp@myproject-id.iam.gserviceaccount.com
 ```
 

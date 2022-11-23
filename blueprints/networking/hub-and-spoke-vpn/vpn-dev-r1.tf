@@ -19,9 +19,9 @@ module "landing-to-dev-vpn-r1" {
   project_id    = var.project_id
   network       = module.landing-vpc.self_link
   region        = var.regions.r1
-  name          = "${local.prefix}lnd-to-dev-r1"
+  name          = "${var.prefix}-lnd-to-dev-r1"
   router_create = false
-  router_name   = "${local.prefix}lnd-vpn-r1"
+  router_name   = "${var.prefix}-lnd-vpn-r1"
   # router is created and managed by the production VPN module
   # so we don't configure advertisements here
   peer_gcp_gateway = module.dev-to-landing-vpn-r1.self_link
@@ -62,9 +62,9 @@ module "dev-to-landing-vpn-r1" {
   project_id    = var.project_id
   network       = module.dev-vpc.self_link
   region        = var.regions.r1
-  name          = "${local.prefix}dev-to-lnd-r1"
+  name          = "${var.prefix}-dev-to-lnd-r1"
   router_create = true
-  router_name   = "${local.prefix}dev-vpn-r1"
+  router_name   = "${var.prefix}-dev-vpn-r1"
   router_asn    = var.vpn_configs.dev-r1.asn
   router_advertise_config = (
     var.vpn_configs.dev-r1.custom_ranges == null

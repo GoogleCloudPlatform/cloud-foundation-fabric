@@ -85,13 +85,13 @@ ping test-r2.dev.example.com
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L49) | Project id for all resources. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L34) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L52) | Project id for all resources. | <code>string</code> | ✓ |  |
 | [ip_ranges](variables.tf#L15) | Subnet IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  land-0-r1 &#61; &#34;10.0.0.0&#47;24&#34;&#10;  land-0-r2 &#61; &#34;10.0.8.0&#47;24&#34;&#10;  dev-0-r1  &#61; &#34;10.0.16.0&#47;24&#34;&#10;  dev-0-r2  &#61; &#34;10.0.24.0&#47;24&#34;&#10;  prod-0-r1 &#61; &#34;10.0.32.0&#47;24&#34;&#10;  prod-0-r2 &#61; &#34;10.0.40.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [ip_secondary_ranges](variables.tf#L28) | Subnet secondary ranges. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L34) | Prefix used in resource names. | <code>string</code> |  | <code>null</code> |
-| [project_create_config](variables.tf#L40) | Populate with billing account id to trigger project creation. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent_id          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [regions](variables.tf#L54) | VPC regions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  r1 &#61; &#34;europe-west1&#34;&#10;  r2 &#61; &#34;europe-west4&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [vpn_configs](variables.tf#L63) | VPN configurations. | <code title="map&#40;object&#40;&#123;&#10;  asn           &#61; number&#10;  custom_ranges &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  land-r1 &#61; &#123;&#10;    asn &#61; 64513&#10;    custom_ranges &#61; &#123;&#10;      &#34;10.0.0.0&#47;8&#34; &#61; &#34;internal default&#34;&#10;    &#125;&#10;  &#125;&#10;  dev-r1 &#61; &#123;&#10;    asn           &#61; 64514&#10;    custom_ranges &#61; null&#10;  &#125;&#10;  prod-r1 &#61; &#123;&#10;    asn           &#61; 64515&#10;    custom_ranges &#61; null&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_create_config](variables.tf#L43) | Populate with billing account id to trigger project creation. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent_id          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [regions](variables.tf#L57) | VPC regions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  r1 &#61; &#34;europe-west1&#34;&#10;  r2 &#61; &#34;europe-west4&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [vpn_configs](variables.tf#L66) | VPN configurations. | <code title="map&#40;object&#40;&#123;&#10;  asn           &#61; number&#10;  custom_ranges &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  land-r1 &#61; &#123;&#10;    asn &#61; 64513&#10;    custom_ranges &#61; &#123;&#10;      &#34;10.0.0.0&#47;8&#34; &#61; &#34;internal default&#34;&#10;    &#125;&#10;  &#125;&#10;  dev-r1 &#61; &#123;&#10;    asn           &#61; 64514&#10;    custom_ranges &#61; null&#10;  &#125;&#10;  prod-r1 &#61; &#123;&#10;    asn           &#61; 64515&#10;    custom_ranges &#61; null&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 

@@ -17,12 +17,12 @@ To simplify the usage of the proxy, a Cloud DNS private zone is created in each 
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L44) | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L66) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L44) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L70) | Project id used for all resources. | <code>string</code> | ✓ |  |
 | [allowed_domains](variables.tf#L17) | List of domains allowed by the squid proxy. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;.google.com&#34;,&#10;  &#34;.github.com&#34;,&#10;  &#34;.fastlydns.net&#34;,&#10;  &#34;.debian.org&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
 | [cidrs](variables.tf#L28) | CIDR ranges for subnets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  app   &#61; &#34;10.0.0.0&#47;24&#34;&#10;  proxy &#61; &#34;10.0.2.0&#47;28&#34;&#10;  psc   &#61; &#34;10.0.3.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [nat_logging](variables.tf#L38) | Enables Cloud NAT logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'. | <code>string</code> |  | <code>&#34;ERRORS_ONLY&#34;</code> |
-| [project_create](variables.tf#L49) | Set to non null if project needs to be created. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L71) | Default region for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [project_create](variables.tf#L53) | Set to non null if project needs to be created. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L75) | Default region for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 <!-- END TFDOC -->

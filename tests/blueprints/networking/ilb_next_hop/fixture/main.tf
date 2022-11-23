@@ -16,6 +16,7 @@
 
 module "test" {
   source         = "../../../../../blueprints/networking/ilb-next-hop"
+  prefix         = var.prefix
   project_create = var.project_create
   project_id     = var.project_id
 }
