@@ -37,6 +37,8 @@ module "bigtable-instance" {
 
 ### Instance with static number of nodes
 
+If you are not using autoscaling settings, you must set a specific number of nodes with the variable `num_nodes`.
+
 ```hcl
 
 module "bigtable-instance" {
@@ -51,6 +53,8 @@ module "bigtable-instance" {
 ```
 
 ### Instance with autoscaling (based on CPU only)
+
+If you use autoscaling, you should not set the variable `num_nodes`.
 
 ```hcl
 
