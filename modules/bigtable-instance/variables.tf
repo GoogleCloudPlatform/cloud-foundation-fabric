@@ -19,8 +19,8 @@ variable "autoscaling_config" {
   type = object({
     min_nodes      = number
     max_nodes      = number
-    cpu_target     = number
-    storage_target = number
+    cpu_target     = number,
+    storage_target = optional(number, null)
   })
   default = null
 }
