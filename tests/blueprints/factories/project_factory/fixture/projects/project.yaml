@@ -1,8 +1,5 @@
 # skip boilerplate check
 
-# [opt] Prefix - overrides default if set
-prefix: test1
-
 # [opt] Billing account id - overrides default if set
 billing_account_id: 012345-67890A-BCDEF0
 
@@ -60,6 +57,9 @@ org_policies:
       suggested_value: null
       values:
         - projects/fast-prod-iac-core-0
+
+# [opt] Prefix - overrides default if set
+prefix: test1
 
 # [opt] Service account to create for the project and their roles on the project
 # in name => [roles] format

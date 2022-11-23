@@ -33,7 +33,6 @@ module "projects" {
   source                 = "../../../../../blueprints/factories/project-factory"
   for_each               = local.projects
   defaults               = local.defaults
-  prefix                 = each.value.prefix
   project_id             = each.key
   billing_account_id     = try(each.value.billing_account_id, null)
   billing_alert          = try(each.value.billing_alert, null)
@@ -45,6 +44,7 @@ module "projects" {
   kms_service_agents     = try(each.value.kms, {})
   labels                 = try(each.value.labels, {})
   org_policies           = try(each.value.org_policies, null)
+  prefix                 = each.value.prefix
   service_accounts       = try(each.value.service_accounts, {})
   services               = try(each.value.services, [])
   service_identities_iam = try(each.value.service_identities_iam, {})
