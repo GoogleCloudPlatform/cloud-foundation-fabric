@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-}
-
 # enable services in the project used
 
 module "project" {
@@ -35,11 +31,11 @@ module "project" {
 module "landing-r1-vm" {
   source     = "../../../modules/compute-vm"
   project_id = var.project_id
-  name       = "${local.prefix}lnd-test-r1"
+  name       = "${var.prefix}-lnd-test-r1"
   zone       = "${var.regions.r1}-b"
   network_interfaces = [{
     network    = module.landing-vpc.self_link
-    subnetwork = module.landing-vpc.subnet_self_links["${var.regions.r1}/${local.prefix}lnd-0"]
+    subnetwork = module.landing-vpc.subnet_self_links["${var.regions.r1}/${var.prefix}-lnd-0"]
     nat        = false
     addresses  = null
   }]
@@ -51,11 +47,11 @@ module "landing-r1-vm" {
 module "prod-r1-vm" {
   source     = "../../../modules/compute-vm"
   project_id = var.project_id
-  name       = "${local.prefix}prd-test-r1"
+  name       = "${var.prefix}-prd-test-r1"
   zone       = "${var.regions.r1}-b"
   network_interfaces = [{
     network    = module.prod-vpc.self_link
-    subnetwork = module.prod-vpc.subnet_self_links["${var.regions.r1}/${local.prefix}prd-0"]
+    subnetwork = module.prod-vpc.subnet_self_links["${var.regions.r1}/${var.prefix}-prd-0"]
     nat        = false
     addresses  = null
   }]
@@ -67,11 +63,11 @@ module "prod-r1-vm" {
 module "dev-r2-vm" {
   source     = "../../../modules/compute-vm"
   project_id = var.project_id
-  name       = "${local.prefix}dev-test-r2"
+  name       = "${var.prefix}-dev-test-r2"
   zone       = "${var.regions.r2}-b"
   network_interfaces = [{
     network    = module.dev-vpc.self_link
-    subnetwork = module.dev-vpc.subnet_self_links["${var.regions.r2}/${local.prefix}dev-0"]
+    subnetwork = module.dev-vpc.subnet_self_links["${var.regions.r2}/${var.prefix}-dev-0"]
     nat        = false
     addresses  = null
   }]

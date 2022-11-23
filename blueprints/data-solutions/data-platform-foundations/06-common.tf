@@ -62,7 +62,7 @@ module "common-project" {
 module "common-datacatalog" {
   source     = "../../../modules/data-catalog-policy-tag"
   project_id = module.common-project.project_id
-  name       = "${local.prefix}datacatalog-policy-tags"
+  name       = "${var.prefix}-datacatalog-policy-tags"
   location   = var.location
   tags       = var.data_catalog_tags
 }
@@ -73,7 +73,7 @@ module "common-datacatalog" {
 #   source     = "../../../modules/kms"
 #   project_id = module.common-project.project_id
 #   keyring = {
-#     name     = "${local.prefix}kr-global",
+#     name     = "${var.prefix}-kr-global",
 #     location = "global"
 #   }
 #   keys = {
@@ -85,7 +85,7 @@ module "common-datacatalog" {
 #   source     = "../../../modules/kms"
 #   project_id = module.common-project.project_id
 #   keyring = {
-#     name     = "${local.prefix}kr-mregional",
+#     name     = "${var.prefix}-kr-mregional",
 #     location = var.location
 #   }
 #   keys = {
@@ -98,7 +98,7 @@ module "common-datacatalog" {
 #   source     = "../../../modules/kms"
 #   project_id = module.cmn-prj.project_id
 #   keyring = {
-#     name     = "${local.prefix}kr-regional",
+#     name     = "${var.prefix}-kr-regional",
 #     location = var.region
 #   }
 #   keys = {

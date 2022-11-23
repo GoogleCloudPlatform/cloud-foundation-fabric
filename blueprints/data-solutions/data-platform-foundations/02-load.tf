@@ -107,7 +107,7 @@ module "load-vpc" {
   source     = "../../../modules/net-vpc"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.load-project.project_id
-  name       = "${local.prefix}default"
+  name       = "${var.prefix}-default"
   subnets = [
     {
       ip_cidr_range = "10.10.0.0/24"
@@ -131,7 +131,7 @@ module "load-nat" {
   source         = "../../../modules/net-cloudnat"
   count          = local.use_shared_vpc ? 0 : 1
   project_id     = module.load-project.project_id
-  name           = "${local.prefix}default"
+  name           = "${var.prefix}-default"
   region         = var.region
   router_network = module.load-vpc.0.name
 }

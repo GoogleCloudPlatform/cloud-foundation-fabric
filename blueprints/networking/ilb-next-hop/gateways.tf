@@ -19,7 +19,7 @@ module "gw" {
   for_each      = local.zones
   project_id    = module.project.project_id
   zone          = each.value
-  name          = "${local.prefix}gw-${each.key}"
+  name          = "${var.prefix}-gw-${each.key}"
   instance_type = "f1-micro"
 
   boot_disk = {
@@ -51,7 +51,7 @@ module "gw" {
     })
   }
   service_account = try(
-    module.service-accounts.emails["${local.prefix}gce-vm"], null
+    module.service-accounts.emails["${var.prefix}-gce-vm"], null
   )
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   group                  = { named_ports = null }
@@ -61,7 +61,7 @@ module "ilb-left" {
   source     = "../../../modules/net-ilb"
   project_id = module.project.project_id
   region     = var.region
-  name       = "${local.prefix}ilb-left"
+  name       = "${var.prefix}-ilb-left"
   vpc_config = {
     network    = module.vpc-left.self_link
     subnetwork = values(module.vpc-left.subnet_self_links)[0]
@@ -85,7 +85,7 @@ module "ilb-right" {
   source     = "../../../modules/net-ilb"
   project_id = module.project.project_id
   region     = var.region
-  name       = "${local.prefix}ilb-right"
+  name       = "${var.prefix}-ilb-right"
   vpc_config = {
     network    = module.vpc-right.self_link
     subnetwork = values(module.vpc-right.subnet_self_links)[0]

@@ -22,7 +22,6 @@ locals {
     },
     var.iam_groups_map
   )
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
   # Adding Roles on Service Identities Service account as per documentation: https://cloud.google.com/composer/docs/composer-2/configure-shared-vpc#edit_permissions_for_the_google_apis_service_account
   _shared_vpc_bindings = {
     "roles/compute.networkUser" = [
@@ -135,7 +134,7 @@ module "nat" {
   count          = local.use_shared_vpc ? 0 : 1
   project_id     = module.project.project_id
   region         = var.region
-  name           = "${local.prefix}default"
+  name           = "${var.prefix}-default"
   router_network = module.vpc.0.name
 }
 

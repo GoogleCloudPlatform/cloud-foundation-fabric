@@ -35,7 +35,6 @@ locals {
   groups_iam = {
     for k, v in local.groups : k => "group:${v}"
   }
-  prefix                  = var.prefix == null ? "" : "${var.prefix}-"
   project_suffix          = var.project_suffix == null ? "" : "-${var.project_suffix}"
   service_encryption_keys = var.service_encryption_keys
   shared_vpc_project      = try(var.network_config.host_project, null)

@@ -30,8 +30,8 @@ locals {
     managed_ad_dn_path        = var.managed_ad_dn != "" ? "-Path \"${var.managed_ad_dn}\"" : ""
     health_check_port         = var.health_check_port
     sql_admin_password_secret = local._secret_parts[length(local._secret_parts) - 1]
-    cluster_ip                = module.ip-addresses.internal_addresses["${local.prefix}cluster"].address
-    loadbalancer_ips          = jsonencode({ for aog in var.always_on_groups : aog => module.ip-addresses.internal_addresses["${local.prefix}lb-${aog}"].address })
+    cluster_ip                = module.ip-addresses.internal_addresses["${var.prefix}-cluster"].address
+    loadbalancer_ips          = jsonencode({ for aog in var.always_on_groups : aog => module.ip-addresses.internal_addresses["${var.prefix}-lb-${aog}"].address })
     sql_cluster_name          = local.cluster_netbios_name
     sql_cluster_full          = local.cluster_full_name
     node_netbios_1            = local.node_netbios_names[0]
@@ -43,7 +43,7 @@ locals {
   _template_vars = merge(local._template_vars0, {
     functions = local._functions
   })
-  _user_name = "${local.prefix}sqlserver"
+  _user_name = "${var.prefix}-sqlserver"
   scripts = {
     for script in local._scripts :
     script => templatefile("${path.module}/scripts/${script}.ps1", local._template_vars)

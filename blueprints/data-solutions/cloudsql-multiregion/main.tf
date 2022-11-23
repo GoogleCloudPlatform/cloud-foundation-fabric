@@ -15,8 +15,6 @@
  */
 
 locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-
   data_eng_principals_iam = [
     for k in var.data_eng_principals :
     "user:${k}"

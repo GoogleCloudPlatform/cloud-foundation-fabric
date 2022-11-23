@@ -26,5 +26,5 @@ module "gcs" {
 module "service-account-gcs" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project.project_id
-  name       = "${local.prefix}gcs"
+  name       = "${var.prefix}-gcs"
 }

@@ -17,7 +17,7 @@ module "kms" {
   source     = "../../../modules/kms"
   project_id = module.project.project_id
   keyring = {
-    name     = "${local.prefix}keyring"
+    name     = "${var.prefix}-keyring"
     location = var.region
   }
   keys = {

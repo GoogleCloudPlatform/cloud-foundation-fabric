@@ -21,10 +21,10 @@
 module "vpc-consumer" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = "${local.prefix}app"
+  name       = "${var.prefix}-app"
   subnets = [
     {
-      name          = "${local.prefix}app"
+      name          = "${var.prefix}-app"
       ip_cidr_range = var.cidrs.app
       region        = var.region
     }
@@ -39,12 +39,12 @@ module "test-vm-consumer" {
   source        = "../../../modules/compute-vm"
   project_id    = module.project.project_id
   zone          = "${var.region}-b"
-  name          = "${local.prefix}test-vm"
+  name          = "${var.prefix}-test-vm"
   instance_type = "e2-micro"
   tags          = ["ssh"]
   network_interfaces = [{
     network    = module.vpc-consumer.self_link
-    subnetwork = module.vpc-consumer.subnet_self_links["${var.region}/${local.prefix}app"]
+    subnetwork = module.vpc-consumer.subnet_self_links["${var.region}/${var.prefix}-app"]
     nat        = false
     addresses  = null
   }]
@@ -64,15 +64,15 @@ module "test-vm-consumer" {
 ###############################################################################
 
 resource "google_compute_address" "psc_endpoint_address" {
-  name         = "${local.prefix}psc-proxy-address"
+  name         = "${var.prefix}-psc-proxy-address"
   project      = module.project.project_id
   address_type = "INTERNAL"
-  subnetwork   = module.vpc-consumer.subnet_self_links["${var.region}/${local.prefix}app"]
+  subnetwork   = module.vpc-consumer.subnet_self_links["${var.region}/${var.prefix}-app"]
   region       = var.region
 }
 
 resource "google_compute_forwarding_rule" "psc_ilb_consumer" {
-  name                  = "${local.prefix}psc-proxy-fw-rule"
+  name                  = "${var.prefix}-psc-proxy-fw-rule"
   project               = module.project.project_id
   region                = var.region
   target                = google_compute_service_attachment.service_attachment.id
@@ -89,7 +89,7 @@ module "private-dns" {
   source          = "../../../modules/dns"
   project_id      = module.project.project_id
   type            = "private"
-  name            = "${local.prefix}internal"
+  name            = "${var.prefix}-internal"
   domain          = "internal."
   client_networks = [module.vpc-consumer.self_link]
   recordsets = {

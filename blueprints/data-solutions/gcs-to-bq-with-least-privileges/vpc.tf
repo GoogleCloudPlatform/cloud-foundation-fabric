@@ -16,7 +16,7 @@ module "vpc" {
   source     = "../../../modules/net-vpc"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.project.project_id
-  name       = "${local.prefix}vpc"
+  name       = "${var.prefix}-vpc"
   subnets = [
     {
       ip_cidr_range = var.vpc_subnet_range
@@ -41,6 +41,6 @@ module "nat" {
   count          = local.use_shared_vpc ? 0 : 1
   project_id     = module.project.project_id
   region         = var.region
-  name           = "${local.prefix}default"
+  name           = "${var.prefix}-default"
   router_network = module.vpc[0].name
 }

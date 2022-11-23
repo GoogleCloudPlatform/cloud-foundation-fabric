@@ -15,7 +15,6 @@
  */
 
 locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
   project_id = (
     var.project_create
     ? module.project.project_id
@@ -28,17 +27,17 @@ locals {
   )
   vpc_producer_main = (
     var.vpc_create
-    ? module.vpc_producer.subnets["${var.region}/${local.prefix}main"].id
+    ? module.vpc_producer.subnets["${var.region}/${var.prefix}-main"].id
     : var.vpc_config["producer"]["subnet_main_id"]
   )
   vpc_producer_proxy = (
     var.vpc_create
-    ? module.vpc_producer.subnets_proxy_only["${var.region}/${local.prefix}proxy"].id
+    ? module.vpc_producer.subnets_proxy_only["${var.region}/${var.prefix}-proxy"].id
     : var.vpc_config["producer"]["subnet_proxy_id"]
   )
   vpc_producer_psc = (
     var.vpc_create
-    ? module.vpc_producer.subnets_psc["${var.region}/${local.prefix}psc"].id
+    ? module.vpc_producer.subnets_psc["${var.region}/${var.prefix}-psc"].id
     : var.vpc_config["producer"]["subnet_psc_id"]
   )
   vpc_consumer_id = (
@@ -48,7 +47,7 @@ locals {
   )
   vpc_consumer_main = (
     var.vpc_create
-    ? module.vpc_consumer.subnets["${var.region}/${local.prefix}consumer"].id
+    ? module.vpc_consumer.subnets["${var.region}/${var.prefix}-consumer"].id
     : var.vpc_config["consumer"]["subnet_main_id"]
   )
 }
@@ -66,11 +65,11 @@ module "project" {
 module "vpc_producer" {
   source     = "../../../modules/net-vpc"
   project_id = local.project_id
-  name       = "${local.prefix}producer"
+  name       = "${var.prefix}-producer"
   subnets = [
     {
       ip_cidr_range      = var.producer["subnet_main"]
-      name               = "${local.prefix}main"
+      name               = "${var.prefix}-main"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -78,7 +77,7 @@ module "vpc_producer" {
   subnets_proxy_only = [
     {
       ip_cidr_range = var.producer["subnet_proxy"]
-      name          = "${local.prefix}proxy"
+      name          = "${var.prefix}-proxy"
       region        = var.region
       active        = true
     }
@@ -86,7 +85,7 @@ module "vpc_producer" {
   subnets_psc = [
     {
       ip_cidr_range = var.producer["subnet_psc"]
-      name          = "${local.prefix}psc"
+      name          = "${var.prefix}-psc"
       region        = var.region
     }
   ]
@@ -95,7 +94,7 @@ module "vpc_producer" {
 module "psc_producer" {
   source          = "./psc-producer"
   project_id      = local.project_id
-  name            = "${local.prefix}producer"
+  name            = "${var.prefix}-producer"
   dest_ip_address = var.dest_ip_address
   dest_port       = var.dest_port
   network         = local.vpc_producer_id
@@ -114,11 +113,11 @@ module "psc_producer" {
 module "vpc_consumer" {
   source     = "../../../modules/net-vpc"
   project_id = local.project_id
-  name       = "${local.prefix}consumer"
+  name       = "${var.prefix}-consumer"
   subnets = [
     {
       ip_cidr_range      = var.subnet_consumer
-      name               = "${local.prefix}consumer"
+      name               = "${var.prefix}-consumer"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -128,7 +127,7 @@ module "vpc_consumer" {
 module "psc_consumer" {
   source     = "./psc-consumer"
   project_id = local.project_id
-  name       = "${local.prefix}consumer"
+  name       = "${var.prefix}-consumer"
   region     = var.region
   network    = local.vpc_consumer_id
   subnet     = local.vpc_consumer_main

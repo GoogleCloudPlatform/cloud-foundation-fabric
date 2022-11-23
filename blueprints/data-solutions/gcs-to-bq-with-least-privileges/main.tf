@@ -81,7 +81,6 @@ locals {
     module.vpc[0].subnets["${var.region}/subnet"].self_link,
     var.network_config.subnet_self_link
   )
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
   shared_vpc_bindings = {
     "roles/compute.networkUser" = [
       "robot-df", "sa-df-worker"
