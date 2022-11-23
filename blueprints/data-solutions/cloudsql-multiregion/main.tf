@@ -142,6 +142,6 @@ module "nat" {
   count          = local.use_shared_vpc ? 0 : 1
   project_id     = module.project.project_id
   region         = var.regions.primary
-  name           = "${local.prefix}default"
+  name           = "${var.prefix}-default"
   router_network = module.vpc.0.name
 }
