@@ -23,7 +23,12 @@ variable "billing_account" {
 }
 
 variable "prefix" {
-  description = "Customer name to use as prefix for resources' naming"
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_vm_services" {

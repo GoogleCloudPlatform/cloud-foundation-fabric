@@ -48,7 +48,12 @@ variable "organization_id" {
 }
 
 variable "prefix" {
-  description = "Customer name to use as prefix for monitoring project"
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_monitoring_services" {

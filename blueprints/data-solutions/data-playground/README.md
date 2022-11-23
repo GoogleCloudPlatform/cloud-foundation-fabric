@@ -47,12 +47,12 @@ You can now connect to the Vertex AI notbook to perform your data analysy.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L22) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L36) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L22) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L40) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
 | [location](variables.tf#L16) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
-| [project_create](variables.tf#L27) | Provide values if project creation is needed, uses existing project if null. Parent format:  folders/folder_id or organizations/org_id | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L41) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [vpc_config](variables.tf#L57) | Parameters to create a VPC. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  ip_cidr_range &#61; &#34;10.0.0.0&#47;20&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_create](variables.tf#L31) | Provide values if project creation is needed, uses existing project if null. Parent format:  folders/folder_id or organizations/org_id | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L45) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [vpc_config](variables.tf#L61) | Parameters to create a VPC. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  ip_cidr_range &#61; &#34;10.0.0.0&#47;20&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 

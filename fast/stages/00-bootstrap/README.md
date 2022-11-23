@@ -415,7 +415,7 @@ The `type` attribute can be set to one of the supported repository types: `githu
 
 Once the stage is applied the generated output files will contain pre-configured workflow files for each repository, that will use Workload Identity Federation via a dedicated service account for each repository to impersonate the automation service account for the stage.
 
-You can use Terraform to automate creation of the repositories using the `00-cicd` stage.
+You can use Terraform to automate creation of the repositories using the extra stage defined in [fast/extras/00-cicd-github](../../extras/00-cicd-github/) (only for Github for now).
 
 The remaining configuration is manual, as it regards the repositories themselves:
 

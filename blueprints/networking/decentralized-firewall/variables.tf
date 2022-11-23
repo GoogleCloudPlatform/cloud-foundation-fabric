@@ -27,8 +27,12 @@ variable "ip_ranges" {
 }
 
 variable "prefix" {
-  description = "Prefix used for resources that need unique names."
+  description = "Prefix used for resource names."
   type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_services" {

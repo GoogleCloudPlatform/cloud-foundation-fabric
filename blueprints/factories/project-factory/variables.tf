@@ -149,9 +149,12 @@ variable "org_policies" {
 }
 
 variable "prefix" {
-  description = "Prefix used for the project id."
+  description = "Prefix used for resource names."
   type        = string
-  default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_id" {

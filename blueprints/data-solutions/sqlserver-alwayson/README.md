@@ -38,9 +38,10 @@ and to `C:\GcpSetupLog.txt` file.
 | [ad_domain_fqdn](variables.tf#L15) | Active Directory domain (FQDN) | <code>string</code> | ✓ |  |
 | [ad_domain_netbios](variables.tf#L24) | Active Directory domain (NetBIOS) | <code>string</code> | ✓ |  |
 | [network](variables.tf#L90) | Network to use in the project | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L128) | Google Cloud project ID | <code>string</code> | ✓ |  |
-| [sql_admin_password](variables.tf#L145) | Password for the SQL admin user to be created | <code>string</code> | ✓ |  |
-| [subnetwork](variables.tf#L160) | Subnetwork to use in the project | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L113) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L131) | Google Cloud project ID | <code>string</code> | ✓ |  |
+| [sql_admin_password](variables.tf#L148) | Password for the SQL admin user to be created | <code>string</code> | ✓ |  |
+| [subnetwork](variables.tf#L163) | Subnetwork to use in the project | <code>string</code> | ✓ |  |
 | [always_on_groups](variables.tf#L33) | List of Always On Groups | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;bookshelf&#34;&#93;</code> |
 | [boot_disk_size](variables.tf#L39) | Boot disk size in GB | <code>number</code> |  | <code>50</code> |
 | [cluster_name](variables.tf#L45) | Cluster name (prepended with prefix) | <code>string</code> |  | <code>&#34;cluster&#34;</code> |
@@ -52,15 +53,14 @@ and to `C:\GcpSetupLog.txt` file.
 | [node_image](variables.tf#L95) | SQL Server node machine image | <code>string</code> |  | <code>&#34;projects&#47;windows-sql-cloud&#47;global&#47;images&#47;family&#47;sql-ent-2019-win-2019&#34;</code> |
 | [node_instance_type](variables.tf#L101) | SQL Server database node instance type | <code>string</code> |  | <code>&#34;n2-standard-8&#34;</code> |
 | [node_name](variables.tf#L107) | Node base name | <code>string</code> |  | <code>&#34;node&#34;</code> |
-| [prefix](variables.tf#L113) | Prefix used for resources (for multiple clusters in a project) | <code>string</code> |  | <code>&#34;aog&#34;</code> |
-| [project_create](variables.tf#L119) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L133) | Region for resources | <code>string</code> |  | <code>&#34;europe-west4&#34;</code> |
-| [shared_vpc_project_id](variables.tf#L139) | Shared VPC project ID for firewall rules | <code>string</code> |  | <code>null</code> |
-| [sql_client_cidrs](variables.tf#L154) | CIDR ranges that are allowed to connect to SQL Server | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;0.0.0.0&#47;0&#34;&#93;</code> |
-| [vpc_ip_cidr_range](variables.tf#L165) | Ip range used in the subnet deployef in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
-| [witness_image](variables.tf#L171) | SQL Server witness machine image | <code>string</code> |  | <code>&#34;projects&#47;windows-cloud&#47;global&#47;images&#47;family&#47;windows-2019&#34;</code> |
-| [witness_instance_type](variables.tf#L177) | SQL Server witness node instance type | <code>string</code> |  | <code>&#34;n2-standard-2&#34;</code> |
-| [witness_name](variables.tf#L183) | Witness base name | <code>string</code> |  | <code>&#34;witness&#34;</code> |
+| [project_create](variables.tf#L122) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L136) | Region for resources | <code>string</code> |  | <code>&#34;europe-west4&#34;</code> |
+| [shared_vpc_project_id](variables.tf#L142) | Shared VPC project ID for firewall rules | <code>string</code> |  | <code>null</code> |
+| [sql_client_cidrs](variables.tf#L157) | CIDR ranges that are allowed to connect to SQL Server | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;0.0.0.0&#47;0&#34;&#93;</code> |
+| [vpc_ip_cidr_range](variables.tf#L168) | Ip range used in the subnet deployef in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
+| [witness_image](variables.tf#L174) | SQL Server witness machine image | <code>string</code> |  | <code>&#34;projects&#47;windows-cloud&#47;global&#47;images&#47;family&#47;windows-2019&#34;</code> |
+| [witness_instance_type](variables.tf#L180) | SQL Server witness node instance type | <code>string</code> |  | <code>&#34;n2-standard-2&#34;</code> |
+| [witness_name](variables.tf#L186) | Witness base name | <code>string</code> |  | <code>&#34;witness&#34;</code> |
 
 ## Outputs
 

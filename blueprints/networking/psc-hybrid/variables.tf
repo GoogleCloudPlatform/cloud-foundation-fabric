@@ -26,8 +26,12 @@ variable "dest_port" {
 }
 
 variable "prefix" {
-  description = "Prefix to use for resource names."
+  description = "Prefix used for resource names."
   type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "producer" {
