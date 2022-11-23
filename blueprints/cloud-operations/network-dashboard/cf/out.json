@@ -531,22 +531,26 @@
         {
           "active": true,
           "name": "prod-peering-0-prod-spoke-0-prod-landing-0",
-          "network": "projects/ludo-prod-net-landing-0/global/networks/prod-landing-0"
+          "network": "projects/ludo-prod-net-landing-0/global/networks/prod-landing-0",
+          "project_id": "ludo-prod-net-landing-0"
         },
         {
           "active": true,
           "name": "servicenetworking-googleapis-com",
-          "network": "projects/r63cc730008bdfb49p-tp/global/networks/servicenetworking"
+          "network": "projects/r63cc730008bdfb49p-tp/global/networks/servicenetworking",
+          "project_id": "r63cc730008bdfb49p-tp"
         },
         {
           "active": true,
           "name": "to-dev-spoke-0",
-          "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0"
+          "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0",
+          "project_id": "ludo-dev-net-spoke-0"
         },
         {
           "active": false,
           "name": "to-test-public-gcs",
-          "network": "projects/186042149622/global/networks/default"
+          "network": "projects/186042149622/global/networks/default",
+          "project_id": "186042149622"
         }
       ],
       "subnetworks": [
@@ -566,12 +570,14 @@
         {
           "active": true,
           "name": "dev-peering-0-prod-landing-0-dev-spoke-0",
-          "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0"
+          "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0",
+          "project_id": "ludo-dev-net-spoke-0"
         },
         {
           "active": true,
           "name": "prod-peering-0-prod-landing-0-prod-spoke-0",
-          "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0"
+          "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0",
+          "project_id": "ludo-prod-net-spoke-0"
         }
       ],
       "subnetworks": [
@@ -609,32 +615,38 @@
         {
           "active": false,
           "name": "composer-474420912893-vpc-peering",
-          "network": "projects/474420912893/global/networks/composer-net"
+          "network": "projects/474420912893/global/networks/composer-net",
+          "project_id": "474420912893"
         },
         {
           "active": false,
           "name": "composer-566526877645-vpc-peering",
-          "network": "projects/566526877645/global/networks/composer-net"
+          "network": "projects/566526877645/global/networks/composer-net",
+          "project_id": "566526877645"
         },
         {
           "active": true,
           "name": "dev-peering-0-dev-spoke-0-prod-landing-0",
-          "network": "projects/ludo-prod-net-landing-0/global/networks/prod-landing-0"
+          "network": "projects/ludo-prod-net-landing-0/global/networks/prod-landing-0",
+          "project_id": "ludo-prod-net-landing-0"
         },
         {
           "active": false,
           "name": "gke-n0a46a71e52c28142071-9ca9-f42d-peer",
-          "network": "projects/gke-prod-europe-west1-b-4/global/networks/gke-n0a46a71e52c28142071-9ca9-32cb-net"
+          "network": "projects/gke-prod-europe-west1-b-4/global/networks/gke-n0a46a71e52c28142071-9ca9-32cb-net",
+          "project_id": "gke-prod-europe-west1-b-4"
         },
         {
           "active": true,
           "name": "servicenetworking-googleapis-com",
-          "network": "projects/p10d8c97c9bd39799p-tp/global/networks/servicenetworking"
+          "network": "projects/p10d8c97c9bd39799p-tp/global/networks/servicenetworking",
+          "project_id": "p10d8c97c9bd39799p-tp"
         },
         {
           "active": true,
           "name": "to-prod-spoke-0",
-          "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0"
+          "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0",
+          "project_id": "ludo-prod-net-spoke-0"
         }
       ],
       "subnetworks": [
@@ -656,7 +668,8 @@
         {
           "active": true,
           "name": "servicenetworking-googleapis-com",
-          "network": "projects/a2fed18bfde5785bdp-tp/global/networks/servicenetworking"
+          "network": "projects/a2fed18bfde5785bdp-tp/global/networks/servicenetworking",
+          "project_id": "a2fed18bfde5785bdp-tp"
         }
       ],
       "subnetworks": [

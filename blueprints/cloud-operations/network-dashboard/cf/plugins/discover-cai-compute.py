@@ -134,7 +134,8 @@ def _handle_networks(resource, data):
   peerings = [{
       'active': p['state'] == 'ACTIVE',
       'name': p['name'],
-      'network': _self_link(p['network'])
+      'network': _self_link(p['network']),
+      'project_id': _self_link(p['network']).split('/')[1]
   } for p in data.get('peerings', [])]
   subnets = [_self_link(s) for s in data.get('subnetworks', [])]
   return {'peerings': peerings, 'subnetworks': subnets}
