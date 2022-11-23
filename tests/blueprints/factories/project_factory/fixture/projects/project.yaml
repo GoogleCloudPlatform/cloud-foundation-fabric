@@ -1,5 +1,8 @@
 # skip boilerplate check
 
+# [opt] Prefix - overrides default if set
+prefix: test1
+
 # [opt] Billing account id - overrides default if set
 billing_account_id: 012345-67890A-BCDEF0
 

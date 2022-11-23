@@ -33,6 +33,7 @@ module "projects" {
   source                 = "../../../../../blueprints/factories/project-factory"
   for_each               = local.projects
   defaults               = local.defaults
+  prefix                 = each.value.prefix
   project_id             = each.key
   billing_account_id     = try(each.value.billing_account_id, null)
   billing_alert          = try(each.value.billing_alert, null)

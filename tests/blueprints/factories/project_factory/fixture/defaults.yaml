@@ -1,5 +1,7 @@
 # skip boilerplate check
 
+prefix: test
+
 billing_account_id: 012345-67890A-BCDEF0
 
 # [opt] Setup for billing alerts
