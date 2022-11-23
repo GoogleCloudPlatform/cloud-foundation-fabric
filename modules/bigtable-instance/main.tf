@@ -27,6 +27,16 @@ resource "google_bigtable_instance" "default" {
     cluster_id   = var.cluster_id
     zone         = var.zone
     storage_type = var.storage_type
+    num_nodes    = var.num_nodes
+    dynamic "autoscaling_config" {
+      for_each = var.autoscaling_config == null ? [] : [""]
+      content {
+        min_nodes      = var.autoscaling_config.min_nodes
+        max_nodes      = var.autoscaling_config.max_nodes
+        cpu_target     = var.autoscaling_config.cpu_target
+        storage_target = var.autoscaling_config.storage_target
+      }
+    }
   }
   instance_type = var.instance_type
 
@@ -56,8 +66,4 @@ resource "google_bigtable_table" "default" {
       family = each.value.column_family
     }
   }
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
