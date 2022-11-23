@@ -89,7 +89,6 @@ module "bigtable-instance" {
 }
 # tftest modules=1 resources=1
 ```
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -105,7 +104,7 @@ module "bigtable-instance" {
 | [display_name](variables.tf#L39) | The human-readable display name of the Bigtable instance. | <code></code> |  | <code>null</code> |
 | [iam](variables.tf#L44) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [instance_type](variables.tf#L50) | (deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'. | <code>string</code> |  | <code>null</code> |
-| [num_nodes](variables.tf#L61) | The number of nodes in your Cloud Bigtable cluster. | <code>number</code> |  | <code>1</code> |
+| [num_nodes](variables.tf#L61) | The number of nodes in your Cloud Bigtable cluster. | <code>number</code> |  | <code>null</code> |
 | [storage_type](variables.tf#L72) | The storage type to use. | <code>string</code> |  | <code>&#34;SSD&#34;</code> |
 | [table_options_defaults](variables.tf#L78) | Default option of tables created in the BigTable instance. | <code title="object&#40;&#123;&#10;  split_keys    &#61; list&#40;string&#41;&#10;  column_family &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  split_keys    &#61; &#91;&#93;&#10;  column_family &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [tables](variables.tf#L90) | Tables to be created in the BigTable instance, options can be null. | <code title="map&#40;object&#40;&#123;&#10;  split_keys    &#61; list&#40;string&#41;&#10;  column_family &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
