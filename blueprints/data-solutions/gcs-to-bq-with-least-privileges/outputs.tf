@@ -25,21 +25,6 @@ output "buckets" {
   }
 }
 
-output "project_id" {
-  description = "Project id."
-  value       = module.project.project_id
-}
-
-output "service_accounts" {
-  description = "Service account."
-  value = {
-    bq      = module.service-account-bq.email
-    df      = module.service-account-df.email
-    orch    = module.service-account-orch.email
-    landing = module.service-account-landing.email
-  }
-}
-
 output "command_01_gcs" {
   description = "gcloud command to copy data into the created bucket impersonating the service account."
   value       = "gsutil -i ${module.service-account-landing.email} cp data-demo/* ${module.gcs-data.url}"
@@ -74,4 +59,19 @@ output "command_03_bq" {
     bigquery_table   = module.bigquery-dataset.tables["person"].table_id
     sql_limit        = 1000
   })
+}
+
+output "project_id" {
+  description = "Project id."
+  value       = module.project.project_id
+}
+
+output "service_accounts" {
+  description = "Service account."
+  value = {
+    bq      = module.service-account-bq.email
+    df      = module.service-account-df.email
+    orch    = module.service-account-orch.email
+    landing = module.service-account-landing.email
+  }
 }

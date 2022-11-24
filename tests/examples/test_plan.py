@@ -16,20 +16,30 @@ import re
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
-EXPECTED_RESOURCES_RE = re.compile(r'# tftest modules=(\d+) resources=(\d+)')
+COUNT_TEST_RE = re.compile(
+    r'# tftest modules=(\d+) resources=(\d+)(?: files=([\w,]+))?')
 
 
 def test_example(recursive_e2e_plan_runner, tmp_path, example):
-  (tmp_path / 'fabric').symlink_to(Path(BASE_PATH, '../../').resolve())
-  (tmp_path / 'variables.tf').symlink_to(
-      Path(BASE_PATH, 'variables.tf').resolve())
-  (tmp_path / 'main.tf').write_text(example)
+  if match := COUNT_TEST_RE.search(example.code):
+    (tmp_path / 'fabric').symlink_to(Path(BASE_PATH, '../../'))
+    (tmp_path / 'variables.tf').symlink_to(Path(BASE_PATH, 'variables.tf'))
+    (tmp_path / 'main.tf').write_text(example.code)
 
-  match = EXPECTED_RESOURCES_RE.search(example)
-  expected_modules = int(match.group(1)) if match is not None else 1
-  expected_resources = int(match.group(2)) if match is not None else 1
+    if match.group(3) is not None:
+      requested_files = match.group(3).split(',')
+      for f in requested_files:
+        destination = tmp_path / example.files[f].path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(example.files[f].content)
 
-  num_modules, num_resources = recursive_e2e_plan_runner(
-      str(tmp_path), tmpdir=False)
-  assert expected_modules == num_modules
-  assert expected_resources == num_resources
+    expected_modules = int(match.group(1)) if match is not None else 1
+    expected_resources = int(match.group(2)) if match is not None else 1
+
+    num_modules, num_resources = recursive_e2e_plan_runner(
+        str(tmp_path), tmpdir=False)
+    assert expected_modules == num_modules, 'wrong number of modules'
+    assert expected_resources == num_resources, 'wrong number of resources'
+
+  else:
+    assert False, "can't find tftest directive"

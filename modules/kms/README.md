@@ -23,7 +23,7 @@ module "kms" {
   keyring_create = false
   keys           = { key-a = null, key-b = null, key-c = null }
 }
-# tftest skip
+# tftest skip (uses data sources)
 ```
 
 ### Keyring creation and crypto key rotation and IAM roles

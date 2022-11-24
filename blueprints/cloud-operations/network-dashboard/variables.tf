@@ -43,13 +43,17 @@ variable "monitoring_project_id" {
   default     = ""
 }
 
-
 variable "organization_id" {
   description = "The organization id for the associated services"
 }
 
 variable "prefix" {
-  description = "Customer name to use as prefix for monitoring project"
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_monitoring_services" {
@@ -59,19 +63,21 @@ variable "project_monitoring_services" {
     "cloudasset.googleapis.com",
     "cloudbilling.googleapis.com",
     "cloudbuild.googleapis.com",
+    "cloudfunctions.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "cloudscheduler.googleapis.com",
     "compute.googleapis.com",
-    "cloudfunctions.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
+    "pubsub.googleapis.com",
     "run.googleapis.com",
-    "serviceusage.googleapis.com"
+    "servicenetworking.googleapis.com",
+    "serviceusage.googleapis.com",
+    "storage-component.googleapis.com"
   ]
 }
-
 variable "region" {
   description = "Region used to deploy the cloud functions and scheduler"
   default     = "europe-west1"

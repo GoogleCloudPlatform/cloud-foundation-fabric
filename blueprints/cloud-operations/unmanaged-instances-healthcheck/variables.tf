@@ -18,6 +18,12 @@ variable "billing_account" {
   type        = string
 }
 
+variable "grace_period" {
+  description = "Grace period for an instance startup."
+  type        = string
+  default     = "180s"
+}
+
 variable "location" {
   description = "App Engine location used in the example (required for CloudFunctions)."
   type        = string
@@ -51,12 +57,6 @@ variable "schedule" {
   description = "Cron schedule for executing compute instances healthcheck."
   type        = string
   default     = "*/5 * * * *" # every five minutes
-}
-
-variable "grace_period" {
-  description = "Grace period for an instance startup."
-  type        = string
-  default     = "180s"
 }
 
 variable "tcp_port" {

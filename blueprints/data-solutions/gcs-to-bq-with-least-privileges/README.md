@@ -193,14 +193,14 @@ The above command will delete the associated resources so there will be no billa
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L36) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L50) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L36) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L54) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
 | [cmek_encryption](variables.tf#L15) | Flag to enable CMEK on GCP resources created. | <code>bool</code> |  | <code>false</code> |
 | [data_eng_principals](variables.tf#L21) | Groups with Service Account Token creator role on service accounts in IAM format, eg 'group:group@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [network_config](variables.tf#L27) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project     &#61; string&#10;  subnet_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_create](variables.tf#L41) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L55) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [vpc_subnet_range](variables.tf#L61) | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
+| [project_create](variables.tf#L45) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L59) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [vpc_subnet_range](variables.tf#L65) | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
 
 ## Outputs
 
@@ -208,10 +208,10 @@ The above command will delete the associated resources so there will be no billa
 |---|---|:---:|
 | [bq_tables](outputs.tf#L15) | Bigquery Tables. |  |
 | [buckets](outputs.tf#L20) | GCS bucket Cloud KMS crypto keys. |  |
-| [command_01_gcs](outputs.tf#L43) | gcloud command to copy data into the created bucket impersonating the service account. |  |
-| [command_02_dataflow](outputs.tf#L48) | Command to run Dataflow template impersonating the service account. |  |
-| [command_03_bq](outputs.tf#L69) | BigQuery command to query imported data. |  |
-| [project_id](outputs.tf#L28) | Project id. |  |
-| [service_accounts](outputs.tf#L33) | Service account. |  |
+| [command_01_gcs](outputs.tf#L28) | gcloud command to copy data into the created bucket impersonating the service account. |  |
+| [command_02_dataflow](outputs.tf#L33) | Command to run Dataflow template impersonating the service account. |  |
+| [command_03_bq](outputs.tf#L54) | BigQuery command to query imported data. |  |
+| [project_id](outputs.tf#L64) | Project id. |  |
+| [service_accounts](outputs.tf#L69) | Service account. |  |
 
 <!-- END TFDOC -->

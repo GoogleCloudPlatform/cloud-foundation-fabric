@@ -19,7 +19,7 @@
 module "compute-service-account" {
   source     = "../../../modules/iam-service-account"
   project_id = var.project_id
-  name       = format("%swsfc", local.prefix)
+  name       = "${var.prefix}-wsfc"
 
   iam_project_roles = {
     (var.project_id) = [
@@ -35,7 +35,7 @@ module "compute-service-account" {
 module "witness-service-account" {
   source     = "../../../modules/iam-service-account"
   project_id = var.project_id
-  name       = format("%swsfc-witness", local.prefix)
+  name       = "${var.prefix}-wsfc-witness"
 
   iam_project_roles = {
     (var.project_id) = [

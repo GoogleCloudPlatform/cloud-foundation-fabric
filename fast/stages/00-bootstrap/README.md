@@ -415,7 +415,7 @@ The `type` attribute can be set to one of the supported repository types: `githu
 
 Once the stage is applied the generated output files will contain pre-configured workflow files for each repository, that will use Workload Identity Federation via a dedicated service account for each repository to impersonate the automation service account for the stage.
 
-You can use Terraform to automate creation of the repositories using the `00-cicd` stage.
+You can use Terraform to automate creation of the repositories using the extra stage defined in [fast/extras/00-cicd-github](../../extras/00-cicd-github/) (only for Github for now).
 
 The remaining configuration is manual, as it regards the repositories themselves:
 
@@ -491,8 +491,8 @@ The remaining configuration is manual, as it regards the repositories themselves
 | [federated_identity](outputs.tf#L116) | Workload Identity Federation pool and providers. |  |  |
 | [outputs_bucket](outputs.tf#L126) | GCS bucket where generated output files are stored. |  |  |
 | [project_ids](outputs.tf#L131) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L151) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L140) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L160) | Terraform variable files for the following stages. | ✓ |  |
+| [providers](outputs.tf#L141) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L148) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L158) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

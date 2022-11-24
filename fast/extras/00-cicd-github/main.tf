@@ -100,7 +100,7 @@ resource "tls_private_key" "default" {
   algorithm = "ED25519"
 }
 
-resource "github_repository_deploy_key" "exdefaultample_repository_deploy_key" {
+resource "github_repository_deploy_key" "default" {
   count      = local.modules_repository == null ? 0 : 1
   title      = "Modules repository access"
   repository = local.modules_repository

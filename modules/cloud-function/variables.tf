@@ -17,8 +17,8 @@
 variable "bucket_config" {
   description = "Enable and configure auto-created bucket. Set fields to null to use defaults."
   type = object({
-    location             = string
-    lifecycle_delete_age = number
+    location                  = optional(string)
+    lifecycle_delete_age_days = optional(number)
   })
   default = null
 }
@@ -28,12 +28,18 @@ variable "bucket_name" {
   type        = string
 }
 
+variable "build_worker_pool" {
+  description = "Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format"
+  type        = string
+  default     = null
+}
+
 variable "bundle_config" {
   description = "Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null."
   type = object({
     source_dir  = string
-    output_path = string
-    excludes    = list(string)
+    output_path = optional(string, "/tmp/bundle.zip")
+    excludes    = optional(list(string))
   })
 }
 
@@ -50,20 +56,20 @@ variable "environment_variables" {
 }
 
 variable "function_config" {
-  description = "Cloud function configuration."
+  description = "Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout"
   type = object({
-    entry_point = string
-    instances   = number
-    memory      = number # Memory in MB
-    runtime     = string
-    timeout     = number
+    entry_point     = optional(string, "main")
+    instance_count  = optional(number, 1)
+    memory_mb       = optional(number, 256) # Memory in MB
+    runtime         = optional(string, "python310")
+    timeout_seconds = optional(number, 180)
   })
   default = {
-    entry_point = "main"
-    instances   = 1
-    memory      = 256
-    runtime     = "python37"
-    timeout     = 180
+    entry_point     = "main"
+    instance_count  = 1
+    memory_mb       = 256
+    runtime         = "python310"
+    timeout_seconds = 180
   }
 }
 
@@ -94,6 +100,10 @@ variable "prefix" {
   description = "Optional prefix used for resource names."
   type        = string
   default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
+  }
 }
 
 variable "project_id" {
@@ -134,11 +144,36 @@ variable "service_account_create" {
 variable "trigger_config" {
   description = "Function trigger configuration. Leave null for HTTP trigger."
   type = object({
-    event    = string
-    resource = string
-    retry    = bool
+    v1 = optional(object({
+      event    = string
+      resource = string
+      retry    = optional(bool)
+    })),
+    v2 = optional(object({
+      region       = optional(string)
+      event_type   = optional(string)
+      pubsub_topic = optional(string)
+      event_filters = optional(list(object({
+        attribute = string
+        value     = string
+        operator  = string
+      })))
+      service_account_email  = optional(string)
+      service_account_create = optional(bool)
+      retry_policy           = optional(string)
+    }))
   })
-  default = null
+  default = { v1 = null, v2 = null }
+  validation {
+    condition     = !(var.trigger_config.v1 != null && var.trigger_config.v2 != null)
+    error_message = "Provide configuration for only one generation - either v1 or v2"
+  }
+}
+
+variable "v2" {
+  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen."
+  type        = bool
+  default     = false
 }
 
 variable "vpc_connector" {
@@ -160,9 +195,4 @@ variable "vpc_connector_config" {
   default = null
 }
 
-variable "v2" {
-  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen."
-  type        = bool
-  default     = false
-}
 

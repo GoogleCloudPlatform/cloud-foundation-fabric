@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-locals {
-  prefix = (var.prefix == null || var.prefix == "") ? "" : "${var.prefix}-"
-}
-
 module "project" {
   source = "../../../modules/project"
   billing_account = (
@@ -41,7 +37,7 @@ module "vpc" {
   count      = var.network_config == null ? 1 : 0
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = "${local.prefix}vpc"
+  name       = "${var.prefix}-vpc"
   subnets = [
     {
       ip_cidr_range = var.subnet_ip_cidr_block
@@ -98,7 +94,7 @@ module "server" {
 
 module "glb" {
   source     = "../../../modules/net-glb"
-  name       = "${local.prefix}glb"
+  name       = "${var.prefix}-glb"
   project_id = module.project.project_id
 
   https              = true

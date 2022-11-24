@@ -14,6 +14,7 @@
 
 module "test" {
   source                  = "../../../../../blueprints/networking/glb-and-armor"
+  prefix                  = var.prefix
   project_create          = var.project_create
   project_id              = var.project_id
   enforce_security_policy = var.enforce_security_policy

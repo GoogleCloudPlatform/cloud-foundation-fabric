@@ -103,24 +103,33 @@ variable "logging_exclusions" {
 }
 
 variable "logging_sinks" {
-  description = "Logging sinks to create for this folder."
+  description = "Logging sinks to create for the organization."
   type = map(object({
-    destination      = string
-    type             = string
-    filter           = string
-    include_children = bool
-    # TODO exclusions also support description and disabled
-    exclusions = map(string)
+    bq_partitioned_table = optional(bool)
+    description          = optional(string)
+    destination          = string
+    disabled             = optional(bool, false)
+    exclusions           = optional(map(string), {})
+    filter               = string
+    include_children     = optional(bool, true)
+    type                 = string
   }))
+  default  = {}
+  nullable = false
   validation {
     condition = alltrue([
-      for k, v in(var.logging_sinks == null ? {} : var.logging_sinks) :
+      for k, v in var.logging_sinks :
       contains(["bigquery", "logging", "pubsub", "storage"], v.type)
     ])
     error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
   }
-  default  = {}
-  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.logging_sinks :
+      v.bq_partitioned_table != true || v.type == "bigquery"
+    ])
+    error_message = "Can only set bq_partitioned_table when type is `bigquery`."
+  }
 }
 
 variable "name" {

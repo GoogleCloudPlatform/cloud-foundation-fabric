@@ -40,16 +40,16 @@ Before applying this Terraform
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [dest_ip_address](variables.tf#L37) | On-prem service destination IP address. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L17) | Prefix to use for resource names. | <code>string</code> | ✓ |  |
-| [producer](variables.tf#L88) | Producer configuration. | <code title="object&#40;&#123;&#10;  subnet_main     &#61; string      &#35; CIDR&#10;  subnet_proxy    &#61; string      &#35; CIDR&#10;  subnet_psc      &#61; string      &#35; CIDR&#10;  accepted_limits &#61; map&#40;number&#41; &#35; Accepted project ids &#61;&#62; PSC endpoint limit&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L22) | When referncing existing projects, the id of the project where resources will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L27) | Region where resources will be created. | <code>string</code> | ✓ |  |
-| [subnet_consumer](variables.tf#L98) | Consumer subnet CIDR. | <code>string &#35; CIDR</code> | ✓ |  |
-| [zone](variables.tf#L32) | Zone where resources will be created. | <code>string</code> | ✓ |  |
-| [dest_port](variables.tf#L42) | On-prem service destination port. | <code>string</code> |  | <code>&#34;80&#34;</code> |
-| [project_create](variables.tf#L48) | Whether to automatically create a project. | <code>bool</code> |  | <code>false</code> |
-| [vpc_config](variables.tf#L60) | VPC and subnet ids, in case existing VPCs are used. | <code title="object&#40;&#123;&#10;  producer &#61; object&#40;&#123;&#10;    id              &#61; string&#10;    subnet_main_id  &#61; string&#10;    subnet_proxy_id &#61; string&#10;    subnet_psc_id   &#61; string&#10;  &#125;&#41;&#10;  consumer &#61; object&#40;&#123;&#10;    id             &#61; string&#10;    subnet_main_id &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  producer &#61; &#123;&#10;    id              &#61; &#34;xxx&#34;&#10;    subnet_main_id  &#61; &#34;xxx&#34;&#10;    subnet_proxy_id &#61; &#34;xxx&#34;&#10;    subnet_psc_id   &#61; &#34;xxx&#34;&#10;  &#125;&#10;  consumer &#61; &#123;&#10;    id             &#61; &#34;xxx&#34;&#10;    subnet_main_id &#61; &#34;xxx&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [vpc_create](variables.tf#L54) | Whether to automatically create VPCs. | <code>bool</code> |  | <code>true</code> |
+| [dest_ip_address](variables.tf#L17) | On-prem service destination IP address. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L28) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [producer](variables.tf#L37) | Producer configuration. | <code title="object&#40;&#123;&#10;  subnet_main     &#61; string      &#35; CIDR&#10;  subnet_proxy    &#61; string      &#35; CIDR&#10;  subnet_psc      &#61; string      &#35; CIDR&#10;  accepted_limits &#61; map&#40;number&#41; &#35; Accepted project ids &#61;&#62; PSC endpoint limit&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L53) | When referncing existing projects, the id of the project where resources will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L58) | Region where resources will be created. | <code>string</code> | ✓ |  |
+| [subnet_consumer](variables.tf#L63) | Consumer subnet CIDR. | <code>string &#35; CIDR</code> | ✓ |  |
+| [zone](variables.tf#L102) | Zone where resources will be created. | <code>string</code> | ✓ |  |
+| [dest_port](variables.tf#L22) | On-prem service destination port. | <code>string</code> |  | <code>&#34;80&#34;</code> |
+| [project_create](variables.tf#L47) | Whether to automatically create a project. | <code>bool</code> |  | <code>false</code> |
+| [vpc_config](variables.tf#L68) | VPC and subnet ids, in case existing VPCs are used. | <code title="object&#40;&#123;&#10;  producer &#61; object&#40;&#123;&#10;    id              &#61; string&#10;    subnet_main_id  &#61; string&#10;    subnet_proxy_id &#61; string&#10;    subnet_psc_id   &#61; string&#10;  &#125;&#41;&#10;  consumer &#61; object&#40;&#123;&#10;    id             &#61; string&#10;    subnet_main_id &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  producer &#61; &#123;&#10;    id              &#61; &#34;xxx&#34;&#10;    subnet_main_id  &#61; &#34;xxx&#34;&#10;    subnet_proxy_id &#61; &#34;xxx&#34;&#10;    subnet_psc_id   &#61; &#34;xxx&#34;&#10;  &#125;&#10;  consumer &#61; &#123;&#10;    id             &#61; &#34;xxx&#34;&#10;    subnet_main_id &#61; &#34;xxx&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [vpc_create](variables.tf#L96) | Whether to automatically create VPCs. | <code>bool</code> |  | <code>true</code> |
 
 <!-- END TFDOC -->

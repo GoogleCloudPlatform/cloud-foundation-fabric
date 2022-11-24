@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-output "health_checks" {
-  description = "Health-check resources."
-  value       = try(google_compute_health_check.health_check, [])
-}
-
 output "backend_services" {
   description = "Backend service resources."
   value = {
@@ -27,18 +22,19 @@ output "backend_services" {
   }
 }
 
-output "url_map" {
-  description = "The url-map."
-  value       = google_compute_url_map.url_map
+output "forwarding_rule" {
+  description = "The regional forwarding rule."
+  value       = var.region == null ? google_compute_global_forwarding_rule.forwarding_rule.0 : google_compute_forwarding_rule.forwarding_rule.0
 }
 
-output "ssl_certificates" {
-  description = "The SSL certificate."
-  value = try(
-    google_compute_managed_ssl_certificate.managed,
-    google_compute_ssl_certificate.unmanaged,
-    null
-  )
+output "global_forwarding_rule" {
+  description = "The global forwarding rule."
+  value       = var.region == null ? google_compute_global_forwarding_rule.forwarding_rule.0 : null
+}
+
+output "health_checks" {
+  description = "Health-check resources."
+  value       = try(google_compute_health_check.health_check, [])
 }
 
 output "ip_address" {
@@ -51,6 +47,15 @@ output "ip_address_self_link" {
   value       = var.region == null ? google_compute_global_forwarding_rule.forwarding_rule.0.ip_address : google_compute_forwarding_rule.forwarding_rule.0.ip_address
 }
 
+output "ssl_certificates" {
+  description = "The SSL certificate."
+  value = try(
+    google_compute_managed_ssl_certificate.managed,
+    google_compute_ssl_certificate.unmanaged,
+    null
+  )
+}
+
 output "target_proxy" {
   description = "The target proxy."
   value = try(
@@ -59,12 +64,7 @@ output "target_proxy" {
   )
 }
 
-output "global_forwarding_rule" {
-  description = "The global forwarding rule."
-  value       = var.region == null ? google_compute_global_forwarding_rule.forwarding_rule.0 : null
-}
-
-output "forwarding_rule" {
-  description = "The regional forwarding rule."
-  value       = var.region == null ? google_compute_global_forwarding_rule.forwarding_rule.0 : google_compute_forwarding_rule.forwarding_rule.0
+output "url_map" {
+  description = "The url-map."
+  value       = google_compute_url_map.url_map
 }

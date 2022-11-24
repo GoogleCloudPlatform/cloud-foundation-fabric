@@ -34,8 +34,12 @@ variable "network_config" {
 }
 
 variable "prefix" {
-  description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
+  description = "Prefix used for resource names."
   type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_create" {

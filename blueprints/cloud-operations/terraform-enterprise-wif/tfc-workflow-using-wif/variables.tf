@@ -13,13 +13,13 @@
 # limitations under the License.
 
 
-variable "project_id" {
-  description = "GCP project ID."
+variable "impersonate_service_account_email" {
+  description = "Service account to be impersonated by workload identity."
   type        = string
 }
 
-variable "impersonate_service_account_email" {
-  description = "Service account to be impersonated by workload identity."
+variable "project_id" {
+  description = "GCP project ID."
   type        = string
 }
 

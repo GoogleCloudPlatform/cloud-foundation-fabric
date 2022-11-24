@@ -14,51 +14,6 @@
  * limitations under the License.
  */
 
-variable "name" {
-  description = "Load balancer name."
-  type        = string
-}
-
-variable "project_id" {
-  description = "Project id."
-  type        = string
-}
-
-variable "region" {
-  description = "Create a regional load balancer in this region."
-  type        = string
-  default     = null
-}
-
-variable "health_checks_config_defaults" {
-  description = "Auto-created health check default configuration."
-  type = object({
-    type    = string      # http https tcp ssl http2
-    check   = map(any)    # actual health check block attributes
-    options = map(number) # interval, thresholds, timeout
-    logging = bool
-  })
-  default = {
-    type    = "http"
-    logging = false
-    options = {}
-    check = {
-      port_specification = "USE_SERVING_PORT"
-    }
-  }
-}
-
-variable "health_checks_config" {
-  description = "Custom health checks configuration."
-  type = map(object({
-    type    = string      # http https tcp ssl http2
-    check   = map(any)    # actual health check block attributes
-    options = map(number) # interval, thresholds, timeout
-    logging = bool
-  }))
-  default = {}
-}
-
 variable "backend_services_config" {
   description = "The backends services configuration."
   type = map(object({
@@ -154,18 +109,100 @@ variable "backend_services_config" {
   default = {}
 }
 
-variable "url_map_config" {
-  description = "The url-map configuration."
+variable "forwarding_rule_config" {
+  description = "Regional forwarding rule configurations."
   type = object({
-    default_service      = string
-    default_route_action = any
-    default_url_redirect = map(any)
-    header_action        = any
-    host_rules           = list(any)
-    path_matchers        = list(any)
-    tests                = list(map(string))
+    ip_protocol           = string
+    ip_version            = string
+    load_balancing_scheme = string
+    port_range            = string
+    network_tier          = string
+    network               = string
   })
-  default = null
+  default = {
+    load_balancing_scheme = "EXTERNAL_MANAGED"
+    ip_protocol           = "TCP"
+    ip_version            = "IPV4"
+    network_tier          = "STANDARD"
+    network               = "default"
+    # If not specified, 80 for https = false, 443 otherwise
+    port_range = null
+  }
+}
+
+variable "global_forwarding_rule_config" {
+  description = "Global forwarding rule configurations."
+  type = object({
+    ip_protocol           = string
+    ip_version            = string
+    load_balancing_scheme = string
+    port_range            = string
+
+  })
+  default = {
+    load_balancing_scheme = "EXTERNAL"
+    ip_protocol           = "TCP"
+    ip_version            = "IPV4"
+    # If not specified, 80 for https = false, 443 otherwise
+    port_range = null
+  }
+}
+
+variable "health_checks_config" {
+  description = "Custom health checks configuration."
+  type = map(object({
+    type    = string      # http https tcp ssl http2
+    check   = map(any)    # actual health check block attributes
+    options = map(number) # interval, thresholds, timeout
+    logging = bool
+  }))
+  default = {}
+}
+
+variable "health_checks_config_defaults" {
+  description = "Auto-created health check default configuration."
+  type = object({
+    type    = string      # http https tcp ssl http2
+    check   = map(any)    # actual health check block attributes
+    options = map(number) # interval, thresholds, timeout
+    logging = bool
+  })
+  default = {
+    type    = "http"
+    logging = false
+    options = {}
+    check = {
+      port_specification = "USE_SERVING_PORT"
+    }
+  }
+}
+
+variable "https" {
+  description = "Whether to enable HTTPS."
+  type        = bool
+  default     = false
+}
+
+variable "name" {
+  description = "Load balancer name."
+  type        = string
+}
+
+variable "project_id" {
+  description = "Project id."
+  type        = string
+}
+
+variable "region" {
+  description = "Create a regional load balancer in this region."
+  type        = string
+  default     = null
+}
+
+variable "reserve_ip_address" {
+  description = "Whether to reserve a static global IP address."
+  type        = bool
+  default     = false
 }
 
 variable "ssl_certificates_config" {
@@ -205,53 +242,16 @@ variable "target_proxy_https_config" {
   default = null
 }
 
-variable "global_forwarding_rule_config" {
-  description = "Global forwarding rule configurations."
+variable "url_map_config" {
+  description = "The url-map configuration."
   type = object({
-    ip_protocol           = string
-    ip_version            = string
-    load_balancing_scheme = string
-    port_range            = string
-
+    default_service      = string
+    default_route_action = any
+    default_url_redirect = map(any)
+    header_action        = any
+    host_rules           = list(any)
+    path_matchers        = list(any)
+    tests                = list(map(string))
   })
-  default = {
-    load_balancing_scheme = "EXTERNAL"
-    ip_protocol           = "TCP"
-    ip_version            = "IPV4"
-    # If not specified, 80 for https = false, 443 otherwise
-    port_range = null
-  }
-}
-
-variable "forwarding_rule_config" {
-  description = "Regional forwarding rule configurations."
-  type = object({
-    ip_protocol           = string
-    ip_version            = string
-    load_balancing_scheme = string
-    port_range            = string
-    network_tier          = string
-    network               = string
-  })
-  default = {
-    load_balancing_scheme = "EXTERNAL_MANAGED"
-    ip_protocol           = "TCP"
-    ip_version            = "IPV4"
-    network_tier          = "STANDARD"
-    network               = "default"
-    # If not specified, 80 for https = false, 443 otherwise
-    port_range = null
-  }
-}
-
-variable "https" {
-  description = "Whether to enable HTTPS."
-  type        = bool
-  default     = false
-}
-
-variable "reserve_ip_address" {
-  description = "Whether to reserve a static global IP address."
-  type        = bool
-  default     = false
+  default = null
 }

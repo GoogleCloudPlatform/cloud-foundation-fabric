@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-output "image_repo_url" {
-  description = "Image source repository url."
-  value       = "ssh://<USER>@source.developers.google.com:2022/p/${module.project.project_id}/r/${module.image_repo.name}"
-}
-
 output "app_repo_url" {
   description = "App source repository url."
   value       = "ssh://<USER>@source.developers.google.com:2022/p/${module.project.project_id}/r/${module.app_repo.name}"
+}
+
+output "image_repo_url" {
+  description = "Image source repository url."
+  value       = "ssh://<USER>@source.developers.google.com:2022/p/${module.project.project_id}/r/${module.image_repo.name}"
 }

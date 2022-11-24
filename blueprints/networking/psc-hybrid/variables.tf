@@ -14,9 +14,40 @@
  * limitations under the License.
  */
 
-variable "prefix" {
-  description = "Prefix to use for resource names."
+variable "dest_ip_address" {
+  description = "On-prem service destination IP address."
   type        = string
+}
+
+variable "dest_port" {
+  description = "On-prem service destination port."
+  type        = string
+  default     = "80"
+}
+
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
+}
+
+variable "producer" {
+  description = "Producer configuration."
+  type = object({
+    subnet_main     = string      # CIDR
+    subnet_proxy    = string      # CIDR
+    subnet_psc      = string      # CIDR
+    accepted_limits = map(number) # Accepted project ids => PSC endpoint limit
+  })
+}
+
+variable "project_create" {
+  description = "Whether to automatically create a project."
+  type        = bool
+  default     = false
 }
 
 variable "project_id" {
@@ -29,32 +60,9 @@ variable "region" {
   type        = string
 }
 
-variable "zone" {
-  description = "Zone where resources will be created."
-  type        = string
-}
-
-variable "dest_ip_address" {
-  description = "On-prem service destination IP address."
-  type        = string
-}
-
-variable "dest_port" {
-  description = "On-prem service destination port."
-  type        = string
-  default     = "80"
-}
-
-variable "project_create" {
-  description = "Whether to automatically create a project."
-  type        = bool
-  default     = false
-}
-
-variable "vpc_create" {
-  description = "Whether to automatically create VPCs."
-  type        = bool
-  default     = true
+variable "subnet_consumer" {
+  description = "Consumer subnet CIDR."
+  type        = string # CIDR
 }
 
 variable "vpc_config" {
@@ -85,17 +93,13 @@ variable "vpc_config" {
   }
 }
 
-variable "producer" {
-  description = "Producer configuration."
-  type = object({
-    subnet_main     = string      # CIDR
-    subnet_proxy    = string      # CIDR
-    subnet_psc      = string      # CIDR
-    accepted_limits = map(number) # Accepted project ids => PSC endpoint limit
-  })
+variable "vpc_create" {
+  description = "Whether to automatically create VPCs."
+  type        = bool
+  default     = true
 }
 
-variable "subnet_consumer" {
-  description = "Consumer subnet CIDR."
-  type        = string # CIDR
+variable "zone" {
+  description = "Zone where resources will be created."
+  type        = string
 }

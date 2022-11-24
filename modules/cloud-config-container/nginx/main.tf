@@ -16,7 +16,6 @@
 
 locals {
   cloud_config = templatefile(local.template, merge(var.config_variables, {
-    docker_logging = var.docker_logging
     etc_mount = (
       var.nginx_config != null || length([
         for name in keys(var.files) :

@@ -65,9 +65,9 @@ module "cos-nginx" {
 
 module "instance-group" {
   source     = "./fabric/modules/compute-vm"
-  for_each = toset(["b", "c"])
+  for_each   = toset(["b", "c"])
   project_id = var.project_id
-  zone     = "europe-west1-${each.key}"
+  zone       = "europe-west1-${each.key}"
   name       = "ilb-test-${each.key}"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -97,7 +97,7 @@ module "ilb" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
     }
-  ports         = [80]
+  ports = [80]
   backends = [
     for z, mod in module.instance-group : {
       group          = mod.group.self_link
@@ -146,8 +146,8 @@ module "ilb" {
 | [forwarding_rule_address](outputs.tf#L37) | Forwarding rule address. |  |
 | [forwarding_rule_id](outputs.tf#L42) | Forwarding rule id. |  |
 | [forwarding_rule_self_link](outputs.tf#L47) | Forwarding rule self link. |  |
-| [group_self_links](outputs.tf#L57) | Optional unmanaged instance group self links. |  |
-| [groups](outputs.tf#L52) | Optional unmanaged instance group resources. |  |
+| [group_self_links](outputs.tf#L52) | Optional unmanaged instance group self links. |  |
+| [groups](outputs.tf#L59) | Optional unmanaged instance group resources. |  |
 | [health_check](outputs.tf#L64) | Auto-created health-check resource. |  |
 | [health_check_self_id](outputs.tf#L69) | Auto-created health-check self id. |  |
 | [health_check_self_link](outputs.tf#L74) | Auto-created health-check self link. |  |

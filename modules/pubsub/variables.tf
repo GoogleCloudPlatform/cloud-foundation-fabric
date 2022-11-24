@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+variable "bigquery_subscription_configs" {
+  description = "Configuration parameters for BigQuery subscriptions."
+  type = map(object({
+    table               = string
+    use_topic_schema    = bool
+    write_metadata      = bool
+    drop_unknown_fields = bool
+  }))
+  default = {}
+}
+
 variable "dead_letter_configs" {
   description = "Per-subscription dead letter policy configuration."
   type = map(object({
@@ -92,6 +103,16 @@ variable "regions" {
   description = "List of regions used to set persistence policy."
   type        = list(string)
   default     = []
+}
+
+variable "schema" {
+  description = "Topic schema. If set, all messages in this topic should follow this schema."
+  type = object({
+    definition   = string
+    msg_encoding = optional(string, "ENCODING_UNSPECIFIED")
+    schema_type  = string
+  })
+  default = null
 }
 
 variable "subscription_iam" {
