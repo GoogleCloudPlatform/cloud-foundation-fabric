@@ -56,9 +56,9 @@ def _forwarding_rules(resources):
   grouped_l4 = itertools.groupby(forwarding_rules_l4, lambda i: i['network'])
   grouped_l7 = itertools.groupby(forwarding_rules_l7, lambda i: i['network'])
   return itertools.chain(
-      _group_timeseries('forwarding_rule_l4', resources, grouped_l4,
+      _group_timeseries('forwarding_rules_l4', resources, grouped_l4,
                         'INTERNAL_FORWARDING_RULES_PER_NETWORK'),
-      _group_timeseries('forwarding_rule_l7', resources, grouped_l7,
+      _group_timeseries('forwarding_rules_l7', resources, grouped_l7,
                         'INTERNAL_MANAGED_FORWARDING_RULES_PER_NETWORK'),
   )
 
@@ -79,13 +79,13 @@ def _peerings(resources):
     limit = quota.get(network_id, {}).get('PEERINGS_PER_NETWORK', 250)
     p_active = len([p for p in network['peerings'] if p['active']])
     p_total = len(network['peerings'])
-    yield TimeSeries('network/peering_active_used', p_active, labels)
-    yield TimeSeries('network/peering_active_available', limit, labels)
-    yield TimeSeries('network/peering_active_used_ratio', p_active / limit,
+    yield TimeSeries('network/peerings_active_used', p_active, labels)
+    yield TimeSeries('network/peerings_active_available', limit, labels)
+    yield TimeSeries('network/peerings_active_used_ratio', p_active / limit,
                      labels)
-    yield TimeSeries('network/peering_total_used', p_total, labels)
-    yield TimeSeries('network/peering_total_available', limit, labels)
-    yield TimeSeries('network/peering_total_used_ratio', p_total / limit,
+    yield TimeSeries('network/peerings_total_used', p_total, labels)
+    yield TimeSeries('network/peerings_total_available', limit, labels)
+    yield TimeSeries('network/peerings_total_used_ratio', p_total / limit,
                      labels)
 
 
@@ -93,7 +93,7 @@ def _subnet_ranges(resources):
   'Derive network timeseries for subnet range utilization.'
   grouped = itertools.groupby(resources['subnetworks'].values(),
                               lambda v: v['network'])
-  return _group_timeseries('subnet', resources, grouped,
+  return _group_timeseries('subnets', resources, grouped,
                            'SUBNET_RANGES_PER_NETWORK')
 
 

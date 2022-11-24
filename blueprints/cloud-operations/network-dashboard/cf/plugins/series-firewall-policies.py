@@ -27,7 +27,7 @@ def timeseries(resources):
   for v in resources['firewall_policies'].values():
     tuples = int(v['num_tuples'])
     labels = {'parent': v['parent'], 'name': v['name']}
-    yield TimeSeries('firewall_policy/tuples_used', tuples, labels)
-    yield TimeSeries('firewall_policy/tuples_available', TUPLE_LIMIT, labels)
-    yield TimeSeries('firewalls_policy/tuples_used_ratio', tuples / TUPLE_LIMIT,
-                     labels)
+    yield TimeSeries('firewall_policies/tuples_used', tuples, labels)
+    yield TimeSeries('firewall_policies/tuples_available', TUPLE_LIMIT, labels)
+    yield TimeSeries('firewall_policies/tuples_used_ratio',
+                     tuples / TUPLE_LIMIT, labels)

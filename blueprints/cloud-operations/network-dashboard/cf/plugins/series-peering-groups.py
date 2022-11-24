@@ -30,7 +30,7 @@ LIMITS = {
         'pg': ('INSTANCES_PER_PEERING_GROUP', 15500),
         'prj': ('INSTANCES_PER_NETWORK_GLOBAL', 15000)
     },
-    'routes': {
+    'routes_static': {
         'pg': ('STATIC_ROUTES_PER_PEERING_GROUP', 300),
         'prj': ('ROUTES', 250)
     },
@@ -49,7 +49,7 @@ def _count_forwarding_rules_l4(resources, network_ids):
   ])
 
 
-def _count_forwarding_rules_l4(resources, network_ids):
+def _count_forwarding_rules_l7(resources, network_ids):
   return len([
       r for r in resources['forwarding_rules'].values()
       if r['network'] in network_ids and
@@ -65,7 +65,7 @@ def _count_instances(resources, network_ids):
   return count
 
 
-def _count_routes(resources, network_ids):
+def _count_routes_static(resources, network_ids):
   return len(
       [r for r in resources['routes'].values() if r['network'] in network_ids])
 
@@ -118,9 +118,9 @@ def _network_timeseries(resources, network):
       continue
     count = func(resources, network_ids)
     labels = {'project': network['project_id'], 'network': network['name']}
-    yield TimeSeries(f'network/{resource_name}_used', count, labels)
-    yield TimeSeries(f'network/{resource_name}_available', limit, labels)
-    yield TimeSeries(f'network/{resource_name}_used_ratio', count / limit,
+    yield TimeSeries(f'peering_group/{resource_name}_used', count, labels)
+    yield TimeSeries(f'peering_group/{resource_name}_available', limit, labels)
+    yield TimeSeries(f'peering_group/{resource_name}_used_ratio', count / limit,
                      labels)
 
 

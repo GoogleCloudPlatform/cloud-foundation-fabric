@@ -32,7 +32,7 @@ def timeseries(resources):
         'network_name': resources['networks'][network_id]['name'],
         'project_id': resources['networks'][network_id]['project_id']
     }
-    yield TimeSeries('network/firewalls/used', count, labels)
+    yield TimeSeries('network/firewall_rules/used', count, labels)
   grouped = itertools.groupby(resources['firewall_rules'].values(),
                               lambda v: v['project_id'])
   for project_id, rules in grouped:
@@ -40,6 +40,5 @@ def timeseries(resources):
     limit = int(resources['quota'][project_id]['global']['FIREWALLS'])
     labels = {'project_id': project_id}
     yield TimeSeries('project/firewall_rules_used', count, labels)
-    yield TimeSeries('project/firewalls_rules_available', limit, labels)
-    yield TimeSeries('project/firewalls_rules_used_ratio', count / limit,
-                     labels)
+    yield TimeSeries('project/firewall_rules_available', limit, labels)
+    yield TimeSeries('project/firewall_rules_used_ratio', count / limit, labels)

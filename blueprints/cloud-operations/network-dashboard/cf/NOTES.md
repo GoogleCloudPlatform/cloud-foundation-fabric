@@ -60,7 +60,7 @@
   `routes.get_static_routes_data`
 - [x] calculate and store peering metrics
   `peerings.get_vpc_peering_data`
-- [ ] calculate and store peering group metrics
+- [x] calculate and store peering group metrics
   `metrics.get_pgg_data`
   `routes.get_routes_ppg`
 - [ ] write buffered timeseries
