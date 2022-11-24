@@ -71,4 +71,4 @@ _plugins_path = str(pathlib.Path(__file__).parent)
 for mod_info in pkgutil.iter_modules([_plugins_path], 'plugins.'):
   importlib.import_module(mod_info.name)
 
-_PLUGINS_DISCOVERY.sort(key=lambda i: i[2:-1])
+_PLUGINS_DISCOVERY.sort(key=lambda i: i.level)

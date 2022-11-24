@@ -122,13 +122,13 @@ def fetch(request):
 
 @click.command()
 @click.option('--organization', '-o', required=True, type=int,
-              help='GCP organization id')
+              help='GCP organization id.')
 @click.option('--op-project', '-op', required=True, type=str,
-              help='GCP monitoring project where metrics will be stored')
+              help='GCP monitoring project where metrics will be stored.')
 @click.option('--project', '-p', type=str, multiple=True,
-              help='GCP project id, can be specified multiple times')
+              help='GCP project id, can be specified multiple times.')
 @click.option('--folder', '-f', type=int, multiple=True,
-              help='GCP folder id, can be specified multiple times')
+              help='GCP folder id, can be specified multiple times.')
 @click.option('--custom-quota-file', type=click.File('r'),
               help='Custom quota file in yaml format.')
 @click.option('--dump-file', type=click.File('w'),
