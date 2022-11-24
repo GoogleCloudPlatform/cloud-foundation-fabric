@@ -45,8 +45,7 @@ def _handle_discovery(resources, response, data):
 @register_init
 def init(resources):
   LOGGER.info('init')
-  if NAME not in resources:
-    resources[NAME] = {}
+  resources.setdefault(NAME, {})
 
 
 @register_discovery(Level.CORE, 0)

@@ -200,8 +200,7 @@ def init(resources):
   'Prepare the shared datastructures for asset types managed here.'
   LOGGER.info('init')
   for name in TYPES:
-    if name not in resources:
-      resources[name] = {}
+    resources.setdefault(name, {})
 
 
 @register_discovery(Level.PRIMARY, 10)

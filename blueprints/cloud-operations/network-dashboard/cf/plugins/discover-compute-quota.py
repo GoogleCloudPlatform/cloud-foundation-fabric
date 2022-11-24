@@ -56,8 +56,7 @@ def _handle_discovery(resources, response):
 def init(resources):
   'Create the quota key in the shared resource map.'
   LOGGER.info('init')
-  if NAME not in resources:
-    resources[NAME] = {}
+  resources.setdefault(NAME, {})
 
 
 @register_discovery(Level.DERIVED, 0)
