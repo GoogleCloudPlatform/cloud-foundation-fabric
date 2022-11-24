@@ -85,8 +85,8 @@ def _forwarding_rules(resources):
 
 def _instances(resources):
   'Derive network timeseries for instance utilization.'
-  instance_networks = functools.reduce(
-      operator.add, [i['networks'] for i in resources['instances'].values()])
+  instance_networks = itertools.chain.from_iterable(
+      i['networks'] for i in resources['instances'].values())
   grouped = itertools.groupby(instance_networks, lambda i: i['network'])
   return _group_timeseries('instances', resources, grouped,
                            'INSTANCES_PER_NETWORK_GLOBAL')
