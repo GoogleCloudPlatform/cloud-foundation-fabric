@@ -18,6 +18,7 @@ locals {
   tables = {
     for k, v in var.tables : k => v != null ? v : var.table_options_defaults
   }
+  num_nodes = var.autoscaling_config == null ? var.num_nodes : null
 }
 
 resource "google_bigtable_instance" "default" {
@@ -27,7 +28,7 @@ resource "google_bigtable_instance" "default" {
     cluster_id   = var.cluster_id
     zone         = var.zone
     storage_type = var.storage_type
-    num_nodes    = var.num_nodes
+    num_nodes    = local.num_nodes
     dynamic "autoscaling_config" {
       for_each = var.autoscaling_config == null ? [] : [""]
       content {

@@ -15,7 +15,7 @@
  */
 
 variable "autoscaling_config" {
-  description = "Settings for autoscaling of the instance. Only one of autoscaling_config or num_nodes should be set."
+  description = "Settings for autoscaling of the instance. If you set this variable, the variable num_nodes is ignored."
   type = object({
     min_nodes      = number
     max_nodes      = number
@@ -59,9 +59,9 @@ variable "name" {
 }
 
 variable "num_nodes" {
-  description = "The number of nodes in your Cloud Bigtable cluster. For production instances, you must set this option to a specific number if you are not using autoscaling."
+  description = "The number of nodes in your Cloud Bigtable cluster. This value is ignored if you are using autoscaling."
   type        = number
-  default     = null
+  default     = 1
 }
 
 variable "project_id" {
