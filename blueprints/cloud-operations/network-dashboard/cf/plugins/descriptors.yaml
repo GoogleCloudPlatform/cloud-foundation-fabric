@@ -1,49 +1,49 @@
 prefix: net-dash/
 descriptors:
-  firewall_policies/tuples_available: Firewall policy tuples available
-  firewall_policies/tuples_used: Firewall policy tuples used
-  firewall_policies/tuples_used_ratio: Firewall policy tuples used ratio
-  network/firewall_rules/used: Firewall rules used
-  network/forwarding_rules_l7_available:
-  network/forwarding_rules_l7_used:
-  network/forwarding_rules_l7_used_ratio:
-  network/instances_available:
-  network/instances_used:
-  network/instances_used_ratio:
-  network/peerings_active_available:
-  network/peerings_active_used:
-  network/peerings_active_used_ratio:
-  network/peerings_total_available:
-  network/peerings_total_used:
-  network/peerings_total_used_ratio:
-  network/routes_dynamic_available:
-  network/routes_dynamic_used:
-  network/routes_dynamic_used_ratio:
-  network/routes_static_used:
-  network/subnets_available:
-  network/subnets_used:
-  network/subnets_used_ratio:
-  peering_group/forwarding_rules_l4_available:
-  peering_group/forwarding_rules_l4_used:
-  peering_group/forwarding_rules_l4_used_ratio:
-  peering_group/forwarding_rules_l7_available:
-  peering_group/forwarding_rules_l7_used:
-  peering_group/forwarding_rules_l7_used_ratio:
-  peering_group/instances_available:
-  peering_group/instances_used:
-  peering_group/instances_used_ratio:
-  peering_group/routes_dynamic_available:
-  peering_group/routes_dynamic_used:
-  peering_group/routes_dynamic_used_ratio:
-  peering_group/routes_static_available:
-  peering_group/routes_static_used:
-  peering_group/routes_static_used_ratio:
-  project/firewall_rules_available:
-  project/firewall_rules_used:
-  project/firewall_rules_used_ratio:
-  project/routes_static_available:
-  project/routes_static_used:
-  project/routes_static_used_ratio:
-  subnetwork/addresses_available:
-  subnetwork/addresses_used:
-  subnetwork/addresses_used_ratio:
+  firewall_policies/tuples_available: Firewall tuples limit per policy
+  firewall_policies/tuples_used: Firewall tuples used per policy
+  firewall_policies/tuples_used_ratio: Firewall tuples used ratio per policy
+  network/firewall_rules/used: Firewall rules used used per network
+  network/forwarding_rules_l7_available: L7 forwarding rules limit per network
+  network/forwarding_rules_l7_used: L7 forwarding rules used per network
+  network/forwarding_rules_l7_used_ratio: L7 forwarding rules used ratio per network
+  network/instances_available: Instance limit per network
+  network/instances_used: Instance used per network
+  network/instances_used_ratio: Instance used ratio per network
+  network/peerings_active_available: Active peering limit per network
+  network/peerings_active_used: Active peering used per network
+  network/peerings_active_used_ratio: Active peering used ratio per network
+  network/peerings_total_available: Total peering limit per network
+  network/peerings_total_used: Total peering used per network
+  network/peerings_total_used_ratio: Total peering used ratio per network
+  network/routes_dynamic_available: Dynamic routes limit per network
+  network/routes_dynamic_used: Dynamic routes used per network
+  network/routes_dynamic_used_ratio: Dynamic routes used ratio per network
+  network/routes_static_used: Static routes used per network
+  network/subnets_available: Subnet limit per network
+  network/subnets_used: Subnet used per network
+  network/subnets_used_ratio: Subnet used ratio per network
+  peering_group/forwarding_rules_l4_available: L4 forwarding rules limit per peering group
+  peering_group/forwarding_rules_l4_used: L4 forwarding rules used per peering group
+  peering_group/forwarding_rules_l4_used_ratio: L4 forwarding rules used ratio per peering group
+  peering_group/forwarding_rules_l7_available: L7 forwarding rules limit per peering group
+  peering_group/forwarding_rules_l7_used: L7 forwarding rules used per peering group
+  peering_group/forwarding_rules_l7_used_ratio: L7 forwarding rules used ratio per peering group
+  peering_group/instances_available: Instance limit per peering group
+  peering_group/instances_used: Instances used per peering group
+  peering_group/instances_used_ratio: Instances used ratio per peering group
+  peering_group/routes_dynamic_available: Dynamic routes limit per peering group
+  peering_group/routes_dynamic_used: Dynamic routes used per peering group
+  peering_group/routes_dynamic_used_ratio: Dynamic routes used ratio per peering group
+  peering_group/routes_static_available: Static routes limit per peering group
+  peering_group/routes_static_used: Static routes used per peering group
+  peering_group/routes_static_used_ratio: Static routes used ratio per peering group
+  project/firewall_rules_available: Firewall rules limit per project
+  project/firewall_rules_used: Firewall rules used per project
+  project/firewall_rules_used_ratio: Firewall rules used ratio per project
+  project/routes_static_available: Static rotues limit per project
+  project/routes_static_used: Static rotues used per project
+  project/routes_static_used_ratio: Static rotues used ratio per project
+  subnetwork/addresses_available: Address limit per project
+  subnetwork/addresses_used: Addresses used per project
+  subnetwork/addresses_used_ratio: Addresses used ratio per project

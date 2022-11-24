@@ -32,6 +32,8 @@ _PLUGINS_TIMESERIES = []
 HTTPRequest = collections.namedtuple('HTTPRequest', 'url headers data json',
                                      defaults=[True])
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
+MetricDescriptor = collections.namedtuple('MetricDescriptor',
+                                          'type name labels is_ratio')
 Plugin = collections.namedtuple('Plugin', 'func name level priority',
                                 defaults=[Level.PRIMARY, 99])
 Resource = collections.namedtuple('Resource', 'type id data key',

@@ -15,8 +15,13 @@
 import itertools
 import logging
 
-from . import TimeSeries, register_timeseries
+from . import MetricDescriptor, TimeSeries, register_timeseries
 
+DESCRIPTOR_ATTRS = {
+    'firewall_rules_used': 'Firewall rules used per {}',
+    'firewall_rules_available': 'Firewall rules limit per {}',
+    'firewall_rules_used_ratio': 'Firewall rules used ratio per {}',
+}
 LOGGER = logging.getLogger('net-dash.timeseries.firewall-rules')
 
 
@@ -24,13 +29,18 @@ LOGGER = logging.getLogger('net-dash.timeseries.firewall-rules')
 def timeseries(resources):
   'Derive and yield network and project timeseries for firewall rules.'
   LOGGER.info('timeseries')
+  for prefix in ('network', 'project'):
+    for dtype, name in DESCRIPTOR_ATTRS.items():
+      labels = ('project',) if prefix == 'project' else ('project', 'name')
+      yield MetricDescriptor(f'{prefix}/{dtype}', name.format(prefix), labels,
+                             name.endswith('ratio'))
   grouped = itertools.groupby(resources['firewall_rules'].values(),
                               lambda v: v['network'])
   for network_id, rules in grouped:
     count = len(list(rules))
     labels = {
-        'network_name': resources['networks'][network_id]['name'],
-        'project_id': resources['networks'][network_id]['project_id']
+        'name': resources['networks'][network_id]['name'],
+        'project': resources['networks'][network_id]['project_id']
     }
     yield TimeSeries('network/firewall_rules/used', count, labels)
   grouped = itertools.groupby(resources['firewall_rules'].values(),
@@ -38,7 +48,7 @@ def timeseries(resources):
   for project_id, rules in grouped:
     count = len(list(rules))
     limit = int(resources['quota'][project_id]['global']['FIREWALLS'])
-    labels = {'project_id': project_id}
+    labels = {'project': project_id}
     yield TimeSeries('project/firewall_rules_used', count, labels)
     yield TimeSeries('project/firewall_rules_available', limit, labels)
     yield TimeSeries('project/firewall_rules_used_ratio', count / limit, labels)

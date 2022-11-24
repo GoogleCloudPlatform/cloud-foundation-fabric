@@ -17,8 +17,30 @@ import itertools
 import logging
 import operator
 
-from . import TimeSeries, register_timeseries
+from . import MetricDescriptor, TimeSeries, register_timeseries
 
+DESCRIPTOR_PREFIX = 'network'
+DESCRIPTOR_ATTRS = {
+    'forwarding_rules_l4_available': 'L4 fwd rules limit per network',
+    'forwarding_rules_l4_used': 'L4 fwd rules used per network',
+    'forwarding_rules_l4_used_ratio': 'L4 fwd rules used ratio per network',
+    'forwarding_rules_l7_available': 'L7 fwd rules limit per network',
+    'forwarding_rules_l7_used': 'L7 fwd rules used per network',
+    'forwarding_rules_l7_used_ratio': 'L7 fwd rules used ratio per network',
+    'instances_available': 'Instance limit per network',
+    'instances_used': 'Instance used per network',
+    'instances_used_ratio': 'Instance used ratio per network',
+    'peerings_active_available': 'Active peering limit per network',
+    'peerings_active_used': 'Active peering used per network',
+    'peerings_active_used_ratio': 'Active peering used ratio per network',
+    'peerings_total_available': 'Total peering limit per network',
+    'peerings_total_used': 'Total peering used per network',
+    'peerings_total_used_ratio': 'Total peering used ratio per network',
+    'subnets_available': 'Subnet limit per network',
+    'subnets_used': 'Subnet used per network',
+    'subnets_used_ratio': 'Subnet used ratio per network'
+}
+DESCRIPTOR_LABELS = ('project', 'network')
 LIMITS = {
     'INSTANCES_PER_NETWORK_GLOBAL': 15000,
     'INTERNAL_FORWARDING_RULES_PER_NETWORK': 500,
@@ -101,5 +123,8 @@ def _subnet_ranges(resources):
 def timeseries(resources):
   'Yield timeseries.'
   LOGGER.info('timeseries')
+  for dtype, name in DESCRIPTOR_ATTRS.items():
+    yield MetricDescriptor(f'{DESCRIPTOR_PREFIX}/{dtype}', name,
+                           DESCRIPTOR_LABELS, dtype.endswith('ratio'))
   return itertools.chain(_forwarding_rules(resources), _instances(resources),
                          _peerings(resources), _subnet_ranges(resources))

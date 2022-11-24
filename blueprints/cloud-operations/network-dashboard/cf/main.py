@@ -31,6 +31,7 @@ Result = collections.namedtuple('Result', 'phase resource data')
 
 
 def do_discovery(resources):
+  'Discover resources needed in measurements.'
   LOGGER.info(f'discovery start')
   for plugin in plugins.get_discovery_plugins():
     q = collections.deque(plugin.func(resources))
@@ -59,6 +60,7 @@ def do_discovery(resources):
 
 def do_init(resources, organization, op_project, folders=None, projects=None,
             custom_quota=None):
+  'Prepare the resources datastructure fields.'
   LOGGER.info(f'init start')
   resources['config:organization'] = str(organization)
   resources['config:monitoring_project'] = op_project
@@ -69,7 +71,13 @@ def do_init(resources, organization, op_project, folders=None, projects=None,
     plugin.func(resources)
 
 
-def do_timeseries(resources, timeseries, debug_plugin=None):
+def do_metric_descriptors(timeseries, op_project):
+  'Create missing descriptors for custom metrics in timeseries.'
+  pass
+
+
+def do_timeseries(resources, descriptors, timeseries, debug_plugin=None):
+  'Create timeseries.'
   LOGGER.info(f'timeseries start (debug plugin: {debug_plugin})')
   for plugin in plugins.get_timeseries_plugins():
     if debug_plugin and plugin.name != debug_plugin:
@@ -78,10 +86,14 @@ def do_timeseries(resources, timeseries, debug_plugin=None):
     for result in plugin.func(resources):
       if not result:
         continue
-      timeseries.append(result)
+      if isinstance(result, plugins.MetricDescriptor):
+        descriptors[result.type] = result
+      elif isinstance(result, plugins.TimeSeries):
+        timeseries.append(result)
 
 
 def fetch(request):
+  'Minimal HTTP client interface for API calls.'
   # try
   LOGGER.info(f'fetch {request.url}')
   try:
@@ -120,6 +132,7 @@ def main(organization=None, op_project=None, project=None, folder=None,
          custom_quota_file=None, dump_file=None, load_file=None,
          debug_plugin=None):
   logging.basicConfig(level=logging.INFO)
+  descriptors = {}
   timeseries = []
   if load_file:
     resources = json.load(load_file)
@@ -133,7 +146,7 @@ def main(organization=None, op_project=None, project=None, folder=None,
         raise SystemExit(f'Error decoding custom quota file: {e.args[0]}')
     do_init(resources, organization, op_project, folder, project, custom_quota)
     do_discovery(resources)
-  do_timeseries(resources, timeseries, debug_plugin)
+  do_timeseries(resources, descriptors, timeseries, debug_plugin)
   LOGGER.info(
       {k: len(v) for k, v in resources.items() if not isinstance(v, str)})
   LOGGER.info(f'{len(timeseries)} timeseries')
@@ -141,7 +154,8 @@ def main(organization=None, op_project=None, project=None, folder=None,
   if dump_file:
     json.dump(resources, dump_file, indent=2)
 
-  print('\n'.join(sorted(list(set(t.metric for t in timeseries)))))
+  import icecream
+  icecream.ic(descriptors)
 
 
 if __name__ == '__main__':

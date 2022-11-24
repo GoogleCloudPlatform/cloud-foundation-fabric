@@ -14,8 +14,15 @@
 
 import logging
 
-from . import TimeSeries, register_timeseries
+from . import MetricDescriptor, TimeSeries, register_timeseries
 
+DESCRIPTOR_PREFIX = 'firewall_policies'
+DESCRIPTOR_ATTRS = {
+    'tuples_used': 'Firewall tuples used per policy',
+    'tuples_available': 'Firewall tuples limit per policy',
+    'tuples_used_ratio': 'Firewall tuples used ratio per policy'
+}
+DESCRIPTOR_LABELS = ('parent', 'name')
 LOGGER = logging.getLogger('net-dash.timeseries.firewall-policies')
 TUPLE_LIMIT = 2000
 
@@ -24,6 +31,9 @@ TUPLE_LIMIT = 2000
 def timeseries(resources):
   'Derive network timeseries for firewall policies.'
   LOGGER.info('timeseries')
+  for dtype, name in DESCRIPTOR_ATTRS.items():
+    yield MetricDescriptor(f'{DESCRIPTOR_PREFIX}/{dtype}', name,
+                           DESCRIPTOR_LABELS, dtype.endswith('ratio'))
   for v in resources['firewall_policies'].values():
     tuples = int(v['num_tuples'])
     labels = {'parent': v['parent'], 'name': v['name']}
