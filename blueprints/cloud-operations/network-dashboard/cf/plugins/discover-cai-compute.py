@@ -150,7 +150,9 @@ def _handle_routers(resource, data):
 
 def _handle_routes(resource, data):
   'Handle route type resource data.'
-  hop = [a.removeprefix('nextHop').lower() for a in data]
+  hop = [
+      a.removeprefix('nextHop').lower() for a in data if a.startswith('nextHop')
+  ]
   return {'next_hop_type': hop[0], 'network': _self_link(data['network'])}
 
 
