@@ -59,9 +59,9 @@ def _register_plugin(collection, *args):
   return outer
 
 
-get_discovery_plugins = lambda: iter(_PLUGINS_DISCOVERY)
-get_init_plugins = lambda: iter(_PLUGINS_INIT)
-get_timeseries_plugins = lambda: iter(_PLUGINS_TIMESERIES)
+get_discovery_plugins = functools.partial(iter, _PLUGINS_DISCOVERY)
+get_init_plugins = functools.partial(iter, _PLUGINS_INIT)
+get_timeseries_plugins = functools.partial(iter, _PLUGINS_TIMESERIES)
 register_discovery = functools.partial(_register_plugin, _PLUGINS_DISCOVERY)
 register_init = functools.partial(_register_plugin, _PLUGINS_INIT)
 register_timeseries = functools.partial(_register_plugin, _PLUGINS_TIMESERIES)
