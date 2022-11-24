@@ -56,6 +56,8 @@ def do_discovery(resources):
           resources[result.type][result.id][result.key] = result.data
         else:
           resources[result.type][result.id] = result.data
+  LOGGER.info('discovery end {}'.format(
+      {k: len(v) for k, v in resources.items() if not isinstance(v, str)}))
 
 
 def do_init(resources, organization, op_project, folders=None, projects=None,
@@ -76,9 +78,9 @@ def do_metric_descriptors(timeseries, op_project):
   pass
 
 
-def do_timeseries(resources, descriptors, timeseries, debug_plugin=None):
-  'Create timeseries.'
-  LOGGER.info(f'timeseries start (debug plugin: {debug_plugin})')
+def do_timeseries_calc(resources, descriptors, timeseries, debug_plugin=None):
+  'Calculate timeseries.'
+  LOGGER.info(f'timeseries calc start (debug plugin: {debug_plugin})')
   for plugin in plugins.get_timeseries_plugins():
     if debug_plugin and plugin.name != debug_plugin:
       LOGGER.info(f'skipping {plugin.name}')
@@ -90,6 +92,13 @@ def do_timeseries(resources, descriptors, timeseries, debug_plugin=None):
         descriptors[result.type] = result
       elif isinstance(result, plugins.TimeSeries):
         timeseries.append(result)
+  LOGGER.info('timeseries calc end (descriptors: {} timeseries: {})'.format(
+      len(descriptors), len(timeseries)))
+
+
+def do_timeseries_post(descriptors, timeseries):
+  'Post timeseries.'
+  LOGGER.info('timeseries post start')
 
 
 def fetch(request):
@@ -146,16 +155,10 @@ def main(organization=None, op_project=None, project=None, folder=None,
         raise SystemExit(f'Error decoding custom quota file: {e.args[0]}')
     do_init(resources, organization, op_project, folder, project, custom_quota)
     do_discovery(resources)
-  do_timeseries(resources, descriptors, timeseries, debug_plugin)
-  LOGGER.info(
-      {k: len(v) for k, v in resources.items() if not isinstance(v, str)})
-  LOGGER.info(f'{len(timeseries)} timeseries')
-
-  if dump_file:
-    json.dump(resources, dump_file, indent=2)
-
-  import icecream
-  icecream.ic(descriptors)
+    if dump_file:
+      json.dump(resources, dump_file, indent=2)
+  do_timeseries_calc(resources, descriptors, timeseries, debug_plugin)
+  do_timeseries_post(descriptors, timeseries)
 
 
 if __name__ == '__main__':
