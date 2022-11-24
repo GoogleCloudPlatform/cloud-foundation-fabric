@@ -27,7 +27,7 @@ API_REGION_URL = '/compute/v1/projects/{}/regions/{}'
 def _handle_discovery(resources, response):
   LOGGER.info('discovery handle request')
   content_type = response.headers['content-type']
-  per_project_quota = resources['config:custom_quota'].get('projects')
+  per_project_quota = resources['config:custom_quota'].get('projects', {})
   for part in dirty_mp_response(content_type, response.content):
     kind = part.get('kind')
     quota = {

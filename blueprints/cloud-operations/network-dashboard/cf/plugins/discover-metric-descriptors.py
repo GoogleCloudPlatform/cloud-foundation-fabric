@@ -19,7 +19,7 @@ from . import HTTPRequest, Level, Resource, register_init, register_discovery
 from .utils import parse_page_token
 
 LOGGER = logging.getLogger('net-dash.discovery.metrics')
-NAME = 'metrics'
+NAME = 'metric-descriptors'
 
 URL = (
     'https://content-monitoring.googleapis.com/v3/projects'

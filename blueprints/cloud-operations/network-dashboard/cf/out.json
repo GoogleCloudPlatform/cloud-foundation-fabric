@@ -9,20 +9,7 @@
   "config:projects": [
     "tf-playground-simple"
   ],
-  "config:custom_quota": {
-    "projects": {
-      "tf-playground-svpc-net": {
-        "global": {
-          "INTERNAL_FORWARDING_RULES_PER_NETWORK": 750
-        }
-      }
-    },
-    "networks": {
-      "projects/tf-playground-svpc-net/global/networks/shared-vpc": {
-        "PEERINGS_PER_NETWORK": 40
-      }
-    }
-  },
+  "config:custom_quota": {},
   "addresses": {
     "projects/tf-playground-simple/regions/europe-west8/addresses/psc-home-hello": {
       "id": "2569728380045293941",
@@ -411,6 +398,14 @@
       "project_id": "tf-playground-svpc-net",
       "project_number": "1079408472053",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc"
+    },
+    "projects/tf-playground-svpc-net/global/firewalls/test-ingress-echo": {
+      "id": "1793500710165447459",
+      "name": "test-ingress-echo",
+      "self_link": "projects/tf-playground-svpc-net/global/firewalls/test-ingress-echo",
+      "project_id": "tf-playground-svpc-net",
+      "project_number": "1079408472053",
+      "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc"
     }
   },
   "forwarding_rules": {
@@ -426,6 +421,19 @@
       "psc_accepted": true,
       "region": "europe-west8",
       "subnetwork": null
+    },
+    "projects/tf-playground-svpc-gce/regions/europe-west8/forwardingRules/test": {
+      "id": "5258452901764956944",
+      "name": "test",
+      "self_link": "projects/tf-playground-svpc-gce/regions/europe-west8/forwardingRules/test",
+      "project_id": "tf-playground-svpc-gce",
+      "project_number": "783093469136",
+      "address": "10.24.32.33",
+      "load_balancing_scheme": "INTERNAL",
+      "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
+      "psc_accepted": false,
+      "region": "europe-west8",
+      "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/forwardingRules/bastion-wg": {
       "id": "4724174290265929790",
@@ -459,6 +467,48 @@
       "id": "1193081157111798056",
       "name": "nginx-ew8-b",
       "self_link": "projects/tf-playground-svpc-gce/zones/europe-west8-b/instances/nginx-ew8-b",
+      "project_id": "tf-playground-svpc-gce",
+      "project_number": "783093469136",
+      "zone": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-gce/zones/europe-west8-b",
+      "networks": [
+        {
+          "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
+          "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
+        }
+      ]
+    },
+    "projects/tf-playground-svpc-gce/zones/europe-west8-b/instances/test-0": {
+      "id": "8688603441516413730",
+      "name": "test-0",
+      "self_link": "projects/tf-playground-svpc-gce/zones/europe-west8-b/instances/test-0",
+      "project_id": "tf-playground-svpc-gce",
+      "project_number": "783093469136",
+      "zone": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-gce/zones/europe-west8-b",
+      "networks": [
+        {
+          "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
+          "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
+        }
+      ]
+    },
+    "projects/tf-playground-svpc-gce/zones/europe-west8-b/instances/test-1": {
+      "id": "6078779822666056482",
+      "name": "test-1",
+      "self_link": "projects/tf-playground-svpc-gce/zones/europe-west8-b/instances/test-1",
+      "project_id": "tf-playground-svpc-gce",
+      "project_number": "783093469136",
+      "zone": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-gce/zones/europe-west8-b",
+      "networks": [
+        {
+          "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
+          "subnetwork": "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce"
+        }
+      ]
+    },
+    "projects/tf-playground-svpc-gce/zones/europe-west8-b/instances/test-failover": {
+      "id": "104671418499892002",
+      "name": "test-failover",
+      "self_link": "projects/tf-playground-svpc-gce/zones/europe-west8-b/instances/test-failover",
       "project_id": "tf-playground-svpc-gce",
       "project_number": "783093469136",
       "zone": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-gce/zones/europe-west8-b",
@@ -2591,8 +2641,7 @@
         "URL_MAPS": 30,
         "VPN_GATEWAYS": 15,
         "VPN_TUNNELS": 30,
-        "XPN_SERVICE_PROJECTS": 1000,
-        "INTERNAL_FORWARDING_RULES_PER_NETWORK": 750
+        "XPN_SERVICE_PROJECTS": 1000
       }
     },
     "tf-playground-svpc-gke": {
@@ -2639,9 +2688,6 @@
         "VPN_TUNNELS": 30,
         "XPN_SERVICE_PROJECTS": 1000
       }
-    },
-    "projects/tf-playground-svpc-net/global/networks/shared-vpc": {
-      "PEERINGS_PER_NETWORK": 40
     }
   },
   "routes_dynamic": {
@@ -2670,5 +2716,5 @@
       "projects/tf-playground-svpc-net/global/networks/shared-vpc"
     ]
   },
-  "metrics": {}
+  "metric-descriptors": {}
 }
