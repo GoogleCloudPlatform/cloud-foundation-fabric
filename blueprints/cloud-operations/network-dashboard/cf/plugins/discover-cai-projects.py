@@ -24,7 +24,7 @@ TYPE = 'cloudresourcemanager.googleapis.com/Project'
 CAI_URL = (
     'https://content-cloudasset.googleapis.com/v1p1beta1'
     '/{}/resources:searchAll'
-    f'?assetTypes=cloudresourcemanager.googleapis.com%2FProject&pageSize=500')
+    f'?assetTypes=cloudresourcemanager.googleapis.com/Project&pageSize=500')
 
 
 def _handle_discovery(resources, response, data):

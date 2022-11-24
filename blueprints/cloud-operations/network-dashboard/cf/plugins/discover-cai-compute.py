@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-import urllib.parse
 
 from . import HTTPRequest, Level, Resource, register_init, register_discovery
 from .utils import parse_cai_results
@@ -151,9 +150,7 @@ def _handle_routers(resource, data):
 
 def _handle_routes(resource, data):
   'Handle route type resource data.'
-  hop = [
-      a.replace('nextHop', '').lower() for a in data if a.startswith('nextHop')
-  ]
+  hop = [a.removeprefix('nextHop').lower() for a in data]
   return {'next_hop_type': hop[0], 'network': _self_link(data['network'])}
 
 
@@ -173,7 +170,7 @@ def _handle_subnetworks(resource, data):
 
 def _self_link(s):
   'Remove initial part from self links.'
-  return s.replace('https://www.googleapis.com/compute/v1/', '')
+  return s.removeprefix('https://www.googleapis.com/compute/v1/')
 
 
 def _get_parent(parent, resources):
@@ -194,8 +191,7 @@ def _url(resources):
   'Return discovery URL'
   organization = resources['config:organization']
   asset_types = '&'.join(
-      'assetTypes=compute.googleapis.com/{}'.format(urllib.parse.quote(t))
-      for t in TYPES.values())
+      f'assetTypes=compute.googleapis.com/{t}' for t in TYPES.values())
   return CAI_URL.format(organization=organization, asset_types=asset_types)
 
 
