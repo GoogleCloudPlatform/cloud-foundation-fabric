@@ -55,7 +55,7 @@ variable "host_project_id" {
 
 
 variable "istio_version" {
-  description = "ASM version"
+  description = "ASM version."
   type        = string
   default     = "1.14.1-asm.3"
 }
@@ -66,7 +66,7 @@ variable "mgmt_project_id" {
 }
 
 variable "mgmt_server_config" {
-  description = "Mgmt server configuration"
+  description = "Mgmt server configuration."
   type = object({
     disk_size     = number
     disk_type     = string

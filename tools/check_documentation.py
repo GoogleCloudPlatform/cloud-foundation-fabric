@@ -37,6 +37,10 @@ class State(enum.IntEnum):
   FAIL_STALE_README = enum.auto()
   FAIL_UNSORTED_VARS = enum.auto()
   FAIL_UNSORTED_OUTPUTS = enum.auto()
+  FAIL_VARIABLE_COLON = enum.auto()
+  FAIL_OUTPUT_COLON = enum.auto()
+  FAIL_VARIABLE_DESCRIPTION = enum.auto()
+  FAIL_OUTPUT_DESCRIPTION = enum.auto()
 
   @property
   def failed(self):
@@ -48,8 +52,12 @@ class State(enum.IntEnum):
         State.SKIP: '  ',
         State.OK: '✓ ',
         State.FAIL_STALE_README: '✗R',
-        State.FAIL_UNSORTED_VARS: '✗V',
-        State.FAIL_UNSORTED_OUTPUTS: '✗O',
+        State.FAIL_UNSORTED_VARS: 'SV',
+        State.FAIL_UNSORTED_OUTPUTS: 'SO',
+        State.FAIL_VARIABLE_COLON: '.V',
+        State.FAIL_OUTPUT_COLON: '.O',
+        State.FAIL_VARIABLE_DESCRIPTION: 'DV',
+        State.FAIL_OUTPUT_DESCRIPTION: 'DO',
     }[self.value]
 
 
@@ -71,10 +79,10 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
         new_doc = tfdoc.create_doc(readme_path.parent, files, show_extra,
                                    exclude_files, readme)
         # TODO: support variables in multiple files
-        variables = [
-            v.name for v in new_doc.variables if v.file == "variables.tf"
-        ]
-        outputs = [o.name for o in new_doc.outputs if o.file == "outputs.tf"]
+        newvars = new_doc.variables
+        newouts = new_doc.outputs
+        variables = [v.name for v in newvars if v.file == "variables.tf"]
+        outputs = [o.name for o in newouts if o.file == "outputs.tf"]
       except SystemExit:
         state = state.SKIP
       else:
@@ -86,6 +94,20 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
           ndiff = difflib.ndiff(result['doc'].split('\n'),
                                 new_doc.content.split('\n'))
           diff = '\n'.join([header] + list(ndiff))
+
+        elif empty := [v.name for v in newvars if not v.description]:
+          state = state.FAIL_VARIABLE_DESCRIPTION
+          diff = "\n".join([
+              f'----- {mod_name} variables missing description -----',
+              ', '.join(empty),
+          ])
+
+        elif empty := [o.name for o in newouts if not o.description]:
+          state = state.FAIL_VARIABLE_DESCRIPTION
+          diff = "\n".join([
+              f'----- {mod_name} outputs missing description -----',
+              ', '.join(empty),
+          ])
 
         elif variables != sorted(variables):
           state = state.FAIL_UNSORTED_VARS
@@ -101,6 +123,20 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
               f'----- {mod_name} outputs -----',
               f'outputs should be in this order: ',
               ', '.join(sorted(outputs)),
+          ])
+
+        elif nc := [v.name for v in newvars if not v.description.endswith('.')]:
+          state = state.FAIL_VARIABLE_COLON
+          diff = "\n".join([
+              f'----- {mod_name} variables missing colons -----',
+              ', '.join(nc),
+          ])
+
+        elif nc := [o.name for o in newouts if not o.description.endswith('.')]:
+          state = state.FAIL_VARIABLE_COLON
+          diff = "\n".join([
+              f'----- {mod_name} outputs missing colons -----',
+              ', '.join(nc),
           ])
 
     yield mod_name, state, diff
@@ -128,7 +164,6 @@ def main(dirs, exclude_file=None, files=False, show_diffs=False,
   if errors:
     if show_diffs:
       print('Errored diffs:')
-      print(errors)
       print('\n'.join([e[1] for e in errors]))
     else:
       print('Errored modules:')

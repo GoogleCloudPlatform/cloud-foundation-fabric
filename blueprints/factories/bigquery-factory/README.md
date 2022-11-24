@@ -73,7 +73,7 @@ deletion_protection: bool # not required, defaults to false
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L17) | Project ID | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L17) | Project ID. | <code>string</code> | ✓ |  |
 | [tables_dir](variables.tf#L22) | Relative path for the folder storing table data. | <code>string</code> | ✓ |  |
 | [views_dir](variables.tf#L27) | Relative path for the folder storing view data. | <code>string</code> | ✓ |  |
 

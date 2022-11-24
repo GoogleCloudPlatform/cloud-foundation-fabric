@@ -32,6 +32,7 @@ variable "billing_account" {
 }
 
 variable "composer_config" {
+  description = "Cloud Composer configuration options."
   type = object({
     node_count      = number
     airflow_version = string

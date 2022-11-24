@@ -175,14 +175,14 @@ variable "service_accounts_additive" {
 }
 
 variable "service_accounts_iam" {
-  description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
+  description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}."
   type        = map(map(list(string)))
   default     = {}
   nullable    = false
 }
 
 variable "service_accounts_iam_additive" {
-  description = "IAM additive bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
+  description = "IAM additive bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}."
   type        = map(map(list(string)))
   default     = {}
   nullable    = false

@@ -1,4 +1,4 @@
-/**
+**
  * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
  */
 
 variable "datastore_name" {
-  description = "Datastore"
+  description = "Datastore."
   type        = string
   nullable    = false
   default     = "gcs"

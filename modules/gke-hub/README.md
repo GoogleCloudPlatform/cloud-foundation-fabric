@@ -297,7 +297,6 @@ module "hub" {
 
 # tftest modules=8 resources=28
 ```
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -315,6 +314,6 @@ module "hub" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [cluster_ids](outputs.tf#L17) |  |  |
+| [cluster_ids](outputs.tf#L17) | Ids of all the clusters created. |  |
 
 <!-- END TFDOC -->
