@@ -17,8 +17,13 @@ import ipaddress
 import itertools
 import logging
 
-from . import TimeSeries, register_timeseries
+from . import MetricDescriptor, TimeSeries, register_timeseries
 
+DESCRIPTOR_ATTRS = {
+    'addresses_available': 'Address limit per subnet',
+    'addresses_used': 'Addresses used per subnet',
+    'addresses_used_ratio': 'Addresses used ratio per subnet'
+}
 LOGGER = logging.getLogger('net-dash.timeseries.subnets')
 
 
@@ -61,6 +66,10 @@ def _subnet_instances(resources):
 def timeseries(resources):
   'Derive and yield subnetwork timeseries for address utilization.'
   LOGGER.info('timeseries')
+  for dtype, name in DESCRIPTOR_ATTRS.items():
+    yield MetricDescriptor(f'subnetwork/{dtype}', name,
+                           ('project', 'network', 'subnetwork'),
+                           dtype.endswith('ratio'))
   subnet_nets = {
       k: ipaddress.ip_network(v['cidr_range'])
       for k, v in resources['subnetworks'].items()

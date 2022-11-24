@@ -15,8 +15,40 @@
 import itertools
 import logging
 
-from . import TimeSeries, register_timeseries
+from . import MetricDescriptor, TimeSeries, register_timeseries
 
+DESCRIPTOR_ATTRS = {
+    'forwarding_rules_l4_available':
+        'L4 fwd rules limit per peering group',
+    'forwarding_rules_l4_used':
+        'L4 fwd rules used per peering group',
+    'forwarding_rules_l4_used_ratio':
+        'L4 fwd rules used ratio per peering group',
+    'forwarding_rules_l7_available':
+        'L7 fwd rules limit per peering group',
+    'forwarding_rules_l7_used':
+        'L7 fwd rules used per peering group',
+    'forwarding_rules_l7_used_ratio':
+        'L7 fwd rules used ratio per peering group',
+    'instances_available':
+        'Instance limit per peering group',
+    'instances_used':
+        'Instance used per peering group',
+    'instances_used_ratio':
+        'Instance used ratio per peering group',
+    'routes_dynamic_available':
+        'Dynamic route limit per peering group',
+    'routes_dynamic_used':
+        'Dynamic route used per peering group',
+    'routes_dynamic_used_ratio':
+        'Dynamic route used ratio per peering group',
+    'routes_static_available':
+        'Static route limit per peering group',
+    'routes_static_used':
+        'Static route used per peering group',
+    'routes_static_used_ratio':
+        'Static route used ratio per peering group',
+}
 LIMITS = {
     'forwarding_rules_l4': {
         'pg': ('INTERNAL_FORWARDING_RULES_PER_PEERING_GROUP', 500),
@@ -128,5 +160,8 @@ def _network_timeseries(resources, network):
 def timeseries(resources):
   'Yield timeseries.'
   LOGGER.info('timeseries')
+  for dtype, name in DESCRIPTOR_ATTRS.items():
+    yield MetricDescriptor(f'peering_group/{dtype}', name,
+                           ('project', 'network'), dtype.endswith('ratio'))
   return itertools.chain(*(_network_timeseries(resources, n)
                            for n in resources['networks'].values()))

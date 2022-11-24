@@ -15,8 +15,24 @@
 import itertools
 import logging
 
-from . import TimeSeries, register_timeseries
+from . import MetricDescriptor, TimeSeries, register_timeseries
 
+DESCRIPTOR_ATTRS = {
+    'network/routes_dynamic_used':
+        'Dynamic routes limit per network',
+    'network/routes_dynamic_available':
+        'Dynamic routes used per network',
+    'network/routes_dynamic_used_ratio':
+        'Dynamic routes used ratio per network',
+    'network/routes_static_used':
+        'Static routes limit per network',
+    'project/routes_dynamic_used':
+        'Dynamic routes limit per project',
+    'project/routes_dynamic_available':
+        'Dynamic routes used per project',
+    'project/routes_dynamic_used_ratio':
+        'Dynamic routes used ratio per project'
+}
 LIMITS = {'ROUTES': 250, 'ROUTES_DYNAMIC': 100}
 LOGGER = logging.getLogger('net-dash.timeseries.routes')
 
@@ -59,4 +75,8 @@ def _static(resources):
 def timeseries(resources):
   'Yield timeseries.'
   LOGGER.info('timeseries')
+  for dtype, name in DESCRIPTOR_ATTRS.items():
+    labels = ('project') if dtype.startswith('project') else ('project',
+                                                              'network')
+    yield MetricDescriptor(dtype, name, labels, dtype.endswith('ratio'))
   return itertools.chain(_static(resources), _dynamic(resources))

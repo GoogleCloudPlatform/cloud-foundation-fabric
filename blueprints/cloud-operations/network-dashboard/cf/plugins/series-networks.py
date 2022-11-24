@@ -19,7 +19,6 @@ import operator
 
 from . import MetricDescriptor, TimeSeries, register_timeseries
 
-DESCRIPTOR_PREFIX = 'network'
 DESCRIPTOR_ATTRS = {
     'forwarding_rules_l4_available': 'L4 fwd rules limit per network',
     'forwarding_rules_l4_used': 'L4 fwd rules used per network',
@@ -40,7 +39,6 @@ DESCRIPTOR_ATTRS = {
     'subnets_used': 'Subnet used per network',
     'subnets_used_ratio': 'Subnet used ratio per network'
 }
-DESCRIPTOR_LABELS = ('project', 'network')
 LIMITS = {
     'INSTANCES_PER_NETWORK_GLOBAL': 15000,
     'INTERNAL_FORWARDING_RULES_PER_NETWORK': 500,
@@ -124,7 +122,7 @@ def timeseries(resources):
   'Yield timeseries.'
   LOGGER.info('timeseries')
   for dtype, name in DESCRIPTOR_ATTRS.items():
-    yield MetricDescriptor(f'{DESCRIPTOR_PREFIX}/{dtype}', name,
-                           DESCRIPTOR_LABELS, dtype.endswith('ratio'))
+    yield MetricDescriptor(f'network/{dtype}', name, ('project', 'network'),
+                           dtype.endswith('ratio'))
   return itertools.chain(_forwarding_rules(resources), _instances(resources),
                          _peerings(resources), _subnet_ranges(resources))
