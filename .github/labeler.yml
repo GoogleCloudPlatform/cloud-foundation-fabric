@@ -14,9 +14,6 @@
 
 'on:blueprints':
   - blueprints/**/*
-'on:documentation':
-  - README.md
-  - */README.md
 'on:FAST':
   - fast/**/*
 'on:modules':
