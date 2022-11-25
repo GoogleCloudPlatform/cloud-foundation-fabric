@@ -92,7 +92,7 @@ module "firewall" {
   network    = "my-network"
   default_rules_config = {
     ssh_ranges = ["10.0.0.0/8"]
-    ssh_rags   = ["ssh-default"]
+    ssh_tags   = ["ssh-default"]
   }
 }
 # tftest modules=1 resources=3
