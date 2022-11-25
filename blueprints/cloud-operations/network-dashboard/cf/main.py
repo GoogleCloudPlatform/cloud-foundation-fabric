@@ -97,8 +97,8 @@ def do_timeseries_calc(resources, descriptors, timeseries, debug_plugin=None):
 def do_timeseries_descriptors(project_id, existing, computed):
   'Post timeseries descriptors.'
   LOGGER.info('timeseries descriptors start')
-  urls = plugins.monitoring.create_descriptors(project_id, MONITORING_ROOT,
-                                               existing, computed)
+  urls = plugins.monitoring.descriptor_requests(project_id, MONITORING_ROOT,
+                                                existing, computed)
   num = 0
   for url in urls:
     fetch(url)

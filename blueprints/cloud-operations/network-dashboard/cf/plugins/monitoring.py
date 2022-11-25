@@ -25,7 +25,7 @@ HEADERS = {'content-type': 'application/json'}
 LOGGER = logging.getLogger('net-dash.plugins.monitoring')
 
 
-def create_descriptors(project_id, root, existing, computed):
+def descriptor_requests(project_id, root, existing, computed):
   type_base = DESCRIPTOR_TYPE_BASE.format(root)
   url = DESCRIPTOR_URL.format(project_id)
   for descriptor in computed:
