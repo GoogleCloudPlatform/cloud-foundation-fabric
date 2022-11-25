@@ -748,7 +748,7 @@
       "cidr_range": "10.24.33.0/24",
       "network": "projects/tf-playground-simple/global/networks/default",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-simple/regions/europe-west8"
+      "region": "europe-west8"
     },
     "projects/tf-playground-simple/regions/europe-west8/subnetworks/test-default": {
       "id": "3192067775436040655",
@@ -759,7 +759,7 @@
       "cidr_range": "10.0.0.0/24",
       "network": "projects/tf-playground-simple/global/networks/test",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-simple/regions/europe-west8"
+      "region": "europe-west8"
     },
     "projects/ludo-prod-net-spoke-0/regions/europe-west1/subnetworks/prod-default-ew1": {
       "id": "4645967677499694788",
@@ -770,7 +770,7 @@
       "cidr_range": "10.128.64.0/24",
       "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-prod-net-spoke-0/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/ludo-prod-net-spoke-0/regions/europe-west1/subnetworks/prod-l7ilb-europe-west1": {
       "id": "5412553412046524467",
@@ -781,7 +781,7 @@
       "cidr_range": "10.128.92.0/24",
       "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0",
       "purpose": "REGIONAL_MANAGED_PROXY",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-prod-net-spoke-0/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/ludo-prod-net-spoke-0/regions/europe-west4/subnetworks/prod-default-ew4": {
       "id": "6980100425062399320",
@@ -792,7 +792,7 @@
       "cidr_range": "10.128.65.0/24",
       "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-prod-net-spoke-0/regions/europe-west4"
+      "region": "europe-west4"
     },
     "projects/ludo-prod-net-spoke-0/regions/europe-west4/subnetworks/prod-l7ilb-europe-west4": {
       "id": "6293569359006437427",
@@ -803,7 +803,7 @@
       "cidr_range": "10.128.93.0/24",
       "network": "projects/ludo-prod-net-spoke-0/global/networks/prod-spoke-0",
       "purpose": "REGIONAL_MANAGED_PROXY",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-prod-net-spoke-0/regions/europe-west4"
+      "region": "europe-west4"
     },
     "projects/ludo-prod-net-landing-0/regions/europe-west1/subnetworks/landing-default-ew1": {
       "id": "6183073250819497646",
@@ -814,7 +814,7 @@
       "cidr_range": "10.128.0.0/24",
       "network": "projects/ludo-prod-net-landing-0/global/networks/prod-landing-0",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-prod-net-landing-0/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/tf-playground-svpc-net-dr/regions/europe-west1/subnetworks/gce": {
       "id": "1753894793794347243",
@@ -825,7 +825,7 @@
       "cidr_range": "10.0.32.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/tf-playground-svpc-net-dr/regions/europe-west1/subnetworks/gke": {
       "id": "4511601755917967596",
@@ -836,7 +836,7 @@
       "cidr_range": "10.0.8.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/tf-playground-svpc-net-dr/regions/europe-west1/subnetworks/gke-vip": {
       "id": "5701824999950967019",
@@ -847,7 +847,7 @@
       "cidr_range": "10.0.16.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/tf-playground-svpc-net-dr/regions/europe-west1/subnetworks/net": {
       "id": "2784995877536981227",
@@ -858,7 +858,7 @@
       "cidr_range": "10.0.0.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/tf-playground-svpc-net-dr/regions/europe-west3/subnetworks/gce": {
       "id": "4654054937679159533",
@@ -869,7 +869,7 @@
       "cidr_range": "10.8.32.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/europe-west3"
+      "region": "europe-west3"
     },
     "projects/tf-playground-svpc-net-dr/regions/europe-west3/subnetworks/net": {
       "id": "1999120736153034998",
@@ -880,7 +880,7 @@
       "cidr_range": "10.8.0.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/europe-west3"
+      "region": "europe-west3"
     },
     "projects/tf-playground-svpc-net-dr/regions/europe-west4/subnetworks/gce": {
       "id": "4593147538303148267",
@@ -891,7 +891,7 @@
       "cidr_range": "10.16.32.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/europe-west4"
+      "region": "europe-west4"
     },
     "projects/tf-playground-svpc-net-dr/regions/europe-west8/subnetworks/gce": {
       "id": "7339386710113181931",
@@ -902,7 +902,7 @@
       "cidr_range": "10.24.32.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/europe-west8"
+      "region": "europe-west8"
     },
     "projects/tf-playground-svpc-net-dr/regions/europe-west8/subnetworks/l7ilb": {
       "id": "137392004069122283",
@@ -913,7 +913,7 @@
       "cidr_range": "10.255.2.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "REGIONAL_MANAGED_PROXY",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/europe-west8"
+      "region": "europe-west8"
     },
     "projects/tf-playground-svpc-net-dr/regions/europe-west8/subnetworks/net": {
       "id": "3309179009467998443",
@@ -924,7 +924,7 @@
       "cidr_range": "10.24.0.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/europe-west8"
+      "region": "europe-west8"
     },
     "projects/tf-playground-svpc-net-dr/regions/us-central1/subnetworks/gke": {
       "id": "748427805746061548",
@@ -935,7 +935,7 @@
       "cidr_range": "10.0.9.0/24",
       "network": "projects/tf-playground-svpc-net-dr/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net-dr/regions/us-central1"
+      "region": "us-central1"
     },
     "projects/ludo-dev-net-spoke-0/regions/europe-west1/subnetworks/dev-dataplatform-ew1": {
       "id": "6460040680782777531",
@@ -946,7 +946,7 @@
       "cidr_range": "10.128.48.0/24",
       "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-dev-net-spoke-0/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/ludo-dev-net-spoke-0/regions/europe-west1/subnetworks/dev-default-ew1": {
       "id": "2831390316161982168",
@@ -957,7 +957,7 @@
       "cidr_range": "10.128.32.0/24",
       "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-dev-net-spoke-0/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/ludo-dev-net-spoke-0/regions/europe-west1/subnetworks/dev-gke-nodes-ew1": {
       "id": "249944920601617510",
@@ -968,7 +968,7 @@
       "cidr_range": "10.64.0.0/24",
       "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-dev-net-spoke-0/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/ludo-dev-net-spoke-0/regions/europe-west1/subnetworks/dev-l7ilb-europe-west1": {
       "id": "2280726911218651187",
@@ -979,7 +979,7 @@
       "cidr_range": "10.128.60.0/24",
       "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0",
       "purpose": "REGIONAL_MANAGED_PROXY",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-dev-net-spoke-0/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/ludo-dev-net-spoke-0/regions/europe-west4/subnetworks/dev-l7ilb-europe-west4": {
       "id": "6599648524023664689",
@@ -990,7 +990,7 @@
       "cidr_range": "10.128.61.0/24",
       "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0",
       "purpose": "REGIONAL_MANAGED_PROXY",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-dev-net-spoke-0/regions/europe-west4"
+      "region": "europe-west4"
     },
     "projects/ludo-dev-net-spoke-0/regions/europe-west8/subnetworks/ludo-dev-default-ew8": {
       "id": "4456740759944235703",
@@ -1001,7 +1001,7 @@
       "cidr_range": "10.128.33.0/24",
       "network": "projects/ludo-dev-net-spoke-0/global/networks/dev-spoke-0",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/ludo-dev-net-spoke-0/regions/europe-west8"
+      "region": "europe-west8"
     },
     "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gce": {
       "id": "1129946310421719129",
@@ -1012,7 +1012,7 @@
       "cidr_range": "10.0.32.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gke": {
       "id": "2478860073774111734",
@@ -1023,7 +1023,7 @@
       "cidr_range": "10.0.8.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/gke-vip": {
       "id": "1416395609824617176",
@@ -1034,7 +1034,7 @@
       "cidr_range": "10.0.16.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/tf-playground-svpc-net/regions/europe-west1/subnetworks/net": {
       "id": "8424841432903474166",
@@ -1045,7 +1045,7 @@
       "cidr_range": "10.0.0.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west1"
+      "region": "europe-west1"
     },
     "projects/tf-playground-svpc-net/regions/europe-west3/subnetworks/gce": {
       "id": "8930552426943163299",
@@ -1056,7 +1056,7 @@
       "cidr_range": "10.8.32.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west3"
+      "region": "europe-west3"
     },
     "projects/tf-playground-svpc-net/regions/europe-west3/subnetworks/net": {
       "id": "5182660640425322036",
@@ -1067,7 +1067,7 @@
       "cidr_range": "10.8.0.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west3"
+      "region": "europe-west3"
     },
     "projects/tf-playground-svpc-net/regions/europe-west4/subnetworks/gce": {
       "id": "2464381379294734425",
@@ -1078,7 +1078,7 @@
       "cidr_range": "10.16.32.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west4"
+      "region": "europe-west4"
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/gce": {
       "id": "6421800903324885909",
@@ -1089,7 +1089,7 @@
       "cidr_range": "10.24.32.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west8"
+      "region": "europe-west8"
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/l7ilb": {
       "id": "9159849323393344035",
@@ -1100,7 +1100,7 @@
       "cidr_range": "10.255.2.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "REGIONAL_MANAGED_PROXY",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west8"
+      "region": "europe-west8"
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/net": {
       "id": "4872843329097064947",
@@ -1111,7 +1111,7 @@
       "cidr_range": "10.24.0.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west8"
+      "region": "europe-west8"
     },
     "projects/tf-playground-svpc-net/regions/europe-west8/subnetworks/psc": {
       "id": "1816076316698934074",
@@ -1122,7 +1122,7 @@
       "cidr_range": "172.16.255.0/25",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE_SERVICE_CONNECT",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/europe-west8"
+      "region": "europe-west8"
     },
     "projects/tf-playground-svpc-net/regions/us-central1/subnetworks/gke": {
       "id": "440151099218547687",
@@ -1133,7 +1133,7 @@
       "cidr_range": "10.0.9.0/24",
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc",
       "purpose": "PRIVATE",
-      "region": "https://www.googleapis.com/compute/v1/projects/tf-playground-svpc-net/regions/us-central1"
+      "region": "us-central1"
     }
   },
   "routers": {
@@ -2720,58 +2720,5 @@
       "projects/tf-playground-svpc-net/global/networks/shared-vpc"
     ]
   },
-  "metric-descriptors": {
-    "custom.googleapis.com/netmon/firewall_policies/tuples_available": {},
-    "custom.googleapis.com/netmon/firewall_policies/tuples_used": {},
-    "custom.googleapis.com/netmon/firewall_policies/tuples_used_ratio": {},
-    "custom.googleapis.com/netmon/network/firewall_rules_available": {},
-    "custom.googleapis.com/netmon/network/firewall_rules_used": {},
-    "custom.googleapis.com/netmon/network/firewall_rules_used_ratio": {},
-    "custom.googleapis.com/netmon/network/forwarding_rules_l4_available": {},
-    "custom.googleapis.com/netmon/network/forwarding_rules_l4_used": {},
-    "custom.googleapis.com/netmon/network/forwarding_rules_l4_used_ratio": {},
-    "custom.googleapis.com/netmon/network/forwarding_rules_l7_available": {},
-    "custom.googleapis.com/netmon/network/forwarding_rules_l7_used": {},
-    "custom.googleapis.com/netmon/network/forwarding_rules_l7_used_ratio": {},
-    "custom.googleapis.com/netmon/network/instances_available": {},
-    "custom.googleapis.com/netmon/network/instances_used": {},
-    "custom.googleapis.com/netmon/network/instances_used_ratio": {},
-    "custom.googleapis.com/netmon/network/peerings_active_available": {},
-    "custom.googleapis.com/netmon/network/peerings_active_used": {},
-    "custom.googleapis.com/netmon/network/peerings_active_used_ratio": {},
-    "custom.googleapis.com/netmon/network/peerings_total_available": {},
-    "custom.googleapis.com/netmon/network/peerings_total_used": {},
-    "custom.googleapis.com/netmon/network/peerings_total_used_ratio": {},
-    "custom.googleapis.com/netmon/network/routes_dynamic_available": {},
-    "custom.googleapis.com/netmon/network/routes_dynamic_used": {},
-    "custom.googleapis.com/netmon/network/routes_dynamic_used_ratio": {},
-    "custom.googleapis.com/netmon/network/routes_static_used": {},
-    "custom.googleapis.com/netmon/network/subnets_available": {},
-    "custom.googleapis.com/netmon/network/subnets_used": {},
-    "custom.googleapis.com/netmon/network/subnets_used_ratio": {},
-    "custom.googleapis.com/netmon/peering_group/forwarding_rules_l4_available": {},
-    "custom.googleapis.com/netmon/peering_group/forwarding_rules_l4_used": {},
-    "custom.googleapis.com/netmon/peering_group/forwarding_rules_l4_used_ratio": {},
-    "custom.googleapis.com/netmon/peering_group/forwarding_rules_l7_available": {},
-    "custom.googleapis.com/netmon/peering_group/forwarding_rules_l7_used": {},
-    "custom.googleapis.com/netmon/peering_group/forwarding_rules_l7_used_ratio": {},
-    "custom.googleapis.com/netmon/peering_group/instances_available": {},
-    "custom.googleapis.com/netmon/peering_group/instances_used": {},
-    "custom.googleapis.com/netmon/peering_group/instances_used_ratio": {},
-    "custom.googleapis.com/netmon/peering_group/routes_dynamic_available": {},
-    "custom.googleapis.com/netmon/peering_group/routes_dynamic_used": {},
-    "custom.googleapis.com/netmon/peering_group/routes_dynamic_used_ratio": {},
-    "custom.googleapis.com/netmon/peering_group/routes_static_available": {},
-    "custom.googleapis.com/netmon/peering_group/routes_static_used": {},
-    "custom.googleapis.com/netmon/peering_group/routes_static_used_ratio": {},
-    "custom.googleapis.com/netmon/project/firewall_rules_available": {},
-    "custom.googleapis.com/netmon/project/firewall_rules_used": {},
-    "custom.googleapis.com/netmon/project/firewall_rules_used_ratio": {},
-    "custom.googleapis.com/netmon/project/routes_dynamic_available": {},
-    "custom.googleapis.com/netmon/project/routes_dynamic_used": {},
-    "custom.googleapis.com/netmon/project/routes_dynamic_used_ratio": {},
-    "custom.googleapis.com/netmon/subnetwork/addresses_available": {},
-    "custom.googleapis.com/netmon/subnetwork/addresses_used": {},
-    "custom.googleapis.com/netmon/subnetwork/addresses_used_ratio": {}
-  }
+  "metric-descriptors": {}
 }

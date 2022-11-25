@@ -166,7 +166,7 @@ def _handle_subnetworks(resource, data):
       'cidr_range': data['ipCidrRange'],
       'network': _self_link(data['network']),
       'purpose': data.get('purpose'),
-      'region': data['region']
+      'region': data['region'].split('/')[-1]
   }
 
 

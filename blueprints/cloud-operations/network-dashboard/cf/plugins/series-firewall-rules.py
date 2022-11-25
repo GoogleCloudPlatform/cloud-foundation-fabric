@@ -33,7 +33,7 @@ def timeseries(resources):
     for dtype, name in DESCRIPTOR_ATTRS.items():
       labels = ('project',) if prefix == 'project' else ('project', 'name')
       yield MetricDescriptor(f'{prefix}/{dtype}', name.format(prefix), labels,
-                             name.endswith('ratio'))
+                             dtype.endswith('ratio'))
   grouped = itertools.groupby(resources['firewall_rules'].values(),
                               lambda v: v['network'])
   for network_id, rules in grouped:
@@ -42,7 +42,7 @@ def timeseries(resources):
         'name': resources['networks'][network_id]['name'],
         'project': resources['networks'][network_id]['project_id']
     }
-    yield TimeSeries('network/firewall_rules/used', count, labels)
+    yield TimeSeries('network/firewall_rules_used', count, labels)
   grouped = itertools.groupby(resources['firewall_rules'].values(),
                               lambda v: v['project_id'])
   for project_id, rules in grouped:

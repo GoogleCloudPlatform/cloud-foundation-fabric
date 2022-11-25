@@ -107,14 +107,14 @@ def do_timeseries_descriptors(project_id, existing, computed):
       len(computed), num))
 
 
-def do_timeseries(project_id, timeseries):
+def do_timeseries(project_id, timeseries, descriptors):
   'Post timeseries.'
   LOGGER.info('timeseries start')
   requests = plugins.monitoring.timeseries_requests(project_id, MONITORING_ROOT,
-                                                    timeseries)
+                                                    timeseries, descriptors)
   num = 0
   for request in requests:
-    # fetch(request)
+    fetch(request)
     num += 1
   LOGGER.info('timeseries end (computed: {} created: {})'.format(
       len(timeseries), num))
@@ -136,6 +136,8 @@ def fetch(request):
     LOGGER.critical(
         f'response code {response.status_code} for URL {request.url}')
     LOGGER.critical(response.content)
+    print(request.data)
+    raise SystemExit(1)
     return
   return response
 
@@ -180,7 +182,7 @@ def main(organization=None, op_project=None, project=None, folder=None,
   do_timeseries_calc(resources, descriptors, timeseries, debug_plugin)
   do_timeseries_descriptors(op_project, resources['metric-descriptors'],
                             descriptors)
-  do_timeseries(op_project, timeseries)
+  do_timeseries(op_project, timeseries, descriptors)
 
 
 if __name__ == '__main__':

@@ -58,39 +58,36 @@ def descriptor_requests(project_id, root, existing, computed):
     yield HTTPRequest(url, HEADERS, data)
 
 
-def timeseries_requests(project_id, root, timeseries):
+def timeseries_requests(project_id, root, timeseries, descriptors):
+  descriptor_valuetypes = {d.type: d.is_ratio for d in descriptors}
   end_time = ''.join((datetime.datetime.utcnow().isoformat('T'), 'Z'))
   type_base = DESCRIPTOR_TYPE_BASE.format(root)
   url = TIMESERIES_URL.format(project_id)
-  ts_buckets = {}
-  for ts in timeseries:
-    bucket = ts_buckets.setdefault(ts.metric, collections.deque())
-    bucket.append(ts)
-  ts_buckets = list(ts_buckets.values())
-  while ts_buckets:
-    data = {'timeSeries': []}
-    i = 0
-    for bucket in ts_buckets:
-      ts = bucket.popleft()
-      pv = 'int64Value' if isinstance(ts.value, int) else 'doubleValue'
-      data['timeSeries'].append({
-          'metric': {
-              'type': f'{type_base}{ts.metric}',
-              'labels': ts.labels
-          },
-          'resource': {
-              'type': 'global'
-          },
-          'points': [{
-              'interval': {
-                  'endTime': end_time
-              },
-              'value': {
-                  pv: ts.value
-              }
-          }]
-      })
-      i += 1
-    ts_buckets = [t for t in ts_buckets if t]
-    LOGGER.info(f'sending {i} timeseries {len(ts_buckets)} buckets left')
+  timeseries = collections.deque(timeseries)
+  while timeseries:
+    ts = timeseries.popleft()
+    if descriptor_valuetypes[ts.metric]:
+      pv = 'doubleValue'
+    else:
+      pv = 'int64Value'
+    data = {
+        'timeSeries': [{
+            'metric': {
+                'type': f'{type_base}{ts.metric}',
+                'labels': ts.labels
+            },
+            'resource': {
+                'type': 'global'
+            },
+            'points': [{
+                'interval': {
+                    'endTime': end_time
+                },
+                'value': {
+                    pv: ts.value
+                }
+            }]
+        }]
+    }
+    LOGGER.info(f'sending 1/{len(timeseries)} timeseries')
     yield HTTPRequest(url, HEADERS, json.dumps(data))

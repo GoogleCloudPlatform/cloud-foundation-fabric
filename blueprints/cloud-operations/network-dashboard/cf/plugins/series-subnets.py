@@ -68,7 +68,7 @@ def timeseries(resources):
   LOGGER.info('timeseries')
   for dtype, name in DESCRIPTOR_ATTRS.items():
     yield MetricDescriptor(f'subnetwork/{dtype}', name,
-                           ('project', 'network', 'subnetwork'),
+                           ('project', 'network', 'subnetwork', 'region'),
                            dtype.endswith('ratio'))
   subnet_nets = {
       k: ipaddress.ip_network(v['cidr_range'])
@@ -87,6 +87,7 @@ def timeseries(resources):
     labels = {
         'network': resources['networks'][subnet['network']]['name'],
         'project': subnet['project_id'],
+        'region': subnet['region'],
         'subnetwork': subnet['name']
     }
     yield TimeSeries('subnetwork/addresses_available', max_ips, labels)
