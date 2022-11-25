@@ -32,6 +32,7 @@ module "project" {
     "bigqueryreservation.googleapis.com",
     "composer.googleapis.com",
     "compute.googleapis.com",
+    "dialogflow.googleapis.com",
     "dataflow.googleapis.com",
     "ml.googleapis.com",
     "notebooks.googleapis.com",
@@ -133,6 +134,7 @@ module "service-account-notebook" {
       "roles/bigquery.jobUser",
       "roles/bigquery.dataEditor",
       "roles/bigquery.user",
+      "roles/dialogflow.client",
       "roles/storage.admin",
     ]
   }
@@ -152,7 +154,7 @@ resource "google_notebooks_instance" "playground" {
   install_gpu_driver = true
   boot_disk_type     = "PD_SSD"
   boot_disk_size_gb  = 110
-  disk_encryption    = try(local.service_encryption_keys.compute != null, false) ? "CMEK" : "GMEK"
+  disk_encryption    = try(local.service_encryption_keys.compute != null, false) ? "CMEK" : null
   kms_key            = try(local.service_encryption_keys.compute, null)
 
   no_public_ip    = true
