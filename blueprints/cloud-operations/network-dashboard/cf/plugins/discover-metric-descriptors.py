@@ -21,11 +21,10 @@ from .utils import parse_page_token
 LOGGER = logging.getLogger('net-dash.discovery.metrics')
 NAME = 'metric-descriptors'
 
-URL = (
-    'https://content-monitoring.googleapis.com/v3/projects'
-    '/{}/metricDescriptors'
-    '?filter=metric.type%3Dstarts_with(%22custom.googleapis.com%2Fnetmon%2F%22)'
-    '&pageSize=500')
+URL = ('https://content-monitoring.googleapis.com/v3/projects'
+       '/{}/metricDescriptors'
+       '?filter=metric.type%3Dstarts_with(%22custom.googleapis.com%2F{}%22)'
+       '&pageSize=500')
 
 
 def _handle_discovery(resources, response, data):
@@ -51,10 +50,12 @@ def init(resources):
 @register_discovery(Level.CORE, 0)
 def start_discovery(resources, response=None, data=None):
   LOGGER.info(f'discovery (has response: {response is not None})')
+  project_id = resources['config:monitoring_project']
+  type_root = resources['config:monitoring_root']
+  url = URL.format(urllib.parse.quote_plus(project_id),
+                   urllib.parse.quote_plus(type_root))
   if response is None:
-    monitoring_project = resources['config:monitoring_project']
-    yield HTTPRequest(URL.format(urllib.parse.quote_plus(monitoring_project)),
-                      {}, None)
+    yield HTTPRequest(url, {}, None)
   else:
     for result in _handle_discovery(resources, response, data):
       yield result

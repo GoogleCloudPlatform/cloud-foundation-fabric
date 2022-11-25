@@ -20,12 +20,14 @@ import logging
 import click
 import google.auth
 import plugins
+import plugins.monitoring
 import yaml
 
 from google.auth.transport.requests import AuthorizedSession
 
 HTTP = AuthorizedSession(google.auth.default()[0])
 LOGGER = logging.getLogger('net-dash')
+MONITORING_ROOT = 'netmon/'
 
 Result = collections.namedtuple('Result', 'phase resource data')
 
@@ -69,17 +71,13 @@ def do_init(resources, organization, op_project, folders=None, projects=None,
   resources['config:folders'] = [str(f) for f in folders or []]
   resources['config:projects'] = projects or []
   resources['config:custom_quota'] = custom_quota or {}
+  resources['config:monitoring_root'] = MONITORING_ROOT
   for plugin in plugins.get_init_plugins():
     plugin.func(resources)
 
 
-def do_metric_descriptors(timeseries, op_project):
-  'Create missing descriptors for custom metrics in timeseries.'
-  pass
-
-
 def do_timeseries_calc(resources, descriptors, timeseries, debug_plugin=None):
-  'Calculate timeseries.'
+  'Calculate descriptors and timeseries.'
   LOGGER.info(f'timeseries calc start (debug plugin: {debug_plugin})')
   for plugin in plugins.get_timeseries_plugins():
     if debug_plugin and plugin.name != debug_plugin:
@@ -89,16 +87,25 @@ def do_timeseries_calc(resources, descriptors, timeseries, debug_plugin=None):
       if not result:
         continue
       if isinstance(result, plugins.MetricDescriptor):
-        descriptors[result.type] = result
+        descriptors.append(result)
       elif isinstance(result, plugins.TimeSeries):
         timeseries.append(result)
   LOGGER.info('timeseries calc end (descriptors: {} timeseries: {})'.format(
       len(descriptors), len(timeseries)))
 
 
-def do_timeseries_post(descriptors, timeseries):
+def do_timeseries_descriptors(project_id, existing, computed):
+  'Post timeseries descriptors.'
+  LOGGER.info('timeseries descriptors start')
+  urls = plugins.monitoring.create_descriptors(project_id, MONITORING_ROOT,
+                                               existing, computed)
+  for url in urls:
+    fetch(url)
+
+
+def do_timeseries(project_id, timeseries):
   'Post timeseries.'
-  LOGGER.info('timeseries post start')
+  LOGGER.info('timeseries start')
 
 
 def fetch(request):
@@ -141,7 +148,7 @@ def main(organization=None, op_project=None, project=None, folder=None,
          custom_quota_file=None, dump_file=None, load_file=None,
          debug_plugin=None):
   logging.basicConfig(level=logging.INFO)
-  descriptors = {}
+  descriptors = []
   timeseries = []
   if load_file:
     resources = json.load(load_file)
@@ -158,7 +165,9 @@ def main(organization=None, op_project=None, project=None, folder=None,
     if dump_file:
       json.dump(resources, dump_file, indent=2)
   do_timeseries_calc(resources, descriptors, timeseries, debug_plugin)
-  do_timeseries_post(descriptors, timeseries)
+  do_timeseries_descriptors(op_project, resources['metric-descriptors'],
+                            descriptors)
+  do_timeseries(op_project, timeseries)
 
 
 if __name__ == '__main__':
