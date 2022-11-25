@@ -15,7 +15,7 @@
  */
 
 variable "datastore_name" {
-  description = "Datastore"
+  description = "Datastore."
   type        = string
   nullable    = false
   default     = "gcs"

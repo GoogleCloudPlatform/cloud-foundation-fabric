@@ -17,7 +17,8 @@ locals {
 }
 
 output "instructions" {
-  value = <<EOF
+  description = "List of steps to follow after applying."
+  value       = <<EOF
         Log-in to all 3 instances with Administrator credentials and run the following PowerShell command:
 
         Add-Computer -Domain ${var.ad_domain_fqdn} -Restart
