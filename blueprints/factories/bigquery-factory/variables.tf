@@ -15,7 +15,7 @@
  */
 
 variable "project_id" {
-  description = "Project ID"
+  description = "Project ID."
   type        = string
 }
 

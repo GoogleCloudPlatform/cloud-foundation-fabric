@@ -29,6 +29,7 @@ variable "autoscaling" {
 }
 
 variable "autoscaling_metric" {
+  description = "Definition of metric to use for scaling."
   type = object({
     name                       = string
     single_instance_assignment = number
@@ -100,7 +101,7 @@ variable "prefix" {
 }
 
 variable "project_create" {
-  description = "Parameters for the creation of the new project"
+  description = "Parameters for the creation of the new project."
   type = object({
     billing_account_id = string
     parent             = string
@@ -109,7 +110,7 @@ variable "project_create" {
 }
 
 variable "project_name" {
-  description = "Name of an existing project or of the new project"
+  description = "Name of an existing project or of the new project."
   type        = string
 }
 

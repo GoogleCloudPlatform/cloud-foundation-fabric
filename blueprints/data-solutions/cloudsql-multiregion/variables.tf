@@ -85,7 +85,7 @@ variable "service_encryption_keys" {
 }
 
 variable "sql_configuration" {
-  description = "Cloud SQL configuration"
+  description = "Cloud SQL configuration."
   type = object({
     availability_type = string
     database_version  = string

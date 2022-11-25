@@ -37,18 +37,18 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Region"
+  description = "Region."
   type        = string
 }
 
 variable "service_account_create" {
-  description = "Flag indicating whether a service account needs to be created"
+  description = "Flag indicating whether a service account needs to be created."
   type        = bool
   default     = false
 }
 
 variable "service_account_email" {
-  description = "Service account for creating API configs"
+  description = "Service account for creating API configs."
   type        = string
   default     = null
 }
