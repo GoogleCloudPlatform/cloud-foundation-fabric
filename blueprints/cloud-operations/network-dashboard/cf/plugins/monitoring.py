@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
 import json
 import logging
 
@@ -23,6 +24,8 @@ DESCRIPTOR_URL = ('https://content-monitoring.googleapis.com/v3'
                   '/projects/{}/metricDescriptors?alt=json')
 HEADERS = {'content-type': 'application/json'}
 LOGGER = logging.getLogger('net-dash.plugins.monitoring')
+TIMESERIES_URL = ('https://content-monitoring.googleapis.com/v3'
+                  '/projects/{}/timeSeries?alt=json')
 
 
 def descriptor_requests(project_id, root, existing, computed):
@@ -51,3 +54,32 @@ def descriptor_requests(project_id, root, existing, computed):
         } for l in descriptor.labels]
     })
     yield HTTPRequest(url, HEADERS, data)
+
+
+def timeseries_requests(project_id, root, timeseries):
+  end_time = ''.join((datetime.datetime.utcnow().isoformat('T'), 'Z'))
+  type_base = DESCRIPTOR_TYPE_BASE.format(root)
+  url = TIMESERIES_URL.format(project_id)
+  # TODO: bucketize per metric type
+  for batch in batched(timeseries, 190):
+    data = {'timeSeries': []}
+    for ts in batch:
+      pv = 'int64Value' if isinstance(ts.value, int) else 'doubleValue'
+      data['timeSeries'].append({
+          'metric': {
+              'type': f'{type_base}{ts.metric}',
+              'labels': ts.labels
+          },
+          'resource': {
+              'type': 'global'
+          },
+          'points': [{
+              'interval': {
+                  'endTime': end_time
+              },
+              'value': {
+                  pv: ts.value
+              }
+          }]
+      })
+    yield HTTPRequest(url, HEADERS, json.dumps(data))

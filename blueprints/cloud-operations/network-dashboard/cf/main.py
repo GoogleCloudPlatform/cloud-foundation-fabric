@@ -97,11 +97,11 @@ def do_timeseries_calc(resources, descriptors, timeseries, debug_plugin=None):
 def do_timeseries_descriptors(project_id, existing, computed):
   'Post timeseries descriptors.'
   LOGGER.info('timeseries descriptors start')
-  urls = plugins.monitoring.descriptor_requests(project_id, MONITORING_ROOT,
-                                                existing, computed)
+  requests = plugins.monitoring.descriptor_requests(project_id, MONITORING_ROOT,
+                                                    existing, computed)
   num = 0
-  for url in urls:
-    fetch(url)
+  for request in requests:
+    fetch(request)
     num += 1
   LOGGER.info('timeseries descriptors end (computed: {} created: {})'.format(
       len(computed), num))
@@ -110,12 +110,20 @@ def do_timeseries_descriptors(project_id, existing, computed):
 def do_timeseries(project_id, timeseries):
   'Post timeseries.'
   LOGGER.info('timeseries start')
+  requests = plugins.monitoring.timeseries_requests(project_id, MONITORING_ROOT,
+                                                    timeseries)
+  num = 0
+  for request in requests:
+    # fetch(request)
+    num += 1
+  LOGGER.info('timeseries end (computed: {} created: {})'.format(
+      len(timeseries), num))
 
 
 def fetch(request):
   'Minimal HTTP client interface for API calls.'
   # try
-  LOGGER.info(f'fetch {request.url}')
+  LOGGER.info(f'fetch {"POST" if request.data else "GET"} {request.url}')
   try:
     if not request.data:
       response = HTTP.get(request.url, headers=request.headers)
@@ -127,6 +135,7 @@ def fetch(request):
   if response.status_code != 200:
     LOGGER.critical(
         f'response code {response.status_code} for URL {request.url}')
+    LOGGER.critical(response.content)
     return
   return response
 
