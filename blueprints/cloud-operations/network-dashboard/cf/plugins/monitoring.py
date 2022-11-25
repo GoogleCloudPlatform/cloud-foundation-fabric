@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import collections
 import datetime
+import itertools
 import json
 import logging
 
@@ -60,10 +62,16 @@ def timeseries_requests(project_id, root, timeseries):
   end_time = ''.join((datetime.datetime.utcnow().isoformat('T'), 'Z'))
   type_base = DESCRIPTOR_TYPE_BASE.format(root)
   url = TIMESERIES_URL.format(project_id)
-  # TODO: bucketize per metric type
-  for batch in batched(timeseries, 190):
+  ts_buckets = {}
+  for ts in timeseries:
+    bucket = ts_buckets.setdefault(ts.metric, collections.deque())
+    bucket.append(ts)
+  ts_buckets = list(ts_buckets.values())
+  while ts_buckets:
     data = {'timeSeries': []}
-    for ts in batch:
+    i = 0
+    for bucket in ts_buckets:
+      ts = bucket.popleft()
       pv = 'int64Value' if isinstance(ts.value, int) else 'doubleValue'
       data['timeSeries'].append({
           'metric': {
@@ -82,4 +90,7 @@ def timeseries_requests(project_id, root, timeseries):
               }
           }]
       })
+      i += 1
+    ts_buckets = [t for t in ts_buckets if t]
+    LOGGER.info(f'sending {i} timeseries {len(ts_buckets)} buckets left')
     yield HTTPRequest(url, HEADERS, json.dumps(data))
