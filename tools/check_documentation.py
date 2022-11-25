@@ -37,8 +37,8 @@ class State(enum.IntEnum):
   FAIL_STALE_README = enum.auto()
   FAIL_UNSORTED_VARS = enum.auto()
   FAIL_UNSORTED_OUTPUTS = enum.auto()
-  FAIL_VARIABLE_COLON = enum.auto()
-  FAIL_OUTPUT_COLON = enum.auto()
+  FAIL_VARIABLE_PERIOD = enum.auto()
+  FAIL_OUTPUT_PERIOD = enum.auto()
   FAIL_VARIABLE_DESCRIPTION = enum.auto()
   FAIL_OUTPUT_DESCRIPTION = enum.auto()
 
@@ -54,8 +54,8 @@ class State(enum.IntEnum):
         State.FAIL_STALE_README: '✗R',
         State.FAIL_UNSORTED_VARS: 'SV',
         State.FAIL_UNSORTED_OUTPUTS: 'SO',
-        State.FAIL_VARIABLE_COLON: '.V',
-        State.FAIL_OUTPUT_COLON: '.O',
+        State.FAIL_VARIABLE_PERIOD: '.V',
+        State.FAIL_OUTPUT_PERIOD: '.O',
         State.FAIL_VARIABLE_DESCRIPTION: 'DV',
         State.FAIL_OUTPUT_DESCRIPTION: 'DO',
     }[self.value]
@@ -126,14 +126,14 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
           ])
 
         elif nc := [v.name for v in newvars if not v.description.endswith('.')]:
-          state = state.FAIL_VARIABLE_COLON
+          state = state.FAIL_VARIABLE_PERIOD
           diff = "\n".join([
               f'----- {mod_name} variables missing colons -----',
               ', '.join(nc),
           ])
 
         elif nc := [o.name for o in newouts if not o.description.endswith('.')]:
-          state = state.FAIL_VARIABLE_COLON
+          state = state.FAIL_VARIABLE_PERIOD
           diff = "\n".join([
               f'----- {mod_name} outputs missing colons -----',
               ', '.join(nc),
