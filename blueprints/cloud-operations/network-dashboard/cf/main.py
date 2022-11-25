@@ -99,8 +99,12 @@ def do_timeseries_descriptors(project_id, existing, computed):
   LOGGER.info('timeseries descriptors start')
   urls = plugins.monitoring.create_descriptors(project_id, MONITORING_ROOT,
                                                existing, computed)
+  num = 0
   for url in urls:
     fetch(url)
+    num += 1
+  LOGGER.info('timeseries descriptors end (computed: {} created: {})'.format(
+      len(computed), num))
 
 
 def do_timeseries(project_id, timeseries):
