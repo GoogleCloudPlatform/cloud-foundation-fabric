@@ -153,7 +153,7 @@ module "apigee" {
 |---|---|:---:|
 | [envgroups](outputs.tf#L17) | Environment groups. |  |
 | [environments](outputs.tf#L22) | Environment. |  |
-| [instances](outputs.tf#L27) | Instances |  |
+| [instances](outputs.tf#L27) | Instances. |  |
 | [org_id](outputs.tf#L32) | Organization ID. |  |
 | [org_name](outputs.tf#L37) | Organization name. |  |
 | [organization](outputs.tf#L42) | Organization. |  |

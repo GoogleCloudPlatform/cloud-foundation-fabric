@@ -69,7 +69,7 @@ variable "data_dir" {
 }
 
 variable "dns" {
-  description = "Onprem DNS resolvers"
+  description = "Onprem DNS resolvers."
   type        = map(list(string))
   default = {
     onprem = ["10.0.200.3"]

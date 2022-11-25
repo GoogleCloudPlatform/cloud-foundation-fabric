@@ -13,6 +13,6 @@
 # limitations under the License.
 
 output "m4ce_gmanaged_service_account" {
-  description = "Google managed service account created automatically during the migrate connector registration.. It is used by M4CE to perform activities on target projects"
+  description = "Google managed service account created automatically during the migrate connector registration.. It is used by M4CE to perform activities on target projects."
   value       = "serviceAccount:service-${module.host-project.number}@gcp-sa-vmmigration.iam.gserviceaccount.com"
 }

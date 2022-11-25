@@ -53,7 +53,7 @@ variable "instance_type" {
 }
 
 variable "network_config" {
-  description = "Network configuration"
+  description = "Network configuration."
   type = object({
     network = string
     subnet  = string
