@@ -11,6 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'''Compute resources discovery from Cloud Asset Inventory.
+
+This plugin handles discovery for Compute resources via a broad org-level
+scoped CAI search. Common resource attributes are parsed by a generic handler
+function, which then delegates parsing of resource-level attributes to smaller
+specialized functions, one per resource type.
+'''
 
 import logging
 
@@ -38,7 +45,7 @@ NAMES = {v: k for k, v in TYPES.items()}
 
 
 def _handle_discovery(resources, response, data):
-  'Process discovery data.'
+  'Processes the asset API response and returns parsed resources or next URL.'
   LOGGER.info('discovery handle request')
   for result in parse_cai_results(data, 'cai-compute', method='list'):
     resource = _handle_resource(resources, result['resource'])
@@ -53,18 +60,22 @@ def _handle_discovery(resources, response, data):
 
 
 def _handle_resource(resources, data):
+  'Parses and returns a single resource. Calls resource-level handler.'
   attrs = data['data']
+  # general attributes shared by all resource types
   resource_name = NAMES[data['discoveryName']]
   resource = {
       'id': attrs['id'],
       'name': attrs['name'],
       'self_link': _self_link(attrs['selfLink'])
   }
+  # derive parent type and id and skip if parent is not within scope
   parent_data = _get_parent(data['parent'], resources)
   if not parent_data:
     LOGGER.info(f'{resource["self_link"]} outside perimeter')
     return
   resource.update(parent_data)
+  # gets and calls the resource-level handler for type specific attributes
   func = globals().get(f'_handle_{resource_name}')
   if not callable(func):
     raise SystemExit(f'specialized function missing for {resource_name}')
@@ -76,7 +87,7 @@ def _handle_resource(resources, data):
 
 
 def _handle_addresses(resource, data):
-  'Handle address type resource data.'
+  'Handles address type resource data.'
   network = data.get('network')
   subnet = data.get('subnetwork')
   return {
@@ -90,7 +101,7 @@ def _handle_addresses(resource, data):
 
 
 def _handle_firewall_policies(resource, data):
-  'Handle firewall policy type resource data.'
+  'Handles firewall policy type resource data.'
   return {
       'num_rules': len(data.get('rules', [])),
       'num_tuples': data.get('ruleTupleCount', 0)
@@ -98,12 +109,12 @@ def _handle_firewall_policies(resource, data):
 
 
 def _handle_firewall_rules(resource, data):
-  'Handle firewall type resource data.'
+  'Handles firewall type resource data.'
   return {'network': _self_link(data['network'])}
 
 
 def _handle_forwarding_rules(resource, data):
-  'Handle forwarding_rules type resource data.'
+  'Handles forwarding_rules type resource data.'
   network = data.get('network')
   region = data.get('region')
   subnet = data.get('subnetwork')
@@ -118,7 +129,7 @@ def _handle_forwarding_rules(resource, data):
 
 
 def _handle_instances(resource, data):
-  'Handle instance type resource data.'
+  'Handles instance type resource data.'
   if data['status'] != 'RUNNING':
     return
   networks = [{
@@ -129,7 +140,7 @@ def _handle_instances(resource, data):
 
 
 def _handle_networks(resource, data):
-  'Handle network type resource data.'
+  'Handles network type resource data.'
   peerings = [{
       'active': p['state'] == 'ACTIVE',
       'name': p['name'],
@@ -141,7 +152,7 @@ def _handle_networks(resource, data):
 
 
 def _handle_routers(resource, data):
-  'Handle router type resource data.'
+  'Handles router type resource data.'
   return {
       'network': _self_link(data['network']),
       'region': data['region'].split('/')[-1]
@@ -149,7 +160,7 @@ def _handle_routers(resource, data):
 
 
 def _handle_routes(resource, data):
-  'Handle route type resource data.'
+  'Handles route type resource data.'
   hop = [
       a.removeprefix('nextHop').lower() for a in data if a.startswith('nextHop')
   ]
@@ -157,7 +168,7 @@ def _handle_routes(resource, data):
 
 
 def _handle_subnetworks(resource, data):
-  'Handle subnetwork type resource data.'
+  'Handles subnetwork type resource data.'
   secondary_ranges = [{
       'name': s['rangeName'],
       'cidr_range': s['ipCidrRange']
@@ -171,12 +182,12 @@ def _handle_subnetworks(resource, data):
 
 
 def _self_link(s):
-  'Remove initial part from self links.'
+  'Removes initial part from self links.'
   return s.removeprefix('https://www.googleapis.com/compute/v1/')
 
 
 def _get_parent(parent, resources):
-  'Extract and return resource parent.'
+  'Extracts and returns resource parent and type.'
   parent_type, parent_id = parent.split('/')[-2:]
   if parent_type == 'projects':
     project = resources['projects:number'].get(parent_id)
@@ -190,7 +201,7 @@ def _get_parent(parent, resources):
 
 
 def _url(resources):
-  'Return discovery URL'
+  'Returns discovery URL'
   organization = resources['config:organization']
   asset_types = '&'.join(
       f'assetTypes=compute.googleapis.com/{t}' for t in TYPES.values())
@@ -199,7 +210,7 @@ def _url(resources):
 
 @register_init
 def init(resources):
-  'Prepare the shared datastructures for asset types managed here.'
+  'Prepares the datastructures for types managed here in the resource map.'
   LOGGER.info('init')
   for name in TYPES:
     resources.setdefault(name, {})
@@ -207,7 +218,7 @@ def init(resources):
 
 @register_discovery(Level.PRIMARY, 10)
 def start_discovery(resources, response=None, data=None):
-  'Start discovery by returning the asset list URL for asset types.'
+  'Plugin entry point, triggers discovery and handles requests and responses.'
   LOGGER.info(f'discovery (has response: {response is not None})')
   if response is None:
     yield HTTPRequest(_url(resources), {}, None)

@@ -11,6 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'''Plugin interface objects and registration functions.
+
+This module export the objects passed to and returned from plugin functions,
+and the function used to register plugins for each stage, and get all plugins
+for individual stages.
+'''
 
 import collections
 import enum

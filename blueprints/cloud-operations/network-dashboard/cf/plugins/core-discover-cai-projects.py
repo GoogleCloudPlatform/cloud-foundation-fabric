@@ -11,6 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'''Project discovery from configuration options.
+
+This plugin needs to run first, as it's responsible for discovering projects
+and their attributes, based on configuration options. Projects are fetched
+from Cloud Asset Inventory based on explicit id or being part of a folder
+hierarchy.
+'''
 
 import logging
 
@@ -28,6 +35,7 @@ CAI_URL = (
 
 
 def _handle_discovery(resources, response, data):
+  'Processes asset response and returns project resources or next URLs.'
   LOGGER.info('discovery handle request')
   for result in parse_cai_results(data, NAME, TYPE):
     data = {
@@ -44,6 +52,7 @@ def _handle_discovery(resources, response, data):
 
 @register_init
 def init(resources):
+  'Prepares project datastructures in the shared resource map.'
   LOGGER.info('init')
   resources.setdefault(NAME, {})
   resources.setdefault('projects:number', {})
@@ -51,12 +60,15 @@ def init(resources):
 
 @register_discovery(Level.CORE, 0)
 def start_discovery(resources, response=None, data=None):
+  'Plugin entry point, triggers discovery and handles requests and responses.'
   LOGGER.info(f'discovery (has response: {response is not None})')
   if response is None:
+    # return asset discovery URLs from initial options on first call
     for v in resources['config:projects']:
       yield HTTPRequest(CAI_URL.format(f'projects/{v}'), {}, None)
     for v in resources['config:folders']:
       yield HTTPRequest(CAI_URL.format(f'folders/{v}'), {}, None)
   else:
+    # pass the API response to the plugin data handler and return results
     for result in _handle_discovery(resources, response, data):
       yield result
