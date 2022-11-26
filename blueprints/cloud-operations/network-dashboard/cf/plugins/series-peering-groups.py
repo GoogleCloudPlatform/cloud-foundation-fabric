@@ -163,5 +163,7 @@ def timeseries(resources):
   for dtype, name in DESCRIPTOR_ATTRS.items():
     yield MetricDescriptor(f'peering_group/{dtype}', name,
                            ('project', 'network'), dtype.endswith('ratio'))
-  return itertools.chain(*(_network_timeseries(resources, n)
-                           for n in resources['networks'].values()))
+  results = itertools.chain(*(_network_timeseries(resources, n)
+                              for n in resources['networks'].values()))
+  for result in results:
+    yield result

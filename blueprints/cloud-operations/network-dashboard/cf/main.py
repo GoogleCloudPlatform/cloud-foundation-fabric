@@ -83,13 +83,17 @@ def do_timeseries_calc(resources, descriptors, timeseries, debug_plugin=None):
     if debug_plugin and plugin.name != debug_plugin:
       LOGGER.info(f'skipping {plugin.name}')
       continue
+    num_desc, num_ts = 0, 0
     for result in plugin.func(resources):
       if not result:
         continue
       if isinstance(result, plugins.MetricDescriptor):
         descriptors.append(result)
+        num_desc += 1
       elif isinstance(result, plugins.TimeSeries):
         timeseries.append(result)
+        num_ts += 1
+    LOGGER.info(f'{plugin.name}: {num_desc} descriptors {num_ts} timeseries')
   LOGGER.info('timeseries calc end (descriptors: {} timeseries: {})'.format(
       len(descriptors), len(timeseries)))
 

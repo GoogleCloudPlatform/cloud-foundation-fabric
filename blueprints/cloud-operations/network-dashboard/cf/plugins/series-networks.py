@@ -124,5 +124,7 @@ def timeseries(resources):
   for dtype, name in DESCRIPTOR_ATTRS.items():
     yield MetricDescriptor(f'network/{dtype}', name, ('project', 'network'),
                            dtype.endswith('ratio'))
-  return itertools.chain(_forwarding_rules(resources), _instances(resources),
-                         _peerings(resources), _subnet_ranges(resources))
+  results = itertools.chain(_forwarding_rules(resources), _instances(resources),
+                            _peerings(resources), _subnet_ranges(resources))
+  for result in results:
+    yield result

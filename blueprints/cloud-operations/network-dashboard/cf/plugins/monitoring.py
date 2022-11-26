@@ -14,7 +14,6 @@
 
 import collections
 import datetime
-import itertools
 import json
 import logging
 
@@ -68,6 +67,7 @@ def timeseries_requests(project_id, root, timeseries, descriptors):
   for ts in timeseries:
     bucket = ts_buckets.setdefault(ts.metric, collections.deque())
     bucket.append(ts)
+  LOGGER.info(f'metric types {list(ts_buckets.keys())}')
   ts_buckets = list(ts_buckets.values())
   while ts_buckets:
     data = {'timeSeries': []}
@@ -96,6 +96,6 @@ def timeseries_requests(project_id, root, timeseries, descriptors):
       })
     req_num = len(data['timeSeries'])
     tot_num = sum(len(b) for b in ts_buckets)
-    LOGGER.info(f'sending {req_num} remaining:\ {tot_num}')
+    LOGGER.info(f'sending {req_num} remaining: {tot_num}')
     yield HTTPRequest(url, HEADERS, json.dumps(data))
     ts_buckets = [b for b in ts_buckets if b]
