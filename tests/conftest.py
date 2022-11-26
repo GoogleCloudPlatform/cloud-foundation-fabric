@@ -98,8 +98,6 @@ def recursive_e2e_plan_runner(_plan_runner):
   (nested) modules and resources"""
 
   def walk_plan(node, modules, resources):
-    # TODO(jccb): this would be better with node.get() but
-    # TerraformPlanOutput objects don't have it
     new_modules = node.get('child_modules', [])
     resources += node.get('resources', [])
     modules += new_modules
