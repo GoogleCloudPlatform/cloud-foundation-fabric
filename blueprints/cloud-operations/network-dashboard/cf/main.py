@@ -116,7 +116,7 @@ def do_timeseries(project_id, timeseries, descriptors):
   for request in requests:
     fetch(request)
     num += 1
-  LOGGER.info('timeseries end (computed: {} created: {})'.format(
+  LOGGER.info('timeseries end (number: {} requests: {})'.format(
       len(timeseries), num))
 
 

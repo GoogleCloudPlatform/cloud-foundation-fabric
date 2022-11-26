@@ -50,6 +50,7 @@ def descriptor_requests(project_id, root, existing, computed):
         'metricKind': 'GAUGE',
         'valueType': value_type,
         'unit': unit,
+        'monitoredResourceTypes': ['global'],
         'labels': [{
             'key': l,
             'valueType': 'STRING'
@@ -63,31 +64,38 @@ def timeseries_requests(project_id, root, timeseries, descriptors):
   end_time = ''.join((datetime.datetime.utcnow().isoformat('T'), 'Z'))
   type_base = DESCRIPTOR_TYPE_BASE.format(root)
   url = TIMESERIES_URL.format(project_id)
-  timeseries = collections.deque(timeseries)
-  while timeseries:
-    ts = timeseries.popleft()
-    if descriptor_valuetypes[ts.metric]:
-      pv = 'doubleValue'
-    else:
-      pv = 'int64Value'
-    data = {
-        'timeSeries': [{
-            'metric': {
-                'type': f'{type_base}{ts.metric}',
-                'labels': ts.labels
-            },
-            'resource': {
-                'type': 'global'
-            },
-            'points': [{
-                'interval': {
-                    'endTime': end_time
-                },
-                'value': {
-                    pv: ts.value
-                }
-            }]
-        }]
-    }
-    LOGGER.info(f'sending 1/{len(timeseries)} timeseries')
+  ts_buckets = {}
+  for ts in timeseries:
+    bucket = ts_buckets.setdefault(ts.metric, collections.deque())
+    bucket.append(ts)
+  ts_buckets = list(ts_buckets.values())
+  while ts_buckets:
+    data = {'timeSeries': []}
+    for bucket in ts_buckets:
+      ts = bucket.popleft()
+      if descriptor_valuetypes[ts.metric]:
+        pv = 'doubleValue'
+      else:
+        pv = 'int64Value'
+      data['timeSeries'].append({
+          'metric': {
+              'type': f'{type_base}{ts.metric}',
+              'labels': ts.labels
+          },
+          'resource': {
+              'type': 'global'
+          },
+          'points': [{
+              'interval': {
+                  'endTime': end_time
+              },
+              'value': {
+                  pv: ts.value
+              }
+          }]
+      })
+    req_num = len(data['timeSeries'])
+    tot_num = sum(len(b) for b in ts_buckets)
+    LOGGER.info(f'sending {req_num} remaining:\ {tot_num}')
     yield HTTPRequest(url, HEADERS, json.dumps(data))
+    ts_buckets = [b for b in ts_buckets if b]
