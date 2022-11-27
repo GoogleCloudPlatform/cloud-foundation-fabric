@@ -13,3 +13,4 @@ Currently available blueprints:
 - **third party solutions** - [OpenShift on GCP user-provisioned infrastructure](./third-party-solutions/openshift), [Wordpress deployment on Cloud Run](./third-party-solutions/wordpress/cloudrun)
 
 For more information see the individual README files in each section.
+
