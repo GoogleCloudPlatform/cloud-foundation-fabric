@@ -13,11 +13,16 @@
 # limitations under the License.
 
 'on:blueprints':
-  - blueprints/**/*
+  - blueprints/**/*tf
 'on:FAST':
-  - fast/**/*
+  - fast/**/*tf
 'on:modules':
-  - modules/**/*
+  - modules/**/*tf
 'on:tools':
   - tools/**/*
   - .github/**/*
+'on:documentation':
+  - README.md
+  - fast/README.md
+  - fast/stages/README.md
+  - */README.md
