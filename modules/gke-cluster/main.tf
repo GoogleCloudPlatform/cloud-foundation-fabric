@@ -142,7 +142,7 @@ resource "google_container_cluster" "cluster" {
       dynamic "resource_limits" {
         for_each = var.cluster_autoscaling.mem_limits != null ? [""] : []
         content {
-          resource_type = "cpu"
+          resource_type = "memory"
           minimum       = var.cluster_autoscaling.mem_limits.min
           maximum       = var.cluster_autoscaling.mem_limits.max
         }
