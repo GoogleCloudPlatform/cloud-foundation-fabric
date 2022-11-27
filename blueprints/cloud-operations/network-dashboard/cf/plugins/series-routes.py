@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'Prepares descriptors and timeseries for network-level route metrics.'
 
 import itertools
 import logging
@@ -44,7 +45,7 @@ LOGGER = logging.getLogger('net-dash.timeseries.routes')
 
 
 def _dynamic(resources):
-  'Derive network timeseries for dynamic routes.'
+  'Computes network-level timeseries for dynamic routes.'
   for network_id, router_counts in resources['routes_dynamic'].items():
     network = resources['networks'][network_id]
     count = sum(router_counts.values())
@@ -56,7 +57,7 @@ def _dynamic(resources):
 
 
 def _static(resources):
-  'Derive network and project timeseries for static routes.'
+  'Computes network and project-level timeseries for dynamic routes.'
   filter = lambda v: v['next_hop_type'] in ('peering', 'network')
   routes = itertools.filterfalse(filter, resources['routes'].values())
   grouped = itertools.groupby(routes, lambda v: v['network'])
@@ -79,12 +80,14 @@ def _static(resources):
 
 @register_timeseries
 def timeseries(resources):
-  'Yield timeseries.'
+  'Returns used/available/ratio timeseries by network and project.'
   LOGGER.info('timeseries')
+  # return descriptors
   for dtype, name in DESCRIPTOR_ATTRS.items():
     labels = ('project') if dtype.startswith('project') else ('project',
                                                               'network')
     yield MetricDescriptor(dtype, name, labels, dtype.endswith('ratio'))
+  # chain static and dynamic route timeseries then return each one individually
   results = itertools.chain(_static(resources), _dynamic(resources))
   for result in results:
     yield result

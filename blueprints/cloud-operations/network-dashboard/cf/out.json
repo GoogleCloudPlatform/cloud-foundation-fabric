@@ -24,6 +24,114 @@
     }
   },
   "config:monitoring_root": "netmon/",
+  "projects": {
+    "tf-playground-simple": {
+      "number": "64297462517",
+      "project_id": "tf-playground-simple"
+    },
+    "ludo-dev-net-spoke-0": {
+      "number": "759592912116",
+      "project_id": "ludo-dev-net-spoke-0"
+    },
+    "ludo-prod-net-landing-0": {
+      "number": "233262889141",
+      "project_id": "ludo-prod-net-landing-0"
+    },
+    "ludo-prod-net-spoke-0": {
+      "number": "195159130008",
+      "project_id": "ludo-prod-net-spoke-0"
+    },
+    "ludo-dev-sec-core-0": {
+      "number": "971935141727",
+      "project_id": "ludo-dev-sec-core-0"
+    },
+    "ludo-prod-sec-core-0": {
+      "number": "990827422843",
+      "project_id": "ludo-prod-sec-core-0"
+    },
+    "tf-playground-gcs-test-0": {
+      "number": "833078410166",
+      "project_id": "tf-playground-gcs-test-0"
+    },
+    "tf-playground-svpc-gce-dr": {
+      "number": "433746214138",
+      "project_id": "tf-playground-svpc-gce-dr"
+    },
+    "tf-playground-svpc-net-dr": {
+      "number": "697669426824",
+      "project_id": "tf-playground-svpc-net-dr"
+    },
+    "tf-playground-svpc-openshift": {
+      "number": "515444627958",
+      "project_id": "tf-playground-svpc-openshift"
+    },
+    "tf-playground-svpc-gce": {
+      "number": "783093469136",
+      "project_id": "tf-playground-svpc-gce"
+    },
+    "tf-playground-svpc-net": {
+      "number": "1079408472053",
+      "project_id": "tf-playground-svpc-net"
+    },
+    "tf-playground-svpc-gke": {
+      "number": "1043465648801",
+      "project_id": "tf-playground-svpc-gke"
+    }
+  },
+  "projects:number": {
+    "64297462517": {
+      "number": "64297462517",
+      "project_id": "tf-playground-simple"
+    },
+    "759592912116": {
+      "number": "759592912116",
+      "project_id": "ludo-dev-net-spoke-0"
+    },
+    "233262889141": {
+      "number": "233262889141",
+      "project_id": "ludo-prod-net-landing-0"
+    },
+    "195159130008": {
+      "number": "195159130008",
+      "project_id": "ludo-prod-net-spoke-0"
+    },
+    "971935141727": {
+      "number": "971935141727",
+      "project_id": "ludo-dev-sec-core-0"
+    },
+    "990827422843": {
+      "number": "990827422843",
+      "project_id": "ludo-prod-sec-core-0"
+    },
+    "833078410166": {
+      "number": "833078410166",
+      "project_id": "tf-playground-gcs-test-0"
+    },
+    "433746214138": {
+      "number": "433746214138",
+      "project_id": "tf-playground-svpc-gce-dr"
+    },
+    "697669426824": {
+      "number": "697669426824",
+      "project_id": "tf-playground-svpc-net-dr"
+    },
+    "515444627958": {
+      "number": "515444627958",
+      "project_id": "tf-playground-svpc-openshift"
+    },
+    "783093469136": {
+      "number": "783093469136",
+      "project_id": "tf-playground-svpc-gce"
+    },
+    "1079408472053": {
+      "number": "1079408472053",
+      "project_id": "tf-playground-svpc-net"
+    },
+    "1043465648801": {
+      "number": "1043465648801",
+      "project_id": "tf-playground-svpc-gke"
+    }
+  },
   "addresses": {
     "projects/tf-playground-simple/regions/europe-west8/addresses/psc-home-hello": {
       "id": "2569728380045293941",
@@ -1995,114 +2103,6 @@
       "network": "projects/tf-playground-svpc-net/global/networks/shared-vpc"
     }
   },
-  "projects": {
-    "tf-playground-simple": {
-      "number": "64297462517",
-      "project_id": "tf-playground-simple"
-    },
-    "ludo-dev-net-spoke-0": {
-      "number": "759592912116",
-      "project_id": "ludo-dev-net-spoke-0"
-    },
-    "ludo-prod-net-landing-0": {
-      "number": "233262889141",
-      "project_id": "ludo-prod-net-landing-0"
-    },
-    "ludo-prod-net-spoke-0": {
-      "number": "195159130008",
-      "project_id": "ludo-prod-net-spoke-0"
-    },
-    "ludo-dev-sec-core-0": {
-      "number": "971935141727",
-      "project_id": "ludo-dev-sec-core-0"
-    },
-    "ludo-prod-sec-core-0": {
-      "number": "990827422843",
-      "project_id": "ludo-prod-sec-core-0"
-    },
-    "tf-playground-gcs-test-0": {
-      "number": "833078410166",
-      "project_id": "tf-playground-gcs-test-0"
-    },
-    "tf-playground-svpc-gce-dr": {
-      "number": "433746214138",
-      "project_id": "tf-playground-svpc-gce-dr"
-    },
-    "tf-playground-svpc-net-dr": {
-      "number": "697669426824",
-      "project_id": "tf-playground-svpc-net-dr"
-    },
-    "tf-playground-svpc-openshift": {
-      "number": "515444627958",
-      "project_id": "tf-playground-svpc-openshift"
-    },
-    "tf-playground-svpc-gce": {
-      "number": "783093469136",
-      "project_id": "tf-playground-svpc-gce"
-    },
-    "tf-playground-svpc-net": {
-      "number": "1079408472053",
-      "project_id": "tf-playground-svpc-net"
-    },
-    "tf-playground-svpc-gke": {
-      "number": "1043465648801",
-      "project_id": "tf-playground-svpc-gke"
-    }
-  },
-  "projects:number": {
-    "64297462517": {
-      "number": "64297462517",
-      "project_id": "tf-playground-simple"
-    },
-    "759592912116": {
-      "number": "759592912116",
-      "project_id": "ludo-dev-net-spoke-0"
-    },
-    "233262889141": {
-      "number": "233262889141",
-      "project_id": "ludo-prod-net-landing-0"
-    },
-    "195159130008": {
-      "number": "195159130008",
-      "project_id": "ludo-prod-net-spoke-0"
-    },
-    "971935141727": {
-      "number": "971935141727",
-      "project_id": "ludo-dev-sec-core-0"
-    },
-    "990827422843": {
-      "number": "990827422843",
-      "project_id": "ludo-prod-sec-core-0"
-    },
-    "833078410166": {
-      "number": "833078410166",
-      "project_id": "tf-playground-gcs-test-0"
-    },
-    "433746214138": {
-      "number": "433746214138",
-      "project_id": "tf-playground-svpc-gce-dr"
-    },
-    "697669426824": {
-      "number": "697669426824",
-      "project_id": "tf-playground-svpc-net-dr"
-    },
-    "515444627958": {
-      "number": "515444627958",
-      "project_id": "tf-playground-svpc-openshift"
-    },
-    "783093469136": {
-      "number": "783093469136",
-      "project_id": "tf-playground-svpc-gce"
-    },
-    "1079408472053": {
-      "number": "1079408472053",
-      "project_id": "tf-playground-svpc-net"
-    },
-    "1043465648801": {
-      "number": "1043465648801",
-      "project_id": "tf-playground-svpc-gke"
-    }
-  },
   "quota": {
     "tf-playground-simple": {
       "global": {
@@ -2721,12 +2721,10 @@
     ]
   },
   "metric-descriptors": {
-    "custom.googleapis.com/netmon/firewall_policies/tuples_available": {},
-    "custom.googleapis.com/netmon/firewall_policies/tuples_used": {},
-    "custom.googleapis.com/netmon/firewall_policies/tuples_used_ratio": {},
-    "custom.googleapis.com/netmon/network/firewall_rules_available": {},
+    "custom.googleapis.com/netmon/firewall_policy/tuples_available": {},
+    "custom.googleapis.com/netmon/firewall_policy/tuples_used": {},
+    "custom.googleapis.com/netmon/firewall_policy/tuples_used_ratio": {},
     "custom.googleapis.com/netmon/network/firewall_rules_used": {},
-    "custom.googleapis.com/netmon/network/firewall_rules_used_ratio": {},
     "custom.googleapis.com/netmon/network/forwarding_rules_l4_available": {},
     "custom.googleapis.com/netmon/network/forwarding_rules_l4_used": {},
     "custom.googleapis.com/netmon/network/forwarding_rules_l4_used_ratio": {},
@@ -2770,6 +2768,9 @@
     "custom.googleapis.com/netmon/project/routes_dynamic_available": {},
     "custom.googleapis.com/netmon/project/routes_dynamic_used": {},
     "custom.googleapis.com/netmon/project/routes_dynamic_used_ratio": {},
+    "custom.googleapis.com/netmon/project/routes_static_available": {},
+    "custom.googleapis.com/netmon/project/routes_static_used": {},
+    "custom.googleapis.com/netmon/project/routes_static_used_ratio": {},
     "custom.googleapis.com/netmon/subnetwork/addresses_available": {},
     "custom.googleapis.com/netmon/subnetwork/addresses_used": {},
     "custom.googleapis.com/netmon/subnetwork/addresses_used_ratio": {}

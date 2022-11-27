@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'Utility functions for API requests and responses.'
 
 import itertools
 import json
@@ -37,7 +38,7 @@ RE_URL = re.compile(r'nextPageToken=[^&]+&?')
 
 
 def batched(iterable, n):
-  'Batch data into lists of length n. The last batch may be shorter.'
+  'Batches data into lists of length n. The last batch may be shorter.'
   # batched('ABCDEFG', 3) --> ABC DEF G
   if n < 1:
     raise ValueError('n must be at least one')
@@ -46,40 +47,8 @@ def batched(iterable, n):
     yield batch
 
 
-def dirty_mp_request(urls, boundary='1234567890'):
-  'Bundle urls into a single multipart mixed batched request.'
-  boundary = f'--{boundary}'
-  data = [boundary]
-  for url in urls:
-    data += ['\n', MP_PART.format(url), boundary]
-  data.append('--\n')
-  headers = {'content-type': f'multipart/mixed; boundary={boundary[2:]}'}
-  return HTTPRequest('https://compute.googleapis.com/batch/compute/v1', headers,
-                     ''.join(data), False)
-
-
-def dirty_mp_response(content_type, content):
-  'Parse multipart mixed response and return individual parts.'
-  try:
-    _, boundary = content_type.split('=')
-  except ValueError:
-    raise PluginError('no boundary found in content type')
-  content = content.decode('utf-8').strip()[:-2]
-  if boundary not in content:
-    raise PluginError('MIME boundary not found')
-  for part in content.split(f'--{boundary}'):
-    part = part.strip()
-    if not part:
-      continue
-    try:
-      mime_header, header, body = part.split('\r\n\r\n', 3)
-    except ValueError:
-      raise PluginError('cannot parse MIME part')
-    yield json.loads(body)
-
-
 def parse_cai_results(data, name, resource_type=None, method='search'):
-  'Preliminary parsing of CAI asset result.'
+  'Parses an asset API response and returns individual results.'
   results = data.get('results' if method == 'search' else 'assets')
   if not results:
     logging.info(f'no results for {name}')
@@ -98,3 +67,35 @@ def parse_page_token(data, url):
     logging.info(f'page  token {page_token}')
   if page_token:
     return RE_URL.sub(f'pageToken={page_token}&', url)
+
+
+def poor_man_mp_request(urls, boundary='1234567890'):
+  'Bundles URLs into a single multipart mixed batched request.'
+  boundary = f'--{boundary}'
+  data = [boundary]
+  for url in urls:
+    data += ['\n', MP_PART.format(url), boundary]
+  data.append('--\n')
+  headers = {'content-type': f'multipart/mixed; boundary={boundary[2:]}'}
+  return HTTPRequest('https://compute.googleapis.com/batch/compute/v1', headers,
+                     ''.join(data), False)
+
+
+def poor_man_mp_response(content_type, content):
+  'Parses a multipart mixed response and returns individual parts.'
+  try:
+    _, boundary = content_type.split('=')
+  except ValueError:
+    raise PluginError('no boundary found in content type')
+  content = content.decode('utf-8').strip()[:-2]
+  if boundary not in content:
+    raise PluginError('MIME boundary not found')
+  for part in content.split(f'--{boundary}'):
+    part = part.strip()
+    if not part:
+      continue
+    try:
+      mime_header, header, body = part.split('\r\n\r\n', 3)
+    except ValueError:
+      raise PluginError('cannot parse MIME part')
+    yield json.loads(body)

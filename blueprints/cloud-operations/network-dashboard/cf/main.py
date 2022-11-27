@@ -182,7 +182,7 @@ def fetch(request):
     JSON-decoded or raw response depending on the 'json' request attribute.
   '''
   # try
-  LOGGER.info(f'fetch {"POST" if request.data else "GET"} {request.url}')
+  LOGGER.debug(f'fetch {"POST" if request.data else "GET"} {request.url}')
   try:
     if not request.data:
       response = HTTP.get(request.url, headers=request.headers)

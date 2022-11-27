@@ -11,11 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'''Prepares descriptors and timeseries for network-level metrics.
+
+This plugin computes metrics for a variety of network resource types like
+subnets, instances, peerings, etc. It mostly does so by first grouping
+resources for a type, and then using a generalized function to derive counts
+and ratios and compute the actual timeseries.
+'''
 
 import functools
 import itertools
 import logging
-import operator
 
 from . import MetricDescriptor, TimeSeries, register_timeseries
 
@@ -50,7 +56,7 @@ LOGGER = logging.getLogger('net-dash.timeseries.networks')
 
 
 def _group_timeseries(name, resources, grouped, limit_name):
-  'Derive and yield timeseries from grouped iterators and limits.'
+  'Generalized function that returns timeseries from data grouped by network.'
   for network_id, elements in grouped:
     network = resources['networks'].get(network_id)
     if not network:
@@ -66,13 +72,15 @@ def _group_timeseries(name, resources, grouped, limit_name):
 
 
 def _forwarding_rules(resources):
-  'Derive network timeseries for forwarding rule utilization.'
+  'Groups forwarding rules by network/type and returns relevant timeseries.'
+  # create two separate iterators filtered by L4 and L7 balancing schemes
   filter = lambda n, v: v['load_balancing_scheme'] != n
   forwarding_rules = resources['forwarding_rules'].values()
   forwarding_rules_l4 = itertools.filterfalse(
       functools.partial(filter, 'INTERNAL'), forwarding_rules)
   forwarding_rules_l7 = itertools.filterfalse(
       functools.partial(filter, 'INTERNAL_MANAGED'), forwarding_rules)
+  # group each iterator by network and return timeseries
   grouped_l4 = itertools.groupby(forwarding_rules_l4, lambda i: i['network'])
   grouped_l7 = itertools.groupby(forwarding_rules_l7, lambda i: i['network'])
   return itertools.chain(
@@ -84,7 +92,7 @@ def _forwarding_rules(resources):
 
 
 def _instances(resources):
-  'Derive network timeseries for instance utilization.'
+  'Groups instances by network and returns relevant timeseries.'
   instance_networks = itertools.chain.from_iterable(
       i['networks'] for i in resources['instances'].values())
   grouped = itertools.groupby(instance_networks, lambda i: i['network'])
@@ -93,6 +101,7 @@ def _instances(resources):
 
 
 def _peerings(resources):
+  'Counts peerings by network and returns relevant timeseries.'
   quota = resources['quota']
   for network_id, network in resources['networks'].items():
     labels = {'project': network['project_id'], 'network': network['name']}
@@ -110,7 +119,7 @@ def _peerings(resources):
 
 
 def _subnet_ranges(resources):
-  'Derive network timeseries for subnet range utilization.'
+  'Groups subnetworks by network and returns relevant timeseries.'
   grouped = itertools.groupby(resources['subnetworks'].values(),
                               lambda v: v['network'])
   return _group_timeseries('subnets', resources, grouped,
@@ -119,11 +128,14 @@ def _subnet_ranges(resources):
 
 @register_timeseries
 def timeseries(resources):
-  'Yield timeseries.'
+  'Returns used/available/ratio timeseries by network for different resources.'
   LOGGER.info('timeseries')
+  # return descriptors
   for dtype, name in DESCRIPTOR_ATTRS.items():
     yield MetricDescriptor(f'network/{dtype}', name, ('project', 'network'),
                            dtype.endswith('ratio'))
+
+  # chain iterators from specialized functions and yield combined timeseries
   results = itertools.chain(_forwarding_rules(resources), _instances(resources),
                             _peerings(resources), _subnet_ranges(resources))
   for result in results:

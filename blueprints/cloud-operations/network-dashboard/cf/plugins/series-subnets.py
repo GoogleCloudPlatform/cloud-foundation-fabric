@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'Prepares descriptors and timeseries for subnetwork-level metrics.'
 
 import collections
 import ipaddress
@@ -28,7 +29,7 @@ LOGGER = logging.getLogger('net-dash.timeseries.subnets')
 
 
 def _subnet_addresses(resources):
-  'Return partial counts of addresses per subnetwork.'
+  'Returns count of addresses per subnetwork.'
   for v in resources['addresses'].values():
     if v['status'] != 'RESERVED':
       continue
@@ -37,7 +38,7 @@ def _subnet_addresses(resources):
 
 
 def _subnet_forwarding_rules(resources, subnet_nets):
-  'Return partial counts of forwarding rules per subnetwork.'
+  'Returns counts of forwarding rules per subnetwork.'
   for v in resources['forwarding_rules'].values():
     if v['load_balancing_scheme'].startswith('INTERNAL'):
       yield v['subnetwork'], 1
@@ -56,7 +57,7 @@ def _subnet_forwarding_rules(resources, subnet_nets):
 
 
 def _subnet_instances(resources):
-  'Return partial counts of instances per subnetwork.'
+  'Returns counts of instances per subnetwork.'
   vm_networks = itertools.chain.from_iterable(
       i['networks'] for i in resources['instances'].values())
   return collections.Counter(v['subnetwork'] for v in vm_networks).items()
@@ -64,23 +65,26 @@ def _subnet_instances(resources):
 
 @register_timeseries
 def timeseries(resources):
-  'Derive and yield subnetwork timeseries for address utilization.'
+  'Returns used/available/ratio timeseries for addresses by subnetwork.'
   LOGGER.info('timeseries')
+  # return descriptors
   for dtype, name in DESCRIPTOR_ATTRS.items():
     yield MetricDescriptor(f'subnetwork/{dtype}', name,
                            ('project', 'network', 'subnetwork', 'region'),
                            dtype.endswith('ratio'))
+  # aggregate per-resource counts in total per-subnet counts
   subnet_nets = {
       k: ipaddress.ip_network(v['cidr_range'])
       for k, v in resources['subnetworks'].items()
   }
+  # TODO: add counter functions for PSA
   subnet_counts = {k: 0 for k in resources['subnetworks']}
-  # TODO: PSA
   counters = itertools.chain(_subnet_addresses(resources),
                              _subnet_forwarding_rules(resources, subnet_nets),
                              _subnet_instances(resources))
   for subnet_self_link, count in counters:
     subnet_counts[subnet_self_link] += count
+  # compute and return metrics
   for subnet_self_link, count in subnet_counts.items():
     max_ips = subnet_nets[subnet_self_link].num_addresses - 4
     subnet = resources['subnetworks'][subnet_self_link]

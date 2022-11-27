@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'Utility functions to create monitoring API requests.'
 
 import collections
 import datetime
@@ -30,6 +31,7 @@ TIMESERIES_URL = ('https://content-monitoring.googleapis.com/v3'
 
 
 def descriptor_requests(project_id, root, existing, computed):
+  'Returns create requests for missing descriptors.'
   type_base = DESCRIPTOR_TYPE_BASE.format(root)
   url = DESCRIPTOR_URL.format(project_id)
   for descriptor in computed:
@@ -59,10 +61,13 @@ def descriptor_requests(project_id, root, existing, computed):
 
 
 def timeseries_requests(project_id, root, timeseries, descriptors):
+  'Returns create requests for timeseries.'
   descriptor_valuetypes = {d.type: d.is_ratio for d in descriptors}
   end_time = ''.join((datetime.datetime.utcnow().isoformat('T'), 'Z'))
   type_base = DESCRIPTOR_TYPE_BASE.format(root)
   url = TIMESERIES_URL.format(project_id)
+  # group timeseries in buckets by their type so that multiple timeseries
+  # can be grouped in a single API request without grouping duplicates types
   ts_buckets = {}
   for ts in timeseries:
     bucket = ts_buckets.setdefault(ts.metric, collections.deque())

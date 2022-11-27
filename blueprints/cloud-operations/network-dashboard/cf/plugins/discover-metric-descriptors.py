@@ -11,6 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'''Discover existing network dashboard metric descriptors.
+
+Populating this data allows the tool to later compute which metric descriptors
+need to be created.
+'''
 
 import logging
 import urllib.parse
@@ -28,6 +33,7 @@ URL = ('https://content-monitoring.googleapis.com/v3/projects'
 
 
 def _handle_discovery(resources, response, data):
+  'Processes monitoring API response and parses descriptor data.'
   LOGGER.info('discovery handle request')
   descriptors = data.get('metricDescriptors')
   if not descriptors:
@@ -43,12 +49,14 @@ def _handle_discovery(resources, response, data):
 
 @register_init
 def init(resources):
+  'Prepares datastructure in the shared resource map.'
   LOGGER.info('init')
   resources.setdefault(NAME, {})
 
 
 @register_discovery(Level.CORE, 0)
 def start_discovery(resources, response=None, data=None):
+  'Plugin entry point, triggers discovery and handles requests and responses.'
   LOGGER.info(f'discovery (has response: {response is not None})')
   project_id = resources['config:monitoring_project']
   type_root = resources['config:monitoring_root']

@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'Prepares descriptors and timeseries for firewall rules by project and network.'
 
 import itertools
 import logging
@@ -18,22 +19,25 @@ import logging
 from . import MetricDescriptor, TimeSeries, register_timeseries
 
 DESCRIPTOR_ATTRS = {
-    'firewall_rules_used': 'Firewall rules used per {}',
-    'firewall_rules_available': 'Firewall rules limit per {}',
-    'firewall_rules_used_ratio': 'Firewall rules used ratio per {}',
+    'firewall_rules_used': 'Firewall rules used per project',
+    'firewall_rules_available': 'Firewall rules limit per project',
+    'firewall_rules_used_ratio': 'Firewall rules used ratio per project',
 }
 LOGGER = logging.getLogger('net-dash.timeseries.firewall-rules')
 
 
 @register_timeseries
 def timeseries(resources):
-  'Derive and yield network and project timeseries for firewall rules.'
+  'Returns used/available/ratio firewall timeseries by project and network.'
   LOGGER.info('timeseries')
-  for prefix in ('network', 'project'):
-    for dtype, name in DESCRIPTOR_ATTRS.items():
-      labels = ('project',) if prefix == 'project' else ('project', 'name')
-      yield MetricDescriptor(f'{prefix}/{dtype}', name.format(prefix), labels,
-                             dtype.endswith('ratio'))
+  # return a single descriptor for network as we don't have limits
+  yield MetricDescriptor(f'network/firewall_rules_used',
+                         'Firewall rules used per network', ('project', 'name'))
+  # return used/vailable/ratio descriptors for project
+  for dtype, name in DESCRIPTOR_ATTRS.items():
+    yield MetricDescriptor(f'project/{dtype}', name, ('project',),
+                           dtype.endswith('ratio'))
+  # group firewall rules by network then prepare and return timeseries
   grouped = itertools.groupby(resources['firewall_rules'].values(),
                               lambda v: v['network'])
   for network_id, rules in grouped:
@@ -43,6 +47,7 @@ def timeseries(resources):
         'project': resources['networks'][network_id]['project_id']
     }
     yield TimeSeries('network/firewall_rules_used', count, labels)
+  # group firewall rules by project then prepare and return timeseries
   grouped = itertools.groupby(resources['firewall_rules'].values(),
                               lambda v: v['project_id'])
   for project_id, rules in grouped:

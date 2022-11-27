@@ -39,7 +39,8 @@ HTTPRequest = collections.namedtuple('HTTPRequest', 'url headers data json',
                                      defaults=[True])
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
 MetricDescriptor = collections.namedtuple('MetricDescriptor',
-                                          'type name labels is_ratio')
+                                          'type name labels is_ratio',
+                                          defaults=[False])
 Plugin = collections.namedtuple('Plugin', 'func name level priority',
                                 defaults=[Level.PRIMARY, 99])
 Resource = collections.namedtuple('Resource', 'type id data key',

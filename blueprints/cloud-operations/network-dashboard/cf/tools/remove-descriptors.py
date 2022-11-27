@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'Delete metric descriptors matching filter.'
 
 import json
 import logging
@@ -51,6 +52,7 @@ def fetch(url, delete=False):
 @click.option('--op-project', '-op', required=True, type=str,
               help='GCP monitoring project where metrics will be stored.')
 def main(op_project):
+  'Module entry point.'
   # if not click.confirm('Do you want to continue?'):
   #   raise SystemExit(0)
   logging.info('fetching descriptors')

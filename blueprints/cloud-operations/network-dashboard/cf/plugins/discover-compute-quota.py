@@ -11,11 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'''Discovers project quota via Compute API and overlay user overrides.
+
+This plugin discovers project quota via batch Compute API requests. Project and
+network quotas are then optionally overlaid with custom quota modifiers passed
+in as options. Region quota discovery is partially implemented but not active.
+'''
 
 import logging
 
 from . import Level, Resource, register_init, register_discovery
-from .utils import batched, dirty_mp_request, dirty_mp_response
+from .utils import batched, poor_man_mp_request, poor_man_mp_response
 
 LOGGER = logging.getLogger('net-dash.discovery.compute-quota')
 NAME = 'quota'
@@ -25,10 +31,12 @@ API_REGION_URL = '/compute/v1/projects/{}/regions/{}'
 
 
 def _handle_discovery(resources, response):
+  'Processes asset batch response and overlays custom quota.'
   LOGGER.info('discovery handle request')
   content_type = response.headers['content-type']
   per_project_quota = resources['config:custom_quota'].get('projects', {})
-  for part in dirty_mp_response(content_type, response.content):
+  # process batch response
+  for part in poor_man_mp_response(content_type, response.content):
     kind = part.get('kind')
     quota = {
         q['metric']: int(q['limit'])
@@ -54,14 +62,14 @@ def _handle_discovery(resources, response):
 
 @register_init
 def init(resources):
-  'Create the quota key in the shared resource map.'
+  'Prepares quota datastructures in the shared resource map.'
   LOGGER.info('init')
   resources.setdefault(NAME, {})
 
 
 @register_discovery(Level.DERIVED, 0)
 def start_discovery(resources, response=None):
-  'Fetch and process quota for projects.'
+  'Plugin entry point, triggers discovery and handles requests and responses.'
   LOGGER.info(f'discovery (has response: {response is not None})')
   if response is None:
     # TODO: regions
@@ -69,7 +77,7 @@ def start_discovery(resources, response=None):
     if not urls:
       return
     for batch in batched(urls, 10):
-      yield dirty_mp_request(batch)
+      yield poor_man_mp_request(batch)
   else:
     for result in _handle_discovery(resources, response):
       yield result

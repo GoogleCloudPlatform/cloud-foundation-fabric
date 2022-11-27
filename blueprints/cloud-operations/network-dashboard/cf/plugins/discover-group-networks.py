@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'Group discovered networks by project.'
 
 import itertools
 import logging
@@ -23,12 +24,14 @@ NAME = 'networks:project'
 
 @register_init
 def init(resources):
+  'Prepares datastructure in the shared resource map.'
   LOGGER.info('init')
   resources.setdefault(NAME, {})
 
 
 @register_discovery(Level.DERIVED)
 def start_discovery(resources, response=None):
+  'Plugin entry point, group and return discovered networks.'
   LOGGER.info(f'discovery (has response: {response is not None})')
   grouped = itertools.groupby(resources['networks'].values(),
                               lambda v: v['project_id'])

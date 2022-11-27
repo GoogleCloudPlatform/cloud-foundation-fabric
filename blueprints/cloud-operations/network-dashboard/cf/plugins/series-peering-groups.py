@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+'Prepares descriptors and timeseries for peering group metrics.'
 
 import itertools
 import logging
@@ -75,6 +76,7 @@ LOGGER = logging.getLogger('net-dash.timeseries.peerings')
 
 
 def _count_forwarding_rules_l4(resources, network_ids):
+  'Returns count of L4 forwarding rules for specified network ids.'
   return len([
       r for r in resources['forwarding_rules'].values() if
       r['network'] in network_ids and r['load_balancing_scheme'] == 'INTERNAL'
@@ -82,6 +84,7 @@ def _count_forwarding_rules_l4(resources, network_ids):
 
 
 def _count_forwarding_rules_l7(resources, network_ids):
+  'Returns count of L7 forwarding rules for specified network ids.'
   return len([
       r for r in resources['forwarding_rules'].values()
       if r['network'] in network_ids and
@@ -90,6 +93,7 @@ def _count_forwarding_rules_l7(resources, network_ids):
 
 
 def _count_instances(resources, network_ids):
+  'Returns count of instances for specified network ids.'
   count = 0
   for i in resources['instances'].values():
     if any(n['network'] in network_ids for n in i['networks']):
@@ -98,11 +102,13 @@ def _count_instances(resources, network_ids):
 
 
 def _count_routes_static(resources, network_ids):
+  'Returns count of static routes for specified network ids.'
   return len(
       [r for r in resources['routes'].values() if r['network'] in network_ids])
 
 
 def _count_routes_dynamic(resources, network_ids):
+  'Returns count of dynamic routes for specified network ids.'
   return sum([
       sum(v.values())
       for k, v in resources['routes_dynamic'].items()
@@ -111,6 +117,7 @@ def _count_routes_dynamic(resources, network_ids):
 
 
 def _get_limit_max(quota, network_id, project_id, resource_name):
+  'Returns maximum limit value in project / peering group / network limits.'
   pg_name, pg_default = LIMITS[resource_name]['pg']
   prj_name, prj_default = LIMITS[resource_name]['prj']
   network_quota = quota.get(network_id, {})
@@ -123,21 +130,23 @@ def _get_limit_max(quota, network_id, project_id, resource_name):
 
 
 def _get_limit(quota, network, resource_name):
-  # https://cloud.google.com/vpc/docs/quota#vpc-peering-ilb-example
-  # vpc_max = max(vpc limit, pg limit)
+  'Computes and returns peering group limit.'
+  # reference https://cloud.google.com/vpc/docs/quota#vpc-peering-ilb-example
+  # step 1 - vpc_max = max(vpc limit, pg limit)
   vpc_max = _get_limit_max(quota, network['self_link'], network['project_id'],
                            resource_name)
-  # peers_max = [max(vpc limit, pg limit) for v in peered vpcs]
-  # peers_min = min(peers_max)
+  # step 2 - peers_max = [max(vpc limit, pg limit) for v in peered vpcs]
+  # step 3 - peers_min = min(peers_max)
   peers_min = min([
       _get_limit_max(quota, p['network'], p['project_id'], resource_name)
       for p in network['peerings']
   ])
-  # max(vpc_max, peers_min)
+  # step 4 - max(vpc_max, peers_min)
   return max([vpc_max, peers_min])
 
 
-def _network_timeseries(resources, network):
+def _peering_group_timeseries(resources, network):
+  'Computes and returns peering group timeseries for network.'
   if len(network['peerings']) == 0:
     return
   network_ids = [network['self_link']
@@ -158,12 +167,14 @@ def _network_timeseries(resources, network):
 
 @register_timeseries
 def timeseries(resources):
-  'Yield timeseries.'
+  'Returns peering group timeseries for all networks.'
   LOGGER.info('timeseries')
+  # returns metric descriptors
   for dtype, name in DESCRIPTOR_ATTRS.items():
     yield MetricDescriptor(f'peering_group/{dtype}', name,
                            ('project', 'network'), dtype.endswith('ratio'))
-  results = itertools.chain(*(_network_timeseries(resources, n)
+  # chain timeseries for each network and return each one individually
+  results = itertools.chain(*(_peering_group_timeseries(resources, n)
                               for n in resources['networks'].values()))
   for result in results:
     yield result
