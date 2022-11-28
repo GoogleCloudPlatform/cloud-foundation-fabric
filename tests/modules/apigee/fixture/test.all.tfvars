@@ -39,3 +39,13 @@ instances = {
     psa_ip_cidr_range = "10.0.5.0/22"
   }
 }
+endpoint_attachments = {
+  endpoint-backend-1 = {
+    region             = "europe-west1"
+    service_attachment = "projects/my-project-1/serviceAttachments/gkebackend1"
+  }
+  endpoint-backend-2 = {
+    region             = "europe-west1"
+    service_attachment = "projects/my-project-2/serviceAttachments/gkebackend2"
+  }
+}
