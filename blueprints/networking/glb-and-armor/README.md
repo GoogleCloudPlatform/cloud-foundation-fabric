@@ -124,10 +124,10 @@ The above command will delete the associated resources so there will be no billa
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L38) | Identifier of the project. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L23) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L41) | Identifier of the project. | <code>string</code> | ✓ |  |
 | [enforce_security_policy](variables.tf#L17) | Enforce security policy. | <code>bool</code> |  | <code>true</code> |
-| [prefix](variables.tf#L23) | Prefix used for created resources. | <code>string</code> |  | <code>null</code> |
-| [project_create](variables.tf#L29) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_create](variables.tf#L32) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

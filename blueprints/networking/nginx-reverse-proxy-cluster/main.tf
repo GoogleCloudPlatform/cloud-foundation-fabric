@@ -161,7 +161,7 @@ module "firewall" {
   project_id = module.project.project_id
   network    = module.vpc.name
   ingress_rules = {
-    format("%sallow-http-to-proxy-cluster", var.prefix) = {
+    "${var.prefix}-allow-http-to-proxy-cluster" = {
       description = "Allow Nginx HTTP(S) ingress traffic"
       source_ranges = [
         var.cidrs[var.subnetwork], "35.191.0.0/16", "130.211.0.0/22"
@@ -170,7 +170,7 @@ module "firewall" {
       use_service_accounts = true
       rules                = [{ protocol = "tcp", ports = [80, 443] }]
     }
-    format("%sallow-iap-ssh", var.prefix) = {
+    "${var.prefix}-allow-iap-ssh" = {
       description          = "Allow Nginx SSH traffic from IAP"
       source_ranges        = ["35.235.240.0/20"]
       targets              = [module.service-account-proxy.email]
@@ -184,7 +184,7 @@ module "nat" {
   source                = "../../../modules/net-cloudnat"
   project_id            = module.project.project_id
   region                = var.region
-  name                  = format("%snat", var.prefix)
+  name                  = "${var.prefix}-nat"
   router_network        = module.vpc.name
   config_source_subnets = "LIST_OF_SUBNETWORKS"
 
@@ -207,7 +207,7 @@ module "nat" {
 module "service-account-proxy" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project.project_id
-  name       = format("%sreverse-proxy", var.prefix)
+  name       = "${var.prefix}-reverse-proxy"
   iam_project_roles = {
     (module.project.project_id) = [
       "roles/logging.logWriter",
@@ -241,7 +241,7 @@ module "mig-proxy" {
   project_id = module.project.project_id
   location   = var.region
   regional   = true
-  name       = format("%sproxy-cluster", var.prefix)
+  name       = "${var.prefix}-proxy-cluster"
   named_ports = {
     http  = "80"
     https = "443"
@@ -313,11 +313,11 @@ module "proxy-vm" {
 
 module "xlb" {
   source             = "../../../modules/net-glb"
-  name               = format("%sreverse-proxy-xlb", var.prefix)
+  name               = "${var.prefix}-reverse-proxy-xlb"
   project_id         = module.project.project_id
   reserve_ip_address = true
   health_checks_config = {
-    format("%sreverse-proxy-hc", var.prefix) = {
+    "${var.prefix}-reverse-proxy-hc" = {
       type    = "http"
       logging = false
       options = {
@@ -334,7 +334,7 @@ module "xlb" {
     }
   }
   backend_services_config = {
-    format("%sreverse-proxy-backend", var.prefix) = {
+    "${var.prefix}-reverse-proxy-backend" = {
       bucket_config = null
       enable_cdn    = false
       cdn_config    = null
@@ -345,7 +345,7 @@ module "xlb" {
             options = null
           }
         ]
-        health_checks = [format("%sreverse-proxy-hc", var.prefix)]
+        health_checks = ["${var.prefix}-reverse-proxy-hc"]
         log_config    = null
         options = {
           affinity_cookie_ttl_sec         = null

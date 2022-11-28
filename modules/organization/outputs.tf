@@ -45,7 +45,9 @@ output "firewall_policy_id" {
 output "network_tag_keys" {
   description = "Tag key resources."
   value = {
-    for k, v in google_tags_tag_key.default : k => v if v.purpose != null
+    for k, v in google_tags_tag_key.default : k => v if(
+      v.purpose != null && v.purpose != ""
+    )
   }
 }
 
@@ -53,7 +55,10 @@ output "network_tag_values" {
   description = "Tag value resources."
   value = {
     for k, v in google_tags_tag_value.default
-    : k => v if google_tags_tag_key.default[split("/", k)[0]].purpose != null
+    : k => v if(
+      google_tags_tag_key.default[split("/", k)[0]].purpose != null &&
+      google_tags_tag_key.default[split("/", k)[0]].purpose != ""
+    )
   }
 }
 
@@ -85,7 +90,9 @@ output "sink_writer_identities" {
 output "tag_keys" {
   description = "Tag key resources."
   value = {
-    for k, v in google_tags_tag_key.default : k => v if v.purpose == null
+    for k, v in google_tags_tag_key.default : k => v if(
+      v.purpose == null || v.purpose == ""
+    )
   }
 }
 
@@ -93,6 +100,9 @@ output "tag_values" {
   description = "Tag value resources."
   value = {
     for k, v in google_tags_tag_value.default
-    : k => v if google_tags_tag_key.default[split("/", k)[0]].purpose == null
+    : k => v if(
+      google_tags_tag_key.default[split("/", k)[0]].purpose == null ||
+      google_tags_tag_key.default[split("/", k)[0]].purpose == ""
+    )
   }
 }

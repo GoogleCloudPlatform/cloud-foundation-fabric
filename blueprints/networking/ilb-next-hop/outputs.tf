@@ -28,7 +28,7 @@ output "addresses" {
 output "backend_health_left" {
   description = "Command-line health status for left ILB backends."
   value       = <<-EOT
-    gcloud compute backend-services get-health ${local.prefix}ilb-left \
+    gcloud compute backend-services get-health ${var.prefix}-ilb-left \
       --region ${var.region} \
       --flatten status.healthStatus \
       --format "value(status.healthStatus.ipAddress, status.healthStatus.healthState)"
@@ -38,7 +38,7 @@ output "backend_health_left" {
 output "backend_health_right" {
   description = "Command-line health status for right ILB backends."
   value       = <<-EOT
-    gcloud compute backend-services get-health ${local.prefix}ilb-right \
+    gcloud compute backend-services get-health ${var.prefix}-ilb-right \
       --region ${var.region} \
       --flatten status.healthStatus \
       --format "value(status.healthStatus.ipAddress, status.healthStatus.healthState)"

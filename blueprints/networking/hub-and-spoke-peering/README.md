@@ -84,13 +84,13 @@ The VPN used to connect the GKE masters VPC does not account for HA, upgrading t
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L66) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L34) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L69) | Project id used for all resources. | <code>string</code> | ✓ |  |
 | [ip_ranges](variables.tf#L15) | IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  hub     &#61; &#34;10.0.0.0&#47;24&#34;&#10;  spoke-1 &#61; &#34;10.0.16.0&#47;24&#34;&#10;  spoke-2 &#61; &#34;10.0.32.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [ip_secondary_ranges](variables.tf#L25) | Secondary IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  spoke-2-pods     &#61; &#34;10.128.0.0&#47;18&#34;&#10;  spoke-2-services &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [prefix](variables.tf#L34) | Arbitrary string used to prefix resource names. | <code>string</code> |  | <code>null</code> |
-| [private_service_ranges](variables.tf#L40) | Private service IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  spoke-2-cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [project_create](variables.tf#L48) | Set to non null if project needs to be created. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  oslogin         &#61; bool&#10;  parent          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L71) | VPC region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [private_service_ranges](variables.tf#L43) | Private service IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  spoke-2-cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_create](variables.tf#L51) | Set to non null if project needs to be created. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  oslogin         &#61; bool&#10;  parent          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L74) | VPC region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 

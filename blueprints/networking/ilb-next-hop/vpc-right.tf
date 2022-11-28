@@ -17,11 +17,11 @@
 module "vpc-right" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = "${local.prefix}right"
+  name       = "${var.prefix}-right"
   subnets = [
     {
       ip_cidr_range = var.ip_ranges.right
-      name          = "${local.prefix}right"
+      name          = "${var.prefix}-right"
       region        = var.region
     },
   ]
@@ -59,6 +59,6 @@ module "nat-right" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.project.project_id
   region         = var.region
-  name           = "${local.prefix}right"
+  name           = "${var.prefix}-right"
   router_network = module.vpc-right.name
 }

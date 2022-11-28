@@ -15,13 +15,13 @@
  */
 
 variable "admission_whitelist_patterns" {
-  description = "An image name pattern to allowlist"
+  description = "An image name pattern to allowlist."
   type        = list(string)
   default     = null
 }
 
 variable "attestors_config" {
-  description = "Attestors configuration"
+  description = "Attestors configuration."
   type = map(object({
     note_reference  = string
     iam             = map(list(string))
@@ -36,7 +36,7 @@ variable "attestors_config" {
 }
 
 variable "cluster_admission_rules" {
-  description = "Admission rules"
+  description = "Admission rules."
   type = map(object({
     evaluation_mode  = string
     enforcement_mode = string
@@ -46,7 +46,7 @@ variable "cluster_admission_rules" {
 }
 
 variable "default_admission_rule" {
-  description = "Default admission rule"
+  description = "Default admission rule."
   type = object({
     evaluation_mode  = string
     enforcement_mode = string

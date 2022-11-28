@@ -27,3 +27,8 @@ variable "project_id" {
   type    = string
   default = "my-project"
 }
+
+variable "prefix" {
+  type    = string
+  default = "test"
+}

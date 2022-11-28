@@ -27,7 +27,7 @@ module "vm-left" {
   for_each      = local.zones
   project_id    = module.project.project_id
   zone          = each.value
-  name          = "${local.prefix}vm-left-${each.key}"
+  name          = "${var.prefix}-vm-left-${each.key}"
   instance_type = "f1-micro"
   network_interfaces = [
     {
@@ -50,7 +50,7 @@ module "vm-right" {
   for_each      = local.zones
   project_id    = module.project.project_id
   zone          = each.value
-  name          = "${local.prefix}vm-right-${each.key}"
+  name          = "${var.prefix}-vm-right-${each.key}"
   instance_type = "f1-micro"
   network_interfaces = [
     {

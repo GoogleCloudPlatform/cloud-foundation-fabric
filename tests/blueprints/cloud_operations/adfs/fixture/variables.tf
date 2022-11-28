@@ -41,7 +41,7 @@ variable "project_id" {
 
 variable "prefix" {
   type    = string
-  default = null
+  default = "test"
 }
 
 variable "network_config" {

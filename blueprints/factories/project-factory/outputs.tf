@@ -17,7 +17,7 @@
 # TODO(): proper outputs
 
 output "project" {
-  description = "The project resource as return by the `project` module"
+  description = "The project resource as return by the `project` module."
   value       = module.project
 
   depends_on = [

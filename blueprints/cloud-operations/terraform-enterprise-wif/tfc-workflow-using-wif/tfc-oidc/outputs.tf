@@ -15,6 +15,7 @@
  */
 
 output "credentials" {
+  description = "Credentials in format to pass the to gcp provider."
   value = jsonencode({
     "type" : "external_account",
     "audience" : "${local.audience}",

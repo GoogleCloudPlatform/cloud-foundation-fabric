@@ -64,12 +64,12 @@ module "gateway" {
 |---|---|:---:|:---:|:---:|
 | [api_id](variables.tf#L17) | API identifier. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L34) | Project identifier. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L39) | Region | <code>string</code> | ✓ |  |
+| [region](variables.tf#L39) | Region. | <code>string</code> | ✓ |  |
 | [spec](variables.tf#L56) | String with the contents of the OpenAPI spec. | <code>string</code> | ✓ |  |
 | [iam](variables.tf#L22) | IAM bindings for the API in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
 | [labels](variables.tf#L28) | Map of labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L44) | Flag indicating whether a service account needs to be created | <code>bool</code> |  | <code>false</code> |
-| [service_account_email](variables.tf#L50) | Service account for creating API configs | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L44) | Flag indicating whether a service account needs to be created. | <code>bool</code> |  | <code>false</code> |
+| [service_account_email](variables.tf#L50) | Service account for creating API configs. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
