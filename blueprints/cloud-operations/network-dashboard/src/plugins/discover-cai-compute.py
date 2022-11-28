@@ -194,7 +194,7 @@ def _get_parent(parent, resources):
     if project:
       return {'project_id': project['project_id'], 'project_number': parent_id}
   if parent_type == 'folders':
-    if parent_id in resources['config:folders']:
+    if parent_id in resources['folders']:
       return {'parent': f'{parent_type}/{parent_id}'}
   if resources['config:organization'] == int(parent_id):
     return {'parent': f'{parent_type}/{parent_id}'}
