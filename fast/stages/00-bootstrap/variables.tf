@@ -209,7 +209,7 @@ variable "organization" {
 }
 
 variable "outputs_location" {
-  description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable"
+  description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable."
   type        = string
   default     = null
 }

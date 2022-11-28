@@ -17,11 +17,11 @@
 module "prod-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = var.project_id
-  name       = "${local.prefix}prd"
+  name       = "${var.prefix}-prd"
   subnets = [
     {
       ip_cidr_range = var.ip_ranges.prod-0-r1
-      name          = "${local.prefix}prd-0"
+      name          = "${var.prefix}-prd-0"
       region        = var.regions.r1
       secondary_ip_ranges = try(
         var.ip_secondary_ranges.prod-0-r1, {}
@@ -29,7 +29,7 @@ module "prod-vpc" {
     },
     {
       ip_cidr_range = var.ip_ranges.prod-0-r2
-      name          = "${local.prefix}prd-0"
+      name          = "${var.prefix}-prd-0"
       region        = var.regions.r2
       secondary_ip_ranges = try(
         var.ip_secondary_ranges.prod-0-r2, {}
@@ -51,7 +51,7 @@ module "prod-dns-peering" {
   source          = "../../../modules/dns"
   project_id      = var.project_id
   type            = "peering"
-  name            = "${local.prefix}example-com-prd-peering"
+  name            = "${var.prefix}-example-com-prd-peering"
   domain          = "example.com."
   client_networks = [module.prod-vpc.self_link]
   peer_network    = module.landing-vpc.self_link
@@ -61,7 +61,7 @@ module "prod-dns-zone" {
   source          = "../../../modules/dns"
   project_id      = var.project_id
   type            = "private"
-  name            = "${local.prefix}prd-example-com"
+  name            = "${var.prefix}-prd-example-com"
   domain          = "prd.example.com."
   client_networks = [module.landing-vpc.self_link]
   recordsets = {

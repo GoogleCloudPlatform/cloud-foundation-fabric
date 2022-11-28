@@ -16,6 +16,7 @@
 
 module "test" {
   source         = "../../../../../blueprints/gke/binauthz"
+  prefix         = var.prefix
   project_create = var.project_create
   project_id     = var.project_id
 }

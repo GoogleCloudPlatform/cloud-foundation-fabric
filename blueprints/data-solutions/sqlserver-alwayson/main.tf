@@ -14,14 +14,14 @@
 
 locals {
   ad_user_password_secret = "${local.cluster_full_name}-password"
-  cluster_full_name       = "${local.prefix}${var.cluster_name}"
+  cluster_full_name       = "${var.prefix}-${var.cluster_name}"
   cluster_netbios_name = (
     length(local.cluster_full_name) > 15
     ? substr(local.cluster_full_name, 0, 15)
     : local.cluster_full_name
   )
   network   = module.vpc.self_link
-  node_base = "${local.prefix}${var.node_name}"
+  node_base = "${var.prefix}-${var.node_name}"
   node_prefix = (
     length(local.node_base) > 12
     ? substr(local.node_base, 0, 12)
@@ -39,7 +39,6 @@ locals {
       (local.witness_netbios_name) = local.zones[length(local.zones) - 1]
     }
   )
-  prefix = var.prefix != "" ? "${var.prefix}-" : ""
   subnetwork = (
     var.project_create != null
     ? module.vpc.subnet_self_links["${var.region}/${var.subnetwork}"]
@@ -50,7 +49,7 @@ locals {
     ? var.shared_vpc_project_id
     : module.project.project_id
   )
-  witness_name = "${local.prefix}${var.witness_name}"
+  witness_name = "${var.prefix}-${var.witness_name}"
   witness_netbios_name = (
     length(local.witness_name) > 15
     ? substr(local.witness_name, 0, 15)

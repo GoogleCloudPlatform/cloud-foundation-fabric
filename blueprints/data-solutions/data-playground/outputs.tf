@@ -31,11 +31,11 @@ output "notebook" {
 }
 
 output "project" {
-  description = "Project id"
+  description = "Project id."
   value       = module.project.project_id
 }
 
 output "vpc" {
-  description = "VPC Network"
+  description = "VPC Network."
   value       = module.vpc.name
 }

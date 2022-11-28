@@ -209,7 +209,7 @@ module "project" {
     ]
   }
   iam = {
-    "roles/editor" = [      
+    "roles/editor" = [
       "serviceAccount:${module.project.service_accounts.cloud_services}"
     ]
   }
@@ -236,7 +236,7 @@ module "project" {
   source          = "./modules/project"
   name            = "project-example"
   iam = {
-    "roles/editor" = [      
+    "roles/editor" = [
       "serviceAccount:${module.project.service_accounts.cloud_services}"
     ]
   }
@@ -543,7 +543,7 @@ locals {
 
 #### The `prefix` variable
 
-If you would like to use a "prefix" variable for resource names, please keep its definition consistent across all code:
+If you would like to use a "prefix" variable for resource names, please keep its definition consistent across all modules:
 ```hcl
 # variables.tf
 variable "prefix" {
@@ -551,14 +551,26 @@ variable "prefix" {
   type        = string
   default     = null
   validation {
-    condition = var.prefix != ""
-    error_message = "Prefix can not be empty, please use null instead."
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
   }
 }
 
 # main.tf
 locals {
   prefix = var.prefix == null ? "" : "${var.prefix}-"
+}
+```
+
+For blueprints the prefix is mandatory:
+```hcl
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 ```
 

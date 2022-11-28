@@ -15,7 +15,7 @@
  */
 
 locals {
-  prefix = (var.prefix == null || var.prefix == "") ? "" : "${var.prefix}-"
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 module "project" {
@@ -40,7 +40,7 @@ module "project" {
 module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = "${local.prefix}vpc"
+  name       = "${var.prefix}-vpc"
   subnets = [
     {
       ip_cidr_range = "10.0.1.0/24"
@@ -70,7 +70,7 @@ module "nat_ew1" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.project.project_id
   region         = "europe-west1"
-  name           = "${local.prefix}nat-eu1"
+  name           = "${var.prefix}-nat-eu1"
   router_network = module.vpc.name
 }
 
@@ -78,7 +78,7 @@ module "nat_ue1" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.project.project_id
   region         = "us-east1"
-  name           = "${local.prefix}nat-ue1"
+  name           = "${var.prefix}-nat-ue1"
   router_network = module.vpc.name
 }
 
@@ -86,7 +86,7 @@ module "instance_template_ew1" {
   source        = "../../../modules/compute-vm"
   project_id    = module.project.project_id
   zone          = "europe-west1-b"
-  name          = "${local.prefix}europe-west1-template"
+  name          = "${var.prefix}-europe-west1-template"
   instance_type = "n1-standard-2"
   network_interfaces = [{
     network    = module.vpc.self_link
@@ -108,7 +108,7 @@ module "instance_template_ue1" {
   source     = "../../../modules/compute-vm"
   project_id = module.project.project_id
   zone       = "us-east1-b"
-  name       = "${local.prefix}us-east1-template"
+  name       = "${var.prefix}-us-east1-template"
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["us-east1/subnet-ue1"]
@@ -156,7 +156,7 @@ module "mig_ew1" {
   source            = "../../../modules/compute-mig"
   project_id        = module.project.project_id
   location          = "europe-west1"
-  name              = "${local.prefix}europe-west1-mig"
+  name              = "${var.prefix}-europe-west1-mig"
   instance_template = module.instance_template_ew1.template.self_link
   autoscaler_config = {
     max_replicas    = 5
@@ -180,7 +180,7 @@ module "mig_ue1" {
   source            = "../../../modules/compute-mig"
   project_id        = module.project.project_id
   location          = "us-east1"
-  name              = "${local.prefix}us-east1-mig"
+  name              = "${var.prefix}-us-east1-mig"
   instance_template = module.instance_template_ue1.template.self_link
   autoscaler_config = {
     max_replicas    = 5
@@ -202,7 +202,7 @@ module "mig_ue1" {
 
 module "glb" {
   source     = "../../../modules/net-glb"
-  name       = "${local.prefix}http-lb"
+  name       = "${var.prefix}-http-lb"
   project_id = module.project.project_id
   backend_services_config = {
     http-backend = {
@@ -259,7 +259,7 @@ module "glb" {
 
 resource "google_compute_security_policy" "policy" {
   count   = var.enforce_security_policy ? 1 : 0
-  name    = "${local.prefix}denylist-siege"
+  name    = "${var.prefix}-denylist-siege"
   project = module.project.project_id
   rule {
     action   = "deny(403)"
