@@ -54,7 +54,7 @@ def init(resources):
   resources.setdefault(NAME, {})
 
 
-@register_discovery(Level.CORE, 0)
+@register_discovery(Level.CORE, 99)
 def start_discovery(resources, response=None, data=None):
   'Plugin entry point, triggers discovery and handles requests and responses.'
   LOGGER.info(f'discovery (has response: {response is not None})')

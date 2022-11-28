@@ -44,6 +44,20 @@ TYPES = {
 NAMES = {v: k for k, v in TYPES.items()}
 
 
+def _get_parent(parent, resources):
+  'Extracts and returns resource parent and type.'
+  parent_type, parent_id = parent.split('/')[-2:]
+  if parent_type == 'projects':
+    project = resources['projects:number'].get(parent_id)
+    if project:
+      return {'project_id': project['project_id'], 'project_number': parent_id}
+  if parent_type == 'folders':
+    if parent_id in resources['folders']:
+      return {'parent': f'{parent_type}/{parent_id}'}
+  if resources.get('organization') == parent_id:
+    return {'parent': f'{parent_type}/{parent_id}'}
+
+
 def _handle_discovery(resources, response, data):
   'Processes the asset API response and returns parsed resources or next URL.'
   LOGGER.info('discovery handle request')
@@ -73,6 +87,10 @@ def _handle_resource(resources, data):
   parent_data = _get_parent(data['parent'], resources)
   if not parent_data:
     LOGGER.info(f'{resource["self_link"]} outside perimeter')
+    LOGGER.debug([
+        resources['organization'], resources['folders'],
+        resources['projects:number']
+    ])
     return
   resource.update(parent_data)
   # gets and calls the resource-level handler for type specific attributes
@@ -184,20 +202,6 @@ def _handle_subnetworks(resource, data):
 def _self_link(s):
   'Removes initial part from self links.'
   return s.removeprefix('https://www.googleapis.com/compute/v1/')
-
-
-def _get_parent(parent, resources):
-  'Extracts and returns resource parent and type.'
-  parent_type, parent_id = parent.split('/')[-2:]
-  if parent_type == 'projects':
-    project = resources['projects:number'].get(parent_id)
-    if project:
-      return {'project_id': project['project_id'], 'project_number': parent_id}
-  if parent_type == 'folders':
-    if parent_id in resources['folders']:
-      return {'parent': f'{parent_type}/{parent_id}'}
-  if resources.get('organization') == parent_id:
-    return {'parent': f'{parent_type}/{parent_id}'}
 
 
 def _url(resources):

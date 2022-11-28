@@ -46,6 +46,8 @@ def _handle_discovery(resources, response, data):
       data = {'number': number, 'project_id': name}
       yield Resource('projects', name, data)
       yield Resource('projects:number', number, data)
+    else:
+      LOGGER.info(f'unknown resource {name}')
   next_url = parse_page_token(data, response.request.url)
   if next_url:
     LOGGER.info('discovery next url')

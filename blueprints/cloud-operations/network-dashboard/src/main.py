@@ -14,9 +14,12 @@
 # limitations under the License.
 'Network dashboard: create network-related metric timeseries for GCP resources.'
 
+import base64
+import binascii
 import collections
 import json
 import logging
+import os
 
 import click
 import google.auth
@@ -58,6 +61,7 @@ def do_discovery(resources):
         if result.json:
           try:
             # decode the JSON HTTP response and pass it to the plugin
+            LOGGER.debug(f'passing JSON result to {plugin.name}')
             results = plugin.func(resources, response, response.json())
           except json.decoder.JSONDecodeError as e:
             LOGGER.critical(
@@ -65,10 +69,12 @@ def do_discovery(resources):
             continue
         else:
           # pass the raw HTTP response to the plugin
+          LOGGER.debug(f'passing raw result to {plugin.name}')
           results = plugin.func(resources, response)
         q += collections.deque(results)
       elif isinstance(result, plugins.Resource):
         # store a resource the plugin derived from a previous HTTP response
+        LOGGER.debug(f'got resource {result} from {plugin.name}')
         if result.key:
           # this specific resource is indexed by an additional key
           resources[result.type][result.id][result.key] = result.data
@@ -102,6 +108,7 @@ def do_init(resources, discovery_root, op_project, folders=None, projects=None,
     resources['folders'] = {f: {} for f in folders}
   for plugin in plugins.get_init_plugins():
     plugin.func(resources)
+  LOGGER.info(f'init completed, resources {resources}')
 
 
 def do_timeseries_calc(resources, descriptors, timeseries, debug_plugin=None):
@@ -205,11 +212,46 @@ def fetch(request):
   return response
 
 
+def main_cf_pubsub(event, context):
+  'Entry point for Cloud Function triggered by a PubSub message.'
+  debug = os.environ.get('DEBUG')
+  logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
+  LOGGER.info('processing pubsub payload')
+  try:
+    payload = json.loads(base64.b64decode(event['data']).decode('utf-8'))
+  except (binascii.Error, json.JSONDecodeError) as e:
+    raise SystemExit(f'Invalid payload: e.args[0].')
+  discovery_root = payload.get('discovery_root')
+  op_project = payload.get('op_project')
+  if not discovery_root:
+    LOGGER.critical('no discovery roo project specified')
+    LOGGER.info(payload)
+    raise SystemExit(f'Invalid options')
+  if not op_project:
+    LOGGER.critical('no monitoring project specified')
+    LOGGER.info(payload)
+    raise SystemExit(f'Invalid options')
+  if discovery_root.partition('/')[0] not in ('folders', 'organizations'):
+    raise SystemExit(f'Invalid discovery root {discovery_root}.')
+  custom_quota = payload.get('custom_quota', {})
+  descriptors = []
+  folders = payload.get('folders', [])
+  projects = payload.get('projects', [])
+  resources = {}
+  timeseries = []
+  do_init(resources, discovery_root, op_project, folders, projects,
+          custom_quota)
+  do_discovery(resources)
+  do_timeseries_calc(resources, descriptors, timeseries)
+  do_timeseries_descriptors(op_project, resources['metric-descriptors'],
+                            descriptors)
+  do_timeseries(op_project, timeseries, descriptors)
+
+
 @click.command()
 @click.option(
     '--discovery-root', '-dr', required=True,
-    help='Node used for asset discovery, either organizations/nnn or folders/nnn.'
-)
+    help='Root node for asset discovery, organizations/nnn or folders/nnn.')
 @click.option('--op-project', '-op', required=True, type=str,
               help='GCP monitoring project where metrics will be stored.')
 @click.option('--project', '-p', type=str, multiple=True,
@@ -224,7 +266,7 @@ def fetch(request):
               help='Load JSON resources from file, skips init and discovery.')
 @click.option('--debug-plugin',
               help='Run only core and specified timeseries plugin.')
-def main(discovery_root=None, op_project=None, project=None, folder=None,
+def main(discovery_root, op_project, project=None, folder=None,
          custom_quota_file=None, dump_file=None, load_file=None,
          debug_plugin=None):
   'CLI entry point.'
@@ -255,4 +297,4 @@ def main(discovery_root=None, op_project=None, project=None, folder=None,
 
 
 if __name__ == '__main__':
-  main(auto_envvar_prefix='NETMON')
+  main_cli(auto_envvar_prefix='NETMON')
