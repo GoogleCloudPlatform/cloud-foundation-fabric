@@ -15,10 +15,11 @@
  */
 
 locals {
-  org_id       = try(google_apigee_organization.organization[0].id, "organizations/${var.project_id}")
-  envgroups    = coalesce(var.envgroups, {})
-  environments = coalesce(var.environments, {})
-  instances    = coalesce(var.instances, {})
+  org_id               = try(google_apigee_organization.organization[0].id, "organizations/${var.project_id}")
+  envgroups            = coalesce(var.envgroups, {})
+  environments         = coalesce(var.environments, {})
+  instances            = coalesce(var.instances, {})
+  endpoint_attachments = coalesce(var.endpoint_attachments, {})
 }
 
 resource "google_apigee_organization" "organization" {
@@ -102,5 +103,12 @@ resource "google_apigee_instance_attachment" "instance_attachments" {
   instance_id = google_apigee_instance.instances[each.value.instance].id
   environment = try(google_apigee_environment.environments[each.value.environment].name,
   "${local.org_id}/environments/${each.value.environment}")
+}
 
+resource "google_apigee_endpoint_attachment" "endpoint_attachments" {
+  for_each               = local.endpoint_attachments
+  org_id                 = local.org_id
+  endpoint_attachment_id = each.key
+  location               = each.value.region
+  service_attachment     = each.value.service_attachment
 }
