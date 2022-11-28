@@ -83,7 +83,7 @@ module "cloud-function" {
   }
 }
 
-resource "google_cloud_scheduler_job" "job" {
+resource "google_cloud_scheduler_job" "default" {
   project   = var.project_id
   region    = var.region
   name      = var.name
