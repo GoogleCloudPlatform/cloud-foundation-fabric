@@ -35,6 +35,6 @@ provider "google-beta" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [credentials](outputs.tf#L17) |  |  |
+| [credentials](outputs.tf#L17) | Credentials in format to pass the to gcp provider. |  |
 
 <!-- END TFDOC -->

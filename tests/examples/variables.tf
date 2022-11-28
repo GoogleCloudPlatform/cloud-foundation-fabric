@@ -36,6 +36,10 @@ variable "folder_id" {
   default = "folders/1122334455"
 }
 
+variable "prefix" {
+  default = "test"
+}
+
 variable "project_id" {
   default = "project-id"
 }

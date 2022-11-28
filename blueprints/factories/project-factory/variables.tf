@@ -149,9 +149,12 @@ variable "org_policies" {
 }
 
 variable "prefix" {
-  description = "Prefix used for the project id."
+  description = "Prefix used for resource names."
   type        = string
-  default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_id" {
@@ -172,14 +175,14 @@ variable "service_accounts_additive" {
 }
 
 variable "service_accounts_iam" {
-  description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
+  description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}."
   type        = map(map(list(string)))
   default     = {}
   nullable    = false
 }
 
 variable "service_accounts_iam_additive" {
-  description = "IAM additive bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
+  description = "IAM additive bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}."
   type        = map(map(list(string)))
   default     = {}
   nullable    = false

@@ -107,15 +107,15 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L44) | Project ID. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L29) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L47) | Project ID. | <code>string</code> | ✓ |  |
 | [master_cidr_block](variables.tf#L17) | Master CIDR block. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;28&#34;</code> |
 | [pods_cidr_block](variables.tf#L23) | Pods CIDR block. | <code>string</code> |  | <code>&#34;172.16.0.0&#47;20&#34;</code> |
-| [prefix](variables.tf#L29) | Prefix for resources created. | <code>string</code> |  | <code>null</code> |
-| [project_create](variables.tf#L35) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L49) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [services_cidr_block](variables.tf#L55) | Services CIDR block. | <code>string</code> |  | <code>&#34;192.168.0.0&#47;24&#34;</code> |
-| [subnet_cidr_block](variables.tf#L61) | Subnet CIDR block. | <code>string</code> |  | <code>&#34;10.0.1.0&#47;24&#34;</code> |
-| [zone](variables.tf#L67) | Zone. | <code>string</code> |  | <code>&#34;europe-west1-c&#34;</code> |
+| [project_create](variables.tf#L38) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L52) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [services_cidr_block](variables.tf#L58) | Services CIDR block. | <code>string</code> |  | <code>&#34;192.168.0.0&#47;24&#34;</code> |
+| [subnet_cidr_block](variables.tf#L64) | Subnet CIDR block. | <code>string</code> |  | <code>&#34;10.0.1.0&#47;24&#34;</code> |
+| [zone](variables.tf#L70) | Zone. | <code>string</code> |  | <code>&#34;europe-west1-c&#34;</code> |
 
 ## Outputs
 

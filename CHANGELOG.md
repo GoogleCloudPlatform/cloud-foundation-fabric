@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1009](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1009)] Fix encryption in Data Playground blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2022-11-25 15:19:02+00:00 -->
+- [[#1003](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1003)] Normalize prefix handling in blueprints ([kunzese](https://github.com/kunzese)) <!-- 2022-11-23 10:09:00+00:00 -->
 - [[#995](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/995)] Push container images to GitHub instead of Google Container Registry ([kunzese](https://github.com/kunzese)) <!-- 2022-11-21 14:53:52+00:00 -->
 - [[#984](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/984)] **incompatible change:** Apigee module and blueprint ([apichick](https://github.com/apichick)) <!-- 2022-11-17 16:20:27+00:00 -->
 - [[#980](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/980)] Have Squid log to /dev/stdout to stream logs to Cloud Logging ([kunzese](https://github.com/kunzese)) <!-- 2022-11-16 13:41:26+00:00 -->
@@ -59,6 +61,10 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1009](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1009)] Fix encryption in Data Playground blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2022-11-25 15:19:02+00:00 -->
+- [[#1006](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1006)] Add settings for autoscaling to Bigtable module. ([iht](https://github.com/iht)) <!-- 2022-11-24 15:59:32+00:00 -->
+- [[#1007](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1007)] fast README, one line fix: 00-cicd stage got moved to extras/ ([skalolazka](https://github.com/skalolazka)) <!-- 2022-11-23 15:31:01+00:00 -->
+- [[#1003](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1003)] Normalize prefix handling in blueprints ([kunzese](https://github.com/kunzese)) <!-- 2022-11-23 10:09:00+00:00 -->
 - [[#987](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/987)] Add tests to factory examples ([juliocc](https://github.com/juliocc)) <!-- 2022-11-18 17:01:41+00:00 -->
 - [[#972](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/972)] Add note about TF_PLUGIN_CACHE_DIR ([wiktorn](https://github.com/wiktorn)) <!-- 2022-11-14 10:21:37+00:00 -->
 - [[#961](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/961)] Remove extra file from root ([ludoo](https://github.com/ludoo)) <!-- 2022-11-09 07:53:11+00:00 -->
@@ -72,6 +78,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1007](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1007)] fast README, one line fix: 00-cicd stage got moved to extras/ ([skalolazka](https://github.com/skalolazka)) <!-- 2022-11-23 15:31:01+00:00 -->
 - [[#976](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/976)] FAST: fixes to GitHub workflow and 02/net outputs ([ludoo](https://github.com/ludoo)) <!-- 2022-11-15 07:48:32+00:00 -->
 - [[#966](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/966)] FAST: improve GitHub workflow, stage 01 output fixes ([ludoo](https://github.com/ludoo)) <!-- 2022-11-11 07:55:58+00:00 -->
 - [[#963](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/963)] **incompatible change:** Refactor vps-sc module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-10 18:34:45+00:00 -->
@@ -104,6 +111,11 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1016](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1016)] Fix memory/cpu typo in gke cluster module ([joeheaton](https://github.com/joeheaton)) <!-- 2022-11-27 17:29:26+00:00 -->
+- [[#1012](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1012)] Fix tag outputs in organization module ([ludoo](https://github.com/ludoo)) <!-- 2022-11-25 13:06:32+00:00 -->
+- [[#1006](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1006)] Add settings for autoscaling to Bigtable module. ([iht](https://github.com/iht)) <!-- 2022-11-24 15:59:32+00:00 -->
+- [[#999](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/999)] Default nodepool creation fix ([astianseb](https://github.com/astianseb)) <!-- 2022-11-22 18:17:58+00:00 -->
+- [[#1005](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1005)] Only set partitioned table when sink type is bigquery ([juliocc](https://github.com/juliocc)) <!-- 2022-11-22 16:13:53+00:00 -->
 - [[#997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/997)] Add BigQuery subcriptions to Pubsub module. ([iht](https://github.com/iht)) <!-- 2022-11-21 17:26:52+00:00 -->
 - [[#995](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/995)] Push container images to GitHub instead of Google Container Registry ([kunzese](https://github.com/kunzese)) <!-- 2022-11-21 14:53:52+00:00 -->
 - [[#994](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/994)] Add schemas to Pubsub topic module. ([iht](https://github.com/iht)) <!-- 2022-11-20 16:56:03+00:00 -->
@@ -174,6 +186,10 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1013](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1013)] Update labeler.yml ([ludoo](https://github.com/ludoo)) <!-- 2022-11-25 13:27:47+00:00 -->
+- [[#1010](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1010)] Enforce nonempty descriptions ending in a dot ([juliocc](https://github.com/juliocc)) <!-- 2022-11-25 09:15:29+00:00 -->
+- [[#1004](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1004)] Use `actions/labeler` to automatically label pull requests ([kunzese](https://github.com/kunzese)) <!-- 2022-11-22 14:42:47+00:00 -->
+- [[#998](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/998)] Add missing `write_package` permission ([kunzese](https://github.com/kunzese)) <!-- 2022-11-22 08:32:42+00:00 -->
 - [[#996](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/996)] Fix `repository name must be lowercase` on docker build ([kunzese](https://github.com/kunzese)) <!-- 2022-11-21 16:04:57+00:00 -->
 - [[#993](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/993)] Fix variable and output sort check ([juliocc](https://github.com/juliocc)) <!-- 2022-11-21 13:32:56+00:00 -->
 - [[#950](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/950)] Add a pytest fixture to convert tfvars to yaml ([ludoo](https://github.com/ludoo)) <!-- 2022-11-04 17:37:24+00:00 -->

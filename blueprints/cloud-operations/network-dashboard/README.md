@@ -89,15 +89,15 @@ If you are interested in this and/or would like to contribute, please contact le
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [billing_account](variables.tf#L17) | The ID of the billing account to associate this project with | <code></code> | ✓ |  |
-| [monitored_projects_list](variables.tf#L36) | ID of the projects to be monitored (where limits and quotas data will be pulled) | <code>list&#40;string&#41;</code> | ✓ |  |
-| [organization_id](variables.tf#L46) | The organization id for the associated services | <code></code> | ✓ |  |
-| [prefix](variables.tf#L50) | Customer name to use as prefix for monitoring project | <code></code> | ✓ |  |
+| [billing_account](variables.tf#L17) | The ID of the billing account to associate this project with. | <code></code> | ✓ |  |
+| [monitored_projects_list](variables.tf#L36) | ID of the projects to be monitored (where limits and quotas data will be pulled). | <code>list&#40;string&#41;</code> | ✓ |  |
+| [organization_id](variables.tf#L46) | The organization id for the associated services. | <code></code> | ✓ |  |
+| [prefix](variables.tf#L50) | Prefix used for resource names. | <code>string</code> | ✓ |  |
 | [cf_version](variables.tf#L21) | Cloud Function version 2nd Gen or 1st Gen. Possible options: 'V1' or 'V2'.Use CFv2 if your Cloud Function timeouts after 9 minutes. By default it is using CFv1. | <code></code> |  | <code>V1</code> |
-| [monitored_folders_list](variables.tf#L30) | ID of the projects to be monitored (where limits and quotas data will be pulled) | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [monitoring_project_id](variables.tf#L41) | Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string | <code></code> |  |  |
-| [project_monitoring_services](variables.tf#L54) | Service APIs enabled in the monitoring project if it will be created. | <code></code> |  | <code title="&#91;&#10;  &#34;artifactregistry.googleapis.com&#34;,&#10;  &#34;cloudasset.googleapis.com&#34;,&#10;  &#34;cloudbilling.googleapis.com&#34;,&#10;  &#34;cloudbuild.googleapis.com&#34;,&#10;  &#34;cloudfunctions.googleapis.com&#34;,&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;cloudscheduler.googleapis.com&#34;,&#10;  &#34;compute.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;iamcredentials.googleapis.com&#34;,&#10;  &#34;logging.googleapis.com&#34;,&#10;  &#34;monitoring.googleapis.com&#34;,&#10;  &#34;pubsub.googleapis.com&#34;,&#10;  &#34;run.googleapis.com&#34;,&#10;  &#34;servicenetworking.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;storage-component.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [region](variables.tf#L76) | Region used to deploy the cloud functions and scheduler | <code></code> |  | <code>europe-west1</code> |
-| [schedule_cron](variables.tf#L81) | Cron format schedule to run the Cloud Function. Default is every 10 minutes. | <code></code> |  | <code>&#42;&#47;10 &#42; &#42; &#42; &#42;</code> |
+| [monitored_folders_list](variables.tf#L30) | ID of the projects to be monitored (where limits and quotas data will be pulled). | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [monitoring_project_id](variables.tf#L41) | Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string. | <code></code> |  |  |
+| [project_monitoring_services](variables.tf#L59) | Service APIs enabled in the monitoring project if it will be created. | <code></code> |  | <code title="&#91;&#10;  &#34;artifactregistry.googleapis.com&#34;,&#10;  &#34;cloudasset.googleapis.com&#34;,&#10;  &#34;cloudbilling.googleapis.com&#34;,&#10;  &#34;cloudbuild.googleapis.com&#34;,&#10;  &#34;cloudfunctions.googleapis.com&#34;,&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;cloudscheduler.googleapis.com&#34;,&#10;  &#34;compute.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;iamcredentials.googleapis.com&#34;,&#10;  &#34;logging.googleapis.com&#34;,&#10;  &#34;monitoring.googleapis.com&#34;,&#10;  &#34;pubsub.googleapis.com&#34;,&#10;  &#34;run.googleapis.com&#34;,&#10;  &#34;servicenetworking.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;storage-component.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [region](variables.tf#L81) | Region used to deploy the cloud functions and scheduler. | <code></code> |  | <code>europe-west1</code> |
+| [schedule_cron](variables.tf#L86) | Cron format schedule to run the Cloud Function. Default is every 10 minutes. | <code></code> |  | <code>&#42;&#47;10 &#42; &#42; &#42; &#42;</code> |
 
 <!-- END TFDOC -->

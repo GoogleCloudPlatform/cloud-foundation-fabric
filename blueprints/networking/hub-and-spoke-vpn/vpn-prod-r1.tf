@@ -19,9 +19,9 @@ module "landing-to-prod-vpn-r1" {
   project_id    = var.project_id
   network       = module.landing-vpc.self_link
   region        = var.regions.r1
-  name          = "${local.prefix}lnd-to-prd-r1"
+  name          = "${var.prefix}-lnd-to-prd-r1"
   router_create = true
-  router_name   = "${local.prefix}lnd-vpn-r1"
+  router_name   = "${var.prefix}-lnd-vpn-r1"
   router_asn    = var.vpn_configs.land-r1.asn
   router_advertise_config = (
     var.vpn_configs.land-r1.custom_ranges == null
@@ -68,9 +68,9 @@ module "prod-to-landing-vpn-r1" {
   project_id    = var.project_id
   network       = module.prod-vpc.self_link
   region        = var.regions.r1
-  name          = "${local.prefix}prd-to-lnd-r1"
+  name          = "${var.prefix}-prd-to-lnd-r1"
   router_create = true
-  router_name   = "${local.prefix}prd-vpn-r1"
+  router_name   = "${var.prefix}-prd-vpn-r1"
   router_asn    = var.vpn_configs.prod-r1.asn
   # the router is managed here but shared with the dev VPN
   router_advertise_config = (
