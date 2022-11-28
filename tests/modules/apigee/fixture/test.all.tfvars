@@ -33,9 +33,9 @@ instances = {
     environments      = ["apis-test"]
     psa_ip_cidr_range = "10.0.4.0/22"
   }
-  instance-prod-ew1 = {
-    region            = "europe-west1"
+  instance-prod-ew3 = {
+    region            = "europe-west3"
     environments      = ["apis-prod"]
-    psa_ip_cidr_range = "10.0.4.0/22"
+    psa_ip_cidr_range = "10.0.5.0/22"
   }
 }
