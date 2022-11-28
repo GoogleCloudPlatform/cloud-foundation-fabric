@@ -1,5 +1,5 @@
 {
-  "config:organization": "436789450919",
+  "config:discovery_root": "organizations/436789450919",
   "config:monitoring_project": "tf-playground-svpc-net",
   "config:folders": [
     "821058723541",
@@ -24,11 +24,25 @@
     }
   },
   "config:monitoring_root": "netmon/",
-  "projects": {
-    "tf-playground-simple": {
-      "number": "64297462517",
-      "project_id": "tf-playground-simple"
+  "organization": "436789450919",
+  "folders": {
+    "821058723541": {
+      "name": "Networking"
     },
+    "949988871993": {
+      "name": "Security"
+    },
+    "321477570496": {
+      "name": "Sandbox"
+    },
+    "1027067030104": {
+      "name": "Development"
+    },
+    "948763653807": {
+      "name": "Production"
+    }
+  },
+  "projects": {
     "ludo-dev-net-spoke-0": {
       "number": "759592912116",
       "project_id": "ludo-dev-net-spoke-0"
@@ -76,13 +90,13 @@
     "tf-playground-svpc-gke": {
       "number": "1043465648801",
       "project_id": "tf-playground-svpc-gke"
+    },
+    "tf-playground-simple": {
+      "number": "64297462517",
+      "project_id": "tf-playground-simple"
     }
   },
   "projects:number": {
-    "64297462517": {
-      "number": "64297462517",
-      "project_id": "tf-playground-simple"
-    },
     "759592912116": {
       "number": "759592912116",
       "project_id": "ludo-dev-net-spoke-0"
@@ -130,6 +144,10 @@
     "1043465648801": {
       "number": "1043465648801",
       "project_id": "tf-playground-svpc-gke"
+    },
+    "64297462517": {
+      "number": "64297462517",
+      "project_id": "tf-playground-simple"
     }
   },
   "addresses": {
@@ -2104,51 +2122,6 @@
     }
   },
   "quota": {
-    "tf-playground-simple": {
-      "global": {
-        "BACKEND_BUCKETS": 9,
-        "BACKEND_SERVICES": 75,
-        "EXTERNAL_VPN_GATEWAYS": 15,
-        "FIREWALLS": 200,
-        "FORWARDING_RULES": 45,
-        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
-        "GLOBAL_INTERNAL_ADDRESSES": 5000,
-        "HEALTH_CHECKS": 150,
-        "IMAGES": 2000,
-        "INSTANCE_TEMPLATES": 300,
-        "INTERCONNECTS": 6,
-        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
-        "IN_USE_ADDRESSES": 69,
-        "MACHINE_IMAGES": 2000,
-        "NETWORKS": 15,
-        "NETWORK_ENDPOINT_GROUPS": 300,
-        "NETWORK_FIREWALL_POLICIES": 30,
-        "PACKET_MIRRORINGS": 45,
-        "PUBLIC_ADVERTISED_PREFIXES": 1,
-        "PUBLIC_DELEGATED_PREFIXES": 10,
-        "ROUTERS": 10,
-        "ROUTES": 250,
-        "SECURITY_POLICIES": 10,
-        "SECURITY_POLICY_CEVAL_RULES": 20,
-        "SECURITY_POLICY_RULES": 100,
-        "SNAPSHOTS": 5000,
-        "SSL_CERTIFICATES": 30,
-        "STATIC_ADDRESSES": 21,
-        "STATIC_BYOIP_ADDRESSES": 1024,
-        "SUBNETWORKS": 175,
-        "TARGET_HTTPS_PROXIES": 30,
-        "TARGET_HTTP_PROXIES": 30,
-        "TARGET_INSTANCES": 150,
-        "TARGET_POOLS": 150,
-        "TARGET_SSL_PROXIES": 30,
-        "TARGET_TCP_PROXIES": 30,
-        "TARGET_VPN_GATEWAYS": 15,
-        "URL_MAPS": 30,
-        "VPN_GATEWAYS": 15,
-        "VPN_TUNNELS": 30,
-        "XPN_SERVICE_PROJECTS": 1000
-      }
-    },
     "ludo-dev-net-spoke-0": {
       "global": {
         "BACKEND_BUCKETS": 9,
@@ -2646,6 +2619,51 @@
       }
     },
     "tf-playground-svpc-gke": {
+      "global": {
+        "BACKEND_BUCKETS": 9,
+        "BACKEND_SERVICES": 75,
+        "EXTERNAL_VPN_GATEWAYS": 15,
+        "FIREWALLS": 200,
+        "FORWARDING_RULES": 45,
+        "GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES": 45,
+        "GLOBAL_INTERNAL_ADDRESSES": 5000,
+        "HEALTH_CHECKS": 150,
+        "IMAGES": 2000,
+        "INSTANCE_TEMPLATES": 300,
+        "INTERCONNECTS": 6,
+        "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES": 45,
+        "IN_USE_ADDRESSES": 69,
+        "MACHINE_IMAGES": 2000,
+        "NETWORKS": 15,
+        "NETWORK_ENDPOINT_GROUPS": 300,
+        "NETWORK_FIREWALL_POLICIES": 30,
+        "PACKET_MIRRORINGS": 45,
+        "PUBLIC_ADVERTISED_PREFIXES": 1,
+        "PUBLIC_DELEGATED_PREFIXES": 10,
+        "ROUTERS": 10,
+        "ROUTES": 250,
+        "SECURITY_POLICIES": 10,
+        "SECURITY_POLICY_CEVAL_RULES": 20,
+        "SECURITY_POLICY_RULES": 100,
+        "SNAPSHOTS": 5000,
+        "SSL_CERTIFICATES": 30,
+        "STATIC_ADDRESSES": 21,
+        "STATIC_BYOIP_ADDRESSES": 1024,
+        "SUBNETWORKS": 175,
+        "TARGET_HTTPS_PROXIES": 30,
+        "TARGET_HTTP_PROXIES": 30,
+        "TARGET_INSTANCES": 150,
+        "TARGET_POOLS": 150,
+        "TARGET_SSL_PROXIES": 30,
+        "TARGET_TCP_PROXIES": 30,
+        "TARGET_VPN_GATEWAYS": 15,
+        "URL_MAPS": 30,
+        "VPN_GATEWAYS": 15,
+        "VPN_TUNNELS": 30,
+        "XPN_SERVICE_PROJECTS": 1000
+      }
+    },
+    "tf-playground-simple": {
       "global": {
         "BACKEND_BUCKETS": 9,
         "BACKEND_SERVICES": 75,

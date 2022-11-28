@@ -24,7 +24,7 @@ import logging
 from . import HTTPRequest, Level, Resource, register_init, register_discovery
 from .utils import parse_page_token, parse_cai_results
 
-LOGGER = logging.getLogger('net-dash.discovery.cai-projects')
+LOGGER = logging.getLogger('net-dash.discovery.cai-nodes')
 
 CAI_URL = ('https://content-cloudasset.googleapis.com/v1p1beta1'
            '/{}/resources:searchAll'
@@ -66,9 +66,8 @@ def start_discovery(resources, response=None, data=None):
   'Plugin entry point, triggers discovery and handles requests and responses.'
   LOGGER.info(f'discovery (has response: {response is not None})')
   if response is None:
-    # return asset discovery URLs from initial options on first call
+    # return initial discovery URLs
     for v in resources['config:folders']:
-      yield Resource('folders', v.split('/')[-1], {})
       yield HTTPRequest(CAI_URL.format(f'folders/{v}'), {}, None)
     for v in resources['config:projects']:
       if v not in resources['projects']:

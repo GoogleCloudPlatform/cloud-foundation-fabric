@@ -78,23 +78,28 @@ def do_discovery(resources):
       {k: len(v) for k, v in resources.items() if not isinstance(v, str)}))
 
 
-def do_init(resources, organization, op_project, folders=None, projects=None,
+def do_init(resources, discovery_root, op_project, folders=None, projects=None,
             custom_quota=None):
   '''Calls init plugins to configure keys in the shared resource map.
 
   Args:
-    organization: organization id from configuration.
+    discovery_root: root node for discovery from configuration.
     op_project: monitoring project id id from configuration.
     folders: list of folder ids for resource discovery from configuration.
     projects: list of project ids for resource discovery from configuration.
   '''
   LOGGER.info(f'init start')
-  resources['config:organization'] = str(organization)
+  folders = [str(f) for f in folders or []]
+  resources['config:discovery_root'] = discovery_root
   resources['config:monitoring_project'] = op_project
-  resources['config:folders'] = [str(f) for f in folders or []]
+  resources['config:folders'] = folders
   resources['config:projects'] = projects or []
   resources['config:custom_quota'] = custom_quota or {}
   resources['config:monitoring_root'] = MONITORING_ROOT
+  if discovery_root.startswith('organization'):
+    resources['organization'] = discovery_root.split('/')[-1]
+  for f in folders:
+    resources['folders'] = {f: {} for f in folders}
   for plugin in plugins.get_init_plugins():
     plugin.func(resources)
 
@@ -201,8 +206,10 @@ def fetch(request):
 
 
 @click.command()
-@click.option('--organization', '-o', required=True, type=int,
-              help='GCP organization id.')
+@click.option(
+    '--discovery-root', '-dr', required=True,
+    help='Node used for asset discovery, either organizations/nnn or folders/nnn.'
+)
 @click.option('--op-project', '-op', required=True, type=str,
               help='GCP monitoring project where metrics will be stored.')
 @click.option('--project', '-p', type=str, multiple=True,
@@ -217,11 +224,13 @@ def fetch(request):
               help='Load JSON resources from file, skips init and discovery.')
 @click.option('--debug-plugin',
               help='Run only core and specified timeseries plugin.')
-def main(organization=None, op_project=None, project=None, folder=None,
+def main(discovery_root=None, op_project=None, project=None, folder=None,
          custom_quota_file=None, dump_file=None, load_file=None,
          debug_plugin=None):
   'CLI entry point.'
   logging.basicConfig(level=logging.INFO)
+  if discovery_root.partition('/')[0] not in ('folders', 'organizations'):
+    raise SystemExit('Invalid discovery root.')
   descriptors = []
   timeseries = []
   if load_file:
@@ -234,7 +243,8 @@ def main(organization=None, op_project=None, project=None, folder=None,
         custom_quota = yaml.load(custom_quota_file, Loader=yaml.Loader)
       except yaml.YAMLError as e:
         raise SystemExit(f'Error decoding custom quota file: {e.args[0]}')
-    do_init(resources, organization, op_project, folder, project, custom_quota)
+    do_init(resources, discovery_root, op_project, folder, project,
+            custom_quota)
     do_discovery(resources)
     if dump_file:
       json.dump(resources, dump_file, indent=2)

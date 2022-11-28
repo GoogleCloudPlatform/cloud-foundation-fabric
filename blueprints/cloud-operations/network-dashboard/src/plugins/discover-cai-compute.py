@@ -27,7 +27,7 @@ from .utils import parse_cai_results
 # https://content-cloudasset.googleapis.com/v1/organizations/436789450919/assets?contentType=RESOURCE&assetTypes=compute.googleapis.com/Network
 
 CAI_URL = ('https://content-cloudasset.googleapis.com/v1'
-           '/organizations/{organization}/assets'
+           '/{root}/assets'
            '?contentType=RESOURCE&{asset_types}&pageSize=500')
 LOGGER = logging.getLogger('net-dash.discovery.cai-compute')
 TYPES = {
@@ -196,16 +196,16 @@ def _get_parent(parent, resources):
   if parent_type == 'folders':
     if parent_id in resources['folders']:
       return {'parent': f'{parent_type}/{parent_id}'}
-  if resources['config:organization'] == int(parent_id):
+  if resources.get('organization') == parent_id:
     return {'parent': f'{parent_type}/{parent_id}'}
 
 
 def _url(resources):
   'Returns discovery URL'
-  organization = resources['config:organization']
+  discovery_root = resources['config:discovery_root']
   asset_types = '&'.join(
       f'assetTypes=compute.googleapis.com/{t}' for t in TYPES.values())
-  return CAI_URL.format(organization=organization, asset_types=asset_types)
+  return CAI_URL.format(root=discovery_root, asset_types=asset_types)
 
 
 @register_init
