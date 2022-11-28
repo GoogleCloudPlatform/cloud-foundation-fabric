@@ -13,11 +13,32 @@
 # limitations under the License.
 
 'on:blueprints':
-  - blueprints/**/*
+  - any:
+    - 'blueprints/**'
+    - '!**/*.md'
+
+'on:documentation':
+  - any:
+      - '**/*.md'
+      - '!**/README.md'
+
+  - 'README.md'
+  - 'blueprints/README.md'
+  - 'blueprints/*/README.md'
+  - 'modules/README.md'
+  - 'fast/README.md'
+  - 'fast/stages/README.md'
+
 'on:FAST':
-  - fast/**/*
+  - any:
+    - 'fast/**'
+    - '!**/*.md'
+
 'on:modules':
-  - modules/**/*
+  - any:
+    - 'modules/**'
+    - '!**/*.md'
+
 'on:tools':
-  - tools/**/*
-  - .github/**/*
+  - 'tools/**'
+  - '.github/**'
