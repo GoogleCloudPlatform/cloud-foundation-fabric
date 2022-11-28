@@ -1,4 +1,3 @@
-# Networking Dashboard
 
 This repository provides an end-to-end solution to gather some GCP Networking quotas and limits (that cannot be seen in the GCP console today) and display them in a dashboard.
 The goal is to allow for better visibility of these limits, facilitating capacity planning and avoiding hitting these limits.
@@ -14,7 +13,9 @@ Three metric descriptors are created for each monitored resource: usage, limit a
 ## Usage
 
 Clone this repository, then go through the following steps to create resources:
+
 - Create a terraform.tfvars file with the following content:
+
   ```tfvars
   organization_id = "<YOUR-ORG-ID>"
   billing_account = "<YOUR-BILLING-ACCOUNT>"
@@ -29,15 +30,16 @@ Clone this repository, then go through the following steps to create resources:
   cf_version = V1|V2
   # Set to V2 to use V2 Cloud Functions environment
     ```
+
 - `terraform init`
 - `terraform apply`
 
 Note: Org level viewing permission is required for some metrics such as firewall policies.
 
-Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=<YOUR-MONITORING-PROJECT> a dashboard called "quotas-utilization" should be created.
+Once the resources are deployed, go to the following page to see the dashboard: <https://console.cloud.google.com/monitoring/dashboards?project>=<YOUR-MONITORING-PROJECT> a dashboard called "quotas-utilization" should be created.
 
 The Cloud Function runs every 10 minutes by default so you should start getting some data points after a few minutes.
-You can use the metric explorer to view the data points for the different custom metrics created: https://console.cloud.google.com/monitoring/metrics-explorer?project=<YOUR-MONITORING-PROJECT>.
+You can use the metric explorer to view the data points for the different custom metrics created: <https://console.cloud.google.com/monitoring/metrics-explorer?project>=<YOUR-MONITORING-PROJECT>.
 You can change this frequency by modifying the "schedule_cron" variable in variables.tf.
 
 Note that some charts in the dashboard align values over 1h so you might need to wait 1h to see charts on the dashboard views.
@@ -45,7 +47,9 @@ Note that some charts in the dashboard align values over 1h so you might need to
 Once done testing, you can clean up resources by running `terraform destroy`.
 
 ## Supported limits and quotas
+
 The Cloud Function currently tracks usage, limit and utilization of:
+
 - active VPC peerings per VPC
 - VPC peerings per VPC
 - instances per VPC
@@ -55,10 +59,10 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - internal forwarding rules for internal L7 load balancers per VPC
 - internal forwarding rules for internal L4 load balancers per VPC peering group
 - internal forwarding rules for internal L7 load balancers per VPC peering group
-- Dynamic routes per VPC 
-- Dynamic routes per VPC peering group 
+- Dynamic routes per VPC
+- Dynamic routes per VPC peering group
 - Static routes per project (VPC drill down is available for usage)
-- Static routes per VPC peering group 
+- Static routes per VPC peering group
 - IP utilization per subnet (% of IP addresses used in a subnet)
 - VPC firewall rules per project (VPC drill down is available for usage)
 - Tuples per Firewall Policy
@@ -68,6 +72,7 @@ It writes this values to custom metrics in Cloud Monitoring and creates a dashbo
 Note that metrics are created in the cloud-function/metrics.yaml file. You can also edit default limits for a specific network in that file. See the example for `vpc_peering_per_network`.
 
 ## Assumptions and limitations
+
 - The CF assumes that all VPCs in peering groups are within the same organization, except for PSA peerings
 - The CF will only fetch subnet utilization data from the PSA peerings (not the VMs, ILB or routes usage)
 - The CF assumes global routing is ON, this impacts dynamic routes usage calculation
@@ -75,12 +80,14 @@ Note that metrics are created in the cloud-function/metrics.yaml file. You can a
 - The CF assumes all networks in peering groups have the same global routing and custom routes sharing configuration
 
 ## Next steps and ideas
+
 In a future release, we could support:
+
 - Google managed VPCs that are peered with PSA (such as Cloud SQL or Memorystore)
 - Dynamic routes calculation for VPCs/PPGs with "global routing" set to OFF
 - Static routes calculation for projects/PPGs with "custom routes importing/exporting" set to OFF
 - Calculations for cross Organization peering groups
-- Support different scopes (reduced and fine-grained) 
+- Support different scopes (reduced and fine-grained)
 
 If you are interested in this and/or would like to contribute, please contact legranda@google.com.
 <!-- BEGIN TFDOC -->

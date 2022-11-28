@@ -297,4 +297,4 @@ def main(discovery_root, op_project, project=None, folder=None,
 
 
 if __name__ == '__main__':
-  main_cli(auto_envvar_prefix='NETMON')
+  main(auto_envvar_prefix='NETMON')
