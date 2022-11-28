@@ -27,15 +27,15 @@ This is an example of a working configuration, where the discovery root is set a
 #   debug = true
 # }
 discovery_config = {
-  discovery_root     = "organizations/436789450919"
-  monitored_folders  = ["321477570496", "821058723541"]
+  discovery_root     = "organizations/1234567890"
+  monitored_folders  = ["3456789012", "7890123456"]
   monitored_projects = []
   custom_quota_file  = "../src/custom-quotas.yaml"
 }
 grant_discovery_iam_roles = true
 project_create_config = {
   billing_account_id = "12345-ABCDEF-12345"
-  parent_id          = "folders/321477570496"
+  parent_id          = "folders/2345678901"
 }
 project_id = "my-project"
 ```
