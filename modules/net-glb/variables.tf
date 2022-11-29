@@ -14,173 +14,34 @@
  * limitations under the License.
  */
 
-variable "backend_services_config" {
-  description = "The backends services configuration."
+variable "address" {
+  description = "Optional IP address used for the forwarding rule."
+  type        = string
+  default     = null
+}
+
+variable "description" {
+  description = "Optional description used for resources."
+  type        = string
+  default     = "Terraform managed."
+}
+
+variable "group_configs" {
+  description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
-    enable_cdn = bool
-
-    cdn_config = object({
-      cache_mode                   = string
-      client_ttl                   = number
-      default_ttl                  = number
-      max_ttl                      = number
-      negative_caching             = bool
-      negative_caching_policy      = map(number)
-      serve_while_stale            = bool
-      signed_url_cache_max_age_sec = string
-    })
-
-    bucket_config = object({
-      bucket_name = string
-      options = object({
-        custom_response_headers = list(string)
-      })
-    })
-
-    group_config = object({
-      backends = list(object({
-        group = string # IG or NEG FQDN address
-        options = object({
-          balancing_mode               = string # Can be UTILIZATION, RATE, CONNECTION
-          capacity_scaler              = number # Valid range is [0.0,1.0]
-          max_connections              = number
-          max_connections_per_instance = number
-          max_connections_per_endpoint = number
-          max_rate                     = number
-          max_rate_per_instance        = number
-          max_rate_per_endpoint        = number
-          max_utilization              = number
-        })
-      }))
-
-      # Optional health check ids for backend service groups.
-      # Will lookup for ids in health_chacks_config first,
-      # then will use the id as is. If no ids are defined
-      # at all (null, []) health_checks_config_defaults is used
-      health_checks = list(string)
-
-      log_config = object({
-        enable      = bool
-        sample_rate = number # must be in [0, 1]
-      })
-
-      options = object({
-        affinity_cookie_ttl_sec         = number
-        custom_request_headers          = list(string)
-        custom_response_headers         = list(string)
-        connection_draining_timeout_sec = number
-        load_balancing_scheme           = string # only EXTERNAL (default) makes sense here
-        locality_lb_policy              = string
-        port_name                       = string
-        protocol                        = string
-        security_policy                 = string
-        session_affinity                = string
-        timeout_sec                     = number
-
-        circuits_breakers = object({
-          max_requests_per_connection = number # Set to 1 to disable keep-alive
-          max_connections             = number # Defaults to 1024
-          max_pending_requests        = number # Defaults to 1024
-          max_requests                = number # Defaults to 1024
-          max_retries                 = number # Defaults to 3
-        })
-
-        consistent_hash = object({
-          http_header_name  = string
-          minimum_ring_size = string
-          http_cookie = object({
-            name = string
-            path = string
-            ttl = object({
-              seconds = number
-              nanos   = number
-            })
-          })
-        })
-
-        iap = object({
-          oauth2_client_id            = string
-          oauth2_client_secret        = string
-          oauth2_client_secret_sha256 = string
-        })
-      })
-    })
+    zone        = string
+    instances   = optional(list(string), [])
+    named_ports = optional(map(number), {})
+    project_id  = optional(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
-variable "forwarding_rule_config" {
-  description = "Regional forwarding rule configurations."
-  type = object({
-    ip_protocol           = string
-    ip_version            = string
-    load_balancing_scheme = string
-    port_range            = string
-    network_tier          = string
-    network               = string
-  })
-  default = {
-    load_balancing_scheme = "EXTERNAL_MANAGED"
-    ip_protocol           = "TCP"
-    ip_version            = "IPV4"
-    network_tier          = "STANDARD"
-    network               = "default"
-    # If not specified, 80 for https = false, 443 otherwise
-    port_range = null
-  }
-}
-
-variable "global_forwarding_rule_config" {
-  description = "Global forwarding rule configurations."
-  type = object({
-    ip_protocol           = string
-    ip_version            = string
-    load_balancing_scheme = string
-    port_range            = string
-
-  })
-  default = {
-    load_balancing_scheme = "EXTERNAL"
-    ip_protocol           = "TCP"
-    ip_version            = "IPV4"
-    # If not specified, 80 for https = false, 443 otherwise
-    port_range = null
-  }
-}
-
-variable "health_checks_config" {
-  description = "Custom health checks configuration."
-  type = map(object({
-    type    = string      # http https tcp ssl http2
-    check   = map(any)    # actual health check block attributes
-    options = map(number) # interval, thresholds, timeout
-    logging = bool
-  }))
-  default = {}
-}
-
-variable "health_checks_config_defaults" {
-  description = "Auto-created health check default configuration."
-  type = object({
-    type    = string      # http https tcp ssl http2
-    check   = map(any)    # actual health check block attributes
-    options = map(number) # interval, thresholds, timeout
-    logging = bool
-  })
-  default = {
-    type    = "http"
-    logging = false
-    options = {}
-    check = {
-      port_specification = "USE_SERVING_PORT"
-    }
-  }
-}
-
-variable "https" {
-  description = "Whether to enable HTTPS."
-  type        = bool
-  default     = false
+variable "labels" {
+  description = "Labels set on resources."
+  type        = map(string)
+  default     = {}
 }
 
 variable "name" {
@@ -188,70 +49,129 @@ variable "name" {
   type        = string
 }
 
+variable "neg_configs" {
+  description = "Optional network endpoint groups to create. Can be referenced in backends via key or outputs."
+  type = map(object({
+    project_id = optional(string)
+    cloudrun = optional(object({
+      region = string
+      target_service = optional(object({
+        name = string
+        tag  = optional(string)
+      }))
+      target_urlmask = optional(string)
+    }))
+    gce = optional(object({
+      zone = string
+      # default_port = optional(number)
+      network    = optional(string)
+      subnetwork = optional(string)
+      endpoints = optional(list(object({
+        instance   = string
+        ip_address = string
+        port       = number
+      })))
+
+    }))
+    hybrid = optional(object({
+      zone    = string
+      network = optional(string)
+      # re-enable once provider properly support this
+      # default_port = optional(number)
+      endpoints = optional(list(object({
+        ip_address = string
+        port       = number
+      })))
+    }))
+    # psc = optional(object({}))
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.neg_configs : (
+        (try(v.cloudrun, null) == null ? 0 : 1) +
+        (try(v.gce, null) == null ? 0 : 1) +
+        (try(v.hybrid, null) == null ? 0 : 1) == 1
+      )
+    ])
+    error_message = "Only one type of neg can be configured at a time."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.neg_configs : (
+        v.cloudrun == null
+        ? true
+        : v.cloudrun.target_urlmask != null || v.cloudrun.target_service != null
+      )
+    ])
+    error_message = "Cloud Run negs need either target type or target urlmask defined."
+  }
+}
+
+variable "network_tier_premium" {
+  description = "Use premium network tier. Defaults to true."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
+variable "ports" {
+  description = "Optional ports for HTTP load balancer, valid ports are 80 and 8080."
+  type        = list(string)
+  default     = null
+}
+
 variable "project_id" {
   description = "Project id."
   type        = string
 }
 
-variable "region" {
-  description = "Create a regional load balancer in this region."
+variable "protocol" {
+  description = "Protocol supported by this load balancer."
   type        = string
-  default     = null
-}
-
-variable "reserve_ip_address" {
-  description = "Whether to reserve a static global IP address."
-  type        = bool
-  default     = false
-}
-
-variable "ssl_certificates_config" {
-  description = "The SSL certificate configuration."
-  type = map(object({
-    domains = list(string)
-    # If unmanaged_config is null, the certificate will be managed
-    unmanaged_config = object({
-      tls_private_key      = string
-      tls_self_signed_cert = string
-    })
-  }))
-  default = {}
-}
-
-variable "ssl_certificates_config_defaults" {
-  description = "The SSL certificate default configuration."
-  type = object({
-    domains = list(string)
-    # If unmanaged_config is null, the certificate will be managed
-    unmanaged_config = object({
-      tls_private_key      = string
-      tls_self_signed_cert = string
-    })
-  })
-  default = {
-    domains          = ["example.com"],
-    unmanaged_config = null
+  default     = "HTTP"
+  nullable    = false
+  validation {
+    condition = (
+      var.protocol == null || var.protocol == "HTTP" || var.protocol == "HTTPS"
+    )
+    error_message = "Protocol must be HTTP or HTTPS"
   }
 }
 
-variable "target_proxy_https_config" {
-  description = "The HTTPS target proxy configuration."
+variable "region" {
+  description = "The region where to allocate the ILB resources."
+  type        = string
+}
+
+variable "service_directory_registration" {
+  description = "Service directory namespace and service used to register this load balancer."
   type = object({
-    ssl_certificates = list(string)
+    namespace = string
+    service   = string
   })
   default = null
 }
 
-variable "url_map_config" {
-  description = "The url-map configuration."
+variable "ssl_certificates" {
+  description = "SSL target proxy certificates (only if protocol is HTTPS)."
   type = object({
-    default_service      = string
-    default_route_action = any
-    default_url_redirect = map(any)
-    header_action        = any
-    host_rules           = list(any)
-    path_matchers        = list(any)
-    tests                = list(map(string))
+    certificate_ids = optional(list(string), [])
+    create_configs = optional(map(object({
+      certificate = string
+      private_key = string
+    })), {})
   })
-  default = null
+  default  = {}
+  nullable = false
+}
+
+variable "vpc_config" {
+  description = "VPC-level configuration."
+  type = object({
+    network    = string
+    subnetwork = string
+  })
+  nullable = false
 }
