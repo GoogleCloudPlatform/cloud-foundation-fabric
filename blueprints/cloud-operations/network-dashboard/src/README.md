@@ -58,16 +58,16 @@ A typical invocation might look like this:
 
 The tool is composed of two main processing phases
 
-- the discovery of resources within a predefined scope using CLoud Asset Inventory and Compute APIs
+- the discovery of resources within a predefined scope using Cloud Asset Inventory and Compute APIs
 - the computation of metric timeseries derived from discovered resources
 
 Once both phases are complete, the tool sends generated timeseries to Cloud Operations together with any missing metric descriptors.
 
 Every action during those phases is delegated to a series of plugins, which conform to simple interfaces and exchange predefined basic types with the main module. Plugins are registered at runtime, and are split in broad categories depending on the stage where they execute:
 
-- init plugin functions have the simple task of preparing the required keys in the shared resource datastructure, and are usually tiny functions one for each discovery plugin
-- discovery plugin functions do the bulk of the work of discovering resources; they return HTTP Requests or Resource objects to the main module, and receive HTTP Responses
-- timeseries plugin read from the shared resource datastructure, and return computed Metric Descriptors and Timeseries objects
+- init plugin functions have the task of preparing the required keys in the shared resource data structure. Usually, init functions are usually small and there's one for each discovery plugin
+- discovery plugin functions do the bulk of the work of discovering resources; they return HTTP Requests (e.g. calls to GCP APIs) or Resource objects (extracted from the API responses) to the main module, and receive HTTP Responses
+- timeseries plugin read from the shared resource data structure, and return computed Metric Descriptors and Timeseries objects
 
 Plugins are registered via simple functions defined in the [plugin package initialization file](./plugins/__init__.py), and leverage [utility functions](./plugins/utils.py) for batching API requests and parsing results.
 

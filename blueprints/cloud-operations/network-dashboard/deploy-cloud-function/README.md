@@ -16,13 +16,13 @@ A few configuration values for the function which are relevant to this example c
 
 Discovery configuration is done via the `discovery_config` variable, which mimicks the set of options available when running the discovery tool in cli mode. Pay particular care in defining the right top-level scope via the `discovery_root` attribute, as this is the root of the hierarchy used to discover Compute resources and it needs to include the individual folders and projects that needs to be monitored, which are defined via the `monitored_folders` and `monitored_projects` attributes.
 
-As an illustration of the interplay between root scope and monitored resources, in the following schematic diagram of a resource hierarchy, the root scope is set to the top-level red folder and it completely encloses every resource that needs to be monitored. The blue folder and project are set as monitored and define the actual perimeter used to discover resources. Setting the root scope to the blue folder would have resulted in the rightmost project being excluded.
+The following schematic diagram of a resource hierarchy illustrates the interplay between root scope and monitored resources. The root scope is set to the top-level red folder and completely encloses every resource that needs to be monitored. The blue folder and project are set as monitored defining the actual perimeter used to discover resources. Note that setting the root scope to the blue folder would have resulted in the rightmost project being excluded.
 
 <img src="diagram-scope.png" width="640px" alt="GCP resource diagram">
 
 This is an example of a working configuration, where the discovery root is set at the org level, but resources used to compute timeseries need to be part of the hierarchy of two specific folders:
 
-```hcl
+```tfvars
 # cloud_function_config = {
 #   debug = true
 # }

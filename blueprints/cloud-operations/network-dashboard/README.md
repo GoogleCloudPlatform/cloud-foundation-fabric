@@ -1,26 +1,18 @@
 # Network Dashboard and Discovery Tool
 
-This repository provides an end-to-end solution to gather some GCP Networking quotas and limits and their corresponding usage, store them in Cloud Operations timeseries, and display them in one or more dashboards or wire them to alerts.
+This repository provides an end-to-end solution to gather some GCP networking quotas, limits, and their corresponding usage, store them in Cloud Operations timeseries which can displayed in one or more dashboards or wired to alerts.
 
 The goal is to allow for better visibility of these limits, some of which cannot be seen in the GCP console today, facilitating capacity planning and being notified when actual usage approaches them.
 
 The tool tracks several distinct usage types across a variety of resources: projects, policies, networks, subnetworks, peering groups, etc. For each usage type three distinct metrics are created tracking usage count, limit and utilization ratio.
 
-This is an example of a simple dashboard provided with this blueprint, showing utilization for a specific metric (number of instances per VPC) for multiple VPCs and projects:
+The screenshot below is an example of a simple dashboard provided with this blueprint, showing utilization for a specific metric (number of instances per VPC) for multiple VPCs and projects:
 
 <img src="metric.png" width="640px">
 
 More complex scenarios are possible by leveraging and combining the 50 different timeseries created by this tool, and connecting them to Cloud Operations dashboards and alerts.
 
 Refer to the [Cloud Function deployment instructions](./deploy-cloud-function/) for a high level overview and an end-to-end deployment example, and to the[discovery tool documentation](./src/) to try it as a standalone program or to package it in alternative ways.
-
-## Assumptions and limitations
-
-- The CF assumes that all VPCs in peering groups are within the same organization, except for PSA peerings
-- The CF will only fetch subnet utilization data from the PSA peerings (not the VMs, ILB or routes usage)
-- The CF assumes global routing is ON, this impacts dynamic routes usage calculation
-- The CF assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation
-- The CF assumes all networks in peering groups have the same global routing and custom routes sharing configuration
 
 ## Metrics created
 
@@ -74,6 +66,14 @@ Refer to the [Cloud Function deployment instructions](./deploy-cloud-function/) 
 - `subnetwork/addresses_available`
 - `subnetwork/addresses_used`
 - `subnetwork/addresses_used_ratio`
+
+## Assumptions and limitations
+
+- The tool assumes all VPCs in peering groups are within the same organization, except for PSA peerings.
+- The tool will only fetch subnet utilization data from the PSA peerings (not the VMs, ILB or routes usage).
+- The tool assumes global routing is ON, this impacts dynamic routes usage calculation.
+- The tool assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation.
+- The tool assumes all networks in peering groups have the same global routing and custom routes sharing configuration.
 
 ## TODO
 
