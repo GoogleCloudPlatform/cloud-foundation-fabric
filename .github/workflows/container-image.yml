@@ -59,3 +59,10 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.date.outputs.date }}
+          labels: |
+            org.opencontainers.image.licenses='Apache-2.0'
+            org.opencontainers.image.revision='${{ github.sha }}'
+            org.opencontainers.image.source='${{ github.server_url }}/${{ github.repository }}'
+            org.opencontainers.image.title='${{ inputs.image_name }}'
+            org.opencontainers.image.vendor='Google LLC'
+            org.opencontainers.image.version='${{ steps.date.outputs.date }}'
