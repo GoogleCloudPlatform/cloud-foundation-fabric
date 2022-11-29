@@ -79,9 +79,8 @@ variable "environments" {
     display_name = optional(string)
     description  = optional(string)
     node_config = optional(object({
-      min_node_count               = optional(number)
-      max_node_count               = optional(number)
-      current_aggregate_node_count = number
+      min_node_count = optional(number)
+      max_node_count = optional(number)
     }))
     iam       = optional(map(list(string)))
     envgroups = list(string)
