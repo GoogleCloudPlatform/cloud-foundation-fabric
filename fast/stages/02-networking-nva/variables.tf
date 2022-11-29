@@ -185,7 +185,7 @@ variable "region_trigram" {
   type        = map(string)
   default = {
     europe-west1 = "ew1"
-    europe-west3 = "ew3"
+    europe-west4 = "ew4"
   }
 }
 
