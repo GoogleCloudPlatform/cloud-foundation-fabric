@@ -18,14 +18,13 @@
 
 locals {
   backend_ids = {
-    for k, v in google_compute_region_backend_service.default : k => v.id
+    for k, v in google_compute_backend_service.default : k => v.id
   }
 }
 
-resource "google_compute_region_url_map" "default" {
+resource "google_compute_url_map" "default" {
   provider    = google-beta
   project     = var.project_id
-  region      = var.region
   name        = var.name
   description = var.description
   default_service = (
@@ -35,6 +34,166 @@ resource "google_compute_region_url_map" "default" {
       var.urlmap_config.default_service
     )
   )
+
+  dynamic "default_route_action" {
+    for_each = (
+      var.urlmap_config.route_action == null
+      ? []
+      : [var.urlmap_config.route_action]
+    )
+    iterator = route_action
+    content {
+      dynamic "cors_policy" {
+        for_each = (
+          route_action.value.cors_policy == null
+          ? []
+          : [route_action.value.cors_policy]
+        )
+        content {
+          allow_credentials    = cors_policy.value.allow_credentials
+          allow_headers        = cors_policy.value.allow_headers
+          allow_methods        = cors_policy.value.allow_methods
+          allow_origin_regexes = cors_policy.value.allow_origin_regexes
+          allow_origins        = cors_policy.value.allow_origins
+          disabled             = cors_policy.value.disabled
+          expose_headers       = cors_policy.value.expose_headers
+          max_age              = cors_policy.value.max_age
+        }
+      }
+      dynamic "fault_injection_policy" {
+        for_each = (
+          route_action.value.fault_injection_policy == null
+          ? []
+          : [route_action.value.fault_injection_policy]
+        )
+        content {
+          dynamic "abort" {
+            for_each = (
+              fault_injection_policy.value.abort == null
+              ? []
+              : [fault_injection_policy.value.abort]
+            )
+            content {
+              http_status = abort.value.status
+              percentage  = abort.value.percentage
+            }
+          }
+          dynamic "delay" {
+            for_each = (
+              fault_injection_policy.value.delay == null
+              ? []
+              : [fault_injection_policy.value.delay]
+            )
+            content {
+              percentage = delay.value.percentage
+              fixed_delay {
+                nanos   = delay.value.fixed.nanos
+                seconds = delay.value.fixed.seconds
+              }
+            }
+          }
+        }
+      }
+      dynamic "request_mirror_policy" {
+        for_each = (
+          route_action.value.request_mirror_backend == null
+          ? []
+          : [""]
+        )
+        content {
+          backend_service = lookup(
+            local.backend_ids,
+            route_action.value.request_mirror_backend,
+            route_action.value.request_mirror_backend
+          )
+        }
+      }
+      dynamic "retry_policy" {
+        for_each = (
+          route_action.value.retry_policy == null
+          ? []
+          : [route_action.value.retry_policy]
+        )
+        content {
+          num_retries      = retry_policy.value.num_retries
+          retry_conditions = retry_policy.value.retry_conditions
+          dynamic "per_try_timeout" {
+            for_each = (
+              retry_policy.value.per_try_timeout == null
+              ? []
+              : [retry_policy.value.per_try_timeout]
+            )
+            content {
+              nanos   = per_try_timeout.value.nanos
+              seconds = per_try_timeout.value.seconds
+            }
+          }
+        }
+      }
+      dynamic "timeout" {
+        for_each = (
+          route_action.value.timeout == null
+          ? []
+          : [route_action.value.timeout]
+        )
+        content {
+          nanos   = timeout.value.nanos
+          seconds = timeout.value.seconds
+        }
+      }
+      dynamic "url_rewrite" {
+        for_each = (
+          route_action.value.url_rewrite == null
+          ? []
+          : [route_action.value.url_rewrite]
+        )
+        content {
+          host_rewrite        = url_rewrite.value.host
+          path_prefix_rewrite = url_rewrite.value.path_prefix
+        }
+      }
+      dynamic "weighted_backend_services" {
+        for_each = coalesce(
+          route_action.value.weighted_backend_services, {}
+        )
+        iterator = service
+        content {
+          backend_service = lookup(
+            local.backend_ids, service.key, service.key
+          )
+          weight = service.value.weight
+          dynamic "header_action" {
+            for_each = (
+              service.value.header_action == null
+              ? []
+              : [service.value.header_action]
+            )
+            iterator = h
+            content {
+              request_headers_to_remove  = h.value.request_remove
+              response_headers_to_remove = h.value.response_remove
+              dynamic "request_headers_to_add" {
+                for_each = coalesce(h.value.request_add, {})
+                content {
+                  header_name  = request_headers_to_add.key
+                  header_value = request_headers_to_add.value.value
+                  replace      = request_headers_to_add.value.replace
+                }
+              }
+              dynamic "response_headers_to_add" {
+                for_each = coalesce(h.value.response_add, {})
+                content {
+                  header_name  = response_headers_to_add.key
+                  header_value = response_headers_to_add.value.value
+                  replace      = response_headers_to_add.value.replace
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   dynamic "default_url_redirect" {
     for_each = (
@@ -50,6 +209,35 @@ resource "google_compute_region_url_map" "default" {
       prefix_redirect        = r.value.prefix
       redirect_response_code = r.value.response_code
       strip_query            = r.value.strip_query
+    }
+  }
+
+  dynamic "header_action" {
+    for_each = (
+      var.urlmap_config.header_action == null
+      ? []
+      : [var.urlmap_config.header_action]
+    )
+    iterator = h
+    content {
+      request_headers_to_remove  = h.value.request_remove
+      response_headers_to_remove = h.value.response_remove
+      dynamic "request_headers_to_add" {
+        for_each = coalesce(h.value.request_add, {})
+        content {
+          header_name  = request_headers_to_add.key
+          header_value = request_headers_to_add.value.value
+          replace      = request_headers_to_add.value.replace
+        }
+      }
+      dynamic "response_headers_to_add" {
+        for_each = coalesce(h.value.response_add, {})
+        content {
+          header_name  = response_headers_to_add.key
+          header_value = response_headers_to_add.value.value
+          replace      = response_headers_to_add.value.replace
+        }
+      }
     }
   }
 
@@ -72,6 +260,165 @@ resource "google_compute_region_url_map" "default" {
       )
       description = m.value.description
       name        = m.key
+      dynamic "default_route_action" {
+        for_each = (
+          m.value.route_action == null
+          ? []
+          : [m.value.route_action]
+        )
+        iterator = route_action
+        content {
+          dynamic "cors_policy" {
+            for_each = (
+              route_action.value.cors_policy == null
+              ? []
+              : [route_action.value.cors_policy]
+            )
+            content {
+              allow_credentials    = cors_policy.value.allow_credentials
+              allow_headers        = cors_policy.value.allow_headers
+              allow_methods        = cors_policy.value.allow_methods
+              allow_origin_regexes = cors_policy.value.allow_origin_regexes
+              allow_origins        = cors_policy.value.allow_origins
+              disabled             = cors_policy.value.disabled
+              expose_headers       = cors_policy.value.expose_headers
+              max_age              = cors_policy.value.max_age
+            }
+          }
+          dynamic "fault_injection_policy" {
+            for_each = (
+              route_action.value.fault_injection_policy == null
+              ? []
+              : [route_action.value.fault_injection_policy]
+            )
+            content {
+              dynamic "abort" {
+                for_each = (
+                  fault_injection_policy.value.abort == null
+                  ? []
+                  : [fault_injection_policy.value.abort]
+                )
+                content {
+                  http_status = abort.value.status
+                  percentage  = abort.value.percentage
+                }
+              }
+              dynamic "delay" {
+                for_each = (
+                  fault_injection_policy.value.delay == null
+                  ? []
+                  : [fault_injection_policy.value.delay]
+                )
+                content {
+                  percentage = delay.value.percentage
+                  fixed_delay {
+                    nanos   = delay.value.fixed.nanos
+                    seconds = delay.value.fixed.seconds
+                  }
+                }
+              }
+            }
+          }
+          dynamic "request_mirror_policy" {
+            for_each = (
+              route_action.value.request_mirror_backend == null
+              ? []
+              : [""]
+            )
+            content {
+              backend_service = lookup(
+                local.backend_ids,
+                route_action.value.request_mirror_backend,
+                route_action.value.request_mirror_backend
+              )
+            }
+          }
+          dynamic "retry_policy" {
+            for_each = (
+              route_action.value.retry_policy == null
+              ? []
+              : [route_action.value.retry_policy]
+            )
+            content {
+              num_retries      = retry_policy.value.num_retries
+              retry_conditions = retry_policy.value.retry_conditions
+              dynamic "per_try_timeout" {
+                for_each = (
+                  retry_policy.value.per_try_timeout == null
+                  ? []
+                  : [retry_policy.value.per_try_timeout]
+                )
+                content {
+                  nanos   = per_try_timeout.value.nanos
+                  seconds = per_try_timeout.value.seconds
+                }
+              }
+            }
+          }
+          dynamic "timeout" {
+            for_each = (
+              route_action.value.timeout == null
+              ? []
+              : [route_action.value.timeout]
+            )
+            content {
+              nanos   = timeout.value.nanos
+              seconds = timeout.value.seconds
+            }
+          }
+          dynamic "url_rewrite" {
+            for_each = (
+              route_action.value.url_rewrite == null
+              ? []
+              : [route_action.value.url_rewrite]
+            )
+            content {
+              host_rewrite        = url_rewrite.value.host
+              path_prefix_rewrite = url_rewrite.value.path_prefix
+            }
+          }
+          dynamic "weighted_backend_services" {
+            for_each = coalesce(
+              route_action.value.weighted_backend_services, {}
+            )
+            iterator = service
+            content {
+              backend_service = lookup(
+                local.backend_ids, service.key, service.key
+              )
+              weight = service.value.weight
+              dynamic "header_action" {
+                for_each = (
+                  service.value.header_action == null
+                  ? []
+                  : [service.value.header_action]
+                )
+                iterator = h
+                content {
+                  request_headers_to_remove  = h.value.request_remove
+                  response_headers_to_remove = h.value.response_remove
+                  dynamic "request_headers_to_add" {
+                    for_each = coalesce(h.value.request_add, {})
+                    content {
+                      header_name  = request_headers_to_add.key
+                      header_value = request_headers_to_add.value.value
+                      replace      = request_headers_to_add.value.replace
+                    }
+                  }
+                  dynamic "response_headers_to_add" {
+                    for_each = coalesce(h.value.response_add, {})
+                    content {
+                      header_name  = response_headers_to_add.key
+                      header_value = response_headers_to_add.value.value
+                      replace      = response_headers_to_add.value.replace
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
       dynamic "default_url_redirect" {
         for_each = (
           m.value.default_url_redirect == null
@@ -85,6 +432,34 @@ resource "google_compute_region_url_map" "default" {
           prefix_redirect        = default_url_redirect.value.prefix
           redirect_response_code = default_url_redirect.value.response_code
           strip_query            = default_url_redirect.value.strip_query
+        }
+      }
+      dynamic "header_action" {
+        for_each = (
+          m.value.header_action == null
+          ? []
+          : [m.value.header_action]
+        )
+        iterator = h
+        content {
+          request_headers_to_remove  = h.value.request_remove
+          response_headers_to_remove = h.value.response_remove
+          dynamic "request_headers_to_add" {
+            for_each = coalesce(h.value.request_add, {})
+            content {
+              header_name  = request_headers_to_add.key
+              header_value = request_headers_to_add.value.value
+              replace      = request_headers_to_add.value.replace
+            }
+          }
+          dynamic "response_headers_to_add" {
+            for_each = coalesce(h.value.response_add, {})
+            content {
+              header_name  = response_headers_to_add.key
+              header_value = response_headers_to_add.value.value
+              replace      = response_headers_to_add.value.replace
+            }
+          }
         }
       }
       dynamic "path_rule" {

@@ -30,6 +30,8 @@ locals {
   }
 }
 
+# google_compute_backend_bucket
+
 resource "google_compute_backend_service" "default" {
   provider = google-beta
   for_each = var.backend_service_configs
@@ -38,7 +40,6 @@ resource "google_compute_backend_service" "default" {
     ? var.project_id
     : each.value.project_id
   )
-  region                          = var.region
   name                            = "${var.name}-${each.key}"
   description                     = var.description
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec

@@ -38,6 +38,17 @@ variable "group_configs" {
   nullable = false
 }
 
+variable "https_proxy_config" {
+  description = "HTTPS proxy connfiguration."
+  type = object({
+    certificate_map = optional(string)
+    quic_override   = optional(string)
+    ssl_policy      = optional(string)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "labels" {
   description = "Labels set on resources."
   type        = map(string)
@@ -140,27 +151,17 @@ variable "protocol" {
   }
 }
 
-variable "region" {
-  description = "The region where to allocate the ILB resources."
-  type        = string
-}
-
-variable "service_directory_registration" {
-  description = "Service directory namespace and service used to register this load balancer."
-  type = object({
-    namespace = string
-    service   = string
-  })
-  default = null
-}
-
 variable "ssl_certificates" {
-  description = "SSL target proxy certificates (only if protocol is HTTPS)."
+  description = "SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates."
   type = object({
     certificate_ids = optional(list(string), [])
     create_configs = optional(map(object({
       certificate = string
       private_key = string
+    })), {})
+    managed_configs = optional(map(object({
+      domains     = list(string)
+      description = optional(string)
     })), {})
   })
   default  = {}
