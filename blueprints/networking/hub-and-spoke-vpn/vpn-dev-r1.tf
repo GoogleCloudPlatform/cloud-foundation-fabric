@@ -59,7 +59,7 @@ module "dev-to-landing-vpn-r1" {
   router_config = {
     name = "${var.prefix}-dev-vpn-r1"
     asn  = var.vpn_configs.dev-r1.asn
-    router_advertise_config = {
+    custom_advertise = {
       all_subnets = false
       ip_ranges   = coalesce(var.vpn_configs.dev-r1.custom_ranges, {})
       mode        = "CUSTOM"
