@@ -163,36 +163,48 @@ def generic_plan_summary():
   def inner(module_path, tf_var_files=None, basedir=None, **tf_vars):
     # TODO:
     # - trigger copy from env var
-    basedir = basedir or BASEDIR
+    basedir = Path(basedir or BASEDIR)
 
-    # prepare tftest
-    tf = tftest.TerraformTest(module_path, basedir=basedir,
-                              binary=os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup(upgrade=True)
-    plan = tf.plan(output=True, refresh=True, tf_var_file=tf_var_files,
-                   tf_vars=tf_vars)
+    with tempfile.TemporaryDirectory() as tmp_path:
+      # if TFTEST_COPY is set, copy the fixture to a temporary
+      # directory before running the plan. This is needed if you want
+      # to run tests in parallel
+      if os.environ.get('TFTEST_COPY'):
+        shutil.copytree(basedir / module_path, tmp_path, dirs_exist_ok=True)
+        test_path = tmp_path
+      else:
+        test_path = module_path
 
-    # compute resource type counts and address->values map
-    values = {}
-    counts = collections.defaultdict(int)
-    q = collections.deque([plan.root_module])
-    while q:
-      e = q.popleft()
+      # prepare tftest
+      tf = tftest.TerraformTest(test_path, basedir=basedir,
+                                binary=os.environ.get('TERRAFORM', 'terraform'))
 
-      if 'type' in e:
-        counts[e['type']] += 1
-      if 'values' in e:
-        values[e['address']] = e['values']
+      tf.setup(upgrade=True)
+      plan = tf.plan(output=True, refresh=True, tf_var_file=tf_var_files,
+                     tf_vars=tf_vars)
 
-      for x in e.get('resources', []):
-        q.append(x)
-      for x in e.get('child_modules', []):
-        q.append(x)
+      # compute resource type counts and address->values map
 
-    # extract planned outputs
-    outputs = plan.get('planned_values', {}).get('outputs', {})
+      values = {}
+      counts = collections.defaultdict(int)
+      q = collections.deque([plan.root_module])
+      while q:
+        e = q.popleft()
 
-    return PlanSummary(values, dict(counts), outputs)
+        if 'type' in e:
+          counts[e['type']] += 1
+        if 'values' in e:
+          values[e['address']] = e['values']
+
+        for x in e.get('resources', []):
+          q.append(x)
+        for x in e.get('child_modules', []):
+          q.append(x)
+
+      # extract planned outputs
+      outputs = plan.get('planned_values', {}).get('outputs', {})
+
+      return PlanSummary(values, dict(counts), outputs)
 
   return inner
 
