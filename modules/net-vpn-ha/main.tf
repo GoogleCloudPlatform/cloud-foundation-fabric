@@ -18,12 +18,12 @@
 locals {
   router = (
     var.router_config.create
-    ? google_compute_router.router[0].name
+    ? try(google_compute_router.router[0].name, null)
     : var.router_config.name
   )
   vpn_gateway = (
     var.vpn_gateway == null
-    ? google_compute_ha_vpn_gateway.ha_gateway[0].self_link
+    ? try(google_compute_ha_vpn_gateway.ha_gateway[0].self_link, null)
     : var.vpn_gateway
   )
   secret = random_id.secret.b64_url
