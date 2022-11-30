@@ -21,8 +21,12 @@ locals {
     ? google_compute_router.router[0].name
     : var.router_config.name
   )
-  vpn_gateway = one(google_compute_ha_vpn_gateway.ha_gateway[*].self_link)
-  secret      = random_id.secret.b64_url
+  vpn_gateway = (
+    var.vpn_gateway == null
+    ? google_compute_ha_vpn_gateway.ha_gateway[0].self_link
+    : var.vpn_gateway
+  )
+  secret = random_id.secret.b64_url
 }
 
 resource "google_compute_ha_vpn_gateway" "ha_gateway" {
