@@ -36,7 +36,6 @@ module "landing-to-prod-vpn-r1" {
         asn     = var.vpn_configs.prod-r1.asn
       }
       bgp_session_range     = "169.254.0.1/30"
-      ike_version           = 2
       vpn_gateway_interface = 0
     }
     1 = {
@@ -45,7 +44,6 @@ module "landing-to-prod-vpn-r1" {
         asn     = var.vpn_configs.prod-r1.asn
       }
       bgp_session_range     = "169.254.0.5/30"
-      ike_version           = 2
       vpn_gateway_interface = 1
     }
   }
@@ -74,7 +72,6 @@ module "prod-to-landing-vpn-r1" {
         asn     = var.vpn_configs.land-r1.asn
       }
       bgp_session_range     = "169.254.0.2/30"
-      ike_version           = 2
       shared_secret         = module.landing-to-prod-vpn-r1.random_secret
       vpn_gateway_interface = 0
     }
@@ -84,7 +81,6 @@ module "prod-to-landing-vpn-r1" {
         asn     = var.vpn_configs.land-r1.asn
       }
       bgp_session_range     = "169.254.0.6/30"
-      ike_version           = 2
       shared_secret         = module.landing-to-prod-vpn-r1.random_secret
       vpn_gateway_interface = 1
     }

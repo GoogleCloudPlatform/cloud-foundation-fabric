@@ -37,7 +37,7 @@ output "random_secret" {
 
 output "router" {
   description = "Router resource (only if auto-created)."
-  value       = var.router_create ? google_compute_router.router[0] : null
+  value       = one(google_compute_router.router[*])
 }
 
 output "router_name" {

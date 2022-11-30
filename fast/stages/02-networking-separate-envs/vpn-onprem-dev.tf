@@ -55,7 +55,6 @@ module "dev-to-onprem-ew1-vpn" {
       }
       bgp_peer_options                = local.bgp_peer_options_onprem.dev-ew1
       bgp_session_range               = "${cidrhost(t.session_range, 2)}/30"
-      ike_version                     = 2
       peer_external_gateway_interface = t.peer_external_gateway_interface
       shared_secret                   = t.secret
       vpn_gateway_interface           = t.vpn_gateway_interface

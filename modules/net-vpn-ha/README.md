@@ -56,7 +56,6 @@ module "vpn-2" {
         asn     = 64514
       }
       bgp_session_range     = "169.254.1.1/30"
-      ike_version           = 2
       shared_secret         = module.vpn-1.random_secret
       vpn_gateway_interface = 0
     }
@@ -66,7 +65,6 @@ module "vpn-2" {
         asn     = 64514
       }
       bgp_session_range     = "169.254.2.1/30"
-      ike_version           = 2
       shared_secret         = module.vpn-1.random_secret
       vpn_gateway_interface = 1
     }

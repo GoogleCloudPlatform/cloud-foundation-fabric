@@ -8,35 +8,50 @@ This example shows how to configure a single VPN tunnel using a couple of extra 
 - internally generated shared secret, which can be fetched from the module's `random_secret` output for reuse; a predefined secret can be used instead by assigning it to the `shared_secret` attribute
 
 ```hcl
+module "vm" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "europe-west1-b"
+  name       = "my-vm"
+  network_interfaces = [{
+    nat        = true
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  service_account_create = true
+}
+
+
 module "vpn-dynamic" {
   source          = "./fabric/modules/net-vpn-dynamic"
   project_id      = "my-project"
   region          = "europe-west1"
-  network         = "my-vpc"
+  network         = var.vpc.name
   name            = "gateway-1"
+  router_config = {
+    asn = 64514
+  }
+
   tunnels = {
     remote-1 = {
       bgp_peer = {
         address = "169.254.139.134"
         asn     = 64513
+        custom_advertise = {
+          all_subnets          = true
+          all_vpc_subnets      = false
+          all_peer_vpc_subnets = false
+          ip_ranges = {
+            "192.168.0.0/24" = "Advertised range description"
+          }
+        }
       }
       bgp_session_range = "169.254.139.133/30"
-      ike_version       = 2
-      peer_ip           = "1.1.1.1"
-      router            = null
-      shared_secret     = null
-      bgp_peer_options = {
-        advertise_groups = ["ALL_SUBNETS"]
-        advertise_ip_ranges = {
-          "192.168.0.0/24" = "Advertised range description"
-        }
-        advertise_mode = "CUSTOM"
-        route_priority = 1000
-      }
+      peer_ip           = module.vm.external_ip
     }
   }
 }
-# tftest modules=1 resources=10
+# tftest modules=2 resources=12
 ```
 <!-- BEGIN TFDOC -->
 

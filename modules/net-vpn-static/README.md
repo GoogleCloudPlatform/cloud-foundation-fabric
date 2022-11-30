@@ -12,13 +12,14 @@ module "addresses" {
 }
 
 module "vpn" {
-  source          = "./fabric/modules/net-vpn-static"
-  project_id      = var.project_id
-  region          = var.region
-  network         = var.vpc.self_link
-  name            = "remote"
-  gateway_address = module.addresses.external_addresses["vpn"].address
-  remote_ranges   = ["10.10.0.0/24"]
+  source                 = "./fabric/modules/net-vpn-static"
+  project_id             = var.project_id
+  region                 = var.region
+  network                = var.vpc.self_link
+  name                   = "remote"
+  gateway_address_create = false
+  gateway_address        = module.addresses.external_addresses["vpn"].address
+  remote_ranges          = ["10.10.0.0/24"]
   tunnels = {
     remote-0 = {
       peer_ip           = "1.1.1.1"
