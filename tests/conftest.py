@@ -13,13 +13,18 @@
 # limitations under the License.
 "Shared fixtures"
 
+import collections
 import inspect
 import os
 import shutil
 import tempfile
+from pathlib import Path
 
 import pytest
 import tftest
+import yaml
+
+PlanSummary = collections.namedtuple('PlanSummary', 'values counts outputs')
 
 BASEDIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -74,10 +79,10 @@ def plan_runner(_plan_runner):
 def e2e_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on an end-to-end fixture."
 
-  def run_plan(fixture_path=None, tf_var_file=None, targets=None, 
-               refresh=True, include_bare_resources=False, **tf_vars):
+  def run_plan(fixture_path=None, tf_var_file=None, targets=None, refresh=True,
+               include_bare_resources=False, **tf_vars):
     "Runs Terraform plan on an end-to-end module using defaults, returns data."
-    plan = _plan_runner(fixture_path, tf_var_file=tf_var_file, targets=targets, 
+    plan = _plan_runner(fixture_path, tf_var_file=tf_var_file, targets=targets,
                         refresh=refresh, **tf_vars)
     # skip the fixture
     root_module = plan.root_module['child_modules'][0]
@@ -108,7 +113,7 @@ def recursive_e2e_plan_runner(_plan_runner):
                include_bare_resources=False, compute_sums=True, tmpdir=True,
                **tf_vars):
     "Runs Terraform plan on a root module using defaults, returns data."
-    plan = _plan_runner(fixture_path, tf_var_file=tf_var_file, targets=targets, 
+    plan = _plan_runner(fixture_path, tf_var_file=tf_var_file, targets=targets,
                         refresh=refresh, tmpdir=tmpdir, **tf_vars)
     modules = []
     resources = []
@@ -150,3 +155,108 @@ def apply_runner():
 @pytest.fixture
 def basedir():
   return BASEDIR
+
+
+@pytest.fixture
+def generic_plan_summary():
+
+  def inner(module_path, tf_var_files=None, basedir=None, **tf_vars):
+    # TODO:
+    # - trigger copy from env var
+    basedir = basedir or BASEDIR
+
+    # prepare tftest
+    tf = tftest.TerraformTest(module_path, basedir=basedir,
+                              binary=os.environ.get('TERRAFORM', 'terraform'))
+    tf.setup(upgrade=True)
+    plan = tf.plan(output=True, refresh=True, tf_var_file=tf_var_files,
+                   tf_vars=tf_vars)
+
+    # compute resource type counts and address->values map
+    values = {}
+    counts = collections.defaultdict(int)
+    q = collections.deque([plan.root_module])
+    while q:
+      e = q.popleft()
+
+      if 'type' in e:
+        counts[e['type']] += 1
+      if 'values' in e:
+        values[e['address']] = e['values']
+
+      for x in e.get('resources', []):
+        q.append(x)
+      for x in e.get('child_modules', []):
+        q.append(x)
+
+    # extract planned outputs
+    outputs = plan.get('planned_values', {}).get('outputs', {})
+
+    return PlanSummary(values, dict(counts), outputs)
+
+  return inner
+
+
+@pytest.fixture
+def generic_plan_validator(generic_plan_summary):
+
+  def inner(inventory_path, module_path, tf_var_files=None, basedir=None,
+            **tf_vars):
+
+    # allow tfvars and inventory to be relative to the caller
+    caller_path = Path(inspect.stack()[1].filename).parent
+    tf_var_files = [caller_path / x for x in tf_var_files]
+    inventory_path = caller_path / inventory_path
+    inventory = yaml.safe_load(inventory_path.read_text())
+    assert inventory is not None, f'Inventory {inventory_path} is empty'
+
+    summary = generic_plan_summary(module_path, tf_var_files=tf_var_files,
+                                   basedir=basedir)
+
+    # If you add additional asserts to this function:
+    # - put the values coming from the plan on the left side of
+    #   any comparison operators
+    # - put the values coming from user's inventory the right
+    #   side of any comparison operators.
+    # - include a descriptive error message to the assert
+
+    # for values:
+    # - verify each address in the user's inventory exists in the plan
+    # - for those address that exist on both the user's inventory and
+    #   the plan output, ensure the set of keys on the inventory are a
+    #   subset of the keys in the plan, and compare their values by
+    #   equality
+    if 'values' in inventory:
+      expected_values = inventory['values']
+      for address, expected_value in expected_values.items():
+        assert address in summary.values, \
+          f'{address} is not a valid address in the plan'
+        for k, v in expected_value.items():
+          assert k in summary.values[address], \
+            f'{k} not found at {address}'
+          plan_value = summary.values[address][k]
+          assert plan_value == v, \
+            f'{k} at {address} failed. Got `{plan_value}`, expected `{v}`'
+
+    if 'counts' in inventory:
+      expected_counts = inventory['counts']
+      for type_, expected_count in expected_counts.items():
+        assert type_ in summary.counts
+        plan_count = summary.counts[type_]
+        assert plan_count == expected_count
+
+    if 'outputs' in inventory:
+      expected_outputs = inventory['outputs']
+      for output_name, expected_output in expected_outputs.items():
+        assert output_name in summary.outputs, \
+          f'module does not output `{output_name}`'
+        output = summary.outputs[output_name]
+        # assert 'value' in output, \
+        #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
+        plan_output = output.get('value', '__missing__')
+        assert plan_output == expected_output, \
+            f'output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
+
+    return summary
+
+  return inner
