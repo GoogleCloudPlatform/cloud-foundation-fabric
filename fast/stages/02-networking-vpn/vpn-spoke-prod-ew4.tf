@@ -19,15 +19,16 @@
 # local.vpn_spoke_bgp_peer_options is defined in the dev VPN file
 
 module "landing-to-prod-ew4-vpn" {
-  source           = "../../../modules/net-vpn-ha"
-  project_id       = module.landing-project.project_id
-  network          = module.landing-vpc.self_link
-  region           = "europe-west4"
-  name             = "vpn-to-prod-ew4"
-  router_create    = true
-  router_name      = "landing-vpn-ew4"
-  router_asn       = var.router_spoke_configs.landing-ew4.asn
-  peer_gcp_gateway = module.prod-to-landing-ew4-vpn.self_link
+  source     = "../../../modules/net-vpn-ha"
+  project_id = module.landing-project.project_id
+  network    = module.landing-vpc.self_link
+  region     = "europe-west4"
+  name       = "vpn-to-prod-ew4"
+  router_config = {
+    name = "landing-vpn-ew4"
+    asn  = var.router_spoke_configs.landing-ew4.asn
+  }
+  peer_gateway = { gcp = module.prod-to-landing-ew4-vpn.self_link }
   tunnels = {
     0 = {
       bgp_peer = {
@@ -38,11 +39,8 @@ module "landing-to-prod-ew4-vpn" {
       bgp_session_range = "${
         cidrhost("169.254.0.96/27", 2)
       }/30"
-      ike_version                     = 2
-      peer_external_gateway_interface = null
-      router                          = null
-      shared_secret                   = null
-      vpn_gateway_interface           = 0
+      ike_version           = 2
+      vpn_gateway_interface = 0
     }
     1 = {
       bgp_peer = {
@@ -53,25 +51,23 @@ module "landing-to-prod-ew4-vpn" {
       bgp_session_range = "${
         cidrhost("169.254.0.96/27", 6)
       }/30"
-      ike_version                     = 2
-      peer_external_gateway_interface = null
-      router                          = null
-      shared_secret                   = null
-      vpn_gateway_interface           = 1
+      ike_version           = 2
+      vpn_gateway_interface = 1
     }
   }
 }
 
 module "prod-to-landing-ew4-vpn" {
-  source           = "../../../modules/net-vpn-ha"
-  project_id       = module.prod-spoke-project.project_id
-  network          = module.prod-spoke-vpc.self_link
-  region           = "europe-west4"
-  name             = "vpn-to-landing-ew4"
-  router_create    = true
-  router_name      = "prod-spoke-vpn-ew4"
-  router_asn       = var.router_spoke_configs.spoke-prod-ew4.asn
-  peer_gcp_gateway = module.landing-to-prod-ew4-vpn.self_link
+  source     = "../../../modules/net-vpn-ha"
+  project_id = module.prod-spoke-project.project_id
+  network    = module.prod-spoke-vpc.self_link
+  region     = "europe-west4"
+  name       = "vpn-to-landing-ew4"
+  router_config = {
+    name = "prod-spoke-vpn-ew4"
+    asn  = var.router_spoke_configs.spoke-prod-ew4.asn
+  }
+  peer_gateway = { gcp = module.landing-to-prod-ew4-vpn.self_link }
   tunnels = {
     0 = {
       bgp_peer = {
@@ -82,11 +78,9 @@ module "prod-to-landing-ew4-vpn" {
       bgp_session_range = "${
         cidrhost("169.254.0.96/27", 1)
       }/30"
-      ike_version                     = 2
-      peer_external_gateway_interface = null
-      router                          = null
-      shared_secret                   = module.landing-to-prod-ew4-vpn.random_secret
-      vpn_gateway_interface           = 0
+      ike_version           = 2
+      shared_secret         = module.landing-to-prod-ew4-vpn.random_secret
+      vpn_gateway_interface = 0
     }
     1 = {
       bgp_peer = {
@@ -97,11 +91,9 @@ module "prod-to-landing-ew4-vpn" {
       bgp_session_range = "${
         cidrhost("169.254.0.96/27", 5)
       }/30"
-      ike_version                     = 2
-      peer_external_gateway_interface = null
-      router                          = null
-      shared_secret                   = module.landing-to-prod-ew4-vpn.random_secret
-      vpn_gateway_interface           = 1
+      ike_version           = 2
+      shared_secret         = module.landing-to-prod-ew4-vpn.random_secret
+      vpn_gateway_interface = 1
     }
   }
 }
