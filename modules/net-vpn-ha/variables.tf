@@ -66,7 +66,7 @@ variable "router_config" {
 }
 
 variable "tunnels" {
-  description = "VPN tunnel configurations, bgp_peer_options is usually null."
+  description = "VPN tunnel configurations."
   type = map(object({
     bgp_peer = object({
       address        = string

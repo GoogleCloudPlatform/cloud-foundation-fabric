@@ -54,7 +54,7 @@ resource "google_compute_external_vpn_gateway" "external_gateway" {
 
 resource "google_compute_router" "router" {
   count   = var.router_config.create ? 1 : 0
-  name    = var.router_config.name == null ? "vpn-${var.name}" : var.router_config.name
+  name    = coalesce(var.router_config.name, "vpn-${var.name}")
   project = var.project_id
   region  = var.region
   network = var.network
@@ -87,7 +87,7 @@ resource "google_compute_router_peer" "bgp_peer" {
   region                    = var.region
   project                   = var.project_id
   name                      = "${var.name}-${each.key}"
-  router                    = local.router
+  router                    = coalesce(each.value.router, local.router)
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
   advertised_route_priority = each.value.bgp_peer.route_priority

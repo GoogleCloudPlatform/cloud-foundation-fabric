@@ -91,7 +91,7 @@ resource "google_compute_vpn_tunnel" "tunnels" {
   local_traffic_selector  = each.value.traffic_selectors.local
   remote_traffic_selector = each.value.traffic_selectors.remote
   ike_version             = each.value.ike_version
-  shared_secret           = each.value.shared_secret == "" ? local.secret : each.value.shared_secret
+  shared_secret           = coalesce(each.value.shared_secret, local.secret)
   target_vpn_gateway      = google_compute_vpn_gateway.gateway.self_link
   depends_on              = [google_compute_forwarding_rule.esp]
 }

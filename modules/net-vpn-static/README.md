@@ -17,12 +17,10 @@ module "vpn" {
   region          = var.region
   network         = var.vpc.self_link
   name            = "remote"
-  gateway_address_create = false
-  gateway_address        = module.addresses.external_addresses["vpn"].address
+  gateway_address = module.addresses.external_addresses["vpn"].address
   remote_ranges   = ["10.10.0.0/24"]
   tunnels = {
     remote-0 = {
-      ike_version       = 2
       peer_ip           = "1.1.1.1"
       shared_secret     = "mysecret"
       traffic_selectors = { local = ["0.0.0.0/0"], remote = ["0.0.0.0/0"] }
