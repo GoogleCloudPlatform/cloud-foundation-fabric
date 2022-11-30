@@ -14,6 +14,8 @@
 
 DATA_FOLDER = "data"
 
+import yaml
+
 
 def test_subnet_factory(plan_runner):
   "Test subnet factory."
@@ -27,45 +29,7 @@ def test_subnet_factory(plan_runner):
   assert {s['private_ip_google_access'] for s in subnets} == {True, False}
 
 
-def test_subnets(plan_runner):
-  "Test subnets variable."
-  _, resources = plan_runner(tf_var_file='test.subnets.tfvars')
-  assert len(resources) == 7
-  subnets = [
-      r['values'] for r in resources if r['type'] == 'google_compute_subnetwork'
-  ]
-  assert {s['name'] for s in subnets} == {'a', 'b', 'c', 'd'}
-  assert {len(s['secondary_ip_range']) for s in subnets} == {0, 0, 2, 0}
-  log_config = {s['name']: s['log_config'] for s in subnets if s['log_config']}
-  assert log_config == {
-      'd': [{
-          'aggregation_interval': 'INTERVAL_10_MIN',
-          'filter_expr': 'true',
-          'flow_sampling': 0.5,
-          'metadata': 'INCLUDE_ALL_METADATA',
-          'metadata_fields': None
-      }]
-  }
-  bindings = {
-      r['index']: r['values']
-      for r in resources
-      if r['type'] == 'google_compute_subnetwork_iam_binding'
-  }
-  assert bindings == {
-      'europe-west1/a.roles/compute.networkUser': {
-          'condition': [],
-          'members': ['group:g-a@example.com', 'user:a@example.com'],
-          'project': 'test-project',
-          'region': 'europe-west1',
-          'role': 'roles/compute.networkUser',
-          'subnetwork': 'a'
-      },
-      'europe-west1/c.roles/compute.networkUser': {
-          'condition': [],
-          'members': ['group:g-c@example.com', 'user:c@example.com'],
-          'project': 'test-project',
-          'region': 'europe-west1',
-          'role': 'roles/compute.networkUser',
-          'subnetwork': 'c'
-      },
-  }
+def test_subnets(generic_plan_validator):
+  generic_plan_validator(inventory_path='subnets.yaml',
+                         module_path="modules/net-vpc",
+                         tf_var_files=['common.tfvars', 'subnets.tfvars'])

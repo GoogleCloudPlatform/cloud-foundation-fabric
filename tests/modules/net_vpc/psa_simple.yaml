@@ -1,0 +1,56 @@
+values:
+  google_compute_global_address.psa_ranges["bar"]:
+    address: 172.16.100.0
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    name: bar
+    prefix_length: 24
+    project: test-project
+    purpose: VPC_PEERING
+  google_compute_global_address.psa_ranges["foo"]:
+    address: 172.16.101.0
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    name: foo
+    prefix_length: 24
+    project: test-project
+    purpose: VPC_PEERING
+  google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: test
+    project: test-project
+    routing_mode: GLOBAL
+  google_compute_network_peering_routes_config.psa_routes["1"]:
+    export_custom_routes: false
+    import_custom_routes: false
+    project: test-project
+  google_service_networking_connection.psa_connection["1"]:
+    reserved_peering_ranges:
+    - bar
+    - foo
+    service: servicenetworking.googleapis.com
+
+counts:
+  google_compute_global_address: 2
+  google_compute_network: 1
+  google_compute_network_peering_routes_config: 1
+  google_service_networking_connection: 1
+
+outputs:
+  bindings: {}
+  name: __missing__
+  network: __missing__
+  project_id: test-project
+  self_link: __missing__
+  subnet_ips: {}
+  subnet_regions: {}
+  subnet_secondary_ranges: {}
+  subnet_self_links: {}
+  subnets: {}
+  subnets_proxy_only: {}
+  subnets_psc: {}

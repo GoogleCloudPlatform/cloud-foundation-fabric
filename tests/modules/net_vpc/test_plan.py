@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-_VAR_PEER_VPC_CONFIG = '''{
-  peer_vpc_self_link="projects/my-project/global/networks/peer",
-  export_routes=true, import_routes=null
-}'''
 _VAR_ROUTES_TEMPLATE = '''{
   next-hop = {
   dest_range="192.168.128.0/24", tags=null,
@@ -33,41 +29,25 @@ _VAR_ROUTES_NEXT_HOPS = {
     'vpn_tunnel': 'regions/europe-west1/vpnTunnels/foo'
 }
 
-
-def test_vpc_simple(plan_runner):
-  "Test vpc with no extra options."
-  _, resources = plan_runner()
-  assert len(resources) == 1
-  assert [r['type'] for r in resources] == ['google_compute_network']
-  assert [r['values']['name'] for r in resources] == ['test']
-  assert [r['values']['project'] for r in resources] == ['test-project']
+import yaml
 
 
-def test_vpc_shared(plan_runner):
-  "Test shared vpc variables."
-  _, resources = plan_runner(shared_vpc_host='true',
-                             shared_vpc_service_projects='["tf-a", "tf-b"]')
-  assert len(resources) == 4
-  assert set(r['type'] for r in resources) == set([
-      'google_compute_network', 'google_compute_shared_vpc_host_project',
-      'google_compute_shared_vpc_service_project'
-  ])
+def test_simple(generic_plan_validator):
+  generic_plan_validator(inventory_path='simple.yaml',
+                         module_path="modules/net-vpc",
+                         tf_var_files=['common.tfvars'])
 
 
-def test_vpc_peering(plan_runner):
-  "Test vpc peering variables."
-  _, resources = plan_runner(peering_config=_VAR_PEER_VPC_CONFIG)
-  assert len(resources) == 3
-  assert set(r['type'] for r in resources) == set(
-      ['google_compute_network', 'google_compute_network_peering'])
-  peerings = [
-      r['values']
-      for r in resources
-      if r['type'] == 'google_compute_network_peering'
-  ]
-  assert [p['name'] for p in peerings] == ['test-peer', 'peer-test']
-  assert [p['export_custom_routes'] for p in peerings] == [True, False]
-  assert [p['import_custom_routes'] for p in peerings] == [False, True]
+def test_vpc_shared(generic_plan_validator):
+  generic_plan_validator(inventory_path='shared_vpc.yaml',
+                         module_path="modules/net-vpc",
+                         tf_var_files=['common.tfvars', 'shared_vpc.tfvars'])
+
+
+def test_vpc_peering(generic_plan_validator):
+  generic_plan_validator(inventory_path='peering.yaml',
+                         module_path="modules/net-vpc",
+                         tf_var_files=['common.tfvars', 'peering.tfvars'])
 
 
 def test_vpc_routes(plan_runner):

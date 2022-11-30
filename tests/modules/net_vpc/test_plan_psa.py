@@ -12,68 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-def test_single_range(plan_runner):
-  "Test single PSA range."
-  psa_config = '''{
-    ranges = {
-      bar = "172.16.100.0/24"
-      foo = "172.16.101.0/24"
-    },
-    routes = null
-  }'''
-  _, resources = plan_runner(psa_config=psa_config)
-  assert len(resources) == 5
-  for r in resources:
-    if r['type'] == 'google_compute_network_peering_routes_config':
-      assert not r['values']['export_custom_routes']
-      assert not r['values']['import_custom_routes']
+import yaml
 
 
-def test_routes_export(plan_runner):
-  "Test routes export."
-  psa_config = '''{
-    ranges = {
-      bar = "172.16.100.0/24"
-    }
-    export_routes = true
-    import_routes = false
-  }'''
-  _, resources = plan_runner(psa_config=psa_config)
-  assert len(resources) == 4
-  for r in resources:
-    if r['type'] == 'google_compute_network_peering_routes_config':
-      assert r['values']['export_custom_routes']
-      assert not r['values']['import_custom_routes']
+def test_simple(generic_plan_validator):
+  generic_plan_validator(inventory_path='psa_simple.yaml',
+                         module_path="modules/net-vpc",
+                         tf_var_files=['common.tfvars', 'psa_simple.tfvars'])
 
 
-def test_routes_import(plan_runner):
-  "Test routes import."
-  psa_config = '''{
-    ranges = {
-      bar = "172.16.100.0/24"
-    },
-    export_routes = false
-    import_routes = true
-  }'''
-  _, resources = plan_runner(psa_config=psa_config)
-  for r in resources:
-    if r['type'] == 'google_compute_network_peering_routes_config':
-      assert not r['values']['export_custom_routes']
-      assert r['values']['import_custom_routes']
+def test_routes_export(generic_plan_validator):
+  generic_plan_validator(
+      inventory_path='psa_routes_export.yaml', module_path="modules/net-vpc",
+      tf_var_files=['common.tfvars', 'psa_routes_export.tfvars'])
 
 
-def test_routes_export_import(plan_runner):
-  "Test routes export and import."
-  psa_config = '''{
-    ranges = {
-      bar = "172.16.100.0/24"
-    },
-    export_routes = true
-    import_routes = true
-  }'''
-  _, resources = plan_runner(psa_config=psa_config)
-  for r in resources:
-    if r['type'] == 'google_compute_network_peering_routes_config':
-      assert r['values']['export_custom_routes']
-      assert r['values']['import_custom_routes']
+def test_routes_import(generic_plan_validator):
+  generic_plan_validator(
+      inventory_path='psa_routes_import.yaml', module_path="modules/net-vpc",
+      tf_var_files=['common.tfvars', 'psa_routes_import.tfvars'])
+
+
+def test_routes_import_export(generic_plan_validator):
+  generic_plan_validator(
+      inventory_path='psa_routes_import_export.yaml',
+      module_path="modules/net-vpc",
+      tf_var_files=['common.tfvars', 'psa_routes_import_export.tfvars'])
