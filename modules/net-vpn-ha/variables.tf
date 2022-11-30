@@ -93,7 +93,13 @@ variable "tunnels" {
 }
 
 variable "vpn_gateway" {
-  description = "Self link of an existing HA VPN Gateway to use. Set to null to create new VPN Gateway."
+  description = "HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`."
   type        = string
   default     = null
+}
+
+variable "vpn_gateway_create" {
+  description = "Create HA VPN Gateway."
+  type        = bool
+  default     = true
 }
