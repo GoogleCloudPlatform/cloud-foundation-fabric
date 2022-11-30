@@ -12,22 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# _RESOURCE_COUNT = {
-#     'module.organization': 28,
-#     'module.automation-project': 23,
-#     'module.automation-tf-bootstrap-gcs': 1,
-#     'module.automation-tf-bootstrap-sa': 1,
-#     'module.automation-tf-resman-gcs': 2,
-#     'module.automation-tf-resman-sa': 1,
-#     'module.billing-export-dataset': 1,
-#     'module.billing-export-project': 7,
-#     'module.log-export-dataset': 1,
-#     'module.log-export-project': 7,
-# }
 
-
-def test_counts(recursive_e2e_plan_runner):
-  "Test stage."
-  # TODO: to re-enable per-module resource count check print _, then test
-  num_modules, num_resources = recursive_e2e_plan_runner()
-  assert num_modules > 0 and num_resources > 0
+def test_simple(generic_plan_validator):
+  s = generic_plan_validator(inventory_path='simple.yaml',
+                             module_path="fast/stages/00-bootstrap",
+                             tf_var_files=['simple.tfvars'])
