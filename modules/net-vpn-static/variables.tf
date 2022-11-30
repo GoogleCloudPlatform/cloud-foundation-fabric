@@ -17,7 +17,7 @@
 variable "gateway_address" {
   description = "Optional address assigned to the VPN gateway. Ignored unless gateway_address_create is set to false."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "gateway_address_create" {
@@ -50,6 +50,7 @@ variable "remote_ranges" {
   description = "Remote IP CIDR ranges."
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "route_priority" {
@@ -61,13 +62,14 @@ variable "route_priority" {
 variable "tunnels" {
   description = "VPN tunnel configurations."
   type = map(object({
-    ike_version   = number
+    ike_version   = optional(number, 2)
     peer_ip       = string
-    shared_secret = string
+    shared_secret = optional(string)
     traffic_selectors = object({
       local  = list(string)
       remote = list(string)
     })
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }

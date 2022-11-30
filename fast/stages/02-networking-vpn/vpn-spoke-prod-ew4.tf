@@ -39,7 +39,6 @@ module "landing-to-prod-ew4-vpn" {
       bgp_session_range = "${
         cidrhost("169.254.0.96/27", 2)
       }/30"
-      ike_version           = 2
       vpn_gateway_interface = 0
     }
     1 = {
@@ -51,7 +50,6 @@ module "landing-to-prod-ew4-vpn" {
       bgp_session_range = "${
         cidrhost("169.254.0.96/27", 6)
       }/30"
-      ike_version           = 2
       vpn_gateway_interface = 1
     }
   }
@@ -78,7 +76,6 @@ module "prod-to-landing-ew4-vpn" {
       bgp_session_range = "${
         cidrhost("169.254.0.96/27", 1)
       }/30"
-      ike_version           = 2
       shared_secret         = module.landing-to-prod-ew4-vpn.random_secret
       vpn_gateway_interface = 0
     }
@@ -91,7 +88,6 @@ module "prod-to-landing-ew4-vpn" {
       bgp_session_range = "${
         cidrhost("169.254.0.96/27", 5)
       }/30"
-      ike_version           = 2
       shared_secret         = module.landing-to-prod-ew4-vpn.random_secret
       vpn_gateway_interface = 1
     }

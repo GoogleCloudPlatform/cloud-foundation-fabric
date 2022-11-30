@@ -94,7 +94,6 @@ module "vpn-onprem" {
         asn     = 65002
       }
       bgp_session_range     = "169.254.0.1/30"
-      ike_version           = 2
       vpn_gateway_interface = 0
     }
     tunnel-1 = {
@@ -103,7 +102,6 @@ module "vpn-onprem" {
         asn     = 65002
       }
       bgp_session_range     = "169.254.0.5/30"
-      ike_version           = 2
       vpn_gateway_interface = 1
     }
   }
@@ -132,26 +130,18 @@ module "vpn-hub" {
         address = "169.254.0.1"
         asn     = 65001
       }
-      bgp_peer_options                = null
-      bgp_session_range               = "169.254.0.2/30"
-      ike_version                     = 2
-      vpn_gateway_interface           = 0
-      peer_external_gateway_interface = null
-      router                          = null
-      shared_secret                   = module.vpn-onprem.random_secret
+      bgp_session_range     = "169.254.0.2/30"
+      vpn_gateway_interface = 0
+      shared_secret         = module.vpn-onprem.random_secret
     }
     tunnel-1 = {
       bgp_peer = {
         address = "169.254.0.5"
         asn     = 65001
       }
-      bgp_peer_options                = null
-      bgp_session_range               = "169.254.0.6/30"
-      ike_version                     = 2
-      vpn_gateway_interface           = 1
-      peer_external_gateway_interface = null
-      router                          = null
-      shared_secret                   = module.vpn-onprem.random_secret
+      bgp_session_range     = "169.254.0.6/30"
+      vpn_gateway_interface = 1
+      shared_secret         = module.vpn-onprem.random_secret
     }
   }
 }

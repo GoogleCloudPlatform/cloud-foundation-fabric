@@ -17,7 +17,7 @@
 variable "gateway_address" {
   description = "Optional address assigned to the VPN gateway. Ignored unless gateway_address_create is set to false."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "gateway_address_create" {
@@ -46,60 +46,43 @@ variable "region" {
   type        = string
 }
 
-variable "route_priority" {
-  description = "Route priority, defaults to 1000."
-  type        = number
-  default     = 1000
-}
-
-variable "router_advertise_config" {
-  description = "Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions."
+variable "router_config" {
+  description = "Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router."
   type = object({
-    groups    = list(string)
-    ip_ranges = map(string)
-    mode      = string
+    create    = optional(bool, true)
+    asn       = number
+    name      = optional(string)
+    keepalive = optional(number)
+    custom_advertise = optional(object({
+      all_subnets = bool
+      ip_ranges   = map(string)
+    }))
   })
-  default = null
-}
-
-variable "router_asn" {
-  description = "Router ASN used for auto-created router."
-  type        = number
-  default     = 64514
-}
-
-variable "router_create" {
-  description = "Create router."
-  type        = bool
-  default     = true
-}
-
-variable "router_name" {
-  description = "Router name used for auto created router, or to specify existing router to use. Leave blank to use VPN name for auto created router."
-  type        = string
-  default     = ""
+  nullable = false
 }
 
 variable "tunnels" {
-  description = "VPN tunnel configurations, bgp_peer_options is usually null."
+  description = "VPN tunnel configurations."
   type = map(object({
     bgp_peer = object({
-      address = string
-      asn     = number
-    })
-    bgp_peer_options = object({
-      advertise_groups    = list(string)
-      advertise_ip_ranges = map(string)
-      advertise_mode      = string
-      route_priority      = number
+      address        = string
+      asn            = number
+      route_priority = optional(number, 1000)
+      custom_advertise = optional(object({
+        all_subnets          = bool
+        all_vpc_subnets      = bool
+        all_peer_vpc_subnets = bool
+        ip_ranges            = map(string)
+      }))
     })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.
     bgp_session_range = string
-    ike_version       = number
+    ike_version       = optional(number, 2)
     peer_ip           = string
-    router            = string
-    shared_secret     = string
+    router            = optional(string)
+    shared_secret     = optional(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
