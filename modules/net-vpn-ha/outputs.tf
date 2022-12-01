@@ -24,29 +24,17 @@ output "bgp_peers" {
 
 output "external_gateway" {
   description = "External VPN gateway resource."
-  value = (
-    var.peer_external_gateway != null
-    ? google_compute_external_vpn_gateway.external_gateway[0]
-    : null
-  )
+  value       = one(google_compute_external_vpn_gateway.external_gateway[*])
 }
 
 output "gateway" {
   description = "VPN gateway resource (only if auto-created)."
-  value = (
-    var.vpn_gateway_create
-    ? google_compute_ha_vpn_gateway.ha_gateway[0]
-    : null
-  )
+  value       = one(google_compute_ha_vpn_gateway.ha_gateway[*])
 }
 
 output "name" {
   description = "VPN gateway name (only if auto-created). ."
-  value = (
-    var.vpn_gateway_create
-    ? google_compute_ha_vpn_gateway.ha_gateway[0].name
-    : null
-  )
+  value       = one(google_compute_ha_vpn_gateway.ha_gateway[*].name)
 }
 
 output "random_secret" {
@@ -56,11 +44,7 @@ output "random_secret" {
 
 output "router" {
   description = "Router resource (only if auto-created)."
-  value = (
-    var.router_name == ""
-    ? google_compute_router.router[0]
-    : null
-  )
+  value       = one(google_compute_router.router[*])
 }
 
 output "router_name" {

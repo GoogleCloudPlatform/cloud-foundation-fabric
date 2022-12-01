@@ -17,16 +17,19 @@
 # tfdoc:file:description VPN between prod and onprem.
 
 module "prod-to-onprem-ew1-vpn" {
-  count                 = local.enable_onprem_vpn ? 1 : 0
-  source                = "../../../modules/net-vpn-ha"
-  project_id            = module.prod-spoke-project.project_id
-  network               = module.prod-spoke-vpc.self_link
-  region                = "europe-west1"
-  name                  = "vpn-to-onprem-ew1"
-  router_create         = true
-  router_name           = "prod-onprem-vpn-ew1"
-  router_asn            = var.router_onprem_configs.prod-ew1.asn
-  peer_external_gateway = var.vpn_onprem_configs.prod-ew1.peer_external_gateway
+  count      = local.enable_onprem_vpn ? 1 : 0
+  source     = "../../../modules/net-vpn-ha"
+  project_id = module.prod-spoke-project.project_id
+  network    = module.prod-spoke-vpc.self_link
+  region     = "europe-west1"
+  name       = "vpn-to-onprem-ew1"
+  router_config = {
+    name = "prod-onprem-vpn-ew1"
+    asn  = var.router_onprem_configs.prod-ew1.asn
+  }
+  peer_gateway = {
+    external = var.vpn_onprem_configs.prod-ew1.peer_external_gateway
+  }
   tunnels = {
     for t in var.vpn_onprem_configs.prod-ew1.tunnels :
     "remote-${t.vpn_gateway_interface}-${t.peer_external_gateway_interface}" => {
@@ -36,9 +39,7 @@ module "prod-to-onprem-ew1-vpn" {
       }
       bgp_peer_options                = local.bgp_peer_options_onprem.prod-ew1
       bgp_session_range               = "${cidrhost(t.session_range, 2)}/30"
-      ike_version                     = 2
       peer_external_gateway_interface = t.peer_external_gateway_interface
-      router                          = null
       shared_secret                   = t.secret
       vpn_gateway_interface           = t.vpn_gateway_interface
     }
