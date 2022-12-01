@@ -14,6 +14,8 @@
 
 
 def test_simple(generic_plan_validator):
-  s = generic_plan_validator(inventory_path='simple.yaml',
-                             module_path="fast/stages/00-bootstrap",
-                             tf_var_files=['simple.tfvars'])
+  generic_plan_validator(
+      inventory_path='simple.yaml',
+      module_path="fast/stages/00-bootstrap",
+      tf_var_files=['simple.tfvars'],
+  )

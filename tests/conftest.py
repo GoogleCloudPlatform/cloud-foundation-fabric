@@ -159,11 +159,43 @@ def basedir():
 
 
 @pytest.fixture
-def generic_plan_summary():
+def generic_plan_summary(request):
+  'Returns a function to generate a PlanSummary'
 
-  def inner(module_path, tf_var_files=None, basedir=None, **tf_vars):
-    basedir = Path(basedir or BASEDIR)
-    module_path = basedir / module_path
+  def inner(module_path, basedir=None, tf_var_files=None, **tf_vars):
+    '''Run a Terraform plan on the module located at `module_path`.\
+
+    - module_path: terraform root module to run. Can be an absolute
+      path or relative to the root of the repository
+
+    - basedir: directory root to use for relative paths in
+      tf_var_files. If None, then paths are relative to the calling
+      test function
+    
+    - tf_var_files: set of terraform variable files (tfvars) to pass
+      in to terraform
+
+    Returns a PlanSummary object containing 3 attributes:
+    - values: dictionary where the keys are terraform plan addresses
+      and values are the JSON representation (converted to python
+      types) of the attribute values of the resource. 
+
+    - counts: dictionary where the keys are the terraform resource
+      types and the values are the number of times that type appears
+      in the plan
+    
+    - outputs: dictionary of the modules outputs that can be
+      determined at plan type. 
+
+    Consult [1] for mode details on the structure of values and outputs
+
+    [1] https://developer.hashicorp.com/terraform/internals/json-format
+
+    '''
+
+    if basedir is None:
+      basedir = Path(request.fspath).parent
+    module_path = Path(BASEDIR) / module_path
 
     # FIXME: find a way to prevent the temp dir if TFTEST_COPY is not
     # in the environment
@@ -175,21 +207,32 @@ def generic_plan_summary():
         test_path = Path(tmp_path)
         shutil.copytree(module_path, test_path, dirs_exist_ok=True)
 
-        # if we're copying, we might as well remove any auto.tfvars
-        # files from the destintion directory to avoid surprises (e.g.
-        # if you have an active fast deployment with links to configs)
-        autofiles = itertools.chain(test_path.glob("*.auto.tfvars"),
-                                    test_path.glob("*.auto.tfvars.json"),
-                                    test_path.glob("terraform.tfvars"))
-        for f in autofiles:
-          f.unlink()
+        # if we're copying the module, we might as well remove any
+        # files and directories from the test directory that are
+        # automatically read by terraform. Useful to avoid surprises
+        # with (e.g. if you have an active fast deployment with links
+        # to configs)
+        autopaths = itertools.chain(
+            test_path.glob("*.auto.tfvars"),
+            test_path.glob("*.auto.tfvars.json"),
+            test_path.glob("terraform.tfstate*"),
+            test_path.glob("terraform.tfvars"),
+            test_path.glob(".terraform"),
+            # any symlinks?
+        )
+        for p in autopaths:
+          if p.is_dir():
+            shutil.rmtree(p)
+          else:
+            p.unlink()
       else:
         test_path = module_path
 
       # prepare tftest and run plan
       binary = os.environ.get('TERRAFORM', 'terraform')
-      tf = tftest.TerraformTest(test_path, basedir=basedir, binary=binary)
+      tf = tftest.TerraformTest(test_path, binary=binary)
       tf.setup(upgrade=True)
+      tf_var_files = [basedir / x for x in tf_var_files or []]
       plan = tf.plan(output=True, refresh=True, tf_var_file=tf_var_files,
                      tf_vars=tf_vars)
 
@@ -219,15 +262,17 @@ def generic_plan_summary():
 
 
 @pytest.fixture
-def generic_plan_validator(generic_plan_summary):
+def generic_plan_validator(generic_plan_summary, request):
+  'Return a function that builds a PlanSummary and compares it to an yaml inventory'
 
-  def inner(inventory_path, module_path, tf_var_files=None, basedir=None,
+  def inner(inventory_path, module_path, basedir=None, tf_var_files=None,
             **tf_vars):
 
+    if basedir is None:
+      basedir = Path(request.fspath).parent
+
     # allow tfvars and inventory to be relative to the caller
-    caller_path = Path(inspect.stack()[1].filename).parent
-    tf_var_files = [caller_path / x for x in tf_var_files]
-    inventory_path = caller_path / inventory_path
+    inventory_path = basedir / inventory_path
     inventory = yaml.safe_load(inventory_path.read_text())
     assert inventory is not None, f'Inventory {inventory_path} is empty'
 

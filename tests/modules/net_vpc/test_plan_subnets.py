@@ -15,6 +15,7 @@
 DATA_FOLDER = "data"
 
 import yaml
+from pathlib import Path
 
 
 def test_subnet_factory(plan_runner):
@@ -30,6 +31,8 @@ def test_subnet_factory(plan_runner):
 
 
 def test_subnets(generic_plan_validator):
-  generic_plan_validator(inventory_path='subnets.yaml',
-                         module_path="modules/net-vpc",
-                         tf_var_files=['common.tfvars', 'subnets.tfvars'])
+  generic_plan_validator(
+      inventory_path='subnets.yaml',
+      module_path="modules/net-vpc",
+      tf_var_files=['common.tfvars', 'subnets.tfvars'],
+  )
