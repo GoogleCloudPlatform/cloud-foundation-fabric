@@ -15,6 +15,7 @@
 
 import collections
 import inspect
+import itertools
 import os
 import shutil
 import tempfile
@@ -161,26 +162,33 @@ def basedir():
 def generic_plan_summary():
 
   def inner(module_path, tf_var_files=None, basedir=None, **tf_vars):
-    # TODO:
-    # - trigger copy from env var
     basedir = Path(basedir or BASEDIR)
+    module_path = basedir / module_path
 
     # FIXME: find a way to prevent the temp dir if TFTEST_COPY is not
     # in the environment
-    with tempfile.TemporaryDirectory() as tmp_path:
+    with tempfile.TemporaryDirectory(dir=module_path.parent) as tmp_path:
       # if TFTEST_COPY is set, copy the fixture to a temporary
       # directory before running the plan. This is needed if you want
       # to run multiple tests for the same module in parallel
       if os.environ.get('TFTEST_COPY'):
-        shutil.copytree(basedir / module_path, tmp_path, dirs_exist_ok=True)
-        test_path = tmp_path
+        test_path = Path(tmp_path)
+        shutil.copytree(module_path, test_path, dirs_exist_ok=True)
+
+        # if we're copying, we might as well remove any auto.tfvars
+        # files from the destintion directory to avoid surprises (e.g.
+        # if you have an active fast deployment with links to configs)
+        autofiles = itertools.chain(test_path.glob("*.auto.tfvars"),
+                                    test_path.glob("*.auto.tfvars.json"),
+                                    test_path.glob("terraform.tfvars"))
+        for f in autofiles:
+          f.unlink()
       else:
         test_path = module_path
 
-      # prepare tftest
-      tf = tftest.TerraformTest(test_path, basedir=basedir,
-                                binary=os.environ.get('TERRAFORM', 'terraform'))
-
+      # prepare tftest and run plan
+      binary = os.environ.get('TERRAFORM', 'terraform')
+      tf = tftest.TerraformTest(test_path, basedir=basedir, binary=binary)
       tf.setup(upgrade=True)
       plan = tf.plan(output=True, refresh=True, tf_var_file=tf_var_files,
                      tf_vars=tf_vars)
@@ -254,9 +262,11 @@ def generic_plan_validator(generic_plan_summary):
     if 'counts' in inventory:
       expected_counts = inventory['counts']
       for type_, expected_count in expected_counts.items():
-        assert type_ in summary.counts
+        assert type_ in summary.counts, \
+          f'module does not create any resources of type `{type_}`'
         plan_count = summary.counts[type_]
-        assert plan_count == expected_count
+        assert plan_count == expected_count, \
+            f'count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
 
     if 'outputs' in inventory:
       expected_outputs = inventory['outputs']
