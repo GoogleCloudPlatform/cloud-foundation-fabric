@@ -37,38 +37,25 @@ _VAR_ROUTES_NEXT_HOPS = {
 
 
 def test_simple(generic_plan_validator):
-  generic_plan_validator(
-      inventory_path='simple.yaml',
-      module_path='modules/net-vpc',
-      tf_var_files=['common.tfvars'],
-  )
+  generic_plan_validator('modules/net-vpc', 'simple.yaml', ['common.tfvars'])
 
 
 def test_vpc_shared(generic_plan_validator):
-  generic_plan_validator(
-      inventory_path='shared_vpc.yaml',
-      module_path='modules/net-vpc',
-      tf_var_files=['common.tfvars', 'shared_vpc.tfvars'],
-  )
+  generic_plan_validator('modules/net-vpc', 'shared_vpc.yaml',
+                         ['common.tfvars', 'shared_vpc.tfvars'])
 
 
 def test_vpc_peering(generic_plan_validator):
-  generic_plan_validator(
-      inventory_path='peering.yaml',
-      module_path='modules/net-vpc',
-      tf_var_files=['common.tfvars', 'peering.tfvars'],
-  )
+  generic_plan_validator('modules/net-vpc', 'peering.yaml',
+                         ['common.tfvars', 'peering.tfvars'])
 
 
 def test_vpc_routes(generic_plan_summary):
   'Test vpc routes.'
   for next_hop_type, next_hop in _VAR_ROUTES_NEXT_HOPS.items():
     var_routes = _VAR_ROUTES_TEMPLATE % (next_hop_type, next_hop)
-    summary = generic_plan_summary(
-        module_path='modules/net-vpc',
-        tf_var_files=['common.tfvars'],
-        routes=var_routes,
-    )
+    summary = generic_plan_summary('modules/net-vpc', ['common.tfvars'],
+                                   routes=var_routes)
     assert len(summary.values) == 3
     route = summary.values[f'google_compute_route.{next_hop_type}["next-hop"]']
     assert route[f'next_hop_{next_hop_type}'] == next_hop

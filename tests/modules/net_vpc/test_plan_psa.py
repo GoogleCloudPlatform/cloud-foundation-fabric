@@ -16,25 +16,20 @@ import yaml
 
 
 def test_simple(generic_plan_validator):
-  generic_plan_validator(inventory_path='psa_simple.yaml',
-                         module_path="modules/net-vpc",
-                         tf_var_files=['common.tfvars', 'psa_simple.tfvars'])
+  generic_plan_validator("modules/net-vpc", 'psa_simple.yaml',
+                         ['common.tfvars', 'psa_simple.tfvars'])
 
 
 def test_routes_export(generic_plan_validator):
-  generic_plan_validator(
-      inventory_path='psa_routes_export.yaml', module_path="modules/net-vpc",
-      tf_var_files=['common.tfvars', 'psa_routes_export.tfvars'])
+  generic_plan_validator("modules/net-vpc", 'psa_routes_export.yaml',
+                         ['common.tfvars', 'psa_routes_export.tfvars'])
 
 
 def test_routes_import(generic_plan_validator):
-  generic_plan_validator(
-      inventory_path='psa_routes_import.yaml', module_path="modules/net-vpc",
-      tf_var_files=['common.tfvars', 'psa_routes_import.tfvars'])
+  generic_plan_validator("modules/net-vpc", 'psa_routes_import.yaml',
+                         ['common.tfvars', 'psa_routes_import.tfvars'])
 
 
 def test_routes_import_export(generic_plan_validator):
-  generic_plan_validator(
-      inventory_path='psa_routes_import_export.yaml',
-      module_path="modules/net-vpc",
-      tf_var_files=['common.tfvars', 'psa_routes_import_export.tfvars'])
+  generic_plan_validator("modules/net-vpc", 'psa_routes_import_export.yaml',
+                         ['common.tfvars', 'psa_routes_import_export.tfvars'])

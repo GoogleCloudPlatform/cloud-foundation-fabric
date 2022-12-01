@@ -162,7 +162,7 @@ def basedir():
 def generic_plan_summary(request):
   'Returns a function to generate a PlanSummary'
 
-  def inner(module_path, basedir=None, tf_var_files=None, **tf_vars):
+  def inner(module_path, tf_var_files=None, basedir=None, **tf_vars):
     '''Run a Terraform plan on the module located at `module_path`.\
 
     - module_path: terraform root module to run. Can be an absolute
@@ -210,8 +210,8 @@ def generic_plan_summary(request):
         # if we're copying the module, we might as well remove any
         # files and directories from the test directory that are
         # automatically read by terraform. Useful to avoid surprises
-        # with (e.g. if you have an active fast deployment with links
-        # to configs)
+        # surprises if, for example, you have an active fast
+        # deployment with links to configs)
         autopaths = itertools.chain(
             test_path.glob("*.auto.tfvars"),
             test_path.glob("*.auto.tfvars.json"),
@@ -265,65 +265,71 @@ def generic_plan_summary(request):
 def generic_plan_validator(generic_plan_summary, request):
   'Return a function that builds a PlanSummary and compares it to an yaml inventory'
 
-  def inner(inventory_path, module_path, basedir=None, tf_var_files=None,
+  def inner(module_path, inventory_paths, tf_var_files=None, basedir=None,
             **tf_vars):
 
     if basedir is None:
       basedir = Path(request.fspath).parent
 
-    # allow tfvars and inventory to be relative to the caller
-    inventory_path = basedir / inventory_path
-    inventory = yaml.safe_load(inventory_path.read_text())
-    assert inventory is not None, f'Inventory {inventory_path} is empty'
+    summary = generic_plan_summary(module_path=module_path,
+                                   tf_var_files=tf_var_files, basedir=basedir,
+                                   **tf_vars)
 
-    summary = generic_plan_summary(module_path, tf_var_files=tf_var_files,
-                                   basedir=basedir)
+    # allow single single string for inventory_paths
+    if not isinstance(inventory_paths, list):
+      inventory_paths = [inventory_paths]
 
-    # If you add additional asserts to this function:
-    # - put the values coming from the plan on the left side of
-    #   any comparison operators
-    # - put the values coming from user's inventory the right
-    #   side of any comparison operators.
-    # - include a descriptive error message to the assert
+    for path in inventory_paths:
+      # allow tfvars and inventory to be relative to the caller
+      path = basedir / path
+      inventory = yaml.safe_load(path.read_text())
+      assert inventory is not None, f'Inventory {path} is empty'
 
-    # for values:
-    # - verify each address in the user's inventory exists in the plan
-    # - for those address that exist on both the user's inventory and
-    #   the plan output, ensure the set of keys on the inventory are a
-    #   subset of the keys in the plan, and compare their values by
-    #   equality
-    if 'values' in inventory:
-      expected_values = inventory['values']
-      for address, expected_value in expected_values.items():
-        assert address in summary.values, \
-          f'{address} is not a valid address in the plan'
-        for k, v in expected_value.items():
-          assert k in summary.values[address], \
-            f'{k} not found at {address}'
-          plan_value = summary.values[address][k]
-          assert plan_value == v, \
-            f'{k} at {address} failed. Got `{plan_value}`, expected `{v}`'
+      # If you add additional asserts to this function:
+      # - put the values coming from the plan on the left side of
+      #   any comparison operators
+      # - put the values coming from user's inventory the right
+      #   side of any comparison operators.
+      # - include a descriptive error message to the assert
 
-    if 'counts' in inventory:
-      expected_counts = inventory['counts']
-      for type_, expected_count in expected_counts.items():
-        assert type_ in summary.counts, \
-          f'module does not create any resources of type `{type_}`'
-        plan_count = summary.counts[type_]
-        assert plan_count == expected_count, \
-            f'count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
+      # for values:
+      # - verify each address in the user's inventory exists in the plan
+      # - for those address that exist on both the user's inventory and
+      #   the plan output, ensure the set of keys on the inventory are a
+      #   subset of the keys in the plan, and compare their values by
+      #   equality
+      if 'values' in inventory:
+        expected_values = inventory['values']
+        for address, expected_value in expected_values.items():
+          assert address in summary.values, \
+            f'{address} is not a valid address in the plan'
+          for k, v in expected_value.items():
+            assert k in summary.values[address], \
+              f'{k} not found at {address}'
+            plan_value = summary.values[address][k]
+            assert plan_value == v, \
+              f'{k} at {address} failed. Got `{plan_value}`, expected `{v}`'
 
-    if 'outputs' in inventory:
-      expected_outputs = inventory['outputs']
-      for output_name, expected_output in expected_outputs.items():
-        assert output_name in summary.outputs, \
-          f'module does not output `{output_name}`'
-        output = summary.outputs[output_name]
-        # assert 'value' in output, \
-        #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
-        plan_output = output.get('value', '__missing__')
-        assert plan_output == expected_output, \
-            f'output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
+      if 'counts' in inventory:
+        expected_counts = inventory['counts']
+        for type_, expected_count in expected_counts.items():
+          assert type_ in summary.counts, \
+            f'module does not create any resources of type `{type_}`'
+          plan_count = summary.counts[type_]
+          assert plan_count == expected_count, \
+              f'count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
+
+      if 'outputs' in inventory:
+        expected_outputs = inventory['outputs']
+        for output_name, expected_output in expected_outputs.items():
+          assert output_name in summary.outputs, \
+            f'module does not output `{output_name}`'
+          output = summary.outputs[output_name]
+          # assert 'value' in output, \
+          #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
+          plan_output = output.get('value', '__missing__')
+          assert plan_output == expected_output, \
+              f'output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
 
     return summary
 
