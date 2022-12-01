@@ -47,12 +47,16 @@ resource "google_apigee_environment" "environments" {
   dynamic "node_config" {
     for_each = try(each.value.node_config, null) != null ? [""] : []
     content {
-      min_node_count               = node_config.min_node_count
-      max_node_count               = node_config.max_node_count
-      current_aggregate_node_count = node_config.current_aggregate_node_count
+      min_node_count = each.value.node_config.min_node_count
+      max_node_count = each.value.node_config.max_node_count
     }
   }
   org_id = local.org_id
+  lifecycle {
+    ignore_changes = [
+      node_config["current_aggregate_node_count"]
+    ]
+  }
 }
 
 resource "google_apigee_envgroup_attachment" "envgroup_attachments" {

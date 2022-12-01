@@ -79,65 +79,58 @@ module "vpc-firewall" {
 }
 
 module "vpn1" {
-  source     = "../../../modules/net-vpn-dynamic"
-  project_id = var.project_id
-  region     = var.region.gcp1
-  network    = module.vpc.name
-  name       = "to-onprem1"
-  router_asn = var.bgp_asn.gcp1
+  source        = "../../../modules/net-vpn-dynamic"
+  project_id    = var.project_id
+  region        = var.region.gcp1
+  network       = module.vpc.name
+  name          = "to-onprem1"
+  router_config = { asn = var.bgp_asn.gcp1 }
   tunnels = {
     onprem = {
       bgp_peer = {
         address = local.bgp_interface_onprem1
         asn     = var.bgp_asn.onprem1
-      }
-      bgp_peer_options = {
-        advertise_groups = ["ALL_SUBNETS"]
-        advertise_ip_ranges = {
-          (local.netblocks.dns)        = "DNS resolvers"
-          (local.netblocks.private)    = "private.gooogleapis.com"
-          (local.netblocks.restricted) = "restricted.gooogleapis.com"
-        }
-        advertise_mode = "CUSTOM"
-        route_priority = 1000
+        custom_advertise = {
+          all_subnets          = true
+          all_vpc_subnets      = false
+          all_peer_vpc_subnets = false
+          ip_ranges = {
+            (local.netblocks.dns)        = "DNS resolvers"
+            (local.netblocks.private)    = "private.gooogleapis.com"
+            (local.netblocks.restricted) = "restricted.gooogleapis.com"
+        } }
       }
       bgp_session_range = "${local.bgp_interface_gcp1}/30"
-      ike_version       = 2
       peer_ip           = module.vm-onprem.external_ip
-      router            = null
-      shared_secret     = ""
     }
   }
 }
 
 module "vpn2" {
-  source     = "../../../modules/net-vpn-dynamic"
-  project_id = var.project_id
-  region     = var.region.gcp2
-  network    = module.vpc.name
-  name       = "to-onprem2"
-  router_asn = var.bgp_asn.gcp2
+  source        = "../../../modules/net-vpn-dynamic"
+  project_id    = var.project_id
+  region        = var.region.gcp2
+  network       = module.vpc.name
+  name          = "to-onprem2"
+  router_config = { asn = var.bgp_asn.gcp2 }
   tunnels = {
     onprem = {
       bgp_peer = {
         address = local.bgp_interface_onprem2
         asn     = var.bgp_asn.onprem2
-      }
-      bgp_peer_options = {
-        advertise_groups = ["ALL_SUBNETS"]
-        advertise_ip_ranges = {
-          (local.netblocks.dns)        = "DNS resolvers"
-          (local.netblocks.private)    = "private.gooogleapis.com"
-          (local.netblocks.restricted) = "restricted.gooogleapis.com"
+        custom_advertise = {
+          all_subnets          = true
+          all_vpc_subnets      = false
+          all_peer_vpc_subnets = false
+          ip_ranges = {
+            (local.netblocks.dns)        = "DNS resolvers"
+            (local.netblocks.private)    = "private.gooogleapis.com"
+            (local.netblocks.restricted) = "restricted.gooogleapis.com"
+          }
         }
-        advertise_mode = "CUSTOM"
-        route_priority = 1000
       }
       bgp_session_range = "${local.bgp_interface_gcp2}/30"
-      ike_version       = 2
       peer_ip           = module.vm-onprem.external_ip
-      router            = null
-      shared_secret     = ""
     }
   }
 }

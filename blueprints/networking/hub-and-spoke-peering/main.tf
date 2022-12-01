@@ -304,7 +304,6 @@ module "vpn-hub" {
   remote_ranges = values(var.private_service_ranges)
   tunnels = {
     spoke-2 = {
-      ike_version       = 2
       peer_ip           = module.vpn-spoke-2.address
       shared_secret     = ""
       traffic_selectors = { local = ["0.0.0.0/0"], remote = null }
@@ -323,7 +322,6 @@ module "vpn-spoke-2" {
   remote_ranges = ["10.0.0.0/8"]
   tunnels = {
     hub = {
-      ike_version       = 2
       peer_ip           = module.vpn-hub.address
       shared_secret     = module.vpn-hub.random_secret
       traffic_selectors = { local = ["0.0.0.0/0"], remote = null }
