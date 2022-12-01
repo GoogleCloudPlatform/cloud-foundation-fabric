@@ -333,7 +333,6 @@ values:
     friendly_name: Billing export.
     labels: null
     location: EU
-    max_time_travel_hours: null
     project: fast-prod-billing-exp-0
   module.billing-export-project[0].data.google_bigquery_default_service_account.bq_sa[0]:
     project: fast-prod-billing-exp-0
@@ -380,7 +379,6 @@ values:
     friendly_name: Audit logs export.
     labels: null
     location: EU
-    max_time_travel_hours: null
     project: fast-prod-audit-logs-0
   module.log-export-project.data.google_bigquery_default_service_account.bq_sa[0]:
     project: fast-prod-audit-logs-0
