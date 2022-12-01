@@ -8,7 +8,7 @@ values:
     members:
     - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
-    role: organizations/123456789012/roles/organizationIamAdmin12
+    role: organizations/123456789012/roles/organizationIamAdmin
   module.automation-project.data.google_bigquery_default_service_account.bq_sa[0]:
     project: fast-prod-iac-core-0
   module.automation-project.data.google_storage_project_service_account.gcs_sa[0]:
@@ -555,17 +555,17 @@ values:
     - group:gcp-security-admins@fast.example.com
     org_id: '123456789012'
     role: roles/securitycenter.admin
-  module.organization.google_organization_iam_custom_role.roles["organizationIamAdmin12"]:
+  module.organization.google_organization_iam_custom_role.roles["organizationIamAdmin"]:
     description: Terraform-managed.
     org_id: '123456789012'
     permissions:
     - resourcemanager.organizations.get
     - resourcemanager.organizations.getIamPolicy
     - resourcemanager.organizations.setIamPolicy
-    role_id: organizationIamAdmin12
+    role_id: organizationIamAdmin
     stage: GA
-    title: Custom role organizationIamAdmin12
-  module.organization.google_organization_iam_custom_role.roles["serviceProjectNetworkAdmin12"]:
+    title: Custom role organizationIamAdmin
+  module.organization.google_organization_iam_custom_role.roles["serviceProjectNetworkAdmin"]:
     description: Terraform-managed.
     org_id: '123456789012'
     permissions:
@@ -579,9 +579,9 @@ values:
     - compute.subnetworks.setIamPolicy
     - dns.networks.bindPrivateDNSZone
     - resourcemanager.projects.get
-    role_id: serviceProjectNetworkAdmin12
+    role_id: serviceProjectNetworkAdmin
     stage: GA
-    title: Custom role serviceProjectNetworkAdmin12
+    title: Custom role serviceProjectNetworkAdmin
   module.organization.google_organization_iam_member.additive["roles/accesscontextmanager.policyAdmin-group:gcp-security-admins@fast.example.com"]:
     condition: []
     member: group:gcp-security-admins@fast.example.com
@@ -690,8 +690,8 @@ outputs:
   billing_dataset: __missing__
   cicd_repositories: {}
   custom_roles:
-    organization_iam_admin: organizations/123456789012/roles/organizationIamAdmin12
-    service_project_network_admin: organizations/123456789012/roles/serviceProjectNetworkAdmin12
+    organization_iam_admin: organizations/123456789012/roles/organizationIamAdmin
+    service_project_network_admin: organizations/123456789012/roles/serviceProjectNetworkAdmin
   federated_identity:
     pool: null
     providers: {}
