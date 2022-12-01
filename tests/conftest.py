@@ -165,10 +165,12 @@ def generic_plan_summary():
     # - trigger copy from env var
     basedir = Path(basedir or BASEDIR)
 
+    # FIXME: find a way to prevent the temp dir if TFTEST_COPY is not
+    # in the environment
     with tempfile.TemporaryDirectory() as tmp_path:
       # if TFTEST_COPY is set, copy the fixture to a temporary
       # directory before running the plan. This is needed if you want
-      # to run tests in parallel
+      # to run multiple tests for the same module in parallel
       if os.environ.get('TFTEST_COPY'):
         shutil.copytree(basedir / module_path, tmp_path, dirs_exist_ok=True)
         test_path = tmp_path
@@ -184,7 +186,6 @@ def generic_plan_summary():
                      tf_vars=tf_vars)
 
       # compute resource type counts and address->values map
-
       values = {}
       counts = collections.defaultdict(int)
       q = collections.deque([plan.root_module])
