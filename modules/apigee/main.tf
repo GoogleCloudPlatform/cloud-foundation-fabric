@@ -52,6 +52,11 @@ resource "google_apigee_environment" "environments" {
     }
   }
   org_id = local.org_id
+  lifecycle {
+    ignore_changes = [
+      node_config["current_aggregate_node_count"]
+    ]
+  }
 }
 
 resource "google_apigee_envgroup_attachment" "envgroup_attachments" {
