@@ -158,107 +158,177 @@ def basedir():
   return BASEDIR
 
 
+def _generic_plan_summary(module_path, tf_var_files=None, basedir=None,
+                          **tf_vars):
+  '''Run a Terraform plan on the module located at `module_path`.\
+
+  - module_path: terraform root module to run. Can be an absolute
+    path or relative to the root of the repository
+
+  - basedir: directory root to use for relative paths in
+    tf_var_files. If None, then paths are relative to the calling
+    test function
+
+  - tf_var_files: set of terraform variable files (tfvars) to pass
+    in to terraform
+
+  Returns a PlanSummary object containing 3 attributes:
+  - values: dictionary where the keys are terraform plan addresses
+    and values are the JSON representation (converted to python
+    types) of the attribute values of the resource. 
+
+  - counts: dictionary where the keys are the terraform resource
+    types and the values are the number of times that type appears
+    in the plan
+
+  - outputs: dictionary of the modules outputs that can be
+    determined at plan type. 
+
+  Consult [1] for mode details on the structure of values and outputs
+
+  [1] https://developer.hashicorp.com/terraform/internals/json-format
+
+  '''
+
+  module_path = Path(BASEDIR) / module_path
+
+  # FIXME: find a way to prevent the temp dir if TFTEST_COPY is not
+  # in the environment
+  with tempfile.TemporaryDirectory(dir=module_path.parent) as tmp_path:
+    # if TFTEST_COPY is set, copy the fixture to a temporary
+    # directory before running the plan. This is needed if you want
+    # to run multiple tests for the same module in parallel
+    if os.environ.get('TFTEST_COPY'):
+      test_path = Path(tmp_path)
+      shutil.copytree(module_path, test_path, dirs_exist_ok=True)
+
+      # if we're copying the module, we might as well remove any
+      # files and directories from the test directory that are
+      # automatically read by terraform. Useful to avoid surprises
+      # surprises if, for example, you have an active fast
+      # deployment with links to configs)
+      autopaths = itertools.chain(
+          test_path.glob("*.auto.tfvars"),
+          test_path.glob("*.auto.tfvars.json"),
+          test_path.glob("terraform.tfstate*"),
+          test_path.glob("terraform.tfvars"),
+          test_path.glob(".terraform"),
+          # any symlinks?
+      )
+      for p in autopaths:
+        if p.is_dir():
+          shutil.rmtree(p)
+        else:
+          p.unlink()
+    else:
+      test_path = module_path
+
+    # prepare tftest and run plan
+    binary = os.environ.get('TERRAFORM', 'terraform')
+    tf = tftest.TerraformTest(test_path, binary=binary)
+    tf.setup(upgrade=True)
+    tf_var_files = [basedir / x for x in tf_var_files or []]
+    plan = tf.plan(output=True, refresh=True, tf_var_file=tf_var_files,
+                   tf_vars=tf_vars)
+
+    # compute resource type counts and address->values map
+    values = {}
+    counts = collections.defaultdict(int)
+    q = collections.deque([plan.root_module])
+    while q:
+      e = q.popleft()
+
+      if 'type' in e:
+        counts[e['type']] += 1
+      if 'values' in e:
+        values[e['address']] = e['values']
+
+      for x in e.get('resources', []):
+        q.append(x)
+      for x in e.get('child_modules', []):
+        q.append(x)
+
+    # extract planned outputs
+    outputs = plan.get('planned_values', {}).get('outputs', {})
+
+    return PlanSummary(values, dict(counts), outputs)
+
+
 @pytest.fixture
 def generic_plan_summary(request):
   'Returns a function to generate a PlanSummary'
 
   def inner(module_path, tf_var_files=None, basedir=None, **tf_vars):
-    '''Run a Terraform plan on the module located at `module_path`.\
-
-    - module_path: terraform root module to run. Can be an absolute
-      path or relative to the root of the repository
-
-    - basedir: directory root to use for relative paths in
-      tf_var_files. If None, then paths are relative to the calling
-      test function
-    
-    - tf_var_files: set of terraform variable files (tfvars) to pass
-      in to terraform
-
-    Returns a PlanSummary object containing 3 attributes:
-    - values: dictionary where the keys are terraform plan addresses
-      and values are the JSON representation (converted to python
-      types) of the attribute values of the resource. 
-
-    - counts: dictionary where the keys are the terraform resource
-      types and the values are the number of times that type appears
-      in the plan
-    
-    - outputs: dictionary of the modules outputs that can be
-      determined at plan type. 
-
-    Consult [1] for mode details on the structure of values and outputs
-
-    [1] https://developer.hashicorp.com/terraform/internals/json-format
-
-    '''
-
     if basedir is None:
       basedir = Path(request.fspath).parent
-    module_path = Path(BASEDIR) / module_path
-
-    # FIXME: find a way to prevent the temp dir if TFTEST_COPY is not
-    # in the environment
-    with tempfile.TemporaryDirectory(dir=module_path.parent) as tmp_path:
-      # if TFTEST_COPY is set, copy the fixture to a temporary
-      # directory before running the plan. This is needed if you want
-      # to run multiple tests for the same module in parallel
-      if os.environ.get('TFTEST_COPY'):
-        test_path = Path(tmp_path)
-        shutil.copytree(module_path, test_path, dirs_exist_ok=True)
-
-        # if we're copying the module, we might as well remove any
-        # files and directories from the test directory that are
-        # automatically read by terraform. Useful to avoid surprises
-        # surprises if, for example, you have an active fast
-        # deployment with links to configs)
-        autopaths = itertools.chain(
-            test_path.glob("*.auto.tfvars"),
-            test_path.glob("*.auto.tfvars.json"),
-            test_path.glob("terraform.tfstate*"),
-            test_path.glob("terraform.tfvars"),
-            test_path.glob(".terraform"),
-            # any symlinks?
-        )
-        for p in autopaths:
-          if p.is_dir():
-            shutil.rmtree(p)
-          else:
-            p.unlink()
-      else:
-        test_path = module_path
-
-      # prepare tftest and run plan
-      binary = os.environ.get('TERRAFORM', 'terraform')
-      tf = tftest.TerraformTest(test_path, binary=binary)
-      tf.setup(upgrade=True)
-      tf_var_files = [basedir / x for x in tf_var_files or []]
-      plan = tf.plan(output=True, refresh=True, tf_var_file=tf_var_files,
-                     tf_vars=tf_vars)
-
-      # compute resource type counts and address->values map
-      values = {}
-      counts = collections.defaultdict(int)
-      q = collections.deque([plan.root_module])
-      while q:
-        e = q.popleft()
-
-        if 'type' in e:
-          counts[e['type']] += 1
-        if 'values' in e:
-          values[e['address']] = e['values']
-
-        for x in e.get('resources', []):
-          q.append(x)
-        for x in e.get('child_modules', []):
-          q.append(x)
-
-      # extract planned outputs
-      outputs = plan.get('planned_values', {}).get('outputs', {})
-
-      return PlanSummary(values, dict(counts), outputs)
+    return _generic_plan_summary(module_path, tf_var_files, basedir, **tf_vars)
 
   return inner
+
+
+def _generic_plan_validator(module_path, inventory_paths, tf_var_files=None,
+                            basedir=None, **tf_vars):
+  summary = _generic_plan_summary(module_path=module_path,
+                                  tf_var_files=tf_var_files, basedir=basedir,
+                                  **tf_vars)
+
+  # allow single single string for inventory_paths
+  if not isinstance(inventory_paths, list):
+    inventory_paths = [inventory_paths]
+
+  for path in inventory_paths:
+    # allow tfvars and inventory to be relative to the caller
+    path = basedir / path
+    inventory = yaml.safe_load(path.read_text())
+    assert inventory is not None, f'Inventory {path} is empty'
+
+    # If you add additional asserts to this function:
+    # - put the values coming from the plan on the left side of
+    #   any comparison operators
+    # - put the values coming from user's inventory the right
+    #   side of any comparison operators.
+    # - include a descriptive error message to the assert
+
+    # for values:
+    # - verify each address in the user's inventory exists in the plan
+    # - for those address that exist on both the user's inventory and
+    #   the plan output, ensure the set of keys on the inventory are a
+    #   subset of the keys in the plan, and compare their values by
+    #   equality
+    if 'values' in inventory:
+      expected_values = inventory['values']
+      for address, expected_value in expected_values.items():
+        assert address in summary.values, \
+          f'{address} is not a valid address in the plan'
+        for k, v in expected_value.items():
+          assert k in summary.values[address], \
+            f'{k} not found at {address}'
+          plan_value = summary.values[address][k]
+          assert plan_value == v, \
+            f'{k} at {address} failed. Got `{plan_value}`, expected `{v}`'
+
+    if 'counts' in inventory:
+      expected_counts = inventory['counts']
+      for type_, expected_count in expected_counts.items():
+        assert type_ in summary.counts, \
+          f'module does not create any resources of type `{type_}`'
+        plan_count = summary.counts[type_]
+        assert plan_count == expected_count, \
+            f'count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
+
+    if 'outputs' in inventory:
+      expected_outputs = inventory['outputs']
+      for output_name, expected_output in expected_outputs.items():
+        assert output_name in summary.outputs, \
+          f'module does not output `{output_name}`'
+        output = summary.outputs[output_name]
+        # assert 'value' in output, \
+        #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
+        plan_output = output.get('value', '__missing__')
+        assert plan_output == expected_output, \
+            f'output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
+
+  return summary
 
 
 @pytest.fixture
@@ -267,70 +337,42 @@ def generic_plan_validator(generic_plan_summary, request):
 
   def inner(module_path, inventory_paths, tf_var_files=None, basedir=None,
             **tf_vars):
-
     if basedir is None:
       basedir = Path(request.fspath).parent
-
-    summary = generic_plan_summary(module_path=module_path,
-                                   tf_var_files=tf_var_files, basedir=basedir,
-                                   **tf_vars)
-
-    # allow single single string for inventory_paths
-    if not isinstance(inventory_paths, list):
-      inventory_paths = [inventory_paths]
-
-    for path in inventory_paths:
-      # allow tfvars and inventory to be relative to the caller
-      path = basedir / path
-      inventory = yaml.safe_load(path.read_text())
-      assert inventory is not None, f'Inventory {path} is empty'
-
-      # If you add additional asserts to this function:
-      # - put the values coming from the plan on the left side of
-      #   any comparison operators
-      # - put the values coming from user's inventory the right
-      #   side of any comparison operators.
-      # - include a descriptive error message to the assert
-
-      # for values:
-      # - verify each address in the user's inventory exists in the plan
-      # - for those address that exist on both the user's inventory and
-      #   the plan output, ensure the set of keys on the inventory are a
-      #   subset of the keys in the plan, and compare their values by
-      #   equality
-      if 'values' in inventory:
-        expected_values = inventory['values']
-        for address, expected_value in expected_values.items():
-          assert address in summary.values, \
-            f'{address} is not a valid address in the plan'
-          for k, v in expected_value.items():
-            assert k in summary.values[address], \
-              f'{k} not found at {address}'
-            plan_value = summary.values[address][k]
-            assert plan_value == v, \
-              f'{k} at {address} failed. Got `{plan_value}`, expected `{v}`'
-
-      if 'counts' in inventory:
-        expected_counts = inventory['counts']
-        for type_, expected_count in expected_counts.items():
-          assert type_ in summary.counts, \
-            f'module does not create any resources of type `{type_}`'
-          plan_count = summary.counts[type_]
-          assert plan_count == expected_count, \
-              f'count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
-
-      if 'outputs' in inventory:
-        expected_outputs = inventory['outputs']
-        for output_name, expected_output in expected_outputs.items():
-          assert output_name in summary.outputs, \
-            f'module does not output `{output_name}`'
-          output = summary.outputs[output_name]
-          # assert 'value' in output, \
-          #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
-          plan_output = output.get('value', '__missing__')
-          assert plan_output == expected_output, \
-              f'output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
-
-    return summary
+    return _generic_plan_validator(module_path, inventory_paths, tf_var_files,
+                                   basedir, **tf_vars)
 
   return inner
+
+
+def pytest_collect_file(parent, file_path):
+  if file_path.suffix == ".yaml" and file_path.name.startswith("tftest"):
+    return YamlFile.from_parent(parent, path=file_path)
+
+
+class YamlFile(pytest.File):
+
+  def collect(self):
+    raw = yaml.safe_load(self.path.open())
+    module = raw['module']
+    for test_name, spec in raw['tests'].items():
+      inventory = spec.get('inventory', f'{test_name}.yaml')
+      tfvars = spec['tfvars']
+      yield YamlItem.from_parent(self, name=test_name, module=module,
+                                 inventory=inventory, tfvars=tfvars)
+
+
+class YamlItem(pytest.Item):
+
+  def __init__(self, name, parent, module, inventory, tfvars):
+    super().__init__(name, parent)
+    self.module = module
+    self.inventory = inventory
+    self.tfvars = tfvars
+
+  def runtest(self):
+    _generic_plan_validator(self.module, self.inventory, self.tfvars,
+                            self.parent.path.parent)
+
+  def reportinfo(self):
+    return self.path, None, self.name

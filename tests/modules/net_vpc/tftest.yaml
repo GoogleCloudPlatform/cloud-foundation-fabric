@@ -1,0 +1,27 @@
+module: modules/net-vpc
+
+tests:
+  simple:
+    tfvars:
+      - common.tfvars
+    inventory:
+      - simple.yaml
+
+  subnets:
+    tfvars:
+      - common.tfvars
+      - subnets.tfvars
+
+  peering:
+    tfvars:
+      - common.tfvars
+      - peering.tfvars
+    inventory:
+      - peering.yaml
+
+  shared_vpc:
+    tfvars:
+      - common.tfvars
+      - shared_vpc.tfvars
+    inventory:
+      - shared_vpc.yaml
