@@ -4,8 +4,6 @@ tests:
   simple:
     tfvars:
       - common.tfvars
-    inventory:
-      - simple.yaml
 
   subnets:
     tfvars:
@@ -16,12 +14,35 @@ tests:
     tfvars:
       - common.tfvars
       - peering.tfvars
-    inventory:
-      - peering.yaml
 
   shared_vpc:
     tfvars:
       - common.tfvars
       - shared_vpc.tfvars
+
+  factory:
+    tfvars:
+      - common.tfvars
+      - factory.tfvars
     inventory:
-      - shared_vpc.yaml
+      - factory.yaml
+
+  psa_simple:
+    tfvars:
+      - common.tfvars
+      - psa_simple.tfvars
+
+  psa_routes_export:
+    tfvars:
+      - common.tfvars
+      - psa_routes_export.tfvars
+
+  psa_routes_import:
+    tfvars:
+      - common.tfvars
+      - psa_routes_import.tfvars
+
+  psa_routes_import_export:
+    tfvars:
+      - common.tfvars
+      - psa_routes_import_export.tfvars

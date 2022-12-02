@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"Shared fixtures"
+'Shared fixtures.'
 
 import collections
 import inspect
@@ -32,18 +32,18 @@ BASEDIR = os.path.dirname(os.path.dirname(__file__))
 
 @pytest.fixture(scope='session')
 def _plan_runner():
-  "Returns a function to run Terraform plan on a fixture."
+  'Return a function to run Terraform plan on a fixture.'
 
   def run_plan(fixture_path=None, extra_files=None, tf_var_file=None,
                targets=None, refresh=True, tmpdir=True, **tf_vars):
-    "Runs Terraform plan and returns parsed output."
+    'Run Terraform plan and returns parsed output.'
     if fixture_path is None:
       # find out the fixture directory from the caller's directory
       caller = inspect.stack()[2]
-      fixture_path = os.path.join(os.path.dirname(caller.filename), "fixture")
+      fixture_path = os.path.join(os.path.dirname(caller.filename), 'fixture')
 
     fixture_parent = os.path.dirname(fixture_path)
-    fixture_prefix = os.path.basename(fixture_path) + "_"
+    fixture_prefix = os.path.basename(fixture_path) + '_'
     with tempfile.TemporaryDirectory(prefix=fixture_prefix,
                                      dir=fixture_parent) as tmp_path:
       # copy fixture to a temporary directory so we can execute
@@ -62,11 +62,11 @@ def _plan_runner():
 
 @pytest.fixture(scope='session')
 def plan_runner(_plan_runner):
-  "Returns a function to run Terraform plan on a module fixture."
+  'Return a function to run Terraform plan on a module fixture.'
 
   def run_plan(fixture_path=None, extra_files=None, tf_var_file=None,
                targets=None, **tf_vars):
-    "Runs Terraform plan and returns plan and module resources."
+    'Run Terraform plan and returns plan and module resources.'
     plan = _plan_runner(fixture_path, extra_files=extra_files,
                         tf_var_file=tf_var_file, targets=targets, **tf_vars)
     # skip the fixture
@@ -78,11 +78,11 @@ def plan_runner(_plan_runner):
 
 @pytest.fixture(scope='session')
 def e2e_plan_runner(_plan_runner):
-  "Returns a function to run Terraform plan on an end-to-end fixture."
+  'Return a function to run Terraform plan on an end-to-end fixture.'
 
   def run_plan(fixture_path=None, tf_var_file=None, targets=None, refresh=True,
                include_bare_resources=False, **tf_vars):
-    "Runs Terraform plan on an end-to-end module using defaults, returns data."
+    'Run Terraform plan on an end-to-end module using defaults, returns data.'
     plan = _plan_runner(fixture_path, tf_var_file=tf_var_file, targets=targets,
                         refresh=refresh, **tf_vars)
     # skip the fixture
@@ -100,8 +100,10 @@ def e2e_plan_runner(_plan_runner):
 
 @pytest.fixture(scope='session')
 def recursive_e2e_plan_runner(_plan_runner):
-  """Plan runner for end-to-end root module, returns total number of
-  (nested) modules and resources"""
+  """
+  Plan runner for end-to-end root module, returns total number of
+  (nested) modules and resources
+  """
 
   def walk_plan(node, modules, resources):
     new_modules = node.get('child_modules', [])
@@ -113,7 +115,7 @@ def recursive_e2e_plan_runner(_plan_runner):
   def run_plan(fixture_path=None, tf_var_file=None, targets=None, refresh=True,
                include_bare_resources=False, compute_sums=True, tmpdir=True,
                **tf_vars):
-    "Runs Terraform plan on a root module using defaults, returns data."
+    'Run Terraform plan on a root module using defaults, returns data.'
     plan = _plan_runner(fixture_path, tf_var_file=tf_var_file, targets=targets,
                         refresh=refresh, tmpdir=tmpdir, **tf_vars)
     modules = []
@@ -126,17 +128,17 @@ def recursive_e2e_plan_runner(_plan_runner):
 
 @pytest.fixture(scope='session')
 def apply_runner():
-  "Returns a function to run Terraform apply on a fixture."
+  'Return a function to run Terraform apply on a fixture.'
 
   def run_apply(fixture_path=None, **tf_vars):
-    "Runs Terraform plan and returns parsed output."
+    'Run Terraform plan and returns parsed output.'
     if fixture_path is None:
       # find out the fixture directory from the caller's directory
       caller = inspect.stack()[1]
-      fixture_path = os.path.join(os.path.dirname(caller.filename), "fixture")
+      fixture_path = os.path.join(os.path.dirname(caller.filename), 'fixture')
 
     fixture_parent = os.path.dirname(fixture_path)
-    fixture_prefix = os.path.basename(fixture_path) + "_"
+    fixture_prefix = os.path.basename(fixture_path) + '_'
 
     with tempfile.TemporaryDirectory(prefix=fixture_prefix,
                                      dir=fixture_parent) as tmp_path:
@@ -160,7 +162,8 @@ def basedir():
 
 def _generic_plan_summary(module_path, tf_var_files=None, basedir=None,
                           **tf_vars):
-  '''Run a Terraform plan on the module located at `module_path`.\
+  """
+  Run a Terraform plan on the module located at `module_path`.
 
   - module_path: terraform root module to run. Can be an absolute
     path or relative to the root of the repository
@@ -187,9 +190,7 @@ def _generic_plan_summary(module_path, tf_var_files=None, basedir=None,
   Consult [1] for mode details on the structure of values and outputs
 
   [1] https://developer.hashicorp.com/terraform/internals/json-format
-
-  '''
-
+  """
   module_path = Path(BASEDIR) / module_path
 
   # FIXME: find a way to prevent the temp dir if TFTEST_COPY is not
@@ -202,17 +203,16 @@ def _generic_plan_summary(module_path, tf_var_files=None, basedir=None,
       test_path = Path(tmp_path)
       shutil.copytree(module_path, test_path, dirs_exist_ok=True)
 
-      # if we're copying the module, we might as well remove any
-      # files and directories from the test directory that are
-      # automatically read by terraform. Useful to avoid surprises
-      # surprises if, for example, you have an active fast
-      # deployment with links to configs)
+      # if we're copying the module, we might as well remove any files
+      # and directories from the test directory that are automatically
+      # read by terraform. Useful to avoid surprises if, for example,
+      # you have an active fast deployment with links to configs)
       autopaths = itertools.chain(
-          test_path.glob("*.auto.tfvars"),
-          test_path.glob("*.auto.tfvars.json"),
-          test_path.glob("terraform.tfstate*"),
-          test_path.glob("terraform.tfvars"),
-          test_path.glob(".terraform"),
+          test_path.glob('*.auto.tfvars'),
+          test_path.glob('*.auto.tfvars.json'),
+          test_path.glob('terraform.tfstate*'),
+          test_path.glob('terraform.tfvars'),
+          test_path.glob('.terraform'),
           # any symlinks?
       )
       for p in autopaths:
@@ -256,7 +256,7 @@ def _generic_plan_summary(module_path, tf_var_files=None, basedir=None,
 
 @pytest.fixture
 def generic_plan_summary(request):
-  'Returns a function to generate a PlanSummary'
+  'Return a function to generate a PlanSummary.'
 
   def inner(module_path, tf_var_files=None, basedir=None, **tf_vars):
     if basedir is None:
@@ -332,8 +332,8 @@ def _generic_plan_validator(module_path, inventory_paths, tf_var_files=None,
 
 
 @pytest.fixture
-def generic_plan_validator(generic_plan_summary, request):
-  'Return a function that builds a PlanSummary and compares it to an yaml inventory'
+def generic_plan_validator(request):
+  'Return a function that builds a PlanSummary and compares it to an yaml inventory.'
 
   def inner(module_path, inventory_paths, tf_var_files=None, basedir=None,
             **tf_vars):
@@ -346,11 +346,11 @@ def generic_plan_validator(generic_plan_summary, request):
 
 
 def pytest_collect_file(parent, file_path):
-  if file_path.suffix == ".yaml" and file_path.name.startswith("tftest"):
-    return YamlFile.from_parent(parent, path=file_path)
+  if file_path.suffix == '.yaml' and file_path.name.startswith('tftest'):
+    return FabricTestFile.from_parent(parent, path=file_path)
 
 
-class YamlFile(pytest.File):
+class FabricTestFile(pytest.File):
 
   def collect(self):
     raw = yaml.safe_load(self.path.open())
@@ -358,11 +358,11 @@ class YamlFile(pytest.File):
     for test_name, spec in raw['tests'].items():
       inventory = spec.get('inventory', f'{test_name}.yaml')
       tfvars = spec['tfvars']
-      yield YamlItem.from_parent(self, name=test_name, module=module,
-                                 inventory=inventory, tfvars=tfvars)
+      yield FabricTestItem.from_parent(self, name=test_name, module=module,
+                                       inventory=inventory, tfvars=tfvars)
 
 
-class YamlItem(pytest.Item):
+class FabricTestItem(pytest.Item):
 
   def __init__(self, name, parent, module, inventory, tfvars):
     super().__init__(name, parent)
