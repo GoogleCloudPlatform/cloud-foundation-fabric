@@ -37,9 +37,9 @@ resource "google_compute_url_map" "default" {
 
   dynamic "default_route_action" {
     for_each = (
-      var.urlmap_config.route_action == null
+      var.urlmap_config.default_route_action == null
       ? []
-      : [var.urlmap_config.route_action]
+      : [var.urlmap_config.default_route_action]
     )
     iterator = route_action
     content {

@@ -20,6 +20,39 @@ variable "address" {
   default     = null
 }
 
+variable "backend_buckets_config" {
+  description = "Backend buckets configuration."
+  type = map(object({
+    bucket_name             = string
+    compression_mode        = optional(string)
+    custom_response_headers = optional(list(string))
+    description             = optional(string)
+    edge_security_policy    = optional(string)
+    enable_cdn              = optional(bool)
+    cdn_policy = optional(object({
+      bypass_cache_on_request_headers = optional(list(string))
+      cache_mode                      = optional(string)
+      client_ttl                      = optional(number)
+      default_ttl                     = optional(number)
+      max_ttl                         = optional(number)
+      negative_caching                = optional(bool)
+      request_coalescing              = optional(bool)
+      serve_while_stale               = optional(bool)
+      signed_url_cache_max_age_sec    = optional(number)
+      cache_key_policy = optional(object({
+        include_http_headers   = optional(list(string))
+        query_string_whitelist = optional(list(string))
+      }))
+      negative_caching_policy = optional(object({
+        code = optional(number)
+        ttl  = optional(number)
+      }))
+    }))
+  }))
+  default  = {}
+  nullable = true
+}
+
 variable "description" {
   description = "Optional description used for resources."
   type        = string
@@ -63,7 +96,12 @@ variable "name" {
 variable "neg_configs" {
   description = "Optional network endpoint groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
-    project_id = optional(string)
+    project_id  = optional(string)
+    description = optional(string)
+    cloudfunction = optional(object({
+      target_function = optional(string)
+      target_urlmask  = optional(string)
+    }))
     cloudrun = optional(object({
       region = string
       target_service = optional(object({
@@ -73,10 +111,10 @@ variable "neg_configs" {
       target_urlmask = optional(string)
     }))
     gce = optional(object({
-      zone = string
+      subnetwork = string
+      zone       = string
       # default_port = optional(number)
-      network    = optional(string)
-      subnetwork = optional(string)
+      network = optional(string)
       endpoints = optional(list(object({
         instance   = string
         ip_address = string
@@ -94,6 +132,15 @@ variable "neg_configs" {
         port       = number
       })))
     }))
+    internet = optional(object({
+      use_fqdn = optional(bool, true)
+      # re-enable once provider properly support this
+      # default_port = optional(number)
+      endpoints = optional(list(object({
+        destination = string
+        port        = number
+      })))
+    }))
     # psc = optional(object({}))
   }))
   default  = {}
@@ -101,12 +148,14 @@ variable "neg_configs" {
   validation {
     condition = alltrue([
       for k, v in var.neg_configs : (
+        (try(v.cloudfunction, null) == null ? 0 : 1) +
         (try(v.cloudrun, null) == null ? 0 : 1) +
         (try(v.gce, null) == null ? 0 : 1) +
-        (try(v.hybrid, null) == null ? 0 : 1) == 1
+        (try(v.hybrid, null) == null ? 0 : 1) +
+        (try(v.internet, null) == null ? 0 : 1) == 1
       )
     ])
-    error_message = "Only one type of neg can be configured at a time."
+    error_message = "Only one type of NEG can be configured at a time."
   }
   validation {
     condition = alltrue([
@@ -116,14 +165,23 @@ variable "neg_configs" {
         : v.cloudrun.target_urlmask != null || v.cloudrun.target_service != null
       )
     ])
-    error_message = "Cloud Run negs need either target type or target urlmask defined."
+    error_message = "Cloud Run NEGs need either target service or target urlmask defined."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.neg_configs : (
+        v.cloudfunction == null
+        ? true
+        : v.cloudfunction.target_urlmask != null || v.cloudfunction.target_function != null
+      )
+    ])
+    error_message = "Cloud Function NEGs need either target function or target urlmask defined."
   }
 }
 
-variable "network_tier_premium" {
-  description = "Use premium network tier. Defaults to true."
-  type        = bool
-  default     = true
+variable "network" {
+  description = "Network name."
+  type        = string
   nullable    = false
 }
 
@@ -165,14 +223,5 @@ variable "ssl_certificates" {
     })), {})
   })
   default  = {}
-  nullable = false
-}
-
-variable "vpc_config" {
-  description = "VPC-level configuration."
-  type = object({
-    network    = string
-    subnetwork = string
-  })
   nullable = false
 }

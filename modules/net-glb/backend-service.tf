@@ -22,7 +22,13 @@ locals {
       for k, v in google_compute_instance_group.default : k => v.id
     },
     {
+      for k, v in google_compute_global_network_endpoint_group.default : k => v.id
+    },
+    {
       for k, v in google_compute_network_endpoint_group.default : k => v.id
+    },
+    {
+      for k, v in google_compute_region_network_endpoint_group.default : k => v.id
     }
   )
   hc_ids = {
@@ -68,7 +74,6 @@ resource "google_compute_backend_service" "default" {
       balancing_mode  = backend.value.balancing_mode # UTILIZATION, RATE
       capacity_scaler = backend.value.capacity_scaler
       description     = backend.value.description
-      failover        = backend.value.failover
       max_connections = try(
         backend.value.max_connections.per_group, null
       )

@@ -16,7 +16,7 @@
 
 output "address" {
   description = "Forwarding rule address."
-  value       = google_compute_forwarding_rule.default.ip_address
+  value       = google_compute_global_forwarding_rule.default.ip_address
 }
 
 output "backend_service_ids" {
@@ -28,7 +28,7 @@ output "backend_service_ids" {
 
 output "forwarding_rule" {
   description = "Forwarding rule resource."
-  value       = google_compute_forwarding_rule.default
+  value       = google_compute_global_forwarding_rule.default
 }
 
 output "group_ids" {

@@ -14,32 +14,65 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Backend groups and NEGs resources.
+# tfdoc:file:description Backend groups and backend buckets resources.
 
-locals {
-  _neg_endpoints = flatten([
-    for k, v in local.neg_zonal : [
-      for vv in v.endpoints : merge(vv, { neg = k, zone = v.zone })
-    ]
-  ])
-  neg_endpoints = {
-    for v in local._neg_endpoints :
-    "${v.neg}-${v.ip_address}-${coalesce(v.port, "none")}" => v
-  }
-  neg_regional = {
-    for k, v in var.neg_configs :
-    k => merge(v.cloudrun, { project_id = v.project_id }) if v.cloudrun != null
-  }
-  neg_zonal = {
-    # we need to rebuild new objects as we cannot merge different types
-    for k, v in var.neg_configs : k => {
-      endpoints  = v.gce != null ? v.gce.endpoints : v.hybrid.endpoints
-      network    = v.gce != null ? v.gce.network : v.hybrid.network
-      project_id = v.project_id
-      subnetwork = v.gce != null ? v.gce.subnetwork : null
-      type       = v.gce != null ? "GCE_VM_IP_PORT" : "NON_GCP_PRIVATE_IP_PORT"
-      zone       = v.gce != null ? v.gce.zone : v.hybrid.zone
-    } if v.gce != null || v.hybrid != null
+resource "google_compute_backend_bucket" "default" {
+  for_each                = var.backend_buckets_config
+  project                 = var.project_id
+  name                    = each.key
+  bucket_name             = each.value.bucket_name
+  compression_mode        = each.value.compression_mode
+  custom_response_headers = each.value.custom_response_headers
+  description             = each.value.description
+  edge_security_policy    = each.value.edge_security_policy
+  enable_cdn              = each.value.enable_cdn
+
+  dynamic "cdn_policy" {
+    for_each = each.value.cdn_policy == null ? [] : [each.value.cdn_policy]
+    iterator = p
+    content {
+      cache_mode                   = p.value.cache_mode
+      client_ttl                   = p.value.client_ttl
+      default_ttl                  = p.value.default_ttl
+      max_ttl                      = p.value.max_ttl
+      negative_caching             = p.value.negative_caching
+      request_coalescing           = p.value.request_coalescing
+      serve_while_stale            = p.value.serve_while_stale
+      signed_url_cache_max_age_sec = p.value.signed_url_cache_max_age_sec
+      dynamic "bypass_cache_on_request_headers" {
+        for_each = (
+          p.value.bypass_cache_on_request_headers == null
+          ? []
+          : [p.value.bypass_cache_on_request_headers]
+        )
+        iterator = h
+        content {
+          header_name = h.value
+        }
+      }
+      dynamic "cache_key_policy" {
+        for_each = (
+          p.value.cache_key_policy == null ? [] : [p.value.cache_key_policy]
+        )
+        iterator = ckp
+        content {
+          include_http_headers   = ckp.value.include_http_headers
+          query_string_whitelist = ckp.value.query_string_whitelist
+        }
+      }
+      dynamic "negative_caching_policy" {
+        for_each = (
+          p.value.negative_caching_policy == null
+          ? []
+          : [p.value.negative_caching_policy]
+        )
+        iterator = ncp
+        content {
+          code = ncp.value.code
+          ttl  = ncp.value.ttl
+        }
+      }
+    }
   }
 }
 
@@ -54,70 +87,12 @@ resource "google_compute_instance_group" "default" {
   name        = "${var.name}-${each.key}"
   description = var.description
   instances   = each.value.instances
+
   dynamic "named_port" {
     for_each = each.value.named_ports
     content {
       name = named_port.key
       port = named_port.value
     }
-  }
-}
-
-# internet negs internet-fqdn-port
-# cloud storage backends
-# full support for serverless negs
-
-resource "google_compute_network_endpoint_group" "default" {
-  for_each = local.neg_zonal
-  project = (
-    each.value.project_id == null
-    ? var.project_id
-    : each.value.project_id
-  )
-  zone = each.value.zone
-  name = "${var.name}-${each.key}"
-  # re-enable once provider properly supports this
-  # default_port = each.value.default_port
-  description           = var.description
-  network_endpoint_type = each.value.type
-  network = (
-    each.value.network != null ? each.value.network : var.vpc_config.network
-  )
-  subnetwork = (
-    each.value.type == "NON_GCP_PRIVATE_IP_PORT"
-    ? null
-    : try(each.value.subnetwork, var.vpc_config.subnetwork)
-  )
-}
-
-resource "google_compute_network_endpoint" "default" {
-  for_each = local.neg_endpoints
-  project = (
-    google_compute_network_endpoint_group.default[each.value.neg].project
-  )
-  network_endpoint_group = (
-    google_compute_network_endpoint_group.default[each.value.neg].name
-  )
-  instance   = try(each.value.instance, null)
-  ip_address = each.value.ip_address
-  port       = each.value.port
-  zone       = each.value.zone
-}
-
-resource "google_compute_region_network_endpoint_group" "default" {
-  for_each = local.neg_regional
-  project = (
-    each.value.project_id == null
-    ? var.project_id
-    : each.value.project_id
-  )
-  region                = each.value.region
-  name                  = "${var.name}-${each.key}"
-  description           = var.description
-  network_endpoint_type = "SERVERLESS"
-  cloud_run {
-    service  = try(each.value.target_service.name, null)
-    tag      = try(each.value.target_service.tag, null)
-    url_mask = each.value.target_urlmask
   }
 }

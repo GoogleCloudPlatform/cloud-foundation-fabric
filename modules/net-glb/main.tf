@@ -38,10 +38,8 @@ resource "google_compute_global_forwarding_rule" "default" {
   ip_address            = var.address
   ip_protocol           = "TCP"
   load_balancing_scheme = "EXTERNAL"
-  network               = var.vpc_config.network
-  network_tier          = var.network_tier_premium ? "PREMIUM" : "STANDARD"
+  network               = var.network
   port_range            = join(",", local.fwd_rule_ports)
-  subnetwork            = var.vpc_config.subnetwork
   labels                = var.labels
   target                = local.fwd_rule_target
 }
