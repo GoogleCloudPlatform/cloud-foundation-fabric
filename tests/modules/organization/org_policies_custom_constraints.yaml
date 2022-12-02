@@ -1,0 +1,23 @@
+values:
+  google_org_policy_custom_constraint.constraint["custom.dataprocNoMoreThan10Workers"]:
+    action_type: DENY
+    condition: resource.config.workerConfig.numInstances + resource.config.secondaryWorkerConfig.numInstances > 10
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dataprocNoMoreThan10Workers
+    parent: organizations/1234567890
+    resource_types:
+    - dataproc.googleapis.com/Cluster
+  google_org_policy_custom_constraint.constraint["custom.gkeEnableAutoUpgrade"]:
+    action_type: ALLOW
+    condition: resource.management.autoUpgrade == true
+    method_types:
+    - CREATE
+    name: custom.gkeEnableAutoUpgrade
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+
+counts:
+  google_org_policy_custom_constraint: 2

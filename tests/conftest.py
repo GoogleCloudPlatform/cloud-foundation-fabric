@@ -160,8 +160,7 @@ def basedir():
   return BASEDIR
 
 
-def _generic_plan_summary(module_path, tf_var_files=None, basedir=None,
-                          **tf_vars):
+def _generic_plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
   """
   Run a Terraform plan on the module located at `module_path`.
 
@@ -169,8 +168,7 @@ def _generic_plan_summary(module_path, tf_var_files=None, basedir=None,
     path or relative to the root of the repository
 
   - basedir: directory root to use for relative paths in
-    tf_var_files. If None, then paths are relative to the calling
-    test function
+    tf_var_files. 
 
   - tf_var_files: set of terraform variable files (tfvars) to pass
     in to terraform
@@ -227,7 +225,7 @@ def _generic_plan_summary(module_path, tf_var_files=None, basedir=None,
     binary = os.environ.get('TERRAFORM', 'terraform')
     tf = tftest.TerraformTest(test_path, binary=binary)
     tf.setup(upgrade=True)
-    tf_var_files = [basedir / x for x in tf_var_files or []]
+    tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
     plan = tf.plan(output=True, refresh=True, tf_var_file=tf_var_files,
                    tf_vars=tf_vars)
 
@@ -258,16 +256,17 @@ def _generic_plan_summary(module_path, tf_var_files=None, basedir=None,
 def generic_plan_summary(request):
   'Return a function to generate a PlanSummary.'
 
-  def inner(module_path, tf_var_files=None, basedir=None, **tf_vars):
+  def inner(module_path, basedir=None, tf_var_files=None, **tf_vars):
     if basedir is None:
       basedir = Path(request.fspath).parent
-    return _generic_plan_summary(module_path, tf_var_files, basedir, **tf_vars)
+    return _generic_plan_summary(module_path=module_path, basedir=basedir,
+                                 tf_var_files=tf_var_files, **tf_vars)
 
   return inner
 
 
-def _generic_plan_validator(module_path, inventory_paths, tf_var_files=None,
-                            basedir=None, **tf_vars):
+def _generic_plan_validator(module_path, inventory_paths, basedir,
+                            tf_var_files=None, **tf_vars):
   summary = _generic_plan_summary(module_path=module_path,
                                   tf_var_files=tf_var_files, basedir=basedir,
                                   **tf_vars)
@@ -335,12 +334,14 @@ def _generic_plan_validator(module_path, inventory_paths, tf_var_files=None,
 def generic_plan_validator(request):
   'Return a function that builds a PlanSummary and compares it to an yaml inventory.'
 
-  def inner(module_path, inventory_paths, tf_var_files=None, basedir=None,
+  def inner(module_path, inventory_paths, basedir=None, tf_var_files=None,
             **tf_vars):
     if basedir is None:
       basedir = Path(request.fspath).parent
-    return _generic_plan_validator(module_path, inventory_paths, tf_var_files,
-                                   basedir, **tf_vars)
+    return _generic_plan_validator(module_path=module_path,
+                                   inventory_paths=inventory_paths,
+                                   basedir=basedir, tf_var_files=tf_var_paths,
+                                   **tf_vars)
 
   return inner
 
@@ -362,6 +363,9 @@ class FabricTestFile(pytest.File):
                                        inventory=inventory, tfvars=tfvars)
 
 
+from icecream import ic
+
+
 class FabricTestItem(pytest.Item):
 
   def __init__(self, name, parent, module, inventory, tfvars):
@@ -371,8 +375,8 @@ class FabricTestItem(pytest.Item):
     self.tfvars = tfvars
 
   def runtest(self):
-    _generic_plan_validator(self.module, self.inventory, self.tfvars,
-                            self.parent.path.parent)
+    s = _generic_plan_validator(self.module, self.inventory,
+                                self.parent.path.parent, self.tfvars)
 
   def reportinfo(self):
     return self.path, None, self.name

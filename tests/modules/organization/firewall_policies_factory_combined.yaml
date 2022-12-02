@@ -1,0 +1,13 @@
+values:
+  google_compute_firewall_policy.policy["factory-1"]: {}
+  google_compute_firewall_policy.policy["policy1"]: {}
+  google_compute_firewall_policy.policy["policy2"]: {}
+  google_compute_firewall_policy_rule.rule["factory-1-allow-admins"]: {}
+  google_compute_firewall_policy_rule.rule["factory-1-allow-ssh-from-iap"]: {}
+  google_compute_firewall_policy_rule.rule["policy1-allow-ingress"]: {}
+  google_compute_firewall_policy_rule.rule["policy1-deny-egress"]: {}
+  google_compute_firewall_policy_rule.rule["policy2-allow-ingress"]: {}
+
+counts:
+  google_compute_firewall_policy: 3
+  google_compute_firewall_policy_rule: 5

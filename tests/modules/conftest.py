@@ -20,11 +20,11 @@ import pytest
 import yaml
 
 
-@pytest.fixture(scope='session')
-def tfvars_to_yaml():
+@pytest.fixture()
+def tfvars_to_yaml(request):
 
   def converter(source, dest, from_var, to_var=None):
-    p_fixture = pathlib.Path(inspect.stack()[1].filename).parent / 'fixture'
+    p_fixture = pathlib.Path(request.path).parent
     p_source = p_fixture / source
     if not p_source.exists():
       raise ValueError(f"tfvars '{source}' not found")

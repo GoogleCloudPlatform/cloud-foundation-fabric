@@ -1,0 +1,16 @@
+values:
+  google_logging_organization_exclusion.logging-exclusion["exclusion1"]:
+    description: exclusion1 (Terraform-managed).
+    disabled: null
+    filter: resource.type=gce_instance
+    name: exclusion1
+    org_id: '1234567890'
+  google_logging_organization_exclusion.logging-exclusion["exclusion2"]:
+    description: exclusion2 (Terraform-managed).
+    disabled: null
+    filter: severity=NOTICE
+    name: exclusion2
+    org_id: '1234567890'
+
+counts:
+  google_logging_organization_exclusion: 2

@@ -1,0 +1,71 @@
+values:
+  google_org_policy_policy.default["compute.restrictLoadBalancerCreationForTypes"]:
+    name: organizations/1234567890/policies/compute.restrictLoadBalancerCreationForTypes
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values: null
+          denied_values:
+          - in:EXTERNAL
+      - allow_all: null
+        condition:
+        - description: test condition
+          expression: resource.matchTagId(aa, bb)
+          location: xxx
+          title: condition
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - EXTERNAL_1
+          denied_values: null
+      - allow_all: 'TRUE'
+        condition:
+        - description: test condition2
+          expression: resource.matchTagId(cc, dd)
+          location: xxx
+          title: condition2
+        deny_all: null
+        enforce: null
+        values: []
+    timeouts: null
+  google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    name: organizations/1234567890/policies/compute.vmExternalIpAccess
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
+        values: []
+    timeouts: null
+  google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
+    name: organizations/1234567890/policies/iam.allowedPolicyMemberDomains
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: true
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - C0xxxxxxx
+          - C0yyyyyyy
+          denied_values: null
+    timeouts: null
+
+counts:
+  google_org_policy_policy: 3

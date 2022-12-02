@@ -1,0 +1,30 @@
+values:
+  google_organization_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - domain:example.org
+    org_id: '1234567890'
+    role: roles/browser
+  google_organization_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - group:owners@example.org
+    - user:one@example.org
+    - user:two@example.org
+    org_id: '1234567890'
+    role: roles/owner
+  google_organization_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - group:owners@example.org
+    org_id: '1234567890'
+    role: roles/resourcemanager.folderAdmin
+  google_organization_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - group:viewers@example.org
+    org_id: '1234567890'
+    role: roles/viewer
+
+counts:
+  google_organization_iam_binding: 4

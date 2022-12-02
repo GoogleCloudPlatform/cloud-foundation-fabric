@@ -40,7 +40,8 @@ def test_vpc_routes(generic_plan_summary, next_hop_type, next_hop):
       next_hop      = "global/gateways/default-internet-gateway"
     }
   }''' % (next_hop_type, next_hop)
-  summary = generic_plan_summary('modules/net-vpc', ['common.tfvars'],
+  summary = generic_plan_summary('modules/net-vpc',
+                                 tf_var_files=['common.tfvars'],
                                  routes=var_routes)
   assert len(summary.values) == 3
   route = summary.values[f'google_compute_route.{next_hop_type}["next-hop"]']

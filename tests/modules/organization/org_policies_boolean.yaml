@@ -1,0 +1,39 @@
+values:
+  google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    name: organizations/1234567890/policies/iam.disableServiceAccountKeyCreation
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    name: organizations/1234567890/policies/iam.disableServiceAccountKeyUpload
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        values: []
+      - allow_all: null
+        condition:
+        - description: test condition
+          expression: resource.matchTagId(aa, bb)
+          location: xxx
+          title: condition
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+
+counts:
+  google_org_policy_policy: 2
