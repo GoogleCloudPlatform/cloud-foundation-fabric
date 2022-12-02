@@ -22,7 +22,7 @@ _stop_ipsec() {
   echo "Shutting down strongSwan/ipsec..."
   ipsec stop
 }
-trap _stop_ipsec SIGTERM
+trap _stop_ipsec TERM
 
 # Making the containter to work as a default gateway for LAN_NETWORKS
 iptables -t nat -A POSTROUTING -s ${LAN_NETWORKS} -o ${VPN_DEVICE} -m policy --dir out --pol ipsec -j ACCEPT
