@@ -262,9 +262,9 @@ resource "google_compute_url_map" "default" {
       name        = m.key
       dynamic "default_route_action" {
         for_each = (
-          m.value.route_action == null
+          m.value.default_route_action == null
           ? []
-          : [m.value.route_action]
+          : [m.value.default_route_action]
         )
         iterator = route_action
         content {

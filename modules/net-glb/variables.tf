@@ -111,10 +111,10 @@ variable "neg_configs" {
       target_urlmask = optional(string)
     }))
     gce = optional(object({
+      network    = string
       subnetwork = string
       zone       = string
       # default_port = optional(number)
-      network = optional(string)
       endpoints = optional(list(object({
         instance   = string
         ip_address = string
@@ -123,8 +123,8 @@ variable "neg_configs" {
 
     }))
     hybrid = optional(object({
+      network = string
       zone    = string
-      network = optional(string)
       # re-enable once provider properly support this
       # default_port = optional(number)
       endpoints = optional(list(object({
@@ -177,12 +177,6 @@ variable "neg_configs" {
     ])
     error_message = "Cloud Function NEGs need either target function or target urlmask defined."
   }
-}
-
-variable "network" {
-  description = "Network name."
-  type        = string
-  nullable    = false
 }
 
 variable "ports" {

@@ -26,7 +26,6 @@ variable "backend_service_configs" {
     custom_response_headers         = optional(list(string))
     enable_cdn                      = optional(bool)
     health_checks                   = optional(list(string), ["default"])
-    locality_lb_policy              = optional(string)
     log_sample_rate                 = optional(number)
     port_name                       = optional(string)
     project_id                      = optional(string)

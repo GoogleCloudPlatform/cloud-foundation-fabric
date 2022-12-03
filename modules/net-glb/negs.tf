@@ -103,7 +103,7 @@ resource "google_compute_network_endpoint_group" "default" {
   # default_port = each.value.default_port
   description           = coalesce(each.value.description, var.description)
   network_endpoint_type = each.value.type
-  network               = coalesce(each.value.network, var.network)
+  network               = each.value.network
   subnetwork = (
     each.value.type == "NON_GCP_PRIVATE_IP_PORT"
     ? null
