@@ -45,9 +45,11 @@ service_accounts:
      - roles/bigquery.jobUser
      - roles/bigquery.user
      - roles/cloudbuild.builds.editor
+     - roles/cloudfunctions.invoker
      - roles/dataflow.developer
      - roles/dataflow.worker
      - roles/iam.serviceAccountUser
+     - roles/secretmanager.secretAccessor
      - roles/serviceusage.serviceUsageConsumer
      - roles/source.reader
      - roles/storage.admin
@@ -68,10 +70,14 @@ services:
     - compute.googleapis.com
     - datacatalog.googleapis.com
     - dataflow.googleapis.com
+    - eventarc.googleapis.com
     - iam.googleapis.com
     - monitoring.googleapis.com
     - notebooks.googleapis.com
+    - run.googleapis.com
+    - secretmanager.googleapis.com
     - servicenetworking.googleapis.com
+    - serviceusage.googleapis.com
 
 buckets:
   creditcards-dev:

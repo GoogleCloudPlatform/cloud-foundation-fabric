@@ -52,6 +52,7 @@ services:
     - cloudbuild.googleapis.com
     - iam.googleapis.com
     - monitoring.googleapis.com
+    - secretmanager.googleapis.com
 
 buckets:
   # Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘constraints/gcp.resourceLocations’"
