@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Exit if any of the intermediate steps fail
+set -e
 
-module "tfe_oidc" {
-  source = "./tfc-oidc"
-
-  impersonate_service_account_email = var.impersonate_service_account_email
+cat <<EOF
+{
+  "audience": "$TFC_WORKLOAD_IDENTITY_AUDIENCE"
 }
-
-provider "google" {
-  credentials = module.tfe_oidc.credentials
-}
+EOF
