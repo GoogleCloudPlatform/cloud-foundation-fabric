@@ -55,6 +55,8 @@ module "projects" {
   repo_name              = try(each.value.repo_name, null)
   service_accounts       = try(each.value.service_accounts, {})
   service_accounts_iam   = try(each.value.service_accounts_iam, {})
+  secrets                = try(each.value.secrets, {})
+  secrets_iam            = try(each.value.secrets_iam, {})
   services               = try(each.value.services, [])
   service_identities_iam = try(each.value.services_iam, {})
   vpc                    = try(each.value.vpc, null)

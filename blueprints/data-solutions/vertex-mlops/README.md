@@ -143,3 +143,5 @@ outputs_location = "./outputs"
 - It is possible that some errors like `googleapi: Error 400: Service account xxxx does not exist.` appears. This is due to some dependencies with the Project IAM authoritative bindings of the service accounts. In this case, re-run again the process with `terraform apply`
 
 
+##  What's next?
+Continue [setting up the GIT repo](./GIT_SETUP.md) and [launching the MLOps pipeline](./MLOPS.md).

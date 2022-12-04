@@ -56,6 +56,9 @@ service_accounts:
     
 # [opt] Authoritative IAM bindings in role => [principals] format
 # Generally used to grant roles to service accounts external to the project
+iam:
+  roles/artifactregistry.writer:
+    - serviceAccount:sa-github@<CICD PROJECT.iam.gserviceaccount.com>
 
 # [opt] Labels for the project - merged with the ones defined in defaults
 labels:

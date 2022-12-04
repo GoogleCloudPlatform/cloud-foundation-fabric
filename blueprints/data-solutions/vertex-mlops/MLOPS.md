@@ -14,7 +14,9 @@ For the Vertex MLOps end2end example we will use the public dataset `bigquery-pu
 Andrea Dal Pozzolo, Olivier Caelen, Reid A. Johnson and Gianluca Bontempi. Calibrating Probability with Undersampling for Unbalanced Classification. In Symposium on Computational Intelligence and Data Mining (CIDM), IEEE, 2015
 ```
 
-If the destination dataset is located in a different region from the source dataset (US) you will need to copy the data to the desired region. You can use the Data Transfer Service or an extracing/load procedure such as the following one:
+If the destination dataset is located in a different region from the source dataset (US) you will need to copy the data to the desired region. You can use the Data Transfer Service or an extracing/load procedure such as the following one. 
+The script `create_tables.sh` has also been provided for convenience. 
+You will need to repeat this procedure for each environment. In a productive environment, it will be necessary to modify the pipeline to access the correct bigquery dataset.
 
 ```
 #Set up env vars
@@ -54,7 +56,7 @@ For the experimentation environment several alternatives are valid, from providi
 
 
 ```
-PROJECT_EXP=cxt1-credit-cards
+PROJECT_EXP=<DEVELOPMENT PROJECT>
 BQ_DATASET_NAME_EXP=credit_cards_eu
 
 
@@ -72,7 +74,7 @@ bq query --project_id $PROJECT --nouse_legacy_sql "$sql_script"
 ## Set up the Vertex managed Dataset
 Run the following commands to setup the Vertex Dataset.
 
-````
+```
 
 bq_uri="bq://${PROJECT}.${BQ_DATASET_NAME}.${ML_TABLE}"
 ${bq_uri}
@@ -102,3 +104,8 @@ curl -X POST \
 ```
 
 
+## Test the build process
+You can test the overall build process from the Github Actions section.
+- **Build Containers**: This action will create the different docker containers that will be used during the Vertex AI pipeline compilation and execution.
+- **Build Vertex AI pipeline**: This action will run the unit tests and if they are executed sucesfull it will compile the Vertex pipeline.
+- **Run Vertex AI pipeline**: This action will execute the Vertex pipeline. 

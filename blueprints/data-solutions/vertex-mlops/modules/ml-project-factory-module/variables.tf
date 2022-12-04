@@ -180,6 +180,21 @@ variable "service_accounts_iam" {
   nullable    = false
 }
 
+
+variable "secrets" {
+  description = "Secrets to be created, and roles to assign them."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "secrets_iam" {
+  description = "IAM bindings on secrets resources. Format is KEY => {ROLE => [MEMBERS]}"
+  type        = map(map(list(string)))
+  default     = {}
+  nullable    = false
+}
+
+
 variable "services" {
   description = "Services to be enabled for the project."
   type        = list(string)

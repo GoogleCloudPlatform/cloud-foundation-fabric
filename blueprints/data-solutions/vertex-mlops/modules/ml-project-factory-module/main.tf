@@ -273,3 +273,10 @@ resource "google_sourcerepo_repository" "code-repo" {
   project = module.project.project_id
 }
 
+module "secret-manager" {
+  project_id = module.project.project_id
+  source     = "../../../../../modules/secret-manager"
+  secrets    = var.secrets
+  iam        = var.secrets_iam
+}
+
