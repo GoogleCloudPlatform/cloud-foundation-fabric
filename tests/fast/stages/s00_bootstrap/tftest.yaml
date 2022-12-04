@@ -6,3 +6,7 @@ tests:
   simple:
     tfvars:
       - simple.tfvars
+    inventory:
+      - simple.yaml
+      - simple_projects.yaml
+      - simple_sas.yaml
