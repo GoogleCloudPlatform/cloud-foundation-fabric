@@ -14,64 +14,65 @@
 
 module: modules/organization
 
-audit_config:
-  tfvars:
-    - common.tfvars
-    - audit_config.tfvars
+tests:
+  audit_config:
+    tfvars:
+      - common.tfvars
+      - audit_config.tfvars
 
-iam:
-  tfvars:
-    - common.tfvars
-    - iam.tfvars
+  iam:
+    tfvars:
+      - common.tfvars
+      - iam.tfvars
 
-iam_additive:
-  tfvars:
-    - common.tfvars
-    - iam_additive.tfvars
+  iam_additive:
+    tfvars:
+      - common.tfvars
+      - iam_additive.tfvars
 
-logging:
-  tfvars:
-    - common.tfvars
-    - logging.tfvars
+  logging:
+    tfvars:
+      - common.tfvars
+      - logging.tfvars
 
-logging_exclusions:
-  tfvars:
-    - common.tfvars
-    - logging_exclusions.tfvars
+  logging_exclusions:
+    tfvars:
+      - common.tfvars
+      - logging_exclusions.tfvars
 
-org_policies_list:
-  tfvars:
-    - common.tfvars
-    - org_policies_list.tfvars
+  org_policies_list:
+    tfvars:
+      - common.tfvars
+      - org_policies_list.tfvars
 
-org_policies_boolean:
-  tfvars:
-    - common.tfvars
-    - org_policies_boolean.tfvars
+  org_policies_boolean:
+    tfvars:
+      - common.tfvars
+      - org_policies_boolean.tfvars
 
-org_policies_custom_constraints:
-  tfvars:
-    - common.tfvars
-    - org_policies_custom_constraints.tfvars
+  org_policies_custom_constraints:
+    tfvars:
+      - common.tfvars
+      - org_policies_custom_constraints.tfvars
 
-tags:
-  tfvars:
-    - common.tfvars
-    - network_tags.tfvars
-    - resource_tags.tfvars
+  tags:
+    tfvars:
+      - common.tfvars
+      - network_tags.tfvars
+      - resource_tags.tfvars
 
-firewall_policies:
-  tfvars:
-    - common.tfvars
-    - firewall_policies.tfvars
+  firewall_policies:
+    tfvars:
+      - common.tfvars
+      - firewall_policies.tfvars
 
-firewall_policies_factory:
-  tfvars:
-    - common.tfvars
-    - firewall_policies_factory.tfvars
+  firewall_policies_factory:
+    tfvars:
+      - common.tfvars
+      - firewall_policies_factory.tfvars
 
-firewall_policies_factory_combined:
-  tfvars:
-    - common.tfvars
-    - firewall_policies.tfvars
-    - firewall_policies_factory.tfvars
+  firewall_policies_factory_combined:
+    tfvars:
+      - common.tfvars
+      - firewall_policies.tfvars
+      - firewall_policies_factory.tfvars

@@ -11,6 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Pytest plugin to discover tests specified in YAML files.
+
+This plugin uses the pytest_collect_file hook to collect all files
+matching tftest*.yaml and runs plan_validate for each test found.
+See FabricTestFile for details on the file structure.
+
+"""
 
 import pytest
 import yaml
@@ -23,11 +30,11 @@ class FabricTestFile(pytest.File):
   def collect(self):
     """Read yaml test spec and yield test items for each test definition.
 
-    Test spec should contain a `module` key with the path of the
+    The test spec should contain a `module` key with the path of the
     terraform module to test, relative to the root of the repository
 
-    All other top-level keys in the yaml are taken as test names, and
-    should have the following structure:
+    Tests are defined within the top-level `tests` key, and should
+    have the following structure:
 
     test-name:
       tfvars:
@@ -42,6 +49,7 @@ class FabricTestFile(pytest.File):
     will be taken from the file test-name.yaml
 
     """
+
     try:
       raw = yaml.safe_load(self.path.open())
       module = raw.pop('module')
@@ -49,13 +57,13 @@ class FabricTestFile(pytest.File):
       raise Exception(f'cannot read test spec {self.path}: {e}')
     except KeyError as e:
       raise Exception(f'`module` key not found in {self.path}: {e}')
-    for test_name, spec in raw.items():
+    for test_name, spec in raw.get('tests', {}).items():
       inventories = spec.get('inventory', [f'{test_name}.yaml'])
       try:
         tfvars = spec['tfvars']
       except KeyError:
         raise Exception(
-            f'test definition `{test_name}` in {self.path} does not contain a `tfvars` key'
+            f'test `{test_name}` in {self.path} does not contain a `tfvars` key'
         )
       for i in inventories:
         name = test_name

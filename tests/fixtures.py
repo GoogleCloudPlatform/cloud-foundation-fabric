@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Common fixtures."""
+
 import collections
 import itertools
 import os
@@ -205,8 +207,7 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
 
 @pytest.fixture(name='plan_validator')
 def plan_validator_fixture(request):
-  """Return a function to builds a PlanSummary and compare it to YAML
-  inventory.
+  """Return a function to build a PlanSummary and compare it to a YAML inventory.
 
   In the returned function `basedir` becomes optional and it defaults
   to the directory of the calling test'
@@ -222,3 +223,9 @@ def plan_validator_fixture(request):
                           tf_var_files=tf_var_paths, **tf_vars)
 
   return inner
+
+
+# @pytest.fixture
+# def repo_root():
+#   'Return a pathlib.Path to the root of the repository'
+#   return Path(__file__).parents[1]
