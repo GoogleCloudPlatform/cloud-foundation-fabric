@@ -224,16 +224,16 @@ vpc_sc_perimeters = {
     ingress_policies = ["iac"]
     resources        = ["projects/1111111111"]
   }
-  dev = {
-    egress_policies  = ["iac-gcs"]
-    ingress_policies = ["iac"]
-    resources        = ["projects/0000000000"]
-  }
-  dev = {
+  landing = {
     access_levels    = ["onprem"]
     egress_policies  = ["iac-gcs"]
     ingress_policies = ["iac"]
     resources        = ["projects/2222222222"]
+  }
+  prod = {
+    egress_policies  = ["iac-gcs"]
+    ingress_policies = ["iac"]
+    resources        = ["projects/0000000000"]
   }
 }
 ```
