@@ -15,19 +15,44 @@
 import pytest
 import yaml
 
-from .fixtures import generic_plan_summary, generic_plan_validator
+from .fixtures import plan_summary, plan_validator
 
 
 class FabricTestFile(pytest.File):
 
   def collect(self):
+    """Read yaml test spec and yield test items for each test definition.
+
+    Test spec should contain a `module` key with the path of the
+    terraform module to test, relative to the root of the repository
+
+    All other top-level keys in the yaml are taken as test names, and
+    should have the following structure:
+
+    test-name:
+      tfvars:
+        - tfvars1.tfvars
+        - tfvars2.tfvars
+      inventory:
+        - inventory1.yaml
+        - inventory2.yaml
+
+    All paths specifications are relative to the location of the test
+    spec. The inventory key is optional, if omitted, the inventory
+    will be taken from the file test-name.yaml
+
+    """
     raw = yaml.safe_load(self.path.open())
-    module = raw['module']
-    for test_name, spec in raw['tests'].items():
-      inventory = spec.get('inventory', f'{test_name}.yaml')
+    module = raw.pop('module')
+    for test_name, spec in raw.items():
+      inventories = spec.get('inventory', [f'{test_name}.yaml'])
       tfvars = spec['tfvars']
-      yield FabricTestItem.from_parent(self, name=test_name, module=module,
-                                       inventory=inventory, tfvars=tfvars)
+      for i in inventories:
+        name = test_name
+        if isinstance(inventories, list) and len(inventories) > 1:
+          name = f'{test_name}[{i}]'
+        yield FabricTestItem.from_parent(self, name=name, module=module,
+                                         inventory=[i], tfvars=tfvars)
 
 
 class FabricTestItem(pytest.Item):
@@ -39,13 +64,14 @@ class FabricTestItem(pytest.Item):
     self.tfvars = tfvars
 
   def runtest(self):
-    s = generic_plan_validator(self.module, self.inventory,
-                               self.parent.path.parent, self.tfvars)
+    s = plan_validator(self.module, self.inventory, self.parent.path.parent,
+                       self.tfvars)
 
   def reportinfo(self):
     return self.path, None, self.name
 
 
 def pytest_collect_file(parent, file_path):
+  'Collect tftest*.yaml files and run plan_validator from them.'
   if file_path.suffix == '.yaml' and file_path.name.startswith('tftest'):
     return FabricTestFile.from_parent(parent, path=file_path)

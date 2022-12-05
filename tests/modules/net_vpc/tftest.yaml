@@ -14,49 +14,46 @@
 
 module: modules/net-vpc
 
-tests:
-  simple:
-    tfvars:
-      - common.tfvars
+simple:
+  tfvars:
+    - common.tfvars
 
-  subnets:
-    tfvars:
-      - common.tfvars
-      - subnets.tfvars
+subnets:
+  tfvars:
+    - common.tfvars
+    - subnets.tfvars
 
-  peering:
-    tfvars:
-      - common.tfvars
-      - peering.tfvars
+peering:
+  tfvars:
+    - common.tfvars
+    - peering.tfvars
 
-  shared_vpc:
-    tfvars:
-      - common.tfvars
-      - shared_vpc.tfvars
+shared_vpc:
+  tfvars:
+    - common.tfvars
+    - shared_vpc.tfvars
 
-  factory:
-    tfvars:
-      - common.tfvars
-      - factory.tfvars
-    inventory:
-      - factory.yaml
+factory:
+  tfvars:
+    - common.tfvars
+    - factory.tfvars
 
-  psa_simple:
-    tfvars:
-      - common.tfvars
-      - psa_simple.tfvars
+psa_simple:
+  tfvars:
+    - common.tfvars
+    - psa_simple.tfvars
 
-  psa_routes_export:
-    tfvars:
-      - common.tfvars
-      - psa_routes_export.tfvars
+psa_routes_export:
+  tfvars:
+    - common.tfvars
+    - psa_routes_export.tfvars
 
-  psa_routes_import:
-    tfvars:
-      - common.tfvars
-      - psa_routes_import.tfvars
+psa_routes_import:
+  tfvars:
+    - common.tfvars
+    - psa_routes_import.tfvars
 
-  psa_routes_import_export:
-    tfvars:
-      - common.tfvars
-      - psa_routes_import_export.tfvars
+psa_routes_import_export:
+  tfvars:
+    - common.tfvars
+    - psa_routes_import_export.tfvars

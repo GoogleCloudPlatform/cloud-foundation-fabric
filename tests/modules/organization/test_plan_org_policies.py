@@ -20,28 +20,26 @@ _params = ['boolean', 'list']
 
 
 @pytest.mark.parametrize('policy_type', _params)
-def test_policy_factory(generic_plan_summary, tfvars_to_yaml, tmp_path,
-                        policy_type):
+def test_policy_factory(plan_summary, tfvars_to_yaml, tmp_path, policy_type):
   dest = tmp_path / 'policies.yaml'
   tfvars_to_yaml(f'org_policies_{policy_type}.tfvars', dest, 'org_policies')
-  tfvars_plan = generic_plan_summary(
+  tfvars_plan = plan_summary(
       'modules/organization',
       tf_var_files=['common.tfvars', f'org_policies_{policy_type}.tfvars'])
-  yaml_plan = generic_plan_summary('modules/organization',
-                                   tf_var_files=['common.tfvars'],
-                                   org_policies_data_path=f'{tmp_path}')
+  yaml_plan = plan_summary('modules/organization',
+                           tf_var_files=['common.tfvars'],
+                           org_policies_data_path=f'{tmp_path}')
   assert tfvars_plan.values == yaml_plan.values
 
 
-def test_custom_constraint_factory(generic_plan_summary, tfvars_to_yaml,
-                                   tmp_path):
+def test_custom_constraint_factory(plan_summary, tfvars_to_yaml, tmp_path):
   dest = tmp_path / 'constraints.yaml'
   tfvars_to_yaml(f'org_policies_custom_constraints.tfvars', dest,
                  'org_policy_custom_constraints')
-  tfvars_plan = generic_plan_summary(
+  tfvars_plan = plan_summary(
       'modules/organization',
       tf_var_files=['common.tfvars', f'org_policies_custom_constraints.tfvars'])
-  yaml_plan = generic_plan_summary(
+  yaml_plan = plan_summary(
       'modules/organization', tf_var_files=['common.tfvars'],
       org_policy_custom_constraints_data_path=f'{tmp_path}')
   assert tfvars_plan.values == yaml_plan.values

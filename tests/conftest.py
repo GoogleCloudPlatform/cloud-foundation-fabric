@@ -23,8 +23,7 @@ import tftest
 import yaml
 
 from .collectors import pytest_collect_file
-from .fixtures import generic_plan_summary_fixture, generic_plan_validator_fixture
-from .fixtures import generic_plan_summary, generic_plan_validator
+from .fixtures import plan_summary_fixture, plan_validator_fixture
 
 BASEDIR = os.path.dirname(os.path.dirname(__file__))
 

@@ -25,7 +25,7 @@ import yaml
 PlanSummary = collections.namedtuple('PlanSummary', 'values counts outputs')
 
 
-def generic_plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
+def plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
   """
   Run a Terraform plan on the module located at `module_path`.
 
@@ -117,8 +117,8 @@ def generic_plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
     return PlanSummary(values, dict(counts), outputs)
 
 
-@pytest.fixture(name='generic_plan_summary')
-def generic_plan_summary_fixture(request):
+@pytest.fixture(name='plan_summary')
+def plan_summary_fixture(request):
   """Return a function to generate a PlanSummary.
 
   In the returned function `basedir` becomes optional and it defaults
@@ -128,17 +128,16 @@ def generic_plan_summary_fixture(request):
   def inner(module_path, basedir=None, tf_var_files=None, **tf_vars):
     if basedir is None:
       basedir = Path(request.fspath).parent
-    return generic_plan_summary(module_path=module_path, basedir=basedir,
-                                tf_var_files=tf_var_files, **tf_vars)
+    return plan_summary(module_path=module_path, basedir=basedir,
+                        tf_var_files=tf_var_files, **tf_vars)
 
   return inner
 
 
-def generic_plan_validator(module_path, inventory_paths, basedir,
-                           tf_var_files=None, **tf_vars):
-  summary = generic_plan_summary(module_path=module_path,
-                                 tf_var_files=tf_var_files, basedir=basedir,
-                                 **tf_vars)
+def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
+                   **tf_vars):
+  summary = plan_summary(module_path=module_path, tf_var_files=tf_var_files,
+                         basedir=basedir, **tf_vars)
 
   # allow single single string for inventory_paths
   if not isinstance(inventory_paths, list):
@@ -201,8 +200,8 @@ def generic_plan_validator(module_path, inventory_paths, basedir,
   return summary
 
 
-@pytest.fixture(name='generic_plan_validator')
-def generic_plan_validator_fixture(request):
+@pytest.fixture(name='plan_validator')
+def plan_validator_fixture(request):
   """Return a function to builds a PlanSummary and compare it to YAML
   inventory.
 
@@ -215,9 +214,8 @@ def generic_plan_validator_fixture(request):
             **tf_vars):
     if basedir is None:
       basedir = Path(request.fspath).parent
-    return generic_plan_validator(module_path=module_path,
-                                  inventory_paths=inventory_paths,
-                                  basedir=basedir, tf_var_files=tf_var_paths,
-                                  **tf_vars)
+    return plan_validator(module_path=module_path,
+                          inventory_paths=inventory_paths, basedir=basedir,
+                          tf_var_files=tf_var_paths, **tf_vars)
 
   return inner

@@ -22,7 +22,7 @@ _route_parameters = [('gateway', 'global/gateways/default-internet-gateway'),
 
 
 @pytest.mark.parametrize('next_hop_type,next_hop', _route_parameters)
-def test_vpc_routes(generic_plan_summary, next_hop_type, next_hop):
+def test_vpc_routes(plan_summary, next_hop_type, next_hop):
   'Test vpc routes.'
 
   var_routes = '''{
@@ -40,9 +40,8 @@ def test_vpc_routes(generic_plan_summary, next_hop_type, next_hop):
       next_hop      = "global/gateways/default-internet-gateway"
     }
   }''' % (next_hop_type, next_hop)
-  summary = generic_plan_summary('modules/net-vpc',
-                                 tf_var_files=['common.tfvars'],
-                                 routes=var_routes)
+  summary = plan_summary('modules/net-vpc', tf_var_files=['common.tfvars'],
+                         routes=var_routes)
   assert len(summary.values) == 3
   route = summary.values[f'google_compute_route.{next_hop_type}["next-hop"]']
   assert route[f'next_hop_{next_hop_type}'] == next_hop
