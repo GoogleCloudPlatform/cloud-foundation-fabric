@@ -28,12 +28,12 @@ locals {
   }
 }
 
-  
+
 
 output "github" {
- 
+
   description = "Github Configuration"
-  value = local.gh_config
+  value       = local.gh_config
 }
 
 

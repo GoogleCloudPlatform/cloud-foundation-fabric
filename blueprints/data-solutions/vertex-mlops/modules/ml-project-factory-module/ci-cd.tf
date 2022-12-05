@@ -27,7 +27,7 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
 
 
 resource "google_service_account_iam_member" "sa-gh-roles" {
-  count                              = var.workload_identity == null ? 0 : 1
+  count              = var.workload_identity == null ? 0 : 1
   service_account_id = module.service-accounts["sa-github"].name
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool[0].name}/${var.workload_identity.identity_pool_claims}"

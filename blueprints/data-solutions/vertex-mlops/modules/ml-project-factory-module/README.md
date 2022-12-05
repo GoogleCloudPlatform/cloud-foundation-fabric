@@ -1,16 +1,6 @@
 
 <!-- BEGIN TFDOC -->
 
-## Files
-
-| name | description | modules | resources |
-|---|---|---|---|
-| [ci-cd.tf](./ci-cd.tf) | None | <code>artifact-registry</code> · <code>iam-service-account</code> | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> |
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>bigquery-dataset</code> · <code>dns</code> · <code>gcs</code> · <code>iam-service-account</code> · <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> | <code>google_compute_subnetwork_iam_member</code> · <code>google_sourcerepo_repository</code> |
-| [notebooks.tf](./notebooks.tf) | None |  | <code>google_notebooks_runtime</code> |
-| [outputs.tf](./outputs.tf) | Module outputs. |  |  |
-| [variables.tf](./variables.tf) | Module variables. |  |  |
-
 ## Variables
 
 | name | description | type | required | default |
@@ -33,20 +23,24 @@
 | [org_policies](variables.tf#L138) | Org-policy overrides at project level. | <code title="object&#40;&#123;&#10;  policy_boolean &#61; map&#40;bool&#41;&#10;  policy_list &#61; map&#40;object&#40;&#123;&#10;    inherit_from_parent &#61; bool&#10;    suggested_value     &#61; string&#10;    status              &#61; bool&#10;    values              &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [prefix](variables.tf#L152) | Prefix used for the project id. | <code>string</code> |  | <code>null</code> |
 | [repo_name](variables.tf#L163) | Cloud Source Repository name. null to avoid to create it. | <code>string</code> |  | <code>null</code> |
+| [secrets](variables.tf#L184) | Secrets to be created, and roles to assign them. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [secrets_iam](variables.tf#L190) | IAM bindings on secrets resources. Format is KEY => {ROLE => [MEMBERS]} | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_accounts](variables.tf#L170) | Service accounts to be created, and roles to assign them. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_identities_iam](variables.tf#L183) | Custom IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [services](variables.tf#L176) | Services to be enabled for the project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc](variables.tf#L190) | Shared VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; object&#40;&#123;&#10;    enable_security_admin     &#61; bool&#10;    enable_host_service_agent &#61; bool&#10;  &#125;&#41;&#10;  subnets_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_local](variables.tf#L203) | Local VPC configuration for the project. | <code title="object&#40;&#123;&#10;  name              &#61; string&#10;  psa_config_ranges &#61; map&#40;string&#41;&#10;  subnets &#61; list&#40;object&#40;&#123;&#10;    name               &#61; string&#10;    region             &#61; string&#10;    ip_cidr_range      &#61; string&#10;    secondary_ip_range &#61; map&#40;string&#41;&#10;    &#125;&#10;  &#41;&#41;&#10;  &#125;&#10;&#41;">object&#40;&#123;&#8230;&#41;</code> |  | <code>null</code> |
-| [workload_identity](variables.tf#L220) | Create Workload Identity Pool for Github | <code title="object&#40;&#123;&#10;  identity_pool_claims &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [service_accounts_iam](variables.tf#L176) | IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]} | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_identities_iam](variables.tf#L205) | Custom IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L198) | Services to be enabled for the project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [vpc](variables.tf#L212) | Shared VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; object&#40;&#123;&#10;    enable_security_admin     &#61; bool&#10;    enable_host_service_agent &#61; bool&#10;  &#125;&#41;&#10;  subnets_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_local](variables.tf#L225) | Local VPC configuration for the project. | <code title="object&#40;&#123;&#10;  name              &#61; string&#10;  psa_config_ranges &#61; map&#40;string&#41;&#10;  subnets &#61; list&#40;object&#40;&#123;&#10;    name               &#61; string&#10;    region             &#61; string&#10;    ip_cidr_range      &#61; string&#10;    secondary_ip_range &#61; map&#40;string&#41;&#10;    &#125;&#10;  &#41;&#41;&#10;  &#125;&#10;&#41;">object&#40;&#123;&#8230;&#41;</code> |  | <code>null</code> |
+| [workload_identity](variables.tf#L242) | Create Workload Identity Pool for Github | <code title="object&#40;&#123;&#10;  identity_pool_claims &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [google_iam_workload_identity_pool_provider](outputs.tf#L25) | Id for the Workload Identity Pool Provider. |  |
-| [project](outputs.tf#L30) | The project resource as return by the `project` module |  |
-| [project_id](outputs.tf#L40) | Project ID. |  |
-| [workload_identity_pool_name](outputs.tf#L20) | Resource name for the Workload Identity Pool. |  |
+| [github](outputs.tf#L33) | Github Configuration |  |
+| [google_iam_workload_identity_pool_provider](outputs.tf#L45) | Id for the Workload Identity Pool Provider. |  |
+| [project](outputs.tf#L50) | The project resource as return by the `project` module |  |
+| [project_id](outputs.tf#L60) | Project ID. |  |
+| [workload_identity_pool_name](outputs.tf#L40) | Resource name for the Workload Identity Pool. |  |
 
 <!-- END TFDOC -->

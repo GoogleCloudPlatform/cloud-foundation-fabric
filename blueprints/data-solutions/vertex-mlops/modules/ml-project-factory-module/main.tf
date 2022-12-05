@@ -179,9 +179,9 @@ module "vpc-local" {
 
 module "firewall" {
   count      = var.vpc_local == null ? 0 : 1
-  source              = "../../../../../modules/net-vpc-firewall"
-  project_id          = module.project.project_id
-  network             = module.vpc-local[0].name
+  source     = "../../../../../modules/net-vpc-firewall"
+  project_id = module.project.project_id
+  network    = module.vpc-local[0].name
   default_rules_config = {
     disabled = true
   }
@@ -198,12 +198,12 @@ module "firewall" {
       extra_attributes     = {}
     }
   }
- 
+
 }
 
 
 module "nat-ew1" {
-  count      = var.vpc_local == null ? 0 : 1
+  count                 = var.vpc_local == null ? 0 : 1
   source                = "../../../../../modules/net-cloudnat"
   project_id            = module.project.project_id
   region                = "europe-west1"
