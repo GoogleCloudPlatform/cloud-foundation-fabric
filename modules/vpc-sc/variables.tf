@@ -92,7 +92,7 @@ variable "egress_policies" {
         "ANY_USER", "ANY_SERVICE_ACCOUNT"
       ], v.from.identity_type)
     ])
-    error_message = "Invalid `from.identity_type` value in eress policy."
+    error_message = "Invalid `from.identity_type` value in egress policy."
   }
 }
 
