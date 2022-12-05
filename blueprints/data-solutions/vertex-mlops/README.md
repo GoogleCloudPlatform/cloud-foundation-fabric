@@ -11,7 +11,8 @@ A terraform script is provided to setup all the required resources:
 - Per project VPC network and a subnet to be used by Vertex and Dataflow
 - Firewall rule to allow the internal subnet communication required by Dataflow
 - Cloud NAT, required to reach the internet from the different computing resources (Vertex and Dataflow)
-- Service account with the minimum permissions required by Dataproc
+- Service account `mlops-env@` with the minimum permissions required by Vertex and Dataflow
+- Service account `github` to be used by Workload Identity Federation, to federate Github identity.
 - GCS bucket to host Vertex and Cloud Build Artifacts.
 - Big Query Dataset to store the training data
 
@@ -49,7 +50,6 @@ In latter stages you will need to provide both the Github organization and repo 
 See the [GIT Setup process](./GIT_SETUP.md)
 
 ##  Instructions
-
 
 ###  Deploy the experimentation environment
 

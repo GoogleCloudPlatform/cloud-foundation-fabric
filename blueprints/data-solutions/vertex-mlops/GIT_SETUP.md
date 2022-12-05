@@ -3,7 +3,8 @@
 ## Introduction
 
 
-Clone Google Cloud Professional services repo to a temp directory and select the `vertex-mlops` branch: 
+Clone Google Cloud Professional services [repo](https://github.com/pbalm/professional-services/tree/vertex-mlops/examples/vertex_mlops_enterprise)
+ to a temp directory and select the `vertex-mlops` branch: 
 ```
 git clone https://github.com/pbalm/professional-services.git`
 cd professional-services/
