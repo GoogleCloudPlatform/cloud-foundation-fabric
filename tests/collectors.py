@@ -42,11 +42,21 @@ class FabricTestFile(pytest.File):
     will be taken from the file test-name.yaml
 
     """
-    raw = yaml.safe_load(self.path.open())
-    module = raw.pop('module')
+    try:
+      raw = yaml.safe_load(self.path.open())
+      module = raw.pop('module')
+    except (IOError, OSError, yaml.YAMLError) as e:
+      raise Exception(f'cannot read test spec {self.path}: {e}')
+    except KeyError as e:
+      raise Exception(f'`module` key not found in {self.path}: {e}')
     for test_name, spec in raw.items():
       inventories = spec.get('inventory', [f'{test_name}.yaml'])
-      tfvars = spec['tfvars']
+      try:
+        tfvars = spec['tfvars']
+      except KeyError:
+        raise Exception(
+            f'test definition `{test_name}` in {self.path} does not contain a `tfvars` key'
+        )
       for i in inventories:
         name = test_name
         if isinstance(inventories, list) and len(inventories) > 1:

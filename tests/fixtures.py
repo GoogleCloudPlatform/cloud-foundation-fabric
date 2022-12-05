@@ -146,7 +146,10 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
   for path in inventory_paths:
     # allow tfvars and inventory to be relative to the caller
     path = basedir / path
-    inventory = yaml.safe_load(path.read_text())
+    try:
+      inventory = yaml.safe_load(path.read_text())
+    except (IOError, OSError, yaml.YAMLError) as e:
+      raise Exception(f'cannot read test inventory {path}: {e}')
 
     # don't fail if the inventory is empty
     inventory = inventory or {}
