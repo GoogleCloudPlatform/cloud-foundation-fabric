@@ -150,7 +150,7 @@ variable "service_perimeters_regular" {
         allowed_services   = list(string)
         enable_restriction = bool
       }))
-    }), {})
+    }))
     status = optional(object({
       access_levels       = optional(list(string))
       resources           = optional(list(string))
@@ -161,7 +161,7 @@ variable "service_perimeters_regular" {
         allowed_services   = list(string)
         enable_restriction = bool
       }))
-    }), {})
+    }))
     use_explicit_dry_run_spec = optional(bool, false)
   }))
   default  = {}
