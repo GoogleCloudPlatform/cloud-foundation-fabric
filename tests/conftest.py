@@ -22,10 +22,9 @@ import pytest
 import tftest
 import yaml
 
-from .collectors import pytest_collect_file
-from .fixtures import plan_summary_fixture, plan_validator_fixture
-
 BASEDIR = os.path.dirname(os.path.dirname(__file__))
+
+pytest_plugins = ('tests.fixtures', 'tests.collectors')
 
 
 @pytest.fixture(scope='session')
