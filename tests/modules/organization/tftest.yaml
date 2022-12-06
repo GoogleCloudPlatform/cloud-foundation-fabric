@@ -11,12 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-'Pytest configuration.'
 
-import pytest
+module: modules/organization
 
-pytest_plugins = (
-    'tests.fixtures',
-    'tests.legacy_fixtures',
-    'tests.collectors',
-)
+common_tfvars:
+  - common.tfvars
+
+tests:
+  audit_config:
+  iam:
+  iam_additive:
+  logging:
+  logging_exclusions:
+  org_policies_list:
+  org_policies_boolean:
+  org_policies_custom_constraints:
+  tags:
+  firewall_policies:
+  firewall_policies_factory:
+  firewall_policies_factory_combined:
+    tfvars:
+      - firewall_policies.tfvars
+      - firewall_policies_factory.tfvars

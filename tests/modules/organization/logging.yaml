@@ -1,0 +1,86 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
+    condition: []
+    dataset_id: mydataset
+    project: myproject
+    role: roles/bigquery.dataEditor
+  google_logging_organization_sink.sink["debug"]:
+    description: debug (Terraform-managed).
+    destination: logging.googleapis.com/projects/myproject/locations/global/buckets/mybucket
+    disabled: false
+    exclusions:
+    - description: null
+      disabled: false
+      filter: logName:compute
+      name: no-compute
+    - description: null
+      disabled: false
+      filter: logName:container
+      name: no-container
+    filter: severity=DEBUG
+    include_children: false
+    name: debug
+    org_id: '1234567890'
+  google_logging_organization_sink.sink["info"]:
+    description: info (Terraform-managed).
+    destination: bigquery.googleapis.com/projects/myproject/datasets/mydataset
+    disabled: true
+    exclusions: []
+    filter: severity=INFO
+    include_children: true
+    name: info
+    org_id: '1234567890'
+  google_logging_organization_sink.sink["notice"]:
+    description: notice (Terraform-managed).
+    destination: pubsub.googleapis.com/projects/myproject/topics/mytopic
+    disabled: false
+    exclusions: []
+    filter: severity=NOTICE
+    include_children: false
+    name: notice
+    org_id: '1234567890'
+  google_logging_organization_sink.sink["warning"]:
+    description: warning (Terraform-managed).
+    destination: storage.googleapis.com/mybucket
+    disabled: false
+    exclusions: []
+    filter: severity=WARNING
+    include_children: true
+    name: warning
+    org_id: '1234567890'
+  google_project_iam_member.bucket-sinks-binding["debug"]:
+    condition:
+    - expression: resource.name.endsWith('projects/myproject/locations/global/buckets/mybucket')
+      title: debug bucket writer
+    project: myproject
+    role: roles/logging.bucketWriter
+  google_pubsub_topic_iam_member.pubsub-sinks-binding["notice"]:
+    condition: []
+    project: myproject
+    role: roles/pubsub.publisher
+    topic: mytopic
+  google_storage_bucket_iam_member.storage-sinks-binding["warning"]:
+    bucket: mybucket
+    condition: []
+    role: roles/storage.objectCreator
+
+counts:
+  google_bigquery_dataset_iam_member: 1
+  google_logging_organization_sink: 4
+  google_project_iam_member: 1
+  google_pubsub_topic_iam_member: 1
+  google_storage_bucket_iam_member: 1
