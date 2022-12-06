@@ -87,8 +87,7 @@ def plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
     tf = tftest.TerraformTest(test_path, binary=binary)
     tf.setup(upgrade=True)
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
-    plan = tf.plan(output=True, refresh=True, tf_var_file=tf_var_files,
-                   tf_vars=tf_vars)
+    plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars=tf_vars)
 
     # compute resource type counts and address->values map
     values = {}
