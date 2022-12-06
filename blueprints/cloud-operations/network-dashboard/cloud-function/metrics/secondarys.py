@@ -45,37 +45,26 @@ def get_all_secondaryRange(config):
 
   for asset in response:
     for versioned in asset.versioned_resources:
-      secondaryRange_name = ""
-      secondaryCidrBlock = ""
-      subnet_name = ""
-      network_name = ""
-      subnet_region = ""
-      project_id = ""
+      subnet_name = versioned.resource.get('name')
+      # Network self link format:
+      # "https://www.googleapis.com/compute/v1/projects/<PROJECT_ID>/global/networks/<NETWORK_NAME>"
+      project_id = versioned.resource.get('network').split('/')[6]
+      network_name = versioned.resource.get('network').split('/')[-1]
+      subnet_region = versioned.resource.get('region').split('/')[-1]
 
       # Check first if the subnet has any secondary ranges to begin with
       if versioned.resource.get('secondaryIpRanges'):
-        for field_name, field_value in versioned.resource.items():
-          if field_name == 'name':
-            subnet_name = field_value
-          elif field_name == 'network':
-            # Network self link format:
-            # "https://www.googleapis.com/compute/v1/projects/<PROJECT_ID>/global/networks/<NETWORK_NAME>"
-            project_id = field_value.split('/')[6]
-            network_name = field_value.split('/')[-1]
-          elif field_name == 'region':
-            subnet_region = field_value.split('/')[-1]
-          elif field_name == 'secondaryIpRanges':
-            for item in field_value:
-              # Each subnet can have multiple secondary ranges
-              secondaryRange_name = item['rangeName']
-              secondaryCidrBlock = item['ipCidrRange']
-              net = ipaddress.ip_network(secondaryCidrBlock)
-              total_ip_addresses = int(net.num_addresses)
+              for items in versioned.resource.get('secondaryIpRanges'):
+                  # Each subnet can have multiple secondary ranges
+                  secondaryRange_name = items.get('rangeName')
+                  secondaryCidrBlock = items.get('ipCidrRange')
 
-              if project_id not in secondary_dict:
-                secondary_dict[project_id] = {}
-              secondary_dict[project_id][
-                  f"{subnet_name}/{secondaryRange_name}"] = {
+                  net = ipaddress.ip_network(secondaryCidrBlock)
+                  total_ip_addresses = int(net.num_addresses)
+
+                  if project_id not in secondary_dict:
+                      secondary_dict[project_id] = {}
+                  secondary_dict[project_id][f"{subnet_name}/{secondaryRange_name}"] = {
                       'name': secondaryRange_name,
                       'region': subnet_region,
                       'subnetName': subnet_name,
@@ -158,7 +147,7 @@ def compute_GKE_secondaryIP_utilization(config, read_mask, all_secondary_dict):
           'this_node_pool':
               versioned.resource['metadata']['labels']
               ['cloud.google.com/gke-nodepool'],
-          'used_IP':
+          'used_ip_addresses':
               0
       }
 
@@ -172,6 +161,8 @@ def compute_GKE_secondaryIP_utilization(config, read_mask, all_secondary_dict):
       })
 
   for asset in response_pods:
+    # Pod name link format:
+    # "//container.googleapis.com/projects/<PROJECT_ID>/<zones/region>/<LOCATION>/clusters/<CLUSTER_NAME>/k8s/namespaces/<NAMESPACE>/pods/<POD_NAME>"
     pod_parent = "/".join(asset.name.split('/')[4:9])
 
     for versioned in asset.versioned_resources:
@@ -182,7 +173,7 @@ def compute_GKE_secondaryIP_utilization(config, read_mask, all_secondary_dict):
 
       # A check to make sure pod is not using node IP
       if cur_PodIP != cur_HostIP:
-        node_secondary_dict[pod_full_path]['used_IP'] += 1
+        node_secondary_dict[pod_full_path]['used_ip_addresses'] += 1
 
   # Counting IP addresses used by Service in GKE
   response_service = config["clients"]["asset_client"].search_all_resources(
@@ -200,7 +191,7 @@ def compute_GKE_secondaryIP_utilization(config, read_mask, all_secondary_dict):
 
   for item in node_secondary_dict.values():
     itemKey = f"{item['node_parent']}/{item['this_node_pool']}"
-    cluster_secondary_dict[itemKey]['used_ip_addresses'] += item['used_IP']
+    cluster_secondary_dict[itemKey]['used_ip_addresses'] += item['used_ip_addresses']
 
   for item in cluster_secondary_dict.values():
     itemKey = f"{item['subnet']}/{item['secondaryRange_name']}"
@@ -252,7 +243,9 @@ def get_secondaries(config, metrics_dict):
       metric_labels = {
           'project': project_id,
           'network_name': secondary_dict['network_name'],
-          'subnet_id': subnet_id
+          'region' : secondary_dict['region'],
+          'subnet' : secondary_dict['subnetName'],
+          'secondary_range' : secondary_dict['name']
       }
       metrics.append_data_to_series_buffer(
           config, metrics_dict["metrics_per_subnet"]
