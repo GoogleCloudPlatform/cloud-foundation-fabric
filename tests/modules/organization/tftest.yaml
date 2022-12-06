@@ -30,3 +30,6 @@ tests:
   firewall_policies:
   firewall_policies_factory:
   firewall_policies_factory_combined:
+    tfvars:
+      - firewall_policies.tfvars
+      - firewall_policies_factory.tfvars
