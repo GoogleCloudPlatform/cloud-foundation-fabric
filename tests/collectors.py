@@ -57,14 +57,11 @@ class FabricTestFile(pytest.File):
       raise Exception(f'cannot read test spec {self.path}: {e}')
     except KeyError as e:
       raise Exception(f'`module` key not found in {self.path}: {e}')
+    common = raw.pop('common_tfvars', [])
     for test_name, spec in raw.get('tests', {}).items():
+      spec = {} if spec is None else spec
       inventories = spec.get('inventory', [f'{test_name}.yaml'])
-      try:
-        tfvars = spec['tfvars']
-      except KeyError:
-        raise Exception(
-            f'test `{test_name}` in {self.path} does not contain a `tfvars` key'
-        )
+      tfvars = common + [f'{test_name}.tfvars'] + spec.get('tfvars', [])
       for i in inventories:
         name = test_name
         if isinstance(inventories, list) and len(inventories) > 1:
