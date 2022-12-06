@@ -14,6 +14,7 @@
 """Common fixtures."""
 
 import collections
+import contextlib
 import itertools
 import os
 import shutil
@@ -25,6 +26,39 @@ import tftest
 import yaml
 
 PlanSummary = collections.namedtuple('PlanSummary', 'values counts outputs')
+
+
+@contextlib.contextmanager
+def _prepare_root_module(path):
+  """Context manager to prepare a terraform module to be tested.
+  
+  If the TFTEST_COPY environment variable is set, `path` is copied to
+  a temporary directory and a few terraform files (e.g.
+  terraform.tfvars) are delete to ensure a clean test environment.
+  Otherwise, `path` is simply returned untouched.
+  """
+  if os.environ.get('TFTEST_COPY'):
+    # if the TFTEST_COPY is set, create temp dir and copy the root
+    # module there
+    with tempfile.TemporaryDirectory(dir=path.parent) as tmp_path:
+      tmp_path = Path(tmp_path)
+
+      # if we're copying the module, we might as well ignore files and
+      # directories that are automatically read by terraform. Useful
+      # to avoid surprises if, for example, you have an active fast
+      # deployment with links to configs)
+      ignore_patterns = shutil.ignore_patterns('*.auto.tfvars',
+                                               '*.auto.tfvars.json',
+                                               'terraform.tfstate*',
+                                               'terraform.tfvars', '.terraform')
+
+      shutil.copytree(path, tmp_path, dirs_exist_ok=True,
+                      ignore=ignore_patterns)
+
+      yield tmp_path
+  else:
+    # if TFTEST_COPY is not set, just return the same path
+    yield path
 
 
 def plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
@@ -56,33 +90,10 @@ def plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
 
   [1] https://developer.hashicorp.com/terraform/internals/json-format
   """
+  # make the module_path relative to the root of the repo while still
+  # supporting absolute paths
   module_path = Path(__file__).parents[1] / module_path
-
-  # FIXME: find a way to prevent the temp dir if TFTEST_COPY is not
-  # in the environment
-  with tempfile.TemporaryDirectory(dir=module_path.parent) as tmp_path:
-    # if TFTEST_COPY is set, copy the fixture to a temporary
-    # directory before running the plan. This is needed if you want
-    # to run multiple tests for the same module in parallel
-    if os.environ.get('TFTEST_COPY'):
-      test_path = Path(tmp_path)
-
-      # if we're copying the module, we might as well ignore files and
-      # directories that are automatically read by terraform. Useful
-      # to avoid surprises if, for example, you have an active fast
-      # deployment with links to configs)
-      ignore_patterns = shutil.ignore_patterns('*.auto.tfvars',
-                                               '*.auto.tfvars.json',
-                                               'terraform.tfstate*',
-                                               'terraform.tfvars', '.terraform')
-
-      shutil.copytree(module_path, test_path, dirs_exist_ok=True,
-                      ignore=ignore_patterns)
-
-    else:
-      test_path = module_path
-
-    # prepare tftest and run plan
+  with _prepare_root_module(module_path) as test_path:
     binary = os.environ.get('TERRAFORM', 'terraform')
     tf = tftest.TerraformTest(test_path, binary=binary)
     tf.setup(upgrade=True)
