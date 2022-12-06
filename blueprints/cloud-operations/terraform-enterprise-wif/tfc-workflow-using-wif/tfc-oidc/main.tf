@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-locals {
-  audience = "//iam.googleapis.com/${var.workload_identity_pool_provider_id}"
-}
-
 data "external" "oidc_token_file" {
   program = ["bash", "${path.module}/write_token.sh", "${var.tmp_oidc_token_path}"]
+}
+
+data "external" "workload_identity_pool" {
+  program = ["bash", "${path.module}/get_audience.sh"]
 }

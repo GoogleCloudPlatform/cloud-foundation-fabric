@@ -1,0 +1,120 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    name: test
+    project: test-project
+    routing_mode: GLOBAL
+  google_compute_subnetwork.subnetwork["europe-west1/a"]:
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.0.0/24
+    log_config: []
+    name: a
+    private_ip_google_access: true
+    project: test-project
+    region: europe-west1
+    role: null
+    secondary_ip_range: []
+  google_compute_subnetwork.subnetwork["europe-west1/b"]:
+    description: Subnet b
+    ip_cidr_range: 10.0.1.0/24
+    log_config: []
+    name: b
+    private_ip_google_access: false
+    project: test-project
+    region: europe-west1
+    role: null
+    secondary_ip_range: []
+  google_compute_subnetwork.subnetwork["europe-west1/c"]:
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.2.0/24
+    ipv6_access_type: null
+    log_config: []
+    name: c
+    private_ip_google_access: true
+    project: test-project
+    region: europe-west1
+    role: null
+    secondary_ip_range:
+      - ip_cidr_range: 192.168.0.0/24
+        range_name: a
+      - ip_cidr_range: 192.168.1.0/24
+        range_name: b 
+  google_compute_subnetwork.subnetwork["europe-west1/d"]:
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.3.0/24
+    log_config:
+    - aggregation_interval: INTERVAL_10_MIN
+      filter_expr: 'true'
+      flow_sampling: 0.5
+      metadata: INCLUDE_ALL_METADATA
+      metadata_fields: null
+    name: d
+    private_ip_google_access: true
+    project: test-project
+    region: europe-west1
+    role: null
+    secondary_ip_range: []
+  google_compute_subnetwork_iam_binding.binding["europe-west1/a.roles/compute.networkUser"]:
+    condition: []
+    members:
+    - group:g-a@example.com
+    - user:a@example.com
+    project: test-project
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: a
+  google_compute_subnetwork_iam_binding.binding["europe-west1/c.roles/compute.networkUser"]:
+    condition: []
+    members:
+    - group:g-c@example.com
+    - user:c@example.com
+    project: test-project
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: c
+
+counts:
+  google_compute_network: 1
+  google_compute_subnetwork: 4
+  google_compute_subnetwork_iam_binding: 2
+
+outputs:
+  bindings: __missing__
+  project_id: test-project
+  subnet_ips:
+    europe-west1/a: 10.0.0.0/24
+    europe-west1/b: 10.0.1.0/24
+    europe-west1/c: 10.0.2.0/24
+    europe-west1/d: 10.0.3.0/24
+  subnet_regions:
+    europe-west1/a: europe-west1
+    europe-west1/b: europe-west1
+    europe-west1/c: europe-west1
+    europe-west1/d: europe-west1
+  subnet_secondary_ranges:
+    europe-west1/a: {}
+    europe-west1/b: {}
+    europe-west1/c:
+      a: 192.168.0.0/24
+      b: 192.168.1.0/24
+    europe-west1/d: {}
+  subnet_self_links: __missing__
+  subnets: __missing__
+  subnets_proxy_only: {}
+  subnets_psc: {}

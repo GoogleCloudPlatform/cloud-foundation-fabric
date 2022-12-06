@@ -1,3 +1,8 @@
+network_tags = {
+  net_environment = {
+    network = "foobar"
+  }
+}
 tags = {
   foo = {}
   bar = {
