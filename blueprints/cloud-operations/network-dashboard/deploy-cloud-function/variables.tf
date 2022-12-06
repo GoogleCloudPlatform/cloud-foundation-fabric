@@ -36,7 +36,7 @@ variable "cloud_function_config" {
 }
 
 variable "discovery_config" {
-  description = "Discovery configuration."
+  description = "Discovery configuration. Discovery root is the organization or a folder. If monitored folders and projects are empy, every project under the discovery root node will be monitored."
   type = object({
     discovery_root     = string
     monitored_folders  = list(string)
