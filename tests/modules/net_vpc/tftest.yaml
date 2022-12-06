@@ -11,12 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-'Pytest configuration.'
 
-import pytest
+module: modules/net-vpc
+common_tfvars:
+  - common.tfvars
 
-pytest_plugins = (
-    'tests.fixtures',
-    'tests.legacy_fixtures',
-    'tests.collectors',
-)
+tests:
+  simple:
+  subnets:
+  peering:
+  shared_vpc:
+  factory:
+  psa_simple:
+  psa_routes_export:
+  psa_routes_import:
+  psa_routes_import_export:
