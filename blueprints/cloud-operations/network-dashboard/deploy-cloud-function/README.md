@@ -30,7 +30,9 @@ discovery_config = {
   discovery_root     = "organizations/1234567890"
   monitored_folders  = ["3456789012", "7890123456"]
   monitored_projects = []
-  custom_quota_file  = "../src/custom-quotas.yaml"
+  # if you have custom quota not returned by the API, compile a file and set
+  # its pat here; format is described in ../src/custom-quotas.sample
+  # custom_quota_file  = "../src/custom-quotas.yaml"
 }
 grant_discovery_iam_roles = true
 project_create_config = {
