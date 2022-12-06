@@ -66,25 +66,19 @@ def plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
     # to run multiple tests for the same module in parallel
     if os.environ.get('TFTEST_COPY'):
       test_path = Path(tmp_path)
-      shutil.copytree(module_path, test_path, dirs_exist_ok=True)
 
-      # if we're copying the module, we might as well remove any files
-      # and directories from the test directory that are automatically
-      # read by terraform. Useful to avoid surprises if, for example,
-      # you have an active fast deployment with links to configs)
-      autopaths = itertools.chain(
-          test_path.glob('*.auto.tfvars'),
-          test_path.glob('*.auto.tfvars.json'),
-          test_path.glob('terraform.tfstate*'),
-          test_path.glob('terraform.tfvars'),
-          test_path.glob('.terraform'),
-          # any symlinks?
-      )
-      for p in autopaths:
-        if p.is_dir():
-          shutil.rmtree(p)
-        else:
-          p.unlink()
+      # if we're copying the module, we might as well ignore files and
+      # directories that are automatically read by terraform. Useful
+      # to avoid surprises if, for example, you have an active fast
+      # deployment with links to configs)
+      ignore_patterns = shutil.ignore_patterns('*.auto.tfvars',
+                                               '*.auto.tfvars.json',
+                                               'terraform.tfstate*',
+                                               'terraform.tfvars', '.terraform')
+
+      shutil.copytree(module_path, test_path, dirs_exist_ok=True,
+                      ignore=ignore_patterns)
+
     else:
       test_path = module_path
 
