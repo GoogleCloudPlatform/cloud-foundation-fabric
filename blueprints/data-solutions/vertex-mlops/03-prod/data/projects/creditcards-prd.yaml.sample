@@ -12,8 +12,9 @@ folder_id: folders/999999999999
 
 # [opt] Authoritative IAM bindings in group => [roles] format
 group_iam:
-  gcp-ml-eng@company.org:
+  gcp-ml-eng@example.com:
     - roles/aiplatform.admin
+    - roles/artifactregistry.admin
     - roles/bigquery.dataEditor
     - roles/bigquery.jobUser
     - roles/bigquery.user
@@ -33,6 +34,7 @@ group_iam:
 service_accounts:                      
   sa-mlops-prd:
      - roles/aiplatform.user
+     - roles/artifactregistry.reader
      - roles/bigquery.dataEditor
      - roles/bigquery.jobUser
      - roles/bigquery.user
@@ -41,35 +43,64 @@ service_accounts:
      - roles/dataflow.worker
      - roles/iam.serviceAccountUser
      - roles/monitoring.metricWriter
+     - roles/secretmanager.secretAccessor
      - roles/serviceusage.serviceUsageConsumer
-     - roles/source.reader
+     - roles/storage.admin
+  sa-github:
+     - roles/artifactregistry.writer
+     - roles/cloudbuild.builds.editor
+     # TODO: better at the sa-mlops SA level
+     - roles/iam.serviceAccountUser
+     - roles/serviceusage.serviceUsageConsumer
      - roles/storage.admin
 
 # [opt] IAM bindings on the service account resources.
 # in name => {role => [members]} format
 #service_accounts_iam:
 
-
 # [opt] Authoritative IAM bindings in role => [principals] format
 # Generally used to grant roles to service accounts external to the project
+# iam:
+
 
 # [opt] Labels for the project - merged with the ones defined in defaults
 labels:
 
+# [opt] Map of secrets to manage and their locations. If locations is null, automatic management will be set.
+secrets:
+  github-key:
+
+# [opt] IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format.
+#secrets_iam:
+   
+         
 # [opt] APIs to enable on the project.
 services:
     - aiplatform.googleapis.com
     - artifactregistry.googleapis.com
     - bigquery.googleapis.com
+    - cloudbuild.googleapis.com
     - compute.googleapis.com
     - datacatalog.googleapis.com
     - dataflow.googleapis.com
     - iam.googleapis.com
     - monitoring.googleapis.com
+    - secretmanager.googleapis.com
     - servicenetworking.googleapis.com
+    - serviceusage.googleapis.com
+
+# [opt] Roles to assign to the robots service accounts in robot => [roles] format
+services_iam:
+  cloudbuild:
+    - roles/iam.serviceAccountUser
+
 
 buckets:
   creditcards-prd:
+    region: EU
+  # Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘constraints/gcp.resourceLocations’"
+  # https://stackoverflow.com/questions/53206667/cloud-build-fails-with-resource-location-constraint
+  creditcards-prd_cloudbuild:
     region: EU
 
 datasets:
@@ -90,3 +121,10 @@ vpc_local:
   psa_config_ranges:
     vertex: 10.13.0.0/18  #Used for Vertex Training peering 
   
+artifact_registry:
+  docker-repo:
+    format: DOCKER
+    region: europe-west4
+
+workload_identity:
+  identity_pool_claims: attribute.repository/ORGANIZATION/REPO

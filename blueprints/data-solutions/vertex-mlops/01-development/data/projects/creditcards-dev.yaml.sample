@@ -13,8 +13,8 @@ folder_id: folders/999999999999
 # [opt] Authoritative IAM bindings in group => [roles] format
 group_iam:
   gcp-ml-ds@company.org:
-    - roles/artifactregistry.admin
     - roles/aiplatform.admin
+    - roles/artifactregistry.admin
     - roles/bigquery.dataEditor
     - roles/bigquery.jobUser
     - roles/bigquery.user
@@ -22,14 +22,12 @@ group_iam:
     - roles/cloudfunctions.developer
     - roles/dataflow.developer
     - roles/dataflow.worker
-    - roles/dataprep.projects.user
     - roles/iam.serviceAccountUser
     - roles/logging.logWriter
     - roles/logging.viewer
     - roles/notebooks.viewer
     - roles/pubsub.editor
     - roles/serviceusage.serviceUsageConsumer
-    - roles/source.writer
     - roles/storage.admin
 
 # [opt] Service account to create for the project and their roles on the project
@@ -38,7 +36,7 @@ group_iam:
 # https://cloud.google.com/build/docs/securing-builds/configure-access-to-resources#granting_permissions_to_run_gcloud_commands
 
 service_accounts:                      
-  sa-mlops-exp:
+  sa-mlops-dev:
      - roles/aiplatform.user
      - roles/artifactregistry.reader
      - roles/bigquery.dataEditor
@@ -49,20 +47,39 @@ service_accounts:
      - roles/dataflow.developer
      - roles/dataflow.worker
      - roles/iam.serviceAccountUser
+     - roles/monitoring.metricWriter
+     - roles/run.invoker
      - roles/secretmanager.secretAccessor
      - roles/serviceusage.serviceUsageConsumer
-     - roles/source.reader
      - roles/storage.admin
+  sa-github:
+     - roles/artifactregistry.writer
+     - roles/cloudbuild.builds.editor
+     # TODO: better at the sa-mlops SA level
+     - roles/iam.serviceAccountUser
+     - roles/serviceusage.serviceUsageConsumer
+     - roles/storage.admin
+
+# [opt] IAM bindings on the service account resources.
+# in name => {role => [members]} format
+#service_accounts_iam:
     
 # [opt] Authoritative IAM bindings in role => [principals] format
 # Generally used to grant roles to service accounts external to the project
-iam:
-  roles/artifactregistry.writer:
-    - serviceAccount:sa-github@<CICD PROJECT.iam.gserviceaccount.com>
+# iam:
+
 
 # [opt] Labels for the project - merged with the ones defined in defaults
 labels:
 
+# [opt] Map of secrets to manage and their locations. If locations is null, automatic management will be set.
+secrets:
+  github-key:
+
+# [opt] IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format.
+#secrets_iam:
+   
+       
 # [opt] APIs to enable on the project.
 services:
     - aiplatform.googleapis.com
@@ -82,6 +99,12 @@ services:
     - servicenetworking.googleapis.com
     - serviceusage.googleapis.com
 
+# [opt] Roles to assign to the robots service accounts in robot => [roles] format
+services_iam:
+  cloudbuild:
+    - roles/iam.serviceAccountUser
+
+
 buckets:
   creditcards-dev:
     region: EU
@@ -96,11 +119,14 @@ datasets:
 
 notebooks:
   user1:
-    owner: user1@company.org
+    owner: jgpuga@example.com
     region: europe-west4
     subnet: default
     internal_ip_only: false
     idle_shutdown_timeout: true
+
+
+
 
 vpc_local:
   name: default
@@ -120,3 +146,6 @@ artifact_registry:
   docker-repo:
     format: DOCKER
     region: europe-west4
+
+workload_identity:
+  identity_pool_claims: attribute.repository/ORGANIZATION/REPO
