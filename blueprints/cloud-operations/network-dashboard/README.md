@@ -10,6 +10,8 @@ The screenshot below is an example of a simple dashboard provided with this blue
 
 <img src="metric.png" width="640px">
 
+One other example is the IP utilization information per subnet, allowing you to monitor the percentage of used IP addresses in your GCP subnets.
+
 More complex scenarios are possible by leveraging and combining the 50 different timeseries created by this tool, and connecting them to Cloud Operations dashboards and alerts.
 
 Refer to the [Cloud Function deployment instructions](./deploy-cloud-function/) for a high level overview and an end-to-end deployment example, and to the[discovery tool documentation](./src/) to try it as a standalone program or to package it in alternative ways.
@@ -80,8 +82,8 @@ Refer to the [Cloud Function deployment instructions](./deploy-cloud-function/) 
 These are some of our ideas for additional features:
 
 - support PSA-peered Google VPCs (Cloud SQL, Memorystore, etc.)
-- dynamic routes for VPCs/peering groups with "global routing" turned ogg
-- static routes calculation for projects/peering groups with custom routes import/export turned ogg
+- dynamic routes for VPCs/peering groups with "global routing" turned off
+- static routes calculation for projects/peering groups with custom routes import/export turned off
 - cross-organization peering groups
 
 If you are interested in this and/or would like to contribute, please open an issue in this repository or send us a PR.
