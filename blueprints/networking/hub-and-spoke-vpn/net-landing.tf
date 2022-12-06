@@ -17,11 +17,11 @@
 module "landing-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = var.project_id
-  name       = "${local.prefix}lnd"
+  name       = "${var.prefix}-lnd"
   subnets = [
     {
       ip_cidr_range = var.ip_ranges.land-0-r1
-      name          = "${local.prefix}lnd-0"
+      name          = "${var.prefix}-lnd-0"
       region        = var.regions.r1
       secondary_ip_ranges = try(
         var.ip_secondary_ranges.land-0-r1, {}
@@ -29,7 +29,7 @@ module "landing-vpc" {
     },
     {
       ip_cidr_range = var.ip_ranges.land-0-r2
-      name          = "${local.prefix}lnd-0"
+      name          = "${var.prefix}-lnd-0"
       region        = var.regions.r2
       secondary_ip_ranges = try(
         var.ip_secondary_ranges.land-0-r2, {}
@@ -51,7 +51,7 @@ module "landing-dns-zone" {
   source          = "../../../modules/dns"
   project_id      = var.project_id
   type            = "private"
-  name            = "${local.prefix}example-com"
+  name            = "${var.prefix}-example-com"
   domain          = "example.com."
   client_networks = [module.landing-vpc.self_link]
   recordsets = {

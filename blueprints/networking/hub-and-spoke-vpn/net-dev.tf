@@ -17,11 +17,11 @@
 module "dev-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = var.project_id
-  name       = "${local.prefix}dev"
+  name       = "${var.prefix}-dev"
   subnets = [
     {
       ip_cidr_range = var.ip_ranges.dev-0-r1
-      name          = "${local.prefix}dev-0"
+      name          = "${var.prefix}-dev-0"
       region        = var.regions.r1
       secondary_ip_ranges = try(
         var.ip_secondary_ranges.dev-0-r1, {}
@@ -29,7 +29,7 @@ module "dev-vpc" {
     },
     {
       ip_cidr_range = var.ip_ranges.dev-0-r2
-      name          = "${local.prefix}dev-0"
+      name          = "${var.prefix}-dev-0"
       region        = var.regions.r2
       secondary_ip_ranges = try(
         var.ip_secondary_ranges.dev-0-r2, {}
@@ -51,7 +51,7 @@ module "dev-dns-peering" {
   source          = "../../../modules/dns"
   project_id      = var.project_id
   type            = "peering"
-  name            = "${local.prefix}example-com-dev-peering"
+  name            = "${var.prefix}-example-com-dev-peering"
   domain          = "example.com."
   client_networks = [module.dev-vpc.self_link]
   peer_network    = module.landing-vpc.self_link
@@ -61,7 +61,7 @@ module "dev-dns-zone" {
   source          = "../../../modules/dns"
   project_id      = var.project_id
   type            = "private"
-  name            = "${local.prefix}dev-example-com"
+  name            = "${var.prefix}-dev-example-com"
   domain          = "dev.example.com."
   client_networks = [module.landing-vpc.self_link]
   recordsets = {

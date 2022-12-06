@@ -15,9 +15,10 @@
  */
 
 output "credentials" {
+  description = "Credentials in format to pass the to gcp provider."
   value = jsonencode({
     "type" : "external_account",
-    "audience" : "${local.audience}",
+    "audience" : data.external.workload_identity_pool.result.audience,
     "subject_token_type" : "urn:ietf:params:oauth:token-type:jwt",
     "token_url" : "https://sts.googleapis.com/v1/token",
     "credential_source" : data.external.oidc_token_file.result

@@ -25,7 +25,7 @@ output "environments" {
 }
 
 output "instances" {
-  description = "Instances"
+  description = "Instances."
   value       = try(google_apigee_instance.instances, null)
 }
 

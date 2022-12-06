@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+variable "endpoint_attachments" {
+  description = "Endpoint attachments."
+  type = map(object({
+    region             = string
+    service_attachment = string
+  }))
+  default = null
+}
 
 variable "envgroups" {
   description = "Environment groups (NAME => [HOSTNAMES])."
@@ -27,9 +35,8 @@ variable "environments" {
     display_name = optional(string)
     description  = optional(string, "Terraform-managed")
     node_config = optional(object({
-      min_node_count               = optional(number)
-      max_node_count               = optional(number)
-      current_aggregate_node_count = number
+      min_node_count = optional(number)
+      max_node_count = optional(number)
     }))
     iam       = optional(map(list(string)))
     envgroups = list(string)
@@ -38,7 +45,7 @@ variable "environments" {
 }
 
 variable "instances" {
-  description = "Instance."
+  description = "Instances."
   type = map(object({
     display_name         = optional(string)
     description          = optional(string, "Terraform-managed")

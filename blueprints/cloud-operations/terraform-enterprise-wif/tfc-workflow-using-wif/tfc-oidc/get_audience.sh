@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-output "m4ce_gmanaged_service_account" {
-  description = "Google managed service account created automatically during the migrate connector registration. It is used by M4CE to perform activities on target projects."
-  value       = "serviceAccount:service-${module.landing-project.number}@gcp-sa-vmmigration.iam.gserviceaccount.com"
+# Exit if any of the intermediate steps fail
+set -e
+
+cat <<EOF
+{
+  "audience": "$TFC_WORKLOAD_IDENTITY_AUDIENCE"
 }
+EOF

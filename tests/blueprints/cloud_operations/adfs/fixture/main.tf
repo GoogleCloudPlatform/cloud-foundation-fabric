@@ -16,6 +16,7 @@
 
 module "test" {
   source               = "../../../../../blueprints/cloud-operations/adfs"
+  prefix               = var.prefix
   project_create       = var.project_create
   project_id           = var.project_id
   ad_dns_domain_name   = var.ad_dns_domain_name

@@ -15,7 +15,6 @@
  */
 
 locals {
-  prefix = (var.prefix == null || var.prefix == "") ? "" : "${var.prefix}-"
   k8s_ns = "apis"
   k8s_sa = "storage-api-sa"
   image = (
@@ -33,8 +32,9 @@ module "project" {
     ? var.project_create.parent
     : null
   )
-  prefix = var.project_create == null ? null : var.prefix
-  name   = var.project_id
+  project_create = var.project_create != null
+  prefix         = var.project_create == null ? null : var.prefix
+  name           = var.project_id
   services = [
     "artifactregistry.googleapis.com",
     "binaryauthorization.googleapis.com",
@@ -60,7 +60,7 @@ module "project" {
 module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = "${local.prefix}vpc"
+  name       = "${var.prefix}-vpc"
   subnets = [
     {
       ip_cidr_range = var.subnet_cidr_block
@@ -78,14 +78,14 @@ module "nat" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.project.project_id
   region         = var.region
-  name           = "${local.prefix}nat"
+  name           = "${var.prefix}-nat"
   router_network = module.vpc.name
 }
 
 module "cluster" {
   source     = "../../../modules/gke-cluster"
   project_id = module.project.project_id
-  name       = "${local.prefix}cluster"
+  name       = "${var.prefix}-cluster"
   location   = var.zone
   vpc_config = {
     master_ipv4_cidr_block = var.master_cidr_block
@@ -173,7 +173,7 @@ module "docker_artifact_registry" {
   project_id = module.project.project_id
   location   = var.region
   format     = "DOCKER"
-  id         = "${local.prefix}registry"
+  id         = "${var.prefix}-registry"
   iam = {
     "roles/artifactregistry.writer" = [module.image_cb_sa.iam_email]
     "roles/artifactregistry.reader" = [module.cluster_nodepool.service_account_iam_email]
@@ -189,7 +189,7 @@ module "image_cb_sa" {
 module "image_repo" {
   source     = "../../../modules/source-repository"
   project_id = module.project.project_id
-  name       = "${local.prefix}image"
+  name       = "${var.prefix}-image"
   triggers = {
     image-trigger = {
       filename        = "cloudbuild.yaml"
@@ -221,7 +221,7 @@ module "app_cb_sa" {
 module "app_repo" {
   source     = "../../../modules/source-repository"
   project_id = module.project.project_id
-  name       = "${local.prefix}app"
+  name       = "${var.prefix}-app"
   triggers = {
     app-trigger = {
       filename        = "cloudbuild.yaml"

@@ -16,9 +16,10 @@
 
 module "test" {
   source = "../../../../../blueprints/networking/hub-and-spoke-vpn"
+  prefix = var.prefix
   project_create_config = {
     billing_account_id = "ABCDE-123456-ABCDE"
     parent_id          = null
   }
-  project_id = "test-1"
+  project_id = var.project_id
 }

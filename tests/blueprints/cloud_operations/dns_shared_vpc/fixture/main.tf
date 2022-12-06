@@ -18,6 +18,7 @@ module "test" {
   source             = "../../../../../blueprints/cloud-operations/dns-shared-vpc"
   billing_account_id = "111111-222222-333333"
   folder_id          = "folders/1234567890"
+  prefix             = var.prefix
   shared_vpc_link    = "https://www.googleapis.com/compute/v1/projects/test-dns/global/networks/default"
   teams              = var.teams
 }

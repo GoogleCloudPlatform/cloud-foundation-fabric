@@ -36,6 +36,10 @@ variable "folder_id" {
   default = "folders/1122334455"
 }
 
+variable "prefix" {
+  default = "test"
+}
+
 variable "project_id" {
   default = "project-id"
 }
@@ -64,14 +68,21 @@ variable "subnet" {
 variable "vpc" {
   default = {
     name      = "vpc_name"
-    self_link = "projects/xxx/global/networks/yyy"
+    self_link = "projects/xxx/global/networks/aaa"
+  }
+}
+
+variable "vpc1" {
+  default = {
+    name      = "vpc_name"
+    self_link = "projects/xxx/global/networks/bbb"
   }
 }
 
 variable "vpc2" {
   default = {
     name      = "vpc2_name"
-    self_link = "vpc2_self_link"
+    self_link = "projects/xxx/global/networks/ccc"
   }
 }
 

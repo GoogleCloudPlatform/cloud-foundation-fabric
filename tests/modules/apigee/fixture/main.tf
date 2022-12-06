@@ -15,10 +15,11 @@
  */
 
 module "test" {
-  source       = "../../../../modules/apigee"
-  project_id   = var.project_id
-  organization = var.organization
-  envgroups    = var.envgroups
-  environments = var.environments
-  instances    = var.instances
+  source               = "../../../../modules/apigee"
+  project_id           = var.project_id
+  organization         = var.organization
+  envgroups            = var.envgroups
+  environments         = var.environments
+  instances            = var.instances
+  endpoint_attachments = var.endpoint_attachments
 }
