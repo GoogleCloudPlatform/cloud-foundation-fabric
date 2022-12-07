@@ -138,3 +138,11 @@ artifact_registry:
   docker-repo:
     format: DOCKER
     region: europe-west4
+
+# [opt] Org policy overrides defined at project level
+org_policies:
+  constraints/compute.disableGuestAttributesAccess:
+    enforce: true
+  constraints/compute.vmExternalIpAccess:
+    deny:
+      all: true

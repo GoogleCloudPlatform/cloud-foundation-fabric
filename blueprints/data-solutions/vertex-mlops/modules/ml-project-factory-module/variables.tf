@@ -24,7 +24,6 @@ variable "artifact_registry" {
   default = null
 }
 
-
 variable "billing_account_id" {
   description = "Billing account id."
   type        = string
@@ -40,6 +39,22 @@ variable "billing_alert" {
     })
     credit_treatment = string
   })
+  default = null
+}
+
+variable "buckets" {
+  description = "Create GCS Buckets."
+  type = map(object({
+    region = string
+  }))
+  default = null
+}
+
+variable "datasets" {
+  description = "Create BigQuery Datasets."
+  type = map(object({
+    region = string
+  }))
   default = null
 }
 
@@ -62,22 +77,6 @@ variable "defaults" {
     shared_vpc_self_link  = string
     vpc_host_project      = string
   })
-  default = null
-}
-
-variable "buckets" {
-  description = "Create GCS Buckets"
-  type = map(object({
-    region = string
-  }))
-  default = null
-}
-
-variable "datasets" {
-  description = "Create BigQuery Datasets"
-  type = map(object({
-    region = string
-  }))
   default = null
 }
 
@@ -123,7 +122,7 @@ variable "labels" {
 }
 
 variable "notebooks" {
-  description = "Vertex AI workbenchs to be deployed"
+  description = "Vertex AI workbenchs to be deployed."
   type = map(object({
     owner                 = string
     region                = string
@@ -137,16 +136,42 @@ variable "notebooks" {
 
 variable "org_policies" {
   description = "Org-policy overrides at project level."
-  type = object({
-    policy_boolean = map(bool)
-    policy_list = map(object({
-      inherit_from_parent = bool
-      suggested_value     = string
-      status              = bool
-      values              = list(string)
+  type = map(object({
+    inherit_from_parent = optional(bool) # for list policies only.
+    reset               = optional(bool)
+
+    # default (unconditional) values
+    allow = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
     }))
-  })
-  default = null
+    deny = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
+    }))
+    enforce = optional(bool, true) # for boolean policies only.
+
+    # conditional values
+    rules = optional(list(object({
+      allow = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      deny = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      enforce = optional(bool, true) # for boolean policies only.
+      condition = object({
+        description = optional(string)
+        expression  = optional(string)
+        location    = optional(string)
+        title       = optional(string)
+      })
+    })), [])
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "prefix" {
@@ -166,6 +191,18 @@ variable "repo_name" {
   default     = null
 }
 
+variable "secrets" {
+  description = "Secrets to be created, and roles to assign them."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "secrets_iam" {
+  description = "IAM bindings on secrets resources. Format is KEY => {ROLE => [MEMBERS]}."
+  type        = map(map(list(string)))
+  default     = {}
+  nullable    = false
+}
 
 variable "service_accounts" {
   description = "Service accounts to be created, and roles to assign them."
@@ -174,31 +211,9 @@ variable "service_accounts" {
 }
 
 variable "service_accounts_iam" {
-  description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
+  description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}."
   type        = map(map(list(string)))
   default     = {}
-  nullable    = false
-}
-
-
-variable "secrets" {
-  description = "Secrets to be created, and roles to assign them."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "secrets_iam" {
-  description = "IAM bindings on secrets resources. Format is KEY => {ROLE => [MEMBERS]}"
-  type        = map(map(list(string)))
-  default     = {}
-  nullable    = false
-}
-
-
-variable "services" {
-  description = "Services to be enabled for the project."
-  type        = list(string)
-  default     = []
   nullable    = false
 }
 
@@ -206,6 +221,13 @@ variable "service_identities_iam" {
   description = "Custom IAM settings for service identities in service => [role] format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
+}
+
+variable "services" {
+  description = "Services to be enabled for the project."
+  type        = list(string)
+  default     = []
   nullable    = false
 }
 
@@ -240,7 +262,7 @@ variable "vpc_local" {
 }
 
 variable "workload_identity" {
-  description = "Create Workload Identity Pool for Github"
+  description = "Create Workload Identity Pool for Github."
   type = object({
     identity_pool_claims = string
   })
