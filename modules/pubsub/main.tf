@@ -37,7 +37,7 @@ locals {
 
 resource "google_pubsub_schema" "default" {
   count      = var.schema == null ? 0 : 1
-  name       = "{$var.name}-schema"
+  name       = "${var.name}-schema"
   type       = var.schema.schema_type
   definition = var.schema.definition
   project    = var.project_id
