@@ -1,12 +1,13 @@
-# Internal (HTTP/S) Load Balancer Module
+# Global HTTP/S Classic Load Balancer Module
 
-This module allows managing Internal HTTP/HTTPS Load Balancers (L7 ILBs). It's designed to expose the full configuration of the underlying resources, and to facilitate common usage patterns by providing sensible defaults, and optionally managing prerequisite resources like health checks, instance groups, etc.
+This module allows managing Global HTTP/HTTPS Classic Load Balancers (GLBs). It's designed to expose the full configuration of the underlying resources, and to facilitate common usage patterns by providing sensible defaults, and optionally managing prerequisite resources like health checks, instance groups, etc.
 
 Due to the complexity of the underlying resources, changes to the configuration that involve recreation of resources are best applied in stages, starting by disabling the configuration in the urlmap that references the resources that neeed recreation, then doing the same for the backend service, etc.
 
 ## Examples
 
-- [Minimal Example](#minimal-example)
+- [Minimal HTTP Example](#minimal-http-example)
+- [Minimal HTTPS Examples](#minimal-https-examples)
 - [Cross-project Backend Services](#cross-project-backend-services)
 - [Health Checks](#health-checks)
 - [Instance Groups](#instance-groups)
@@ -15,56 +16,92 @@ Due to the complexity of the underlying resources, changes to the configuration 
 - [SSL Certificates](#ssl-certificates)
 - [Complex Example](#complex-example)
 
-### Minimal Example
+### Minimal HTTP Example
 
-An HTTP ILB with a backend service pointing to a GCE instance group:
+An HTTP load balancer with a backend service pointing to a GCE instance group:
 
 ```hcl
-module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
-  name       = "ilb-test"
-  project_id = var.project_id
-  region     = "europe-west1"
-  backend_service_configs = {
-    default = {
-      backends = [{
-        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
-      }]
-    }
+name       = "glb-test-0"
+project_id = "myprj"
+backend_service_configs = {
+  default = {
+    backends = [
+      { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
+      { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+    ]
   }
-  vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
-  }
+}
+urlmap_config = {
+  default_service = "default"
 }
 # tftest modules=1 resources=5
 ```
 
-An HTTPS ILB needs a few additional fields:
+### Minimal HTTPS examples
+
+#### HTTP backends
+
+An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. THis is an example With HTTP backends and a managed certificate:
 
 ```hcl
-module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
-  name       = "ilb-test"
-  project_id = var.project_id
-  region     = "europe-west1"
-  backend_service_configs = {
+name       = "glb-test-0"
+project_id = "myprj"
+backend_service_configs = {
+  default = {
+    backends = [
+      { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
+      { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+    ]
+    protocol = "HTTP"
+  }
+}
+protocol = "HTTPS"
+ssl_certificates = {
+  managed_configs = {
     default = {
-      backends = [{
-        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
-      }]
+      domains = ["glb-test-0.example.org"]
     }
   }
-  protocol = "HTTPS"
-  ssl_certificates = {
-    certificate_ids = [
-      "projects/myprj/regions/europe-west1/sslCertificates/my-cert"
+}
+urlmap_config = {
+  default_service = "default"
+}
+# tftest modules=1 resources=5
+```
+
+#### HTTPS backends
+
+For HTTPS backends the backend service protocol needs to be set to `HTTPS`. The port name if omitted is inferred from the protocol, in this case it is set internally to `https`. The health check also needs to be set to https. This is a complete example:
+
+```hcl
+name       = "glb-test-0"
+project_id = "myprj"
+backend_service_configs = {
+  default = {
+    backends = [
+      { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
+      { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
     ]
   }
-  vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
+  protocol = "HTTPS"
+}
+health_check_configs = {
+  default = {
+    https = {
+      port_specification = "USE_SERVING_PORT"
+    }
   }
+}
+protocol = "HTTPS"
+ssl_certificates = {
+  managed_configs = {
+    default = {
+      domains = ["glb-test-0.example.org"]
+    }
+  }
+}
+urlmap_config = {
+  default_service = "default"
 }
 # tftest modules=1 resources=5
 ```
