@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 resource "google_notebooks_runtime" "runtime" {
   for_each = var.notebooks
   name     = each.key

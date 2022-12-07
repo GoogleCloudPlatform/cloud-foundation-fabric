@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 resource "google_iam_workload_identity_pool" "github_pool" {
   count                     = var.workload_identity == null ? 0 : 1
   provider                  = google-beta
