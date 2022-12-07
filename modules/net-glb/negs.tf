@@ -51,7 +51,6 @@ locals {
       description = v.description
       endpoints   = v.gce != null ? v.gce.endpoints : v.hybrid.endpoints
       network     = v.gce != null ? v.gce.network : v.hybrid.network
-      project_id  = v.project_id
       subnetwork  = v.gce != null ? v.gce.subnetwork : null
       type        = v.gce != null ? "GCE_VM_IP_PORT" : "NON_GCP_PRIVATE_IP_PORT"
       zone        = v.gce != null ? v.gce.zone : v.hybrid.zone
@@ -62,12 +61,8 @@ locals {
 
 resource "google_compute_global_network_endpoint_group" "default" {
   for_each = local.neg_global
-  project = (
-    each.value.project_id == null
-    ? var.project_id
-    : each.value.project_id
-  )
-  name = "${var.name}-${each.key}"
+  project  = var.project_id
+  name     = "${var.name}-${each.key}"
   # re-enable once provider properly supports this
   # default_port = each.value.default_port
   description = coalesce(each.value.description, var.description)
@@ -92,13 +87,9 @@ resource "google_compute_global_network_endpoint" "default" {
 
 resource "google_compute_network_endpoint_group" "default" {
   for_each = local.neg_zonal
-  project = (
-    each.value.project_id == null
-    ? var.project_id
-    : each.value.project_id
-  )
-  zone = each.value.zone
-  name = "${var.name}-${each.key}"
+  project  = var.project_id
+  zone     = each.value.zone
+  name     = "${var.name}-${each.key}"
   # re-enable once provider properly supports this
   # default_port = each.value.default_port
   description           = coalesce(each.value.description, var.description)
@@ -126,12 +117,8 @@ resource "google_compute_network_endpoint" "default" {
 }
 
 resource "google_compute_region_network_endpoint_group" "default" {
-  for_each = local.neg_regional
-  project = (
-    each.value.project_id == null
-    ? var.project_id
-    : each.value.project_id
-  )
+  for_each              = local.neg_regional
+  project               = var.project_id
   region                = each.value.region
   name                  = "${var.name}-${each.key}"
   description           = coalesce(each.value.description, var.description)
