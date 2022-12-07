@@ -201,7 +201,7 @@ module "glb-0" {
         backend        = "projects/myprj/zones/europe-west8-b/networkEndpointGroups/myneg-b"
         balancing_mode = "RATE"
         max_rate       = { per_endpoint = 10 }
-      },
+      }
     ]
   }
 }
@@ -221,14 +221,14 @@ module "glb-0" {
   default = {
     backends = [
       {
-        backend        = "neg-gce-ew8-b"
+        backend        = "neg-0"
         balancing_mode = "RATE"
         max_rate       = { per_endpoint = 10 }
-      },
+      }
     ]
   }
   neg_configs = {
-    neg-gce-ew8-b = {
+    neg-0 = {
       gce = {
         network    = "projects/myprj-host/global/networks/svpc"
         subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
@@ -258,19 +258,50 @@ module "glb-0" {
   default = {
     backends = [
       {
-        backend        = "neg-hybrid"
+        backend        = "neg-0"
         balancing_mode = "RATE"
         max_rate       = { per_endpoint = 10 }
-      },
+      }
     ]
   }
   neg_configs = {
-    neg-hybrid = {
+    neg-0 = {
       hybrid = {
         network    = "projects/myprj-host/global/networks/svpc"
         zone       = "europe-west8-b"
         endpoints = [{
           ip_address = "10.0.0.10"
+          port       = 80
+        }]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=7
+```
+
+#### Internet NEG creation
+
+This example shows how to create and manage internet NEGs:
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id = "myprj"
+  name       = "glb-test-0"
+  backend_service_configs = {
+  default = {
+    backends = [
+      { backend = "neg-0" }
+    ]
+    health_checks = []
+  }
+  neg_configs = {
+    neg-0 = {
+      internet = {
+        use_fqdn  = true
+        endpoints = [{
+          destination = "www.example.org"
           port = 80
         }]
       }
@@ -294,13 +325,13 @@ module "ilb-l7" {
     default = {
       backends = [{
         balancing_mode = "RATE"
-        group = "my-neg"
+        group = "neg-0"
         max_rate       = { per_endpoint = 1 }
       }]
     }
   }
   neg_configs = {
-    my-neg = {
+    neg-0 = {
       cloudrun = {
         region = "europe-west1"
         target_service = {

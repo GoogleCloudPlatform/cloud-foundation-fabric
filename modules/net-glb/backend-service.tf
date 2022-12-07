@@ -54,7 +54,7 @@ resource "google_compute_backend_service" "default" {
   custom_request_headers          = each.value.custom_request_headers
   custom_response_headers         = each.value.custom_response_headers
   enable_cdn                      = each.value.enable_cdn
-  health_checks = [
+  health_checks = length(each.value.health_checks) == 0 ? null : [
     for k in each.value.health_checks : lookup(local.hc_ids, k, k)
   ]
   load_balancing_scheme = "EXTERNAL"
