@@ -15,7 +15,7 @@
  */
 
 module "projects" {
-  source               = "../../../../../blueprints/data-solutions/vertex-mlops/01-experimentation/"
+  source               = "../../../../../blueprints/data-solutions/vertex-mlops/01-development/"
   data_dir             = "./data/projects/"
   defaults_file        = "./data/defaults.yaml"
   prefix               = "test"
