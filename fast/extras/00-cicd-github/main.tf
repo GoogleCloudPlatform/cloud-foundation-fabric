@@ -52,7 +52,7 @@ locals {
       for k, v in var.repositories :
       "${k}/templates/providers.tf.tpl" => {
         repository = k
-        file       = "../../assets/templates/providers.tf.tpl"
+        file       = "../../cloud-foundation-fabric/fast/assets/templates/providers.tf.tpl"
         name       = "templates/providers.tf.tpl"
       }
       if v.populate_from != null
