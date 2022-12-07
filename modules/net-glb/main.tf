@@ -56,7 +56,7 @@ resource "google_compute_ssl_certificate" "default" {
 resource "google_compute_managed_ssl_certificate" "default" {
   for_each    = var.ssl_certificates.managed_configs
   project     = var.project_id
-  name        = each.key
+  name        = "${var.name}-${each.key}"
   description = each.value.description
   managed {
     domains = each.value.domains
