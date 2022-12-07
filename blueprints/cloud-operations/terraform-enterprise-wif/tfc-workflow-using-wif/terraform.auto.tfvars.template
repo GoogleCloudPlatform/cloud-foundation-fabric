@@ -13,5 +13,4 @@
 # limitations under the License.
 
 project_id                         = "tfe-oidc-workflow"
-workload_identity_pool_provider_id = "projects/683987109094/locations/global/workloadIdentityPools/tfe-pool/providers/tfe-provider"
 impersonate_service_account_email  = "sa-tfe@tfe-oidc-workflow2.iam.gserviceaccount.com"

@@ -1,0 +1,44 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_organization_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - domain:example.org
+    org_id: '1234567890'
+    role: roles/browser
+  google_organization_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - group:owners@example.org
+    - user:one@example.org
+    - user:two@example.org
+    org_id: '1234567890'
+    role: roles/owner
+  google_organization_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - group:owners@example.org
+    org_id: '1234567890'
+    role: roles/resourcemanager.folderAdmin
+  google_organization_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - group:viewers@example.org
+    org_id: '1234567890'
+    role: roles/viewer
+
+counts:
+  google_organization_iam_binding: 4

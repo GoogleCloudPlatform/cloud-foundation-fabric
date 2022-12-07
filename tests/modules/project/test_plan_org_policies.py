@@ -31,13 +31,14 @@ def test_policy_list(plan_runner):
 
 def test_factory_policy_boolean(plan_runner, tfvars_to_yaml, tmp_path):
   dest = tmp_path / 'policies.yaml'
-  tfvars_to_yaml('test.orgpolicies-boolean.tfvars', dest, 'org_policies')
+  tfvars_to_yaml('fixture/test.orgpolicies-boolean.tfvars', dest,
+                 'org_policies')
   _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
   validate_policy_boolean(resources)
 
 
 def test_factory_policy_list(plan_runner, tfvars_to_yaml, tmp_path):
   dest = tmp_path / 'policies.yaml'
-  tfvars_to_yaml('test.orgpolicies-list.tfvars', dest, 'org_policies')
+  tfvars_to_yaml('fixture/test.orgpolicies-list.tfvars', dest, 'org_policies')
   _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
   validate_policy_list(resources)

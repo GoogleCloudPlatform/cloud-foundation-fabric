@@ -24,8 +24,3 @@ variable "tmp_oidc_token_path" {
   type        = string
   default     = ".oidc_token"
 }
-
-variable "workload_identity_pool_provider_id" {
-  description = "GCP workload identity pool provider ID."
-  type        = string
-}

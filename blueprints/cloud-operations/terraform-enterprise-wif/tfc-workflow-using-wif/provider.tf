@@ -16,8 +16,7 @@
 module "tfe_oidc" {
   source = "./tfc-oidc"
 
-  workload_identity_pool_provider_id = var.workload_identity_pool_provider_id
-  impersonate_service_account_email  = var.impersonate_service_account_email
+  impersonate_service_account_email = var.impersonate_service_account_email
 }
 
 provider "google" {
