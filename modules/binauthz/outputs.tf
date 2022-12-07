@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-output "id" {
-  description = "Binary Authorization policy ID"
-  value       = google_binary_authorization_policy.policy.id
-}
-
 output "attestors" {
   description = "Attestors."
   value       = google_binary_authorization_attestor.attestors
   depends_on = [
     google_binary_authorization_attestor_iam_binding.bindings
   ]
+}
+
+output "id" {
+  description = "Binary Authorization policy ID."
+  value       = google_binary_authorization_policy.policy.id
 }
 
 output "notes" {

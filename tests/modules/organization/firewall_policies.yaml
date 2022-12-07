@@ -1,0 +1,73 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_firewall_policy.policy["policy1"]:
+    parent: organizations/1234567890
+    short_name: policy1
+  google_compute_firewall_policy.policy["policy2"]:
+    parent: organizations/1234567890
+    short_name: policy2
+  google_compute_firewall_policy_rule.rule["policy1-allow-ingress"]:
+    action: allow
+    direction: INGRESS
+    disabled: null
+    enable_logging: false
+    match:
+    - dest_ip_ranges: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '22'
+      src_ip_ranges:
+      - 10.0.0.0/8
+    priority: 100
+    target_resources: null
+    target_service_accounts: null
+  google_compute_firewall_policy_rule.rule["policy1-deny-egress"]:
+    action: deny
+    direction: EGRESS
+    disabled: null
+    enable_logging: false
+    match:
+    - dest_ip_ranges:
+      - 192.168.0.0/24
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '443'
+      src_ip_ranges: null
+    priority: 200
+    target_resources: null
+    target_service_accounts: null
+  google_compute_firewall_policy_rule.rule["policy2-allow-ingress"]:
+    action: allow
+    direction: INGRESS
+    disabled: null
+    enable_logging: false
+    match:
+    - dest_ip_ranges: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '22'
+      src_ip_ranges:
+      - 10.0.0.0/8
+    priority: 100
+    target_resources: null
+    target_service_accounts: null
+
+counts:
+  google_compute_firewall_policy: 2
+  google_compute_firewall_policy_rule: 3

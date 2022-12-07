@@ -19,12 +19,12 @@ output "id" {
   value       = google_compute_network_endpoint_group.group.name
 }
 
-output "size" {
-  description = "Size of the network endpoint group."
-  value       = google_compute_network_endpoint_group.group.size
-}
-
 output "self_lnk" {
   description = "Network endpoint group self link."
   value       = google_compute_network_endpoint_group.group.self_link
+}
+
+output "size" {
+  description = "Size of the network endpoint group."
+  value       = google_compute_network_endpoint_group.group.size
 }

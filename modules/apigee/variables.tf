@@ -14,9 +14,48 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "Project ID."
-  type        = string
+variable "endpoint_attachments" {
+  description = "Endpoint attachments."
+  type = map(object({
+    region             = string
+    service_attachment = string
+  }))
+  default = null
+}
+
+variable "envgroups" {
+  description = "Environment groups (NAME => [HOSTNAMES])."
+  type        = map(list(string))
+  default     = null
+}
+
+variable "environments" {
+  description = "Environments."
+  type = map(object({
+    display_name = optional(string)
+    description  = optional(string, "Terraform-managed")
+    node_config = optional(object({
+      min_node_count = optional(number)
+      max_node_count = optional(number)
+    }))
+    iam       = optional(map(list(string)))
+    envgroups = list(string)
+  }))
+  default = null
+}
+
+variable "instances" {
+  description = "Instances."
+  type = map(object({
+    display_name         = optional(string)
+    description          = optional(string, "Terraform-managed")
+    region               = string
+    environments         = list(string)
+    psa_ip_cidr_range    = string
+    disk_encryption_key  = optional(string)
+    consumer_accept_list = optional(list(string))
+  }))
+  default = null
 }
 
 variable "organization" {
@@ -33,38 +72,7 @@ variable "organization" {
   default = null
 }
 
-variable "envgroups" {
-  description = "Environment groups (NAME => [HOSTNAMES])."
-  type        = map(list(string))
-  default     = null
-}
-
-variable "environments" {
-  description = "Environments."
-  type = map(object({
-    display_name = optional(string)
-    description  = optional(string, "Terraform-managed")
-    node_config = optional(object({
-      min_node_count               = optional(number)
-      max_node_count               = optional(number)
-      current_aggregate_node_count = number
-    }))
-    iam       = optional(map(list(string)))
-    envgroups = list(string)
-  }))
-  default = null
-}
-
-variable "instances" {
-  description = "Instance."
-  type = map(object({
-    display_name         = optional(string)
-    description          = optional(string, "Terraform-managed")
-    region               = string
-    environments         = list(string)
-    psa_ip_cidr_range    = string
-    disk_encryption_key  = optional(string)
-    consumer_accept_list = optional(list(string))
-  }))
-  default = null
+variable "project_id" {
+  description = "Project ID."
+  type        = string
 }

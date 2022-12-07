@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "Project ID."
-  type        = string
-}
-
-variable "organization" {
-  description = "Apigee organization"
-  type = object({
-    display_name            = optional(string)
-    description             = optional(string, "Apigee Organization created by tf module")
-    authorized_network      = optional(string)
-    runtime_type            = optional(string, "CLOUD")
-    billing_type            = optional(string)
-    database_encryption_key = optional(string)
-    analytics_region        = optional(string, "europe-west1")
-  })
+variable "endpoint_attachments" {
+  description = "Endpoint attachments."
+  type = map(object({
+    region             = string
+    service_attachment = string
+  }))
   default = null
 }
 
@@ -43,11 +33,10 @@ variable "environments" {
   description = "Environments."
   type = map(object({
     display_name = optional(string)
-    description  = optional(string)
+    description  = optional(string, "Terraform-managed")
     node_config = optional(object({
-      min_node_count               = optional(number)
-      max_node_count               = optional(number)
-      current_aggregate_node_count = number
+      min_node_count = optional(number)
+      max_node_count = optional(number)
     }))
     iam       = optional(map(list(string)))
     envgroups = list(string)
@@ -56,10 +45,10 @@ variable "environments" {
 }
 
 variable "instances" {
-  description = "Instance."
+  description = "Instances."
   type = map(object({
     display_name         = optional(string)
-    description          = optional(string)
+    description          = optional(string, "Terraform-managed")
     region               = string
     environments         = list(string)
     psa_ip_cidr_range    = string
@@ -67,4 +56,23 @@ variable "instances" {
     consumer_accept_list = optional(list(string))
   }))
   default = null
+}
+
+variable "organization" {
+  description = "Apigee organization. If set to null the organization must already exist."
+  type = object({
+    display_name            = optional(string)
+    description             = optional(string, "Terraform-managed")
+    authorized_network      = optional(string)
+    runtime_type            = optional(string, "CLOUD")
+    billing_type            = optional(string)
+    database_encryption_key = optional(string)
+    analytics_region        = optional(string, "europe-west1")
+  })
+  default = null
+}
+
+variable "project_id" {
+  description = "Project ID."
+  type        = string
 }

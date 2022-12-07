@@ -33,16 +33,19 @@ locals {
 }
 
 module "landing-to-onprem-ew1-vpn" {
-  count                 = local.enable_onprem_vpn ? 1 : 0
-  source                = "../../../modules/net-vpn-ha"
-  project_id            = module.landing-project.project_id
-  network               = module.landing-trusted-vpc.self_link
-  region                = "europe-west1"
-  name                  = "vpn-to-onprem-ew1"
-  router_create         = true
-  router_name           = "landing-onprem-vpn-ew1"
-  router_asn            = var.router_configs.landing-trusted-ew1.asn
-  peer_external_gateway = var.vpn_onprem_configs.landing-trusted-ew1.peer_external_gateway
+  count      = local.enable_onprem_vpn ? 1 : 0
+  source     = "../../../modules/net-vpn-ha"
+  project_id = module.landing-project.project_id
+  network    = module.landing-trusted-vpc.self_link
+  region     = "europe-west1"
+  name       = "vpn-to-onprem-ew1"
+  router_config = {
+    name = "landing-onprem-vpn-ew1"
+    asn  = var.router_configs.landing-trusted-ew1.asn
+  }
+  peer_gateway = {
+    external = var.vpn_onprem_configs.landing-trusted-ew1.peer_external_gateway
+  }
   tunnels = {
     for t in var.vpn_onprem_configs.landing-trusted-ew1.tunnels :
     "remote-${t.vpn_gateway_interface}-${t.peer_external_gateway_interface}" => {
@@ -52,9 +55,7 @@ module "landing-to-onprem-ew1-vpn" {
       }
       bgp_peer_options                = local.bgp_peer_options_onprem.landing-trusted-ew1
       bgp_session_range               = "${cidrhost(t.session_range, 2)}/30"
-      ike_version                     = 2
       peer_external_gateway_interface = t.peer_external_gateway_interface
-      router                          = null
       shared_secret                   = t.secret
       vpn_gateway_interface           = t.vpn_gateway_interface
     }
@@ -62,16 +63,19 @@ module "landing-to-onprem-ew1-vpn" {
 }
 
 module "landing-to-onprem-ew4-vpn" {
-  count                 = local.enable_onprem_vpn ? 1 : 0
-  source                = "../../../modules/net-vpn-ha"
-  project_id            = module.landing-project.project_id
-  network               = module.landing-trusted-vpc.self_link
-  region                = "europe-west4"
-  name                  = "vpn-to-onprem-ew4"
-  router_create         = true
-  router_name           = "landing-onprem-vpn-ew4"
-  router_asn            = var.router_configs.landing-trusted-ew4.asn
-  peer_external_gateway = var.vpn_onprem_configs.landing-trusted-ew4.peer_external_gateway
+  count      = local.enable_onprem_vpn ? 1 : 0
+  source     = "../../../modules/net-vpn-ha"
+  project_id = module.landing-project.project_id
+  network    = module.landing-trusted-vpc.self_link
+  region     = "europe-west4"
+  name       = "vpn-to-onprem-ew4"
+  router_config = {
+    name = "landing-onprem-vpn-ew4"
+    asn  = var.router_configs.landing-trusted-ew4.asn
+  }
+  peer_gateway = {
+    external = var.vpn_onprem_configs.landing-trusted-ew4.peer_external_gateway
+  }
   tunnels = {
     for t in var.vpn_onprem_configs.landing-trusted-ew4.tunnels :
     "remote-${t.vpn_gateway_interface}-${t.peer_external_gateway_interface}" => {
@@ -81,9 +85,7 @@ module "landing-to-onprem-ew4-vpn" {
       }
       bgp_peer_options                = local.bgp_peer_options_onprem.landing-trusted-ew4
       bgp_session_range               = "${cidrhost(t.session_range, 2)}/30"
-      ike_version                     = 2
       peer_external_gateway_interface = t.peer_external_gateway_interface
-      router                          = null
       shared_secret                   = t.secret
       vpn_gateway_interface           = t.vpn_gateway_interface
     }

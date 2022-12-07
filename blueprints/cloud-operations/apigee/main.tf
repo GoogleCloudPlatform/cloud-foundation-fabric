@@ -25,7 +25,7 @@ module "project" {
     : null
   )
   name           = var.project_id
-  project_create = var.project_create == null ? false : true
+  project_create = var.project_create != null
   services = [
     "apigee.googleapis.com",
     "bigquery.googleapis.com",

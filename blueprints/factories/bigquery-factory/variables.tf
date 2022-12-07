@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-variable "views_dir" {
-  description = "Relative path for the folder storing view data."
+variable "project_id" {
+  description = "Project ID."
   type        = string
 }
 
@@ -24,8 +24,7 @@ variable "tables_dir" {
   type        = string
 }
 
-variable "project_id" {
-  description = "Project ID"
+variable "views_dir" {
+  description = "Relative path for the folder storing view data."
   type        = string
-
 }

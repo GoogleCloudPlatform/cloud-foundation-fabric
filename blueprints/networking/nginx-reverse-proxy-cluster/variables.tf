@@ -29,6 +29,7 @@ variable "autoscaling" {
 }
 
 variable "autoscaling_metric" {
+  description = "Definition of metric to use for scaling."
   type = object({
     name                       = string
     single_instance_assignment = number
@@ -91,13 +92,16 @@ variable "ops_agent_image" {
 }
 
 variable "prefix" {
-  description = "Prefix used for resources that need unique names."
+  description = "Prefix used for resource names."
   type        = string
-  default     = ""
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_create" {
-  description = "Parameters for the creation of the new project"
+  description = "Parameters for the creation of the new project."
   type = object({
     billing_account_id = string
     parent             = string
@@ -106,7 +110,7 @@ variable "project_create" {
 }
 
 variable "project_name" {
-  description = "Name of an existing project or of the new project"
+  description = "Name of an existing project or of the new project."
   type        = string
 }
 
@@ -127,4 +131,3 @@ variable "tls" {
   type        = bool
   default     = false
 }
-

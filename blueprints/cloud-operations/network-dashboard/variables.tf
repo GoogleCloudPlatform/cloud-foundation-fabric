@@ -15,7 +15,7 @@
  */
 
 variable "billing_account" {
-  description = "The ID of the billing account to associate this project with"
+  description = "The ID of the billing account to associate this project with."
 }
 
 variable "cf_version" {
@@ -29,26 +29,31 @@ variable "cf_version" {
 
 variable "monitored_folders_list" {
   type        = list(string)
-  description = "ID of the projects to be monitored (where limits and quotas data will be pulled)"
+  description = "ID of the projects to be monitored (where limits and quotas data will be pulled)."
   default     = []
 }
 
 variable "monitored_projects_list" {
   type        = list(string)
-  description = "ID of the projects to be monitored (where limits and quotas data will be pulled)"
+  description = "ID of the projects to be monitored (where limits and quotas data will be pulled)."
 }
 
 variable "monitoring_project_id" {
-  description = "Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string"
+  description = "Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string."
   default     = ""
 }
 
 variable "organization_id" {
-  description = "The organization id for the associated services"
+  description = "The organization id for the associated services."
 }
 
 variable "prefix" {
-  description = "Customer name to use as prefix for monitoring project"
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_monitoring_services" {
@@ -74,7 +79,7 @@ variable "project_monitoring_services" {
   ]
 }
 variable "region" {
-  description = "Region used to deploy the cloud functions and scheduler"
+  description = "Region used to deploy the cloud functions and scheduler."
   default     = "europe-west1"
 }
 

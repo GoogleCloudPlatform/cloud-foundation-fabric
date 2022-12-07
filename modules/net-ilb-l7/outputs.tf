@@ -27,7 +27,7 @@ output "backend_service_ids" {
 }
 
 output "forwarding_rule" {
-  description = "Forwarding rule resource"
+  description = "Forwarding rule resource."
   value       = google_compute_forwarding_rule.default
 }
 

@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "service_encryption_keys" {
-  description = "Cloud KMS keys to use to encrypt resources. Provide a key for each reagion configured."
-  type        = map(string)
-  default     = null
-}
-
 variable "data_eng_principals" {
   description = "Groups with Service Account Token creator role on service accounts in IAM format, only user supported on CloudSQL, eg 'user@domain.com'."
   type        = list(string)
@@ -37,20 +31,24 @@ variable "network_config" {
   default = null
 }
 
-variable "postgres_user_password" {
-  description = "`postgres` user password."
-  type        = string
-}
-
 variable "postgres_database" {
   description = "`postgres` database."
   type        = string
   default     = "guestbook"
 }
 
-variable "prefix" {
-  description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
+variable "postgres_user_password" {
+  description = "`postgres` user password."
   type        = string
+}
+
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_create" {
@@ -80,9 +78,14 @@ variable "regions" {
   }
 }
 
+variable "service_encryption_keys" {
+  description = "Cloud KMS keys to use to encrypt resources. Provide a key for each reagion configured."
+  type        = map(string)
+  default     = null
+}
 
 variable "sql_configuration" {
-  description = "Cloud SQL configuration"
+  description = "Cloud SQL configuration."
   type = object({
     availability_type = string
     database_version  = string

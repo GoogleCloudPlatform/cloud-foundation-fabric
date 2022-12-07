@@ -11,8 +11,7 @@ The codebase provisions the following list of resources:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [impersonate_service_account_email](variables.tf#L21) | Service account to be impersonated by workload identity. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L16) | GCP project ID. | <code>string</code> | ✓ |  |
-| [workload_identity_pool_provider_id](variables.tf#L26) | GCP workload identity pool provider ID. | <code>string</code> | ✓ |  |
+| [impersonate_service_account_email](variables.tf#L16) | Service account to be impersonated by workload identity. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L21) | GCP project ID. | <code>string</code> | ✓ |  |
 
 <!-- END TFDOC -->

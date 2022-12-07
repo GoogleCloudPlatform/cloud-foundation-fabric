@@ -52,20 +52,20 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [ad_dns_domain_name](variables.tf#L44) | AD DNS domain name. | <code>string</code> | ✓ |  |
-| [adfs_dns_domain_name](variables.tf#L49) | ADFS DNS domain name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L24) | Host project ID. | <code>string</code> | ✓ |  |
-| [ad_ip_cidr_block](variables.tf#L90) | Managed AD IP CIDR block. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;24&#34;</code> |
-| [disk_size](variables.tf#L54) | Disk size. | <code>number</code> |  | <code>50</code> |
-| [disk_type](variables.tf#L60) | Disk type. | <code>string</code> |  | <code>&#34;pd-ssd&#34;</code> |
-| [image](variables.tf#L66) | Image. | <code>string</code> |  | <code>&#34;projects&#47;windows-cloud&#47;global&#47;images&#47;family&#47;windows-2022&#34;</code> |
-| [instance_type](variables.tf#L72) | Instance type. | <code>string</code> |  | <code>&#34;n1-standard-2&#34;</code> |
-| [network_config](variables.tf#L35) | Network configuration | <code title="object&#40;&#123;&#10;  network &#61; string&#10;  subnet  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prefix](variables.tf#L29) | Prefix for the resources created. | <code>string</code> |  | <code>null</code> |
-| [project_create](variables.tf#L15) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L78) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [subnet_ip_cidr_block](variables.tf#L96) | Subnet IP CIDR block. | <code>string</code> |  | <code>&#34;10.0.1.0&#47;28&#34;</code> |
-| [zone](variables.tf#L84) | Zone. | <code>string</code> |  | <code>&#34;europe-west1-c&#34;</code> |
+| [ad_dns_domain_name](variables.tf#L15) | AD DNS domain name. | <code>string</code> | ✓ |  |
+| [adfs_dns_domain_name](variables.tf#L26) | ADFS DNS domain name. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L64) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L82) | Host project ID. | <code>string</code> | ✓ |  |
+| [ad_ip_cidr_block](variables.tf#L20) | Managed AD IP CIDR block. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;24&#34;</code> |
+| [disk_size](variables.tf#L31) | Disk size. | <code>number</code> |  | <code>50</code> |
+| [disk_type](variables.tf#L37) | Disk type. | <code>string</code> |  | <code>&#34;pd-ssd&#34;</code> |
+| [image](variables.tf#L43) | Image. | <code>string</code> |  | <code>&#34;projects&#47;windows-cloud&#47;global&#47;images&#47;family&#47;windows-2022&#34;</code> |
+| [instance_type](variables.tf#L49) | Instance type. | <code>string</code> |  | <code>&#34;n1-standard-2&#34;</code> |
+| [network_config](variables.tf#L55) | Network configuration. | <code title="object&#40;&#123;&#10;  network &#61; string&#10;  subnet  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_create](variables.tf#L73) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L87) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [subnet_ip_cidr_block](variables.tf#L93) | Subnet IP CIDR block. | <code>string</code> |  | <code>&#34;10.0.1.0&#47;28&#34;</code> |
+| [zone](variables.tf#L99) | Zone. | <code>string</code> |  | <code>&#34;europe-west1-c&#34;</code> |
 
 ## Outputs
 

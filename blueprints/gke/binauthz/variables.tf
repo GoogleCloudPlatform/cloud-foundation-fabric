@@ -14,6 +14,27 @@
  * limitations under the License.
  */
 
+variable "master_cidr_block" {
+  description = "Master CIDR block."
+  type        = string
+  default     = "10.0.0.0/28"
+}
+
+variable "pods_cidr_block" {
+  description = "Pods CIDR block."
+  type        = string
+  default     = "172.16.0.0/20"
+}
+
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
+}
+
 variable "project_create" {
   description = "Parameters for the creation of the new project."
   type = object({
@@ -28,16 +49,10 @@ variable "project_id" {
   type        = string
 }
 
-variable "prefix" {
-  description = "Prefix for resources created."
+variable "region" {
+  description = "Region."
   type        = string
-  default     = null
-}
-
-variable "pods_cidr_block" {
-  description = "Pods CIDR block."
-  type        = string
-  default     = "172.16.0.0/20"
+  default     = "europe-west1"
 }
 
 variable "services_cidr_block" {
@@ -46,22 +61,10 @@ variable "services_cidr_block" {
   default     = "192.168.0.0/24"
 }
 
-variable "master_cidr_block" {
-  description = "Master CIDR block."
-  type        = string
-  default     = "10.0.0.0/28"
-}
-
 variable "subnet_cidr_block" {
   description = "Subnet CIDR block."
   type        = string
   default     = "10.0.1.0/24"
-}
-
-variable "region" {
-  description = "Region."
-  type        = string
-  default     = "europe-west1"
 }
 
 variable "zone" {

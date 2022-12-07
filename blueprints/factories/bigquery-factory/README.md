@@ -67,20 +67,17 @@ labels: # not required, defaults to {}, Example: {"a":"thisislabela","b":"thisis
 use_legacy_sql: bool # not required, defaults to false
 deletion_protection: bool # not required, defaults to false
 ```
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L27) | Project ID | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L17) | Project ID. | <code>string</code> | ✓ |  |
 | [tables_dir](variables.tf#L22) | Relative path for the folder storing table data. | <code>string</code> | ✓ |  |
-| [views_dir](variables.tf#L17) | Relative path for the folder storing view data. | <code>string</code> | ✓ |  |
+| [views_dir](variables.tf#L27) | Relative path for the folder storing view data. | <code>string</code> | ✓ |  |
 
 <!-- END TFDOC -->
-
-
 ## TODO
 
 - [ ] add external table support

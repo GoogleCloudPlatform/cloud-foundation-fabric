@@ -143,25 +143,25 @@ The above command will delete the associated resources so there will be no billa
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [postgres_user_password](variables.tf#L40) | `postgres` user password. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L51) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L65) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [data_eng_principals](variables.tf#L23) | Groups with Service Account Token creator role on service accounts in IAM format, only user supported on CloudSQL, eg 'user@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [network_config](variables.tf#L29) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project       &#61; string&#10;  network_self_link  &#61; string&#10;  subnet_self_link   &#61; string&#10;  cloudsql_psa_range &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [postgres_database](variables.tf#L45) | `postgres` database. | <code>string</code> |  | <code>&#34;guestbook&#34;</code> |
-| [project_create](variables.tf#L56) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [regions](variables.tf#L70) | Map of instance_name => location where instances will be deployed. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  primary &#61; &#34;europe-west1&#34;&#10;  replica &#61; &#34;europe-west3&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [service_encryption_keys](variables.tf#L17) | Cloud KMS keys to use to encrypt resources. Provide a key for each reagion configured. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [sql_configuration](variables.tf#L84) | Cloud SQL configuration | <code title="object&#40;&#123;&#10;  availability_type &#61; string&#10;  database_version  &#61; string&#10;  psa_range         &#61; string&#10;  tier              &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  availability_type &#61; &#34;REGIONAL&#34;&#10;  database_version  &#61; &#34;POSTGRES_13&#34;&#10;  psa_range         &#61; &#34;10.60.0.0&#47;16&#34;&#10;  tier              &#61; &#34;db-g1-small&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [prefix](variables.tf#L45) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L63) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [data_eng_principals](variables.tf#L17) | Groups with Service Account Token creator role on service accounts in IAM format, only user supported on CloudSQL, eg 'user@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [network_config](variables.tf#L23) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project       &#61; string&#10;  network_self_link  &#61; string&#10;  subnet_self_link   &#61; string&#10;  cloudsql_psa_range &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [postgres_database](variables.tf#L34) | `postgres` database. | <code>string</code> |  | <code>&#34;guestbook&#34;</code> |
+| [project_create](variables.tf#L54) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [regions](variables.tf#L68) | Map of instance_name => location where instances will be deployed. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  primary &#61; &#34;europe-west1&#34;&#10;  replica &#61; &#34;europe-west3&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [service_encryption_keys](variables.tf#L81) | Cloud KMS keys to use to encrypt resources. Provide a key for each reagion configured. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [sql_configuration](variables.tf#L87) | Cloud SQL configuration. | <code title="object&#40;&#123;&#10;  availability_type &#61; string&#10;  database_version  &#61; string&#10;  psa_range         &#61; string&#10;  tier              &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  availability_type &#61; &#34;REGIONAL&#34;&#10;  database_version  &#61; &#34;POSTGRES_13&#34;&#10;  psa_range         &#61; &#34;10.60.0.0&#47;16&#34;&#10;  tier              &#61; &#34;db-g1-small&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [bucket](outputs.tf#L22) | Cloud storage bucket to import/export data from Cloud SQL. |  |
-| [connection_names](outputs.tf#L17) | Connection name of each instance. |  |
-| [demo_commands](outputs.tf#L37) | Demo commands. |  |
-| [ips](outputs.tf#L27) | IP address of each instance. |  |
-| [project_id](outputs.tf#L32) | ID of the project containing all the instances. |  |
+| [bucket](outputs.tf#L17) | Cloud storage bucket to import/export data from Cloud SQL. |  |
+| [connection_names](outputs.tf#L22) | Connection name of each instance. |  |
+| [demo_commands](outputs.tf#L27) | Demo commands. |  |
+| [ips](outputs.tf#L36) | IP address of each instance. |  |
+| [project_id](outputs.tf#L41) | ID of the project containing all the instances. |  |
 | [service_accounts](outputs.tf#L46) | Service Accounts. |  |
 
 <!-- END TFDOC -->

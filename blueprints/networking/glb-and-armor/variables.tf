@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+variable "enforce_security_policy" {
+  description = "Enforce security policy."
+  type        = bool
+  default     = true
+}
+
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
+}
+
 variable "project_create" {
   description = "Parameters for the creation of the new project."
   type = object({
@@ -26,16 +41,4 @@ variable "project_create" {
 variable "project_id" {
   description = "Identifier of the project."
   type        = string
-}
-
-variable "enforce_security_policy" {
-  description = "Enforce security policy."
-  type        = bool
-  default     = true
-}
-
-variable "prefix" {
-  description = "Prefix used for created resources."
-  type        = string
-  default     = null
 }

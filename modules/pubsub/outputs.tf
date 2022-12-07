@@ -22,6 +22,16 @@ output "id" {
   ]
 }
 
+output "schema" {
+  description = "Schema resource."
+  value       = try(google_pubsub_schema.default[0], null)
+}
+
+output "schema_id" {
+  description = "Schema resource id."
+  value       = try(google_pubsub_schema.default[0].id, null)
+}
+
 output "subscription_id" {
   description = "Subscription ids."
   value = {

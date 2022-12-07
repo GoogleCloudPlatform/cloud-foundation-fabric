@@ -101,8 +101,12 @@ variable "organization_domain" {
 }
 
 variable "prefix" {
-  description = "Unique prefix used for resource names."
+  description = "Prefix used for resource names."
   type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_services" {

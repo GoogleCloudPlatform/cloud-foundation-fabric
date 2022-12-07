@@ -12,104 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "prefix" {
-  description = "Prefix used for resources (for multiple clusters in a project)"
-  type        = string
-  default     = "aog"
-}
-
-variable "region" {
-  description = "Region for resources"
-  type        = string
-  default     = "europe-west4"
-}
-
-variable "project_id" {
-  description = "Google Cloud project ID"
-  type        = string
-}
-
-variable "shared_vpc_project_id" {
-  description = "Shared VPC project ID for firewall rules"
-  type        = string
-  default     = null
-}
-
-variable "network" {
-  description = "Network to use in the project"
-  type        = string
-}
-
-variable "subnetwork" {
-  description = "Subnetwork to use in the project"
-  type        = string
-}
-
-variable "cluster_name" {
-  description = "Cluster name (prepended with prefix)"
-  type        = string
-  default     = "cluster"
-}
-
-variable "sql_client_cidrs" {
-  description = "CIDR ranges that are allowed to connect to SQL Server"
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
-}
-
-variable "health_check_ranges" {
-  description = "Health check ranges"
-  type        = list(string)
-  default     = ["35.191.0.0/16", "209.85.152.0/22", "209.85.204.0/22"]
-}
-
-variable "node_instance_type" {
-  description = "SQL Server database node instance type"
-  type        = string
-  default     = "n2-standard-8"
-}
-
-variable "witness_instance_type" {
-  description = "SQL Server witness node instance type"
-  type        = string
-  default     = "n2-standard-2"
-}
-
-variable "node_image" {
-  description = "SQL Server node machine image"
-  type        = string
-  default     = "projects/windows-sql-cloud/global/images/family/sql-ent-2019-win-2019"
-}
-
-variable "witness_image" {
-  description = "SQL Server witness machine image"
-  type        = string
-  default     = "projects/windows-cloud/global/images/family/windows-2019"
-}
-
-variable "boot_disk_size" {
-  description = "Boot disk size in GB"
-  type        = number
-  default     = 50
-}
-
-variable "data_disk_size" {
-  description = "Database disk size in GB"
-  type        = number
-  default     = 200
-}
-
-variable "sql_admin_password" {
-  description = "Password for the SQL admin user to be created"
-  type        = string
-  validation {
-    condition     = length(var.sql_admin_password) > 0
-    error_message = "SQL administrator password needs to be specified."
-  }
-}
-
 variable "ad_domain_fqdn" {
-  description = "Active Directory domain (FQDN)"
+  description = "Active Directory domain (FQDN)."
   type        = string
   validation {
     condition     = length(var.ad_domain_fqdn) > 0
@@ -118,7 +22,7 @@ variable "ad_domain_fqdn" {
 }
 
 variable "ad_domain_netbios" {
-  description = "Active Directory domain (NetBIOS)"
+  description = "Active Directory domain (NetBIOS)."
   type        = string
   validation {
     condition     = length(var.ad_domain_netbios) > 0
@@ -126,26 +30,32 @@ variable "ad_domain_netbios" {
   }
 }
 
-variable "managed_ad_dn" {
-  description = "Managed Active Directory domain (eg. OU=Cloud,DC=example,DC=com)"
-  type        = string
-  default     = ""
-}
-
 variable "always_on_groups" {
-  description = "List of Always On Groups"
+  description = "List of Always On Groups."
   type        = list(string)
   default     = ["bookshelf"]
 }
 
-variable "health_check_port" {
-  description = "Health check port"
+variable "boot_disk_size" {
+  description = "Boot disk size in GB."
   type        = number
-  default     = 59997
+  default     = 50
+}
+
+variable "cluster_name" {
+  description = "Cluster name (prepended with prefix)."
+  type        = string
+  default     = "cluster"
+}
+
+variable "data_disk_size" {
+  description = "Database disk size in GB."
+  type        = number
+  default     = 200
 }
 
 variable "health_check_config" {
-  description = "Health check configuration"
+  description = "Health check configuration."
   type = object({ check_interval_sec = number,
     healthy_threshold   = number,
     unhealthy_threshold = number,
@@ -159,16 +69,54 @@ variable "health_check_config" {
   }
 }
 
+variable "health_check_port" {
+  description = "Health check port."
+  type        = number
+  default     = 59997
+}
+
+variable "health_check_ranges" {
+  description = "Health check ranges."
+  type        = list(string)
+  default     = ["35.191.0.0/16", "209.85.152.0/22", "209.85.204.0/22"]
+}
+
+variable "managed_ad_dn" {
+  description = "Managed Active Directory domain (eg. OU=Cloud,DC=example,DC=com)."
+  type        = string
+  default     = ""
+}
+
+variable "network" {
+  description = "Network to use in the project."
+  type        = string
+}
+
+variable "node_image" {
+  description = "SQL Server node machine image."
+  type        = string
+  default     = "projects/windows-sql-cloud/global/images/family/sql-ent-2019-win-2019"
+}
+
+variable "node_instance_type" {
+  description = "SQL Server database node instance type."
+  type        = string
+  default     = "n2-standard-8"
+}
+
 variable "node_name" {
-  description = "Node base name"
+  description = "Node base name."
   type        = string
   default     = "node"
 }
 
-variable "witness_name" {
-  description = "Witness base name"
+variable "prefix" {
+  description = "Prefix used for resource names."
   type        = string
-  default     = "witness"
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_create" {
@@ -180,8 +128,63 @@ variable "project_create" {
   default = null
 }
 
+variable "project_id" {
+  description = "Google Cloud project ID."
+  type        = string
+}
+
+variable "region" {
+  description = "Region for resources."
+  type        = string
+  default     = "europe-west4"
+}
+
+variable "shared_vpc_project_id" {
+  description = "Shared VPC project ID for firewall rules."
+  type        = string
+  default     = null
+}
+
+variable "sql_admin_password" {
+  description = "Password for the SQL admin user to be created."
+  type        = string
+  validation {
+    condition     = length(var.sql_admin_password) > 0
+    error_message = "SQL administrator password needs to be specified."
+  }
+}
+
+variable "sql_client_cidrs" {
+  description = "CIDR ranges that are allowed to connect to SQL Server."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "subnetwork" {
+  description = "Subnetwork to use in the project."
+  type        = string
+}
+
 variable "vpc_ip_cidr_range" {
   description = "Ip range used in the subnet deployef in the Service Project."
   type        = string
   default     = "10.0.0.0/20"
+}
+
+variable "witness_image" {
+  description = "SQL Server witness machine image."
+  type        = string
+  default     = "projects/windows-cloud/global/images/family/windows-2019"
+}
+
+variable "witness_instance_type" {
+  description = "SQL Server witness node instance type."
+  type        = string
+  default     = "n2-standard-2"
+}
+
+variable "witness_name" {
+  description = "Witness base name."
+  type        = string
+  default     = "witness"
 }

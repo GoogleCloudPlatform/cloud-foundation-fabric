@@ -19,13 +19,17 @@ variable "location" {
   default     = "EU"
 }
 
-variable "project_id" {
-  description = "Project id, references existing project if `project_create` is null."
+variable "prefix" {
+  description = "Prefix used for resource names."
   type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_create" {
-  description = "Provide values if project creation is needed, uses existing project if null. Parent format:  folders/folder_id or organizations/org_id"
+  description = "Provide values if project creation is needed, uses existing project if null. Parent format:  folders/folder_id or organizations/org_id."
   type = object({
     billing_account_id = string
     parent             = string
@@ -33,8 +37,8 @@ variable "project_create" {
   default = null
 }
 
-variable "prefix" {
-  description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
+variable "project_id" {
+  description = "Project id, references existing project if `project_create` is null."
   type        = string
 }
 

@@ -14,7 +14,7 @@
 
 - name: Prepare
   hosts: adfs
-  gather_facts: yes
+  gather_facts: no
   vars_files:
     - vars/vars.yaml
   roles:

@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-variable "workload_identity_pool_provider_id" {
-  description = "GCP workload identity pool provider ID."
-  type        = string
-}
-
 variable "impersonate_service_account_email" {
   description = "Service account to be impersonated by workload identity federation."
   type        = string

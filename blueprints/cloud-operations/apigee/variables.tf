@@ -14,41 +14,11 @@
  * limitations under the License.
  */
 
-variable "project_create" {
-  description = "Parameters for the creation of the new project."
-  type = object({
-    billing_account_id = string
-    parent             = string
-  })
-  default = null
-}
-
-variable "vpc_create" {
-  description = "Boolean flag indicating whether the VPC should be created or not."
-  type        = bool
-  default     = true
-}
-
-variable "project_id" {
-  description = "Project ID."
+variable "datastore_name" {
+  description = "Datastore."
   type        = string
   nullable    = false
-}
-
-variable "organization" {
-  description = "Apigee organization."
-  type = object({
-    display_name            = optional(string, "Apigee organization created by tf module")
-    description             = optional(string, "Apigee organization created by tf module")
-    authorized_network      = optional(string, "vpc")
-    runtime_type            = optional(string, "CLOUD")
-    billing_type            = optional(string)
-    database_encryption_key = optional(string)
-    analytics_region        = optional(string, "europe-west1")
-  })
-  nullable = false
-  default = {
-  }
+  default     = "gcs"
 }
 
 variable "envgroups" {
@@ -63,9 +33,8 @@ variable "environments" {
     display_name = optional(string)
     description  = optional(string)
     node_config = optional(object({
-      min_node_count               = optional(number)
-      max_node_count               = optional(number)
-      current_aggregate_node_count = number
+      min_node_count = optional(number)
+      max_node_count = optional(number)
     }))
     iam       = optional(map(list(string)))
     envgroups = list(string)
@@ -87,6 +56,22 @@ variable "instances" {
   nullable = false
 }
 
+variable "organization" {
+  description = "Apigee organization."
+  type = object({
+    display_name            = optional(string, "Apigee organization created by tf module")
+    description             = optional(string, "Apigee organization created by tf module")
+    authorized_network      = optional(string, "vpc")
+    runtime_type            = optional(string, "CLOUD")
+    billing_type            = optional(string)
+    database_encryption_key = optional(string)
+    analytics_region        = optional(string, "europe-west1")
+  })
+  nullable = false
+  default = {
+  }
+}
+
 variable "path" {
   description = "Bucket path."
   type        = string
@@ -94,15 +79,29 @@ variable "path" {
   nullable    = false
 }
 
-variable "datastore_name" {
-  description = "Datastore"
+variable "project_create" {
+  description = "Parameters for the creation of the new project."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
+variable "project_id" {
+  description = "Project ID."
   type        = string
   nullable    = false
-  default     = "gcs"
 }
 
 variable "psc_config" {
   description = "PSC configuration."
   type        = map(string)
   nullable    = false
+}
+
+variable "vpc_create" {
+  description = "Boolean flag indicating whether the VPC should be created or not."
+  type        = bool
+  default     = true
 }

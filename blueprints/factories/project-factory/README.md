@@ -69,6 +69,7 @@ module "projects" {
   kms_service_agents     = try(each.value.kms, {})
   labels                 = try(each.value.labels, {})
   org_policies           = try(each.value.org_policies, {})
+  prefix                 = each.value.prefix
   service_accounts       = try(each.value.service_accounts, {})
   services               = try(each.value.services, [])
   service_identities_iam = try(each.value.service_identities_iam, {})
@@ -109,9 +110,9 @@ vpc_host_project: project-example-host-project
 
 # [opt] Billing account id - overrides default if set
 billing_account_id: 012345-67890A-BCDEF0
-                    
+
 # [opt] Billing alerts config - overrides default if set
-billing_alert:      
+billing_alert:
   amount: 10
   thresholds:
     current:
@@ -119,42 +120,42 @@ billing_alert:
       - 0.8
     forecasted: []
 
-# [opt] DNS zones to be created as children of the environment_dns_zone defined in defaults 
-dns_zones:          
+# [opt] DNS zones to be created as children of the environment_dns_zone defined in defaults
+dns_zones:
     - lorem
     - ipsum
 
-# [opt] Contacts for billing alerts and important notifications 
-essential_contacts:                  
+# [opt] Contacts for billing alerts and important notifications
+essential_contacts:
   - team-a-contacts@example.com
 
 # Folder the project will be created as children of
 folder_id: folders/012345678901
 
 # [opt] Authoritative IAM bindings in group => [roles] format
-group_iam:          
+group_iam:
   test-team-foobar@fast-lab-0.gcp-pso-italy.net:
     - roles/compute.admin
 
 # [opt] Authoritative IAM bindings in role => [principals] format
 # Generally used to grant roles to service accounts external to the project
-iam:                                    
+iam:
   roles/compute.admin:
     - serviceAccount:service-account
 
-# [opt] Service robots and keys they will be assigned as cryptoKeyEncrypterDecrypter 
+# [opt] Service robots and keys they will be assigned as cryptoKeyEncrypterDecrypter
 # in service => [keys] format
-kms_service_agents:                 
+kms_service_agents:
   compute: [key1, key2]
   storage: [key1, key2]
 
 # [opt] Labels for the project - merged with the ones defined in defaults
-labels:             
+labels:
   environment: prod
 
 # [opt] Org policy overrides defined at project level
 org_policies:
-  constraints/compute.disableGuestAttributesAccess: 
+  constraints/compute.disableGuestAttributesAccess:
     enforce: true
   constraints/compute.trustedImageProjects:
     allow:
@@ -166,7 +167,7 @@ org_policies:
 
 # [opt] Service account to create for the project and their roles on the project
 # in name => [roles] format
-service_accounts:                      
+service_accounts:
   another-service-account:
     - roles/compute.admin
   my-service-account:
@@ -179,37 +180,37 @@ service_accounts_iam:
     - roles/iam.serviceAccountTokenCreator:
       - group: app-team-1@example.com
 
-# [opt] APIs to enable on the project. 
-services:           
+# [opt] APIs to enable on the project.
+services:
   - storage.googleapis.com
   - stackdriver.googleapis.com
   - compute.googleapis.com
 
 # [opt] Roles to assign to the robots service accounts in robot => [roles] format
-services_iam:       
+services_iam:
   compute:
     - roles/storage.objectViewer
 
- # [opt] VPC setup. 
- # If set enables the `compute.googleapis.com` service and configures 
+ # [opt] VPC setup.
+ # If set enables the `compute.googleapis.com` service and configures
  # service project attachment
-vpc:               
+vpc:
 
   # [opt] If set, enables the container API
-  gke_setup:        
+  gke_setup:
 
-    # Grants "roles/container.hostServiceAgentUser" to the container robot if set 
+    # Grants "roles/container.hostServiceAgentUser" to the container robot if set
     enable_host_service_agent: false
 
-    # Grants  "roles/compute.securityAdmin" to the container robot if set                    
+    # Grants  "roles/compute.securityAdmin" to the container robot if set
     enable_security_admin: true
 
-  # Host project the project will be service project of                    
+  # Host project the project will be service project of
   host_project: fast-prod-net-spoke-0
 
   # [opt] Subnets in the host project where principals will be granted networkUser
-  # in region/subnet-name => [principals]                    
-  subnets_iam:                          
+  # in region/subnet-name => [principals]
+  subnets_iam:
     europe-west1/prod-default-ew1:
       - user:foobar@example.com
       - serviceAccount:service-account1@my-project.iam.gserviceaccount.com
@@ -221,7 +222,8 @@ vpc:
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [billing_account_id](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L157) | Project id. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L151) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L160) | Project id. | <code>string</code> | ✓ |  |
 | [billing_alert](variables.tf#L22) | Billing alert configuration. | <code title="object&#40;&#123;&#10;  amount &#61; number&#10;  thresholds &#61; object&#40;&#123;&#10;    current    &#61; list&#40;number&#41;&#10;    forecasted &#61; list&#40;number&#41;&#10;  &#125;&#41;&#10;  credit_treatment &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [defaults](variables.tf#L35) | Project factory default values. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  billing_alert &#61; object&#40;&#123;&#10;    amount &#61; number&#10;    thresholds &#61; object&#40;&#123;&#10;      current    &#61; list&#40;number&#41;&#10;      forecasted &#61; list&#40;number&#41;&#10;    &#125;&#41;&#10;    credit_treatment &#61; string&#10;  &#125;&#41;&#10;  environment_dns_zone  &#61; string&#10;  essential_contacts    &#61; list&#40;string&#41;&#10;  labels                &#61; map&#40;string&#41;&#10;  notification_channels &#61; list&#40;string&#41;&#10;  shared_vpc_self_link  &#61; string&#10;  vpc_host_project      &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [dns_zones](variables.tf#L57) | DNS private zones to create as child of var.defaults.environment_dns_zone. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
@@ -234,21 +236,20 @@ vpc:
 | [kms_service_agents](variables.tf#L99) | KMS IAM configuration in as service => [key]. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L105) | Labels to be assigned at project level. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies](variables.tf#L111) | Org-policy overrides at project level. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  allow &#61; optional&#40;object&#40;&#123;&#10;    all    &#61; optional&#40;bool&#41;&#10;    values &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  deny &#61; optional&#40;object&#40;&#123;&#10;    all    &#61; optional&#40;bool&#41;&#10;    values &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  enforce &#61; optional&#40;bool, true&#41; &#35; for boolean policies only.&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool, true&#41; &#35; for boolean policies only.&#10;    condition &#61; object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L151) | Prefix used for the project id. | <code>string</code> |  | <code>null</code> |
-| [service_accounts](variables.tf#L162) | Service accounts to be created, and roles assigned them on the project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_accounts_additive](variables.tf#L168) | Service accounts to be created, and roles assigned them on the project additively. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_accounts_iam](variables.tf#L174) | IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]} | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_accounts_iam_additive](variables.tf#L181) | IAM additive bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]} | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_identities_iam](variables.tf#L195) | Custom IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_identities_iam_additive](variables.tf#L202) | Custom additive IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [services](variables.tf#L188) | Services to be enabled for the project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc](variables.tf#L209) | VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; object&#40;&#123;&#10;    enable_security_admin     &#61; bool&#10;    enable_host_service_agent &#61; bool&#10;  &#125;&#41;&#10;  subnets_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [service_accounts](variables.tf#L165) | Service accounts to be created, and roles assigned them on the project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_accounts_additive](variables.tf#L171) | Service accounts to be created, and roles assigned them on the project additively. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_accounts_iam](variables.tf#L177) | IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_accounts_iam_additive](variables.tf#L184) | IAM additive bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_identities_iam](variables.tf#L191) | Custom IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_identities_iam_additive](variables.tf#L198) | Custom additive IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L205) | Services to be enabled for the project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [vpc](variables.tf#L212) | VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; object&#40;&#123;&#10;    enable_security_admin     &#61; bool&#10;    enable_host_service_agent &#61; bool&#10;  &#125;&#41;&#10;  subnets_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [project](outputs.tf#L19) | The project resource as return by the `project` module |  |
+| [project](outputs.tf#L19) | The project resource as return by the `project` module. |  |
 | [project_id](outputs.tf#L29) | Project ID. |  |
 
 <!-- END TFDOC -->

@@ -19,38 +19,6 @@ variable "billing_account_id" {
   type        = string
 }
 
-variable "parent" {
-  description = "Parent."
-  type        = string
-}
-
-variable "host_project_id" {
-  description = "Project ID."
-  type        = string
-}
-
-variable "fleet_project_id" {
-  description = "Management Project ID."
-  type        = string
-}
-
-variable "mgmt_project_id" {
-  description = "Management Project ID."
-  type        = string
-}
-
-variable "mgmt_subnet_cidr_block" {
-  description = "Management subnet CIDR block."
-  type        = string
-  default     = "10.0.0.0/28"
-}
-
-variable "region" {
-  description = "Region."
-  type        = string
-  default     = "europe-west1"
-}
-
 variable "clusters_config" {
   description = "Clusters configuration."
   type = map(object({
@@ -75,8 +43,30 @@ variable "clusters_config" {
   }
 }
 
+variable "fleet_project_id" {
+  description = "Management Project ID."
+  type        = string
+}
+
+variable "host_project_id" {
+  description = "Project ID."
+  type        = string
+}
+
+
+variable "istio_version" {
+  description = "ASM version."
+  type        = string
+  default     = "1.14.1-asm.3"
+}
+
+variable "mgmt_project_id" {
+  description = "Management Project ID."
+  type        = string
+}
+
 variable "mgmt_server_config" {
-  description = "Mgmt server configuration"
+  description = "Mgmt server configuration."
   type = object({
     disk_size     = number
     disk_type     = string
@@ -95,8 +85,19 @@ variable "mgmt_server_config" {
   }
 }
 
-variable "istio_version" {
-  description = "ASM version"
+variable "mgmt_subnet_cidr_block" {
+  description = "Management subnet CIDR block."
   type        = string
-  default     = "1.14.1-asm.3"
+  default     = "10.0.0.0/28"
+}
+
+variable "parent" {
+  description = "Parent."
+  type        = string
+}
+
+variable "region" {
+  description = "Region."
+  type        = string
+  default     = "europe-west1"
 }

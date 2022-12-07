@@ -48,17 +48,17 @@ There's a minor glitch that can surface running `terraform destroy`, where the s
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [billing_account_id](variables.tf#L15) | Billing account id used as default for new projects. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L62) | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  |
-| [root_node](variables.tf#L90) | Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L62) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [root_node](variables.tf#L94) | Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'. | <code>string</code> | ✓ |  |
 | [cluster_create](variables.tf#L20) | Create GKE cluster and nodepool. | <code>bool</code> |  | <code>true</code> |
 | [ip_ranges](variables.tf#L26) | Subnet IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gce &#61; &#34;10.0.16.0&#47;24&#34;&#10;  gke &#61; &#34;10.0.32.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [ip_secondary_ranges](variables.tf#L35) | Secondary IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gke-pods     &#61; &#34;10.128.0.0&#47;18&#34;&#10;  gke-services &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [owners_gce](variables.tf#L44) | GCE project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [owners_gke](variables.tf#L50) | GKE project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [owners_host](variables.tf#L56) | Host project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [private_service_ranges](variables.tf#L67) | Private service IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [project_services](variables.tf#L75) | Service APIs enabled by default in new projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;container.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [region](variables.tf#L84) | Region used. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [private_service_ranges](variables.tf#L71) | Private service IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_services](variables.tf#L79) | Service APIs enabled by default in new projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;container.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [region](variables.tf#L88) | Region used. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 

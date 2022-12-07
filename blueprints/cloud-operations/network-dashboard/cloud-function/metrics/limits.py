@@ -187,7 +187,7 @@ def count_effective_limit(config, project_id, network_dict, usage_metric_name,
   for peered_network in network_dict['peerings']:
     if 'usage' not in peered_network:
       print(
-          f"Can not add metrics for peered network in projects/{project_id} as no usage metrics exist due to missing permissions"
+          f"Cannot add metrics for peered network in projects/{project_id} as no usage metrics exist due to missing permissions"
       )
       continue
     peering_group_usage += peered_network['usage']

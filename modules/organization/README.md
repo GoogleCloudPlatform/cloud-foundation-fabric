@@ -459,8 +459,8 @@ module "org" {
 | [org_policies_data_path](variables.tf#L220) | Path containing org policies in YAML format. | <code>string</code> |  | <code>null</code> |
 | [org_policy_custom_constraints](variables.tf#L226) | Organization policiy custom constraints keyed by constraint name. | <code title="map&#40;object&#40;&#123;&#10;  display_name   &#61; optional&#40;string&#41;&#10;  description    &#61; optional&#40;string&#41;&#10;  action_type    &#61; string&#10;  condition      &#61; string&#10;  method_types   &#61; list&#40;string&#41;&#10;  resource_types &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policy_custom_constraints_data_path](variables.tf#L240) | Path containing org policy custom constraints in YAML format. | <code>string</code> |  | <code>null</code> |
-| [tag_bindings](variables.tf#L275) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [tags](variables.tf#L255) | Tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L255) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L261) | Tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -471,10 +471,10 @@ module "org" {
 | [firewall_policies](outputs.tf#L35) | Map of firewall policy resources created in the organization. |  |
 | [firewall_policy_id](outputs.tf#L40) | Map of firewall policy ids created in the organization. |  |
 | [network_tag_keys](outputs.tf#L45) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L52) | Tag value resources. |  |
-| [organization_id](outputs.tf#L60) | Organization id dependent on module resources. |  |
-| [sink_writer_identities](outputs.tf#L77) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L85) | Tag key resources. |  |
-| [tag_values](outputs.tf#L92) | Tag value resources. |  |
+| [network_tag_values](outputs.tf#L54) | Tag value resources. |  |
+| [organization_id](outputs.tf#L65) | Organization id dependent on module resources. |  |
+| [sink_writer_identities](outputs.tf#L82) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L90) | Tag key resources. |  |
+| [tag_values](outputs.tf#L99) | Tag value resources. |  |
 
 <!-- END TFDOC -->

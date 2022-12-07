@@ -14,25 +14,39 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "Project ID."
-  type        = string
-}
-
-variable "global_policy_evaluation_mode" {
-  description = "Global policy evaluation mode."
-  type        = string
-  default     = null
-}
-
 variable "admission_whitelist_patterns" {
-  description = "An image name pattern to allowlist"
+  description = "An image name pattern to allowlist."
   type        = list(string)
   default     = null
 }
 
+variable "attestors_config" {
+  description = "Attestors configuration."
+  type = map(object({
+    note_reference  = string
+    iam             = map(list(string))
+    pgp_public_keys = list(string)
+    pkix_public_keys = list(object({
+      id                  = string
+      public_key_pem      = string
+      signature_algorithm = string
+    }))
+  }))
+  default = null
+}
+
+variable "cluster_admission_rules" {
+  description = "Admission rules."
+  type = map(object({
+    evaluation_mode  = string
+    enforcement_mode = string
+    attestors        = list(string)
+  }))
+  default = null
+}
+
 variable "default_admission_rule" {
-  description = "Default admission rule"
+  description = "Default admission rule."
   type = object({
     evaluation_mode  = string
     enforcement_mode = string
@@ -45,27 +59,13 @@ variable "default_admission_rule" {
   }
 }
 
-variable "cluster_admission_rules" {
-  description = "Admission rules"
-  type = map(object({
-    evaluation_mode  = string
-    enforcement_mode = string
-    attestors        = list(string)
-  }))
-  default = null
+variable "global_policy_evaluation_mode" {
+  description = "Global policy evaluation mode."
+  type        = string
+  default     = null
 }
 
-variable "attestors_config" {
-  description = "Attestors configuration"
-  type = map(object({
-    note_reference  = string
-    iam             = map(list(string))
-    pgp_public_keys = list(string)
-    pkix_public_keys = list(object({
-      id                  = string
-      public_key_pem      = string
-      signature_algorithm = string
-    }))
-  }))
-  default = null
+variable "project_id" {
+  description = "Project ID."
+  type        = string
 }

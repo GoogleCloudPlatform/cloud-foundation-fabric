@@ -29,7 +29,7 @@ variable "bucket_name" {
 }
 
 variable "build_worker_pool" {
-  description = "Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format"
+  description = "Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format."
   type        = string
   default     = null
 }
@@ -56,7 +56,7 @@ variable "environment_variables" {
 }
 
 variable "function_config" {
-  description = "Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout"
+  description = "Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout."
   type = object({
     entry_point     = optional(string, "main")
     instance_count  = optional(number, 1)
@@ -170,6 +170,12 @@ variable "trigger_config" {
   }
 }
 
+variable "v2" {
+  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen."
+  type        = bool
+  default     = false
+}
+
 variable "vpc_connector" {
   description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created."
   type = object({
@@ -187,12 +193,6 @@ variable "vpc_connector_config" {
     network       = string
   })
   default = null
-}
-
-variable "v2" {
-  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen."
-  type        = bool
-  default     = false
 }
 
 

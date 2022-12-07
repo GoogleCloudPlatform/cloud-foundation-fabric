@@ -30,7 +30,35 @@ import tfdoc
 
 BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 
-State = enum.Enum('State', 'OK FAIL SKIP')
+
+class State(enum.IntEnum):
+  SKIP = enum.auto()
+  OK = enum.auto()
+  FAIL_STALE_README = enum.auto()
+  FAIL_UNSORTED_VARS = enum.auto()
+  FAIL_UNSORTED_OUTPUTS = enum.auto()
+  FAIL_VARIABLE_PERIOD = enum.auto()
+  FAIL_OUTPUT_PERIOD = enum.auto()
+  FAIL_VARIABLE_DESCRIPTION = enum.auto()
+  FAIL_OUTPUT_DESCRIPTION = enum.auto()
+
+  @property
+  def failed(self):
+    return self.value > State.OK
+
+  @property
+  def label(self):
+    return {
+        State.SKIP: '  ',
+        State.OK: '✓ ',
+        State.FAIL_STALE_README: '✗R',
+        State.FAIL_UNSORTED_VARS: 'SV',
+        State.FAIL_UNSORTED_OUTPUTS: 'SO',
+        State.FAIL_VARIABLE_PERIOD: '.V',
+        State.FAIL_OUTPUT_PERIOD: '.O',
+        State.FAIL_VARIABLE_DESCRIPTION: 'DV',
+        State.FAIL_OUTPUT_DESCRIPTION: 'DO',
+    }[self.value]
 
 
 def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
@@ -39,6 +67,7 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
   for readme_path in sorted(dir_path.glob('**/README.md')):
     if '.terraform' in str(readme_path):
       continue
+
     diff = None
     readme = readme_path.read_text()
     mod_name = str(readme_path.relative_to(dir_path).parent)
@@ -49,33 +78,67 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
       try:
         new_doc = tfdoc.create_doc(readme_path.parent, files, show_extra,
                                    exclude_files, readme)
-        variables = [v.name for v in new_doc.variables]
-        outputs = [v.name for v in new_doc.outputs]
+        # TODO: support variables in multiple files
+        newvars = new_doc.variables
+        newouts = new_doc.outputs
+        variables = [v.name for v in newvars if v.file == "variables.tf"]
+        outputs = [o.name for o in newouts if o.file == "outputs.tf"]
       except SystemExit:
         state = state.SKIP
       else:
-        if new_doc.content == result['doc']:
-          state = State.OK
+        state = State.OK
+
+        if new_doc.content != result['doc']:
+          state = State.FAIL_STALE_README
+          header = f'----- {mod_name} diff -----\n'
+          ndiff = difflib.ndiff(result['doc'].split('\n'),
+                                new_doc.content.split('\n'))
+          diff = '\n'.join([header] + list(ndiff))
+
+        elif empty := [v.name for v in newvars if not v.description]:
+          state = state.FAIL_VARIABLE_DESCRIPTION
+          diff = "\n".join([
+              f'----- {mod_name} variables missing description -----',
+              ', '.join(empty),
+          ])
+
+        elif empty := [o.name for o in newouts if not o.description]:
+          state = state.FAIL_VARIABLE_DESCRIPTION
+          diff = "\n".join([
+              f'----- {mod_name} outputs missing description -----',
+              ', '.join(empty),
+          ])
+
         elif variables != sorted(variables):
-          state = state.FAIL
+          state = state.FAIL_UNSORTED_VARS
           diff = "\n".join([
               f'----- {mod_name} variables -----',
               f'variables should be in this order: ',
               ', '.join(sorted(variables)),
           ])
+
         elif outputs != sorted(outputs):
-          state = state.FAIL
+          state = state.FAIL_UNSORTED_OUTPUTS
           diff = "\n".join([
               f'----- {mod_name} outputs -----',
               f'outputs should be in this order: ',
               ', '.join(sorted(outputs)),
           ])
-        else:
-          state = State.FAIL
-          header = f'----- {mod_name} diff -----\n'
-          ndiff = difflib.ndiff(result['doc'].split('\n'),
-                                new_doc.content.split('\n'))
-          diff = '\n'.join([header] + list(ndiff))
+
+        elif nc := [v.name for v in newvars if not v.description.endswith('.')]:
+          state = state.FAIL_VARIABLE_PERIOD
+          diff = "\n".join([
+              f'----- {mod_name} variables missing colons -----',
+              ', '.join(nc),
+          ])
+
+        elif nc := [o.name for o in newouts if not o.description.endswith('.')]:
+          state = state.FAIL_VARIABLE_PERIOD
+          diff = "\n".join([
+              f'----- {mod_name} outputs missing colons -----',
+              ', '.join(nc),
+          ])
+
     yield mod_name, state, diff
 
 
@@ -90,14 +153,14 @@ def main(dirs, exclude_file=None, files=False, show_diffs=False,
   'Cycle through modules and ensure READMEs are up-to-date.'
   print(f'files: {files}, extra: {show_extra}, diffs: {show_diffs}\n')
   errors = []
-  state_labels = {State.FAIL: '✗', State.OK: '✓', State.SKIP: ' '}
   for dir_name in dirs:
     print(f'----- {dir_name} -----')
-    for mod_name, state, diff in _check_dir(dir_name, exclude_file, files,
-                                            show_extra):
-      if state == State.FAIL:
+    result = _check_dir(dir_name, exclude_file, files, show_extra)
+    for mod_name, state, diff in result:
+      if state.failed:
         errors.append((mod_name, diff))
-      print(f'[{state_labels[state]}] {mod_name}')
+      print(f'[{state.label}] {mod_name}')
+
   if errors:
     if show_diffs:
       print('Errored diffs:')

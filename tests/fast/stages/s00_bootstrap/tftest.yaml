@@ -1,0 +1,12 @@
+# skip boilerplate check
+
+module: fast/stages/00-bootstrap
+
+tests:
+  simple:
+    tfvars:
+      - simple.tfvars
+    inventory:
+      - simple.yaml
+      - simple_projects.yaml
+      - simple_sas.yaml

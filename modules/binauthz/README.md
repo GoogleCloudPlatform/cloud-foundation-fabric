@@ -61,19 +61,19 @@ module "binauthz" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L17) | Project ID. | <code>string</code> | ✓ |  |
-| [admission_whitelist_patterns](variables.tf#L28) | An image name pattern to allowlist | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [attestors_config](variables.tf#L58) | Attestors configuration | <code title="map&#40;object&#40;&#123;&#10;  note_reference  &#61; string&#10;  iam             &#61; map&#40;list&#40;string&#41;&#41;&#10;  pgp_public_keys &#61; list&#40;string&#41;&#10;  pkix_public_keys &#61; list&#40;object&#40;&#123;&#10;    id                  &#61; string&#10;    public_key_pem      &#61; string&#10;    signature_algorithm &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [cluster_admission_rules](variables.tf#L48) | Admission rules | <code title="map&#40;object&#40;&#123;&#10;  evaluation_mode  &#61; string&#10;  enforcement_mode &#61; string&#10;  attestors        &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [default_admission_rule](variables.tf#L34) | Default admission rule | <code title="object&#40;&#123;&#10;  evaluation_mode  &#61; string&#10;  enforcement_mode &#61; string&#10;  attestors        &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  evaluation_mode  &#61; &#34;ALWAYS_ALLOW&#34;&#10;  enforcement_mode &#61; &#34;ENFORCED_BLOCK_AND_AUDIT_LOG&#34;&#10;  attestors        &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [global_policy_evaluation_mode](variables.tf#L22) | Global policy evaluation mode. | <code>string</code> |  | <code>null</code> |
+| [project_id](variables.tf#L68) | Project ID. | <code>string</code> | ✓ |  |
+| [admission_whitelist_patterns](variables.tf#L17) | An image name pattern to allowlist. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [attestors_config](variables.tf#L23) | Attestors configuration. | <code title="map&#40;object&#40;&#123;&#10;  note_reference  &#61; string&#10;  iam             &#61; map&#40;list&#40;string&#41;&#41;&#10;  pgp_public_keys &#61; list&#40;string&#41;&#10;  pkix_public_keys &#61; list&#40;object&#40;&#123;&#10;    id                  &#61; string&#10;    public_key_pem      &#61; string&#10;    signature_algorithm &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [cluster_admission_rules](variables.tf#L38) | Admission rules. | <code title="map&#40;object&#40;&#123;&#10;  evaluation_mode  &#61; string&#10;  enforcement_mode &#61; string&#10;  attestors        &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [default_admission_rule](variables.tf#L48) | Default admission rule. | <code title="object&#40;&#123;&#10;  evaluation_mode  &#61; string&#10;  enforcement_mode &#61; string&#10;  attestors        &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  evaluation_mode  &#61; &#34;ALWAYS_ALLOW&#34;&#10;  enforcement_mode &#61; &#34;ENFORCED_BLOCK_AND_AUDIT_LOG&#34;&#10;  attestors        &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [global_policy_evaluation_mode](variables.tf#L62) | Global policy evaluation mode. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [attestors](outputs.tf#L22) | Attestors. |  |
-| [id](outputs.tf#L17) | Binary Authorization policy ID |  |
+| [attestors](outputs.tf#L17) | Attestors. |  |
+| [id](outputs.tf#L25) | Binary Authorization policy ID. |  |
 | [notes](outputs.tf#L30) | Notes. |  |
 
 <!-- END TFDOC -->

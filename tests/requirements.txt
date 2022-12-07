@@ -1,6 +1,6 @@
 pytest>=6.2.5
 PyYAML>=6.0
-tftest>=1.7.6
+tftest>=1.8.1
 marko>=1.2.0
 deepdiff>=5.7.0
 python-hcl2>=3.0.5

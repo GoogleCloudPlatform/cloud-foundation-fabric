@@ -415,7 +415,7 @@ The `type` attribute can be set to one of the supported repository types: `githu
 
 Once the stage is applied the generated output files will contain pre-configured workflow files for each repository, that will use Workload Identity Federation via a dedicated service account for each repository to impersonate the automation service account for the stage.
 
-You can use Terraform to automate creation of the repositories using the `00-cicd` stage.
+You can use Terraform to automate creation of the repositories using the extra stage defined in [fast/extras/00-cicd-github](../../extras/00-cicd-github/) (only for Github for now).
 
 The remaining configuration is manual, as it regards the repositories themselves:
 
@@ -477,7 +477,7 @@ The remaining configuration is manual, as it regards the repositories themselves
 | [iam_additive](variables.tf#L152) | Organization-level custom IAM settings in role => [principal] format for non-authoritative bindings. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [locations](variables.tf#L158) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; string&#10;  gcs     &#61; string&#10;  logging &#61; string&#10;  pubsub  &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  bq      &#61; &#34;EU&#34;&#10;  gcs     &#61; &#34;EU&#34;&#10;  logging &#61; &#34;global&#34;&#10;  pubsub  &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [log_sinks](variables.tf#L177) | Org-level log sinks, in name => {type, filter} format. | <code title="map&#40;object&#40;&#123;&#10;  filter &#61; string&#10;  type   &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  audit-logs &#61; &#123;&#10;    filter &#61; &#34;logName:&#92;&#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Factivity&#92;&#34; OR logName:&#92;&#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Fsystem_event&#92;&#34;&#34;&#10;    type   &#61; &#34;bigquery&#34;&#10;  &#125;&#10;  vpc-sc &#61; &#123;&#10;    filter &#61; &#34;protoPayload.metadata.&#64;type&#61;&#92;&#34;type.googleapis.com&#47;google.cloud.audit.VpcServiceControlAuditMetadata&#92;&#34;&#34;&#10;    type   &#61; &#34;bigquery&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [outputs_location](variables.tf#L211) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable | <code>string</code> |  | <code>null</code> |  |
+| [outputs_location](variables.tf#L211) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable. | <code>string</code> |  | <code>null</code> |  |
 | [project_parent_ids](variables.tf#L227) | Optional parents for projects created here in folders/nnnnnnn format. Null values will use the organization as parent. | <code title="object&#40;&#123;&#10;  automation &#61; string&#10;  billing    &#61; string&#10;  logging    &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  automation &#61; null&#10;  billing    &#61; null&#10;  logging    &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 
 ## Outputs
@@ -491,8 +491,8 @@ The remaining configuration is manual, as it regards the repositories themselves
 | [federated_identity](outputs.tf#L116) | Workload Identity Federation pool and providers. |  |  |
 | [outputs_bucket](outputs.tf#L126) | GCS bucket where generated output files are stored. |  |  |
 | [project_ids](outputs.tf#L131) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L151) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L140) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L160) | Terraform variable files for the following stages. | ✓ |  |
+| [providers](outputs.tf#L141) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L148) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L158) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

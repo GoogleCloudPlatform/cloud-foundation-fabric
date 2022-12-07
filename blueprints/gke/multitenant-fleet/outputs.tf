@@ -14,16 +14,16 @@
 
 # tfdoc:file:description Output variables.
 
-output "clusters" {
-  description = "Cluster resources."
-  value       = module.gke-cluster
-}
-
 output "cluster_ids" {
   description = "Cluster ids."
   value = {
     for k, v in module.gke-cluster : k => v.id
   }
+}
+
+output "clusters" {
+  description = "Cluster resources."
+  value       = module.gke-cluster
 }
 
 output "project_id" {

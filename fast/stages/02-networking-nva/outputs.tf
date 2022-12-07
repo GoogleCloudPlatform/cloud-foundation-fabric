@@ -70,6 +70,12 @@ output "shared_vpc_self_links" {
   value       = local.vpc_self_links
 }
 
+output "tfvars" {
+  description = "Terraform variables file for the following stages."
+  sensitive   = true
+  value       = local.tfvars
+}
+
 output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
   value = local.enable_onprem_vpn == false ? null : {
@@ -82,10 +88,4 @@ output "vpn_gateway_endpoints" {
       v.id => v.ip_address
     }
   }
-}
-
-output "tfvars" {
-  description = "Terraform variables file for the following stages."
-  sensitive   = true
-  value       = local.tfvars
 }

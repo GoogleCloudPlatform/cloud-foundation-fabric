@@ -12,38 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "project_create" {
-  description = "Parameters for the creation of the new project."
-  type = object({
-    billing_account_id = string
-    parent             = string
-  })
-  default = null
-}
-
-variable "project_id" {
-  description = "Host project ID."
-  type        = string
-}
-
-variable "prefix" {
-  description = "Prefix for the resources created."
-  type        = string
-  default     = null
-}
-
-variable "network_config" {
-  description = "Network configuration"
-  type = object({
-    network = string
-    subnet  = string
-  })
-  default = null
-}
-
 variable "ad_dns_domain_name" {
   description = "AD DNS domain name."
   type        = string
+}
+
+variable "ad_ip_cidr_block" {
+  description = "Managed AD IP CIDR block."
+  type        = string
+  default     = "10.0.0.0/24"
 }
 
 variable "adfs_dns_domain_name" {
@@ -75,26 +52,52 @@ variable "instance_type" {
   default     = "n1-standard-2"
 }
 
+variable "network_config" {
+  description = "Network configuration."
+  type = object({
+    network = string
+    subnet  = string
+  })
+  default = null
+}
+
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
+}
+
+variable "project_create" {
+  description = "Parameters for the creation of the new project."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
+variable "project_id" {
+  description = "Host project ID."
+  type        = string
+}
+
 variable "region" {
   description = "Region."
   type        = string
   default     = "europe-west1"
 }
 
-variable "zone" {
-  description = "Zone."
-  type        = string
-  default     = "europe-west1-c"
-}
-
-variable "ad_ip_cidr_block" {
-  description = "Managed AD IP CIDR block."
-  type        = string
-  default     = "10.0.0.0/24"
-}
-
 variable "subnet_ip_cidr_block" {
   description = "Subnet IP CIDR block."
   type        = string
   default     = "10.0.1.0/28"
+}
+
+variable "zone" {
+  description = "Zone."
+  type        = string
+  default     = "europe-west1-c"
 }
