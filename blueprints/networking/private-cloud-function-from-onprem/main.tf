@@ -79,85 +79,69 @@ module "vpn-onprem" {
   region     = var.region
   network    = module.vpc-onprem.self_link
   name       = "${var.name}-onprem-to-hub"
-  router_asn = 65001
-  router_advertise_config = {
-    groups = ["ALL_SUBNETS"]
-    ip_ranges = {
+  router_config = {
+    asn = 65001
+    custom_advertise = {
+      all_subnets = true
+      ip_ranges   = {}
     }
-    mode = "CUSTOM"
   }
-  peer_gcp_gateway = module.vpn-hub.self_link
+  peer_gateway = { gcp = module.vpn-hub.self_link }
   tunnels = {
     tunnel-0 = {
       bgp_peer = {
         address = "169.254.0.2"
         asn     = 65002
       }
-      bgp_peer_options                = null
-      bgp_session_range               = "169.254.0.1/30"
-      ike_version                     = 2
-      vpn_gateway_interface           = 0
-      peer_external_gateway_interface = null
-      router                          = null
-      shared_secret                   = ""
+      bgp_session_range     = "169.254.0.1/30"
+      vpn_gateway_interface = 0
     }
     tunnel-1 = {
       bgp_peer = {
         address = "169.254.0.6"
         asn     = 65002
       }
-      bgp_peer_options                = null
-      bgp_session_range               = "169.254.0.5/30"
-      ike_version                     = 2
-      vpn_gateway_interface           = 1
-      peer_external_gateway_interface = null
-      router                          = null
-      shared_secret                   = ""
+      bgp_session_range     = "169.254.0.5/30"
+      vpn_gateway_interface = 1
     }
   }
 }
 
 module "vpn-hub" {
-  source           = "../../../modules/net-vpn-ha"
-  project_id       = module.project.project_id
-  region           = var.region
-  network          = module.vpc-hub.name
-  name             = "${var.name}-hub-to-onprem"
-  router_asn       = 65002
-  peer_gcp_gateway = module.vpn-onprem.self_link
-  router_advertise_config = {
-    groups = ["ALL_SUBNETS"]
-    ip_ranges = {
-      (var.psc_endpoint) = "to-psc-endpoint"
+  source     = "../../../modules/net-vpn-ha"
+  project_id = module.project.project_id
+  region     = var.region
+  network    = module.vpc-hub.name
+  name       = "${var.name}-hub-to-onprem"
+  router_config = {
+    asn = 65002
+    custom_advertise = {
+      all_subnets = true
+      ip_ranges = {
+        (var.psc_endpoint) = "to-psc-endpoint"
+      }
     }
-    mode = "CUSTOM"
   }
+  peer_gateway = { gcp = module.vpn-onprem.self_link }
+
   tunnels = {
     tunnel-0 = {
       bgp_peer = {
         address = "169.254.0.1"
         asn     = 65001
       }
-      bgp_peer_options                = null
-      bgp_session_range               = "169.254.0.2/30"
-      ike_version                     = 2
-      vpn_gateway_interface           = 0
-      peer_external_gateway_interface = null
-      router                          = null
-      shared_secret                   = module.vpn-onprem.random_secret
+      bgp_session_range     = "169.254.0.2/30"
+      vpn_gateway_interface = 0
+      shared_secret         = module.vpn-onprem.random_secret
     }
     tunnel-1 = {
       bgp_peer = {
         address = "169.254.0.5"
         asn     = 65001
       }
-      bgp_peer_options                = null
-      bgp_session_range               = "169.254.0.6/30"
-      ike_version                     = 2
-      vpn_gateway_interface           = 1
-      peer_external_gateway_interface = null
-      router                          = null
-      shared_secret                   = module.vpn-onprem.random_secret
+      bgp_session_range     = "169.254.0.6/30"
+      vpn_gateway_interface = 1
+      shared_secret         = module.vpn-onprem.random_secret
     }
   }
 }

@@ -12,9 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
+values:
+  google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    name: test
+    project: test-project
+    routing_mode: GLOBAL
 
+counts:
+  google_compute_network: 1
 
-def pytest_collection_modifyitems(config, items):
-  for item in items:
-    item.add_marker(pytest.mark.xdist_group(name=item.path.parent.name))
+outputs:
+  bindings: {}
+  project_id: test-project
+  subnet_ips: {}
+  subnet_regions: {}
+  subnet_secondary_ranges: {}
+  subnet_self_links: {}
+  subnets: {}
+  subnets_proxy_only: {}
+  subnets_psc: {}

@@ -12,10 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM alpine:latest
+FROM debian:bullseye-slim
 
-RUN set -xe \
-  && apk add --no-cache strongswan bash sudo
+ENV STRONGSWAN_VERSION=5.9
+
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y sudo iptables procps strongswan=${STRONGSWAN_VERSION}* \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 0755 /entrypoint.sh

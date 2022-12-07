@@ -24,17 +24,15 @@ The test instance is optional, as described above.
 
 ```hcl
 module "cloud-vpn" {
-  source     = "./fabric/modules/net-vpn-static"
-  project_id = "my-project"
-  region     = "europe-west1"
-  network    = "my-vpc"
-  name       = "to-on-prem"
+  source        = "./fabric/modules/net-vpn-static"
+  project_id    = "my-project"
+  region        = "europe-west1"
+  network       = "my-vpc"
+  name          = "to-on-prem"
   remote_ranges = ["192.168.192.0/24"]
   tunnels = {
     remote-0 = {
-      ike_version       = 2
       peer_ip           = module.on-prem.external_address
-      shared_secret     = ""
       traffic_selectors = { local = ["0.0.0.0/0"], remote = null }
     }
   }

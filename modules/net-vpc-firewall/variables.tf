@@ -15,7 +15,7 @@
  */
 
 variable "default_rules_config" {
-  description = "Optionally created convenience rules. Set the variable or individual members to null to disable."
+  description = "Optionally created convenience rules. Set the 'disabled' attribute to true, or individual rule attributes to empty lists to disable."
   type = object({
     admin_ranges = optional(list(string))
     disabled     = optional(bool, false)

@@ -149,7 +149,8 @@ def compute_subnet_utilization_ilbs(config, read_mask, all_subnets_dict):
     for versioned in asset.versioned_resources:
       for field_name, field_value in versioned.resource.items():
         if 'loadBalancingScheme' in field_name and field_value in [
-            'INTERNAL', 'INTERNAL_MANAGED']:
+            'INTERNAL', 'INTERNAL_MANAGED'
+        ]:
           internal = True
         # We want to count only accepted PSC endpoint Forwarding Rule
         # If the PSC endpoint Forwarding Rule is pending, we will count it in the reserved IP addresses
