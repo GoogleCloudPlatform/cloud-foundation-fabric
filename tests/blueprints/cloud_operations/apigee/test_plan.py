@@ -18,4 +18,4 @@ def test_blueprint(recursive_e2e_plan_runner):
     "Test that all blueprint resources are created."
     count_modules, count_resources = recursive_e2e_plan_runner(tf_var_file='test.regular.tfvars')
     assert count_modules == 10
-    assert count_resources == 60
+    assert count_resources == 59
