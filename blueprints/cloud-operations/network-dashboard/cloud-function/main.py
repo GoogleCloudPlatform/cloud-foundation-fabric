@@ -21,7 +21,7 @@ import time
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
-from metrics import ilb_fwrules, firewall_policies, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
+from metrics import ilb_fwrules, firewall_policies, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls, secondarys
 
 CF_VERSION = os.environ.get("CF_VERSION")
 
@@ -157,6 +157,9 @@ def main(event, context=None):
 
   # IP utilization subnet level metrics
   subnets.get_subnets(config, metrics_dict)
+
+  # IP utilization secondary range metrics
+  secondarys.get_secondaries(config, metrics_dict)
 
   # Asset inventory queries
   gce_instance_dict = instances.get_gce_instance_dict(config)
