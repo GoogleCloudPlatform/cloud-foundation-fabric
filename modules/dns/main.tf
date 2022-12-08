@@ -73,7 +73,7 @@ resource "google_dns_managed_zone" "non-public" {
   dns_name       = var.domain
   description    = var.description
   visibility     = "private"
-  reverse_lookup = (var.type == "reverse")
+  reverse_lookup = (var.type == "reverse-managed")
 
   dynamic "forwarding_config" {
     for_each = (
