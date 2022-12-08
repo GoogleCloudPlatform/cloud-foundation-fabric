@@ -351,11 +351,12 @@ module "glb-0" {
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
-  default = {
-    backends = [
-      { backend = "neg-0" }
-    ]
-    health_checks = []
+    default = {
+      backends = [
+        { backend = "neg-0" }
+      ]
+      health_checks = []
+    }
   }
   # with a single serverless NEG the implied default health check is not needed
   health_check_configs = {}
@@ -380,20 +381,19 @@ The module exposes the full URL map resource configuration, with some minor chan
 The default URL map configuration sets the `default` backend service as the default service for the load balancer as a convenience. Just override the `urlmap_config` variable to change the default behaviour:
 
 ```hcl
-module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
-  name       = "ilb-test"
-  project_id = var.project_id
-  region     = "europe-west1"
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id = "myprj"
+  name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [{
-        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+        backend = "projects/myprj/zones/europe-west8-b/instanceGroups/ig-0"
       }]
     }
-    video = {
+    other = {
       backends = [{
-        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig-2"
+        backend = "projects/myprj/zones/europe-west8-c/instanceGroups/ig-1"
       }]
     }
   }
@@ -407,15 +407,11 @@ module "ilb-l7" {
       pathmap = {
         default_service = "default"
         path_rules = [{
-          paths = ["/video", "/video/*"]
-          service = "video"
+          paths = ["/other", "/other/*"]
+          service = "other"
         }]
       }
     }
-  }
-  vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
   }
 }
 
@@ -424,7 +420,9 @@ module "ilb-l7" {
 
 ### SSL Certificates
 
-Similarly to health checks, SSL certificates can also be created by the module. In this example we are using private key and certificate resources so that the example test only depends on Terraform providers, but in real use those can be replaced by external files.
+The module also allows managing managed and self-managed SSL certificates via the `ssl_certificates` variable. Any certificate defined there will be added to the HTTPS proxy resource.
+
+THe [HTTPS example above](#minimal-https-examples) shows how to configure manage certificated, the following example shows how to use an unmanaged (or self managed) certificate. The example uses Terraform resource for the key and certificate so that the we don't depend on external files when running tests,  in real use the key and certificate are generally provided via external files read by the Terraform `file()` function.
 
 ```hcl
 
@@ -447,21 +445,17 @@ resource "tls_self_signed_cert" "default" {
   ]
 }
 
-module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
-  name       = "ilb-test"
-  project_id = var.project_id
-  region     = "europe-west1"
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id = "myprj"
+  name       = "glb-test-0"
   backend_service_configs = {
     default = {
-      backends = [{
-        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
-      }]
-    }
-  }
-  health_check_configs = {
-    default = {
-      https = { port = 443 }
+      backends = [
+        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
+        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+      ]
+      protocol = "HTTP"
     }
   }
   protocol = "HTTPS"
@@ -473,10 +467,6 @@ module "ilb-l7" {
         private_key = tls_private_key.default.private_key_pem
       }
     }
-  }
-  vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
   }
 }
 # tftest modules=1 resources=8
