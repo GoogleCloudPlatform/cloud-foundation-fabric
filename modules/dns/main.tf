@@ -66,13 +66,14 @@ locals {
 }
 
 resource "google_dns_managed_zone" "non-public" {
-  count       = (var.zone_create && var.type != "public") ? 1 : 0
-  provider    = google-beta
-  project     = var.project_id
-  name        = var.name
-  dns_name    = var.domain
-  description = var.description
-  visibility  = "private"
+  count          = (var.zone_create && var.type != "public") ? 1 : 0
+  provider       = google-beta
+  project        = var.project_id
+  name           = var.name
+  dns_name       = var.domain
+  description    = var.description
+  visibility     = "private"
+  reverse_lookup = (var.type == "reverse-managed")
 
   dynamic "forwarding_config" {
     for_each = (
