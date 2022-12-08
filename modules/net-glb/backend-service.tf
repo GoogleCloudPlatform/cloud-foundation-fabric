@@ -28,7 +28,10 @@ locals {
       for k, v in google_compute_network_endpoint_group.default : k => v.id
     },
     {
-      for k, v in google_compute_region_network_endpoint_group.default : k => v.id
+      for k, v in google_compute_region_network_endpoint_group.psc : k => v.id
+    },
+    {
+      for k, v in google_compute_region_network_endpoint_group.serverless : k => v.id
     }
   )
   hc_ids = {

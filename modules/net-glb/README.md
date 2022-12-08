@@ -111,6 +111,28 @@ module "glb-0" {
 # tftest modules=1 resources=6
 ```
 
+### Classic vs Non-classic
+
+The module uses a classic Global Load Balancer by default. To use the non-classic version set the `use_classic_version` variable to `false` as in the following example, note that the module is not enforcing feature sets between the two versions:
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id          = "myprj"
+  name                = "glb-test-0"
+  use_classic_version = false
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
+        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=5
+```
+
 ### Health Checks
 
 You can leverage externally defined health checks for backend services, or have the module create them for you.
@@ -343,6 +365,38 @@ module "glb-0" {
   }
 }
 # tftest modules=1 resources=6
+```
+
+#### Private Service Connect NEG creation
+
+The module supports managing PSC NEGs if the non-classic version of the load balancer is used:
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id          = "myprj"
+  name                = "glb-test-0"
+  use_classic_version = false
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = "neg-0" }
+      ]
+      health_checks = []
+    }
+  }
+  # with a single PSC NEG the implied default health check is not needed
+  health_check_configs = {}
+  neg_configs = {
+    neg-0 = {
+      psc = {
+        region = "europe-west8"
+        target_service = "europe-west8-cloudkms.googleapis.com"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=5
 ```
 
 #### Serverless NEG creation

@@ -41,7 +41,11 @@ locals {
     for k, v in var.neg_configs :
     k => v if v.internet != null
   }
-  neg_regional = {
+  neg_regional_psc = {
+    for k, v in var.neg_configs :
+    k => v if v.psc != null
+  }
+  neg_regional_serverless = {
     for k, v in var.neg_configs :
     k => v if v.cloudrun != null || v.cloudfunction != null
   }
@@ -116,8 +120,20 @@ resource "google_compute_network_endpoint" "default" {
   zone       = each.value.zone
 }
 
-resource "google_compute_region_network_endpoint_group" "default" {
-  for_each = local.neg_regional
+resource "google_compute_region_network_endpoint_group" "psc" {
+  for_each              = local.neg_regional_psc
+  project               = var.project_id
+  region                = each.value.psc.region
+  name                  = "${var.name}-${each.key}"
+  description           = coalesce(each.value.description, var.description)
+  network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
+  psc_target_service    = each.value.psc.target_service
+  network               = each.value.psc.network
+  subnetwork            = each.value.psc.subnetwork
+}
+
+resource "google_compute_region_network_endpoint_group" "serverless" {
+  for_each = local.neg_regional_serverless
   project  = var.project_id
   region = try(
     each.value.cloudrun.region, each.value.cloudfunction.region, null

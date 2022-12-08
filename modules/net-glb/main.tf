@@ -31,16 +31,18 @@ locals {
 }
 
 resource "google_compute_global_forwarding_rule" "default" {
-  provider              = google-beta
-  project               = var.project_id
-  name                  = var.name
-  description           = var.description
-  ip_address            = var.address
-  ip_protocol           = "TCP"
-  load_balancing_scheme = "EXTERNAL"
-  port_range            = join(",", local.fwd_rule_ports)
-  labels                = var.labels
-  target                = local.fwd_rule_target
+  provider    = google-beta
+  project     = var.project_id
+  name        = var.name
+  description = var.description
+  ip_address  = var.address
+  ip_protocol = "TCP"
+  load_balancing_scheme = (
+    var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
+  )
+  port_range = join(",", local.fwd_rule_ports)
+  labels     = var.labels
+  target     = local.fwd_rule_target
 }
 
 # certificates

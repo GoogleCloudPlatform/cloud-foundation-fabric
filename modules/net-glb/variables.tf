@@ -140,7 +140,12 @@ variable "neg_configs" {
         port        = number
       })))
     }))
-    # psc = optional(object({}))
+    psc = optional(object({
+      region         = string
+      target_service = string
+      network        = optional(string)
+      subnetwork     = optional(string)
+    }))
   }))
   default  = {}
   nullable = false
@@ -151,7 +156,8 @@ variable "neg_configs" {
         (try(v.cloudrun, null) == null ? 0 : 1) +
         (try(v.gce, null) == null ? 0 : 1) +
         (try(v.hybrid, null) == null ? 0 : 1) +
-        (try(v.internet, null) == null ? 0 : 1) == 1
+        (try(v.internet, null) == null ? 0 : 1) +
+        (try(v.psc, null) == null ? 0 : 1) == 1
       )
     ])
     error_message = "Only one type of NEG can be configured at a time."
@@ -217,4 +223,10 @@ variable "ssl_certificates" {
   })
   default  = {}
   nullable = false
+}
+
+variable "use_classic_version" {
+  description = "Use classic Global Load Balancer."
+  type        = bool
+  default     = true
 }
