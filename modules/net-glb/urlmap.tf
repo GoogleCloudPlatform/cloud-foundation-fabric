@@ -17,9 +17,10 @@
 # tfdoc:file:description URL map resources.
 
 locals {
-  backend_ids = {
-    for k, v in google_compute_backend_service.default : k => v.id
-  }
+  backend_ids = merge(
+    { for k, v in google_compute_backend_service.default : k => v.id },
+    { for k, v in google_compute_backend_bucket.default : k => v.id }
+  )
 }
 
 resource "google_compute_url_map" "default" {

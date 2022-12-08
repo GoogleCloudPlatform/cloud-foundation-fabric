@@ -98,6 +98,7 @@ variable "neg_configs" {
   type = map(object({
     description = optional(string)
     cloudfunction = optional(object({
+      region          = string
       target_function = optional(string)
       target_urlmask  = optional(string)
     }))

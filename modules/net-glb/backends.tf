@@ -19,7 +19,7 @@
 resource "google_compute_backend_bucket" "default" {
   for_each                = var.backend_buckets_config
   project                 = var.project_id
-  name                    = each.key
+  name                    = "${var.name}-${each.key}"
   bucket_name             = each.value.bucket_name
   compression_mode        = each.value.compression_mode
   custom_response_headers = each.value.custom_response_headers

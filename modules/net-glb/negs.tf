@@ -117,9 +117,11 @@ resource "google_compute_network_endpoint" "default" {
 }
 
 resource "google_compute_region_network_endpoint_group" "default" {
-  for_each              = local.neg_regional
-  project               = var.project_id
-  region                = each.value.region
+  for_each = local.neg_regional
+  project  = var.project_id
+  region = try(
+    each.value.cloudrun.region, each.value.cloudfunction.region, null
+  )
   name                  = "${var.name}-${each.key}"
   description           = coalesce(each.value.description, var.description)
   network_endpoint_type = "SERVERLESS"
