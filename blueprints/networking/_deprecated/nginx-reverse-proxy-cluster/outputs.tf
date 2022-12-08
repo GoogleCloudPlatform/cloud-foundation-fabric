@@ -16,5 +16,5 @@
 
 output "load_balancer_url" {
   description = "Load balancer for the reverse proxy instance group."
-  value       = !var.tls ? format("http://%s/", module.xlb.ip_address) : format("https://%s/", module.xlb.ip_address)
+  value       = format("http%s://%s/", var.tls ? "s" : "", module.glb.address)
 }

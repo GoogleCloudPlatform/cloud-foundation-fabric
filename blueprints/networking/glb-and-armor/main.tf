@@ -204,55 +204,14 @@ module "glb" {
   source     = "../../../modules/net-glb"
   name       = "${var.prefix}-http-lb"
   project_id = module.project.project_id
-  backend_services_config = {
-    http-backend = {
-      bucket_config = null
-      enable_cdn    = false
-      cdn_config    = null
-      group_config = {
-        backends = [
-          {
-            group   = module.mig_ew1.group_manager.instance_group
-            options = null
-          },
-          {
-            group   = module.mig_ue1.group_manager.instance_group
-            options = null
-          }
-        ],
-        health_checks = ["hc"]
-        log_config = {
-          enable      = true
-          sample_rate = 1
-        }
-        options = {
-          affinity_cookie_ttl_sec         = null
-          custom_request_headers          = null
-          custom_response_headers         = null
-          connection_draining_timeout_sec = null
-          load_balancing_scheme           = null
-          locality_lb_policy              = null
-          port_name                       = "http"
-          security_policy                 = try(google_compute_security_policy.policy[0].name, null)
-          session_affinity                = null
-          timeout_sec                     = null
-          circuits_breakers               = null
-          consistent_hash                 = null
-          iap                             = null
-          protocol                        = "HTTP"
-        }
-      }
-    }
-  }
-  health_checks_config = {
-    hc = {
-      type    = "http"
-      logging = true
-      options = null
-      check = {
-        port_name          = "http"
-        port_specification = "USE_NAMED_PORT"
-      }
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = module.mig_ew1.group_manager.instance_group },
+        { backend = module.mig_ue1.group_manager.instance_group }
+      ]
+      log_sample_rate = 1
+      security_policy = try(google_compute_security_policy.policy[0].name, null)
     }
   }
 }

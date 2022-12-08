@@ -46,11 +46,13 @@ The blueprint shows how to implement spoke transitivity via BGP advertisements, 
 
 <br clear="left">
 
+<!--
 ### Nginx-based reverse proxy cluster
 
-<a href="./nginx-reverse-proxy-cluster/" title="Nginx-based reverse proxy cluster"><img src="./nginx-reverse-proxy-cluster/reverse-proxy.png" align="left" width="280px"></a> This [blueprint](./nginx-reverse-proxy-cluster/) how to deploy an autoscaling reverse proxy cluster using Nginx, based on regional Managed Instance Groups. The autoscaling is driven by Nginx current connections metric, sent by Cloud Ops Agent.
+<a href="./_deprecated/nginx-reverse-proxy-cluster/" title="Nginx-based reverse proxy cluster"><img src="./_deprecated/nginx-reverse-proxy-cluster/reverse-proxy.png" align="left" width="280px"></a> This [blueprint](./nginx-reverse-proxy-cluster/) how to deploy an autoscaling reverse proxy cluster using Nginx, based on regional Managed Instance Groups. The autoscaling is driven by Nginx current connections metric, sent by Cloud Ops Agent.
 
 <br clear="left">
+-->
 
 ### DNS and Private Access for On-premises
 
