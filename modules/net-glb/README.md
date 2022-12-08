@@ -71,7 +71,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=6
 ```
 
 #### HTTPS backends
@@ -89,8 +89,8 @@ module "glb-0" {
         { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
         { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
       ]
+      protocol = "HTTPS"
     }
-    protocol = "HTTPS"
   }
   health_check_configs = {
     default = {
@@ -108,7 +108,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=6
 ```
 
 ### Health Checks
@@ -127,7 +127,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+        backend = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
       }]
       # no need to reference the hc explicitly when using the `default` key
       # health_checks = ["default"]
@@ -152,7 +152,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+        backend = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
       }]
       health_checks = ["projects/myprj/global/healthChecks/custom"]
     }
@@ -208,9 +208,9 @@ module "glb-0" {
     }
   }
   # with a single GCS backend the implied default health check is not needed
-  health_check+configs = {}
+  health_check_configs = {}
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=4
 ```
 
 #### Network Endpoint Groups (NEGs)
@@ -223,14 +223,15 @@ module "glb-0" {
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
-  default = {
-    backends = [
-      {
-        backend        = "projects/myprj/zones/europe-west8-b/networkEndpointGroups/myneg-b"
-        balancing_mode = "RATE"
-        max_rate       = { per_endpoint = 10 }
-      }
-    ]
+    default = {
+      backends = [
+        {
+          backend        = "projects/myprj/zones/europe-west8-b/networkEndpointGroups/myneg-b"
+          balancing_mode = "RATE"
+          max_rate       = { per_endpoint = 10 }
+        }
+      ]
+    }
   }
 }
 # tftest modules=1 resources=5
@@ -246,14 +247,15 @@ module "glb-0" {
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
-  default = {
-    backends = [
-      {
-        backend        = "neg-0"
-        balancing_mode = "RATE"
-        max_rate       = { per_endpoint = 10 }
-      }
-    ]
+    default = {
+      backends = [
+        {
+          backend        = "neg-0"
+          balancing_mode = "RATE"
+          max_rate       = { per_endpoint = 10 }
+        }
+      ]
+    }
   }
   neg_configs = {
     neg-0 = {
@@ -270,7 +272,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=7
 ```
 
 #### Hybrid NEG creation
@@ -283,14 +285,15 @@ module "glb-0" {
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
-  default = {
-    backends = [
-      {
-        backend        = "neg-0"
-        balancing_mode = "RATE"
-        max_rate       = { per_endpoint = 10 }
-      }
-    ]
+    default = {
+      backends = [
+        {
+          backend        = "neg-0"
+          balancing_mode = "RATE"
+          max_rate       = { per_endpoint = 10 }
+        }
+      ]
+    }
   }
   neg_configs = {
     neg-0 = {
@@ -318,11 +321,12 @@ module "glb-0" {
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
-  default = {
-    backends = [
-      { backend = "neg-0" }
-    ]
-    health_checks = []
+    default = {
+      backends = [
+        { backend = "neg-0" }
+      ]
+      health_checks = []
+    }
   }
   # with a single internet NEG the implied default health check is not needed
   health_check_configs = {}
@@ -338,7 +342,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=6
 ```
 
 #### Serverless NEG creation
@@ -371,7 +375,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=5
 ```
 
 ### URL Map
@@ -477,47 +481,46 @@ module "glb-0" {
 This example mixes group and NEG backends, and shows how to set HTTPS for specific backends.
 
 ```hcl
-module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
-  name       = "ilb-l7-test-0"
-  project_id = "prj-gce"
-  region     = "europe-west8"
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id = "myprj"
+  name       = "glb-test-0"
+  backend_buckets_config = {
+    gcs-0 = {
+      bucket_name = "my-bucket"
+    }
+  }
   backend_service_configs = {
     default = {
       backends = [
-        { group = "nginx-ew8-b" },
-        { group = "nginx-ew8-c" },
+        { backend = "ew8-b" },
+        { backend = "ew8-c" },
       ]
     }
-    gce-neg = {
+    neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        group          = "neg-nginx-ew8-c"
-        max_rate       = { per_endpoint = 1 }
+        backend          = "neg-ew8-c"
+        max_rate       = { per_endpoint = 10 }
       }]
     }
-    home = {
+    neg-hybrid-0 = {
       backends = [{
-        balancing_mode = "RATE"
-        group          = "neg-home-hello"
-        max_rate = {
-          per_endpoint = 1
-        }
+        backend          = "neg-hello"
       }]
       health_checks      = ["neg"]
-      locality_lb_policy = "ROUND_ROBIN"
       protocol           = "HTTPS"
     }
   }
   group_configs = {
-    nginx-ew8-b = {
+    ew8-b = {
       zone = "europe-west8-b"
       instances = [
         "projects/prj-gce/zones/europe-west8-b/instances/nginx-ew8-b"
       ]
       named_ports = { http = 80 }
     }
-    nginx-ew8-c = {
+    ew8-c = {
       zone = "europe-west8-c"
       instances = [
         "projects/prj-gce/zones/europe-west8-c/instances/nginx-ew8-c"
@@ -533,14 +536,16 @@ module "ilb-l7" {
     }
     neg = {
       https = {
-        host = "hello.home.example.com"
+        host = "hello.example.com"
         port = 443
       }
     }
   }
   neg_configs = {
-    neg-nginx-ew8-c = {
+    neg-ew8-c = {
       gce = {
+        network    = "projects/myprj-host/global/networks/svpc"
+        subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
         zone = "europe-west8-c"
         endpoints = [{
           instance   = "nginx-ew8-c"
@@ -549,8 +554,9 @@ module "ilb-l7" {
         }]
       }
     }
-    neg-home-hello = {
+    neg-hello = {
       hybrid = {
+        network    = "projects/myprj-host/global/networks/svpc"
         zone      = "europe-west8-b"
         endpoints = [{
           ip_address = "192.168.0.3"
@@ -567,8 +573,12 @@ module "ilb-l7" {
         path_matcher = "gce"
       },
       {
-        hosts        = ["hello.home.example.com"]
-        path_matcher = "home"
+        hosts        = ["hello.example.com"]
+        path_matcher = "hello"
+      },
+      {
+        hosts        = ["static.example.com"]
+        path_matcher = "static"
       }
     ]
     path_matchers = {
@@ -577,21 +587,20 @@ module "ilb-l7" {
         path_rules = [
           {
             paths   = ["/gce-neg", "/gce-neg/*"]
-            service = "gce-neg"
+            service = "neg-gce-0"
           }
         ]
       }
-      home = {
-        default_service = "home"
+      hello = {
+        default_service = "neg-hybrid-0"
+      }
+      static = {
+        default_service = "gcs-0"
       }
     }
   }
-  vpc_config = {
-    network    = "projects/prj-host/global/networks/shared-vpc"
-    subnetwork = "projects/prj-host/regions/europe-west8/subnetworks/gce"
-  }
 }
-# tftest modules=1 resources=14
+# tftest modules=1 resources=15
 ```
 
 <!-- TFDOC OPTS files:1 -->
