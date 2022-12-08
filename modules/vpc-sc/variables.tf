@@ -92,7 +92,7 @@ variable "egress_policies" {
         "ANY_USER", "ANY_SERVICE_ACCOUNT"
       ], v.from.identity_type)
     ])
-    error_message = "Invalid `from.identity_type` value in eress policy."
+    error_message = "Invalid `from.identity_type` value in egress policy."
   }
 }
 
@@ -150,7 +150,7 @@ variable "service_perimeters_regular" {
         allowed_services   = list(string)
         enable_restriction = bool
       }))
-    }), {})
+    }))
     status = optional(object({
       access_levels       = optional(list(string))
       resources           = optional(list(string))
@@ -161,7 +161,7 @@ variable "service_perimeters_regular" {
         allowed_services   = list(string)
         enable_restriction = bool
       }))
-    }), {})
+    }))
     use_explicit_dry_run_spec = optional(bool, false)
   }))
   default  = {}

@@ -22,8 +22,3 @@ variable "project_id" {
   description = "GCP project ID."
   type        = string
 }
-
-variable "workload_identity_pool_provider_id" {
-  description = "GCP workload identity pool provider ID."
-  type        = string
-}

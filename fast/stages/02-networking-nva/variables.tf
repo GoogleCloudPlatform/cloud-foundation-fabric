@@ -185,7 +185,7 @@ variable "region_trigram" {
   type        = map(string)
   default = {
     europe-west1 = "ew1"
-    europe-west3 = "ew3"
+    europe-west4 = "ew4"
   }
 }
 
@@ -235,10 +235,7 @@ variable "vpn_onprem_configs" {
     })
     peer_external_gateway = object({
       redundancy_type = string
-      interfaces = list(object({
-        id         = number
-        ip_address = string
-      }))
+      interfaces      = list(string)
     })
     tunnels = list(object({
       peer_asn                        = number
@@ -258,9 +255,7 @@ variable "vpn_onprem_configs" {
       }
       peer_external_gateway = {
         redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
-        interfaces = [
-          { id = 0, ip_address = "8.8.8.8" },
-        ]
+        interfaces      = ["8.8.8.8"]
       }
       tunnels = [
         {
@@ -288,9 +283,7 @@ variable "vpn_onprem_configs" {
       }
       peer_external_gateway = {
         redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
-        interfaces = [
-          { id = 0, ip_address = "8.8.8.8" },
-        ]
+        interfaces      = ["8.8.8.8"]
       }
       tunnels = [
         {

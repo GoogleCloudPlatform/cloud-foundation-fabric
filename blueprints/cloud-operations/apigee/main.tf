@@ -39,11 +39,21 @@ module "project" {
     "storage.googleapis.com"
   ]
   iam = {
-    "roles/bigquery.jobUser"  = [module.function_gcs2bq.service_account_iam_email]
-    "roles/logging.logWriter" = [module.function_export.service_account_iam_email]
-    "roles/logging.logWriter" = [module.function_gcs2bq.service_account_iam_email]
-    "roles/apigee.admin"      = [module.function_export.service_account_iam_email]
-    "roles/storage.admin"     = ["serviceAccount:${module.project.service_accounts.robots.apigee}"]
+    "roles/bigquery.jobUser" = [
+      module.function_gcs2bq.service_account_iam_email
+    ]
+    "roles/logging.logWriter" = [
+      module.function_export.service_account_iam_email
+    ]
+    "roles/logging.logWriter" = [
+      module.function_gcs2bq.service_account_iam_email
+    ]
+    "roles/apigee.admin" = [
+      module.function_export.service_account_iam_email
+    ]
+    "roles/storage.admin" = [
+      "serviceAccount:${module.project.service_accounts.robots.apigee}"
+    ]
   }
 }
 
@@ -52,16 +62,14 @@ module "vpc" {
   project_id = module.project.project_id
   name       = var.organization.authorized_network
   vpc_create = var.vpc_create
-  subnets_psc = [for k, v in var.psc_config :
-    {
-      ip_cidr_range = v
-      name          = "subnet-psc-${k}"
-      region        = k
-    }
-  ]
+  subnets_psc = [for k, v in var.psc_config : {
+    ip_cidr_range = v
+    name          = "subnet-psc-${k}"
+    region        = k
+  }]
   psa_config = {
-    ranges = { for k, v in var.instances :
-      "apigee-${k}" => v.psa_ip_cidr_range
+    ranges = {
+      for k, v in var.instances : "apigee-${k}" => v.psa_ip_cidr_range
     }
   }
 }
@@ -78,76 +86,39 @@ module "apigee" {
   ]
 }
 
-resource "google_compute_region_network_endpoint_group" "neg" {
-  for_each              = var.instances
-  name                  = "apigee-neg-${each.key}"
-  project               = module.project.project_id
-  region                = each.value.region
-  network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
-  psc_target_service    = module.apigee.instances[each.key].service_attachment
-  network               = module.vpc.network.self_link
-  subnetwork            = module.vpc.subnets_psc["${each.value.region}/subnet-psc-${each.value.region}"].self_link
-}
-
 module "glb" {
-  source     = "../../../modules/net-glb"
-  name       = "glb"
-  project_id = module.project.project_id
-
-  https              = true
-  reserve_ip_address = true
-
-  ssl_certificates_config = { for k, v in var.envgroups :
-    "${k}-domain" => {
-      domains          = v,
-      unmanaged_config = null
+  source              = "../../../modules/net-glb"
+  name                = "glb"
+  project_id          = module.project.project_id
+  protocol            = "HTTPS"
+  use_classic_version = false
+  backend_service_configs = {
+    default = {
+      backends = [for k, v in var.instances : { backend = k }]
+      protocol = "HTTPS"
     }
   }
-
-  target_proxy_https_config = {
-    ssl_certificates = [for k, v in var.envgroups : "${k}-domain"]
+  health_check_configs = {
+    default = {
+      https = { port_specification = "USE_SERVING_PORT" }
+    }
   }
-
-  health_checks_config_defaults = null
-
-  backend_services_config = {
-    apigee = {
-      bucket_config = null
-      enable_cdn    = false
-      cdn_config    = null
-      group_config = {
-        backends = [for k, v in google_compute_region_network_endpoint_group.neg :
-          {
-            group   = v.id
-            options = null
-          }
-        ],
-        health_checks = []
-        log_config    = null
-        options = {
-          affinity_cookie_ttl_sec         = null
-          custom_request_headers          = null
-          custom_response_headers         = null
-          connection_draining_timeout_sec = null
-          load_balancing_scheme           = "EXTERNAL_MANAGED"
-          locality_lb_policy              = null
-          port_name                       = null
-          security_policy                 = null
-          session_affinity                = null
-          timeout_sec                     = null
-          circuits_breakers               = null
-          consistent_hash                 = null
-          iap                             = null
-          protocol                        = "HTTPS"
-        }
+  neg_configs = {
+    for k, v in var.instances : k => {
+      psc = {
+        region         = v.region
+        target_service = module.apigee.instances[k].service_attachment
+        network        = module.vpc.network.self_link
+        subnetwork = (
+          module.vpc.subnets_psc["${v.region}/subnet-psc-${v.region}"].self_link
+        )
       }
     }
   }
-  global_forwarding_rule_config = {
-    load_balancing_scheme = "EXTERNAL_MANAGED"
-    ip_protocol           = "TCP"
-    ip_version            = "IPV4"
-    port_range            = null
+  ssl_certificates = {
+    managed_config = {
+      for k, v in var.envgroups : k => { domains = [v] }
+    }
   }
 }
 
@@ -162,7 +133,9 @@ module "bucket_export" {
   project_id = module.project.project_id
   name       = "${module.project.project_id}-export"
   iam = {
-    "roles/storage.objectViewer" = [module.function_gcs2bq.service_account_iam_email]
+    "roles/storage.objectViewer" = [
+      module.function_gcs2bq.service_account_iam_email
+    ]
   }
   notification_config = {
     enabled           = true
@@ -266,15 +239,24 @@ module "bigquery_dataset" {
     }
   }
   iam = {
-    "roles/bigquery.dataEditor" = [module.function_gcs2bq.service_account_iam_email]
+    "roles/bigquery.dataEditor" = [
+      module.function_gcs2bq.service_account_iam_email
+    ]
   }
 }
 
 resource "google_app_engine_application" "app" {
   project = module.project.project_id
-  location_id = ((var.organization.analytics_region == "europe-west1" || var.organization.analytics_region == "us-central1") ?
-    substr(var.organization.analytics_region, 0, length(var.organization.analytics_region) - 1) :
-  var.organization.analytics_region)
+  location_id = (
+    (
+      var.organization.analytics_region == "europe-west1" ||
+      var.organization.analytics_region == "us-central1"
+    )
+    ? substr(
+      var.organization.analytics_region, 0, length(var.organization.analytics_region) - 1
+    )
+    : var.organization.analytics_region
+  )
 }
 
 resource "google_cloud_scheduler_job" "job" {

@@ -53,7 +53,9 @@ def create_metrics(monitoring_project, config):
                             monitoring_project, config)
             # Parse limits for network and peering group metrics
             # Subnet level metrics have a different limit: the subnet IP range size
-            if sub_metric_key == "limit" and metric_name != "ip_usage_per_subnet":
+            if sub_metric_key == "limit" and (
+                metric_name != "ip_usage_per_subnet" and
+                metric_name != "ip_usage_per_secondaryRange"):
               limits_dict_for_metric = {}
               if "values" in sub_metric:
                 for network_link, limit_value in sub_metric["values"].items():
