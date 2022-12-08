@@ -71,7 +71,7 @@ locals {
       error_log stderr;
       access_log /dev/stdout combined;
 
-      set_real_ip_from ${module.xlb.ip_address}/32;
+      set_real_ip_from ${module.glb.address}/32;
       set_real_ip_from 35.191.0.0/16;
       set_real_ip_from 130.211.0.0/22;
       real_ip_header X-Forwarded-For;
@@ -121,7 +121,8 @@ locals {
 
 module "project" {
   source = "../../../modules/project"
-  billing_account = (var.project_create != null
+  billing_account = (
+    var.project_create != null
     ? var.project_create.billing_account_id
     : null
   )
@@ -130,7 +131,7 @@ module "project" {
     ? var.project_create.parent
     : null
   )
-
+  project_create = var.project_create != null
   services = [
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
@@ -138,21 +139,17 @@ module "project" {
     "logging.googleapis.com",
     "monitoring.googleapis.com",
   ]
-
-  project_create = var.project_create != null
 }
 
 module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
   name       = var.network
-  subnets = [
-    {
-      name          = var.subnetwork
-      ip_cidr_range = var.cidrs[var.subnetwork]
-      region        = var.region
-    },
-  ]
+  subnets = [{
+    name          = var.subnetwork
+    ip_cidr_range = var.cidrs[var.subnetwork]
+    region        = var.region
+  }]
   vpc_create = var.network_create
 }
 
@@ -181,23 +178,21 @@ module "firewall" {
 }
 
 module "nat" {
-  source                = "../../../modules/net-cloudnat"
-  project_id            = module.project.project_id
-  region                = var.region
-  name                  = "${var.prefix}-nat"
-  router_network        = module.vpc.name
-  config_source_subnets = "LIST_OF_SUBNETWORKS"
-
-  logging_filter = "ALL"
-
+  source                  = "../../../modules/net-cloudnat"
+  project_id              = module.project.project_id
+  region                  = var.region
+  name                    = "${var.prefix}-nat"
   config_min_ports_per_vm = 4000
-  subnetworks = [
-    {
-      self_link            = module.vpc.subnet_self_links[format("%s/%s", var.region, var.subnetwork)]
-      config_source_ranges = ["ALL_IP_RANGES"]
-      secondary_ranges     = null
-    }
-  ]
+  config_source_subnets   = "LIST_OF_SUBNETWORKS"
+  logging_filter          = "ALL"
+  router_network          = module.vpc.name
+  subnetworks = [{
+    self_link = (
+      module.vpc.subnet_self_links[format("%s/%s", var.region, var.subnetwork)]
+    )
+    config_source_ranges = ["ALL_IP_RANGES"]
+    secondary_ranges     = null
+  }]
 }
 
 ###############################################################################
@@ -240,7 +235,6 @@ module "mig-proxy" {
   source     = "../../../modules/compute-mig"
   project_id = module.project.project_id
   location   = var.region
-  regional   = true
   name       = "${var.prefix}-proxy-cluster"
   named_ports = {
     http  = "80"
@@ -255,19 +249,14 @@ module "mig-proxy" {
     metric                            = var.autoscaling_metric
   }
   update_policy = {
-    instance_redistribution_type = "PROACTIVE"
-    max_surge_type               = "fixed"
-    max_surge                    = 3
-    max_unavailable_type         = null
-    max_unavailable              = null
-    minimal_action               = "REPLACE"
-    min_ready_sec                = 60
-    type                         = "PROACTIVE"
+    minimal_action = "REPLACE"
+    type           = "PROACTIVE"
+    min_ready_sec  = 30
+    max_surge = {
+      fixed = 1
+    }
   }
-  default_version = {
-    instance_template = module.proxy-vm.template.self_link
-    name              = "proxy-vm"
-  }
+  instance_template = module.proxy-vm.template.self_link
   health_check_config = {
     type = "http"
     check = {
@@ -311,59 +300,28 @@ module "proxy-vm" {
   service_account_create = false
 }
 
-module "xlb" {
-  source             = "../../../modules/net-glb"
-  name               = "${var.prefix}-reverse-proxy-xlb"
-  project_id         = module.project.project_id
-  reserve_ip_address = true
-  health_checks_config = {
-    "${var.prefix}-reverse-proxy-hc" = {
-      type    = "http"
-      logging = false
-      options = {
-        check_interval_sec  = 10
-        healthy_threshold   = 1
-        unhealthy_threshold = 1
-        timeout_sec         = 10
-      }
-      check = {
+module "glb" {
+  source     = "../../../modules/net-glb"
+  project_id = module.project.project_id
+  name       = "${var.prefix}-reverse-proxy-glb"
+  health_check_configs = {
+    default = {
+      check_interval_sec  = 10
+      healthy_threshold   = 1
+      unhealthy_threshold = 1
+      timeout_sec         = 10
+      http = {
         port_specification = "USE_NAMED_PORT"
         port_name          = "http"
         request_path       = "/healthz"
       }
     }
   }
-  backend_services_config = {
-    "${var.prefix}-reverse-proxy-backend" = {
-      bucket_config = null
-      enable_cdn    = false
-      cdn_config    = null
-      group_config = {
-        backends = [
-          {
-            group   = module.mig-proxy.group_manager.instance_group
-            options = null
-          }
-        ]
-        health_checks = ["${var.prefix}-reverse-proxy-hc"]
-        log_config    = null
-        options = {
-          affinity_cookie_ttl_sec         = null
-          custom_request_headers          = null
-          custom_response_headers         = null
-          connection_draining_timeout_sec = null
-          load_balancing_scheme           = null
-          locality_lb_policy              = null
-          port_name                       = !var.tls ? "http" : "https"
-          protocol                        = !var.tls ? "HTTP" : "HTTPS"
-          security_policy                 = null
-          session_affinity                = null
-          timeout_sec                     = null
-          circuits_breakers               = null
-          consistent_hash                 = null
-          iap                             = null
-        }
-      }
+  backend_service_configs = {
+    default = {
+      backends  = [{ backend = module.mig-proxy.group_manager.instance_group }]
+      port_name = !var.tls ? "http" : "https"
+      protocol  = !var.tls ? "HTTP" : "HTTPS"
     }
   }
 }
