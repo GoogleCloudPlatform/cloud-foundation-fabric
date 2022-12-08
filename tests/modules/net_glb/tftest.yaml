@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import collections
-
-def test_blueprint(recursive_e2e_plan_runner):
-    "Test that all blueprint resources are created."
-    count_modules, count_resources = recursive_e2e_plan_runner(tf_var_file='test.regular.tfvars')
-    assert count_modules == 10
-    assert count_resources == 59
+module: modules/net-glb
+tests:
+  test-plan:
