@@ -20,7 +20,7 @@ Usage: main.py [OPTIONS]
 Options:
   -dr, --discovery-root TEXT    Root node for asset discovery,
                                 organizations/nnn or folders/nnn.  [required]
-  -op, --op-project TEXT        GCP monitoring project where metrics will be
+  -op, --monitoring-project TEXT        GCP monitoring project where metrics will be
                                 stored.  [required]
   -p, --project TEXT            GCP project id, can be specified multiple
                                 times.

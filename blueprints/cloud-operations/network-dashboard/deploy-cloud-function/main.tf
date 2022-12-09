@@ -94,10 +94,10 @@ resource "google_cloud_scheduler_job" "default" {
     attributes = {}
     topic_name = module.pubsub.topic.id
     data = base64encode(jsonencode({
-      discovery_root = var.discovery_config.discovery_root
-      folders        = var.discovery_config.monitored_folders
-      projects       = var.discovery_config.monitored_projects
-      op_project     = module.project.project_id
+      discovery_root     = var.discovery_config.discovery_root
+      folders            = var.discovery_config.monitored_folders
+      projects           = var.discovery_config.monitored_projects
+      monitoring_project = module.project.project_id
       custom_quota = (
         var.discovery_config.custom_quota_file == null
         ? { networks = {}, projects = {} }

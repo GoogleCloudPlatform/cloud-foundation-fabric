@@ -84,20 +84,20 @@ def do_discovery(resources):
       {k: len(v) for k, v in resources.items() if not isinstance(v, str)}))
 
 
-def do_init(resources, discovery_root, op_project, folders=None, projects=None,
+def do_init(resources, discovery_root, monitoring_project, folders=None, projects=None,
             custom_quota=None):
   '''Calls init plugins to configure keys in the shared resource map.
 
   Args:
     discovery_root: root node for discovery from configuration.
-    op_project: monitoring project id id from configuration.
+    monitoring_project: monitoring project id id from configuration.
     folders: list of folder ids for resource discovery from configuration.
     projects: list of project ids for resource discovery from configuration.
   '''
   LOGGER.info(f'init start')
   folders = [str(f) for f in folders or []]
   resources['config:discovery_root'] = discovery_root
-  resources['config:monitoring_project'] = op_project
+  resources['config:monitoring_project'] = monitoring_project
   resources['config:folders'] = folders
   resources['config:projects'] = projects or []
   resources['config:custom_quota'] = custom_quota or {}
@@ -222,12 +222,12 @@ def main_cf_pubsub(event, context):
   except (binascii.Error, json.JSONDecodeError) as e:
     raise SystemExit(f'Invalid payload: e.args[0].')
   discovery_root = payload.get('discovery_root')
-  op_project = payload.get('op_project')
+  monitoring_project = payload.get('monitoring_project')
   if not discovery_root:
     LOGGER.critical('no discovery roo project specified')
     LOGGER.info(payload)
     raise SystemExit(f'Invalid options')
-  if not op_project:
+  if not monitoring_project:
     LOGGER.critical('no monitoring project specified')
     LOGGER.info(payload)
     raise SystemExit(f'Invalid options')
@@ -239,20 +239,20 @@ def main_cf_pubsub(event, context):
   projects = payload.get('projects', [])
   resources = {}
   timeseries = []
-  do_init(resources, discovery_root, op_project, folders, projects,
+  do_init(resources, discovery_root, monitoring_project, folders, projects,
           custom_quota)
   do_discovery(resources)
   do_timeseries_calc(resources, descriptors, timeseries)
-  do_timeseries_descriptors(op_project, resources['metric-descriptors'],
+  do_timeseries_descriptors(monitoring_project, resources['metric-descriptors'],
                             descriptors)
-  do_timeseries(op_project, timeseries, descriptors)
+  do_timeseries(monitoring_project, timeseries, descriptors)
 
 
 @click.command()
 @click.option(
     '--discovery-root', '-dr', required=True,
     help='Root node for asset discovery, organizations/nnn or folders/nnn.')
-@click.option('--op-project', '-op', required=True, type=str,
+@click.option('--monitoring-project', '-mon', required=True, type=str,
               help='GCP monitoring project where metrics will be stored.')
 @click.option('--project', '-p', type=str, multiple=True,
               help='GCP project id, can be specified multiple times.')
@@ -266,7 +266,7 @@ def main_cf_pubsub(event, context):
               help='Load JSON resources from file, skips init and discovery.')
 @click.option('--debug-plugin',
               help='Run only core and specified timeseries plugin.')
-def main(discovery_root, op_project, project=None, folder=None,
+def main(discovery_root, monitoring_project, project=None, folder=None,
          custom_quota_file=None, dump_file=None, load_file=None,
          debug_plugin=None):
   'CLI entry point.'
@@ -285,15 +285,15 @@ def main(discovery_root, op_project, project=None, folder=None,
         custom_quota = yaml.load(custom_quota_file, Loader=yaml.Loader)
       except yaml.YAMLError as e:
         raise SystemExit(f'Error decoding custom quota file: {e.args[0]}')
-    do_init(resources, discovery_root, op_project, folder, project,
+    do_init(resources, discovery_root, monitoring_project, folder, project,
             custom_quota)
     do_discovery(resources)
     if dump_file:
       json.dump(resources, dump_file, indent=2)
   do_timeseries_calc(resources, descriptors, timeseries, debug_plugin)
-  do_timeseries_descriptors(op_project, resources['metric-descriptors'],
+  do_timeseries_descriptors(monitoring_project, resources['metric-descriptors'],
                             descriptors)
-  do_timeseries(op_project, timeseries, descriptors)
+  do_timeseries(monitoring_project, timeseries, descriptors)
 
 
 if __name__ == '__main__':

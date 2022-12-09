@@ -49,14 +49,14 @@ def fetch(url, delete=False):
 
 
 @click.command()
-@click.option('--op-project', '-op', required=True, type=str,
+@click.option('--monitoring-project', '-op', required=True, type=str,
               help='GCP monitoring project where metrics will be stored.')
-def main(op_project):
+def main(monitoring_project):
   'Module entry point.'
   # if not click.confirm('Do you want to continue?'):
   #   raise SystemExit(0)
   logging.info('fetching descriptors')
-  result = fetch(URL_LIST.format(op_project))
+  result = fetch(URL_LIST.format(monitoring_project))
   descriptors = result.get('metricDescriptors')
   if not descriptors:
     raise SystemExit(0)
