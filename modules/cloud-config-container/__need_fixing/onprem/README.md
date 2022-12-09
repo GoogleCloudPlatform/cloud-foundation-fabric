@@ -14,13 +14,9 @@ A [complete scenario using this module](../../../blueprints/networking/onprem-go
 
 The module renders the generated cloud config in the `cloud_config` output, to be used in instances or instance templates via the `user-data` metadata.
 
-For convenience during development or for simple use cases, the module can optionally manage a single instance via the `test_instance` variable. If the instance is not needed the `instance*tf` files can be safely removed. Refer to the [top-level README](../README.md) for more details on the included instance.
-
 ## Examples
 
 ### Static VPN
-
-The test instance is optional, as described above.
 
 ```hcl
 module "cloud-vpn" {
@@ -32,29 +28,43 @@ module "cloud-vpn" {
   remote_ranges = ["192.168.192.0/24"]
   tunnels = {
     remote-0 = {
-      peer_ip           = module.on-prem.external_address
+      peer_ip           = module.vm.external_ip
       traffic_selectors = { local = ["0.0.0.0/0"], remote = null }
     }
   }
 }
 
 module "on-prem" {
-  source = "./fabric/modules/cos-container/on-prem"
-  name       = "onprem"
+  source = "./fabric/modules/cloud-config-container/onprem"
   vpn_config = {
     type          = "static"
     peer_ip       = module.cloud-vpn.address
     shared_secret = module.cloud-vpn.random_secret
   }
-  test_instance = {
-    project_id = "my-project"
-    zone       = "europe-west1-b"
-    name       = "cos-coredns"
-    type       = "f1-micro"
-    network    = "default"
-    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/my-subnet"
-  }
 }
+
+module "vm" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "europe-west8-b"
+  name       = "cos-nginx-tls"
+  network_interfaces = [{
+    nat        = true
+    network    = "default"
+    subnetwork = "gce"
+  }]
+  metadata = {
+    user-data              = module.on-prem.cloud_config
+    google-logging-enabled = true
+  }
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
+  tags = ["ssh"]
+}
+# tftest modules=1 resources=1
 ```
 <!-- BEGIN TFDOC -->
 
@@ -79,4 +89,3 @@ module "on-prem" {
 | [test_instance](outputs-instance.tf#L17) | Optional test instance name and address. |  |
 
 <!-- END TFDOC -->
-

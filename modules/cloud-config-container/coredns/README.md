@@ -27,14 +27,27 @@ module "cos-coredns" {
   source           = "./fabric/modules/cloud-config-container/coredns"
 }
 
-# use it as metadata in a compute instance or template
-module "vm-coredns" {
-  source = "./fabric/modules/compute-vm"
+module "vm" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "europe-west8-b"
+  name       = "cos-coredns"
+  network_interfaces = [{
+    network    = "default"
+    subnetwork = "gce"
+  }]
   metadata = {
     user-data              = module.cos-coredns.cloud_config
     google-logging-enabled = true
   }
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
+  tags = ["dns", "ssh"]
 }
+# tftest modules=1 resources=1
 ```
 
 ### Custom CoreDNS configuration
@@ -51,26 +64,11 @@ module "cos-coredns" {
       owner       = null
       permissions = "0644"
     }
+  }  
 }
+# tftest modules=0 resources=0
 ```
 
-### CoreDNS instance
-
-This example shows how to create the single instance optionally managed by the module, providing all required attributes in the `test_instance` variable. The instance is purposefully kept simple and should only be used in development, or when designing infrastructures.
-
-```hcl
-module "cos-coredns" {
-  source           = "./fabric/modules/cloud-config-container/coredns"
-  test_instance = {
-    project_id = "my-project"
-    zone       = "europe-west1-b"
-    name       = "cos-coredns"
-    type       = "f1-micro"
-    network    = "default"
-    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/my-subnet"
-  }
-}
-```
 <!-- BEGIN TFDOC -->
 
 ## Variables

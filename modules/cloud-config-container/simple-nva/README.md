@@ -9,7 +9,6 @@ This NVA can be used to interconnect up to 8 VPCs.
 ### Simple example
 
 ```hcl
-# Interfaces configuration
 locals {
   network_interfaces = [
     {
@@ -28,41 +27,40 @@ locals {
       routes     = ["10.0.0.0/9"]
       subnetwork = "prod_vpc_nva_subnet_self_link"
     }
+  ]
 }
 
-# NVA config
-module "nva-cloud-config" {
-  source               = "../../../cloud-foundation-fabric/modules/cloud-config-container/simple-nva"
+module "cos-nva" {
+  source               = "./fabric/modules/cloud-config-container/simple-nva"
   enable_health_checks = true
   network_interfaces   = local.network_interfaces
-  files = {
-    "/var/lib/cloud/scripts/per-boot/firewall-rules.sh" = {
-      content     = file("./your_path/to/firewall-rules.sh")
-      owner       = "root"
-      permissions = 0700
-    }
-  }
+  # files = {
+  #   "/var/lib/cloud/scripts/per-boot/firewall-rules.sh" = {
+  #     content     = file("./your_path/to/firewall-rules.sh")
+  #     owner       = "root"
+  #     permissions = 0700
+  #   }
+  # }
 }
 
-# COS VM
-module "nva" {
-  source             = "../../modules/compute-vm"
-  project_id         = "myproject"
-  instance_type      = "e2-standard-2"
-  name               = "nva"
-  can_ip_forward     = true
-  zone               = "europe-west8-a"
-  tags               = ["nva"]
+module "vm" {
+  source             = "./fabric/modules/compute-vm"
+  project_id         = "my-project"
+  zone               = "europe-west8-b"
+  name               = "cos-nva"
   network_interfaces = local.network_interfaces
+  metadata = {
+    user-data              = module.cos-nva.cloud_config
+    google-logging-enabled = true
+  }
   boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
     size  = 10
-    type  = "pd-balanced"
   }
-  metadata = {
-    user-data = module.nva-cloud-config.cloud_config
-  }
+  tags = ["nva", "ssh"]
 }
+# tftest modules=1 resources=1
 ```
 <!-- BEGIN TFDOC -->
 

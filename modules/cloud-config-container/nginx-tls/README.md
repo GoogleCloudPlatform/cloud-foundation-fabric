@@ -29,6 +29,7 @@ module "vm-nginx-tls" {
     type  = "pd-ssd"
     size  = 10
   }
+  tags = ["http-server", "https-server", "ssh"]
 }
 # tftest modules=1 resources=1
 ```

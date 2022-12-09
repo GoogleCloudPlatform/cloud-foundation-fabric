@@ -37,9 +37,9 @@ variable "vpn_config" {
   type = object({
     peer_ip        = string
     shared_secret  = string
-    type           = string
-    peer_ip2       = string
-    shared_secret2 = string
+    type           = optional(string, "static")
+    peer_ip2       = optional(string)
+    shared_secret2 = optional(string)
   })
 }
 

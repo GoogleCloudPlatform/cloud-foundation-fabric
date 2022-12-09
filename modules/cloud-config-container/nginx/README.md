@@ -27,33 +27,29 @@ module "cos-nginx" {
   source           = "./fabric/modules/cloud-config-container/nginx"
 }
 
-# use it as metadata in a compute instance or template
-module "vm-nginx" {
-  source = "./fabric/modules/compute-vm"
+module "vm-nginx-tls" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "europe-west8-b"
+  name       = "cos-nginx"
+  network_interfaces = [{
+    network    = "default"
+    subnetwork = "gce"
+  }]
   metadata = {
     user-data              = module.cos-nginx.cloud_config
     google-logging-enabled = true
   }
-}
-```
-
-### Nginx instance
-
-This example shows how to create the single instance optionally managed by the module, providing all required attributes in the `test_instance` variable. The instance is purposefully kept simple and should only be used in development, or when designing infrastructures.
-
-```hcl
-module "cos-nginx" {
-  source           = "./fabric/modules/cloud-config-container/nginx"
-  test_instance = {
-    project_id = "my-project"
-    zone       = "europe-west1-b"
-    name       = "cos-nginx"
-    type       = "f1-micro"
-    network    = "default"
-    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/my-subnet"
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
   }
+  tags = ["http-server", "ssh"]
 }
+# tftest modules=1 resources=1
 ```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

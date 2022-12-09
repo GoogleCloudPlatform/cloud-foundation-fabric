@@ -25,39 +25,33 @@ This example will create a `cloud-config` that allows any client in the 10.0.0.0
 ```hcl
 module "cos-squid" {
   source           = "./fabric/modules/cloud-config-container/squid"
-  whitelist = [".github.com"]
+  allow = [".github.com"]
   clients   = ["10.0.0.0/8"]
 }
 
-# use it as metadata in a compute instance or template
-module "vm-squid" {
-  source = "./fabric/modules/compute-vm"
+module "vm" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "europe-west8-b"
+  name       = "cos-squid"
+  network_interfaces = [{
+    network    = "default"
+    subnetwork = "gce"
+  }]
   metadata = {
     user-data              = module.cos-squid.cloud_config
     google-logging-enabled = true
   }
-}
-```
-
-### Test Squid instance
-
-This example shows how to create the single instance optionally managed by the module, providing all required attributes in the `test_instance` variable. The instance is purposefully kept simple and should only be used in development, or when designing infrastructures.
-
-```hcl
-module "cos-squid" {
-  source           = "./fabric/modules/cloud-config-container/squid"
-  whitelist = ["github.com"]
-  clients   = ["10.0.0.0/8"]
-  test_instance = {
-    project_id = "my-project"
-    zone       = "europe-west1-b"
-    name       = "cos-squid"
-    type       = "f1-micro"
-    network    = "default"
-    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/my-subnet"
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
   }
+  tags = ["http-server", "ssh"]
 }
+# tftest modules=1 resources=1
 ```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

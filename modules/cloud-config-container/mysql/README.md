@@ -26,18 +26,31 @@ This example will create a `cloud-config` that uses the container's default conf
 
 ```hcl
 module "cos-mysql" {
-  source         = "./fabric/modules/cos-container/mysql"
+  source         = "./fabric/modules/cloud-config-container/mysql"
   mysql_password = "foo"
 }
 
-# use it as metadata in a compute instance or template
-module "vm-mysql" {
-  source = "./fabric/modules/compute-vm"
+module "vm" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "europe-west8-b"
+  name       = "cos-mysql"
+  network_interfaces = [{
+    network    = "default"
+    subnetwork = "gce"
+  }]
   metadata = {
     user-data              = module.cos-mysql.cloud_config
     google-logging-enabled = true
   }
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
+  tags = ["mysql", "ssh"]
 }
+# tftest modules=1 resources=1
 ```
 
 ### Custom MySQL configuration and KMS encrypted password
@@ -46,7 +59,7 @@ This example will create a `cloud-config` that uses a custom MySQL configuration
 
 ```hcl
 module "cos-mysql" {
-  source         = "./fabric/modules/cos-container/mysql"
+  source         = "./fabric/modules/cloud-config-container/mysql"
   mysql_config   = "./my.cnf"
   mysql_password = "CiQAsd7WY=="
   kms_config     = {
@@ -56,26 +69,9 @@ module "cos-mysql" {
     key        = "mysql"
   }
 }
+# tftest modules=0 resources=0
 ```
 
-### MySQL instance
-
-This example shows how to create the single instance optionally managed by the module, providing all required attributes in the `test_instance` variable. The instance is purposefully kept simple and should only be used in development, or when designing infrastructures.
-
-```hcl
-module "cos-mysql" {
-  source         = "./fabric/modules/cos-container/mysql"
-  mysql_password = "foo"
-  test_instance = {
-    project_id = "my-project"
-    zone       = "europe-west1-b"
-    name       = "cos-mysql"
-    type       = "n1-standard-1"
-    network    = "default"
-    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/my-subnet"
-  }
-}
-```
 <!-- BEGIN TFDOC -->
 
 ## Variables
