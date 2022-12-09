@@ -127,12 +127,12 @@ variable "service_directory_namespace" {
 }
 
 variable "type" {
-  description = "Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'."
+  description = "Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory','reverse-managed'."
   type        = string
   default     = "private"
   validation {
-    condition     = contains(["public", "private", "forwarding", "peering", "service-directory"], var.type)
-    error_message = "Zone must be one of 'public', 'private', 'forwarding', 'peering', 'service-directory'."
+    condition     = contains(["public", "private", "forwarding", "peering", "service-directory", "reverse-managed"], var.type)
+    error_message = "Zone must be one of 'public', 'private', 'forwarding', 'peering', 'service-directory','reverse-managed'."
   }
 }
 

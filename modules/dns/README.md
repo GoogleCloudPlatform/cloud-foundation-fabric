@@ -1,6 +1,6 @@
 # Google Cloud DNS Module
 
-This module allows simple management of Google Cloud DNS zones and records. It supports creating public, private, forwarding, peering and service directory based zones.
+This module allows simple management of Google Cloud DNS zones and records. It supports creating public, private, forwarding, peering, service directory and reverse-managed based zones.
 
 For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dns_managed_zone#dnssec_config).
 
@@ -86,6 +86,20 @@ module "private-dns" {
 }
 # tftest modules=1 resources=4
 ```
+
+### Reverse Lookup Zone
+
+```hcl
+module "private-dns" {
+  source          = "./fabric/modules/dns"
+  project_id      = "myproject"
+  type            = "reverse-managed"
+  name            = "test-example"
+  domain          = "0.0.10.in-addr.arpa."
+  client_networks = [var.vpc.self_link]
+}
+# tftest modules=1 resources=1
+```
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -103,7 +117,7 @@ module "private-dns" {
 | [peer_network](variables.tf#L77) | Peering network self link, only valid for 'peering' zone types. | <code>string</code> |  | <code>null</code> |
 | [recordsets](variables.tf#L88) | Map of DNS recordsets in \"type name\" => {ttl, [records]} format. | <code title="map&#40;object&#40;&#123;&#10;  ttl     &#61; optional&#40;number, 300&#41;&#10;  records &#61; optional&#40;list&#40;string&#41;&#41;&#10;  geo_routing &#61; optional&#40;list&#40;object&#40;&#123;&#10;    location &#61; string&#10;    records  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  wrr_routing &#61; optional&#40;list&#40;object&#40;&#123;&#10;    weight  &#61; number&#10;    records &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_directory_namespace](variables.tf#L123) | Service directory namespace id (URL), only valid for 'service-directory' zone types. | <code>string</code> |  | <code>null</code> |
-| [type](variables.tf#L129) | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'. | <code>string</code> |  | <code>&#34;private&#34;</code> |
+| [type](variables.tf#L129) | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory','reverse-managed'. | <code>string</code> |  | <code>&#34;private&#34;</code> |
 | [zone_create](variables.tf#L139) | Create zone. When set to false, uses a data source to reference existing zone. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
