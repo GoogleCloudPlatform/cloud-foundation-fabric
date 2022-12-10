@@ -20,8 +20,9 @@ import marko
 import pytest
 
 FABRIC_ROOT = Path(__file__).parents[2]
-MODULES_PATH = FABRIC_ROOT / 'modules/'
 BLUEPRINTS_PATH = FABRIC_ROOT / 'blueprints/'
+MODULES_PATH = FABRIC_ROOT / 'modules/'
+SUBMODULES_PATH = MODULES_PATH / 'cloud-config-container'
 
 FILE_TEST_RE = re.compile(r'# tftest file (\w+) ([\S]+)')
 
@@ -32,6 +33,7 @@ File = collections.namedtuple('File', 'path content')
 def pytest_generate_tests(metafunc):
   if 'example' in metafunc.fixturenames:
     modules = [x for x in MODULES_PATH.iterdir() if x.is_dir()]
+    modules.extend(x for x in SUBMODULES_PATH.iterdir() if x.is_dir())
     modules.extend(x for x in BLUEPRINTS_PATH.glob("*/*") if x.is_dir())
     modules.sort()
     examples = []
@@ -46,7 +48,7 @@ def pytest_generate_tests(metafunc):
       last_header = None
       files = {}
 
-      #first pass: collect all tftest tagged files
+      # first pass: collect all tftest tagged files
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode):
           code = child.children[0].children
