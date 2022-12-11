@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1045](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1045)] Assorted module fixes ([ludoo](https://github.com/ludoo)) <!-- 2022-12-10 14:40:15+00:00 -->
 - [[#1044](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1044)] **incompatible change:** Refactor net-glb module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-12-08 16:35:45+00:00 -->
 - [[#982](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/982)] Adding Secondary IP Utilization calculation ([brianhmj](https://github.com/brianhmj)) <!-- 2022-12-07 10:45:21+00:00 -->
 - [[#1037](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1037)] Bump qs and formidable in /blueprints/cloud-operations/apigee/functions/export ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2022-12-06 15:43:35+00:00 -->
@@ -69,6 +70,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1045](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1045)] Assorted module fixes ([ludoo](https://github.com/ludoo)) <!-- 2022-12-10 14:40:15+00:00 -->
 - [[#1014](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1014)] Update typos in `net-vpc-firewall` README.md ([aymanfarhat](https://github.com/aymanfarhat)) <!-- 2022-12-08 16:48:26+00:00 -->
 - [[#1044](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1044)] **incompatible change:** Refactor net-glb module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-12-08 16:35:45+00:00 -->
 - [[#1009](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1009)] Fix encryption in Data Playground blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2022-11-25 15:19:02+00:00 -->
@@ -123,6 +125,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1045](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1045)] Assorted module fixes ([ludoo](https://github.com/ludoo)) <!-- 2022-12-10 14:40:15+00:00 -->
 - [[#1040](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1040)] Fix name in google_pubsub_schema resource ([VictorCavalcanteLG](https://github.com/VictorCavalcanteLG)) <!-- 2022-12-08 17:25:36+00:00 -->
 - [[#1043](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1043)] added reverse lookup feature to module dns #1042 ([chemapolo](https://github.com/chemapolo)) <!-- 2022-12-08 17:13:05+00:00 -->
 - [[#1044](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1044)] **incompatible change:** Refactor net-glb module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-12-08 16:35:45+00:00 -->
