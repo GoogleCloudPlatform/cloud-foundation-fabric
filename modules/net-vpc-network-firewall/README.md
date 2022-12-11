@@ -193,8 +193,10 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_global_network_association"></a> [global\_network\_association](#output\_global\_network\_association) | Global association name |
 | <a name="output_global_policy_name"></a> [global\_policy\_name](#output\_global\_policy\_name) | Global network firewall policy name |
 | <a name="output_global_rules"></a> [global\_rules](#output\_global\_rules) | Global rules. |
+| <a name="output_regional_network_association"></a> [regional\_network\_association](#output\_regional\_network\_association) | Global association name |
 | <a name="output_regional_policy_name"></a> [regional\_policy\_name](#output\_regional\_policy\_name) | Regional network firewall policy name |
 | <a name="output_regional_rules"></a> [regional\_rules](#output\_regional\_rules) | Regional rules. |
 <!-- END_TF_DOCS -->
