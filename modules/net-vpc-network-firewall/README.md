@@ -47,7 +47,7 @@ module "global_policy_2" { # firewall rules using firewall_rules variables
       description             = "rule 1"
       action                  = "allow"
       direction               = "INGRESS"
-      priority                = 999
+      priority                = 888
       enable_logging          = true
       src_secure_tags         = ["production", "nonprod"]
       ip_protocol             = "tcp"

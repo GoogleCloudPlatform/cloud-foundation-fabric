@@ -1,3 +1,19 @@
+/**
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 locals {
   _files = try(flatten(
     [
@@ -116,7 +132,7 @@ resource "google_compute_network_firewall_policy_rule" "default" {
 resource "google_compute_network_firewall_policy_association" "default" {
 
   count             = var.global_network != null ? 1 : 0
-  name              = "association"
+  name              = "global-association"
   attachment_target = var.global_network
   firewall_policy   = google_compute_network_firewall_policy.default[0].name
   project           = var.project_id
@@ -177,7 +193,7 @@ resource "google_compute_region_network_firewall_policy_rule" "default" {
 
 resource "google_compute_region_network_firewall_policy_association" "default" {
   count             = var.regional_network != null ? 1 : 0
-  name              = "association"
+  name              = "regional-association"
   attachment_target = var.regional_network
   firewall_policy   = google_compute_region_network_firewall_policy.default[0].name
   project           = var.project_id
