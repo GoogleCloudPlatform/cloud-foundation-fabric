@@ -658,12 +658,12 @@ Our new approach to testing requires you to:
 
 - create a folder in the right `tests` hierarchy where specific test files will be hosted
 - define `tfvars` files each with a specific variable configuration to test
-- define `yaml` files with the plan and output results you want to test
+- define `yaml` "inventory" files with the plan and output results you want to test
 - declare which of these files need to be run as tests in a `tftest.yaml` file
 
 Let's go through each step in succession, assuming you are testing the new `net-glb` module.
 
-First create a new folder under `tests/modules` replacing any dhash in the module name with underscores. You also need to create an empty `__init__.py` file in it, since the folder represents a package from the point of view of `pytest`. Note that if you were testing a blueprint the folder would go in `tests/blueprints`.
+First create a new folder under `tests/modules` replacing any dash in the module name with underscores. You also need to create an empty `__init__.py` file in it, since the folder represents a package from the point of view of `pytest`. Note that if you were testing a blueprint the folder would go in `tests/blueprints`.
 
 ```bash
 mkdir tests/modules/net_glb
@@ -683,7 +683,7 @@ backend_buckets_config = {
 }
 ```
 
-Next define the corresponding `yaml` file which will be used to assert values from the plan that uses the `tfvars` file above. In the `yaml` file you have three sections available:
+Next define the corresponding inventory `yaml` file which will be used to assert values from the plan that uses the `tfvars` file above. In the inventory file you have three sections available:
 
 - `values` is a map of resource indexes (the same ones used by Terraform state) and their attribute name and values; you can define just the attributes you are interested in and the other will be ignored
 - `counts` is a map of resource types (eg `google_compute_engine`) and the number of times each type occurs in the plan; here too just define the ones the need checking
@@ -722,9 +722,6 @@ module: modules/net-glb
 #   - defaults.tfvars
 tests:
   test-plan:
-  # you can also reuse tfvars from other examples and test with a different yaml
-  # this for example will check with the test-plan-2.yaml file
-  # test-plan-2:
     tfvars:
       - test-plan.tfvars
       - test-plan-extra.tfvars
@@ -732,82 +729,38 @@ tests:
 
 A good example of tests showing different ways of leveraging our framework is in the [`tests/modules/organization`](./tests/modules/organization) folder.
 
-##### Testing end-to-end examples via Python (legacy approach)
+##### Writing tests in Python (legacy approach)
 
-Putting it all together, here is how an end-to-end blueprint test works.
+Where possible, we recommend using the testing framework described in the previous section. However, if you need it, you can still write tests using Python directly.
 
-Each example is a Python module in its own directory, and a Terraform fixture that calls the example as a module:
+In general, you should try to use the `plan_summary` fixture, which runs a a terraform plan and returns a `PlanSummary` object. The most important arguments to `plan_summary` are:
+- the path of the Terraform module you want to test, relative to the root of the repository
+- a list of paths representing the tfvars file to pass in to terraform. These paths are relative to the python file defining the test.
 
-```bash
-tests/blueprints/cloud_operations/iam_delegated_role_grants/
-├── fixture
-│   ├── main.tf
-│   └── variables.tf
-├── __init__.py
-└── test_plan.py
-```
+If successful, `plan_summary` will return a `PlanSummary` object with the `values`, `counts` and `outputs` attributes following the same semantics described in the previous section. You can use this fields to write your custom tests.
 
-One point of note is that the folder contains a Python module, so any dash needs to be replaced with underscores to make it importable. The actual test in the `test_plan.py` file looks like this:
-
-```python
-def test_resources(e2e_plan_runner):
-  "Test that plan works and the numbers of resources is as expected."
-  modules, resources = e2e_plan_runner()
-  assert len(modules) == 6
-  assert len(resources) == 18
-```
-
-It uses our pytest `e2e_plan_runner` fixture, which assumes a Terraform test setup is present in the `fixture` folder alongside the test file, runs `plan` on it, and returns the number of modules and resources.
-
-The Terraform fixture is a single block that runs the whole example as a module, and a handful of variables that can be used to test different configurations (not used above so they could be replaced with static strings).
-
-```hcl
-module "test" {
-  source         = "../../../../../blueprints/cloud-operations/asset-inventory-feed-remediation"
-  project_create = var.project_create
-  project_id     = var.project_id
-}
-```
-
-You can run this test as part of or entire suite of tests, the blueprints suite, or individually:
+Like before let's imagine we're writing a (python) test for `net-glb` module. First create a new folder under `tests/modules` replacing any dash in the module name with underscores. You also need to create an empty `__init__.py` file in it, to ensure `pytest` discovers you new tests automatically.
 
 ```bash
-# run all tests
-pytest
-# only run example tests
-pytest tests/blueprints
-# only run this example tests
-pytest tests/blueprints/cloud_operations/iam_delegated_role_grants/
-# only run a single unit
-pytest tests/blueprints/cloud_operations/iam_delegated_role_grants/test_plan.py::test_resources
+mkdir tests/modules/net_glb
+touch tests/modules/net_glb/__init__.py
 ```
 
-##### Testing modules
-
-The same approach used above can also be used for testing modules when a simple plan is enough to validate code. When specific features need to be tested though, the `plan_runner` pytest fixture can be used so that plan resources are returned for inspection.
-
-The following example from the `project` module leverages variables in the Terraform fixture to define which module resources are returned from plan.
-
+Now create a file containingyour tests, e.g. `test_plan.py`:
 ```python
-def test_iam(plan_runner):
-  "Test IAM bindings."
-  iam = (
-      '{"roles/owner" = ["user:one@example.org"],'
-      '"roles/viewer" = ["user:two@example.org", "user:three@example.org"]}'
-  )
-  _, resources = plan_runner(iam=iam)
-  roles = dict((r['values']['role'], r['values']['members'])
-               for r in resources if r['type'] == 'google_project_iam_binding')
-  assert roles == {
-      'roles/owner': ['user:one@example.org'],
-      'roles/viewer': ['user:three@example.org', 'user:two@example.org']}
+def test_name(plan_summary, tfvars_to_yaml, tmp_path):
+  s = plan_summary('modules/net-glb', tf_var_files=['test-plan.tfvars'])
+  address = 'google_compute_url_map.default'
+  assert s.values[address]['project'] == 'my-project'
 ```
+
+For more examples on how to write python tests, the tests for  [`organization`](./tests/modules/organization/test_plan_org_policies.py) and [`net-vpc`](./tests/modules/net_vpc/test_routes.py) modules.
 
 #### Testing documentation examples
 
-Most of our documentation examples are also tested via the `examples` test suite. To enable an example for testing just use the special `tftest` comment as the last line in the example, listing the number of modules and resources tested.
+Most of our documentation examples are also tested via the `examples` test suite. To enable an example for testing just use the special `tftest` comment as the last line in the example, listing the number of modules and resources expected.
 
-A few preset variables are available for use, as shown in this example from the `dns` module documentation.
+A [few preset variables](./tests/examples/variables.tf) are available for use, as shown in this example from the `dns` module documentation.
 
 ```hcl
 module "private-dns" {
@@ -823,6 +776,25 @@ module "private-dns" {
 }
 # tftest modules=1 resources=2
 ```
+
+Note that all HCL code examples in READMEs are automatically tested. To prevent this behavior, include `tftest skip` somewhere in the code.
+
+#### Running tests from a temporary directory
+
+Most of the time you can run tests using the `pytest` command as described in previous the previous sections. However, the `plan_summary` fixture allows copying the root modules and running the test from a temporary directory.
+
+To enable this option, just define the environment variable `TFTEST_COPY` and any tests using the `plan_summary` fixture will automatically run from a temporary directory.
+
+Running tests from temporary directories is useful if:
+- you're running tests in parallel using `pytest-xdist`. In this case, just run you tests as follows:
+  ```bash
+  TFTEST_COPY=1 pytest -n 4
+  ```
+- you're running tests for the `fast/` directory which contain tfvars and auto.tfvars files (which are read by terraform automatically) making your tests fail. In this case, you can run
+  ```
+  TFTEST_COPY=1 pytest fast/
+  ```
+
 
 #### Fabric tools
 
