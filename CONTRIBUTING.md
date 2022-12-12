@@ -746,7 +746,7 @@ mkdir tests/modules/net_glb
 touch tests/modules/net_glb/__init__.py
 ```
 
-Now create a file containingyour tests, e.g. `test_plan.py`:
+Now create a file containing your tests, e.g. `test_plan.py`:
 ```python
 def test_name(plan_summary, tfvars_to_yaml, tmp_path):
   s = plan_summary('modules/net-glb', tf_var_files=['test-plan.tfvars'])
@@ -781,7 +781,7 @@ Note that all HCL code examples in READMEs are automatically tested. To prevent 
 
 #### Running tests from a temporary directory
 
-Most of the time you can run tests using the `pytest` command as described in previous the previous sections. However, the `plan_summary` fixture allows copying the root modules and running the test from a temporary directory.
+    Most of the time you can run tests using the `pytest` command as described in previous. However, the `plan_summary` fixture allows copying the root module and running the test from a temporary directory.
 
 To enable this option, just define the environment variable `TFTEST_COPY` and any tests using the `plan_summary` fixture will automatically run from a temporary directory.
 
