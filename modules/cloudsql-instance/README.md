@@ -163,7 +163,7 @@ module "db" {
 | [flags](variables.tf#L84) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [ipv4_enabled](variables.tf#L90) | Add a public IP address to database instance. | <code>bool</code> |  | <code>false</code> |
 | [labels](variables.tf#L96) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [postgres_client_cert](variables.tf#L112) | Map of cert keys connect to the application(s) using public IP. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [postgres_client_certificates](variables.tf#L112) | Map of cert keys connect to the application(s) using public IP. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [prefix](variables.tf#L118) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
 | [replicas](variables.tf#L138) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [root_password](variables.tf#L147) | Root password of the Cloud SQL instance. Required for MS SQL Server. | <code>string</code> |  | <code>null</code> |
@@ -182,7 +182,7 @@ module "db" {
 | [ips](outputs.tf#L61) | IP addresses of all instances. |  |
 | [name](outputs.tf#L69) | Name of the primary instance. |  |
 | [names](outputs.tf#L74) | Names of all instances. |  |
-| [postgres_client_cert](outputs.tf#L82) | The CA Certificate used to connect to the SQL Instance via SSL. | ✓ |
+| [postgres_client_certificates](outputs.tf#L82) | The CA Certificate used to connect to the SQL Instance via SSL. | ✓ |
 | [self_link](outputs.tf#L88) | Self link of the primary instance. |  |
 | [self_links](outputs.tf#L93) | Self links of all instances. |  |
 | [user_passwords](outputs.tf#L101) | Map of containing the password of all users created through terraform. | ✓ |

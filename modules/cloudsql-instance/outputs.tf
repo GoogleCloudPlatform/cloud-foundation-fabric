@@ -79,10 +79,8 @@ output "names" {
   }
 }
 
-output "postgres_client_cert" {
+output "postgres_client_certificates" {
   description = "The CA Certificate used to connect to the SQL Instance via SSL."
-  value       = google_sql_ssl_cert.postgres_client_cert
-  sensitive   = true
 }
 
 output "self_link" {
