@@ -175,3 +175,10 @@ resource "google_sql_user" "users" {
   host     = each.value.host
   password = each.value.password
 }
+
+resource "google_sql_ssl_cert" "postgres_client_cert" {
+  for_each    = var.postgres_client_cert != null ? toset(var.postgres_client_cert) : toset([])
+  provider    = google-beta
+  instance    = google_sql_database_instance.primary.name
+  common_name = each.key
+}
