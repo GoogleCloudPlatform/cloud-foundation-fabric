@@ -670,7 +670,7 @@ mkdir tests/modules/net_glb
 touch tests/modules/net_glb/__init__.py
 ```
 
-Then define a `tfvars` file with one of the module configurations you want to test. If you have a lot of variables which are shared across different tests, you can group all the common variables in a single `tfvars` file and associate it with each test's specific `tfvars` file (check the [organization module test](/tests/modules/organization/tftest.yaml) for an example).
+Then define a `tfvars` file with one of the module configurations you want to test. If you have a lot of variables which are shared across different tests, you can group all the common variables in a single `tfvars` file and associate it with each test's specific `tfvars` file (check the [organization module test](./tests/modules/organization/tftest.yaml) for an example).
 
 ```hcl
 # file: tests/modules/net_glb/test-simple.tfvars
@@ -730,7 +730,7 @@ tests:
       - test-plan-extra.tfvars
 ```
 
-A good example of tests showing different ways of leveraging our framework is in the [`tests/modules/organization`](tests/modules/organization) folder.
+A good example of tests showing different ways of leveraging our framework is in the [`tests/modules/organization`](./tests/modules/organization) folder.
 
 ##### Testing end-to-end examples via Python (legacy approach)
 
