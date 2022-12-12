@@ -1,3 +1,5 @@
+# skip boilerplate check
+
 #!/bin/bash
 
 #
