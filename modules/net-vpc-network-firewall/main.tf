@@ -197,6 +197,6 @@ resource "google_compute_region_network_firewall_policy_association" "default" {
   attachment_target = var.regional_network
   firewall_policy   = google_compute_region_network_firewall_policy.default[0].name
   project           = var.project_id
-  region            = "var.firewall_policy_region"
+  region            = var.firewall_policy_region
 }
 
