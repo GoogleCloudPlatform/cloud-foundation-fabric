@@ -7,7 +7,7 @@
       {
         "height": 4,
         "widget": {
-          "title": "internal_forwarding_rules_l4_utilization",
+          "title": "Internal L4 forwarding rules utilization",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -24,7 +24,7 @@
                       "alignmentPeriod": "3600s",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/internal_forwarding_rules_l4_utilization\" resource.type=\"global\"",
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/forwarding_rules_l4_used_ratio\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "1800s",
                       "perSeriesAligner": "ALIGN_MEAN"
@@ -47,7 +47,7 @@
       {
         "height": 4,
         "widget": {
-          "title": "internal_forwarding_rules_l7_utilization",
+          "title": "Internal L7 forwarding rules utilization",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -64,7 +64,7 @@
                       "alignmentPeriod": "3600s",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/internal_forwarding_rules_l7_utilization\" resource.type=\"global\"",
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/forwarding_rules_l4_used_ratio\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_MEAN"
@@ -87,7 +87,7 @@
       {
         "height": 4,
         "widget": {
-          "title": "number_of_instances_utilization",
+          "title": "Instance utilization",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -104,7 +104,7 @@
                       "alignmentPeriod": "3600s",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/number_of_instances_utilization\" resource.type=\"global\"",
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/instances_used_ratio\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_MEAN"
@@ -127,7 +127,7 @@
       {
         "height": 4,
         "widget": {
-          "title": "number_of_vpc_peerings_utilization",
+          "title": "Peering utilization",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -144,7 +144,7 @@
                       "alignmentPeriod": "3600s",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/number_of_vpc_peerings_utilization\" resource.type=\"global\"",
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/peerings_total_used_ratio\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_MEAN"
@@ -167,7 +167,7 @@
       {
         "height": 4,
         "widget": {
-          "title": "number_of_active_vpc_peerings_utilization",
+          "title": "Active peering utilization",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -184,7 +184,7 @@
                       "alignmentPeriod": "3600s",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/number_of_active_vpc_peerings_utilization\" resource.type=\"global\"",
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/peerings_active_used_ratio\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_INTERPOLATE"
@@ -207,7 +207,7 @@
       {
         "height": 4,
         "widget": {
-          "title": "subnet_IP_ranges_ppg_utilization",
+          "title": "Subnet IP ranges per peering group utilization",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -224,7 +224,7 @@
                       "alignmentPeriod": "3600s",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/number_of_subnet_IP_ranges_ppg_utilization\" resource.type=\"global\"",
+                    "filter": "metric.type=\"custom.googleapis.com/peering_group/subnet_ranges_used_ratio\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "3600s",
                       "perSeriesAligner": "ALIGN_MEAN"
