@@ -72,11 +72,13 @@ pytest tests/examples
 Once everything looks good, add/commit any pending changes then push and open a PR on GitHub. We typically enforce a set of design and style conventions, so please make sure you have familiarized yourself with the following sections and implemented them in your code, to avoid lengthy review cycles.
 
 HINT: if you work on high-latency or low-bandwidth network use `TF_PLUGIN_CACHE_DIR` environment variable to dramatically speed up the tests, for example:
+
 ```bash
 TF_PLUGIN_CACHE_DIR=/tmp/tfcache pytest tests
 ```
 
 Or just add into your [terraformrc](https://developer.hashicorp.com/terraform/cli/config/config-file):
+
 ```
 plugin_cache_dir = "$HOME/.terraform.d/plugin-cache"
 ```
@@ -544,6 +546,7 @@ locals {
 #### The `prefix` variable
 
 If you would like to use a "prefix" variable for resource names, please keep its definition consistent across all modules:
+
 ```hcl
 # variables.tf
 variable "prefix" {
@@ -563,6 +566,7 @@ locals {
 ```
 
 For blueprints the prefix is mandatory:
+
 ```hcl
 variable "prefix" {
   description = "Prefix used for resource names."
@@ -608,6 +612,7 @@ The linting workflow tests:
 
 - that the correct copyright boilerplate is present in all files, using `tools/check_boilerplate.py`
 - that all Terraform code is linted via `terraform fmt`
+- that Terraform variables and outputs are sorted alphabetically
 - that all README files have up to date outputs, variables, and files (where relevant) tables, via `tools/check_documentation.py`
 - that all links in README files are syntactically correct and valid if internal, via `tools/check_links.py`
 - that resource names used in FAST stages stay within a length limit, via `tools/check_names.py`
@@ -639,15 +644,95 @@ The test workflow runs test suites in parallel. Refer to the next section for mo
 
 #### Using and writing tests
 
-Our testing approach follows a simple philosophy: we mainly test to ensure code works, and it does not break due to changes to dependencies (modules) or provider resources.
+Our testing approach follows a simple philosophy: we mainly test to ensure code works, and that it does not break due to changes to dependencies (modules) or provider resources.
 
 This makes testing very simple, as a successful `terraform plan` run in a test case is often enough. We only write more specialized tests when we need to check the output of complex transformations in `for` loops.
 
-As our testing needs are very simple, we also wanted to reduce the friction required to write new tests as much as possible: our tests are written in Python, and use `pytest` which is the standard for the language. We adopted this approach instead of others (Inspec/Kitchen, Terratest) as it allows writing simple functions as test units using Python which is simple and widely known.
+As our testing needs are very simple, we also wanted to reduce the friction required to write new tests as much as possible: our tests are written in Python and use `pytest` which is the standard for the language, leveraging our [`tftest`](https://pypi.org/project/tftest/) library, which wraps the Terraform executable and returns familiar data structures for most commands.
 
-The last piece of our testing framework is our [`tftest`](https://pypi.org/project/tftest/) library, which wraps the Terraform executable and returns familiar data structures for most commands.
+Writing `pytest` unit tests to check plan results is really easy, but since wrapping modules and examples in dedicated fixtures and hand-coding checks gets annoying after a while, we developed a thin layer that allows us to use `tfvars` files to run tests, and `yaml` results to check results. In some specific situations you might still want to interact directly with `tftest` via Python, if that's the case skip to the legacy approach below.
 
-##### Testing end-to-end examples
+##### Testing end-to-end examples via `tfvars` and `yaml`
+
+Our new approach to testing requires you to:
+
+- create a folder in the right `tests` hierarchy where specific test files will be hosted
+- define `tfvars` files each with a specific variable configuration to test
+- define `yaml` files with the plan and output results you want to test
+- declare which of these files need to be run as tests in a `tftest.yaml` file
+
+Let's go through each step in succession, assuming you are testing the new `net-glb` module.
+
+First create a new folder under `tests/modules` replacing any dhash in the module name with underscores. You also need to create an empty `__init__.py` file in it, since the folder represents a package from the point of view of `pytest`. Note that if you were testing a blueprint the folder would go in `tests/blueprints`.
+
+```bash
+mkdir tests/modules/net_glb
+touch tests/modules/net_glb/__init__.py
+```
+
+Then define a `tfvars` file with one of the module configurations you want to test. If you have a lot of variables which are shared across different tests, you can group all the common variables in a single `tfvars` file and associate it with each test's specific `tfvars` file (check the [organization module test](/tests/modules/organization/tftest.yaml) for an example).
+
+```hcl
+# file: tests/modules/net_glb/test-simple.tfvars
+name       = "glb-test-0"
+project_id = "my-project"
+backend_buckets_config = {
+  default = {
+    bucket_name = "my-bucket"
+  }
+}
+```
+
+Next define the corresponding `yaml` file which will be used to assert values from the plan that uses the `tfvars` file above. In the `yaml` file you have three sections available:
+
+- `values` is a map of resource indexes (the same ones used by Terraform state) and their attribute name and values; you can define just the attributes you are interested in and the other will be ignored
+- `counts` is a map of resource types (eg `google_compute_engine`) and the number of times each type occurs in the plan; here too just define the ones the need checking
+- `outputs` is a map of outputs and their values; where a value is unknown at plan time use the special `__missing__` token
+
+```yaml
+# file: tests/modules/net_glb/test-simple.yaml
+values:
+  google_compute_global_forwarding_rule.default:
+    description: Terraform managed.
+    load_balancing_scheme: EXTERNAL
+  google_compute_target_http_proxy.default[0]:
+    name: glb-test-1
+counts:
+  google_compute_backend_bucket: 1
+  google_compute_global_forwarding_rule: 1
+  google_compute_health_check: 1
+  google_compute_target_http_proxy: 1
+  google_compute_url_map: 1
+outputs:
+  address: __missing__
+  backend_service_ids: __missing__
+  forwarding_rule: __missing__
+  group_ids: __missing__
+  health_check_ids: __missing__
+  neg_ids: __missing__
+```
+
+Create as many pairs of `tfvars`/`yaml` files as you need to test every scenario and feature, then create the file that triggers our fixture and converts them into `pytest` tests.
+
+```yaml
+# file: tests/modules/net_glb/tftest.yaml
+module: modules/net-glb
+# if there are variables shared among all tests you can define a common file
+# common_tfvars:
+#   - defaults.tfvars
+tests:
+  test-plan:
+  # you can also reuse tfvars from other examples and test with a different yaml
+  # this for example will check with the test-plan-2.yaml file
+  # test-plan-2:
+    tfvars:
+      - test-plan.tfvars
+      - test-plan-extra.tfvars
+```
+
+A good example of tests showing different ways of leveraging our framework is in the [`tests/modules/organization`](tests/modules/organization) folder.
+
+##### Testing end-to-end examples via Python (legacy approach)
 
 Putting it all together, here is how an end-to-end blueprint test works.
 
