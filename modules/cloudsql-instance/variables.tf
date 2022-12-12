@@ -109,7 +109,7 @@ variable "network" {
   type        = string
 }
 
-variable "postgres_client_cert" {
+variable "postgres_client_certificates" {
   description = "Map of cert keys connect to the application(s) using public IP."
   type        = list(string)
   default     = null
