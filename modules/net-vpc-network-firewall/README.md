@@ -97,21 +97,21 @@ module "regional_policy_1" { # firewall rules using yaml configuration
 ### Rule definition format and structure
 
 ```yaml
-rule-name: # descriptive name, naming convention is adjusted by the module
-  deployment: deployment option "regional" or "global"
+rule-name: # rule descriptive name
+  deployment: # deployment option "regional" or "global"
   disabled: #`false` or `true`, FW rule is disabled when `true`, default value is `false`
   description: # rules description
   action: # allow or deny
   direction: # INGRESS or EGRESS
   priority: # rule priority value, default value is 1000
   enable_logging: # Enable rule logging. Default is false
-  src_secure_tags: # list of security tag source
+  src_secure_tags: # list of tag source
   ip_protocol: #  protocol, put `all` for any protocol
   ports: # list of ports
   target_service_accounts: #  list of target service accounts
   dest_ip_ranges: # Destination ip range
   src_ip_ranges: # source ip range
-  target_secure_tags: list tag security tags target
+  target_secure_tags: # list tag target
   ```
 
 Firewall rules example yaml configuration
