@@ -43,7 +43,3 @@ output "regional_policy_name" {
   description = "Regional network firewall policy name"
   value       = try(google_compute_network_firewall_policy_rule.default[0].id, null)
 }
-
-
-
-

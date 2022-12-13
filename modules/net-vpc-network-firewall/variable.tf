@@ -20,6 +20,18 @@ variable "data_folders" {
   default     = null
 }
 
+variable "deployment_scope" {
+  description = ""
+  type        = string
+  validation {
+    condition = contains(
+      ["global", "regional"],
+      var.deployment_scope
+    )
+    error_message = "Invalid deployment scope, supported scope: 'global' or 'regional'."
+  }
+}
+
 variable "firewall_policy_region" {
   description = "Network firewall policy region."
   type        = string
@@ -29,22 +41,21 @@ variable "firewall_policy_region" {
 variable "firewall_rules" {
   description = "List rule definitions, default to allow action."
   type = map(object({
-    deployment              = optional(string, "global")
-    disabled                = optional(bool, false)
-    description             = optional(string)
-    action                  = optional(string, "allow")
-    direction               = optional(string, "INGRESS")
+    action         = optional(string, "allow")
+    description    = optional(string, null)
+    dest_ip_ranges = optional(list(string))
+    disabled       = optional(bool, false)
+    direction      = optional(string, "INGRESS")
+    enable_logging = optional(bool, false)
+    layer4_configs = optional(list(object({
+      protocol = string
+      ports    = optional(list(string))
+    })), [{ protocol = "all" }])
     priority                = optional(number, 1000)
-    enable_logging          = optional(bool, false)
     src_secure_tags         = optional(list(string))
-    ip_protocol             = optional(string, "all")
-    ports                   = optional(list(string))
-    target_service_accounts = optional(list(string))
-    dest_ip_ranges          = optional(list(string))
     src_ip_ranges           = optional(list(string))
+    target_service_accounts = optional(list(string))
     target_secure_tags      = optional(list(string))
-
-
   }))
   default  = {}
   nullable = false
@@ -59,12 +70,6 @@ variable "global_policy_name" {
   description = "Global network firewall policy name."
   type        = string
   default     = null
-}
-
-variable "parent_tag" {
-  description = "An identifier for the resource with format tagValues/{{name}}"
-  type        = string
-  default     = "null"
 }
 
 variable "project_id" {
