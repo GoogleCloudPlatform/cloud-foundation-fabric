@@ -17,7 +17,7 @@ module "global_policy" { # global firewall rules using YAML by defining rules fi
   project_id         = "my-project"
   global_network     = "my-network"
   deployment_scope   = "global"
-  data_folders       = ["./global-rules"]
+  data_folders       = ["./firewall-rules"]
 }
 
 module "global_policy_2" { # global firewall rules using HCL
@@ -65,9 +65,9 @@ module "regional_policy" { # regional firewall rules using YAML by defining rule
   project_id             = "my-project"
   firewall_policy_region = "australia-southeast1"
   deployment_scope       = "regional"
-  data_folders           = ["./regional-rules"]
+  data_folders           = ["./firewall-rules"]
 }
-# tftest skip
+# tftest modules=3 resources=9 files=rules
 ```
 
 ### Example Configuration Structure using yaml files to create rules
@@ -115,6 +115,7 @@ rule-name: # rule descriptive name
 Firewall rules example yaml configuration
 
 ```yaml
+# tftest file rules firewall-rules/rules.yaml
 rule-1:
   description: global rule 1
   action: allow
@@ -161,73 +162,40 @@ rule-2:
     - 446253268572
   
 ```
+<!-- BEGIN TFDOC -->
 
-<!-- BEGIN_TF_DOCS -->
-Copyright 2022 Google LLC
+## Files
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+| name | description | resources |
+|---|---|---|
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_network_firewall_policy</code> · <code>google_compute_network_firewall_policy_association</code> · <code>google_compute_network_firewall_policy_rule</code> · <code>google_compute_region_network_firewall_policy</code> · <code>google_compute_region_network_firewall_policy_association</code> · <code>google_compute_region_network_firewall_policy_rule</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [variables.tf](./variables.tf) | Module variables. |  |
+| [versions.tf](./versions.tf) | Version pins. |  |
 
-     http://www.apache.org/licenses/LICENSE-2.0
+## Variables
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | >= 4.40.0 |
-| <a name="requirement_google-beta"></a> [google-beta](#requirement\_google-beta) | >= 4.40.0 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | >= 4.40.0 |
-
-## Modules
-
-No modules.
-
-## Resources
-
-| Name | Type |
-|------|------|
-| [google_compute_network_firewall_policy.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_firewall_policy) | resource |
-| [google_compute_network_firewall_policy_association.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_firewall_policy_association) | resource |
-| [google_compute_network_firewall_policy_rule.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network_firewall_policy_rule) | resource |
-| [google_compute_region_network_firewall_policy.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_region_network_firewall_policy) | resource |
-| [google_compute_region_network_firewall_policy_association.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_region_network_firewall_policy_association) | resource |
-| [google_compute_region_network_firewall_policy_rule.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_region_network_firewall_policy_rule) | resource |
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_data_folders"></a> [data\_folders](#input\_data\_folders) | List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`. | `list(string)` | `null` | no |
-| <a name="input_deployment_scope"></a> [deployment\_scope](#input\_deployment\_scope) | n/a | `string` | n/a | yes |
-| <a name="input_firewall_policy_region"></a> [firewall\_policy\_region](#input\_firewall\_policy\_region) | Network firewall policy region. | `string` | `null` | no |
-| <a name="input_firewall_rules"></a> [firewall\_rules](#input\_firewall\_rules) | List rule definitions, default to allow action. | <pre>map(object({<br>    action         = optional(string, "allow")<br>    description    = optional(string, null)<br>    dest_ip_ranges = optional(list(string))<br>    disabled       = optional(bool, false)<br>    direction      = optional(string, "INGRESS")<br>    enable_logging = optional(bool, false)<br>    layer4_configs = optional(list(object({<br>      protocol = string<br>      ports    = optional(list(string))<br>    })), [{ protocol = "all" }])<br>    priority                = optional(number, 1000)<br>    src_secure_tags         = optional(list(string))<br>    src_ip_ranges           = optional(list(string))<br>    target_service_accounts = optional(list(string))<br>    target_secure_tags      = optional(list(string))<br>  }))</pre> | `{}` | no |
-| <a name="input_global_network"></a> [global\_network](#input\_global\_network) | VPC SelfLink to attach the global firewall policy. | `string` | `null` | no |
-| <a name="input_global_policy_name"></a> [global\_policy\_name](#input\_global\_policy\_name) | Global network firewall policy name. | `string` | `null` | no |
-| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Project id of the project that holds the network. | `string` | n/a | yes |
-| <a name="input_regional_network"></a> [regional\_network](#input\_regional\_network) | VPC SelfLink to attach the regional firewall policy. | `string` | `null` | no |
-| <a name="input_regional_policy_name"></a> [regional\_policy\_name](#input\_regional\_policy\_name) | Global network firewall policy name. | `string` | `null` | no |
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [deployment_scope](variables.tf#L23) |  | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L75) | Project id of the project that holds the network. | <code>string</code> | ✓ |  |
+| [data_folders](variables.tf#L17) | List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [firewall_policy_region](variables.tf#L35) | Network firewall policy region. | <code>string</code> |  | <code>null</code> |
+| [firewall_rules](variables.tf#L41) | List rule definitions, default to allow action. | <code title="map&#40;object&#40;&#123;&#10;  action         &#61; optional&#40;string, &#34;allow&#34;&#41;&#10;  description    &#61; optional&#40;string, null&#41;&#10;  dest_ip_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;  disabled       &#61; optional&#40;bool, false&#41;&#10;  direction      &#61; optional&#40;string, &#34;INGRESS&#34;&#41;&#10;  enable_logging &#61; optional&#40;bool, false&#41;&#10;  layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;    protocol &#61; string&#10;    ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#91;&#123; protocol &#61; &#34;all&#34; &#125;&#93;&#41;&#10;  priority                &#61; optional&#40;number, 1000&#41;&#10;  src_secure_tags         &#61; optional&#40;list&#40;string&#41;&#41;&#10;  src_ip_ranges           &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_service_accounts &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_secure_tags      &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [global_network](variables.tf#L64) | VPC SelfLink to attach the global firewall policy. | <code>string</code> |  | <code>null</code> |
+| [global_policy_name](variables.tf#L69) | Global network firewall policy name. | <code>string</code> |  | <code>null</code> |
+| [regional_network](variables.tf#L80) | VPC SelfLink to attach the regional firewall policy. | <code>string</code> |  | <code>null</code> |
+| [regional_policy_name](variables.tf#L85) | Global network firewall policy name. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_global_network_association"></a> [global\_network\_association](#output\_global\_network\_association) | Global association name |
-| <a name="output_global_policy_name"></a> [global\_policy\_name](#output\_global\_policy\_name) | Global network firewall policy name |
-| <a name="output_global_rules"></a> [global\_rules](#output\_global\_rules) | Global rules. |
-| <a name="output_regional_network_association"></a> [regional\_network\_association](#output\_regional\_network\_association) | Global association name |
-| <a name="output_regional_policy_name"></a> [regional\_policy\_name](#output\_regional\_policy\_name) | Regional network firewall policy name |
-| <a name="output_regional_rules"></a> [regional\_rules](#output\_regional\_rules) | Regional rules. |
-<!-- END_TF_DOCS -->
+| name | description | sensitive |
+|---|---|:---:|
+| [global_network_association](outputs.tf#L17) | Global association name |  |
+| [global_policy_name](outputs.tf#L27) | Global network firewall policy name |  |
+| [global_rules](outputs.tf#L22) | Global rules. |  |
+| [regional_network_association](outputs.tf#L32) | Global association name |  |
+| [regional_policy_name](outputs.tf#L42) | Regional network firewall policy name |  |
+| [regional_rules](outputs.tf#L37) | Regional rules. |  |
+
+<!-- END TFDOC -->
