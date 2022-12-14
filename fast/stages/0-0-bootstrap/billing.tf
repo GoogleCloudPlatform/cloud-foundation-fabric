@@ -30,7 +30,7 @@ locals {
 
 module "billing-export-project" {
   source          = "../../../modules/project"
-  count           = local.billing_org ? 1 : 0
+  count           = var.billing_account.is_org_level ? 1 : 0
   billing_account = var.billing_account.id
   name            = "billing-exp-0"
   parent = coalesce(
@@ -52,56 +52,18 @@ module "billing-export-project" {
 
 module "billing-export-dataset" {
   source        = "../../../modules/bigquery-dataset"
-  count         = local.billing_org ? 1 : 0
+  count         = var.billing_account.is_org_level ? 1 : 0
   project_id    = module.billing-export-project.0.project_id
   id            = "billing_export"
   friendly_name = "Billing export."
   location      = var.locations.bq
 }
 
-# billing account in a different org
-
-module "billing-organization-ext" {
-  source          = "../../../modules/organization"
-  count           = local.billing_org_ext ? 1 : 0
-  organization_id = "organizations/${var.billing_account.organization_id}"
-  iam_additive = {
-    "roles/billing.admin" = local.billing_ext_admins
-  }
-}
-
-
-resource "google_organization_iam_binding" "billing_org_ext_admin_delegated" {
-  # refer to organization.tf for the explanation of how this binding works
-  count  = local.billing_org_ext ? 1 : 0
-  org_id = var.billing_account.organization_id
-  # if the billing org does not have our custom role, user the predefined one
-  # role = "roles/resourcemanager.organizationAdmin"
-  role = join("", [
-    "organizations/${var.billing_account.organization_id}/",
-    "roles/${var.custom_role_names.organization_iam_admin}"
-  ])
-  members = [module.automation-tf-resman-sa.iam_email]
-  condition {
-    title       = "automation_sa_delegated_grants"
-    description = "Automation service account delegated grants."
-    expression = format(
-      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-      join(",", formatlist("'%s'", [
-        "roles/billing.costsManager",
-        "roles/billing.user",
-        ]
-      ))
-    )
-  }
-  depends_on = [module.billing-organization-ext]
-}
-
 # standalone billing account
 
 resource "google_billing_account_iam_member" "billing_ext_admin" {
   for_each = toset(
-    local.billing_ext ? local.billing_ext_admins : []
+    !var.billing_account.is_org_level ? local.billing_ext_admins : []
   )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.admin"
@@ -110,7 +72,7 @@ resource "google_billing_account_iam_member" "billing_ext_admin" {
 
 resource "google_billing_account_iam_member" "billing_ext_cost_manager" {
   for_each = toset(
-    local.billing_ext ? local.billing_ext_admins : []
+    !var.billing_account.is_org_level ? local.billing_ext_admins : []
   )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.costsManager"

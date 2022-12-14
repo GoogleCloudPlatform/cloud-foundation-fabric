@@ -15,11 +15,15 @@
  */
 
 variable "billing_account" {
-  description = "Billing account id and organization id ('nnnnnnnn' or null)."
+  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
   type = object({
-    id              = string
-    organization_id = number
+    id           = string
+    is_org_level = optional(bool, true)
   })
+  validation {
+    condition     = var.billing_account.is_org_level != null
+    error_message = "Invalid `null` value for `billing_account.is_org_level`."
+  }
 }
 
 variable "bootstrap_user" {
@@ -32,12 +36,6 @@ variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     bootstrap = object({
-      branch            = string
-      identity_provider = string
-      name              = string
-      type              = string
-    })
-    cicd = object({
       branch            = string
       identity_provider = string
       name              = string

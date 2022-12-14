@@ -38,17 +38,12 @@ locals {
     k => try(module.organization.custom_role_id[v], null)
   }
   providers = {
-    "00-bootstrap" = templatefile(local._tpl_providers, {
+    "0-0-bootstrap" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-bootstrap-gcs.name
       name   = "bootstrap"
       sa     = module.automation-tf-bootstrap-sa.email
     })
-    "00-cicd" = templatefile(local._tpl_providers, {
-      bucket = module.automation-tf-cicd-gcs.name
-      name   = "cicd"
-      sa     = module.automation-tf-cicd-provisioning-sa.email
-    })
-    "01-resman" = templatefile(local._tpl_providers, {
+    "1-0-resman" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-resman-gcs.name
       name   = "resman"
       sa     = module.automation-tf-resman-sa.email
@@ -149,7 +144,6 @@ output "service_accounts" {
   description = "Automation service accounts created by this stage."
   value = {
     bootstrap = module.automation-tf-bootstrap-sa.email
-    cicd      = module.automation-tf-cicd-provisioning-sa.email
     resman    = module.automation-tf-resman-sa.email
   }
 }

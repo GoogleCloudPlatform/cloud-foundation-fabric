@@ -78,7 +78,7 @@ locals {
         module.automation-tf-resman-sa.iam_email
       ]
     },
-    local.billing_org ? {
+    var.billing_account.is_org_level ? {
       "roles/billing.admin" = [
         local.groups_iam.gcp-billing-admins,
         local.groups_iam.gcp-organization-admins,
@@ -220,7 +220,7 @@ resource "google_organization_iam_binding" "org_admin_delegated" {
           "roles/compute.xpnAdmin",
           "roles/orgpolicy.policyAdmin",
         ],
-        local.billing_org ? [
+        var.billing_account.is_org_level ? [
           "roles/billing.admin",
           "roles/billing.costsManager",
           "roles/billing.user",
