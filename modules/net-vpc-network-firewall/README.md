@@ -12,7 +12,7 @@ Nested folder structure for yaml configurations is optionally supported, which a
 
 ```hcl
 module "global_policy" { # global firewall rules using YAML by defining rules file location
-  source             = "./fabric/modules/project"
+  source             = "./fabric/modules/net-vpc-network-firewall"
   global_policy_name = "global-policy-1"
   project_id         = "my-project"
   global_network     = "my-network"
@@ -21,7 +21,7 @@ module "global_policy" { # global firewall rules using YAML by defining rules fi
 }
 
 module "global_policy_2" { # global firewall rules using HCL
-  source             = "./fabric/modules/project"
+  source             = "./fabric/modules/net-vpc-network-firewall"
   global_policy_name = "global-policy-1"
   project_id         = "my-project"
   deployment_scope   = "global"
@@ -60,7 +60,7 @@ module "global_policy_2" { # global firewall rules using HCL
 }
 
 module "regional_policy" { # regional firewall rules using YAML by defining rules file location
-  source                 = "./fw"
+  source                 = "./fabric/modules/net-vpc-network-firewall"
   regional_policy_name   = "regional-policy-1"
   project_id             = "my-project"
   firewall_policy_region = "australia-southeast1"
