@@ -19,19 +19,11 @@ module "org" {
   group_iam       = {
     "cloud-owners@example.org" = ["roles/owner", "roles/projectCreator"]
   }
-  iam             = {
+  iam = {
     "roles/resourcemanager.projectCreator" = ["group:cloud-admins@example.org"]
   }
-
-  org_policy_custom_constraints = {
-    "custom.gkeEnableAutoUpgrade" = {
-      resource_types = ["container.googleapis.com/NodePool"]
-      method_types   = ["CREATE"]
-      condition      = "resource.management.autoUpgrade == true"
-      action_type    = "ALLOW"
-      display_name   = "Enable node auto-upgrade"
-      description    = "All node pools must have node auto-upgrade enabled."
-    }
+  iam_additive_members = {
+    "user:compute@example.org" = ["roles/compute.admin", "roles/container.viewer"]
   }
 
   org_policies = {
@@ -76,7 +68,7 @@ module "org" {
     }
   }
 }
-# tftest modules=1 resources=12
+# tftest modules=1 resources=13 inventory=basic.yaml
 ```
 
 ## IAM
@@ -123,7 +115,7 @@ module "org" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=custom-constraints.yaml
 ```
 
 ### Org policy custom constraints factory
@@ -136,10 +128,14 @@ The example below deploys a few org policy custom constraints split between two 
 module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
-  
   org_policy_custom_constraints_data_path = "configs/custom-constraints"
+  org_policies = {
+    "custom.gkeEnableAutoUpgrade" = {
+      enforce = true
+    }
+  }
 }
-# tftest modules=1 resources=3 files=gke,dataproc
+# tftest modules=1 resources=3 files=gke inventory=custom-constraints.yaml
 ```
 
 ```yaml
@@ -163,6 +159,7 @@ custom.gkeEnableAutoUpgrade:
   display_name: Enable node auto-upgrade
   description: All node pools must have node auto-upgrade enabled.
 ```
+
 
 ```yaml
 # tftest file dataproc configs/custom-constraints/dataproc.yaml
@@ -195,6 +192,17 @@ module "org" {
   organization_id = var.organization_id
   firewall_policies = {
     iap-policy = {
+      allow-admins = {
+        description             = "Access from the admin subnet to all subnets"
+        direction               = "INGRESS"
+        action                  = "allow"
+        priority                = 1000
+        ranges                  = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+        ports                   = { all = [] }
+        target_service_accounts = null
+        target_resources        = null
+        logging                 = false
+      }
       allow-iap-ssh = {
         description = "Always allow ssh from IAP."
         direction   = "INGRESS"
@@ -214,7 +222,7 @@ module "org" {
     iap_policy = "iap-policy"
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=4 inventory=hfw.yaml
 ```
 
 ### Firewall policy factory
@@ -227,14 +235,14 @@ module "org" {
   organization_id = var.organization_id
   firewall_policy_factory = {
     cidr_file   = "configs/firewall-policies/cidrs.yaml"
-    policy_name = null
+    policy_name = "iap-policy"
     rules_file  = "configs/firewall-policies/rules.yaml"
   }
   firewall_policy_association = {
-    factory-policy = module.org.firewall_policy_id["factory"]
+    iap_policy = module.org.firewall_policy_id["iap-policy"]
   }
 }
-# tftest modules=1 resources=4 files=cidrs,rules
+# tftest modules=1 resources=4 files=cidrs,rules inventory=hfw.yaml
 ```
 
 ```yaml
@@ -257,19 +265,19 @@ allow-admins:
   ports:
     all: []
   target_resources: null
-  enable_logging: false
+  logging: false
 
-allow-ssh-from-iap:
-  description: Enable SSH from IAP
+allow-iap-ssh:
+  description: "Always allow ssh from IAP."
   direction: INGRESS
   action: allow
-  priority: 1002
+  priority: 100
   ranges:
     - 35.235.240.0/20
   ports:
     tcp: ["22"]
   target_resources: null
-  enable_logging: false
+  logging: false
 ```
 
 ## Logging Sinks
@@ -335,7 +343,7 @@ module "org" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest modules=5 resources=13
+# tftest modules=5 resources=13 inventory=logging.yaml
 ```
 
 ## Custom Roles
@@ -353,7 +361,7 @@ module "org" {
     (module.org.custom_role_id.myRole) = ["user:me@example.com"]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=roles.yaml
 ```
 
 ## Tags
@@ -386,7 +394,7 @@ module "org" {
     foo      = "tagValues/12345678"
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=7 inventory=tags.yaml
 ```
 
 You can also define network tags, through a dedicated variable *network_tags*:
@@ -414,7 +422,7 @@ module "org" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=network-tags.yaml
 ```
 
 <!-- TFDOC OPTS files:1 -->

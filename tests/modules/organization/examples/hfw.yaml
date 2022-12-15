@@ -13,14 +13,33 @@
 # limitations under the License.
 
 values:
-  google_compute_firewall_policy.policy["policy1"]:
-    parent: organizations/1234567890
-    short_name: policy1
-  google_compute_firewall_policy.policy["policy2"]:
-    parent: organizations/1234567890
-    short_name: policy2
-  google_compute_firewall_policy_rule.rule["policy1-allow-ingress"]:
+  module.org.google_compute_firewall_policy.policy["iap-policy"]:
+    parent: organizations/1122334455
+    short_name: iap-policy
+  module.org.google_compute_firewall_policy_association.association["iap_policy"]:
+    attachment_target: organizations/1122334455
+    name: organizations-1122334455
+  module.org.google_compute_firewall_policy_rule.rule["iap-policy-allow-admins"]:
     action: allow
+    description: Access from the admin subnet to all subnets
+    direction: INGRESS
+    disabled: null
+    enable_logging: false
+    match:
+    - dest_ip_ranges: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: []
+      src_ip_ranges:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+    priority: 1000
+    target_resources: null
+    target_service_accounts: null
+  module.org.google_compute_firewall_policy_rule.rule["iap-policy-allow-iap-ssh"]:
+    action: allow
+    description: Always allow ssh from IAP.
     direction: INGRESS
     disabled: null
     enable_logging: false
@@ -31,43 +50,13 @@ values:
         ports:
         - '22'
       src_ip_ranges:
-      - 10.0.0.0/8
+      - 35.235.240.0/20
     priority: 100
     target_resources: null
     target_service_accounts: null
-  google_compute_firewall_policy_rule.rule["policy1-deny-egress"]:
-    action: deny
-    direction: EGRESS
-    disabled: null
-    enable_logging: false
-    match:
-    - dest_ip_ranges:
-      - 192.168.0.0/24
-      layer4_configs:
-      - ip_protocol: tcp
-        ports:
-        - '443'
-      src_ip_ranges: null
-    priority: 200
-    target_resources: null
-    target_service_accounts: null
-  google_compute_firewall_policy_rule.rule["policy2-allow-ingress"]:
-    action: allow
-    direction: INGRESS
-    disabled: null
-    enable_logging: false
-    match:
-    - dest_ip_ranges: null
-      layer4_configs:
-      - ip_protocol: tcp
-        ports:
-        - '22'
-      src_ip_ranges:
-      - 10.0.0.0/8
-    priority: 100
-    target_resources: null
-    target_service_accounts: null
+    timeouts: null
 
 counts:
-  google_compute_firewall_policy: 2
-  google_compute_firewall_policy_rule: 3
+  google_compute_firewall_policy: 1
+  google_compute_firewall_policy_association: 1
+  google_compute_firewall_policy_rule: 2

@@ -12,19 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  google_logging_organization_exclusion.logging-exclusion["exclusion1"]:
-    description: exclusion1 (Terraform-managed).
-    disabled: null
-    filter: resource.type=gce_instance
-    name: exclusion1
-    org_id: '1234567890'
-  google_logging_organization_exclusion.logging-exclusion["exclusion2"]:
-    description: exclusion2 (Terraform-managed).
-    disabled: null
-    filter: severity=NOTICE
-    name: exclusion2
-    org_id: '1234567890'
+values: 
+  module.org.google_organization_iam_binding.authoritative["organizations/1122334455/roles/myRole"]:
+    condition: []
+    members:
+    - user:me@example.com
+    org_id: '1122334455'
+    role: organizations/1122334455/roles/myRole
+  module.org.google_organization_iam_custom_role.roles["myRole"]:
+    description: Terraform-managed.
+    org_id: '1122334455'
+    permissions:
+    - compute.instances.list
+    role_id: myRole
+    stage: GA
+    title: Custom role myRole
 
 counts:
-  google_logging_organization_exclusion: 2
+  google_organization_iam_binding: 1
+  google_organization_iam_custom_role: 1
