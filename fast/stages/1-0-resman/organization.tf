@@ -105,6 +105,9 @@ module "organization" {
         production  = null
       }
     }
+    (var.tag_names.tenant) = {
+      description = "Organization tenant."
+    }
   }
 }
 

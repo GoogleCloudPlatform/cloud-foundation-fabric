@@ -236,10 +236,12 @@ variable "tag_names" {
   type = object({
     context     = string
     environment = string
+    tenant      = string
   })
   default = {
     context     = "context"
     environment = "environment"
+    tenant      = "tenant"
   }
   nullable = false
   validation {

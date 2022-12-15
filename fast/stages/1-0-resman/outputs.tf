@@ -19,42 +19,42 @@ locals {
   cicd_workflow_attrs = {
     data_platform_dev = {
       service_account   = try(module.branch-dp-dev-sa-cicd.0.email, null)
-      tf_providers_file = "03-data-platform-dev-providers.tf"
+      tf_providers_file = "3-0-data-platform-dev-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     data_platform_prod = {
       service_account   = try(module.branch-dp-prod-sa-cicd.0.email, null)
-      tf_providers_file = "03-data-platform-prod-providers.tf"
+      tf_providers_file = "3-0-data-platform-prod-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     gke_dev = {
       service_account   = try(module.branch-gke-dev-sa-cicd.0.email, null)
-      tf_providers_file = "03-gke-dev-providers.tf"
+      tf_providers_file = "3-0-gke-dev-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     gke_prod = {
       service_account   = try(module.branch-gke-prod-sa-cicd.0.email, null)
-      tf_providers_file = "03-gke-prod-providers.tf"
+      tf_providers_file = "3-0-gke-prod-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     networking = {
       service_account   = try(module.branch-network-sa-cicd.0.email, null)
-      tf_providers_file = "02-networking-providers.tf"
+      tf_providers_file = "2-0-networking-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_2
     }
     project_factory_dev = {
       service_account   = try(module.branch-pf-dev-sa-cicd.0.email, null)
-      tf_providers_file = "03-project-factory-dev-providers.tf"
+      tf_providers_file = "3-0-project-factory-dev-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     project_factory_prod = {
       service_account   = try(module.branch-pf-prod-sa-cicd.0.email, null)
-      tf_providers_file = "03-project-factory-prod-providers.tf"
+      tf_providers_file = "3-0-project-factory-prod-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     security = {
       service_account   = try(module.branch-security-sa-cicd.0.email, null)
-      tf_providers_file = "02-security-providers.tf"
+      tf_providers_file = "2-0-security-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_2
     }
   }
@@ -98,55 +98,55 @@ locals {
   )
   providers = merge(
     {
-      "02-networking" = templatefile(local._tpl_providers, {
+      "2-0-networking" = templatefile(local._tpl_providers, {
         bucket = module.branch-network-gcs.name
         name   = "networking"
         sa     = module.branch-network-sa.email
       })
-      "02-security" = templatefile(local._tpl_providers, {
+      "2-0-security" = templatefile(local._tpl_providers, {
         bucket = module.branch-security-gcs.name
         name   = "security"
         sa     = module.branch-security-sa.email
       })
     },
     !var.fast_features.data_platform ? {} : {
-      "03-data-platform-dev" = templatefile(local._tpl_providers, {
+      "3-0-data-platform-dev" = templatefile(local._tpl_providers, {
         bucket = module.branch-dp-dev-gcs.0.name
         name   = "dp-dev"
         sa     = module.branch-dp-dev-sa.0.email
       })
-      "03-data-platform-prod" = templatefile(local._tpl_providers, {
+      "3-0-data-platform-prod" = templatefile(local._tpl_providers, {
         bucket = module.branch-dp-prod-gcs.0.name
         name   = "dp-prod"
         sa     = module.branch-dp-prod-sa.0.email
       })
     },
     !var.fast_features.gke ? {} : {
-      "03-gke-dev" = templatefile(local._tpl_providers, {
+      "3-0-gke-dev" = templatefile(local._tpl_providers, {
         bucket = module.branch-gke-dev-gcs.0.name
         name   = "gke-dev"
         sa     = module.branch-gke-dev-sa.0.email
       })
-      "03-gke-prod" = templatefile(local._tpl_providers, {
+      "3-0-gke-prod" = templatefile(local._tpl_providers, {
         bucket = module.branch-gke-prod-gcs.0.name
         name   = "gke-prod"
         sa     = module.branch-gke-prod-sa.0.email
       })
     },
     !var.fast_features.project_factory ? {} : {
-      "03-project-factory-dev" = templatefile(local._tpl_providers, {
+      "3-0-project-factory-dev" = templatefile(local._tpl_providers, {
         bucket = module.branch-pf-dev-gcs.0.name
         name   = "team-dev"
         sa     = module.branch-pf-dev-sa.0.email
       })
-      "03-project-factory-prod" = templatefile(local._tpl_providers, {
+      "3-0-project-factory-prod" = templatefile(local._tpl_providers, {
         bucket = module.branch-pf-prod-gcs.0.name
         name   = "team-prod"
         sa     = module.branch-pf-prod-sa.0.email
       })
     },
     !var.fast_features.sandbox ? {} : {
-      "99-sandbox" = templatefile(local._tpl_providers, {
+      "9-0-sandbox" = templatefile(local._tpl_providers, {
         bucket = module.branch-sandbox-gcs.0.name
         name   = "sandbox"
         sa     = module.branch-sandbox-sa.0.email
@@ -154,7 +154,7 @@ locals {
     },
     !var.fast_features.teams ? {} : merge(
       {
-        "03-teams" = templatefile(local._tpl_providers, {
+        "3-0-teams" = templatefile(local._tpl_providers, {
           bucket = module.branch-teams-gcs.0.name
           name   = "teams"
           sa     = module.branch-teams-sa.0.email
@@ -162,7 +162,7 @@ locals {
       },
       {
         for k, v in module.branch-teams-team-sa :
-        "03-teams-${k}" => templatefile(local._tpl_providers, {
+        "3-0-teams-${k}" => templatefile(local._tpl_providers, {
           bucket = module.branch-teams-team-gcs[k].name
           name   = "teams"
           sa     = v.email
@@ -190,7 +190,7 @@ locals {
   tfvars = {
     folder_ids       = local.folder_ids
     service_accounts = local.service_accounts
-    tag_names        = var.tag_names
+    tag_keys         = { for k, v in module.organization.tag_keys : k => v.id }
   }
 }
 
