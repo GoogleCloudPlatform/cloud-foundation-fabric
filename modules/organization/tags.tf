@@ -27,8 +27,9 @@ locals {
         roles = keys(coalesce(
           value_attrs == null ? null : value_attrs.iam, {}
         ))
-        tag    = tag
-        tag_id = attrs.id
+        tag         = tag
+        tag_id      = attrs.id
+        tag_network = try(attrs.network, null) != null
       }
     ]
   ])

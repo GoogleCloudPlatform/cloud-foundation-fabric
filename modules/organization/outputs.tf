@@ -54,11 +54,8 @@ output "network_tag_keys" {
 output "network_tag_values" {
   description = "Tag value resources."
   value = {
-    for k, v in google_tags_tag_value.default
-    : k => v if(
-      google_tags_tag_key.default[split("/", k)[0]].purpose != null &&
-      google_tags_tag_key.default[split("/", k)[0]].purpose != ""
-    )
+    for k, v in google_tags_tag_value.default :
+    k => v if local.tag_values[k].tag_network
   }
 }
 
@@ -99,10 +96,7 @@ output "tag_keys" {
 output "tag_values" {
   description = "Tag value resources."
   value = {
-    for k, v in google_tags_tag_value.default
-    : k => v if(
-      google_tags_tag_key.default[split("/", k)[0]].purpose == null ||
-      google_tags_tag_key.default[split("/", k)[0]].purpose == ""
-    )
+    for k, v in google_tags_tag_value.default :
+    k => v if !local.tag_values[k].tag_network
   }
 }
