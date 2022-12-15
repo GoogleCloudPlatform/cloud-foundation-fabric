@@ -54,6 +54,9 @@ For same-organization billing, we configure a custom organization role that can 
 
 For details on configuring the different billing account modes, refer to the [How to run this stage](#how-to-run-this-stage) section below.
 
+> Because of limitations of API availability, Manual steps have to followed to enable Billing export within billing project to BigQuery dataset billing_export which will be created as part of the 00-bootstrap stage. Process to share billing data outligned here - [Billing export](https://cloud.google.com/billing/docs/how-to/export-data-bigquery-setup#enable-bq-export)
+
+
 ### Organization-level logging
 
 We create organization-level log sinks early in the bootstrap process to ensure a proper audit trail is in place from the very beginning.  By default, we provide log filters to capture [Cloud Audit Logs](https://cloud.google.com/logging/docs/audit) and [VPC Service Controls violations](https://cloud.google.com/vpc-service-controls/docs/troubleshooting#vpc-sc-errors) into a Bigquery dataset in the top-level audit project.
