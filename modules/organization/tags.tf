@@ -27,7 +27,8 @@ locals {
         roles = keys(coalesce(
           value_attrs == null ? null : value_attrs.iam, {}
         ))
-        tag = tag
+        tag    = tag
+        tag_id = attrs.id
       }
     ]
   ])
@@ -44,8 +45,9 @@ locals {
   _tags_iam = flatten([
     for tag, attrs in local.tags : [
       for role in keys(coalesce(attrs.iam, {})) : {
-        role = role
-        tag  = tag
+        role   = role
+        tag    = tag
+        tag_id = attrs.id
       }
     ]
   ])
@@ -64,7 +66,7 @@ locals {
 # keys
 
 resource "google_tags_tag_key" "default" {
-  for_each = local.tags
+  for_each = { for k, v in local.tags : k => v if v.id == null }
   parent   = var.organization_id
   purpose = (
     lookup(each.value, "network", null) == null ? null : "GCE_FIREWALL"
@@ -83,8 +85,12 @@ resource "google_tags_tag_key" "default" {
 
 resource "google_tags_tag_key_iam_binding" "default" {
   for_each = local.tags_iam
-  tag_key  = google_tags_tag_key.default[each.value.tag].id
-  role     = each.value.role
+  tag_key = (
+    each.value.tag_id == null
+    ? google_tags_tag_key.default[each.value.tag].id
+    : each.value.tag_id
+  )
+  role = each.value.role
   members = coalesce(
     local.tags[each.value.tag]["iam"][each.value.role], []
   )
@@ -93,8 +99,12 @@ resource "google_tags_tag_key_iam_binding" "default" {
 # values
 
 resource "google_tags_tag_value" "default" {
-  for_each    = local.tag_values
-  parent      = google_tags_tag_key.default[each.value.tag].id
+  for_each = local.tag_values
+  parent = (
+    each.value.tag_id == null
+    ? google_tags_tag_key.default[each.value.tag].id
+    : each.value.tag_id
+  )
   short_name  = each.value.name
   description = each.value.description
 }
