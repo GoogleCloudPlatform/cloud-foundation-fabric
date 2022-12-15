@@ -23,17 +23,16 @@ locals {
     for k, v in var.tenant_config.locations :
     k => v == null ? var.locations[k] : v
   }
-  prefix   = join("-", compact([var.prefix, var.tenant_config.short_name]))
-  tag_name = "${var.tag_names.tenant}/${var.tenant_config.short_name}"
+  prefix = join("-", compact([var.prefix, var.tenant_config.short_name]))
 }
 
 module "tenant-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = var.tenant_config.descriptive_name
-  # tag_bindings = {
-  #   tenant = try(module.organization.tag_values[local.tag_name].id, null)
-  # }
+  tag_bindings = {
+    tenant = try(module.organization.tag_values[var.tenant_config.short_name].id, null)
+  }
 }
 
 module "tenant-folder-iam" {

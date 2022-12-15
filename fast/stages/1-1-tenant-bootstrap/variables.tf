@@ -122,19 +122,12 @@ variable "prefix" {
   }
 }
 
-variable "tag_names" {
-  description = "Customized names for resource management tags."
+variable "tag_keys" {
+  description = "Organization tag keys."
   type = object({
     tenant = string
   })
-  default = {
-    tenant = "tenant"
-  }
   nullable = false
-  validation {
-    condition     = alltrue([for k, v in var.tag_names : v != null])
-    error_message = "Tag names cannot be null."
-  }
 }
 
 variable "tenant_config" {

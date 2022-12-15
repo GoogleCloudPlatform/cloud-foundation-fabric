@@ -23,14 +23,14 @@ module "organization" {
     "roles/billing.admin"        = ["group:${local.groups.gcp-admins}"]
     "roles/billing.costsManager" = ["group:${local.groups.gcp-admins}"]
   } : {}
-  # tags = {
-  #   (var.tag_names.tenant) = {
-  #     description = "Tenant short names."
-  #     values = {
-  #       for k, v in var.tenants : k => null
-  #     }
-  #   }
-  # }
+  tags = {
+    tenant = {
+      id = var.tag_keys.tenant
+      values = {
+        (var.tenant_config.short_name) = {}
+      }
+    }
+  }
 }
 
 resource "google_organization_iam_member" "org_policy_admin_pf" {
@@ -41,7 +41,7 @@ resource "google_organization_iam_member" "org_policy_admin_pf" {
     title       = "org_policy_tag_${var.tenant_config.short_name}_scoped"
     description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name}."
     expression = (
-      "resource.matchTag('${var.organization.id}/${var.tag_names.tenant}', '${var.tenant_config.short_name}')"
+      "resource.matchTag('${var.tag_keys.tenant}', '${var.tenant_config.short_name}')"
     )
   }
 }
