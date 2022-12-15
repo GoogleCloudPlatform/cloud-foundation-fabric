@@ -16,15 +16,19 @@ import re
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
-COUNT_TEST_RE = re.compile(
-    r'# tftest modules=(\d+) resources=(\d+)(?: files=([\w,]+))?')
+COUNT_TEST_RE = re.compile(r'# tftest modules=(\d+) resources=(\d+)' +
+                           r'(?: files=([\w,-.]+))?' +
+                           r'(?: inventory=([\w\-.]+))?')
 
 
-def test_example(recursive_e2e_plan_runner, tmp_path, example):
+def test_example(plan_validator, tmp_path, example):
   if match := COUNT_TEST_RE.search(example.code):
-    (tmp_path / 'fabric').symlink_to(Path(BASE_PATH, '../../'))
-    (tmp_path / 'variables.tf').symlink_to(Path(BASE_PATH, 'variables.tf'))
+    (tmp_path / 'fabric').symlink_to(BASE_PATH.parents[1])
+    (tmp_path / 'variables.tf').symlink_to(BASE_PATH / 'variables.tf')
     (tmp_path / 'main.tf').write_text(example.code)
+
+    expected_modules = int(match.group(1))
+    expected_resources = int(match.group(2))
 
     if match.group(3) is not None:
       requested_files = match.group(3).split(',')
@@ -33,11 +37,18 @@ def test_example(recursive_e2e_plan_runner, tmp_path, example):
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(example.files[f].content)
 
-    expected_modules = int(match.group(1)) if match is not None else 1
-    expected_resources = int(match.group(2)) if match is not None else 1
+    inventory = []
+    if match.group(4) is not None:
+      inventory = BASE_PATH.parent / example.module / 'examples'
+      inventory = inventory / match.group(4)
 
-    num_modules, num_resources = recursive_e2e_plan_runner(
-        str(tmp_path), tmpdir=False)
+    # TODO: force plan_validator to never copy files (we're already
+    # running from a temp dir)
+    summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
+                             tf_var_files=[])
+
+    counts = summary.counts
+    num_modules, num_resources = counts['modules'], counts['resources']
     assert expected_modules == num_modules, 'wrong number of modules'
     assert expected_resources == num_resources, 'wrong number of resources'
 

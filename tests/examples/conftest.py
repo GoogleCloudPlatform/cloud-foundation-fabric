@@ -26,7 +26,7 @@ SUBMODULES_PATH = MODULES_PATH / 'cloud-config-container'
 
 FILE_TEST_RE = re.compile(r'# tftest file (\w+) ([\S]+)')
 
-Example = collections.namedtuple('Example', 'code files')
+Example = collections.namedtuple('Example', 'code module files')
 File = collections.namedtuple('File', 'path content')
 
 
@@ -64,8 +64,8 @@ def pytest_generate_tests(metafunc):
           if 'tftest skip' in code:
             continue
           if child.lang == 'hcl':
-            examples.append(Example(code, files))
             path = module.relative_to(FABRIC_ROOT)
+            examples.append(Example(code, path, files))
             name = f'{path}:{last_header}'
             if index > 1:
               name += f' {index}'
