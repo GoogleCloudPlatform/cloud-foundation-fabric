@@ -10,6 +10,13 @@ tags = {
     iam         = null
     values      = null
   }
+  baz = {
+    id = "tagKeys/1234567890"
+    values = {
+      one = null
+      two = null
+    }
+  }
   foobar = {
     description = "Foobar tag."
     iam = {
