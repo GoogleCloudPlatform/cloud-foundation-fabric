@@ -44,16 +44,16 @@ locals {
       prefix = null
       sa     = module.automation-tf-bootstrap-sa.email
     })
+    "0-1-tenant-bootstrap" = templatefile(local._tpl_providers, {
+      bucket = module.automation-tf-resman-gcs.name
+      name   = "resman"
+      prefix = "bootstrap-multitenant"
+      sa     = module.automation-tf-resman-sa.email
+    })
     "1-0-resman" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-resman-gcs.name
       name   = "resman"
       prefix = null
-      sa     = module.automation-tf-resman-sa.email
-    })
-    "1-1-bootstrap-multitenant" = templatefile(local._tpl_providers, {
-      bucket = module.automation-tf-resman-gcs.name
-      name   = "resman"
-      prefix = "bootstrap-multitenant"
       sa     = module.automation-tf-resman-sa.email
     })
   }
