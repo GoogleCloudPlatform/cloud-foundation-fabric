@@ -37,11 +37,15 @@ variable "automation" {
 
 variable "billing_account" {
   # tfdoc:variable:source 00-bootstrap
-  description = "Billing account id and organization id ('nnnnnnnn' or null)."
+  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
   type = object({
-    id              = string
-    organization_id = number
+    id           = string
+    is_org_level = optional(bool, true)
   })
+  validation {
+    condition     = var.billing_account.is_org_level != null
+    error_message = "Invalid `null` value for `billing_account.is_org_level`."
+  }
 }
 
 variable "cicd_repositories" {
@@ -163,17 +167,15 @@ variable "fast_features" {
 
 variable "groups" {
   # tfdoc:variable:source 00-bootstrap
-  description = "Group names to grant organization-level permissions."
-  type        = map(string)
   # https://cloud.google.com/docs/enterprise/setup-checklist
-  default = {
-    gcp-billing-admins      = "gcp-billing-admins",
-    gcp-devops              = "gcp-devops",
-    gcp-network-admins      = "gcp-network-admins"
-    gcp-organization-admins = "gcp-organization-admins"
-    gcp-security-admins     = "gcp-security-admins"
-    gcp-support             = "gcp-support"
-  }
+  description = "Group names to grant organization-level permissions."
+  type = object({
+    gcp-devops          = optional(string)
+    gcp-network-admins  = optional(string)
+    gcp-security-admins = optional(string)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "locations" {

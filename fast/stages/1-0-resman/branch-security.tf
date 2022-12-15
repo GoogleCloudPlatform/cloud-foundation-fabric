@@ -20,7 +20,7 @@ module "branch-security-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Security"
-  group_iam = {
+  group_iam = local.groups.gcp-security-admins == null ? {} : {
     (local.groups.gcp-security-admins) = [
       # add any needed roles for resources/services not managed via Terraform,
       # e.g.

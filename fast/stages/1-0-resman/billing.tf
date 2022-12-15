@@ -34,23 +34,11 @@ locals {
 
 # billing account in same org (resources is in the organization.tf file)
 
-# billing account in a different org
-
-module "billing-organization-ext" {
-  source          = "../../../modules/organization"
-  count           = local.billing_org_ext ? 1 : 0
-  organization_id = "organizations/${var.billing_account.organization_id}"
-  iam_additive = {
-    "roles/billing.user"         = local.billing_ext_users
-    "roles/billing.costsManager" = local.billing_ext_users
-  }
-}
-
 # standalone billing account
 
 resource "google_billing_account_iam_member" "billing_ext_admin" {
   for_each = toset(
-    local.billing_ext ? local.billing_ext_users : []
+    !var.billing_account.is_org_level ? local.billing_ext_users : []
   )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.user"
@@ -59,7 +47,7 @@ resource "google_billing_account_iam_member" "billing_ext_admin" {
 
 resource "google_billing_account_iam_member" "billing_ext_costsmanager" {
   for_each = toset(
-    local.billing_ext ? local.billing_ext_users : []
+    !var.billing_account.is_org_level ? local.billing_ext_users : []
   )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.costsManager"

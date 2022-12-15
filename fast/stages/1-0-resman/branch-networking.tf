@@ -20,7 +20,7 @@ module "branch-network-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Networking"
-  group_iam = {
+  group_iam = local.groups.gcp-network-admins == null ? {} : {
     (local.groups.gcp-network-admins) = [
       # add any needed roles for resources/services not managed via Terraform,
       # or replace editor with ~viewer if no broad resource management needed

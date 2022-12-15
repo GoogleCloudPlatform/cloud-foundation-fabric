@@ -23,9 +23,6 @@ locals {
     )],
     []
   )
-  billing_ext     = var.billing_account.organization_id == null
-  billing_org     = var.billing_account.organization_id == var.organization.id
-  billing_org_ext = !local.billing_ext && !local.billing_org
   branch_optional_sa_lists = {
     dp-dev   = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])
     dp-prod  = compact([try(module.branch-dp-prod-sa.0.iam_email, "")])
@@ -74,8 +71,7 @@ locals {
     k => "${v}@${var.organization.domain}"
   }
   groups_iam = {
-    for k, v in local.groups :
-    k => "group:${v}"
+    for k, v in local.groups : k => v != null ? "group:${v}" : null
   }
   identity_providers = coalesce(
     try(var.automation.federated_identity_providers, null), {}
