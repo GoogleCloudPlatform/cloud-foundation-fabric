@@ -16,9 +16,9 @@ import re
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
-COUNT_TEST_RE = re.compile(r'# tftest modules=(\d+) resources=(\d+)' +
-                           r'(?: files=([\w,-.]+))?' +
-                           r'(?: inventory=([\w\-.]+))?')
+COUNT_TEST_RE = re.compile(r'# tftest +modules=(\d+) +resources=(\d+)' +
+                           r'(?: +files=([\w,-.]+))?' +
+                           r'(?: +inventory=([\w\-.]+))?')
 
 
 def test_example(plan_validator, tmp_path, example):
