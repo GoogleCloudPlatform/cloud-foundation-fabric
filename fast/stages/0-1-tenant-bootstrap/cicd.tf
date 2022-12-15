@@ -44,14 +44,14 @@ module "automation-tf-cicd-repo" {
       module.automation-tf-resman-sa.iam_email
     ]
     "roles/source.reader" = [
-      module.automation-tf-cicd-sa.iam_email
+      module.automation-tf-cicd-sa.0.iam_email
     ]
   }
   triggers = {
     fast-1-0-resman = {
       filename        = ".cloudbuild/workflow.yaml"
       included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
-      service_account = module.automation-tf-cicd-sa.id
+      service_account = module.automation-tf-cicd-sa.0.id
       substitutions   = {}
       template = {
         project_id  = null
@@ -71,7 +71,7 @@ module "automation-tf-cicd-sa" {
   project_id   = module.automation-project.project_id
   name         = "iac-core-resman-0c"
   display_name = "Terraform CI/CD tenant bootstrap service account."
-  prefix       = local.prefixes
+  prefix       = local.prefix
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos

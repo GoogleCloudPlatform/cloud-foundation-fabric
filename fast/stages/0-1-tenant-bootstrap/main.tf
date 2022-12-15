@@ -31,6 +31,15 @@ module "tenant-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = var.tenant_config.descriptive_name
+  # tag_bindings = {
+  #   tenant = try(module.organization.tag_values[local.tag_name].id, null)
+  # }
+}
+
+module "tenant-folder-iam" {
+  source        = "../../../modules/folder"
+  id            = module.tenant-folder.id
+  folder_create = false
   group_iam = merge(var.tenant_config.group_iam, {
     (local.groups.gcp-admins) = [
       "roles/logging.admin",
@@ -47,7 +56,5 @@ module "tenant-folder" {
     "roles/resourcemanager.projectCreator" = [module.automation-tf-resman-sa.iam_email]
     "roles/compute.xpnAdmin"               = [module.automation-tf-resman-sa.iam_email]
   })
-  tag_bindings = {
-    tenant = try(module.organization.tag_values[local.tag_name].id, null)
-  }
+  depends_on = [module.automation-project]
 }

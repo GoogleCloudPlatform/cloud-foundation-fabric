@@ -35,7 +35,7 @@ locals {
     fast_features   = var.fast_features
     locations       = local.locations
     organization    = var.organization
-    prefix          = local.prefixes
+    prefix          = local.prefix
     root_node       = module.tenant-folder.id
   }
   workflow = local.cicd_repository_type == null ? "" : templatefile(

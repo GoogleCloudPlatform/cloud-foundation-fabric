@@ -24,7 +24,7 @@ module "automation-project" {
     var.tenant_config.project_parent_ids.automation,
     module.tenant-folder.id
   )
-  prefix = local.prefixes
+  prefix = local.prefix
   # human (groups) IAM bindings
   group_iam = {
     (local.groups.gcp-admins) = [
@@ -112,11 +112,10 @@ module "automation-tf-resman-gcs" {
 
 module "automation-tf-resman-sa" {
   source       = "../../../modules/iam-service-account"
-  for_each     = var.tenants
   project_id   = module.automation-project.project_id
   name         = "resman-0"
   display_name = "Terraform stage 1 resman service account."
-  prefix       = local.prefixes
+  prefix       = local.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
