@@ -18,7 +18,7 @@
 # the tfvars file generated in stage 00 and stored in its outputs
 
 variable "automation" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket          = string
@@ -36,7 +36,7 @@ variable "automation" {
 }
 
 variable "billing_account" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
   type = object({
     id           = string
@@ -131,7 +131,7 @@ variable "cicd_repositories" {
 }
 
 variable "custom_roles" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   description = "Custom roles defined at the org level, in key => id format."
   type = object({
     service_project_network_admin = string
@@ -146,7 +146,7 @@ variable "data_dir" {
 }
 
 variable "fast_features" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   description = "Selective control for top-level FAST features."
   type = object({
     data_platform   = bool
@@ -166,7 +166,7 @@ variable "fast_features" {
 }
 
 variable "groups" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names to grant organization-level permissions."
   type = object({
@@ -179,7 +179,7 @@ variable "groups" {
 }
 
 variable "locations" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   description = "Optional locations for GCS, BigQuery, and logging buckets created here."
   type = object({
     bq      = string
@@ -197,7 +197,7 @@ variable "locations" {
 }
 
 variable "organization" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   description = "Organization details."
   type = object({
     domain      = string
@@ -221,7 +221,7 @@ variable "outputs_location" {
 }
 
 variable "prefix" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
 

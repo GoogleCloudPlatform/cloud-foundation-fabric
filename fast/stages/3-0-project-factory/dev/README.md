@@ -28,7 +28,7 @@ The project factory takes care of the following activities:
   
 ## How to run this stage
 
-This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), 02-networking (either [VPN](../../02-networking-vpn) or [NVA](../../02-networking-nva)) and [`02-security`](../../02-security)) have been run.
+This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../0-0-bootstrap), [`01-resman`](../../1-0-resman), 02-networking (either [VPN](../../2-0-networking-b-vpn) or [NVA](../../2-0-networking-c-nva)) and [`02-security`](../../2-0-security)) have been run.
 
 It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
 

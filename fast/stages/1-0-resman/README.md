@@ -34,17 +34,17 @@ Additionally, a few critical benefits are directly provided by this design:
 - grouping application resources and services using teams or business logic is a flexible approach, which maps well to typical operational or budget requirements
 - automation stages (e.g. Networking) can be segregated in a simple and effective way, by creating the required service accounts and buckets for each stage here, and applying a handful of IAM roles to the relevant folder
 
-For a discussion on naming, please refer to the [Bootstrap stage documentation](../00-bootstrap/README.md#naming), as the same approach is shared by all stages.
+For a discussion on naming, please refer to the [Bootstrap stage documentation](../0-0-bootstrap/README.md#naming), as the same approach is shared by all stages.
 
 ### Workload Identity Federation and CI/CD
 
 This stage also implements optional support for CI/CD, much in the same way as the bootstrap stage. The only difference is on Workload Identity Federation, which is only configured in bootstrap and made available here via stage interface variables (the automatically generated `.tfvars` files).
 
-For details on how to configure CI/CD please refer to the [relevant section in the bootstrap stage documentation](../00-bootstrap/README.md#cicd-repositories).
+For details on how to configure CI/CD please refer to the [relevant section in the bootstrap stage documentation](../0-0-bootstrap/README.md#cicd-repositories).
 
 ## How to run this stage
 
-This stage is meant to be executed after the [bootstrap](../00-bootstrap) stage has run, as it leverages the automation service account and bucket created there. The relevant user groups must also exist, but that's one of the requirements for the previous stage too, so if you ran that successfully, you're good to go.
+This stage is meant to be executed after the [bootstrap](../0-0-bootstrap) stage has run, as it leverages the automation service account and bucket created there. The relevant user groups must also exist, but that's one of the requirements for the previous stage too, so if you ran that successfully, you're good to go.
 
 It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the bootstrap stage for the actual roles needed.
 
@@ -56,7 +56,7 @@ The default way of making sure you have the right permissions, is to use the ide
 
 To simplify setup, the previous stage pre-configures a valid providers file in its output, and optionally writes it to a local file if the `outputs_location` variable is set to a valid path.
 
-If you have set a valid value for `outputs_location` in the bootstrap stage (see the [bootstrap stage README](../00-bootstrap/#output-files-and-cross-stage-variables) for more details), simply link the relevant `providers.tf` file from this stage's folder in the path you specified:
+If you have set a valid value for `outputs_location` in the bootstrap stage (see the [bootstrap stage README](../0-0-bootstrap/#output-files-and-cross-stage-variables) for more details), simply link the relevant `providers.tf` file from this stage's folder in the path you specified:
 
 ```bash
 # `outputs_location` is set to `~/fast-config`
@@ -66,12 +66,12 @@ ln -s ~/fast-config/providers/01-resman-providers.tf .
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
 
 ```bash
-cd ../00-bootstrap
+cd ../0-0-bootstrap
 terraform output -json providers | jq -r '.["01-resman"]' \
-  > ../01-resman/providers.tf
+  > ../1-0-resman/providers.tf
 ```
 
-If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as described [here](../00-bootstrap/#output-files-and-cross-stage-variables).
+If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as described [here](../0-0-bootstrap/#output-files-and-cross-stage-variables).
 
 ### Variable configuration
 
@@ -82,17 +82,17 @@ There are two broad sets of variables you will need to fill in:
 
 To avoid the tedious job of filling in the first group of variable with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
 
-If you configured a valid path for `outputs_location` in the bootstrap stage, simply link the relevant `*.auto.tfvars.json` files from the outputs folder. For this stage, you need the `globals.auto.tfvars.json` file containing global values compiled manually for the bootstrap stage, and `00-bootstrap.auto.tfvars.json` containing values derived from resources managed by the bootstrap stage:
+If you configured a valid path for `outputs_location` in the bootstrap stage, simply link the relevant `*.auto.tfvars.json` files from the outputs folder. For this stage, you need the `globals.auto.tfvars.json` file containing global values compiled manually for the bootstrap stage, and `0-0-bootstrap.auto.tfvars.json` containing values derived from resources managed by the bootstrap stage:
 
 ```bash
 # `outputs_location` is set to `~/fast-config`
 ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/0-0-bootstrap.auto.tfvars.json .
 ```
 
 A second set of variables is specific to this stage, they are all optional so if you need to customize them, create an extra `terraform.tfvars` file.
 
-Refer to the [Variables](#variables) table at the bottom of this document, for a full list of variables, their origin (e.g. a stage or specific to this one), and descriptions explaining their meaning. The sections below also describe some of the possible customizations. For billing configurations, refer to the [Bootstrap documentation on billing](../00-bootstrap/README.md#billing-account) as the `billing_account` variable is identical across all stages.
+Refer to the [Variables](#variables) table at the bottom of this document, for a full list of variables, their origin (e.g. a stage or specific to this one), and descriptions explaining their meaning. The sections below also describe some of the possible customizations. For billing configurations, refer to the [Bootstrap documentation on billing](../0-0-bootstrap/README.md#billing-account) as the `billing_account` variable is identical across all stages.
 
 Once done, you can run this stage:
 
@@ -141,7 +141,7 @@ For policies where additional data is needed, a root-level `organization_policy_
 
 ### IAM
 
-IAM roles can be easily edited in the relevant `branch-xxx.tf` file, following the best practice outlined in the [bootstrap stage](../00-bootstrap#customizations) documentation of separating user-level and service-account level IAM policies in modules' `iam_groups`, `iam`, and `iam_additive` variables.
+IAM roles can be easily edited in the relevant `branch-xxx.tf` file, following the best practice outlined in the [bootstrap stage](../0-0-bootstrap#customizations) documentation of separating user-level and service-account level IAM policies in modules' `iam_groups`, `iam`, and `iam_additive` variables.
 
 A full reference of IAM roles managed by this stage [is available here](./IAM.md).
 
@@ -180,16 +180,16 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables.tf#L20) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket          &#61; string&#10;  project_id              &#61; string&#10;  project_number          &#61; string&#10;  federated_identity_pool &#61; string&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    issuer           &#61; string&#10;    issuer_uri       &#61; string&#10;    name             &#61; string&#10;    principal_tpl    &#61; string&#10;    principalset_tpl &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
-| [billing_account](variables.tf#L38) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
-| [organization](variables.tf#L199) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
-| [prefix](variables.tf#L223) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
+| [automation](variables.tf#L20) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket          &#61; string&#10;  project_id              &#61; string&#10;  project_number          &#61; string&#10;  federated_identity_pool &#61; string&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    issuer           &#61; string&#10;    issuer_uri       &#61; string&#10;    name             &#61; string&#10;    principal_tpl    &#61; string&#10;    principalset_tpl &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-0-bootstrap</code> |
+| [billing_account](variables.tf#L38) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-0-bootstrap</code> |
+| [organization](variables.tf#L199) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-0-bootstrap</code> |
+| [prefix](variables.tf#L223) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-0-bootstrap</code> |
 | [cicd_repositories](variables.tf#L51) | CI/CD repository configuration. Identity providers reference keys in the `automation.federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed. | <code title="object&#40;&#123;&#10;  data_platform_dev &#61; object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#10;  data_platform_prod &#61; object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#10;  gke_dev &#61; object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#10;  gke_prod &#61; object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#10;  networking &#61; object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#10;  project_factory_dev &#61; object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#10;  project_factory_prod &#61; object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#10;  security &#61; object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [custom_roles](variables.tf#L133) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  service_project_network_admin &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>00-bootstrap</code> |
+| [custom_roles](variables.tf#L133) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  service_project_network_admin &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-0-bootstrap</code> |
 | [data_dir](variables.tf#L142) | Relative path for the folder storing configuration data. | <code>string</code> |  | <code>&#34;data&#34;</code> |  |
-| [fast_features](variables.tf#L148) | Selective control for top-level FAST features. | <code title="object&#40;&#123;&#10;  data_platform   &#61; bool&#10;  gke             &#61; bool&#10;  project_factory &#61; bool&#10;  sandbox         &#61; bool&#10;  teams           &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_platform   &#61; true&#10;  gke             &#61; true&#10;  project_factory &#61; true&#10;  sandbox         &#61; true&#10;  teams           &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> | <code>00-bootstrap</code> |
-| [groups](variables.tf#L168) | Group names to grant organization-level permissions. | <code title="object&#40;&#123;&#10;  gcp-devops          &#61; optional&#40;string&#41;&#10;  gcp-network-admins  &#61; optional&#40;string&#41;&#10;  gcp-security-admins &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>00-bootstrap</code> |
-| [locations](variables.tf#L181) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; string&#10;  gcs     &#61; string&#10;  logging &#61; string&#10;  pubsub  &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  bq      &#61; &#34;EU&#34;&#10;  gcs     &#61; &#34;EU&#34;&#10;  logging &#61; &#34;global&#34;&#10;  pubsub  &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>00-bootstrap</code> |
+| [fast_features](variables.tf#L148) | Selective control for top-level FAST features. | <code title="object&#40;&#123;&#10;  data_platform   &#61; bool&#10;  gke             &#61; bool&#10;  project_factory &#61; bool&#10;  sandbox         &#61; bool&#10;  teams           &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_platform   &#61; true&#10;  gke             &#61; true&#10;  project_factory &#61; true&#10;  sandbox         &#61; true&#10;  teams           &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> | <code>0-0-bootstrap</code> |
+| [groups](variables.tf#L168) | Group names to grant organization-level permissions. | <code title="object&#40;&#123;&#10;  gcp-devops          &#61; optional&#40;string&#41;&#10;  gcp-network-admins  &#61; optional&#40;string&#41;&#10;  gcp-security-admins &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-0-bootstrap</code> |
+| [locations](variables.tf#L181) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; string&#10;  gcs     &#61; string&#10;  logging &#61; string&#10;  pubsub  &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  bq      &#61; &#34;EU&#34;&#10;  gcs     &#61; &#34;EU&#34;&#10;  logging &#61; &#34;global&#34;&#10;  pubsub  &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>0-0-bootstrap</code> |
 | [organization_policy_configs](variables.tf#L209) | Organization policies customization. | <code title="object&#40;&#123;&#10;  allowed_policy_member_domains &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
 | [outputs_location](variables.tf#L217) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable. | <code>string</code> |  | <code>null</code> |  |
 | [tag_names](variables.tf#L234) | Customized names for resource management tags. | <code title="object&#40;&#123;&#10;  context     &#61; string&#10;  environment &#61; string&#10;  tenant      &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  context     &#61; &#34;context&#34;&#10;  environment &#61; &#34;environment&#34;&#10;  tenant      &#61; &#34;tenant&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |

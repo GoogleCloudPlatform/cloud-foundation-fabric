@@ -42,11 +42,11 @@ As per our GCP best practices the Data Platform relies on user groups to assign 
 
 ### Network
 
-A Shared VPC is used here, either from one of the FAST networking stages (e.g. [hub and spoke via VPN](../../02-networking-vpn)) or from an external source.
+A Shared VPC is used here, either from one of the FAST networking stages (e.g. [hub and spoke via VPN](../../2-0-networking-b-vpn)) or from an external source.
 
 ### Encryption
 
-Cloud KMS crypto keys can be configured wither from the [FAST security stage](../../02-security) or from an external source. This step is optional and depends on customer policies and security best practices.
+Cloud KMS crypto keys can be configured wither from the [FAST security stage](../../2-0-security) or from an external source. This step is optional and depends on customer policies and security best practices.
 
 To configure the use of Cloud KMS on resources, you have to specify the key id on the `service_encryption_keys` variable. Key locations should match resource locations.
 
@@ -55,19 +55,20 @@ To configure the use of Cloud KMS on resources, you have to specify the key id o
 [Data Catalog](https://cloud.google.com/data-catalog) helps you to document your data entry at scale. Data Catalog relies on [tags](https://cloud.google.com/data-catalog/docs/tags-and-tag-templates#tags) and [tag template](https://cloud.google.com/data-catalog/docs/tags-and-tag-templates#tag-templates) to manage metadata for all data entries in a unified and centralized service. To implement [column-level security](https://cloud.google.com/bigquery/docs/column-level-security-intro) on BigQuery, we suggest to use `Tags` and `Tag templates`.
 
 The default configuration will implement 3 tags:
- - `3_Confidential`: policy tag for columns that include very sensitive information, such as credit card numbers.
- - `2_Private`: policy tag for columns that include sensitive personal identifiable information (PII) information, such as a person's first name.
- - `1_Sensitive`: policy tag for columns that include data that cannot be made public, such as the credit limit.
+
+- `3_Confidential`: policy tag for columns that include very sensitive information, such as credit card numbers.
+- `2_Private`: policy tag for columns that include sensitive personal identifiable information (PII) information, such as a person's first name.
+- `1_Sensitive`: policy tag for columns that include data that cannot be made public, such as the credit limit.
 
 Anything that is not tagged is available to all users who have access to the data warehouse.
 
-You can configure your tags and roles associated by configuring the `data_catalog_tags` variable. We suggest useing the "[Best practices for using policy tags in BigQuery](https://cloud.google.com/bigquery/docs/best-practices-policy-tags)" article as a guide to designing your tags structure and access pattern. By default, no groups has access to tagged data. 
+You can configure your tags and roles associated by configuring the `data_catalog_tags` variable. We suggest useing the "[Best practices for using policy tags in BigQuery](https://cloud.google.com/bigquery/docs/best-practices-policy-tags)" article as a guide to designing your tags structure and access pattern. By default, no groups has access to tagged data.
 
 ### VPC-SC
 
-As is often the case in real-world configurations, [VPC-SC](https://cloud.google.com/vpc-service-controls) is needed to mitigate data exfiltration. VPC-SC can be configured from the [FAST security stage](../../02-security). This step is optional, but highly recomended, and depends on customer policies and security best practices.
+As is often the case in real-world configurations, [VPC-SC](https://cloud.google.com/vpc-service-controls) is needed to mitigate data exfiltration. VPC-SC can be configured from the [FAST security stage](../../2-0-security). This step is optional, but highly recomended, and depends on customer policies and security best practices.
 
-To configure the use of VPC-SC on the data platform, you have to specify the data platform project numbers on the `vpc_sc_perimeter_projects.dev` variable on [FAST security stage](../../02-security#perimeter-resources).
+To configure the use of VPC-SC on the data platform, you have to specify the data platform project numbers on the `vpc_sc_perimeter_projects.dev` variable on [FAST security stage](../../2-0-security#perimeter-resources).
 
 In the case your Data Warehouse need to handle confidential data and you have the requirement to separate them deeply from other data and IAM is not enough, the suggested configuration is to keep the confidential project in a separate VPC-SC perimeter with the adequate ingress/egress rules needed for the load and tranformation service account. Below you can find an high level diagram describing the configuration.
 
@@ -77,7 +78,7 @@ In the case your Data Warehouse need to handle confidential data and you have th
 
 ## How to run this stage
 
-This stage can be run in isolation by prviding the necessary variables, but it's really meant to be used as part of the FAST flow after the "foundational stages" ([`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), [`02-networking`](../../02-networking-vpn) and [`02-security`](../../02-security)).
+This stage can be run in isolation by prviding the necessary variables, but it's really meant to be used as part of the FAST flow after the "foundational stages" ([`00-bootstrap`](../../0-0-bootstrap), [`01-resman`](../../1-0-resman), [`02-networking`](../../2-0-networking-b-vpn) and [`02-security`](../../2-0-security)).
 
 When running in isolation, the following roles are needed on the principal used to apply Terraform:
 
@@ -111,9 +112,9 @@ ln -s ~/fast-config/providers/03-data-platform-dev-providers.tf .
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
 
 ```bash
-cd ../../01-resman
+cd ../../1-0-resman
 terraform output -json providers | jq -r '.["03-data-platform-dev"]' \
-  > ../03-data-platform/dev/providers.tf
+  > ../3-0-data-platform/dev/providers.tf
 ```
 
 ### Variable configuration
@@ -133,7 +134,7 @@ ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
 ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
 # also copy the tfvars file used for the bootstrap stage
-cp ../../00-bootstrap/terraform.tfvars .
+cp ../../0-0-bootstrap/terraform.tfvars .
 ```
 
 If you're not using FAST or its output files, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
@@ -147,7 +148,7 @@ terraform apply
 
 ## Demo pipeline
 
-The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `landing` area to the `DataWarehouse Confidential` dataset suing different features. 
+The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `landing` area to the `DataWarehouse Confidential` dataset suing different features.
 
 You can find examples in the `[demo](../../../../blueprints/data-solutions/data-platform-foundations/demo)` folder.
 

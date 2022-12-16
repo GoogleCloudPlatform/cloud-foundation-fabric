@@ -17,7 +17,7 @@
 #TODO: tfdoc annotations
 
 variable "billing_account" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   description = "Billing account id and organization id ('nnnnnnnn' or null)."
   type = object({
     id              = string
@@ -38,14 +38,14 @@ variable "defaults_file" {
 }
 
 variable "environment_dns_zone" {
-  # tfdoc:variable:source 02-networking
+  # tfdoc:variable:source 2-0-networking
   description = "DNS zone suffix for environment."
   type        = string
   default     = null
 }
 
 variable "host_project_ids" {
-  # tfdoc:variable:source 02-networking
+  # tfdoc:variable:source 2-0-networking
   description = "Host project for the shared VPC."
   type = object({
     dev-spoke-0 = string
@@ -54,7 +54,7 @@ variable "host_project_ids" {
 }
 
 variable "prefix" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
 
@@ -65,7 +65,7 @@ variable "prefix" {
 }
 
 variable "vpc_self_links" {
-  # tfdoc:variable:source 02-networking
+  # tfdoc:variable:source 2-0-networking
   description = "Self link for the shared VPC."
   type = object({
     dev-spoke-0 = string

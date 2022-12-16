@@ -15,7 +15,7 @@
 # tfdoc:file:description Terraform Variables.
 
 variable "automation" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 0-0-bootstrap
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket = string
@@ -63,7 +63,7 @@ variable "data_force_destroy" {
 }
 
 variable "folder_ids" {
-  # tfdoc:variable:source 01-resman
+  # tfdoc:variable:source 1-0-resman
   description = "Folder to be used for the networking resources in folders/nnnn format."
   type = object({
     data-platform-dev = string
@@ -81,7 +81,7 @@ variable "groups" {
 }
 
 variable "host_project_ids" {
-  # tfdoc:variable:source 02-networking
+  # tfdoc:variable:source 2-0-networking
   description = "Shared VPC project ids."
   type = object({
     dev-spoke-0 = string
@@ -164,7 +164,7 @@ variable "service_encryption_keys" {
 }
 
 variable "subnet_self_links" {
-  # tfdoc:variable:source 02-networking
+  # tfdoc:variable:source 2-0-networking
   description = "Shared VPC subnet self links."
   type = object({
     dev-spoke-0 = map(string)
@@ -173,7 +173,7 @@ variable "subnet_self_links" {
 }
 
 variable "vpc_self_links" {
-  # tfdoc:variable:source 02-networking
+  # tfdoc:variable:source 2-0-networking
   description = "Shared VPC self links."
   type = object({
     dev-spoke-0 = string
