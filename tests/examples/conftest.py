@@ -11,13 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Pytest configuration for testing code examples."""
 
 import collections
 import re
 from pathlib import Path
 
 import marko
-import pytest
 
 FABRIC_ROOT = Path(__file__).parents[2]
 BLUEPRINTS_PATH = FABRIC_ROOT / 'blueprints/'
@@ -31,10 +31,11 @@ File = collections.namedtuple('File', 'path content')
 
 
 def pytest_generate_tests(metafunc):
+  """Find all README.md files and collect code examples tagged for testing."""
   if 'example' in metafunc.fixturenames:
     modules = [x for x in MODULES_PATH.iterdir() if x.is_dir()]
     modules.extend(x for x in SUBMODULES_PATH.iterdir() if x.is_dir())
-    modules.extend(x for x in BLUEPRINTS_PATH.glob("*/*") if x.is_dir())
+    modules.extend(x for x in BLUEPRINTS_PATH.glob('*/*') if x.is_dir())
     modules.sort()
     examples = []
     ids = []
