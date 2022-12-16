@@ -2,6 +2,23 @@
 
 This module implements the creation and management of one GCP project including IAM, organization policies, Shared VPC host or service attachment, service API activation, and tag attachment. It also offers a convenient way to refer to managed service identities (aka robot service accounts) for APIs.
 
+# Basic Project Creation
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = "123456-123456-123456"
+  name            = "myproject"
+  parent          = "folders/1234567890"
+  prefix          = "foo"
+  services = [
+    "container.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
+}
+# tftest modules=1 resources=3 inventory=basic.yaml
+```
+
 ## IAM Examples
 
 IAM is managed via several variables that implement different levels of control:
@@ -36,7 +53,7 @@ module "project" {
     ]
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=iam-authoritative.yaml
 ```
 
 The `group_iam` variable uses group email addresses as keys and is a convenient way to assign roles to humans following Google's best practices. The end result is readable code that also serves as documentation.
@@ -48,10 +65,6 @@ module "project" {
   name            = "project-example"
   parent          = "folders/1234567890"
   prefix          = "foo"
-  services = [
-    "container.googleapis.com",
-    "stackdriver.googleapis.com"
-  ]
   group_iam = {
     "gcp-security-admins@example.com" = [
       "roles/cloudasset.owner",
@@ -61,7 +74,7 @@ module "project" {
     ]
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=5 inventory=iam-group.yaml
 ```
 
 ### Additive IAM
@@ -85,7 +98,22 @@ module "project" {
     ],
   }
 }
-# tftest modules=1 resources=5 inventory=additive.yaml
+# tftest modules=1 resources=5 inventory=iam-additive.yaml
+```
+
+### Additive IAM by members
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project-example"
+  iam_additive_members = {
+    "user:one@example.org" = ["roles/owner"]
+    "user:two@example.org" = ["roles/owner", "roles/editor"]
+  }
+
+}
+# tftest modules=1 resources=4 inventory=iam-additive-members.yaml
 ```
 
 ### Service Identities and authoritative IAM
@@ -110,34 +138,27 @@ module "project" {
 # tftest modules=1 resources=2
 ```
 
-## Shared VPC service
+## Shared VPC
 
 The module allows managing Shared VPC status for both hosts and service projects, and includes a simple way of assigning Shared VPC roles to service identities.
-
-### Host project
 
 You can enable Shared VPC Host at the project level and manage project service association independently.
 
 ```hcl
-module "project" {
+module "host-project" {
   source = "./fabric/modules/project"
-  name   = "project-example"
+  name   = "my-host-project"
   shared_vpc_host_config = {
     enabled = true
   }
 }
-# tftest modules=1 resources=2
-```
 
-### Service project
-
-```hcl
-module "project" {
+module "service-project" {
   source = "./fabric/modules/project"
-  name   = "project-example"
+  name   = "my-service-project"
   shared_vpc_service_config = {
     attach       = true
-    host_project = "my-host-project"
+    host_project = module.host-project.project_id
     service_identity_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
@@ -151,7 +172,7 @@ module "project" {
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=2 resources=8 inventory=shared-vpc.yaml
 ```
 
 ## Organization policies
@@ -165,10 +186,6 @@ module "project" {
   name            = "project-example"
   parent          = "folders/1234567890"
   prefix          = "foo"
-  services = [
-    "container.googleapis.com",
-    "stackdriver.googleapis.com"
-  ]
   org_policies = {
     "compute.disableGuestAttributesAccess" = {
       enforce = true
@@ -208,7 +225,7 @@ module "project" {
     }
   }
 }
-# tftest modules=1 resources=10
+# tftest modules=1 resources=8 inventory=org-policies.yaml
 ```
 
 ### Organization policy factory
@@ -220,63 +237,54 @@ Note that contraints defined via `org_policies` take precedence over those in `o
 The example below deploys a few organization policies split between two YAML files.
 
 ```hcl
-module "folder" {
-  source                 = "./fabric/modules/folder"
-  parent                 = "organizations/1234567890"
-  name                   = "Folder name"
+module "project" {
+  source                 = "./fabric/modules/project"
+  billing_account        = "123456-123456-123456"
+  name                   = "project-example"
+  parent                 = "folders/1234567890"
+  prefix                 = "foo"
   org_policies_data_path = "configs/org-policies/"
 }
-# tftest modules=1 resources=6 files=boolean,list
+# tftest modules=1 resources=8 files=boolean,list inventory=org-policies.yaml
 ```
 
 ```yaml
 # tftest-file id=boolean path=configs/org-policies/boolean.yaml
+compute.disableGuestAttributesAccess:
+  enforce: true
+constraints/compute.skipDefaultNetworkCreation:
+  enforce: true
 iam.disableServiceAccountKeyCreation:
   enforce: true
-
 iam.disableServiceAccountKeyUpload:
   enforce: false
   rules:
-    - condition:
-        expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
-        title: condition
-        description: test condition
-        location: xxx
-      enforce: true
+  - condition:
+      description: test condition
+      expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
+      location: somewhere
+      title: condition
+    enforce: true
 ```
 
 ```yaml
 # tftest-file id=list path=configs/org-policies/list.yaml
-compute.vmExternalIpAccess:
-  deny:
-    all: true
-
-iam.allowedPolicyMemberDomains:
+constraints/compute.trustedImageProjects:
   allow:
     values:
-      - C0xxxxxxx
-      - C0yyyyyyy
-
-compute.restrictLoadBalancerCreationForTypes:
+    - projects/my-project
+constraints/compute.vmExternalIpAccess:
   deny:
-    values: ["in:EXTERNAL"]
-  rules:
-    - condition:
-        expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
-        title: condition
-        description: test condition
-      allow:
-        values: ["in:EXTERNAL"]
-    - condition:
-        expression: resource.matchTagId("tagKeys/12345", "tagValues/12345")
-        title: condition2
-        description: test condition2
-      allow:
-        all: true
+    all: true
+constraints/iam.allowedPolicyMemberDomains:
+  allow:
+    values:
+    - C0xxxxxxx
+    - C0yyyyyyy
 ```
 
 
-## Logging Sinks (in same project)
+## Logging Sinks
 
 ```hcl
 module "gcs" {
@@ -339,38 +347,8 @@ module "project-host" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest modules=5 resources=14
+# tftest modules=5 resources=14 inventory=logging.yaml
 ```
-
-## Logging Sinks (in different project)
-
-When writing to destinations in a different project, set `unique_writer` to `true`.
-
-```hcl
-module "gcs" {
-  source        = "./fabric/modules/gcs"
-  project_id    = "project-1"
-  name          = "gcs_sink"
-  force_destroy = true
-}
-
-module "project-host" {
-  source          = "./fabric/modules/project"
-  name            = "project-2"
-  billing_account = "123456-123456-123456"
-  parent          = "folders/1234567890"
-  logging_sinks = {
-    warnings = {
-      destination   = module.gcs.id
-      filter        = "severity=WARNING"
-      unique_writer = true
-      type          = "storage"
-    }
-  }
-}
-# tftest modules=2 resources=4
-```
-
 
 ## Cloud KMS encryption keys
 
@@ -378,10 +356,9 @@ The module offers a simple, centralized way to assign `roles/cloudkms.cryptoKeyE
 
 ```hcl
 module "project" {
-  source          = "./fabric/modules/project"
-  name            = "my-project"
-  billing_account = "123456-123456-123456"
-  prefix          = "foo"
+  source = "./fabric/modules/project"
+  name   = "my-project"
+  prefix = "foo"
   services = [
     "compute.googleapis.com",
     "storage.googleapis.com"
@@ -448,7 +425,7 @@ module "project" {
 output "compute_robot" {
   value = module.project.service_accounts.robots.compute
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory:outputs.yaml
 ```
 
 <!-- TFDOC OPTS files:1 -->

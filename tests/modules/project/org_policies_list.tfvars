@@ -3,6 +3,7 @@ org_policies = {
     deny = { all = true }
   }
   "iam.allowedPolicyMemberDomains" = {
+    inherit_from_parent = true
     allow = {
       values = ["C0xxxxxxx", "C0yyyyyyy"]
     }
