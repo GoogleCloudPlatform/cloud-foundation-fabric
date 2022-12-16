@@ -17,7 +17,7 @@
 resource "google_container_cluster" "cluster" {
   lifecycle {
     ignore_changes = [
-      node_config.boot_disk_kms_key
+      node_config[0].boot_disk_kms_key
     ]
   }
   provider    = google-beta
