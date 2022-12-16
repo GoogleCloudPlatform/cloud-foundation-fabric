@@ -54,7 +54,7 @@ For same-organization billing, we configure a custom organization role that can 
 
 For details on configuring the different billing account modes, refer to the [How to run this stage](#how-to-run-this-stage) section below.
 
-Because of limitations of API availability, manual steps have to be followed to enable billing export within billing project to BigQuery dataset `billing_export` which will be created as part of the bootstrap stage. THe process to share billing data [is outlined here](https://cloud.google.com/billing/docs/how-to/export-data-bigquery-setup#enable-bq-export).
+Because of limitations of API availability, manual steps have to be followed to enable billing export within billing project to BigQuery dataset `billing_export` which will be created as part of the bootstrap stage. The process to share billing data [is outlined here](https://cloud.google.com/billing/docs/how-to/export-data-bigquery-setup#enable-bq-export).
 
 ### Organization-level logging
 
