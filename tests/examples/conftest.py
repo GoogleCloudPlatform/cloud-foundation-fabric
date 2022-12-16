@@ -47,7 +47,7 @@ def pytest_generate_tests(metafunc):
       index = 0
       files = collections.defaultdict(dict)
 
-      # first pass: collect all examples tagget with tftest-file
+      # first pass: collect all examples tagged with tftest-file
       last_header = None
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode):
@@ -59,7 +59,7 @@ def pytest_generate_tests(metafunc):
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
 
-      # second pass: collect all examples taggeet with tftest
+      # second pass: collect all examples tagged with tftest
       last_header = None
       index = 0
       for child in doc.children:
