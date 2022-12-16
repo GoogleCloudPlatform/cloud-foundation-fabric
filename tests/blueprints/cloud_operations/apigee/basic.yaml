@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-def test_counts(plan_summary):
-  "Test stage."
-  summary = plan_summary("fast/stages/02-security",
-                         tf_var_files=["common.tfvars"])
-  assert summary.counts["modules"] > 0
-  assert summary.counts["resources"] > 0
+counts:
+  modules: 9
+  resources: 59
