@@ -57,6 +57,7 @@ resource "google_container_cluster" "cluster" {
         enable_integrity_monitoring = true
       }
     }
+    boot_disk_kms_key = var.default_pool_boot_disk_kms_key
   }
 
 
