@@ -17,10 +17,6 @@ values:
     account_id: fast-prod-bootstrap-0
     display_name: Terraform organization bootstrap service account.
     project: fast-prod-iac-core-0
-  module.automation-tf-cicd-provisioning-sa.google_service_account.service_account[0]:
-    account_id: fast-prod-cicd-0
-    display_name: Terraform stage 1 CICD service account.
-    project: fast-prod-iac-core-0
   module.automation-tf-resman-sa.google_service_account.service_account[0]:
     account_id: fast-prod-resman-0
     display_name: Terraform stage 1 resman service account.

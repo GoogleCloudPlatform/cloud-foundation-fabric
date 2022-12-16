@@ -25,11 +25,11 @@ counts:
   google_project_iam_member: 1
   google_project_service: 29
   google_project_service_identity: 2
-  google_service_account: 3
-  google_service_account_iam_binding: 3
-  google_storage_bucket: 4
-  google_storage_bucket_iam_binding: 2
-  google_storage_bucket_iam_member: 3
+  google_service_account: 2
+  google_service_account_iam_binding: 2
+  google_storage_bucket: 3
+  google_storage_bucket_iam_binding: 1
+  google_storage_bucket_iam_member: 2
   google_storage_bucket_object: 5
   google_storage_project_service_account: 3
   local_file: 5
@@ -45,5 +45,4 @@ outputs:
     log-export: fast-prod-audit-logs-0
   service_accounts:
     bootstrap: fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
-    cicd: fast-prod-cicd-0@fast-prod-iac-core-0.iam.gserviceaccount.com
     resman: fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
