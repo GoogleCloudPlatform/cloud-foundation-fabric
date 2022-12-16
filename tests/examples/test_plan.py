@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import re
+import subprocess
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
@@ -51,6 +52,13 @@ def test_example(plan_validator, tmp_path, example):
     num_modules, num_resources = counts['modules'], counts['resources']
     assert expected_modules == num_modules, 'wrong number of modules'
     assert expected_resources == num_resources, 'wrong number of resources'
+
+    # TODO(jccb): this should probably be done in check_documentation
+    # but we already have all the data here.
+    result = subprocess.run(
+        'terraform fmt -check -diff -no-color main.tf'.split(), cwd=tmp_path,
+        stdout=subprocess.PIPE, encoding='utf-8')
+    assert result.returncode == 0, f'terraform code not formatted correctly\n{result.stdout}'
 
   else:
     assert False, "can't find tftest directive"

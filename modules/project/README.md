@@ -26,7 +26,7 @@ module "project" {
   name            = "project-example"
   parent          = "folders/1234567890"
   prefix          = "foo"
-  services        = [
+  services = [
     "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
@@ -48,7 +48,7 @@ module "project" {
   name            = "project-example"
   parent          = "folders/1234567890"
   prefix          = "foo"
-  services        = [
+  services = [
     "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
@@ -70,17 +70,17 @@ Additive IAM is typically used where bindings for specific roles are controlled 
 
 ```hcl
 module "project" {
-  source          = "./fabric/modules/project"
-  name            = "project-example"
+  source = "./fabric/modules/project"
+  name   = "project-example"
   iam_additive = {
-    "roles/viewer"               = [
+    "roles/viewer" = [
       "group:one@example.org",
       "group:two@xample.org"
     ],
-    "roles/storage.objectAdmin"  = [
+    "roles/storage.objectAdmin" = [
       "group:two@example.org"
     ],
-    "roles/owner"                = [
+    "roles/owner" = [
       "group:three@example.org"
     ],
   }
@@ -94,15 +94,15 @@ As mentioned above, there are cases where authoritative management of specific I
 
 ```hcl
 module "project" {
-  source          = "./fabric/modules/project"
-  name            = "project-example"
+  source = "./fabric/modules/project"
+  name   = "project-example"
   group_iam = {
     "foo@example.com" = [
       "roles/editor"
     ]
   }
   iam = {
-    "roles/editor" = [      
+    "roles/editor" = [
       "serviceAccount:${module.project.service_accounts.cloud_services}"
     ]
   }
@@ -120,8 +120,8 @@ You can enable Shared VPC Host at the project level and manage project service a
 
 ```hcl
 module "project" {
-  source          = "./fabric/modules/project"
-  name            = "project-example"
+  source = "./fabric/modules/project"
+  name   = "project-example"
   shared_vpc_host_config = {
     enabled = true
   }
@@ -133,16 +133,16 @@ module "project" {
 
 ```hcl
 module "project" {
-  source          = "./fabric/modules/project"
-  name            = "project-example"
+  source = "./fabric/modules/project"
+  name   = "project-example"
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = "my-host-project"
+    attach       = true
+    host_project = "my-host-project"
     service_identity_iam = {
-      "roles/compute.networkUser"            = [
+      "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
       ]
-      "roles/vpcaccess.user"                 = [
+      "roles/vpcaccess.user" = [
         "cloudrun"
       ]
       "roles/container.hostServiceAgentUser" = [
@@ -165,7 +165,7 @@ module "project" {
   name            = "project-example"
   parent          = "folders/1234567890"
   prefix          = "foo"
-  services        = [
+  services = [
     "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
@@ -409,8 +409,8 @@ module "org" {
   organization_id = var.organization_id
   tags = {
     environment = {
-      description  = "Environment specification."
-      iam          = null
+      description = "Environment specification."
+      iam         = null
       values = {
         dev  = null
         prod = null
@@ -438,8 +438,8 @@ One non-obvious output is `service_accounts`, which offers a simple way to disco
 
 ```hcl
 module "project" {
-  source   = "./fabric/modules/project"
-  name     = "project-example"
+  source = "./fabric/modules/project"
+  name   = "project-example"
   services = [
     "compute.googleapis.com"
   ]

@@ -24,9 +24,9 @@ BLUEPRINTS_PATH = FABRIC_ROOT / 'blueprints/'
 MODULES_PATH = FABRIC_ROOT / 'modules/'
 SUBMODULES_PATH = MODULES_PATH / 'cloud-config-container'
 
-FILE_TEST_RE = re.compile(r'# tftest-file id=(\w+) path=([\S]+)')
+FILE_TEST_RE = re.compile(r'# tftest-file +id=(\w+) +path=([\S]+)')
 
-Example = collections.namedtuple('Example', 'code module files')
+Example = collections.namedtuple('Example', 'name code module files')
 File = collections.namedtuple('File', 'path content')
 
 
@@ -71,11 +71,11 @@ def pytest_generate_tests(metafunc):
             continue
           if child.lang == 'hcl':
             path = module.relative_to(FABRIC_ROOT)
-            examples.append(Example(code, path, files[last_header]))
             name = f'{path}:{last_header}'
             if index > 1:
               name += f' {index}'
             ids.append(name)
+            examples.append(Example(name, code, path, files[last_header]))
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
           index = 0

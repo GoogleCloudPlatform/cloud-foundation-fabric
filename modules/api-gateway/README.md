@@ -6,11 +6,11 @@ This module allows creating an API with its associated API config and API gatewa
 ## Basic example
 ```hcl
 module "gateway" {
-  source                = "./fabric/modules/api-gateway"
-  project_id            = "my-project"
-  api_id                = "api"
-  region                = "europe-west1"
-  spec                  = <<EOT
+  source     = "./fabric/modules/api-gateway"
+  project_id = "my-project"
+  api_id     = "api"
+  region     = "europe-west1"
+  spec       = <<EOT
   # The OpenAPI spec contents
   # ...
   EOT
@@ -31,7 +31,7 @@ module "gateway" {
   EOT
   service_account_email = "sa@my-project.iam.gserviceaccount.com"
   iam = {
-    "roles/apigateway.admin" = [ "user:user@example.com" ]
+    "roles/apigateway.admin" = ["user:user@example.com"]
   }
 }
 # tftest modules=1 resources=7
@@ -40,18 +40,18 @@ module "gateway" {
 ## Basic example + service account creation
 ```hcl
 module "gateway" {
-  source                = "./fabric/modules/api-gateway"
-  project_id            = "my-project"
-  api_id                = "api"
-  region                = "europe-west1"
-  spec                  = <<EOT
+  source                 = "./fabric/modules/api-gateway"
+  project_id             = "my-project"
+  api_id                 = "api"
+  region                 = "europe-west1"
+  spec                   = <<EOT
   # The OpenAPI spec contents
   # ...
   EOT
   service_account_create = true
   iam = {
-    "roles/apigateway.admin" = [ "user:mirene@google.com" ]
-    "roles/apigateway.viewer" = [ "user:mirene@google.com" ]
+    "roles/apigateway.admin"  = ["user:mirene@google.com"]
+    "roles/apigateway.viewer" = ["user:mirene@google.com"]
   }
 }
 # tftest modules=1 resources=11

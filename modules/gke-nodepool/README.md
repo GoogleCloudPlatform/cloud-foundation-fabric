@@ -10,11 +10,11 @@ If no specific node configuration is set via variables, the module uses the prov
 
 ```hcl
 module "cluster-1-nodepool-1" {
-  source        = "./fabric/modules/gke-nodepool"
-  project_id    = "myproject"
-  cluster_name  = "cluster-1"
-  location      = "europe-west1-b"
-  name          = "nodepool-1"
+  source       = "./fabric/modules/gke-nodepool"
+  project_id   = "myproject"
+  cluster_name = "cluster-1"
+  location     = "europe-west1-b"
+  name         = "nodepool-1"
 }
 # tftest modules=1 resources=1
 ```
@@ -31,11 +31,11 @@ To use the GCE default service account, you can ignore the variable which is equ
 
 ```hcl
 module "cluster-1-nodepool-1" {
-  source          = "./fabric/modules/gke-nodepool"
-  project_id      = "myproject"
-  cluster_name    = "cluster-1"
-  location        = "europe-west1-b"
-  name            = "nodepool-1"
+  source       = "./fabric/modules/gke-nodepool"
+  project_id   = "myproject"
+  cluster_name = "cluster-1"
+  location     = "europe-west1-b"
+  name         = "nodepool-1"
 }
 # tftest modules=1 resources=1
 ```
@@ -46,11 +46,11 @@ To use an existing service account, pass in just the `email` attribute.
 
 ```hcl
 module "cluster-1-nodepool-1" {
-  source          = "./fabric/modules/gke-nodepool"
-  project_id      = "myproject"
-  cluster_name    = "cluster-1"
-  location        = "europe-west1-b"
-  name            = "nodepool-1"
+  source       = "./fabric/modules/gke-nodepool"
+  project_id   = "myproject"
+  cluster_name = "cluster-1"
+  location     = "europe-west1-b"
+  name         = "nodepool-1"
   service_account = {
     email = "foo-bar@myproject.iam.gserviceaccount.com"
   }
@@ -64,11 +64,11 @@ To have the module create a service account, set the `create` attribute to `true
 
 ```hcl
 module "cluster-1-nodepool-1" {
-  source          = "./fabric/modules/gke-nodepool"
-  project_id      = "myproject"
-  cluster_name    = "cluster-1"
-  location        = "europe-west1-b"
-  name            = "nodepool-1"
+  source       = "./fabric/modules/gke-nodepool"
+  project_id   = "myproject"
+  cluster_name = "cluster-1"
+  location     = "europe-west1-b"
+  name         = "nodepool-1"
   service_account = {
     create = true
     # optional

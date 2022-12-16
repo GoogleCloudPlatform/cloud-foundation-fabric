@@ -110,7 +110,7 @@ module "simple-vm-example" {
     }
   }]
   service_account_create = true
-  create_template = true
+  create_template        = true
 }
 # tftest modules=1 resources=2
 ```
@@ -131,8 +131,8 @@ module "kms-vm-example" {
   }]
   attached_disks = [
     {
-      name  = "attached-disk"
-      size  = 10
+      name = "attached-disk"
+      size = 10
     }
   ]
   service_account_create = true
@@ -176,9 +176,9 @@ This example shows how to enable [gVNIC](https://cloud.google.com/compute/docs/n
 ```hcl
 
 resource "google_compute_image" "cos-gvnic" {
-  project       = "my-project"
-  name          = "my-image"
-  source_image  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-89-16108-534-18"
+  project      = "my-project"
+  name         = "my-image"
+  source_image = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-89-16108-534-18"
 
   guest_os_features {
     type = "GVNIC"
@@ -200,8 +200,8 @@ module "vm-with-gvnic" {
   zone       = "europe-west1-b"
   name       = "test"
   boot_disk = {
-      image = google_compute_image.cos-gvnic.self_link
-      type  = "pd-ssd"
+    image = google_compute_image.cos-gvnic.self_link
+    type  = "pd-ssd"
   }
   network_interfaces = [{
     network    = var.vpc.self_link

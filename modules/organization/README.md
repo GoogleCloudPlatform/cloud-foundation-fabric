@@ -16,7 +16,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 module "org" {
   source          = "./fabric/modules/organization"
   organization_id = "organizations/1234567890"
-  group_iam       = {
+  group_iam = {
     "cloud-owners@example.org" = ["roles/owner", "roles/projectCreator"]
   }
   iam = {
@@ -96,7 +96,7 @@ To manage organization policy custom constraints, the `orgpolicy.googleapis.com`
 module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
-  
+
   org_policy_custom_constraints = {
     "custom.gkeEnableAutoUpgrade" = {
       resource_types = ["container.googleapis.com/NodePool"]
@@ -126,8 +126,8 @@ The example below deploys a few org policy custom constraints split between two 
 
 ```hcl
 module "org" {
-  source          = "./fabric/modules/organization"
-  organization_id = var.organization_id
+  source                                  = "./fabric/modules/organization"
+  organization_id                         = var.organization_id
   org_policy_custom_constraints_data_path = "configs/custom-constraints"
   org_policies = {
     "custom.gkeEnableAutoUpgrade" = {
@@ -333,7 +333,7 @@ module "org" {
     debug = {
       destination = module.bucket.id
       filter      = "severity=DEBUG"
-      exclusions  = {
+      exclusions = {
         no-compute = "logName:compute"
       }
       type = "logging"
@@ -374,12 +374,12 @@ module "org" {
   organization_id = var.organization_id
   tags = {
     environment = {
-      description  = "Environment specification."
-      iam          = {
+      description = "Environment specification."
+      iam = {
         "roles/resourcemanager.tagAdmin" = ["group:admins@example.com"]
       }
       values = {
-        dev  = {}
+        dev = {}
         prod = {
           description = "Environment: production."
           iam = {
@@ -405,13 +405,13 @@ module "org" {
   organization_id = var.organization_id
   network_tags = {
     net-environment = {
-      description  = "This is a network tag."
-      network      = "my_project/my_vpc"
-      iam          = {
+      description = "This is a network tag."
+      network     = "my_project/my_vpc"
+      iam = {
         "roles/resourcemanager.tagAdmin" = ["group:admins@example.com"]
       }
       values = {
-        dev  = null
+        dev = null
         prod = {
           description = "Environment: production."
           iam = {

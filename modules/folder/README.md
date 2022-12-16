@@ -10,11 +10,11 @@ This module allows the creation and management of folders, including support for
 module "folder" {
   source = "./fabric/modules/folder"
   parent = "organizations/1234567890"
-  name  = "Folder name"
-  group_iam       = {
+  name   = "Folder name"
+  group_iam = {
     "cloud-owners@example.org" = [
-        "roles/owner",
-        "roles/resourcemanager.projectCreator"
+      "roles/owner",
+      "roles/resourcemanager.projectCreator"
     ]
   }
   iam = {
@@ -32,7 +32,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 module "folder" {
   source = "./fabric/modules/folder"
   parent = "organizations/1234567890"
-  name  = "Folder name"
+  name   = "Folder name"
   org_policies = {
     "compute.disableGuestAttributesAccess" = {
       enforce = true
@@ -85,9 +85,9 @@ In the same way as for the [organization](../organization) module, the in-built 
 
 ```hcl
 module "folder" {
-  source          = "./fabric/modules/folder"
+  source = "./fabric/modules/folder"
   parent = "organizations/1234567890"
-  name  = "Folder name"
+  name   = "Folder name"
   firewall_policy_factory = {
     cidr_file   = "configs/firewall-policies/cidrs.yaml"
     policy_name = null
@@ -250,8 +250,8 @@ module "org" {
   organization_id = var.organization_id
   tags = {
     environment = {
-      description  = "Environment specification."
-      iam          = null
+      description = "Environment specification."
+      iam         = null
       values = {
         dev  = null
         prod = null

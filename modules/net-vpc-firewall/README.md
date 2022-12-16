@@ -44,11 +44,11 @@ module "firewall" {
   default_rules_config = {
     admin_ranges = ["10.0.0.0/8"]
   }
-  egress_rules  = {
+  egress_rules = {
     # implicit `deny` action
     allow-egress-rfc1918 = {
       description = "Allow egress to RFC 1918 ranges."
-      destination_ranges      = [
+      destination_ranges = [
         "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"
       ]
       # implicit { protocol = "all" } rule
@@ -108,7 +108,7 @@ module "firewall" {
   project_id = "my-project"
   network    = "my-network"
   default_rules_config = {
-    ssh_ranges   = []
+    ssh_ranges = []
   }
 }
 # tftest modules=1 resources=2
@@ -134,9 +134,9 @@ The module includes a rules factory (see [Resource Factories](../../blueprints/f
 
 ```hcl
 module "firewall" {
-  source           = "./fabric/modules/net-vpc-firewall"
-  project_id       = "my-project"
-  network          = "my-network"
+  source     = "./fabric/modules/net-vpc-firewall"
+  project_id = "my-project"
+  network    = "my-network"
   factories_config = {
     rules_folder  = "configs/firewall/rules"
     cidr_tpl_file = "configs/firewall/cidrs.yaml"

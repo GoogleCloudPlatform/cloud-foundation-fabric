@@ -45,9 +45,9 @@ module "vpc-hub" {
   project_id = "hub"
   name       = "vpc-hub"
   subnets = [{
-    ip_cidr_range      = "10.0.0.0/24"
-    name               = "subnet-1"
-    region             = "europe-west1"
+    ip_cidr_range = "10.0.0.0/24"
+    name          = "subnet-1"
+    region        = "europe-west1"
   }]
 }
 
@@ -56,9 +56,9 @@ module "vpc-spoke-1" {
   project_id = "spoke1"
   name       = "vpc-spoke1"
   subnets = [{
-    ip_cidr_range      = "10.0.1.0/24"
-    name               = "subnet-2"
-    region             = "europe-west1"
+    ip_cidr_range = "10.0.1.0/24"
+    name          = "subnet-2"
+    region        = "europe-west1"
   }]
   peering_config = {
     peer_vpc_self_link = module.vpc-hub.self_link
@@ -75,8 +75,8 @@ module "vpc-spoke-1" {
 ```hcl
 locals {
   service_project_1 = {
-    project_id = "project1"
-    gke_service_account = "gke"
+    project_id                     = "project1"
+    gke_service_account            = "gke"
     cloud_services_service_account = "cloudsvc"
   }
   service_project_2 = {
@@ -128,9 +128,9 @@ module "vpc" {
   name       = "my-network"
   subnets = [
     {
-      ip_cidr_range      = "10.0.0.0/24"
-      name               = "production"
-      region             = "europe-west1"
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
+      region        = "europe-west1"
     }
   ]
   psa_config = {
@@ -151,13 +151,13 @@ module "vpc" {
   name       = "my-network"
   subnets = [
     {
-      ip_cidr_range      = "10.0.0.0/24"
-      name               = "production"
-      region             = "europe-west1"
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
+      region        = "europe-west1"
     }
   ]
   psa_config = {
-    ranges = { myrange = "10.0.1.0/24" }
+    ranges        = { myrange = "10.0.1.0/24" }
     export_routes = true
     import_routes = true
   }
@@ -205,7 +205,7 @@ module "vpc" {
   project_id = "my-project"
   name       = "my-network"
   dns_policy = {
-    inbound  = true
+    inbound = true
     outbound = {
       private_ns = ["10.0.0.1"]
       public_ns  = ["8.8.8.8"]
@@ -213,9 +213,9 @@ module "vpc" {
   }
   subnets = [
     {
-      ip_cidr_range      = "10.0.0.0/24"
-      name               = "production"
-      region             = "europe-west1"
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
+      region        = "europe-west1"
     }
   ]
 }
