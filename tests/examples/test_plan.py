@@ -40,7 +40,8 @@ def test_example(plan_validator, tmp_path, example):
 
     inventory = []
     if match.group(4) is not None:
-      inventory = BASE_PATH.parent / example.module / 'examples'
+      python_test_path = str(example.module).replace('-', '_')
+      inventory = BASE_PATH.parent / python_test_path / 'examples'
       inventory = inventory / match.group(4)
 
     # TODO: force plan_validator to never copy files (we're already
