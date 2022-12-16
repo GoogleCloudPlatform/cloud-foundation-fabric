@@ -24,7 +24,7 @@ BLUEPRINTS_PATH = FABRIC_ROOT / 'blueprints/'
 MODULES_PATH = FABRIC_ROOT / 'modules/'
 SUBMODULES_PATH = MODULES_PATH / 'cloud-config-container'
 
-FILE_TEST_RE = re.compile(r'# tftest file (\w+) ([\S]+)')
+FILE_TEST_RE = re.compile(r'# tftest-file id=(\w+) path=([\S]+)')
 
 Example = collections.namedtuple('Example', 'code module files')
 File = collections.namedtuple('File', 'path content')
@@ -45,18 +45,23 @@ def pytest_generate_tests(metafunc):
         continue
       doc = marko.parse(readme.read_text())
       index = 0
-      last_header = None
-      files = {}
+      files = collections.defaultdict(dict)
 
-      # first pass: collect all tftest tagged files
+      # first pass: collect all examples tagget with tftest-file
+      last_header = None
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode):
           code = child.children[0].children
           match = FILE_TEST_RE.search(code)
           if match:
             name, path = match.groups()
-            files[name] = File(path, code)
+            files[last_header][name] = File(path, code)
+        elif isinstance(child, marko.block.Heading):
+          last_header = child.children[0].children
 
+      # second pass: collect all examples taggeet with tftest
+      last_header = None
+      index = 0
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode):
           index += 1
@@ -65,7 +70,7 @@ def pytest_generate_tests(metafunc):
             continue
           if child.lang == 'hcl':
             path = module.relative_to(FABRIC_ROOT)
-            examples.append(Example(code, path, files))
+            examples.append(Example(code, path, files[last_header]))
             name = f'{path}:{last_header}'
             if index > 1:
               name += f' {index}'

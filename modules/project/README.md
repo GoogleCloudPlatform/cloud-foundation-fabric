@@ -85,7 +85,7 @@ module "project" {
     ],
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=additive.yaml
 ```
 
 ### Service Identities and authoritative IAM
@@ -230,7 +230,7 @@ module "folder" {
 ```
 
 ```yaml
-# tftest file boolean configs/org-policies/boolean.yaml
+# tftest-file id=boolean path=configs/org-policies/boolean.yaml
 iam.disableServiceAccountKeyCreation:
   enforce: true
 
@@ -246,7 +246,7 @@ iam.disableServiceAccountKeyUpload:
 ```
 
 ```yaml
-# tftest file list configs/org-policies/list.yaml
+# tftest-file id=list path=configs/org-policies/list.yaml
 compute.vmExternalIpAccess:
   deny:
     all: true

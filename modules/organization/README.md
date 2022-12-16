@@ -139,7 +139,7 @@ module "org" {
 ```
 
 ```yaml
-# tftest file gke configs/custom-constraints/gke.yaml
+# tftest-file id=gke path=configs/custom-constraints/gke.yaml
 custom.gkeEnableLogging:
   resource_types:
   - container.googleapis.com/Cluster
@@ -162,7 +162,7 @@ custom.gkeEnableAutoUpgrade:
 
 
 ```yaml
-# tftest file dataproc configs/custom-constraints/dataproc.yaml
+# tftest-file id=dataproc path=configs/custom-constraints/dataproc.yaml
 custom.dataprocNoMoreThan10Workers:
   resource_types:
   - dataproc.googleapis.com/Cluster
@@ -246,7 +246,7 @@ module "org" {
 ```
 
 ```yaml
-# tftest file cidrs configs/firewall-policies/cidrs.yaml
+# tftest-file id=cidrs path=configs/firewall-policies/cidrs.yaml
 rfc1918:
   - 10.0.0.0/8
   - 172.16.0.0/12
@@ -254,7 +254,7 @@ rfc1918:
 ```
 
 ```yaml
-# tftest file rules configs/firewall-policies/rules.yaml
+# tftest-file id=rules path=configs/firewall-policies/rules.yaml
 allow-admins:
   description: Access from the admin subnet to all subnets
   direction: INGRESS

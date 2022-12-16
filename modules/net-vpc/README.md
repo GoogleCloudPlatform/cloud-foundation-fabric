@@ -233,11 +233,11 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=1 file=subnets
+# tftest modules=1 resources=2 files=subnets
 ```
 
 ```yaml
-# tftest file subnets ./config/subnets/subnet-name.yaml
+# tftest-file id=subnets path=config/subnets/subnet-name.yaml
 region: europe-west1
 description: Sample description
 ip_cidr_range: 10.0.0.0/24
@@ -249,9 +249,10 @@ iam_service_accounts: ["fbz@prj.iam.gserviceaccount.com"]
 secondary_ip_ranges:              # map of secondary ip ranges
   secondary-range-a: 192.168.0.0/24
 flow_logs:                        # enable, set to empty map to use defaults
-  - aggregation_interval: "INTERVAL_5_SEC"
-  - flow_sampling: 0.5
-  - metadata: "INCLUDE_ALL_METADATA"
+  aggregation_interval: "INTERVAL_5_SEC"
+  flow_sampling: 0.5
+  metadata: "INCLUDE_ALL_METADATA"
+  filter_expression: null
 ```
 <!-- BEGIN TFDOC -->
 
