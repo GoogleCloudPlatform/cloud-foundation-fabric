@@ -1,0 +1,58 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+rule-1:
+  description: global rule 1
+  action: allow
+  direction: ingress
+  priority: 1000
+  enable_logging: true
+  layer4_configs:
+    - protocol: tcp
+      ports:
+        - 80
+        - 443
+    - protocol: udp
+      ports:
+        - 555
+        - 666
+  src_ip_ranges:
+   - 192.168.1.100/32
+   - 10.10.10.0/24
+  target_secure_tags:
+    - 446253268572
+  src_secure_tags:
+    - 516738215535
+    - 839187618417
+
+rule-2:
+  description: global rule 2
+  action: allow
+  direction: EGRESS
+  priority: 1000
+  enable_logging: true
+  layer4_configs:
+    - protocol: tcp
+      ports:
+        - 80
+        - 443
+    - protocol: udp
+      ports:
+        - 555
+        - 666
+  dest_ip_ranges:
+    - 192.168.0.0/24
+    - 172.16.10.0/24
+  target_secure_tags:
+    - 446253268572

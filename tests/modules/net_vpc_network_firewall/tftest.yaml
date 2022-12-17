@@ -1,0 +1,6 @@
+module: modules/net-vpc-network-firewall
+
+tests:
+  test-plan:
+    tfvars:
+      - test-network-firewall-global.tfvars

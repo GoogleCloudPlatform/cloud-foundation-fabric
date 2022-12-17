@@ -1,0 +1,80 @@
+
+
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_network_firewall_policy.default[0]:
+   description: Global network firewall policy
+   name: global-test
+  google_compute_network_firewall_policy_association.default[0]:
+   attachment_target: my-network
+   firewall_policy: global-test
+   name: global-association
+  google_compute_network_firewall_policy_rule.default["rule-1"]:
+   action: allow
+   description: global rule 1
+   direction: INGRESS
+   disabled: false
+   enable_logging: true
+   firewall_policy: true
+   priority: 1000
+   rule_name: rule-1
+   match:
+    layer4_configs:
+      - protocol: tcp
+        ports:
+          - 80
+          - 443
+      - protocol: udp
+        ports:
+          - 555
+          - 666
+    src_ip_ranges:
+    - 192.168.1.100/32
+    - 10.10.10.0/24
+    target_secure_tags:
+      - 446253268572
+    src_secure_tags:
+      - 516738215535
+      - 839187618417
+  google_compute_network_firewall_policy_rule.default["rule-2"]:
+   action: allow
+   description: global rule 2
+   direction: EGRESS
+   disabled: false
+   enable_logging: true
+   firewall_policy: true
+   priority: 1000
+   rule_name: rule-2
+   match:
+    layer4_configs:
+      - protocol: tcp
+        ports:
+          - 80
+          - 443
+      - protocol: udp
+        ports:
+          - 555
+          - 666
+    dest_ip_ranges:
+      - 192.168.0.0/24
+      - 172.16.10.0/24
+    target_secure_tags:
+      - 446253268572
+
+counts:
+  google_compute_network_firewall_policy: 1
+  google_compute_network_firewall_policy_association: 1
+  google_compute_network_firewall_policy_rule: 2
