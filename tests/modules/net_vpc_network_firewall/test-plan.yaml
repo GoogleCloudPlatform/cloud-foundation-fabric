@@ -1,5 +1,3 @@
-
-
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project_id         = "my-project"
-global_network     = "my-network"
-data_folders       = ["./firewall-rules"]
-deployment_scope   = "global"
-global_policy_name = "global-test"
+counts:
+  google_compute_network_firewall_policy: 1
+  google_compute_network_firewall_policy_association: 1
+  google_compute_network_firewall_policy_rule: 1

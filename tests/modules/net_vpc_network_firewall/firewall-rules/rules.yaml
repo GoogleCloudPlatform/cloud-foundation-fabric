@@ -40,7 +40,7 @@ rule-2:
   description: global rule 2
   action: allow
   direction: EGRESS
-  priority: 1000
+  priority: 2000
   enable_logging: true
   layer4_configs:
     - protocol: tcp
