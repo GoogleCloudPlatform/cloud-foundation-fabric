@@ -48,16 +48,16 @@ locals {
   }
   cicd_workflow_var_files = {
     stage_2 = [
-      "0-0-bootstrap.auto.tfvars.json",
-      "1-0-resman.auto.tfvars.json",
+      "0-bootstrap.auto.tfvars.json",
+      "1-resman.auto.tfvars.json",
       "globals.auto.tfvars.json"
     ]
     stage_3 = [
-      "0-0-bootstrap.auto.tfvars.json",
-      "1-0-resman.auto.tfvars.json",
+      "0-bootstrap.auto.tfvars.json",
+      "1-resman.auto.tfvars.json",
       "globals.auto.tfvars.json",
-      "2-0-networking.auto.tfvars.json",
-      "2-0-security.auto.tfvars.json"
+      "2-networking.auto.tfvars.json",
+      "2-security.auto.tfvars.json"
     ]
   }
   custom_roles = coalesce(var.custom_roles, {})

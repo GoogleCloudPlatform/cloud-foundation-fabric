@@ -15,7 +15,7 @@
  */
 
 variable "automation" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket = string
@@ -23,7 +23,7 @@ variable "automation" {
 }
 
 variable "billing_account" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Billing account id and organization id ('nnnnnnnn' or null)."
   type = object({
     id              = string
@@ -32,7 +32,7 @@ variable "billing_account" {
 }
 
 variable "folder_ids" {
-  # tfdoc:variable:source 1-0-resman
+  # tfdoc:variable:source 1-resman
   description = "Folder name => id mappings, the 'security' folder name must exist."
   type = object({
     security = string
@@ -40,7 +40,7 @@ variable "folder_ids" {
 }
 
 variable "groups" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Group names to grant organization-level permissions."
   type        = map(string)
   # https://cloud.google.com/docs/enterprise/setup-checklist
@@ -78,7 +78,7 @@ variable "kms_keys" {
 }
 
 variable "organization" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
   type = object({
     domain      = string
@@ -94,7 +94,7 @@ variable "outputs_location" {
 }
 
 variable "prefix" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
 
@@ -105,7 +105,7 @@ variable "prefix" {
 }
 
 variable "service_accounts" {
-  # tfdoc:variable:source 1-0-resman
+  # tfdoc:variable:source 1-resman
   description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
   type = object({
     data-platform-dev    = string

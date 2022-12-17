@@ -19,7 +19,7 @@
 # cloud dns for gke?
 
 variable "automation" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket = string
@@ -27,7 +27,7 @@ variable "automation" {
 }
 
 variable "billing_account" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Billing account id and organization id ('nnnnnnnn' or null)."
   type = object({
     id              = string
@@ -147,7 +147,7 @@ variable "fleet_workload_identity" {
 }
 
 variable "folder_ids" {
-  # tfdoc:variable:source 1-0-resman
+  # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
   type = object({
     gke-dev = string
@@ -162,7 +162,7 @@ variable "group_iam" {
 }
 
 variable "host_project_ids" {
-  # tfdoc:variable:source 2-0-networking
+  # tfdoc:variable:source 2-networking
   description = "Host project for the shared VPC."
   type = object({
     dev-spoke-0 = string
@@ -223,7 +223,7 @@ variable "project_services" {
 }
 
 variable "vpc_self_links" {
-  # tfdoc:variable:source 2-0-networking
+  # tfdoc:variable:source 2-networking
   description = "Self link for the shared VPC."
   type = object({
     dev-spoke-0 = string

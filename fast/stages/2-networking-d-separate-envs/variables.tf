@@ -15,7 +15,7 @@
  */
 
 variable "automation" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket = string
@@ -23,7 +23,7 @@ variable "automation" {
 }
 
 variable "billing_account" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Billing account id and organization id ('nnnnnnnn' or null)."
   type = object({
     id              = string
@@ -48,7 +48,7 @@ variable "custom_adv" {
 }
 
 variable "custom_roles" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Custom roles defined at the org level, in key => id format."
   type = object({
     service_project_network_admin = string
@@ -72,7 +72,7 @@ variable "dns" {
 }
 
 variable "folder_ids" {
-  # tfdoc:variable:source 1-0-resman
+  # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
   type = object({
     networking      = string
@@ -100,7 +100,7 @@ variable "l7ilb_subnets" {
 }
 
 variable "organization" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
   type = object({
     domain      = string
@@ -116,7 +116,7 @@ variable "outputs_location" {
 }
 
 variable "prefix" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
 
@@ -187,7 +187,7 @@ variable "router_onprem_configs" {
 }
 
 variable "service_accounts" {
-  # tfdoc:variable:source 1-0-resman
+  # tfdoc:variable:source 1-resman
   description = "Automation service accounts in name => email format."
   type = object({
     data-platform-dev    = string
