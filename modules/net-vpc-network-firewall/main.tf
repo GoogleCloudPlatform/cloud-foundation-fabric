@@ -34,9 +34,7 @@ locals {
     ]...
   ), null)
 
-  firewall_rules = merge(try(local._files_rules, {}), try(var.firewall_rules, {}))
-
-  rules = { for k, v in local.firewall_rules : k => {
+  _firewall_rules = try({ for k, v in local._files_rules : k => {
     disabled                = try(v.disabled, false)
     description             = try(v.description, null)
     action                  = try(v.action, "allow")
@@ -50,18 +48,20 @@ locals {
     src_secure_tags         = try(v.src_secure_tags, null)
     target_secure_tags      = try(v.target_secure_tags, null)
     }
-  }
+  }, null)
+
+  rules = merge(local._firewall_rules, var.firewall_rules)
 }
 
 resource "google_compute_network_firewall_policy" "default" {
   count       = var.deployment_scope == "global" ? 1 : 0
-  name        = var.global_policy_name
+  name        = var.policy_name
   project     = var.project_id
   description = "Global network firewall policy"
 }
 
 resource "google_compute_network_firewall_policy_rule" "default" {
-  for_each        = var.deployment_scope == "global" ? local.rules : {}
+  for_each        = { for k, v in local.rules : k => v if var.deployment_scope == "global" }
   project         = var.project_id
   firewall_policy = google_compute_network_firewall_policy.default[0].name
   rule_name       = each.key
@@ -101,26 +101,26 @@ resource "google_compute_network_firewall_policy_rule" "default" {
 }
 
 resource "google_compute_network_firewall_policy_association" "default" {
-  count             = var.deployment_scope == "global" && var.global_network != null ? 1 : 0
+  count             = var.deployment_scope == "global" && var.network != null ? 1 : 0
   name              = "global-association"
-  attachment_target = var.global_network
+  attachment_target = var.network
   firewall_policy   = google_compute_network_firewall_policy.default[0].name
   project           = var.project_id
 }
 
 resource "google_compute_region_network_firewall_policy" "default" {
   count       = var.deployment_scope == "regional" ? 1 : 0
-  name        = var.regional_policy_name
+  name        = var.policy_name
   project     = var.project_id
   description = "Regional network firewall policy"
-  region      = var.firewall_policy_region
+  region      = var.policy_region
 }
 
 resource "google_compute_region_network_firewall_policy_rule" "default" {
-  for_each        = var.deployment_scope == "regional" ? local.rules : {}
+  for_each        = { for k, v in local.rules : k => v if var.deployment_scope == "regional" }
   project         = var.project_id
   firewall_policy = google_compute_region_network_firewall_policy.default[0].name
-  region          = var.firewall_policy_region
+  region          = var.policy_region
   rule_name       = each.key
   disabled        = each.value["disabled"]
   action          = each.value["action"]
@@ -159,10 +159,10 @@ resource "google_compute_region_network_firewall_policy_rule" "default" {
 }
 
 resource "google_compute_region_network_firewall_policy_association" "default" {
-  count             = var.deployment_scope == "regional" && var.regional_network != null ? 1 : 0
+  count             = var.deployment_scope == "regional" && var.network != null ? 1 : 0
   name              = "regional-association"
-  attachment_target = var.regional_network
+  attachment_target = var.network
   firewall_policy   = google_compute_region_network_firewall_policy.default[0].name
   project           = var.project_id
-  region            = var.firewall_policy_region
+  region            = var.policy_region
 }

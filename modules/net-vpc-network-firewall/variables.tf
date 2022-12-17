@@ -21,7 +21,7 @@ variable "data_folders" {
 }
 
 variable "deployment_scope" {
-  description = ""
+  description = "Firewall policy deployment scope. Can be either 'global' or 'regional'. "
   type        = string
   validation {
     condition = contains(
@@ -32,7 +32,7 @@ variable "deployment_scope" {
   }
 }
 
-variable "firewall_policy_region" {
+variable "policy_region" {
   description = "Network firewall policy region."
   type        = string
   default     = null
@@ -61,29 +61,17 @@ variable "firewall_rules" {
   nullable = false
 }
 
-variable "global_network" {
-  description = "VPC SelfLink to attach the global firewall policy."
+variable "network" {
+  description = "VPC SelfLink to attach the firewall policy."
   type        = string
   default     = null
 }
-variable "global_policy_name" {
-  description = "Global network firewall policy name."
+variable "policy_name" {
+  description = "Network firewall policy name."
   type        = string
-  default     = null
 }
 
 variable "project_id" {
   description = "Project id of the project that holds the network."
   type        = string
-}
-
-variable "regional_network" {
-  description = "VPC SelfLink to attach the regional firewall policy."
-  type        = string
-  default     = null
-}
-variable "regional_policy_name" {
-  description = "Global network firewall policy name."
-  type        = string
-  default     = null
 }
