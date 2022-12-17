@@ -12,31 +12,27 @@ This example will create a `cloud-config` that starts [Envoy Proxy](https://www.
 
 ```hcl
 module "cos-envoy" {
-  source = "./fabric/modules/cos-generic-metadata"
-
+  source = "./fabric/modules/cloud-config-container/cos-generic-metadata"
   container_image = "envoyproxy/envoy:v1.14.1"
   container_name  = "envoy"
   container_args  = "-c /etc/envoy/envoy.yaml --log-level info --allow-unknown-static-fields"
-
   container_volumes = [
     { host = "/etc/envoy/envoy.yaml", container = "/etc/envoy/envoy.yaml" }
   ]
-
   docker_args = "--network host --pid host"
-
+  # file paths are mocked to run this example in tests
   files = {
     "/var/run/envoy/customize.sh" = {
-      content     = file("customize.sh")
+      content     = file("/dev/null") # file("customize.sh")
       owner       = "root"
       permissions = "0744"
     }
     "/etc/envoy/envoy.yaml" = {
-      content     = file("envoy.yaml")
+      content     = file("/dev/null") # file("envoy.yaml")
       owner       = "root"
       permissions = "0644"
     }
   }
-
   run_commands = [
     "iptables -t nat -N ENVOY_IN_REDIRECT",
     "iptables -t nat -A ENVOY_IN_REDIRECT -p tcp -j REDIRECT --to-port 15001",
@@ -46,14 +42,13 @@ module "cos-envoy" {
     "systemctl daemon-reload",
     "systemctl start envoy",
   ]
-
-  users = [
-    {
-      username = "envoy",
-      uid      = 1337
-    }
-  ]
+  users = [{
+    username = "envoy",
+    uid      = 1337
+  }]
 }
+
+# tftest modules=0 resources=0
 ```
 <!-- BEGIN TFDOC -->
 

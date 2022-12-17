@@ -1,6 +1,6 @@
 # On-prem DNS and Google Private Access
 
-This blueprint leverages the [on prem in a box](../../../modules/cloud-config-container/onprem) module to bootstrap an emulated on-premises environment on GCP, then connects it via VPN and sets up BGP and DNS so that several specific features can be tested:
+This blueprint leverages the on prem in a box module to bootstrap an emulated on-premises environment on GCP, then connects it via VPN and sets up BGP and DNS so that several specific features can be tested:
 
 - [Cloud DNS forwarding zone](https://cloud.google.com/dns/docs/overview#fz-targets) to on-prem
 - DNS forwarding from on-prem via a [Cloud DNS inbound policy](https://cloud.google.com/dns/docs/policies#create-in)
@@ -30,7 +30,7 @@ The Cloud DNS inbound policy reserves an IP address in the VPC, which is used by
 
 ### Find out the forwarder entry point address
 
-Run this gcloud command to (find out the address assigned to the inbound forwarder)[https://cloud.google.com/dns/docs/policies#list-in-entrypoints]:
+Run this gcloud command to [find out the address assigned to the inbound forwarder](https://cloud.google.com/dns/docs/policies#list-in-entrypoints):
 
 ```bash
 gcloud compute addresses list --project [your project id]
@@ -199,7 +199,7 @@ curl www.onprem.example.org -s |grep h1
 
 A single pre-existing project is used in this blueprint to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
 
-The VPN-s used to connect to the on-premises environment do not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../../modules/net-vpn-ha).
+The VPN-s used to connect to the on-premises environment do not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../../../modules/net-vpn-ha).
 <!-- BEGIN TFDOC -->
 
 ## Variables
