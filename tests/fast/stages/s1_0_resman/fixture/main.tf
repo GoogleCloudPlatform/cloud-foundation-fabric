@@ -15,7 +15,7 @@
  */
 
 module "stage" {
-  source = "../../../../../fast/stages/01-resman"
+  source = "../../../../../fast/stages/1-0-resman"
   automation = {
     federated_identity_pool      = null
     federated_identity_providers = null

@@ -38,22 +38,22 @@ locals {
     k => try(module.organization.custom_role_id[v], null)
   }
   providers = {
-    "0-0-bootstrap" = templatefile(local._tpl_providers, {
+    "0-bootstrap" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-bootstrap-gcs.name
       name   = "bootstrap"
       prefix = null
       sa     = module.automation-tf-bootstrap-sa.email
     })
-    "1-1-tenant-bootstrap" = templatefile(local._tpl_providers, {
-      bucket = module.automation-tf-resman-gcs.name
-      name   = "resman"
-      prefix = "bootstrap-multitenant"
-      sa     = module.automation-tf-resman-sa.email
-    })
-    "1-0-resman" = templatefile(local._tpl_providers, {
+    "1-resman" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-resman-gcs.name
       name   = "resman"
       prefix = null
+      sa     = module.automation-tf-resman-sa.email
+    })
+    "multitenant/1-bootstrap" = templatefile(local._tpl_providers, {
+      bucket = module.automation-tf-resman-gcs.name
+      name   = "resman"
+      prefix = "bootstrap-multitenant"
       sa     = module.automation-tf-resman-sa.email
     })
   }

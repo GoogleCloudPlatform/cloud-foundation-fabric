@@ -30,7 +30,7 @@ resource "local_file" "providers" {
 resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${local.outputs_location}/tfvars/1-0-resman.auto.tfvars.json"
+  filename        = "${local.outputs_location}/tfvars/1-resman.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
 }
 

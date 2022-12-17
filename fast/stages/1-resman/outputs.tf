@@ -19,42 +19,42 @@ locals {
   cicd_workflow_attrs = {
     data_platform_dev = {
       service_account   = try(module.branch-dp-dev-sa-cicd.0.email, null)
-      tf_providers_file = "3-0-data-platform-dev-providers.tf"
+      tf_providers_file = "3-data-platform-dev-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     data_platform_prod = {
       service_account   = try(module.branch-dp-prod-sa-cicd.0.email, null)
-      tf_providers_file = "3-0-data-platform-prod-providers.tf"
+      tf_providers_file = "3-data-platform-prod-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     gke_dev = {
       service_account   = try(module.branch-gke-dev-sa-cicd.0.email, null)
-      tf_providers_file = "3-0-gke-dev-providers.tf"
+      tf_providers_file = "3-gke-dev-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     gke_prod = {
       service_account   = try(module.branch-gke-prod-sa-cicd.0.email, null)
-      tf_providers_file = "3-0-gke-prod-providers.tf"
+      tf_providers_file = "3-gke-prod-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     networking = {
       service_account   = try(module.branch-network-sa-cicd.0.email, null)
-      tf_providers_file = "2-0-networking-providers.tf"
+      tf_providers_file = "2-networking-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_2
     }
     project_factory_dev = {
       service_account   = try(module.branch-pf-dev-sa-cicd.0.email, null)
-      tf_providers_file = "3-0-project-factory-dev-providers.tf"
+      tf_providers_file = "3-project-factory-dev-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     project_factory_prod = {
       service_account   = try(module.branch-pf-prod-sa-cicd.0.email, null)
-      tf_providers_file = "3-0-project-factory-prod-providers.tf"
+      tf_providers_file = "3-project-factory-prod-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     security = {
       service_account   = try(module.branch-security-sa-cicd.0.email, null)
-      tf_providers_file = "2-0-security-providers.tf"
+      tf_providers_file = "2-security-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_2
     }
   }
@@ -154,7 +154,7 @@ locals {
     },
     !var.fast_features.teams ? {} : merge(
       {
-        "3-0-teams" = templatefile(local._tpl_providers, {
+        "3-teams" = templatefile(local._tpl_providers, {
           bucket = module.branch-teams-gcs.0.name
           name   = "teams"
           sa     = module.branch-teams-sa.0.email
@@ -162,7 +162,7 @@ locals {
       },
       {
         for k, v in module.branch-teams-team-sa :
-        "3-0-teams-${k}" => templatefile(local._tpl_providers, {
+        "3-teams-${k}" => templatefile(local._tpl_providers, {
           bucket = module.branch-teams-team-gcs[k].name
           name   = "teams"
           sa     = v.email
