@@ -20,9 +20,6 @@ from pathlib import Path
 import marko
 
 FABRIC_ROOT = Path(__file__).parents[2]
-BLUEPRINTS_PATH = FABRIC_ROOT / 'blueprints/'
-MODULES_PATH = FABRIC_ROOT / 'modules/'
-SUBMODULES_PATH = MODULES_PATH / 'cloud-config-container'
 
 FILE_TEST_RE = re.compile(r'# tftest-file +id=(\w+) +path=([\S]+)')
 
@@ -33,17 +30,12 @@ File = collections.namedtuple('File', 'path content')
 def pytest_generate_tests(metafunc):
   """Find all README.md files and collect code examples tagged for testing."""
   if 'example' in metafunc.fixturenames:
-    modules = [x for x in MODULES_PATH.iterdir() if x.is_dir()]
-    modules.extend(x for x in SUBMODULES_PATH.iterdir() if x.is_dir())
-    modules.extend(x for x in BLUEPRINTS_PATH.glob('*/*') if x.is_dir())
-    modules.sort()
+    readmes = FABRIC_ROOT.glob('**/README.md')
     examples = []
     ids = []
 
-    for module in modules:
-      readme = module / 'README.md'
-      if not readme.exists():
-        continue
+    for readme in readmes:
+      module = readme.parent
       doc = marko.parse(readme.read_text())
       index = 0
       files = collections.defaultdict(dict)
