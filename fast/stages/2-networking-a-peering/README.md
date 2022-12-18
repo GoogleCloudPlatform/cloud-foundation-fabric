@@ -44,13 +44,13 @@ As mentioned initially, there are of course other ways to implement internal con
 
 This is a summary of the main options:
 
-- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (implemented by [02-networking-vpn](../2-0-networking-b-vpn/))
+- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (implemented by [02-networking-vpn](../2-networking-b-vpn/))
   - Pros: simple compatibility with GCP services that leverage peering internally, better control on routes, avoids peering groups shared quotas and limits
   - Cons: additional cost, marginal increase in latency, requires multiple tunnels for full bandwidth
 - [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (implemented here)
   - Pros: no additional costs, full bandwidth with no configurations, no extra latency, total environment isolation
   - Cons: no transitivity (e.g. to GKE masters, Cloud SQL, etc.), no selective exchange of routes, several quotas and limits shared between VPCs in a peering group
-- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented by [02-networking-nva](../2-0-networking-c-nva/))
+- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented by [02-networking-nva](../2-networking-c-nva/))
   - Pros: additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
 
@@ -122,7 +122,7 @@ This configuration is battle-tested, and flexible enough to lend itself to simpl
 
 ## How to run this stage
 
-This stage is meant to be executed after the [resman](../1-0-resman) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured in the [bootstrap](../0-0-bootstrap) stage.
+This stage is meant to be executed after the [resman](../1-resman) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured in the [bootstrap](../0-bootstrap) stage.
 
 It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the previous stages for the environmental requirements.
 
@@ -130,7 +130,7 @@ Before running this stage, you need to make sure you have the correct credential
 
 ### Providers configuration
 
-The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage during the [resource management](../1-0-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
+The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage during the [resource management](../1-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
 
 To simplify setup, the previous stage pre-configures a valid providers file in its output, and optionally writes it to a local file if the `outputs_location` variable is set to a valid path.
 
@@ -144,7 +144,7 @@ ln -s ~/fast-config/providers/02-networking-providers.tf .
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
 
 ```bash
-cd ../1-0-resman
+cd ../1-resman
 terraform output -json providers | jq -r '.["02-networking"]' \
   > ../02-networking/providers.tf
 ```

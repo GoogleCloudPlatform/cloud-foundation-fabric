@@ -42,7 +42,7 @@ Some care needs to be taken with project membership in perimeters, which can onl
 
 ## How to run this stage
 
-This stage is meant to be executed after the [resource management](../1-0-resman) stage has run, as it leverages the folder and automation resources created there. The relevant user groups must also exist, but that's one of the requirements for the previous stages too, so if you ran those successfully, you're good to go.
+This stage is meant to be executed after the [resource management](../1-resman) stage has run, as it leverages the folder and automation resources created there. The relevant user groups must also exist, but that's one of the requirements for the previous stages too, so if you ran those successfully, you're good to go.
 
 It's possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the bootstrap stage for the required roles.
 
@@ -64,7 +64,7 @@ ln -s ~/fast-config/providers/02-security-providers.tf .
 If you have not configured `outputs_location` in resource management, you can derive the providers file from that stage's outputs:
 
 ```bash
-cd ../1-0-resman
+cd ../1-resman
 terraform output -json providers | jq -r '.["02-security"]' \
   > ../02-security/providers.tf
 ```
@@ -85,7 +85,7 @@ If you configured a valid path for `outputs_location` in the previous stages, si
 ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
 # also copy the tfvars file used for the bootstrap stage
-cp ../0-0-bootstrap/terraform.tfvars .
+cp ../0-bootstrap/terraform.tfvars .
 ```
 
 A second set of optional variables is specific to this stage. If you need to customize them add them to the file copied from bootstrap.

@@ -42,11 +42,11 @@ As per our GCP best practices the Data Platform relies on user groups to assign 
 
 ### Network
 
-A Shared VPC is used here, either from one of the FAST networking stages (e.g. [hub and spoke via VPN](../../2-0-networking-b-vpn)) or from an external source.
+A Shared VPC is used here, either from one of the FAST networking stages (e.g. [hub and spoke via VPN](../../2-networking-b-vpn)) or from an external source.
 
 ### Encryption
 
-Cloud KMS crypto keys can be configured wither from the [FAST security stage](../../2-0-security) or from an external source. This step is optional and depends on customer policies and security best practices.
+Cloud KMS crypto keys can be configured wither from the [FAST security stage](../../2-security) or from an external source. This step is optional and depends on customer policies and security best practices.
 
 To configure the use of Cloud KMS on resources, you have to specify the key id on the `service_encryption_keys` variable. Key locations should match resource locations.
 
@@ -66,9 +66,9 @@ You can configure your tags and roles associated by configuring the `data_catalo
 
 ### VPC-SC
 
-As is often the case in real-world configurations, [VPC-SC](https://cloud.google.com/vpc-service-controls) is needed to mitigate data exfiltration. VPC-SC can be configured from the [FAST security stage](../../2-0-security). This step is optional, but highly recomended, and depends on customer policies and security best practices.
+As is often the case in real-world configurations, [VPC-SC](https://cloud.google.com/vpc-service-controls) is needed to mitigate data exfiltration. VPC-SC can be configured from the [FAST security stage](../../2-security). This step is optional, but highly recomended, and depends on customer policies and security best practices.
 
-To configure the use of VPC-SC on the data platform, you have to specify the data platform project numbers on the `vpc_sc_perimeter_projects.dev` variable on [FAST security stage](../../2-0-security#perimeter-resources).
+To configure the use of VPC-SC on the data platform, you have to specify the data platform project numbers on the `vpc_sc_perimeter_projects.dev` variable on [FAST security stage](../../2-security#perimeter-resources).
 
 In the case your Data Warehouse need to handle confidential data and you have the requirement to separate them deeply from other data and IAM is not enough, the suggested configuration is to keep the confidential project in a separate VPC-SC perimeter with the adequate ingress/egress rules needed for the load and tranformation service account. Below you can find an high level diagram describing the configuration.
 
@@ -78,7 +78,7 @@ In the case your Data Warehouse need to handle confidential data and you have th
 
 ## How to run this stage
 
-This stage can be run in isolation by prviding the necessary variables, but it's really meant to be used as part of the FAST flow after the "foundational stages" ([`00-bootstrap`](../../0-0-bootstrap), [`01-resman`](../../1-0-resman), [`02-networking`](../../2-0-networking-b-vpn) and [`02-security`](../../2-0-security)).
+This stage can be run in isolation by prviding the necessary variables, but it's really meant to be used as part of the FAST flow after the "foundational stages" ([`00-bootstrap`](../../0-bootstrap), [`01-resman`](../../1-resman), [`02-networking`](../../2-networking-b-vpn) and [`02-security`](../../2-security)).
 
 When running in isolation, the following roles are needed on the principal used to apply Terraform:
 
@@ -112,9 +112,9 @@ ln -s ~/fast-config/providers/03-data-platform-dev-providers.tf .
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
 
 ```bash
-cd ../../1-0-resman
+cd ../../1-resman
 terraform output -json providers | jq -r '.["03-data-platform-dev"]' \
-  > ../3-0-data-platform/dev/providers.tf
+  > ../3-data-platform/dev/providers.tf
 ```
 
 ### Variable configuration
@@ -134,7 +134,7 @@ ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
 ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
 # also copy the tfvars file used for the bootstrap stage
-cp ../../0-0-bootstrap/terraform.tfvars .
+cp ../../0-bootstrap/terraform.tfvars .
 ```
 
 If you're not using FAST or its output files, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.

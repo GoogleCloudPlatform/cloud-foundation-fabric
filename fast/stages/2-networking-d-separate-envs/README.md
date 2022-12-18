@@ -89,7 +89,7 @@ This configuration is battle-tested, and flexible enough to lend itself to simpl
 
 ## How to run this stage
 
-This stage is meant to be executed after the [resman](../1-0-resman) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured in the [bootstrap](../0-0-bootstrap) stage.
+This stage is meant to be executed after the [resman](../1-resman) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured in the [bootstrap](../0-bootstrap) stage.
 
 It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the previous stages for the environmental requirements.
 
@@ -97,7 +97,7 @@ Before running this stage, you need to make sure you have the correct credential
 
 ### Providers configuration
 
-The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage during the [resource management](../1-0-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
+The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage during the [resource management](../1-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
 
 To simplify setup, the previous stage pre-configures a valid providers file in its output, and optionally writes it to a local file if the `outputs_location` variable is set to a valid path.
 
@@ -111,7 +111,7 @@ ln -s ~/fast-config/providers/02-networking-providers.tf .
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
 
 ```bash
-cd ../1-0-resman
+cd ../1-resman
 terraform output -json providers | jq -r '.["02-networking"]' \
   > ../02-networking/providers.tf
 ```
@@ -132,7 +132,7 @@ If you have set a valid value for `outputs_location` in the bootstrap and in the
 ln -s ../../configs/example/02-networking/terraform-bootstrap.auto.tfvars.json
 ln -s ../../configs/example/02-networking/terraform-resman.auto.tfvars.json
 # also copy the tfvars file used for the bootstrap stage
-cp ../0-0-bootstrap/terraform.tfvars .
+cp ../0-bootstrap/terraform.tfvars .
 ```
 
 A second set of variables is specific to this stage, they are all optional so if you need to customize them, add them to the file copied from bootstrap.

@@ -73,7 +73,7 @@ gcloud beta billing accounts add-iam-policy-binding $FAST_BA_ID \
 --member user:$FAST_BU --role roles/billing.admin
 ```
 
-If you are using a billing account in a different organization, please follow [these steps](0-0-bootstrap#billing-account-in-a-different-organization) instead.
+If you are using a billing account in a different organization, please follow [these steps](0-bootstrap#billing-account-in-a-different-organization) instead.
 
 ## Stage 0 (Bootstrap)
 
@@ -221,7 +221,7 @@ ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 edit terraform.tfvars
 ```
 
-Some examples of terraform.tfvars configurations for KMS and VPC-SC can be found [here](2-0-security#customizations)
+Some examples of terraform.tfvars configurations for KMS and VPC-SC can be found [here](2-security#customizations)
 
 ```bash
 # run init and apply
