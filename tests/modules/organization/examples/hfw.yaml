@@ -1,0 +1,62 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.org.google_compute_firewall_policy.policy["iap-policy"]:
+    parent: organizations/1122334455
+    short_name: iap-policy
+  module.org.google_compute_firewall_policy_association.association["iap_policy"]:
+    attachment_target: organizations/1122334455
+    name: organizations-1122334455
+  module.org.google_compute_firewall_policy_rule.rule["iap-policy-allow-admins"]:
+    action: allow
+    description: Access from the admin subnet to all subnets
+    direction: INGRESS
+    disabled: null
+    enable_logging: false
+    match:
+    - dest_ip_ranges: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: []
+      src_ip_ranges:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+    priority: 1000
+    target_resources: null
+    target_service_accounts: null
+  module.org.google_compute_firewall_policy_rule.rule["iap-policy-allow-iap-ssh"]:
+    action: allow
+    description: Always allow ssh from IAP.
+    direction: INGRESS
+    disabled: null
+    enable_logging: false
+    match:
+    - dest_ip_ranges: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '22'
+      src_ip_ranges:
+      - 35.235.240.0/20
+    priority: 100
+    target_resources: null
+    target_service_accounts: null
+    timeouts: null
+
+counts:
+  google_compute_firewall_policy: 1
+  google_compute_firewall_policy_association: 1
+  google_compute_firewall_policy_rule: 2

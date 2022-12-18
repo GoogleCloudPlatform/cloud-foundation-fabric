@@ -24,7 +24,7 @@ This example will create a `cloud-config` that uses the module's defaults, creat
 
 ```hcl
 module "cos-nginx" {
-  source           = "./fabric/modules/cloud-config-container/nginx"
+  source = "./fabric/modules/cloud-config-container/nginx"
 }
 
 module "vm-nginx-tls" {

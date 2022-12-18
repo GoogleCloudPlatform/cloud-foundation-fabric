@@ -56,7 +56,7 @@ module "cluster_1" {
     master_authorized_ranges = {
       fc1918_10_8 = "10.0.0.0/8"
     }
-    master_ipv4_cidr_block  = "192.168.0.0/28"
+    master_ipv4_cidr_block = "192.168.0.0/28"
   }
   enable_features = {
     dataplane_v2      = true
@@ -115,7 +115,7 @@ module "hub" {
     }
   }
   configmanagement_clusters = {
-    "default" = [ "cluster-1" ]
+    "default" = ["cluster-1"]
   }
 }
 
@@ -216,7 +216,7 @@ module "cluster_1" {
       mgmt           = "10.0.0.0/28"
       pods-cluster-1 = "10.3.0.0/16"
     }
-    master_ipv4_cidr_block  = "192.168.1.0/28"
+    master_ipv4_cidr_block = "192.168.1.0/28"
   }
   private_cluster_config = {
     enable_private_endpoint = false
@@ -240,10 +240,10 @@ module "cluster_1_nodepool" {
 }
 
 module "cluster_2" {
-  source                   = "./fabric/modules/gke-cluster"
-  project_id               = module.project.project_id
-  name                     = "cluster-2"
-  location                 = "europe-west4"
+  source     = "./fabric/modules/gke-cluster"
+  project_id = module.project.project_id
+  name       = "cluster-2"
+  location   = "europe-west4"
   vpc_config = {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["europe-west4/subnet-cluster-2"]
@@ -251,7 +251,7 @@ module "cluster_2" {
       mgmt           = "10.0.0.0/28"
       pods-cluster-1 = "10.3.0.0/16"
     }
-    master_ipv4_cidr_block  = "192.168.2.0/28"
+    master_ipv4_cidr_block = "192.168.2.0/28"
   }
   private_cluster_config = {
     enable_private_endpoint = false
@@ -264,11 +264,11 @@ module "cluster_2" {
 }
 
 module "cluster_2_nodepool" {
-  source                      = "./fabric/modules/gke-nodepool"
-  project_id                  = module.project.project_id
-  cluster_name                = module.cluster_2.name
-  location                    = "europe-west4"
-  name                        = "nodepool"
+  source          = "./fabric/modules/gke-nodepool"
+  project_id      = module.project.project_id
+  cluster_name    = module.cluster_2.name
+  location        = "europe-west4"
+  name            = "nodepool"
   node_count      = { initial = 1 }
   service_account = { create = true }
   tags            = ["cluster-2-node"]
@@ -277,7 +277,7 @@ module "cluster_2_nodepool" {
 module "hub" {
   source     = "./fabric/modules/gke-hub"
   project_id = module.project.project_id
-  clusters = { 
+  clusters = {
     cluster-1 = module.cluster_1.id
     cluster-2 = module.cluster_2.id
   }

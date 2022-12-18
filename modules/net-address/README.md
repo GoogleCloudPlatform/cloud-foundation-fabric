@@ -27,12 +27,12 @@ module "addresses" {
   project_id = var.project_id
   internal_addresses = {
     ilb-1 = {
-      purpose = "SHARED_LOADBALANCER_VIP"
+      purpose    = "SHARED_LOADBALANCER_VIP"
       region     = var.region
       subnetwork = var.subnet.self_link
     }
     ilb-2 = {
-      address = "10.0.0.2"
+      address    = "10.0.0.2"
       region     = var.region
       subnetwork = var.subnet.self_link
     }
@@ -66,11 +66,11 @@ module "addresses" {
   project_id = var.project_id
   psc_addresses = {
     one = {
-      address     = null
+      address = null
       network = var.vpc.self_link
     }
     two = {
-      address     = "10.0.0.32"
+      address = "10.0.0.32"
       network = var.vpc.self_link
     }
   }

@@ -1,0 +1,146 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.org.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
+    name: organizations/1234567890/policies/compute.disableGuestAttributesAccess
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+  module.org.google_org_policy_policy.default["constraints/compute.skipDefaultNetworkCreation"]:
+    name: organizations/1234567890/policies/constraints/compute.skipDefaultNetworkCreation
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+  module.org.google_org_policy_policy.default["constraints/compute.trustedImageProjects"]:
+    name: organizations/1234567890/policies/constraints/compute.trustedImageProjects
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - projects/my-project
+          denied_values: null
+  module.org.google_org_policy_policy.default["constraints/compute.vmExternalIpAccess"]:
+    name: organizations/1234567890/policies/constraints/compute.vmExternalIpAccess
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
+        values: []
+  module.org.google_org_policy_policy.default["constraints/iam.allowedPolicyMemberDomains"]:
+    name: organizations/1234567890/policies/constraints/iam.allowedPolicyMemberDomains
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - C0xxxxxxx
+          - C0yyyyyyy
+          denied_values: null
+  module.org.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    name: organizations/1234567890/policies/iam.disableServiceAccountKeyCreation
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+  module.org.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    name: organizations/1234567890/policies/iam.disableServiceAccountKeyUpload
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        values: []
+      - allow_all: null
+        condition:
+        - description: test condition
+          expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
+          location: somewhere
+          title: condition
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+  module.org.google_organization_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - group:cloud-owners@example.org
+    org_id: '1234567890'
+    role: roles/owner
+  module.org.google_organization_iam_binding.authoritative["roles/projectCreator"]:
+    condition: []
+    members:
+    - group:cloud-owners@example.org
+    org_id: '1234567890'
+    role: roles/projectCreator
+  module.org.google_organization_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - group:cloud-admins@example.org
+    org_id: '1234567890'
+    role: roles/resourcemanager.projectCreator
+  module.org.google_organization_iam_member.additive["roles/compute.admin-user:compute@example.org"]:
+    condition: []
+    member: user:compute@example.org
+    org_id: '1234567890'
+    role: roles/compute.admin
+  module.org.google_organization_iam_member.additive["roles/container.viewer-user:compute@example.org"]:
+    condition: []
+    member: user:compute@example.org
+    org_id: '1234567890'
+    role: roles/container.viewer
+counts:
+  google_org_policy_policy: 8
+  google_organization_iam_binding: 3

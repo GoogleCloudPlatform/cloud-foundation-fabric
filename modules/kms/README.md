@@ -14,9 +14,9 @@ In this module **no lifecycle blocks are set on resources to prevent destroy**, 
 
 ```hcl
 module "kms" {
-  source         = "./fabric/modules/kms"
-  project_id     = "my-project"
-  iam    = {
+  source     = "./fabric/modules/kms"
+  project_id = "my-project"
+  iam = {
     "roles/cloudkms.admin" = ["user:user1@example.com"]
   }
   keyring        = { location = "europe-west1", name = "test" }
@@ -63,8 +63,8 @@ module "kms" {
 
 ```hcl
 module "kms" {
-  source      = "./fabric/modules/kms"
-  project_id  = "my-project"
+  source     = "./fabric/modules/kms"
+  project_id = "my-project"
   key_purpose = {
     key-c = {
       purpose = "ASYMMETRIC_SIGN"
@@ -74,8 +74,8 @@ module "kms" {
       }
     }
   }
-  keyring     = { location = "europe-west1", name = "test" }
-  keys        = { key-a = null, key-b = null, key-c = null }
+  keyring = { location = "europe-west1", name = "test" }
+  keys    = { key-a = null, key-b = null, key-c = null }
 }
 # tftest modules=1 resources=4
 ```

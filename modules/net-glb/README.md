@@ -117,7 +117,7 @@ The module uses a classic Global Load Balancer by default. To use the non-classi
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source              = "./fabric/modules/net-glb"
   project_id          = "myprj"
   name                = "glb-test-0"
   use_classic_version = false
@@ -320,8 +320,8 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       hybrid = {
-        network    = "projects/myprj-host/global/networks/svpc"
-        zone       = "europe-west8-b"
+        network = "projects/myprj-host/global/networks/svpc"
+        zone    = "europe-west8-b"
         endpoints = [{
           ip_address = "10.0.0.10"
           port       = 80
@@ -355,10 +355,10 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       internet = {
-        use_fqdn  = true
+        use_fqdn = true
         endpoints = [{
           destination = "www.example.org"
-          port = 80
+          port        = 80
         }]
       }
     }
@@ -373,7 +373,7 @@ The module supports managing PSC NEGs if the non-classic version of the load bal
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source              = "./fabric/modules/net-glb"
   project_id          = "myprj"
   name                = "glb-test-0"
   use_classic_version = false
@@ -390,7 +390,7 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       psc = {
-        region = "europe-west8"
+        region         = "europe-west8"
         target_service = "europe-west8-cloudkms.googleapis.com"
       }
     }
@@ -465,7 +465,7 @@ module "glb-0" {
       pathmap = {
         default_service = "default"
         path_rules = [{
-          paths = ["/other", "/other/*"]
+          paths   = ["/other", "/other/*"]
           service = "other"
         }]
       }
@@ -554,16 +554,16 @@ module "glb-0" {
     neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend          = "neg-ew8-c"
+        backend        = "neg-ew8-c"
         max_rate       = { per_endpoint = 10 }
       }]
     }
     neg-hybrid-0 = {
       backends = [{
-        backend          = "neg-hello"
+        backend = "neg-hello"
       }]
-      health_checks      = ["neg"]
-      protocol           = "HTTPS"
+      health_checks = ["neg"]
+      protocol      = "HTTPS"
     }
   }
   group_configs = {
@@ -600,7 +600,7 @@ module "glb-0" {
       gce = {
         network    = "projects/myprj-host/global/networks/svpc"
         subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
-        zone = "europe-west8-c"
+        zone       = "europe-west8-c"
         endpoints = [{
           instance   = "nginx-ew8-c"
           ip_address = "10.24.32.26"
@@ -610,8 +610,8 @@ module "glb-0" {
     }
     neg-hello = {
       hybrid = {
-        network    = "projects/myprj-host/global/networks/svpc"
-        zone      = "europe-west8-b"
+        network = "projects/myprj-host/global/networks/svpc"
+        zone    = "europe-west8-b"
         endpoints = [{
           ip_address = "192.168.0.3"
           port       = 443

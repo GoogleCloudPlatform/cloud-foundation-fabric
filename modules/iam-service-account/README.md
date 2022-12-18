@@ -8,12 +8,11 @@ Note that this module does not fully comply with our design principles, as outpu
 
 ```hcl
 module "myproject-default-service-accounts" {
-  source            = "./fabric/modules/iam-service-account"
-  project_id        = "myproject"
-  name              = "vm-default"
-  generate_key      = true
+  source     = "./fabric/modules/iam-service-account"
+  project_id = "myproject"
+  name       = "vm-default"
   # authoritative roles granted *on* the service accounts to other identities
-  iam       = {
+  iam = {
     "roles/iam.serviceAccountUser" = ["user:foo@example.com"]
   }
   # non-authoritative roles granted *to* the service accounts on other resources
@@ -24,7 +23,7 @@ module "myproject-default-service-accounts" {
     ]
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=4 inventory=basic.yaml
 ```
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->

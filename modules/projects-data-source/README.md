@@ -31,7 +31,7 @@ output "folders" {
 module "my-dev" {
   source = "./fabric/modules/projects-data-source"
   parent = "folders/123456789"
-  filter = "labels.env:DEV lifecycleState:ACTIVE"   
+  filter = "labels.env:DEV lifecycleState:ACTIVE"
 }
 
 output "dev-projects" {
