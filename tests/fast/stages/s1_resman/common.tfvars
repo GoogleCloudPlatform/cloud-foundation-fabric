@@ -6,8 +6,7 @@ automation = {
   outputs_bucket               = "test"
 }
 billing_account = {
-  id              = "000000-111111-222222"
-  organization_id = 123456789012
+  id = "000000-111111-222222"
 }
 custom_roles = {
   # organization_iam_admin = "organizations/123456789012/roles/organizationIamAdmin",
