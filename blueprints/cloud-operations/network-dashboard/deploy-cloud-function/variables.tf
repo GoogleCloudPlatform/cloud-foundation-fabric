@@ -35,6 +35,12 @@ variable "cloud_function_config" {
   nullable = false
 }
 
+variable "dashboard_json_path" {
+  description = "Optional monitoring dashboard to deploy."
+  type        = string
+  default     = null
+}
+
 variable "discovery_config" {
   description = "Discovery configuration. Discovery root is the organization or a folder. If monitored folders and projects are empy, every project under the discovery root node will be monitored."
   type = object({

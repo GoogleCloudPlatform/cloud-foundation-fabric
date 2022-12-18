@@ -136,3 +136,9 @@ resource "google_project_iam_member" "monitoring" {
   role    = "roles/monitoring.metricWriter"
   member  = module.cloud-function.service_account_iam_email
 }
+
+resource "google_monitoring_dashboard" "dashboard" {
+  count          = var.dashboard_json_path == null ? 0 : 1
+  project        = var.project_id
+  dashboard_json = file(var.dashboard_json_path)
+}

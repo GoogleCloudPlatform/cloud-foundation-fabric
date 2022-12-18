@@ -50,22 +50,31 @@ If the function crashes or its behaviour is not as expected, you can turn on deb
 # copy and paste to the function's "Testing" tab in the console
 tf output -raw troubleshooting_payload
 ```
+
+## Monitoring dashboard
+
+A monitoring dashboard can be optionally be deployed int he same project by setting the `dashboard_json_path` variable to the path of a dashboard JSON file. A sample dashboard is in included, and can be deployed with this variable configuration:
+
+```hcl
+dashboard_json_path = "../dashboards/quotas-utilization.json"
+```
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [discovery_config](variables.tf#L38) | Discovery configuration. Discovery root is the organization or a folder. If monitored folders and projects are empy, every project under the discovery root node will be monitored. | <code title="object&#40;&#123;&#10;  discovery_root     &#61; string&#10;  monitored_folders  &#61; list&#40;string&#41;&#10;  monitored_projects &#61; list&#40;string&#41;&#10;  custom_quota_file  &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L84) | Project id where the Cloud Function will be deployed. | <code>string</code> | ✓ |  |
+| [discovery_config](variables.tf#L44) | Discovery configuration. Discovery root is the organization or a folder. If monitored folders and projects are empy, every project under the discovery root node will be monitored. | <code title="object&#40;&#123;&#10;  discovery_root     &#61; string&#10;  monitored_folders  &#61; list&#40;string&#41;&#10;  monitored_projects &#61; list&#40;string&#41;&#10;  custom_quota_file  &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L90) | Project id where the Cloud Function will be deployed. | <code>string</code> | ✓ |  |
 | [bundle_path](variables.tf#L17) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
 | [cloud_function_config](variables.tf#L23) | Optional Cloud Function configuration. | <code title="object&#40;&#123;&#10;  bucket_name          &#61; optional&#40;string&#41;&#10;  build_worker_pool_id &#61; optional&#40;string&#41;&#10;  bundle_path          &#61; optional&#40;string, &#34;.&#47;bundle.zip&#34;&#41;&#10;  debug                &#61; optional&#40;bool, false&#41;&#10;  memory_mb            &#61; optional&#40;number, 256&#41;&#10;  source_dir           &#61; optional&#40;string, &#34;..&#47;src&#34;&#41;&#10;  timeout_seconds      &#61; optional&#40;number, 540&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [grant_discovery_iam_roles](variables.tf#L56) | Optionally grant required IAM roles to Cloud Function service account. | <code>bool</code> |  | <code>false</code> |
-| [labels](variables.tf#L63) | Billing labels used for the Cloud Function, and the project if project_create is true. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [name](variables.tf#L69) | Name used to create Cloud Function related resources. | <code>string</code> |  | <code>&#34;net-dash&#34;</code> |
-| [project_create_config](variables.tf#L75) | Optional configuration if project creation is required. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent_id          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L89) | Compute region where the Cloud Function will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [schedule_config](variables.tf#L95) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0&#47;30 &#42; &#42; &#42; &#42;&#34;</code> |
+| [dashboard_json_path](variables.tf#L38) | Optional monitoring dashboard to deploy. | <code>string</code> |  | <code>null</code> |
+| [grant_discovery_iam_roles](variables.tf#L62) | Optionally grant required IAM roles to Cloud Function service account. | <code>bool</code> |  | <code>false</code> |
+| [labels](variables.tf#L69) | Billing labels used for the Cloud Function, and the project if project_create is true. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L75) | Name used to create Cloud Function related resources. | <code>string</code> |  | <code>&#34;net-dash&#34;</code> |
+| [project_create_config](variables.tf#L81) | Optional configuration if project creation is required. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent_id          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L95) | Compute region where the Cloud Function will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [schedule_config](variables.tf#L101) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0&#47;30 &#42; &#42; &#42; &#42;&#34;</code> |
 
 ## Outputs
 
