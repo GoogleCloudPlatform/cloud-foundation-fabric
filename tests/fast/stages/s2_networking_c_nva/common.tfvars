@@ -1,10 +1,9 @@
-data_dir = "../../../fast/stages/02-networking-nva/data/"
+data_dir = "../../../fast/stages/2-networking-c-nva/data/"
 automation = {
   outputs_bucket = "test"
 }
 billing_account = {
-  id              = "000000-111111-222222"
-  organization_id = 123456789012
+  id = "000000-111111-222222"
 }
 custom_roles = {
   service_project_network_admin = "organizations/123456789012/roles/foo"

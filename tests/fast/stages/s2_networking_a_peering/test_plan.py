@@ -20,16 +20,16 @@ from deepdiff import DeepDiff
 
 BASEDIR = Path(__file__).parent
 FIXTURE_PEERING = BASEDIR / 'fixture'
-FIXTURE_VPN = BASEDIR.parent / 's02_networking_vpn/fixture'
+FIXTURE_VPN = BASEDIR.parent / 's2_networking_b_vpn/fixture'
 
 STAGES = Path(__file__).parents[4] / 'fast/stages'
-STAGE_PEERING = STAGES / '02-networking-peering'
-STAGE_VPN = STAGES / '02-networking-vpn'
+STAGE_PEERING = STAGES / '2-networking-a-peering'
+STAGE_VPN = STAGES / '2-networking-b-vpn'
 
 
 def test_counts(plan_summary):
   "Test stage."
-  summary = plan_summary("fast/stages/02-networking-peering",
+  summary = plan_summary("fast/stages/2-networking-a-peering",
                          tf_var_files=["common.tfvars"])
   assert summary.counts["modules"] > 0
   assert summary.counts["resources"] > 0
@@ -38,9 +38,9 @@ def test_counts(plan_summary):
 def test_vpn_peering_parity(plan_summary):
   '''Ensure VPN- and peering-based networking stages are identical except
   for VPN and VPC peering resources'''
-  summary_peering = plan_summary("fast/stages/02-networking-peering",
+  summary_peering = plan_summary("fast/stages/2-networking-a-peering",
                                  tf_var_files=["common.tfvars"])
-  summary_vpn = plan_summary("fast/stages/02-networking-vpn",
+  summary_vpn = plan_summary("fast/stages/2-networking-b-vpn",
                              tf_var_files=["common.tfvars"])
 
   ddiff = DeepDiff(summary_vpn.values, summary_peering.values,
