@@ -2,8 +2,7 @@ automation = {
   outputs_bucket = "test"
 }
 billing_account = {
-  id              = "012345-67890A-BCDEF0",
-  organization_id = 123456
+  id = "012345-67890A-BCDEF0",
 }
 folder_ids = {
   data-platform-dev = "folders/12345678"
@@ -12,9 +11,9 @@ host_project_ids = {
   dev-spoke-0 = "fast-dev-net-spoke-0"
 }
 organization = {
-  domain      = "example.com"
+  domain      = "fast.example.com"
   id          = 123456789012
-  customer_id = "A11aaaaa1"
+  customer_id = "C00000000"
 }
 prefix = "fast"
 subnet_self_links = {

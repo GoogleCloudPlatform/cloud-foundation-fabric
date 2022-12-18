@@ -2,8 +2,7 @@ automation = {
   outputs_bucket = "test"
 }
 billing_account = {
-  id              = "012345-67890A-BCDEF0",
-  organization_id = 123456
+  id = "012345-67890A-BCDEF0",
 }
 clusters = {
   mycluster = {

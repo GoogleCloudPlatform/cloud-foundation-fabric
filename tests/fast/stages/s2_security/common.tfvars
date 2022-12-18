@@ -2,16 +2,15 @@ automation = {
   outputs_bucket = "test"
 }
 billing_account = {
-  id              = "000000-111111-222222"
-  organization_id = 123456789012
+  id = "000000-111111-222222"
 }
 folder_ids = {
   security = null
 }
 organization = {
-  domain      = "gcp-pso-italy.net"
-  id          = 856933387836
-  customer_id = "C01lmug8b"
+  domain      = "fast.example.com"
+  id          = 123456789012
+  customer_id = "C00000000"
 }
 prefix = "fast"
 kms_keys = {

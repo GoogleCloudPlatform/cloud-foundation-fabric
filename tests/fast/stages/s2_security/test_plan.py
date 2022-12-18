@@ -15,7 +15,7 @@
 
 def test_counts(plan_summary):
   "Test stage."
-  summary = plan_summary("fast/stages/02-security",
+  summary = plan_summary("fast/stages/2-security",
                          tf_var_files=["common.tfvars"])
   assert summary.counts["modules"] > 0
   assert summary.counts["resources"] > 0
