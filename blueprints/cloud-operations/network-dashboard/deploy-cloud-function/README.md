@@ -55,7 +55,7 @@ tf output -raw troubleshooting_payload
 
 A monitoring dashboard can be optionally be deployed int he same project by setting the `dashboard_json_path` variable to the path of a dashboard JSON file. A sample dashboard is in included, and can be deployed with this variable configuration:
 
-```hcl
+```tfvars
 dashboard_json_path = "../dashboards/quotas-utilization.json"
 ```
 <!-- BEGIN TFDOC -->
