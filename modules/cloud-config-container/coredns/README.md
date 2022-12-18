@@ -24,7 +24,7 @@ This example will create a `cloud-config` that uses the module's defaults, creat
 
 ```hcl
 module "cos-coredns" {
-  source           = "./fabric/modules/cloud-config-container/coredns"
+  source = "./fabric/modules/cloud-config-container/coredns"
 }
 
 module "vm" {
@@ -56,7 +56,7 @@ This example will create a `cloud-config` using a custom CoreDNS configuration, 
 
 ```hcl
 module "cos-coredns" {
-  source           = "./fabric/modules/cloud-config-container/coredns"
+  source         = "./fabric/modules/cloud-config-container/coredns"
   coredns_config = "./fabric/modules/cloud-config-container/coredns/Corefile-hosts"
   files = {
     "/etc/coredns/example.hosts" = {
@@ -64,7 +64,7 @@ module "cos-coredns" {
       owner       = null
       permissions = "0644"
     }
-  }  
+  }
 }
 # tftest modules=0 resources=0
 ```

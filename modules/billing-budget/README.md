@@ -29,7 +29,7 @@ module "budget" {
   ]
   email_recipients = {
     project_id = "my-project"
-    emails     =  ["user@example.com"]
+    emails     = ["user@example.com"]
   }
 }
 # tftest modules=1 resources=2

@@ -243,9 +243,9 @@ module "nginx-mig" {
   target_size       = 3
   instance_template = module.nginx-template.template.self_link
   update_policy = {
-    minimal_action       = "REPLACE"
-    type                 = "PROACTIVE"
-    min_ready_sec        = 30
+    minimal_action = "REPLACE"
+    type           = "PROACTIVE"
+    min_ready_sec  = 30
     max_surge = {
       fixed = 1
     }
@@ -393,8 +393,8 @@ module "nginx-mig" {
   stateful_config = {
     # name needs to match a MIG instance name
     instance-1 = {
-      minimal_action                   = "NONE",
-      most_disruptive_allowed_action   = "REPLACE"
+      minimal_action                 = "NONE",
+      most_disruptive_allowed_action = "REPLACE"
       preserved_state = {
         disks = {
           persistent-disk-1 = {

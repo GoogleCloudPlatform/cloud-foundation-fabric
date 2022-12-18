@@ -14,18 +14,18 @@ module "cloud_run" {
   project_id = "my-project"
   name       = "hello"
   containers = [{
-    image   = "us-docker.pkg.dev/cloudrun/container/hello"
+    image = "us-docker.pkg.dev/cloudrun/container/hello"
     options = {
       command = null
       args    = null
-      env     = {
-        "VAR1": "VALUE1",
-        "VAR2": "VALUE2",
+      env = {
+        "VAR1" : "VALUE1",
+        "VAR2" : "VALUE2",
       }
       env_from = null
     }
-    ports = null
-    resources = null
+    ports         = null
+    resources     = null
     volume_mounts = null
   }]
 }
@@ -42,18 +42,18 @@ module "cloud_run" {
   containers = [{
     image = "us-docker.pkg.dev/cloudrun/container/hello"
     options = {
-      command   = null
-      args      = null
-      env       = null
-      env_from  = {
-        "CREDENTIALS": {
+      command = null
+      args    = null
+      env     = null
+      env_from = {
+        "CREDENTIALS" : {
           name = "credentials"
-          key = "1"
+          key  = "1"
         }
       }
     }
-    ports = null
-    resources = null
+    ports         = null
+    resources     = null
     volume_mounts = null
   }]
 }
@@ -64,26 +64,26 @@ module "cloud_run" {
 
 ```hcl
 module "cloud_run" {
-  source     = "./fabric/modules/cloud-run"
-  project_id = var.project_id
-  name       = "hello"
-  region     = var.region
+  source        = "./fabric/modules/cloud-run"
+  project_id    = var.project_id
+  name          = "hello"
+  region        = var.region
   revision_name = "green"
   containers = [{
-    image         = "us-docker.pkg.dev/cloudrun/container/hello"
-    options       = null
-    ports         = null
-    resources     = null
+    image     = "us-docker.pkg.dev/cloudrun/container/hello"
+    options   = null
+    ports     = null
+    resources = null
     volume_mounts = {
-      "credentials": "/credentials"
+      "credentials" : "/credentials"
     }
   }]
   volumes = [
     {
-      name = "credentials"
+      name        = "credentials"
       secret_name = "credentials"
       items = [{
-        key = "1"
+        key  = "1"
         path = "v1.txt"
       }]
     }
@@ -98,9 +98,9 @@ This deploys a Cloud Run service with traffic split between two revisions.
 
 ```hcl
 module "cloud_run" {
-  source     = "./fabric/modules/cloud-run"
-  project_id = "my-project"
-  name       = "hello"
+  source        = "./fabric/modules/cloud-run"
+  project_id    = "my-project"
+  name          = "hello"
   revision_name = "green"
   containers = [{
     image         = "us-docker.pkg.dev/cloudrun/container/hello"
@@ -110,7 +110,7 @@ module "cloud_run" {
     volume_mounts = null
   }]
   traffic = {
-    "blue" = 25
+    "blue"  = 25
     "green" = 75
   }
 }
@@ -159,8 +159,8 @@ module "cloud_run" {
   }]
   audit_log_triggers = [
     {
-      service_name  = "cloudresourcemanager.googleapis.com"
-      method_name   = "SetIamPolicy"
+      service_name = "cloudresourcemanager.googleapis.com"
+      method_name  = "SetIamPolicy"
     }
   ]
 }

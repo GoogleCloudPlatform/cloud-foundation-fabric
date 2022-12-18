@@ -62,7 +62,7 @@ module "bucket" {
   source     = "./fabric/modules/gcs"
   project_id = "myproject"
   prefix     = "test"
-  name      = "my-bucket"
+  name       = "my-bucket"
 
   iam = {
     "roles/storage.admin" = ["group:storage@example.com"]

@@ -97,34 +97,6 @@ def e2e_plan_runner(_plan_runner):
 
 
 @pytest.fixture(scope='session')
-def recursive_e2e_plan_runner(_plan_runner):
-  """
-  Plan runner for end-to-end root module, returns total number of
-  (nested) modules and resources
-  """
-
-  def walk_plan(node, modules, resources):
-    new_modules = node.get('child_modules', [])
-    resources += node.get('resources', [])
-    modules += new_modules
-    for module in new_modules:
-      walk_plan(module, modules, resources)
-
-  def run_plan(fixture_path=None, tf_var_file=None, targets=None, refresh=True,
-               include_bare_resources=False, compute_sums=True, tmpdir=True,
-               **tf_vars):
-    'Run Terraform plan on a root module using defaults, returns data.'
-    plan = _plan_runner(fixture_path, tf_var_file=tf_var_file, targets=targets,
-                        refresh=refresh, tmpdir=tmpdir, **tf_vars)
-    modules = []
-    resources = []
-    walk_plan(plan.root_module, modules, resources)
-    return len(modules), len(resources)
-
-  return run_plan
-
-
-@pytest.fixture(scope='session')
 def apply_runner():
   'Return a function to run Terraform apply on a fixture.'
 

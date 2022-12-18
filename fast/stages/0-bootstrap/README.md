@@ -54,7 +54,7 @@ For same-organization billing, we configure a custom organization role that can 
 
 For details on configuring the different billing account modes, refer to the [How to run this stage](#how-to-run-this-stage) section below.
 
-Because of limitations of API availability, manual steps have to be followed to enable billing export within billing project to BigQuery dataset `billing_export` which will be created as part of the bootstrap stage. THe process to share billing data [is outlined here](https://cloud.google.com/billing/docs/how-to/export-data-bigquery-setup#enable-bq-export).
+Because of limitations of API availability, manual steps have to be followed to enable billing export within billing project to BigQuery dataset `billing_export` which will be created as part of the bootstrap stage. The process to share billing data [is outlined here](https://cloud.google.com/billing/docs/how-to/export-data-bigquery-setup#enable-bq-export).
 
 ### Organization-level logging
 
@@ -226,7 +226,7 @@ Alongisde the GCS stored files, you can also configure a second copy to be saves
 
 This second set of files is disabled by default, you can enable it by setting the `outputs_location` variable to a valid path on a local filesystem, e.g.
 
-```hcl
+```tfvars
 outputs_location = "~/fast-config"
 ```
 
@@ -298,10 +298,11 @@ variable "groups" {
   description = "Group names to grant organization-level permissions."
   type        = map(string)
   default = {
-    gcp-network-admins      = "net-rockstars"
+    gcp-network-admins = "net-rockstars"
     # [...]
   }
 }
+# tftest skip
 ```
 
 If your groups layout differs substantially from the checklist, define all relevant groups in the `groups` variable, then rearrange IAM roles in the code to match your setup.
@@ -360,7 +361,7 @@ Provider key names are used by the `cicd_repositories` variable to configure aut
 
 This is a sample configuration of a GitHub and a Gitlab provider, `attribute_condition` attribute can use any of the mapped attribute for the provider (refer to the `identity-providers.tf` file for the full list) or set to `null` if needed:
 
-```hcl
+```tfvars
 federated_identity_providers = {
   github-sample = {
     attribute_condition = "attribute.repository_owner==\"my-github-org\""
@@ -375,9 +376,9 @@ federated_identity_providers = {
   gitlab-ce-sample = {
     attribute_condition = "attribute.namespace_path==\"my-gitlab-org\""
     issuer              = "gitlab"
-    custom_settings     = {
-      issuer_uri          = "https://gitlab.fast.example.com"
-      allowed_audiences   = ["https://gitlab.fast.example.com"]
+    custom_settings = {
+      issuer_uri        = "https://gitlab.fast.example.com"
+      allowed_audiences = ["https://gitlab.fast.example.com"]
     }
   }
 }
@@ -391,7 +392,7 @@ The repository design we support is fairly simple, with a repository for modules
 
 This is an example of configuring the bootstrap and resource management repositories in this stage. CI/CD configuration is optional, so the entire variable or any of its attributes can be set to null if not needed.
 
-```hcl
+```tfvars
 cicd_repositories = {
   bootstrap = {
     branch            = null

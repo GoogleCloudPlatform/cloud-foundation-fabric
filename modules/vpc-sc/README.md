@@ -120,7 +120,7 @@ module "test" {
       to = {
         operations = [{
           method_selectors = ["*"]
-          service_name = "storage.googleapis.com"
+          service_name     = "storage.googleapis.com"
         }]
         resources = ["projects/123456789"]
       }

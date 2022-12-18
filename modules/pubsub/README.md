@@ -28,7 +28,7 @@ module "topic_with_schema" {
   name       = "my-topic"
   schema = {
     msg_encoding = "JSON"
-    schema_type = "AVRO"
+    schema_type  = "AVRO"
     definition = jsonencode({
       "type" = "record",
       "name" = "Avro",

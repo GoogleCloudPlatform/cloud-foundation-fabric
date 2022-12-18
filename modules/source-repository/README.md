@@ -27,16 +27,16 @@ module "repo" {
   name       = "my-repo"
   triggers = {
     foo = {
-      filename = "ci/workflow-foo.yaml"
-      included_files = ["**/*tf"]
+      filename        = "ci/workflow-foo.yaml"
+      included_files  = ["**/*tf"]
       service_account = null
       substitutions = {
         BAR = 1
       }
       template = {
         branch_name = "main"
-        project_id = null
-        tag_name = null
+        project_id  = null
+        tag_name    = null
       }
     }
   }

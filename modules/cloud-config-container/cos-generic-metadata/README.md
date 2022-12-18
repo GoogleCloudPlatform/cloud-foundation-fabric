@@ -12,7 +12,7 @@ This example will create a `cloud-config` that starts [Envoy Proxy](https://www.
 
 ```hcl
 module "cos-envoy" {
-  source = "./fabric/modules/cloud-config-container/cos-generic-metadata"
+  source          = "./fabric/modules/cloud-config-container/cos-generic-metadata"
   container_image = "envoyproxy/envoy:v1.14.1"
   container_name  = "envoy"
   container_args  = "-c /etc/envoy/envoy.yaml --log-level info --allow-unknown-static-fields"

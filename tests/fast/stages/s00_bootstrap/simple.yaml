@@ -1,0 +1,49 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+counts:
+  google_bigquery_dataset: 2
+  google_bigquery_dataset_iam_member: 2
+  google_bigquery_default_service_account: 3
+  google_logging_organization_sink: 2
+  google_organization_iam_binding: 19
+  google_organization_iam_custom_role: 2
+  google_organization_iam_member: 16
+  google_project: 3
+  google_project_iam_binding: 9
+  google_project_iam_member: 1
+  google_project_service: 29
+  google_project_service_identity: 2
+  google_service_account: 3
+  google_service_account_iam_binding: 3
+  google_storage_bucket: 4
+  google_storage_bucket_iam_binding: 2
+  google_storage_bucket_iam_member: 3
+  google_storage_bucket_object: 5
+  google_storage_project_service_account: 3
+  local_file: 5
+
+outputs:
+  custom_roles:
+    organization_iam_admin: organizations/123456789012/roles/organizationIamAdmin
+    service_project_network_admin: organizations/123456789012/roles/serviceProjectNetworkAdmin
+  outputs_bucket: fast-prod-iac-core-outputs-0
+  project_ids:
+    automation: fast-prod-iac-core-0
+    billing-export: fast-prod-billing-exp-0
+    log-export: fast-prod-audit-logs-0
+  service_accounts:
+    bootstrap: fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    cicd: fast-prod-cicd-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    resman: fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com

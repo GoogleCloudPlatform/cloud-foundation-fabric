@@ -62,7 +62,7 @@ module "cos-mysql" {
   source         = "./fabric/modules/cloud-config-container/mysql"
   mysql_config   = "./my.cnf"
   mysql_password = "CiQAsd7WY=="
-  kms_config     = {
+  kms_config = {
     project_id = "my-project"
     keyring    = "test-cos"
     location   = "europe-west1"

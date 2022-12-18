@@ -103,6 +103,7 @@ def plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
     # compute resource type counts and address->values map
     values = {}
     counts = collections.defaultdict(int)
+    counts['modules'] = counts['resources'] = 0
     q = collections.deque([plan.root_module])
     while q:
       e = q.popleft()
@@ -113,8 +114,10 @@ def plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
         values[e['address']] = e['values']
 
       for x in e.get('resources', []):
+        counts['resources'] += 1
         q.append(x)
       for x in e.get('child_modules', []):
+        counts['modules'] += 1
         q.append(x)
 
     # extract planned outputs
@@ -224,7 +227,7 @@ def plan_validator_fixture(request):
       basedir = Path(request.fspath).parent
     return plan_validator(module_path=module_path,
                           inventory_paths=inventory_paths, basedir=basedir,
-                          tf_var_files=tf_var_paths, **tf_vars)
+                          tf_var_files=tf_var_files, **tf_vars)
 
   return inner
 

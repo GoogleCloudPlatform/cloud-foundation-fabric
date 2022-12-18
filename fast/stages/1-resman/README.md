@@ -109,7 +109,7 @@ This stage provides a single built-in customization that offers a minimal (but u
 
 Consider the following example in a `tfvars` file:
 
-```hcl
+```tfvars
 team_folders = {
   team-a = {
     descriptive_name = "Team A"

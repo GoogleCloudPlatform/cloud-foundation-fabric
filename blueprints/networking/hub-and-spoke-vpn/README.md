@@ -35,12 +35,12 @@ You can easily create such a project by commenting turning on project creation i
 
 ```hcl
 module "project" {
-  source           = "../../../modules/project"
-  name             = var.project_id
+  source = "../../../modules/project"
+  name   = var.project_id
   # comment or remove this line to enable project creation
   # project_create = false
   # add the following line with your billing account id value
-  billing_account  = "12345-ABCD-12345"
+  billing_account = "12345-ABCD-12345"
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com"

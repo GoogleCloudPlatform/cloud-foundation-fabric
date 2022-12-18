@@ -27,24 +27,27 @@ STAGE_PEERING = STAGES / '02-networking-peering'
 STAGE_VPN = STAGES / '02-networking-vpn'
 
 
-def test_counts(recursive_e2e_plan_runner):
-  'Test stage.'
-  num_modules, num_resources = recursive_e2e_plan_runner()
-  # TODO: to re-enable per-module resource count check print _, then test
-  assert num_modules > 0 and num_resources > 0
+def test_counts(plan_summary):
+  "Test stage."
+  summary = plan_summary("fast/stages/02-networking-peering",
+                         tf_var_files=["common.tfvars"])
+  assert summary.counts["modules"] > 0
+  assert summary.counts["resources"] > 0
 
 
-def test_vpn_peering_parity(e2e_plan_runner):
+def test_vpn_peering_parity(plan_summary):
   '''Ensure VPN- and peering-based networking stages are identical except
   for VPN and VPC peering resources'''
-  _, plan_peering = e2e_plan_runner(fixture_path=FIXTURE_PEERING)
-  _, plan_vpn = e2e_plan_runner(fixture_path=FIXTURE_VPN)
+  summary_peering = plan_summary("fast/stages/02-networking-peering",
+                                 tf_var_files=["common.tfvars"])
+  summary_vpn = plan_summary("fast/stages/02-networking-vpn",
+                             tf_var_files=["common.tfvars"])
 
-  ddiff = DeepDiff(plan_vpn, plan_peering, ignore_order=True,
-                   group_by='address', view='tree')
+  ddiff = DeepDiff(summary_vpn.values, summary_peering.values,
+                   ignore_order=True)
 
-  removed_types = {x.t1['type'] for x in ddiff['dictionary_item_removed']}
-  added_types = {x.t2['type'] for x in ddiff['dictionary_item_added']}
+  removed_types = {x.split('.')[-2] for x in ddiff['dictionary_item_removed']}
+  added_types = {x.split('.')[-2] for x in ddiff['dictionary_item_added']}
 
   assert added_types == {'google_compute_network_peering'}
   assert removed_types == {
