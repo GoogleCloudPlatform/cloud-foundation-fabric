@@ -18,11 +18,15 @@
 
 variable "billing_account" {
   # tfdoc:variable:source 0-bootstrap
-  description = "Billing account id and organization id ('nnnnnnnn' or null)."
+  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
   type = object({
-    id              = string
-    organization_id = number
+    id           = string
+    is_org_level = optional(bool, true)
   })
+  validation {
+    condition     = var.billing_account.is_org_level != null
+    error_message = "Invalid `null` value for `billing_account.is_org_level`."
+  }
 }
 
 variable "data_dir" {
