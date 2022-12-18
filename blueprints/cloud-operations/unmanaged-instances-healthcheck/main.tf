@@ -146,13 +146,11 @@ module "cf-healthchecker" {
   name        = "cf-healthchecker"
   region      = var.region
   bucket_name = module.cf-restarter.bucket_name
-
   bundle_config = {
     source_dir  = "${path.module}/function/healthchecker"
     output_path = "healthchecker.zip"
   }
   service_account = module.service-account-healthchecker.email
-
   function_config = {
     entry_point      = "HealthCheck"
     ingress_settings = null
@@ -161,7 +159,6 @@ module "cf-healthchecker" {
     runtime          = "go116"
     timeout          = 300
   }
-
   environment_variables = {
     FILTER       = "name = nginx-*"
     GRACE_PERIOD = var.grace_period
@@ -171,7 +168,6 @@ module "cf-healthchecker" {
     TCP_PORT     = var.tcp_port
     TIMEOUT      = var.timeout
   }
-
   vpc_connector = {
     create          = true
     name            = "hc-connector"
@@ -230,23 +226,25 @@ resource "google_cloud_scheduler_job" "healthcheck-job" {
 
 module "cos-nginx" {
   source = "../../../modules/cloud-config-container/nginx"
-  test_instance = {
-    project_id = module.project.project_id
-    zone       = "${var.region}-b"
-    name       = "nginx-test"
-    type       = "f1-micro"
+}
+
+module "test-vm" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.project.project_id
+  zone       = "${var.region}-b"
+  name       = "nginx-test"
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
+  metadata = {
+    user-data              = module.cos-nginx.cloud_config
+    google-logging-enabled = true
+  }
+  network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region}/apps"]
-  }
-  test_instance_defaults = {
-    disks    = {}
-    image    = null
-    metadata = {}
-    nat      = false
-    service_account_roles = [
-      "roles/logging.logWriter",
-      "roles/monitoring.metricWriter"
-    ]
-    tags = ["ssh"]
-  }
+  }]
+  tags = ["ssh"]
 }

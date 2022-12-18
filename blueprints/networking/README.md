@@ -49,18 +49,19 @@ The blueprint shows how to implement spoke transitivity via BGP advertisements, 
 <!--
 ### Nginx-based reverse proxy cluster
 
-<a href="./_deprecated/nginx-reverse-proxy-cluster/" title="Nginx-based reverse proxy cluster"><img src="./_deprecated/nginx-reverse-proxy-cluster/reverse-proxy.png" align="left" width="280px"></a> This [blueprint](./nginx-reverse-proxy-cluster/) how to deploy an autoscaling reverse proxy cluster using Nginx, based on regional Managed Instance Groups. The autoscaling is driven by Nginx current connections metric, sent by Cloud Ops Agent.
+<a href="./__need_fixing/nginx-reverse-proxy-cluster/" title="Nginx-based reverse proxy cluster"><img src="./_deprecated/nginx-reverse-proxy-cluster/reverse-proxy.png" align="left" width="280px"></a> This [blueprint](./nginx-reverse-proxy-cluster/) how to deploy an autoscaling reverse proxy cluster using Nginx, based on regional Managed Instance Groups. The autoscaling is driven by Nginx current connections metric, sent by Cloud Ops Agent.
 
 <br clear="left">
--->
 
 ### DNS and Private Access for On-premises
 
-<a href="./onprem-google-access-dns/" title="DNS and Private Access for On-premises"><img src="./onprem-google-access-dns/diagram.png" align="left" width="280px"></a> This [blueprint](./onprem-google-access-dns/) uses an emulated on-premises environment running in Docker containers inside a GCE instance, to allow testing specific features like DNS policies, DNS forwarding zones across VPN, and Private Access for On-premises hosts.
+<a href="./__need_fixing/onprem-google-access-dns/" title="DNS and Private Access for On-premises"><img src="./onprem-google-access-dns/diagram.png" align="left" width="280px"></a> This [blueprint](./onprem-google-access-dns/) uses an emulated on-premises environment running in Docker containers inside a GCE instance, to allow testing specific features like DNS policies, DNS forwarding zones across VPN, and Private Access for On-premises hosts.
 
 The emulated on-premises environment can be used to test access to different services from outside Google Cloud, by implementing a VPN connection and BGP to Google CLoud via Strongswan and Bird.
 
 <br clear="left">
+
+-->
 
 ### Calling a private Cloud Function from on-premises
 

@@ -109,6 +109,12 @@ variable "network" {
   type        = string
 }
 
+variable "postgres_client_certificates" {
+  description = "Map of cert keys connect to the application(s) using public IP."
+  type        = list(string)
+  default     = null
+}
+
 variable "prefix" {
   description = "Optional prefix used to generate instance names."
   type        = string

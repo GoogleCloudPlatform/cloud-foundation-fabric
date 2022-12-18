@@ -16,5 +16,23 @@
 
 output "cloud_config" {
   description = "Rendered cloud-config file to be passed as user-data instance metadata."
-  value       = module.cos-envoy-td.cloud_config
+  value = templatefile("${path.module}/assets/cloud-config.yaml", {
+    files = merge(
+      {
+        "/var/run/nginx/customize.sh" = {
+          content     = file("${path.module}/assets/customize.sh")
+          owner       = "root"
+          permissions = "0744"
+        }
+        "/etc/nginx/conf.d/default.conf" = {
+          content = templatefile(
+            "${path.module}/assets/default.conf", { hello = var.hello }
+          )
+          owner       = "root"
+          permissions = "0644"
+        }
+      }, var.files
+    )
+    image = var.image
+  })
 }
