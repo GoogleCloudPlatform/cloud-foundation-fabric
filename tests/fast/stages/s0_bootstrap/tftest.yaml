@@ -1,6 +1,6 @@
 # skip boilerplate check
 
-module: fast/stages/00-bootstrap
+module: fast/stages/0-bootstrap
 
 tests:
   simple:
