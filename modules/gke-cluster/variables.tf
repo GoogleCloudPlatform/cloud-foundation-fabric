@@ -226,11 +226,3 @@ variable "vpc_config" {
   })
   nullable = false
 }
-
-
-variable "default_pool_boot_disk_kms_key" {
-
-  description = "KMS keys to be used for default pool"
-  type        = string
-  default     = null
-}
