@@ -228,6 +228,14 @@ module "ilb-l7" {
 Similarly to instance groups, NEGs can also be managed by this module which supports GCE, hybrid, and serverless NEGs:
 
 ```hcl
+resource "google_compute_address" "test" {
+  name         = "neg-test"
+  subnetwork   = var.subnet.self_link
+  address_type = "INTERNAL"
+  address      = "10.0.0.10"
+  region       = "europe-west1"
+}
+
 module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
@@ -248,8 +256,9 @@ module "ilb-l7" {
         zone = "europe-west1-b"
         endpoints = [{
           instance   = "test-1"
-          ip_address = "10.0.0.10"
-          port       = 80
+          ip_address = google_compute_address.test.address
+          # ip_address = "10.0.0.10"
+          port = 80
         }]
       }
     }
@@ -259,7 +268,7 @@ module "ilb-l7" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=8
 ```
 
 Hybrid NEGs are also supported:
