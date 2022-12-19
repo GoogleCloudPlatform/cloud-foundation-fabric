@@ -16,19 +16,19 @@ This module allows managing a single BigTable instance, including access configu
 ```hcl
 
 module "bigtable-instance" {
-  source               = "./fabric/modules/bigtable-instance"
-  project_id           = "my-project"
-  name                 = "instance"
-  cluster_id           = "instance"
-  zone                 = "europe-west1-b"
-  tables               = {
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  cluster_id = "instance"
+  zone       = "europe-west1-b"
+  tables = {
     test1 = null,
     test2 = {
       split_keys    = ["a", "b", "c"]
       column_family = null
     }
   }
-  iam       = {
+  iam = {
     "roles/bigtable.user" = ["user:viewer@testdomain.com"]
   }
 }
@@ -59,11 +59,11 @@ If you use autoscaling, you should not set the variable `num_nodes`.
 ```hcl
 
 module "bigtable-instance" {
-  source             = "./fabric/modules/bigtable-instance"
-  project_id         = "my-project"
-  name               = "instance"
-  cluster_id         = "instance"
-  zone               = "europe-southwest1-b"
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  cluster_id = "instance"
+  zone       = "europe-southwest1-b"
   autoscaling_config = {
     min_nodes  = 3
     max_nodes  = 7
@@ -78,12 +78,12 @@ module "bigtable-instance" {
 ```hcl
 
 module "bigtable-instance" {
-  source             = "./fabric/modules/bigtable-instance"
-  project_id         = "my-project"
-  name               = "instance"
-  cluster_id         = "instance"
-  zone               = "europe-southwest1-a"
-  storage_type       = "SSD"
+  source       = "./fabric/modules/bigtable-instance"
+  project_id   = "my-project"
+  name         = "instance"
+  cluster_id   = "instance"
+  zone         = "europe-southwest1-a"
+  storage_type = "SSD"
   autoscaling_config = {
     min_nodes      = 3
     max_nodes      = 7

@@ -49,8 +49,8 @@ locals {
     trimsuffix(f, ".yaml") => yamldecode(file("${local._data_dir}/${f}"))
   }
   # these are usually set via variables
-  _base_dir = "./fabric/blueprints/factories/project-factory"
-  _data_dir = "${local._base_dir}/sample-data/projects/"
+  _base_dir      = "./fabric/blueprints/factories/project-factory"
+  _data_dir      = "${local._base_dir}/sample-data/projects/"
   _defaults_file = "${local._base_dir}/sample-data/defaults.yaml"
 }
 

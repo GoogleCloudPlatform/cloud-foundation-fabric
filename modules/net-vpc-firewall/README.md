@@ -44,11 +44,11 @@ module "firewall" {
   default_rules_config = {
     admin_ranges = ["10.0.0.0/8"]
   }
-  egress_rules  = {
+  egress_rules = {
     # implicit `deny` action
     allow-egress-rfc1918 = {
       description = "Allow egress to RFC 1918 ranges."
-      destination_ranges      = [
+      destination_ranges = [
         "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"
       ]
       # implicit { protocol = "all" } rule
@@ -108,7 +108,7 @@ module "firewall" {
   project_id = "my-project"
   network    = "my-network"
   default_rules_config = {
-    ssh_ranges   = []
+    ssh_ranges = []
   }
 }
 # tftest modules=1 resources=2
@@ -134,34 +134,35 @@ The module includes a rules factory (see [Resource Factories](../../blueprints/f
 
 ```hcl
 module "firewall" {
-  source           = "./fabric/modules/net-vpc-firewall"
-  project_id       = "my-project"
-  network          = "my-network"
+  source     = "./fabric/modules/net-vpc-firewall"
+  project_id = "my-project"
+  network    = "my-network"
   factories_config = {
-    rules_folder  = "configs/firewal/rules"
-    cidr_tpl_file = "configs/firewal/cidr_template.yaml"
+    rules_folder  = "configs/firewall/rules"
+    cidr_tpl_file = "configs/firewall/cidrs.yaml"
   }
-
+  default_rules_config = { disabled = true }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=1 files=lbs,cidrs
 ```
 
 ```yaml
-# tftest file configs/firewall/rules/load_balancers.yaml
-allow-healthchecks:
-  description: Allow ingress from healthchecks.
-  ranges:
-    - healthchecks
-  targets: ["lb-backends"]
-  rules:
-    - protocol: tcp
-      ports:
-        - 80
-        - 443
+# tftest-file id=lbs path=configs/firewall/rules/load_balancers.yaml
+ingress:
+  allow-healthchecks:
+    description: Allow ingress from healthchecks.
+    ranges:
+      - healthchecks
+    targets: ["lb-backends"]
+    rules:
+      - protocol: tcp
+        ports:
+          - 80
+          - 443
 ```
 
 ```yaml
-# tftest file configs/firewall/cidr_template.yaml
+# tftest-file id=cidrs path=configs/firewall/cidrs.yaml
 healthchecks:
   - 35.191.0.0/16
   - 130.211.0.0/22

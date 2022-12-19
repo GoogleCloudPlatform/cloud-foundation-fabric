@@ -176,7 +176,7 @@ module "ilb-l7" {
   backend_service_configs = {
     default = {
       port_name = "http"
-      backends  = [
+      backends = [
         { group = "default" }
       ]
     }
@@ -237,7 +237,7 @@ module "ilb-l7" {
     default = {
       backends = [{
         balancing_mode = "RATE"
-        group = "my-neg"
+        group          = "my-neg"
         max_rate       = { per_endpoint = 1 }
       }]
     }
@@ -245,11 +245,11 @@ module "ilb-l7" {
   neg_configs = {
     my-neg = {
       gce = {
-        zone      = "europe-west1-b"
+        zone = "europe-west1-b"
         endpoints = [{
           instance   = "test-1"
           ip_address = "10.0.0.10"
-          port = 80
+          port       = 80
         }]
       }
     }
@@ -274,7 +274,7 @@ module "ilb-l7" {
     default = {
       backends = [{
         balancing_mode = "RATE"
-        group = "my-neg"
+        group          = "my-neg"
         max_rate       = { per_endpoint = 1 }
       }]
     }
@@ -282,10 +282,10 @@ module "ilb-l7" {
   neg_configs = {
     my-neg = {
       hybrid = {
-        zone      = "europe-west1-b"
+        zone = "europe-west1-b"
         endpoints = [{
           ip_address = "10.0.0.10"
-          port = 80
+          port       = 80
         }]
       }
     }
@@ -310,7 +310,7 @@ module "ilb-l7" {
     default = {
       backends = [{
         balancing_mode = "RATE"
-        group = "my-neg"
+        group          = "my-neg"
         max_rate       = { per_endpoint = 1 }
       }]
     }
@@ -367,7 +367,7 @@ module "ilb-l7" {
       pathmap = {
         default_service = "default"
         path_rules = [{
-          paths = ["/video", "/video/*"]
+          paths   = ["/video", "/video/*"]
           service = "video"
         }]
       }
@@ -521,7 +521,7 @@ module "ilb-l7" {
     }
     neg-home-hello = {
       hybrid = {
-        zone      = "europe-west8-b"
+        zone = "europe-west8-b"
         endpoints = [{
           ip_address = "192.168.0.3"
           port       = 443

@@ -16,7 +16,7 @@ The secret replication policy is automatically managed if no location is set, or
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
-  secrets    = {
+  secrets = {
     test-auto   = null
     test-manual = ["europe-west1", "europe-west4"]
   }
@@ -32,12 +32,12 @@ IAM bindings can be set per secret in the same way as for most other modules sup
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
-  secrets    = {
+  secrets = {
     test-auto   = null
     test-manual = ["europe-west1", "europe-west4"]
   }
   iam = {
-    test-auto   = {
+    test-auto = {
       "roles/secretmanager.secretAccessor" = ["group:auto-readers@example.com"]
     }
     test-manual = {
@@ -56,7 +56,7 @@ As mentioned above, please be aware that **version data will be stored in state 
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
-  secrets    = {
+  secrets = {
     test-auto   = null
     test-manual = ["europe-west1", "europe-west4"]
   }
