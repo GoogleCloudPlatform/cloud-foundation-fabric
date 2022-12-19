@@ -149,11 +149,10 @@ module "db" {
 | [database_version](variables.tf#L49) | Database type and version to create. | <code>string</code> | ✓ |  |
 | [name](variables.tf#L102) | Name of primary instance. | <code>string</code> | ✓ |  |
 | [network](variables.tf#L107) | VPC self link where the instances will be deployed. Private Service Networking must be enabled and configured in this VPC. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L140) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L145) | Region of the primary instance. | <code>string</code> | ✓ |  |
-| [tier](variables.tf#L165) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
-| [allocated_ip_range_primary](variables.tf#L112) | (Optional)The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with RFC 1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z?. | <code>string</code> |  | <code>null</code> |
-| [allocated_ip_range_replica](variables.tf#L118) | (Optional)The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with RFC 1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z?. | <code>string</code> |  | <code>null</code> |
+| [project_id](variables.tf#L138) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L143) | Region of the primary instance. | <code>string</code> | ✓ |  |
+| [tier](variables.tf#L163) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
+| [allocated_ip_ranges](variables.tf#L112) | (Optional)The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with RFC 1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z?. | <code title="object&#40;&#123;&#10;  primary &#61; optional&#40;string&#41;&#10;  replica &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [authorized_networks](variables.tf#L17) | Map of NAME=>CIDR_RANGE to allow to connect to the database(s). | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [availability_type](variables.tf#L23) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;ZONAL&#34;</code> |
 | [backup_configuration](variables.tf#L29) | Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas. | <code title="object&#40;&#123;&#10;  enabled            &#61; bool&#10;  binary_log_enabled &#61; bool&#10;  start_time         &#61; string&#10;  location           &#61; string&#10;  log_retention_days &#61; number&#10;  retention_count    &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enabled            &#61; false&#10;  binary_log_enabled &#61; false&#10;  start_time         &#61; &#34;23:00&#34;&#10;  location           &#61; null&#10;  log_retention_days &#61; 7&#10;  retention_count    &#61; 7&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -165,11 +164,11 @@ module "db" {
 | [flags](variables.tf#L84) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [ipv4_enabled](variables.tf#L90) | Add a public IP address to database instance. | <code>bool</code> |  | <code>false</code> |
 | [labels](variables.tf#L96) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [postgres_client_certificates](variables.tf#L124) | Map of cert keys connect to the application(s) using public IP. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [prefix](variables.tf#L130) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [replicas](variables.tf#L150) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [root_password](variables.tf#L159) | Root password of the Cloud SQL instance. Required for MS SQL Server. | <code>string</code> |  | <code>null</code> |
-| [users](variables.tf#L170) | Map of users to create in the primary instance (and replicated to other replicas) in the format USER=>PASSWORD. For MySQL, anything afterr the first `@` (if persent) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [postgres_client_certificates](variables.tf#L122) | Map of cert keys connect to the application(s) using public IP. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L128) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
+| [replicas](variables.tf#L148) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [root_password](variables.tf#L157) | Root password of the Cloud SQL instance. Required for MS SQL Server. | <code>string</code> |  | <code>null</code> |
+| [users](variables.tf#L168) | Map of users to create in the primary instance (and replicated to other replicas) in the format USER=>PASSWORD. For MySQL, anything afterr the first `@` (if persent) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
