@@ -20,8 +20,8 @@ variable "allocated_ip_ranges" {
     primary = optional(string)
     replica = optional(string)
   })
-  default = null
-
+  default  = {}
+  nullable = false
 }
 variable "authorized_networks" {
   description = "Map of NAME=>CIDR_RANGE to allow to connect to the database(s)."
