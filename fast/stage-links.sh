@@ -27,7 +27,7 @@ else
   CMD="ln -s $1"
 fi
 
-STAGE_NAME=$(basename $(pwd))
+STAGE_NAME=$(basename "$(pwd)")
 
 case $STAGE_NAME in
 
@@ -52,13 +52,24 @@ case $STAGE_NAME in
   tfvars/0-bootstrap.auto.tfvars.json"
   ;;
 "2-"*)
-  FILES="providers/1-resman-providers.tf
+  FILES="providers/2-networking-providers.tf
   tfvars/globals.auto.tfvars.json
   tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
 *)
-  echo "stage '$STAGE_NAME' not found"
+  # check for a "dev" stage 3
+  STAGE_PARENT=$(basename $(dirname "$(pwd)"))
+  if [[ "$STAGE_PARENT" == "3-"* ]]; then
+    FILES="providers/${STAGE_PARENT}-providers.tf
+    tfvars/globals.auto.tfvars.json
+    tfvars/0-bootstrap.auto.tfvars.json
+    tfvars/1-resman.auto.tfvars.json
+    tfvars/2-networking.auto.tfvars.json
+    tfvars/2-security.auto.tfvars.json"
+  else
+    echo "stage '$STAGE_NAME' not found"
+  fi
   ;;
 
 esac
