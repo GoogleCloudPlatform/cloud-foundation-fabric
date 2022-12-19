@@ -15,15 +15,18 @@
 # limitations under the License.
 
 import click
+import os
 import sys
 import yaml
 
 from pathlib import Path
 
-BASEDIR = Path(__file__).parents[1]
-sys.path.append(str(BASEDIR / 'tests'))
-
-import fixtures
+try:
+  import fixtures
+except ImportError:
+  BASEDIR = Path(__file__).parents[1]
+  sys.path.append(str(BASEDIR / 'tests'))
+  import fixtures
 
 
 @click.command()
@@ -31,6 +34,7 @@ import fixtures
 @click.argument('tfvars', type=click.Path(exists=True), nargs=-1)
 def main(module, tfvars):
   module = BASEDIR / module
+  os.environ['TFTEST_COPY'] = '1'
   summary = fixtures.plan_summary(module, Path(), tfvars)
   print(yaml.dump({'values': summary.values}))
   print(yaml.dump({'counts': summary.counts}))
