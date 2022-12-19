@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 <!-- None < 2022-12-13 10:03:24+00:00 -->
+- [[#1054](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1054)] Updating a small typo ([agutta](https://github.com/agutta)) <!-- 2022-12-16 16:00:00+00:00 -->
+
+### BLUEPRINTS
+
+- [[#1020](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1020)] Networking dashboard and discovery tool refactor ([ludoo](https://github.com/ludoo)) <!-- 2022-12-18 09:07:24+00:00 -->
+
+### FAST
+
+- [[#1051](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1051)] FAST: add instructions for billing export to stage 0 README ([KPRepos](https://github.com/KPRepos)) <!-- 2022-12-15 08:53:57+00:00 -->
+
+### TOOLS
+
+- [[#1053](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1053)] Extend inventory-based testing to examples ([juliocc](https://github.com/juliocc)) <!-- 2022-12-18 19:50:34+00:00 -->
 
 ## [19.0.0] - 2022-12-13
 <!-- 2022-12-13 10:03:24+00:00 < 2022-09-09 18:02:15+00:00 -->
