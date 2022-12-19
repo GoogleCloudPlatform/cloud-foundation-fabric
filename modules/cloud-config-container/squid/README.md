@@ -24,9 +24,9 @@ This example will create a `cloud-config` that allows any client in the 10.0.0.0
 
 ```hcl
 module "cos-squid" {
-  source           = "./fabric/modules/cloud-config-container/squid"
-  allow = [".github.com"]
-  clients   = ["10.0.0.0/8"]
+  source  = "./fabric/modules/cloud-config-container/squid"
+  allow   = [".github.com"]
+  clients = ["10.0.0.0/8"]
 }
 
 module "vm" {

@@ -88,7 +88,7 @@ module "db" {
     # generatea password for user1
     user1 = null
     # assign a password to user2
-    user2  = "mypassword"
+    user2 = "mypassword"
   }
 }
 # tftest modules=1 resources=6

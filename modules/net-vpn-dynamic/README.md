@@ -23,11 +23,11 @@ module "vm" {
 
 
 module "vpn-dynamic" {
-  source          = "./fabric/modules/net-vpn-dynamic"
-  project_id      = "my-project"
-  region          = "europe-west1"
-  network         = var.vpc.name
-  name            = "gateway-1"
+  source     = "./fabric/modules/net-vpn-dynamic"
+  project_id = "my-project"
+  region     = "europe-west1"
+  network    = var.vpc.name
+  name       = "gateway-1"
   router_config = {
     asn = 64514
   }

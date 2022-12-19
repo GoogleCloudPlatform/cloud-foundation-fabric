@@ -16,10 +16,10 @@ This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bu
 
 ```hcl
 module "cf-http" {
-  source        = "./fabric/modules/cloud-function"
-  project_id    = "my-project"
-  name          = "test-cf-http"
-  bucket_name   = "test-cf-bundles"
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
   bundle_config = {
     source_dir  = "fabric/assets/"
     output_path = "bundle.zip"
@@ -31,11 +31,11 @@ module "cf-http" {
 Analogous example using 2nd generation Cloud Functions
 ```hcl
 module "cf-http" {
-  source        = "./fabric/modules/cloud-function"
-  v2            = true
-  project_id    = "my-project"
-  name          = "test-cf-http"
-  bucket_name   = "test-cf-bundles"
+  source      = "./fabric/modules/cloud-function"
+  v2          = true
+  project_id  = "my-project"
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
   bundle_config = {
     source_dir  = "fabric/assets/"
     output_path = "bundle.zip"
@@ -111,15 +111,15 @@ To allow anonymous access to the function, grant the `roles/cloudfunctions.invok
 
 ```hcl
 module "cf-http" {
-  source        = "./fabric/modules/cloud-function"
-  project_id    = "my-project"
-  name          = "test-cf-http"
-  bucket_name   = "test-cf-bundles"
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
   bundle_config = {
     source_dir  = "fabric/assets/"
     output_path = "bundle.zip"
   }
-  iam   = {
+  iam = {
     "roles/cloudfunctions.invoker" = ["allUsers"]
   }
 }
@@ -132,15 +132,15 @@ You can have the module auto-create the GCS bucket used for deployment via the `
 
 ```hcl
 module "cf-http" {
-  source        = "./fabric/modules/cloud-function"
-  project_id    = "my-project"
-  name          = "test-cf-http"
-  bucket_name   = "test-cf-bundles"
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
   bucket_config = {
     lifecycle_delete_age_days = 1
   }
   bundle_config = {
-    source_dir  = "fabric/assets/"
+    source_dir = "fabric/assets/"
   }
 }
 # tftest modules=1 resources=3
@@ -152,10 +152,10 @@ To use a custom service account managed by the module, set `service_account_crea
 
 ```hcl
 module "cf-http" {
-  source        = "./fabric/modules/cloud-function"
-  project_id    = "my-project"
-  name          = "test-cf-http"
-  bucket_name   = "test-cf-bundles"
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
   bundle_config = {
     source_dir  = "fabric/assets/"
     output_path = "bundle.zip"
@@ -169,10 +169,10 @@ To use an externally managed service account, pass its email in `service_account
 
 ```hcl
 module "cf-http" {
-  source        = "./fabric/modules/cloud-function"
-  project_id    = "my-project"
-  name          = "test-cf-http"
-  bucket_name   = "test-cf-bundles"
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
   bundle_config = {
     source_dir  = "fabric/assets/"
     output_path = "bundle.zip"
@@ -188,10 +188,10 @@ In order to help prevent `archive_zip.output_md5` from changing cross platform (
 
 ```hcl
 module "cf-http" {
-  source        = "./fabric/modules/cloud-function"
-  project_id    = "my-project"
-  name          = "test-cf-http"
-  bucket_name   = "test-cf-bundles"
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
   bundle_config = {
     source_dir  = "fabric/assets"
     output_path = "bundle.zip"
@@ -207,10 +207,10 @@ This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bu
 
 ```hcl
 module "cf-http" {
-  source        = "./fabric/modules/cloud-function"
-  project_id    = "my-project"
-  name          = "test-cf-http"
-  bucket_name   = "test-cf-bundles"
+  source            = "./fabric/modules/cloud-function"
+  project_id        = "my-project"
+  name              = "test-cf-http"
+  bucket_name       = "test-cf-bundles"
   build_worker_pool = "projects/my-project/locations/europe-west1/workerPools/my_build_worker_pool"
   bundle_config = {
     source_dir  = "fabric/assets"

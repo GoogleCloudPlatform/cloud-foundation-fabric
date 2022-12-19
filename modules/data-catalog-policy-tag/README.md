@@ -12,7 +12,7 @@ module "cmn-dc" {
   source     = "./fabric/modules/data-catalog-policy-tag"
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
-  tags       = {
+  tags = {
     low = null, medium = null, high = null
   }
 }
@@ -26,10 +26,10 @@ module "cmn-dc" {
   source     = "./fabric/modules/data-catalog-policy-tag"
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
-  tags       = { 
-    low = null
+  tags = {
+    low    = null
     medium = null
-    high = {"roles/datacatalog.categoryFineGrainedReader" = ["group:GROUP_NAME@example.com"]}
+    high   = { "roles/datacatalog.categoryFineGrainedReader" = ["group:GROUP_NAME@example.com"] }
   }
   iam = {
     "roles/datacatalog.categoryAdmin" = ["group:GROUP_NAME@example.com"]

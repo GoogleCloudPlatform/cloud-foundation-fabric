@@ -15,7 +15,7 @@
 ingress:
   allow-healthchecks:
     description: Allow ingress from healthchecks.
-    source_ranges:
+    ranges:
       - healthchecks
     targets: ["lb-backends"]
     rules:
