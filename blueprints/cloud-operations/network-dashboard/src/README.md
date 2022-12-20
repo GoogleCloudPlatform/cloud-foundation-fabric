@@ -75,6 +75,9 @@ The main module cycles through stages, calling stage plugins in succession itera
 
 ## Debugging and Troubleshooting
 
+If you run into a ùModuleNotFoundError`, install the dependencies before running the code:
+`pip3 install -r requirements.txt`
+
 A few convenience options are provided to simplify development, debugging and troubleshooting:
 
 - the discovery phase results can be dumped to a JSON file, that can then be used to check actual resource representation, or skip the discovery phase entirely to speed up development of timeseries-related functions
