@@ -32,10 +32,10 @@ STAGE_NAME=$(basename "$(pwd)")
 case $STAGE_NAME in
 
 "0-bootstrap")
-  FILES="providers/0-bootstrap-providers.tf"
+  FILES="providers/multitenant/${STAGE_NAME}-providers.tf"
   ;;
 "0-bootstrap-tenant")
-  FILES="providers/multitenant/0-bootstrap-providers.tf
+  FILES="providers/multitenant/0-boostrap-providers.tf
   tfvars/globals.auto.tfvars.json
   tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
@@ -47,12 +47,12 @@ case $STAGE_NAME in
   tfvars/1-resman.auto.tfvars.json"
   ;;
 "1-resman")
-  FILES="providers/1-resman-providers.tf
+  FILES="providers/multitenant/${STAGE_NAME}-providers.tf
   tfvars/globals.auto.tfvars.json
   tfvars/0-bootstrap.auto.tfvars.json"
   ;;
 "2-"*)
-  FILES="providers/2-networking-providers.tf
+  FILES="providers/multitenant/${STAGE_NAME}-providers.tf
   tfvars/globals.auto.tfvars.json
   tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
