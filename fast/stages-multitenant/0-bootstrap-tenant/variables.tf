@@ -183,3 +183,10 @@ variable "tenant_config" {
     error_message = "Short name must be a string of 4 characters or less."
   }
 }
+
+
+variable "test_principal" {
+  description = "Used when testing to bypass the data source returning the current identity."
+  type        = string
+  default     = null
+}

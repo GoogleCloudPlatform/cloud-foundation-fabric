@@ -40,7 +40,7 @@ module "automation-project" {
   iam = {
     "roles/owner" = [
       module.automation-tf-resman-sa.iam_email,
-      "serviceAccount:${data.google_client_openid_userinfo.resman-sa.email}"
+      "serviceAccount:${local.resman_sa}"
     ]
     "roles/cloudbuild.builds.editor" = [
       module.automation-tf-resman-sa.iam_email

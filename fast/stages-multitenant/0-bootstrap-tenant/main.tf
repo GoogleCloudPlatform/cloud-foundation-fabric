@@ -29,9 +29,16 @@ locals {
     k => v == null ? var.locations[k] : v
   }
   prefix = join("-", compact([var.prefix, var.tenant_config.short_name]))
+  resman_sa = (
+    var.test_principal == null
+    ? data.google_client_openid_userinfo.resman-sa.0.email
+    : var.test_principal
+  )
 }
 
-data "google_client_openid_userinfo" "resman-sa" {}
+data "google_client_openid_userinfo" "resman-sa" {
+  count = var.test_principal == null ? 1 : 0
+}
 
 module "tenant-folder" {
   source = "../../../modules/folder"
