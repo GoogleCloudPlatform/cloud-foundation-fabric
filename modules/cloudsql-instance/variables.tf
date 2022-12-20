@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+variable "allocated_ip_ranges" {
+  description = "(Optional)The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with RFC 1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z?."
+  type = object({
+    primary = optional(string)
+    replica = optional(string)
+  })
+  default  = {}
+  nullable = false
+}
 variable "authorized_networks" {
   description = "Map of NAME=>CIDR_RANGE to allow to connect to the database(s)."
   type        = map(string)
@@ -107,16 +116,6 @@ variable "name" {
 variable "network" {
   description = "VPC self link where the instances will be deployed. Private Service Networking must be enabled and configured in this VPC."
   type        = string
-}
-
-variable "allocated_ip_ranges" {
-  description = "(Optional)The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with RFC 1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z?."
-  type = object({
-    primary = optional(string)
-    replica = optional(string)
-  })
-  default = null
-
 }
 
 variable "postgres_client_certificates" {
