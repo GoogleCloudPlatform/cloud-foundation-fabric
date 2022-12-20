@@ -27,9 +27,10 @@ organization = {
 }
 prefix = "fast2"
 tag_keys = {
-  context     = "tagKeys/1234567890",
-  environment = "tagKeys/4567890123",
-  tenant      = "tagKeys/7890123456"
+  tenant = "tagKeys/7890123456"
+}
+tag_names = {
+  tenant = "tenant"
 }
 tenant_config = {
   groups = {

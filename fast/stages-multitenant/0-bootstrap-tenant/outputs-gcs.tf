@@ -30,6 +30,7 @@ resource "google_storage_bucket_object" "tfvars" {
 }
 
 resource "google_storage_bucket_object" "workflows" {
+  count   = local.workflow == null ? 0 : 1
   bucket  = module.automation-tf-output-gcs.name
   name    = "tenants/${var.tenant_config.short_name}/workflows/1-0-resman.yaml"
   content = local.workflow

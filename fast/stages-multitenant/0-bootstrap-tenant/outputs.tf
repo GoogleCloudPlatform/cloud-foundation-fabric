@@ -38,7 +38,7 @@ locals {
     prefix          = local.prefix
     root_node       = module.tenant-folder.id
   }
-  workflow = local.cicd_repository_type == null ? "" : templatefile(
+  workflow = local.cicd_repository_type == null ? null : templatefile(
     "${path.module}/templates/workflow-${local.cicd_repository_type}.yaml", {
       identity_provider = try(
         local.identity_providers[var.tenant_config.cicd.identity_provider].name,

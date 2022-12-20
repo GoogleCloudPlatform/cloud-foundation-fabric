@@ -39,7 +39,7 @@ module "tenant-folder" {
   name   = var.tenant_config.descriptive_name
   tag_bindings = {
     tenant = try(
-      module.organization.tag_values["tenant/${var.tenant_config.short_name}"].id,
+      module.organization.tag_values["${var.tag_names.tenant}/${var.tenant_config.short_name}"].id,
       null
     )
   }

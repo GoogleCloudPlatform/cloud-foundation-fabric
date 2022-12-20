@@ -113,7 +113,7 @@ variable "outputs_location" {
 }
 
 variable "prefix" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
   validation {
@@ -123,7 +123,17 @@ variable "prefix" {
 }
 
 variable "tag_keys" {
+  # tfdoc:variable:source 1-resman
   description = "Organization tag keys."
+  type = object({
+    tenant = string
+  })
+  nullable = false
+}
+
+variable "tag_names" {
+  # tfdoc:variable:source 1-resman
+  description = "Customized names for resource management tags."
   type = object({
     tenant = string
   })
