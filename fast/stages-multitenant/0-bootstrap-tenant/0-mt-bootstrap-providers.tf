@@ -1,0 +1,1 @@
+/home/ludomagno/Desktop/dev/tf-playground/config/providers/multitenant/0-mt-bootstrap-providers.tf

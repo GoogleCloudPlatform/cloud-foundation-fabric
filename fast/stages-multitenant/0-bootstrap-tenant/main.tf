@@ -15,6 +15,11 @@
  */
 
 locals {
+  gcs_storage_class = (
+    length(split("-", local.locations.gcs)) < 2
+    ? "MULTI_REGIONAL"
+    : "REGIONAL"
+  )
   groups = {
     for k, v in var.tenant_config.groups :
     k => v == null ? null : "${v}@${var.organization.domain}"
@@ -26,12 +31,17 @@ locals {
   prefix = join("-", compact([var.prefix, var.tenant_config.short_name]))
 }
 
+data "google_client_openid_userinfo" "resman-sa" {}
+
 module "tenant-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = var.tenant_config.descriptive_name
   tag_bindings = {
-    tenant = try(module.organization.tag_values[var.tenant_config.short_name].id, null)
+    tenant = try(
+      module.organization.tag_values["tenant/${var.tenant_config.short_name}"].id,
+      null
+    )
   }
 }
 
@@ -49,11 +59,21 @@ module "tenant-folder-iam" {
     ]
   })
   iam = merge(var.tenant_config.iam, {
-    "roles/logging.admin"                  = [module.automation-tf-resman-sa.iam_email]
-    "roles/owner"                          = [module.automation-tf-resman-sa.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.automation-tf-resman-sa.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.automation-tf-resman-sa.iam_email]
-    "roles/compute.xpnAdmin"               = [module.automation-tf-resman-sa.iam_email]
+    "roles/compute.xpnAdmin" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/logging.admin" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/resourcemanager.folderAdmin" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/resourcemanager.projectCreator" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/owner" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
   })
   depends_on = [module.automation-project]
 }

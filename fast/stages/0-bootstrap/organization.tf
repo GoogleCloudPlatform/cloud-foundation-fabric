@@ -39,7 +39,10 @@ locals {
     #   "domain:${var.organization.domain}"
     # ]
     "roles/resourcemanager.projectCreator" = concat(
-      [module.automation-tf-bootstrap-sa.iam_email],
+      [
+        module.automation-tf-bootstrap-sa.iam_email,
+        module.automation-tf-resman-sa.iam_email
+      ],
       local._iam_bootstrap_user
     )
     "roles/resourcemanager.projectMover" = [

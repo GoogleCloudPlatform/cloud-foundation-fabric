@@ -39,7 +39,8 @@ module "automation-project" {
   # machine (service accounts) IAM bindings
   iam = {
     "roles/owner" = [
-      module.automation-tf-resman-sa.iam_email
+      module.automation-tf-resman-sa.iam_email,
+      "serviceAccount:${data.google_client_openid_userinfo.resman-sa.email}"
     ]
     "roles/cloudbuild.builds.editor" = [
       module.automation-tf-resman-sa.iam_email
@@ -88,23 +89,25 @@ module "automation-project" {
 # output files bucket
 
 module "automation-tf-output-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = module.automation-project.project_id
-  name       = "iac-core-outputs-0"
-  prefix     = local.prefix
-  location   = local.locations.gcs
-  versioning = true
+  source        = "../../../modules/gcs"
+  project_id    = module.automation-project.project_id
+  name          = "iac-core-outputs-0"
+  prefix        = local.prefix
+  location      = local.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
 }
 
 # resource management stage bucket and service account
 
 module "automation-tf-resman-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = module.automation-project.project_id
-  name       = "iac-core-resman-0"
-  prefix     = local.prefix
-  location   = local.locations.gcs
-  versioning = true
+  source        = "../../../modules/gcs"
+  project_id    = module.automation-project.project_id
+  name          = "iac-core-resman-0"
+  prefix        = local.prefix
+  location      = local.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.automation-tf-resman-sa.iam_email]
   }

@@ -39,7 +39,7 @@ module "tenant-folder" {
   parent   = "organizations/${var.organization.id}"
   name     = each.value.descriptive_name
   tag_bindings = {
-    tenant = try(module.organization.tag_values[each.key].id, null)
+    tenant = try(module.organization.tag_values["tenant/${each.key}"].id, null)
   }
 }
 

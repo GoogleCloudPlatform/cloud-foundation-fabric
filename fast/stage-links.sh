@@ -20,49 +20,56 @@ fi
 
 if [[ "$1" == "gs://"* ]]; then
   CMD="gcloud alpha storage cp $1"
+  CP_CMD=$CMD
 elif [ ! -d "$1" ]; then
   echo "folder $1 not found"
   exit 1
 else
   CMD="ln -s $1"
+  CP_CMD="cp -s $1"
 fi
+
+PROVIDER_CMD=$CMD
 
 STAGE_NAME=$(basename "$(pwd)")
 
 case $STAGE_NAME in
 
 "0-bootstrap")
-  FILES="providers/multitenant/${STAGE_NAME}-providers.tf"
+  PROVIDER="providers/multitenant/${STAGE_NAME}-providers.tf"
+  TFVARS=""
   ;;
 "0-bootstrap-tenant")
-  FILES="providers/multitenant/0-boostrap-providers.tf
-  tfvars/globals.auto.tfvars.json
+  PROVIDER_CMD=$CP_CMD
+  PROVIDER="providers/multitenant/0-mt-bootstrap-providers.tf"
+  TFVARS="tfvars/globals.auto.tfvars.json
   tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
 "0-bootstrap-multitenant")
-  FILES="providers/multitenant/0-boostrap-providers.tf
-  tfvars/globals.auto.tfvars.json
+  PROVIDER="providers/multitenant/0-mt-bootstrap-providers.tf"
+  TFVARS="tfvars/globals.auto.tfvars.json
   tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
 "1-resman")
-  FILES="providers/multitenant/${STAGE_NAME}-providers.tf
-  tfvars/globals.auto.tfvars.json
+  PROVIDER="providers/${STAGE_NAME}-providers.tf"
+  TFVARS="tfvars/globals.auto.tfvars.json
   tfvars/0-bootstrap.auto.tfvars.json"
   ;;
 "2-"*)
-  FILES="providers/multitenant/${STAGE_NAME}-providers.tf
-  tfvars/globals.auto.tfvars.json
+  PROVIDER="providers/multitenant/${STAGE_NAME}-providers.tf"
+  TFVARS="tfvars/globals.auto.tfvars.json
   tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
 *)
   # check for a "dev" stage 3
-  STAGE_PARENT=$(basename $(dirname "$(pwd)"))
-  if [[ "$STAGE_PARENT" == "3-"* ]]; then
-    FILES="providers/${STAGE_PARENT}-providers.tf
-    tfvars/globals.auto.tfvars.json
+  echo "trying for parent stage 3..."
+  STAGE_NAME=$(basename $(dirname "$(pwd)"))
+  if [[ "$STAGE_NAME" == "3-"* ]]; then
+    PROVIDER="providers/${STAGE_NAME}-providers.tf"
+    TFVARS="tfvars/globals.auto.tfvars.json
     tfvars/0-bootstrap.auto.tfvars.json
     tfvars/1-resman.auto.tfvars.json
     tfvars/2-networking.auto.tfvars.json
@@ -74,6 +81,10 @@ case $STAGE_NAME in
 
 esac
 
-for f in $FILES; do
+echo "commands for '$STAGE_NAME'"
+
+echo "$PROVIDER_CMD/$PROVIDER ./"
+
+for f in $TFVARS; do
   echo "$CMD/$f ./"
 done
