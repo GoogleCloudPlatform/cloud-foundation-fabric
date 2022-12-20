@@ -18,21 +18,21 @@ Usage: main.py [OPTIONS]
   CLI entry point.
 
 Options:
-  -dr, --discovery-root TEXT    Root node for asset discovery,
-                                organizations/nnn or folders/nnn.  [required]
-  -op, --monitoring-project TEXT        GCP monitoring project where metrics will be
-                                stored.  [required]
-  -p, --project TEXT            GCP project id, can be specified multiple
-                                times.
-  -f, --folder INTEGER          GCP folder id, can be specified multiple
-                                times.
-  --custom-quota-file FILENAME  Custom quota file in yaml format.
-  --dump-file FILENAME          Export JSON representation of resources to
-                                file.
-  --load-file FILENAME          Load JSON resources from file, skips init and
-                                discovery.
-  --debug-plugin TEXT           Run only core and specified timeseries plugin.
-  --help                        Show this message and exit.
+  -dr, --discovery-root TEXT        Root node for asset discovery,
+                                    organizations/nnn or folders/nnn.  [required]
+  -mon, --monitoring-project TEXT   GCP monitoring project where metrics will be
+                                    stored.  [required]
+  -p, --project TEXT                GCP project id to be monitored, can be specified multiple
+                                    times.
+  -f, --folder INTEGER              GCP folder id to be monitored, can be specified multiple
+                                    times.
+  --custom-quota-file FILENAME      Custom quota file in yaml format.
+  --dump-file FILENAME              Export JSON representation of resources to
+                                    file.
+  --load-file FILENAME              Load JSON resources from file, skips init and
+                                    discovery.
+  --debug-plugin TEXT               Run only core and specified timeseries plugin.
+  --help                            Show this message and exit.
 ```
 
 In normal use three pieces of information need to be passed in:
