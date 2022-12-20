@@ -143,7 +143,7 @@ module "firewall" {
   }
   default_rules_config = { disabled = true }
 }
-# tftest modules=1 resources=1 files=lbs,cidrs
+# tftest modules=1 resources=3 files=lbs,cidrs
 ```
 
 ```yaml
@@ -151,7 +151,7 @@ module "firewall" {
 ingress:
   allow-healthchecks:
     description: Allow ingress from healthchecks.
-    ranges:
+    source_ranges:
       - healthchecks
     targets: ["lb-backends"]
     rules:
@@ -159,6 +159,25 @@ ingress:
         ports:
           - 80
           - 443
+  allow-service-1-to-service-2:
+    description: Allow ingress from service-1 SA
+    targets: ["service-2"]
+    use_service_accounts: true
+    sources:
+      - service-1@my-project.iam.gserviceaccount.com
+    rules:
+      - protocol: tcp
+        ports:
+          - 80
+          - 443
+egress:
+  block-telnet:
+    description: block outbound telnet
+    deny: true
+    rules:
+      - protocol: tcp
+        ports:
+          - 23
 ```
 
 ```yaml
