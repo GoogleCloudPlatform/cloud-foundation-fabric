@@ -18,7 +18,9 @@ locals {
   # we need keys in the endpoint type to address issue #1055
   _neg_endpoints = flatten([
     for k, v in local.neg_zonal : [
-      for kk, vv in v.endpoints : merge(vv, { neg = k, key = "${k}-${kk}", zone = v.zone })
+      for kk, vv in v.endpoints : merge(vv, {
+        key = "${k}-${kk}", neg = k, zone = v.zone
+      })
     ]
   ])
   fwd_rule_ports = (
