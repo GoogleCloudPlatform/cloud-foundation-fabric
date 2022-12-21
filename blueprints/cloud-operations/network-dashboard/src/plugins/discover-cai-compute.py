@@ -31,6 +31,7 @@ CAI_URL = ('https://content-cloudasset.googleapis.com/v1'
 LOGGER = logging.getLogger('net-dash.discovery.cai-compute')
 TYPES = {
     'addresses': 'Address',
+    'global_addresses': 'GlobalAddress',
     'firewall_policies': 'FirewallPolicy',
     'firewall_rules': 'Firewall',
     'forwarding_rules': 'ForwardingRule',
@@ -61,7 +62,7 @@ def _handle_discovery(resources, response, data):
   'Processes the asset API response and returns parsed resources or next URL.'
   LOGGER.info('discovery handle request')
   for result in parse_cai_results(data, 'cai-compute', method='list'):
-    resource = _handle_resource(resources, result['resource'])
+    resource = _handle_resource(resources, result['resource'], result['assetType'])
     if not resource:
       continue
     yield resource
@@ -72,15 +73,19 @@ def _handle_discovery(resources, response, data):
     yield HTTPRequest(f'{url}&pageToken={page_token}', {}, None)
 
 
-def _handle_resource(resources, data):
+def _handle_resource(resources, data, assetType):
   'Parses and returns a single resource. Calls resource-level handler.'
   attrs = data['data']
   # general attributes shared by all resource types
-  resource_name = NAMES[data['discoveryName']]
+  # Using Asset type as the resource_name instead of the discoveryName
+  # Because sometimes it doesn't match
+  # For example: assetType = GlobalAddress but discoveryName = Address
+  resource_name = NAMES[assetType.split('/')[-1]]
   resource = {
       'id': attrs['id'],
       'name': attrs['name'],
-      'self_link': _self_link(attrs['selfLink'])
+      'self_link': _self_link(attrs['selfLink']),
+      'assetType': assetType
   }
   # derive parent type and id and skip if parent is not within scope
   parent_data = _get_parent(data['parent'], resources)
@@ -116,6 +121,19 @@ def _handle_addresses(resource, data):
       'subnetwork': None if not subnet else _self_link(subnet)
   }
 
+def _handle_global_addresses(resource, data):  
+  'Handles GlobalAddress type resource data (ex: PSA ranges).'
+  network = data.get('network')
+  subnet = data.get('subnetwork')
+  prefixLength = data.get('prefixLength')
+  return {
+      'address': data['address'],
+      'prefixLength': None if not prefixLength else prefixLength,
+      'internal': data.get('addressType') == 'INTERNAL',
+      'purpose': data.get('purpose', ''),
+      'status': data.get('status', ''),
+      'network': None if not network else _self_link(network),
+  }
 
 def _handle_firewall_policies(resource, data):
   'Handles firewall policy type resource data.'
