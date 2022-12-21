@@ -16,6 +16,12 @@
 
 # tfdoc:file:description Organization tag and conditional IAM grant.
 
+locals {
+  tag_keys = {
+    for k, v in var.tag_names : k => "${var.organization.id}/${v}"
+  }
+}
+
 module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
@@ -36,7 +42,7 @@ module "organization" {
   }
 }
 
-resource "google_organization_iam_member" "org_policy_admin" {
+resource "google_organization_iam_member" "org_policy_admin_stage0" {
   for_each = toset([
     "group:${local.groups.gcp-admins}",
     module.automation-tf-resman-sa.iam_email
@@ -48,7 +54,22 @@ resource "google_organization_iam_member" "org_policy_admin" {
     title       = "org_policy_tag_${var.tenant_config.short_name}_scoped"
     description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name}."
     expression = (
-      "resource.matchTag('${var.organization.id}/${var.tag_names.tenant}', '${var.tenant_config.short_name}')"
+      "resource.matchTag('${local.tag_keys.tenant}', '${var.tenant_config.short_name}')"
     )
   }
 }
+
+resource "google_organization_iam_member" "org_policy_admin_stage2_3" {
+  for_each = {
+    for k, v in local.branch_sas : k => v if var.fast_features[v.flag]
+  }
+  org_id = var.organization.id
+  role   = "roles/orgpolicy.policyAdmin"
+  member = module.automation-tf-resman-sa-stage2-3[each.key].iam_email
+  condition {
+    title       = "org_policy_tag_${var.tenant_config.short_name}_${each.key}_scoped"
+    description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name} ${each.value.description}."
+    expression  = each.value.condition
+  }
+}
+

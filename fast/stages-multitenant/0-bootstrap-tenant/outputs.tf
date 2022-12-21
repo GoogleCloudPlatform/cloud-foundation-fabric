@@ -38,8 +38,16 @@ locals {
     organization    = var.organization
     prefix          = local.prefix
     root_node       = module.tenant-folder.id
-    tag_keys        = var.tag_keys
-    tag_names       = var.tag_names
+    service_accounts = merge(
+      { resman = module.automation-tf-resman-sa.email },
+      {
+        for k, v in local.branch_sas : k => try(
+          module.automation-tf-resman-sa-stage2-3[k].email, null
+        )
+      }
+    )
+    tag_keys  = var.tag_keys
+    tag_names = var.tag_names
     tag_values = merge(var.tag_values, {
       for k, v in module.organization.tag_values : k => v.id
     })
