@@ -28,61 +28,44 @@ DESCRIPTOR_ATTRS = {
 LOGGER = logging.getLogger('net-dash.timeseries.psa')
 
 
-def _psa_range_sqlinstances(resources):
+def _sql_addresses(sql_instances):
   'Returns counts of Cloud SQL instances per PSA range.'
-  for sql_instance in resources['sqlinstances'].values():
-    # Get the private IP
-    sql_instance_private_ip = None
-    for ip in sql_instance['ipAddresses']:
-      if ip['type'] == 'PRIVATE':
-        sql_instance_private_ip = ip['ipAddress']
-    if not sql_instance_private_ip:
+  for v in sql_instances.values():
+    if not v['ipAddresses']:
       continue
-
-    # Using 1 IP for the Cloud SQL instance + 1 IP for the ILB in front
-    # + 1 other IP if availabilityType == 'REGIONAL' (additional instance for HA)
-    nb_ips = 3 if sql_instance['availabilityType'] == 'REGIONAL' else 2
-
-    # Need to find the correct PSA range matching
-    for psa_range in resources['global_addresses'].values():
-      psa_range_ip = ipaddress.ip_network(psa_range['address'] + '/' +
-                                          str(psa_range['prefixLength']))
-      # Found matching PSA range for our Cloud SQL instance
-      if ipaddress.ip_address(sql_instance_private_ip) in psa_range_ip:
-        yield psa_range['self_link'], nb_ips
-        break
+    # 1 IP for the instance + 1 IP for the ILB + 1 IP if HA
+    yield v['ipAddresses'][0], 2 if v['availabilityType'] != 'REGIONAL' else 3
 
 
 @register_timeseries
 def timeseries(resources):
   'Returns used/available/ratio timeseries for addresses by PSA ranges.'
   LOGGER.info('timeseries')
-  # return descriptors
   for dtype, name in DESCRIPTOR_ATTRS.items():
     yield MetricDescriptor(f'network/psa/{dtype}', name,
                            ('project', 'network', 'subnetwork'),
                            dtype.endswith('ratio'))
-  # aggregate per-resource counts in total per psa-range counts
-  psa_ranges = {
-      k: ipaddress.ip_network(v['address'] + '/' + str(v['prefixLength']))
-      for k, v in resources['global_addresses'].items()
+  psa_nets = {
+      k: ipaddress.ip_network('{}/{}'.format(v['address'], v['prefixLength']))
+      for k, v in resources['global_addresses'].items() if v['prefixLength']
   }
+  psa_counts = {}
+  for address, ip_count in _sql_addresses(resources.get('sqlinstances', {})):
+    ip_address = ipaddress.ip_address(address)
+    for k, v in psa_nets.items():
+      if ip_address in v:
+        psa_counts[k] = psa_counts.get(k, 0) + ip_count
+        break
 
-  psa_counts = {k: 0 for k in resources['global_addresses']}
-  # TODO: Later we need to add MemoryStore, Filestore, etc.
-  counters = itertools.chain(_psa_range_sqlinstances(resources))
-  for psa_self_link, count in counters:
-    psa_counts[psa_self_link] += count
-
-  for psa_self_link, count in psa_counts.items():
-    max_ips = psa_ranges[psa_self_link].num_addresses - 4
-    psa_range = resources['global_addresses'][psa_self_link]
+  for k, v in psa_counts.items():
+    max_ips = psa_nets[k].num_addresses - 4
+    psa_range = resources['global_addresses'][k]
     labels = {
         'network': psa_range['network'],
         'project': psa_range['project_id'],
-        'psa_range_name': psa_range['name']
+        'psa_range': psa_range['name']
     }
     yield TimeSeries('network/psa/addresses_available', max_ips, labels)
-    yield TimeSeries('network/psa/addresses_used', count, labels)
+    yield TimeSeries('network/psa/addresses_used', v, labels)
     yield TimeSeries('network/psa/addresses_used_ratio',
-                     0 if count == 0 else count / max_ips, labels)
+                     0 if v == 0 else v / max_ips, labels)
