@@ -45,7 +45,8 @@ def _psa_range_sqlinstances(resources):
 
     # Need to find the correct PSA range matching
     for psa_range in resources['global_addresses'].values():
-      psa_range_ip = ipaddress.ip_network(psa_range['address'] + '/' + str(psa_range['prefixLength']))
+      psa_range_ip = ipaddress.ip_network(psa_range['address'] + '/' +
+                                          str(psa_range['prefixLength']))
       # Found matching PSA range for our Cloud SQL instance
       if ipaddress.ip_address(sql_instance_private_ip) in psa_range_ip:
         yield psa_range['self_link'], nb_ips

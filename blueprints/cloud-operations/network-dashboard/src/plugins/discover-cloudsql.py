@@ -24,7 +24,6 @@ import logging
 from . import HTTPRequest, Level, Resource, register_init, register_discovery
 from .utils import parse_cai_results
 
-
 CAI_URL = ('https://content-cloudasset.googleapis.com/v1'
            '/{root}/assets'
            '?contentType=RESOURCE&{asset_types}&pageSize=500')

@@ -24,7 +24,6 @@ import logging
 from . import HTTPRequest, Level, Resource, register_init, register_discovery
 from .utils import parse_cai_results
 
-
 CAI_URL = ('https://content-cloudasset.googleapis.com/v1'
            '/{root}/assets'
            '?contentType=RESOURCE&{asset_types}&pageSize=500')
@@ -62,7 +61,8 @@ def _handle_discovery(resources, response, data):
   'Processes the asset API response and returns parsed resources or next URL.'
   LOGGER.info('discovery handle request')
   for result in parse_cai_results(data, 'cai-compute', method='list'):
-    resource = _handle_resource(resources, result['resource'], result['assetType'])
+    resource = _handle_resource(resources, result['resource'],
+                                result['assetType'])
     if not resource:
       continue
     yield resource
@@ -121,7 +121,8 @@ def _handle_addresses(resource, data):
       'subnetwork': None if not subnet else _self_link(subnet)
   }
 
-def _handle_global_addresses(resource, data):  
+
+def _handle_global_addresses(resource, data):
   'Handles GlobalAddress type resource data (ex: PSA ranges).'
   network = data.get('network')
   subnet = data.get('subnetwork')
@@ -134,6 +135,7 @@ def _handle_global_addresses(resource, data):
       'status': data.get('status', ''),
       'network': None if not network else _self_link(network),
   }
+
 
 def _handle_firewall_policies(resource, data):
   'Handles firewall policy type resource data.'
