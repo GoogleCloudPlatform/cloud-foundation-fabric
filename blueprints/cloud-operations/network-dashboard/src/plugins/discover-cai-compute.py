@@ -153,7 +153,6 @@ def _handle_forwarding_rules(resource, data):
 def _handle_global_addresses(resource, data):
   'Handles GlobalAddress type resource data (ex: PSA ranges).'
   network = data.get('network')
-  subnet = data.get('subnetwork')
   return {
       'address': data['address'],
       'prefixLength': data.get('prefixLength') or None,
