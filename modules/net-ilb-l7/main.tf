@@ -15,9 +15,10 @@
  */
 
 locals {
+  # we need keys in the endpoint type to address issue #1055
   _neg_endpoints = flatten([
     for k, v in local.neg_zonal : [
-      for vv in v.endpoints : merge(vv, { neg = k, zone = v.zone })
+      for kk, vv in v.endpoints : merge(vv, { neg = k, key = "${k}-${kk}", zone = v.zone })
     ]
   ])
   fwd_rule_ports = (
@@ -29,8 +30,7 @@ locals {
     : google_compute_region_target_http_proxy.default.0.id
   )
   neg_endpoints = {
-    for v in local._neg_endpoints :
-    "${v.neg}-${v.ip_address}-${coalesce(v.port, "none")}" => v
+    for v in local._neg_endpoints : (v.key) => v
   }
   neg_regional = {
     for k, v in var.neg_configs :
