@@ -115,7 +115,7 @@ variable "neg_configs" {
       subnetwork = string
       zone       = string
       # default_port = optional(number)
-      endpoints = optional(list(object({
+      endpoints = optional(map(object({
         instance   = string
         ip_address = string
         port       = number
@@ -126,7 +126,7 @@ variable "neg_configs" {
       zone    = string
       # re-enable once provider properly support this
       # default_port = optional(number)
-      endpoints = optional(list(object({
+      endpoints = optional(map(object({
         ip_address = string
         port       = number
       })))
@@ -135,7 +135,7 @@ variable "neg_configs" {
       use_fqdn = optional(bool, true)
       # re-enable once provider properly support this
       # default_port = optional(number)
-      endpoints = optional(list(object({
+      endpoints = optional(map(object({
         destination = string
         port        = number
       })))

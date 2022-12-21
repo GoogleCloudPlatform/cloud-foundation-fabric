@@ -285,11 +285,13 @@ module "glb-0" {
         network    = "projects/myprj-host/global/networks/svpc"
         subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
         zone       = "europe-west8-b"
-        endpoints = [{
-          instance   = "myinstance-b-0"
-          ip_address = "10.24.32.25"
-          port       = 80
-        }]
+        endpoints = {
+          e-0 = {
+            instance   = "myinstance-b-0"
+            ip_address = "10.24.32.25"
+            port       = 80
+          }
+        }
       }
     }
   }
@@ -322,10 +324,12 @@ module "glb-0" {
       hybrid = {
         network = "projects/myprj-host/global/networks/svpc"
         zone    = "europe-west8-b"
-        endpoints = [{
-          ip_address = "10.0.0.10"
-          port       = 80
-        }]
+        endpoints = {
+          e-0 = {
+            ip_address = "10.0.0.10"
+            port       = 80
+          }
+        }
       }
     }
   }
@@ -356,10 +360,12 @@ module "glb-0" {
     neg-0 = {
       internet = {
         use_fqdn = true
-        endpoints = [{
-          destination = "www.example.org"
-          port        = 80
-        }]
+        endpoints = {
+          e-0 = {
+            destination = "www.example.org"
+            port        = 80
+          }
+        }
       }
     }
   }
@@ -601,21 +607,25 @@ module "glb-0" {
         network    = "projects/myprj-host/global/networks/svpc"
         subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
         zone       = "europe-west8-c"
-        endpoints = [{
-          instance   = "nginx-ew8-c"
-          ip_address = "10.24.32.26"
-          port       = 80
-        }]
+        endpoints = {
+          e-0 = {
+            instance   = "nginx-ew8-c"
+            ip_address = "10.24.32.26"
+            port       = 80
+          }
+        }
       }
     }
     neg-hello = {
       hybrid = {
         network = "projects/myprj-host/global/networks/svpc"
         zone    = "europe-west8-b"
-        endpoints = [{
-          ip_address = "192.168.0.3"
-          port       = 443
-        }]
+        endpoints = {
+          e-0 = {
+            ip_address = "192.168.0.3"
+            port       = 443
+          }
+        }
       }
     }
   }
@@ -691,7 +701,7 @@ module "glb-0" {
 | [health_check_configs](variables-health-check.tf#L19) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="map&#40;object&#40;&#123;&#10;  check_interval_sec  &#61; optional&#40;number&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  enable_logging      &#61; optional&#40;bool, false&#41;&#10;  healthy_threshold   &#61; optional&#40;number&#41;&#10;  project_id          &#61; optional&#40;string&#41;&#10;  timeout_sec         &#61; optional&#40;number&#41;&#10;  unhealthy_threshold &#61; optional&#40;number&#41;&#10;  grpc &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    service_name       &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http2 &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  https &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  tcp &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ssl &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  default &#61; &#123;&#10;    http &#61; &#123;&#10;      port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [https_proxy_config](variables.tf#L74) | HTTPS proxy connfiguration. | <code title="object&#40;&#123;&#10;  certificate_map &#61; optional&#40;string&#41;&#10;  quic_override   &#61; optional&#40;string&#41;&#10;  ssl_policy      &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L85) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L96) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  cloudfunction &#61; optional&#40;object&#40;&#123;&#10;    region          &#61; string&#10;    target_function &#61; optional&#40;string&#41;&#10;    target_urlmask  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cloudrun &#61; optional&#40;object&#40;&#123;&#10;    region &#61; string&#10;    target_service &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      tag  &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    target_urlmask &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gce &#61; optional&#40;object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;    zone       &#61; string&#10;    endpoints &#61; optional&#40;list&#40;object&#40;&#123;&#10;      instance   &#61; string&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  hybrid &#61; optional&#40;object&#40;&#123;&#10;    network &#61; string&#10;    zone    &#61; string&#10;    endpoints &#61; optional&#40;list&#40;object&#40;&#123;&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  internet &#61; optional&#40;object&#40;&#123;&#10;    use_fqdn &#61; optional&#40;bool, true&#41;&#10;    endpoints &#61; optional&#40;list&#40;object&#40;&#123;&#10;      destination &#61; string&#10;      port        &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  psc &#61; optional&#40;object&#40;&#123;&#10;    region         &#61; string&#10;    target_service &#61; string&#10;    network        &#61; optional&#40;string&#41;&#10;    subnetwork     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L96) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  cloudfunction &#61; optional&#40;object&#40;&#123;&#10;    region          &#61; string&#10;    target_function &#61; optional&#40;string&#41;&#10;    target_urlmask  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cloudrun &#61; optional&#40;object&#40;&#123;&#10;    region &#61; string&#10;    target_service &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      tag  &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    target_urlmask &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gce &#61; optional&#40;object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;    zone       &#61; string&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      instance   &#61; string&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  hybrid &#61; optional&#40;object&#40;&#123;&#10;    network &#61; string&#10;    zone    &#61; string&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  internet &#61; optional&#40;object&#40;&#123;&#10;    use_fqdn &#61; optional&#40;bool, true&#41;&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      destination &#61; string&#10;      port        &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  psc &#61; optional&#40;object&#40;&#123;&#10;    region         &#61; string&#10;    target_service &#61; string&#10;    network        &#61; optional&#40;string&#41;&#10;    subnetwork     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ports](variables.tf#L187) | Optional ports for HTTP load balancer, valid ports are 80 and 8080. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [protocol](variables.tf#L198) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
 | [ssl_certificates](variables.tf#L211) | SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates. | <code title="object&#40;&#123;&#10;  certificate_ids &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  create_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    certificate &#61; string&#10;    private_key &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  managed_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    domains     &#61; list&#40;string&#41;&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
