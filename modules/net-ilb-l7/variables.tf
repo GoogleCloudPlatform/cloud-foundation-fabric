@@ -73,7 +73,7 @@ variable "neg_configs" {
       # default_port = optional(number)
       network    = optional(string)
       subnetwork = optional(string)
-      endpoints = optional(list(object({
+      endpoints = optional(map(object({
         instance   = string
         ip_address = string
         port       = number
@@ -85,7 +85,7 @@ variable "neg_configs" {
       network = optional(string)
       # re-enable once provider properly support this
       # default_port = optional(number)
-      endpoints = optional(list(object({
+      endpoints = optional(map(object({
         ip_address = string
         port       = number
       })))
