@@ -19,23 +19,23 @@
 locals {
   _neg_endpoints_global = flatten([
     for k, v in local.neg_global : [
-      for vv in v.internet.endpoints :
-      merge(vv, { neg = k, use_fqdn = v.internet.use_fqdn })
+      for kk, vv in v.internet.endpoints : merge(vv, {
+        key = "${k}-${kk}", neg = k, use_fqdn = v.internet.use_fqdn
+      })
     ]
   ])
   _neg_endpoints_zonal = flatten([
     for k, v in local.neg_zonal : [
-      for vv in v.endpoints :
-      merge(vv, { neg = k, zone = v.zone })
+      for kk, vv in v.endpoints : merge(vv, {
+        key = "${k}-${kk}", neg = k, zone = v.zone
+      })
     ]
   ])
   neg_endpoints_global = {
-    for v in local._neg_endpoints_global :
-    "${v.neg}-${v.destination}-${coalesce(v.port, "none")}" => v
+    for v in local._neg_endpoints_global : (v.key) => v
   }
   neg_endpoints_zonal = {
-    for v in local._neg_endpoints_zonal :
-    "${v.neg}-${v.ip_address}-${coalesce(v.port, "none")}" => v
+    for v in local._neg_endpoints_zonal : (v.key) => v
   }
   neg_global = {
     for k, v in var.neg_configs :

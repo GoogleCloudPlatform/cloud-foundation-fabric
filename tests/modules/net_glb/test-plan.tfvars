@@ -62,30 +62,36 @@ neg_configs = {
       network    = "projects/my-project/global/networks/shared-vpc"
       subnetwork = "projects/my-project/regions/europe-west8/subnetworks/gce"
       zone       = "europe-west8-b"
-      endpoints = [{
-        instance   = "nginx-ew8-b"
-        ip_address = "10.24.32.25"
-        port       = 80
-      }]
+      endpoints = {
+        e-0 = {
+          instance   = "nginx-ew8-b"
+          ip_address = "10.24.32.25"
+          port       = 80
+        }
+      }
     }
   }
   neg-hybrid = {
     hybrid = {
       network = "projects/my-project/global/networks/shared-vpc"
       zone    = "europe-west8-b"
-      endpoints = [{
-        ip_address = "192.168.0.3"
-        port       = 80
-      }]
+      endpoints = {
+        e-0 = {
+          ip_address = "192.168.0.3"
+          port       = 80
+        }
+      }
     }
   }
   neg-internet = {
     internet = {
       use_fqdn = true
-      endpoints = [{
-        destination = "hello.example.org"
-        port        = 80
-      }]
+      endpoints = {
+        e-0 = {
+          destination = "hello.example.org"
+          port        = 80
+        }
+      }
     }
   }
 }
