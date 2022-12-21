@@ -27,10 +27,24 @@ organization = {
 }
 prefix = "fast2"
 tag_keys = {
-  tenant = "tagKeys/7890123456"
+  context     = "tagKeys/1234567890"
+  environment = "tagKeys/4567890123"
+  tenant      = "tagKeys/7890123456"
 }
 tag_names = {
-  tenant = "tenant"
+  context     = "context"
+  environment = "environment"
+  tenant      = "tenant"
+}
+tag_values = {
+  "context/data" : "tagValues/1234567890",
+  "context/gke" : "tagValues/1234567890",
+  "context/networking" : "tagValues/1234567890",
+  "context/sandbox" : "tagValues/1234567890",
+  "context/security" : "tagValues/1234567890",
+  "context/teams" : "tagValues/1234567890",
+  "environment/development" : "tagValues/1234567890",
+  "environment/production" : "tagValues/1234567890"
 }
 tenant_config = {
   groups = {

@@ -19,15 +19,21 @@
 # service account billing roles are in the SA module in automation.tf
 
 resource "google_billing_account_iam_member" "billing_ext_admin" {
-  count              = var.billing_account.is_org_level ? 0 : 1
+  for_each = toset(var.billing_account.is_org_level ? [] : [
+    "group:${local.groups.gcp-admins}",
+    module.automation-tf-resman-sa.iam_email
+  ])
   billing_account_id = var.billing_account.id
   role               = "roles/billing.admin"
-  member             = "group:${local.groups.gcp-admins}"
+  member             = each.key
 }
 
 resource "google_billing_account_iam_member" "billing_ext_cost_manager" {
-  count              = var.billing_account.is_org_level ? 0 : 1
+  for_each = toset(var.billing_account.is_org_level ? [] : [
+    "group:${local.groups.gcp-admins}",
+    module.automation-tf-resman-sa.iam_email
+  ])
   billing_account_id = var.billing_account.id
   role               = "roles/billing.costsManager"
-  member             = "group:${local.groups.gcp-admins}"
+  member             = each.key
 }

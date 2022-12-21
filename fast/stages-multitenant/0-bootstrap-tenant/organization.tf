@@ -20,7 +20,10 @@ module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
   iam_additive = var.billing_account.is_org_level ? {
-    "roles/billing.admin"        = ["group:${local.groups.gcp-admins}"]
+    "roles/billing.admin" = [
+      "group:${local.groups.gcp-admins}",
+      module.automation-tf-resman-sa.iam_email
+    ]
     "roles/billing.costsManager" = ["group:${local.groups.gcp-admins}"]
   } : {}
   tags = {
@@ -34,9 +37,13 @@ module "organization" {
 }
 
 resource "google_organization_iam_member" "org_policy_admin" {
+  for_each = toset([
+    "group:${local.groups.gcp-admins}",
+    module.automation-tf-resman-sa.iam_email
+  ])
   org_id = var.organization.id
   role   = "roles/orgpolicy.policyAdmin"
-  member = module.automation-tf-resman-sa.iam_email
+  member = each.key
   condition {
     title       = "org_policy_tag_${var.tenant_config.short_name}_scoped"
     description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name}."

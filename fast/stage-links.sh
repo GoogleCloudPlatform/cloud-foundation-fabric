@@ -26,41 +26,45 @@ elif [ ! -d "$1" ]; then
   exit 1
 else
   CMD="ln -s $1"
-  CP_CMD="cp -s $1"
+  CP_CMD="cp $1"
 fi
 
+GLOBALS="tfvars/globals.auto.tfvars.json"
 PROVIDER_CMD=$CMD
-
 STAGE_NAME=$(basename "$(pwd)")
 
 case $STAGE_NAME in
 
 "0-bootstrap")
+  GLOBALS=""
   PROVIDER="providers/multitenant/${STAGE_NAME}-providers.tf"
   TFVARS=""
   ;;
 "0-bootstrap-tenant")
   PROVIDER_CMD=$CP_CMD
   PROVIDER="providers/multitenant/0-mt-bootstrap-providers.tf"
-  TFVARS="tfvars/globals.auto.tfvars.json
-  tfvars/0-bootstrap.auto.tfvars.json
+  TFVARS="tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
 "0-bootstrap-multitenant")
   PROVIDER="providers/multitenant/0-mt-bootstrap-providers.tf"
-  TFVARS="tfvars/globals.auto.tfvars.json
-  tfvars/0-bootstrap.auto.tfvars.json
+  TFVARS="tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
 "1-resman")
   PROVIDER="providers/${STAGE_NAME}-providers.tf"
-  TFVARS="tfvars/globals.auto.tfvars.json
-  tfvars/0-bootstrap.auto.tfvars.json"
+  TFVARS="tfvars/0-bootstrap.auto.tfvars.json"
+  ;;
+"1-resman-tenant")
+  if [[ -z "$TENANT" ]]; then
+    TENANT="\${TENANT}"
+  fi
+  PROVIDER="tenants/${TENANT}/providers/1-resman-providers.tf"
+  TFVARS="tenants/${TENANT}/tfvars/0-bootstrap.auto.tfvars.json"
   ;;
 "2-"*)
   PROVIDER="providers/multitenant/${STAGE_NAME}-providers.tf"
-  TFVARS="tfvars/globals.auto.tfvars.json
-  tfvars/0-bootstrap.auto.tfvars.json
+  TFVARS="tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
 *)
@@ -69,8 +73,7 @@ case $STAGE_NAME in
   STAGE_NAME=$(basename $(dirname "$(pwd)"))
   if [[ "$STAGE_NAME" == "3-"* ]]; then
     PROVIDER="providers/${STAGE_NAME}-providers.tf"
-    TFVARS="tfvars/globals.auto.tfvars.json
-    tfvars/0-bootstrap.auto.tfvars.json
+    TFVARS="tfvars/0-bootstrap.auto.tfvars.json
     tfvars/1-resman.auto.tfvars.json
     tfvars/2-networking.auto.tfvars.json
     tfvars/2-security.auto.tfvars.json"
@@ -84,6 +87,7 @@ esac
 echo "commands for '$STAGE_NAME'"
 
 echo "$PROVIDER_CMD/$PROVIDER ./"
+echo "$CMD/$GLOBALS ./"
 
 for f in $TFVARS; do
   echo "$CMD/$f ./"

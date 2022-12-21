@@ -126,7 +126,9 @@ variable "tag_keys" {
   # tfdoc:variable:source 1-resman
   description = "Organization tag keys."
   type = object({
-    tenant = string
+    context     = string
+    environment = string
+    tenant      = string
   })
   nullable = false
 }
@@ -135,9 +137,18 @@ variable "tag_names" {
   # tfdoc:variable:source 1-resman
   description = "Customized names for resource management tags."
   type = object({
-    tenant = string
+    context     = string
+    environment = string
+    tenant      = string
   })
   nullable = false
+}
+
+variable "tag_values" {
+  # tfdoc:variable:source 1-resman
+  description = "Organization resource management tag values."
+  type        = map(string)
+  nullable    = false
 }
 
 variable "tenant_config" {

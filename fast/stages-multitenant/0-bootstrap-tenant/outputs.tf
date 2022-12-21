@@ -33,10 +33,16 @@ locals {
     billing_account = var.billing_account
     custom_roles    = var.custom_roles
     fast_features   = var.fast_features
+    groups          = var.tenant_config.groups
     locations       = local.locations
     organization    = var.organization
     prefix          = local.prefix
     root_node       = module.tenant-folder.id
+    tag_keys        = var.tag_keys
+    tag_names       = var.tag_names
+    tag_values = merge(var.tag_values, {
+      for k, v in module.organization.tag_values : k => v.id
+    })
   }
   workflow = local.cicd_repository_type == null ? null : templatefile(
     "${path.module}/templates/workflow-${local.cicd_repository_type}.yaml", {
