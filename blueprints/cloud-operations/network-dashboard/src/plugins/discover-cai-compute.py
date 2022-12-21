@@ -122,21 +122,6 @@ def _handle_addresses(resource, data):
   }
 
 
-def _handle_global_addresses(resource, data):
-  'Handles GlobalAddress type resource data (ex: PSA ranges).'
-  network = data.get('network')
-  subnet = data.get('subnetwork')
-  prefixLength = data.get('prefixLength')
-  return {
-      'address': data['address'],
-      'prefixLength': None if not prefixLength else prefixLength,
-      'internal': data.get('addressType') == 'INTERNAL',
-      'purpose': data.get('purpose', ''),
-      'status': data.get('status', ''),
-      'network': None if not network else _self_link(network),
-  }
-
-
 def _handle_firewall_policies(resource, data):
   'Handles firewall policy type resource data.'
   return {
@@ -162,6 +147,20 @@ def _handle_forwarding_rules(resource, data):
       'psc_accepted': data.get('pscConnectionStatus') == 'ACCEPTED',
       'region': None if not region else region.split('/')[-1],
       'subnetwork': None if not subnet else _self_link(subnet)
+  }
+
+
+def _handle_global_addresses(resource, data):
+  'Handles GlobalAddress type resource data (ex: PSA ranges).'
+  network = data.get('network')
+  subnet = data.get('subnetwork')
+  return {
+      'address': data['address'],
+      'prefixLength': data.get('prefixLength') or None,
+      'internal': data.get('addressType') == 'INTERNAL',
+      'purpose': data.get('purpose', ''),
+      'status': data.get('status', ''),
+      'network': None if not network else _self_link(network),
   }
 
 
