@@ -50,7 +50,7 @@ def timeseries(resources):
       for k, v in resources['global_addresses'].items() if v['prefixLength']
   }
   psa_counts = {}
-  for address, ip_count in _sql_addresses(resources.get('sqlinstances', {})):
+  for address, ip_count in _sql_addresses(resources.get('sql_instances', {})):
     ip_address = ipaddress.ip_address(address)
     for k, v in psa_nets.items():
       if ip_address in v:
