@@ -77,10 +77,12 @@ variable "storage_type" {
 
 variable "tables" {
   description = "Tables to be created in the BigTable instance."
+  nullable    = false
   type = map(object({
     split_keys      = optional(list(string), [])
     column_families = optional(list(string), [])
   }))
+  default = {}
 }
 
 variable "zone" {
