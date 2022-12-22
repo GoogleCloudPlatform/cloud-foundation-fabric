@@ -75,22 +75,25 @@ resource "google_storage_bucket" "bucket" {
   }
 
   dynamic "lifecycle_rule" {
-    for_each = var.lifecycle_rule == null ? [] : [""]
+    for_each = var.lifecycle_rules
+    iterator = rule
     content {
       action {
-        type          = var.lifecycle_rule.action["type"]
-        storage_class = var.lifecycle_rule.action["storage_class"]
+        type          = rule.value.action.type
+        storage_class = rule.value.action.storage_class
       }
       condition {
-        age                        = var.lifecycle_rule.condition["age"]
-        created_before             = var.lifecycle_rule.condition["created_before"]
-        with_state                 = var.lifecycle_rule.condition["with_state"]
-        matches_storage_class      = var.lifecycle_rule.condition["matches_storage_class"]
-        num_newer_versions         = var.lifecycle_rule.condition["num_newer_versions"]
-        custom_time_before         = var.lifecycle_rule.condition["custom_time_before"]
-        days_since_custom_time     = var.lifecycle_rule.condition["days_since_custom_time"]
-        days_since_noncurrent_time = var.lifecycle_rule.condition["days_since_noncurrent_time"]
-        noncurrent_time_before     = var.lifecycle_rule.condition["noncurrent_time_before"]
+        age                        = rule.value.condition.age
+        created_before             = rule.value.condition.created_before
+        custom_time_before         = rule.value.condition.custom_time_before
+        days_since_custom_time     = rule.value.condition.days_since_custom_time
+        days_since_noncurrent_time = rule.value.condition.days_since_noncurrent_time
+        matches_prefix             = rule.value.condition.matches_prefix
+        matches_storage_class      = rule.value.condition.matches_storage_class
+        matches_suffix             = rule.value.condition.matches_suffix
+        noncurrent_time_before     = rule.value.condition.noncurrent_time_before
+        num_newer_versions         = rule.value.condition.num_newer_versions
+        with_state                 = rule.value.condition.with_state
       }
     }
   }
@@ -104,15 +107,14 @@ resource "google_storage_bucket_iam_binding" "bindings" {
 }
 
 resource "google_storage_notification" "notification" {
-  count             = local.notification ? 1 : 0
-  bucket            = google_storage_bucket.bucket.name
-  payload_format    = var.notification_config.payload_format
-  topic             = google_pubsub_topic.topic[0].id
-  event_types       = var.notification_config.event_types
-  custom_attributes = var.notification_config.custom_attributes
-
-  depends_on = [google_pubsub_topic_iam_binding.binding]
-
+  count              = local.notification ? 1 : 0
+  bucket             = google_storage_bucket.bucket.name
+  payload_format     = var.notification_config.payload_format
+  topic              = google_pubsub_topic.topic[0].id
+  custom_attributes  = var.notification_config.custom_attributes
+  event_types        = var.notification_config.event_types
+  object_name_prefix = var.notification_config.object_name_prefix
+  depends_on         = [google_pubsub_topic_iam_binding.binding]
 }
 resource "google_pubsub_topic_iam_binding" "binding" {
   count   = local.notification ? 1 : 0
