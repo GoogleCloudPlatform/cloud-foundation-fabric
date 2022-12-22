@@ -24,7 +24,7 @@ module "bigtable-instance" {
   tables = {
     test1 = {},
     test2 = {
-      split_keys    = ["a", "b", "c"]
+      split_keys = ["a", "b", "c"]
     }
   }
   iam = {
@@ -47,7 +47,7 @@ module "bigtable-instance" {
   tables = {
     test1 = {},
     test2 = {
-      split_keys     = ["a", "b", "c"]
+      split_keys      = ["a", "b", "c"]
       column_families = ["cf1", "cf2", "cf3"]
     }
     test3 = {
