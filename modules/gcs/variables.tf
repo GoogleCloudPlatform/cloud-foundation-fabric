@@ -17,10 +17,10 @@
 variable "cors" {
   description = "CORS configuration for the bucket. Defaults to null."
   type = object({
-    origin          = list(string)
-    method          = list(string)
-    response_header = list(string)
-    max_age_seconds = number
+    origin          = optional(list(string))
+    method          = optional(list(string))
+    response_header = optional(list(string))
+    max_age_seconds = optional(number)
   })
   default = null
 }
@@ -49,26 +49,53 @@ variable "labels" {
   default     = {}
 }
 
-variable "lifecycle_rule" {
+variable "lifecycle_rules" {
   description = "Bucket lifecycle rule."
-  type = object({
+  type = map(object({
     action = object({
       type          = string
-      storage_class = string
+      storage_class = optional(string)
     })
     condition = object({
-      age                        = number
-      created_before             = string
-      with_state                 = string
-      matches_storage_class      = list(string)
-      num_newer_versions         = string
-      custom_time_before         = string
-      days_since_custom_time     = string
-      days_since_noncurrent_time = string
-      noncurrent_time_before     = string
+      age                        = optional(number)
+      created_before             = optional(string)
+      custom_time_before         = optional(string)
+      days_since_custom_time     = optional(number)
+      days_since_noncurrent_time = optional(number)
+      matches_prefix             = optional(list(string))
+      matches_storage_class      = optional(list(string)) # STANDARD, MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE, DURABLE_REDUCED_AVAILABILITY
+      matches_suffix             = optional(list(string))
+      noncurrent_time_before     = optional(string)
+      num_newer_versions         = optional(number)
+      with_state                 = optional(string) # "LIVE", "ARCHIVED", "ANY"
     })
-  })
-  default = null
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.lifecycle_rules : v.action != null && v.condition != null
+    ])
+    error_message = "Lifecycle rules action and condition cannot be null."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.lifecycle_rules : contains(
+        ["Delete", "SetStorageClass", "AbortIncompleteMultipartUpload"],
+        v.action.type
+      )
+    ])
+    error_message = "Lifecycle rules action type has unsupported value."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.lifecycle_rules :
+      v.action.type != "SetStorageClass"
+      ||
+      v.action.storage_class != null
+    ])
+    error_message = "Lifecycle rules with action type SetStorageClass require a storage class."
+  }
 }
 
 variable "location" {
@@ -81,7 +108,7 @@ variable "logging_config" {
   description = "Bucket logging configuration."
   type = object({
     log_bucket        = string
-    log_object_prefix = string
+    log_object_prefix = optional(string)
   })
   default = null
 }
@@ -94,12 +121,13 @@ variable "name" {
 variable "notification_config" {
   description = "GCS Notification configuration."
   type = object({
-    enabled           = bool
-    payload_format    = string
-    topic_name        = string
-    sa_email          = string
-    event_types       = list(string)
-    custom_attributes = map(string)
+    enabled            = bool
+    payload_format     = string
+    topic_name         = string
+    sa_email           = string
+    event_types        = optional(list(string))
+    custom_attributes  = optional(map(string))
+    object_name_prefix = optional(string)
   })
   default = null
 }
@@ -123,7 +151,7 @@ variable "retention_policy" {
   description = "Bucket retention policy."
   type = object({
     retention_period = number
-    is_locked        = bool
+    is_locked        = optional(bool)
   })
   default = null
 }
@@ -153,8 +181,8 @@ variable "versioning" {
 variable "website" {
   description = "Bucket website."
   type = object({
-    main_page_suffix = string
-    not_found_page   = string
+    main_page_suffix = optional(string)
+    not_found_page   = optional(string)
   })
   default = null
 }
