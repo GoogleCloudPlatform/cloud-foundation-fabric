@@ -15,9 +15,6 @@
  */
 
 locals {
-  tables = {
-    for k, v in var.tables : k => v != null ? v : var.table_options_defaults
-  }
   num_nodes = var.autoscaling_config == null ? var.num_nodes : null
 }
 
@@ -54,17 +51,17 @@ resource "google_bigtable_instance_iam_binding" "default" {
 }
 
 resource "google_bigtable_table" "default" {
-  for_each      = local.tables
+  for_each      = var.tables
   project       = var.project_id
   instance_name = google_bigtable_instance.default.name
   name          = each.key
   split_keys    = each.value.split_keys
 
   dynamic "column_family" {
-    for_each = each.value.column_family != null ? [""] : []
+    for_each = each.value.column_families
 
     content {
-      family = each.value.column_family
+      family = column_family.value
     }
   }
 }
