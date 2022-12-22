@@ -22,14 +22,37 @@ module "bigtable-instance" {
   cluster_id = "instance"
   zone       = "europe-west1-b"
   tables = {
-    test1 = null,
+    test1 = {},
     test2 = {
       split_keys    = ["a", "b", "c"]
-      column_family = null
     }
   }
   iam = {
     "roles/bigtable.user" = ["user:viewer@testdomain.com"]
+  }
+}
+# tftest modules=1 resources=4
+```
+
+### Instance with tables and column families
+
+```hcl
+
+module "bigtable-instance" {
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  cluster_id = "instance"
+  zone       = "europe-west1-b"
+  tables = {
+    test1 = {},
+    test2 = {
+      split_keys     = ["a", "b", "c"]
+      column_families = ["cf1", "cf2", "cf3"]
+    }
+    test3 = {
+      column_families = ["cf1"]
+    }
   }
 }
 # tftest modules=1 resources=4
@@ -101,7 +124,8 @@ module "bigtable-instance" {
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L56) | The name of the Cloud Bigtable instance. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L67) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
-| [zone](variables.tf#L99) | The zone to create the Cloud Bigtable cluster in. | <code>string</code> | ✓ |  |
+| [tables](variables.tf#L78) | Tables to be created in the BigTable instance. | <code title="map&#40;object&#40;&#123;&#10;  split_keys    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  column_families &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [zone](variables.tf#L86) | The zone to create the Cloud Bigtable cluster in. | <code>string</code> | ✓ |  |
 | [autoscaling_config](variables.tf#L17) | Settings for autoscaling of the instance. If you set this variable, the variable num_nodes is ignored. | <code title="object&#40;&#123;&#10;  min_nodes      &#61; number&#10;  max_nodes      &#61; number&#10;  cpu_target     &#61; number,&#10;  storage_target &#61; optional&#40;number, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [cluster_id](variables.tf#L28) | The ID of the Cloud Bigtable cluster. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | [deletion_protection](variables.tf#L34) | Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail. | <code></code> |  | <code>true</code> |
@@ -110,8 +134,6 @@ module "bigtable-instance" {
 | [instance_type](variables.tf#L50) | (deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'. | <code>string</code> |  | <code>null</code> |
 | [num_nodes](variables.tf#L61) | The number of nodes in your Cloud Bigtable cluster. This value is ignored if you are using autoscaling. | <code>number</code> |  | <code>1</code> |
 | [storage_type](variables.tf#L72) | The storage type to use. | <code>string</code> |  | <code>&#34;SSD&#34;</code> |
-| [table_options_defaults](variables.tf#L78) | Default option of tables created in the BigTable instance. | <code title="object&#40;&#123;&#10;  split_keys    &#61; list&#40;string&#41;&#10;  column_family &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  split_keys    &#61; &#91;&#93;&#10;  column_family &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [tables](variables.tf#L90) | Tables to be created in the BigTable instance, options can be null. | <code title="map&#40;object&#40;&#123;&#10;  split_keys    &#61; list&#40;string&#41;&#10;  column_family &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
