@@ -17,6 +17,7 @@
 # tfdoc:file:description Organization tag and conditional IAM grant.
 
 locals {
+  iam_tenant_condition = "resource.matchTag('${local.tag_keys.tenant}', '${var.tenant_config.short_name}')"
   tag_keys = {
     for k, v in var.tag_names : k => "${var.organization.id}/${v}"
   }
@@ -55,25 +56,8 @@ resource "google_organization_iam_member" "org_policy_admin_stage0" {
   condition {
     title       = "org_policy_tag_${var.tenant_config.short_name}_scoped"
     description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name}."
-    expression = (
-      "resource.matchTag('${local.tag_keys.tenant}', '${var.tenant_config.short_name}')"
-    )
+    expression  = local.iam_tenant_condition
   }
 }
 
-# assign org policy admin with a tag-based condition to stage 2 and 3 SAs
-
-resource "google_organization_iam_member" "org_policy_admin_stage2_3" {
-  for_each = {
-    for k, v in local.branch_sas : k => v if var.fast_features[v.flag]
-  }
-  org_id = var.organization.id
-  role   = "roles/orgpolicy.policyAdmin"
-  member = module.automation-tf-resman-sa-stage2-3[each.key].iam_email
-  condition {
-    title       = "org_policy_tag_${var.tenant_config.short_name}_${each.key}_scoped"
-    description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name} ${each.value.description}."
-    expression  = each.value.condition
-  }
-}
-
+# tag-based condition for service accounts is in the automation-sa file

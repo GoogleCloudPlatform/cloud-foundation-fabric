@@ -19,40 +19,41 @@
 locals {
   branch_sas = {
     dp-dev = {
-      condition   = <<END
-      resource.matchTag('${local.tag_keys.context}', 'data')
-      &&
-      resource.matchTag('${local.tag_keys.environment}', 'development')
-      END
+      condition = join(" && ", [
+        "resource.matchTag('${local.tag_keys.context}', 'data')",
+        "resource.matchTag('${local.tag_keys.environment}', 'development')"
+      ])
       description = "data platform dev"
       flag        = "data_platform"
     }
     dp-prod = {
-      condition   = <<END
-      resource.matchTag('${local.tag_keys.context}', 'data')
-      &&
-      resource.matchTag('${local.tag_keys.environment}', 'production')
-      END
+      condition = join(" && ", [
+        "resource.matchTag('${local.tag_keys.context}', 'data')",
+        "resource.matchTag('${local.tag_keys.environment}', 'production')"
+      ])
       description = "data platform prod"
       flag        = "data_platform"
     }
     gke-dev = {
-      condition   = <<END
-      resource.matchTag('${local.tag_keys.context}', 'gke')
-      &&
-      resource.matchTag('${local.tag_keys.environment}', 'development')
-      END
+      condition = join(" && ", [
+        "resource.matchTag('${local.tag_keys.context}', 'gke')",
+        "resource.matchTag('${local.tag_keys.environment}', 'development')"
+      ])
       description = "GKE dev"
       flag        = "gke"
     }
     gke-prod = {
-      condition   = <<END
-      resource.matchTag('${local.tag_keys.context}', 'gke')
-      &&
-      resource.matchTag('${local.tag_keys.environment}', 'production')
-      END
+      condition = join(" && ", [
+        "resource.matchTag('${local.tag_keys.context}', 'gke')",
+        "resource.matchTag('${local.tag_keys.environment}', 'production')"
+      ])
       description = "GKE prod"
       flag        = "gke"
+    }
+    networking = {
+      condition   = "resource.matchTag('${local.tag_keys.context}', 'networking')"
+      description = "networking"
+      flag        = "-"
     }
     pf-dev = {
       condition   = "resource.matchTag('${local.tag_keys.environment}', 'development')"
@@ -69,6 +70,11 @@ locals {
       description = "sandbox"
       flag        = "sandbox"
     }
+    security = {
+      condition   = "resource.matchTag('${local.tag_keys.context}', 'security')"
+      description = "security"
+      flag        = "-"
+    }
     pf-prod = {
       condition   = "resource.matchTag('${local.tag_keys.context}', 'teams')"
       description = "teams"
@@ -80,7 +86,8 @@ locals {
 module "automation-tf-resman-sa-stage2-3" {
   source = "../../../modules/iam-service-account"
   for_each = {
-    for k, v in local.branch_sas : k => v if var.fast_features[v.flag]
+    for k, v in local.branch_sas :
+    k => v if lookup(var.fast_features, v.flag, true)
   }
   project_id   = module.automation-project.project_id
   name         = "${each.key}-0"
@@ -98,3 +105,23 @@ module "automation-tf-resman-sa-stage2-3" {
   } : {}
 }
 
+# assign org policy admin with a tag-based condition to stage 2 and 3 SAs
+
+resource "google_organization_iam_member" "org_policy_admin_stage2_3" {
+  for_each = {
+    for k, v in module.automation-tf-resman-sa-stage2-3 : k => v.iam_email
+  }
+  org_id = var.organization.id
+  role   = "roles/orgpolicy.policyAdmin"
+  member = each.value
+  condition {
+    title = "org_policy_tag_${var.tenant_config.short_name}_${each.key}_scoped"
+    description = join("", [
+      "Org policy tag scoped grant for tenant ${var.tenant_config.short_name} ",
+      local.branch_sas[each.key].description
+    ])
+    expression = join(" && ", [
+      local.iam_tenant_condition, local.branch_sas[each.key].condition
+    ])
+  }
+}

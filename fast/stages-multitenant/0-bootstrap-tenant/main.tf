@@ -26,7 +26,7 @@ locals {
   }
   locations = {
     for k, v in var.tenant_config.locations :
-    k => v == null ? var.locations[k] : v
+    k => v == null || v == [] ? var.locations[k] : v
   }
   prefix = join("-", compact([var.prefix, var.tenant_config.short_name]))
   resman_sa = (

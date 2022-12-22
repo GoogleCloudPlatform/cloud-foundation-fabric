@@ -29,6 +29,14 @@ locals {
       project_number               = module.automation-project.number
       federated_identity_pool      = var.automation.federated_identity_pool
       federated_identity_providers = var.automation.federated_identity_providers
+      service_accounts = merge(
+        { resman = module.automation-tf-resman-sa.email },
+        {
+          for k, v in local.branch_sas : k => try(
+            module.automation-tf-resman-sa-stage2-3[k].email, null
+          )
+        }
+      )
     }
     billing_account = var.billing_account
     custom_roles    = var.custom_roles
@@ -38,19 +46,14 @@ locals {
     organization    = var.organization
     prefix          = local.prefix
     root_node       = module.tenant-folder.id
-    service_accounts = merge(
-      { resman = module.automation-tf-resman-sa.email },
-      {
-        for k, v in local.branch_sas : k => try(
-          module.automation-tf-resman-sa-stage2-3[k].email, null
-        )
-      }
-    )
-    tag_keys  = var.tag_keys
-    tag_names = var.tag_names
-    tag_values = merge(var.tag_values, {
-      for k, v in module.organization.tag_values : k => v.id
-    })
+    short_name      = var.tenant_config.short_name
+    tags = {
+      keys  = var.tag_keys
+      names = var.tag_names
+      values = merge(var.tag_values, {
+        for k, v in module.organization.tag_values : k => v.id
+      })
+    }
   }
   workflow = local.cicd_repository_type == null ? null : templatefile(
     "${path.module}/templates/workflow-${local.cicd_repository_type}.yaml", {
