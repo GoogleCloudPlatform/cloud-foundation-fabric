@@ -22,10 +22,9 @@ module "test" {
     "roles/bigtable.user" = ["user:me@example.com"]
   }
   tables = {
-    test-1 = null,
+    test-1 = {},
     test-2 = {
       split_keys    = ["a", "b", "c"]
-      column_family = null
     }
 
   }
