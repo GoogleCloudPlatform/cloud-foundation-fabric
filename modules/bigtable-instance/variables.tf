@@ -53,7 +53,6 @@ variable "display_name" {
   default     = null
 }
 
-
 variable "iam" {
   description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
