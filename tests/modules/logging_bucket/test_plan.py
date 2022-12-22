@@ -22,6 +22,7 @@ def test_project_logging_bucket(plan_runner):
   assert resource["type"] == "google_logging_project_bucket_config"
   assert resource["values"] == {
       "bucket_id": "mybucket",
+      "cmek_settings": [],
       "project": "myproject",
       "location": "global",
       "retention_days": 30,
@@ -39,6 +40,7 @@ def test_folder_logging_bucket(plan_runner):
   assert resource["type"] == "google_logging_folder_bucket_config"
   assert resource["values"] == {
       "bucket_id": "mybucket",
+      "cmek_settings": [],
       "folder": "folders/0123456789",
       "location": "global",
       "retention_days": 30,
@@ -56,6 +58,7 @@ def test_organization_logging_bucket(plan_runner):
   assert resource["type"] == "google_logging_organization_bucket_config"
   assert resource["values"] == {
       "bucket_id": "mybucket",
+      "cmek_settings": [],
       "organization": "organizations/0123456789",
       "location": "global",
       "retention_days": 30,
@@ -73,6 +76,7 @@ def test_billing_account_logging_bucket(plan_runner):
   assert resource["type"] == "google_logging_billing_account_bucket_config"
   assert resource["values"] == {
       "bucket_id": "mybucket",
+      "cmek_settings": [],
       "billing_account": "0123456789",
       "location": "global",
       "retention_days": 30,

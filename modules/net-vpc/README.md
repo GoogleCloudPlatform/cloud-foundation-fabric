@@ -76,8 +76,8 @@ module "vpc-spoke-1" {
 locals {
   service_project_1 = {
     project_id                     = "project1"
-    gke_service_account            = "gke"
-    cloud_services_service_account = "cloudsvc"
+    gke_service_account            = "serviceAccount:gke"
+    cloud_services_service_account = "serviceAccount:cloudsvc"
   }
   service_project_2 = {
     project_id = "project2"
