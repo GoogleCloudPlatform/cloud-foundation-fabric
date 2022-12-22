@@ -24,21 +24,22 @@ import logging
 from . import HTTPRequest, Level, Resource, register_init, register_discovery
 from .utils import parse_cai_results
 
-
 CAI_URL = ('https://content-cloudasset.googleapis.com/v1'
            '/{root}/assets'
            '?contentType=RESOURCE&{asset_types}&pageSize=500')
 LOGGER = logging.getLogger('net-dash.discovery.cai-compute')
 TYPES = {
-    'addresses': 'Address',
-    'firewall_policies': 'FirewallPolicy',
-    'firewall_rules': 'Firewall',
-    'forwarding_rules': 'ForwardingRule',
-    'instances': 'Instance',
-    'networks': 'Network',
-    'subnetworks': 'Subnetwork',
-    'routers': 'Router',
-    'routes': 'Route',
+    'addresses': 'compute.googleapis.com/Address',
+    'global_addresses': 'compute.googleapis.com/GlobalAddress',
+    'firewall_policies': 'compute.googleapis.com/FirewallPolicy',
+    'firewall_rules': 'compute.googleapis.com/Firewall',
+    'forwarding_rules': 'compute.googleapis.com/ForwardingRule',
+    'instances': 'compute.googleapis.com/Instance',
+    'networks': 'compute.googleapis.com/Network',
+    'subnetworks': 'compute.googleapis.com/Subnetwork',
+    'routers': 'compute.googleapis.com/Router',
+    'routes': 'compute.googleapis.com/Route',
+    'sql_instances': 'sqladmin.googleapis.com/Instance'
 }
 NAMES = {v: k for k, v in TYPES.items()}
 
@@ -61,7 +62,8 @@ def _handle_discovery(resources, response, data):
   'Processes the asset API response and returns parsed resources or next URL.'
   LOGGER.info('discovery handle request')
   for result in parse_cai_results(data, 'cai-compute', method='list'):
-    resource = _handle_resource(resources, result['resource'])
+    resource = _handle_resource(
+        resources, result['assetType'], result['resource'])
     if not resource:
       continue
     yield resource
@@ -72,15 +74,18 @@ def _handle_discovery(resources, response, data):
     yield HTTPRequest(f'{url}&pageToken={page_token}', {}, None)
 
 
-def _handle_resource(resources, data):
+def _handle_resource(resources, asset_type, data):
   'Parses and returns a single resource. Calls resource-level handler.'
-  attrs = data['data']
   # general attributes shared by all resource types
-  resource_name = NAMES[data['discoveryName']]
+  attrs = data['data']
+  # we use the asset type as the discovery name sometimes does not match
+  # e.g. assetType = GlobalAddress but discoveryName = Address
+  resource_name = NAMES[asset_type]
   resource = {
-      'id': attrs['id'],
+      'id': attrs.get('id'),
       'name': attrs['name'],
-      'self_link': _self_link(attrs['selfLink'])
+      'self_link': _self_link(attrs['selfLink']),
+      'assetType': asset_type
   }
   # derive parent type and id and skip if parent is not within scope
   parent_data = _get_parent(data['parent'], resources)
@@ -145,6 +150,19 @@ def _handle_forwarding_rules(resource, data):
   }
 
 
+def _handle_global_addresses(resource, data):
+  'Handles GlobalAddress type resource data (ex: PSA ranges).'
+  network = data.get('network')
+  return {
+      'address': data['address'],
+      'prefixLength': data.get('prefixLength') or None,
+      'internal': data.get('addressType') == 'INTERNAL',
+      'purpose': data.get('purpose', ''),
+      'status': data.get('status', ''),
+      'network': None if not network else _self_link(network),
+  }
+
+
 def _handle_instances(resource, data):
   'Handles instance type resource data.'
   if data['status'] != 'RUNNING':
@@ -184,6 +202,18 @@ def _handle_routes(resource, data):
   return {'next_hop_type': hop[0], 'network': _self_link(data['network'])}
 
 
+def _handle_sql_instances(resource, data):
+  'Handles cloud sql instance type resource data.'
+  return {
+      'name': data['name'],
+      'self_link': _self_link(data['selfLink']),
+      'ipAddresses': [
+          i['ipAddress'] for i in data['ipAddresses'] if i['type'] == 'PRIVATE'
+      ],
+      'region': data['region'],
+      'availabilityType': data['settings']['availabilityType'],
+  }
+
 def _handle_subnetworks(resource, data):
   'Handles subnetwork type resource data.'
   secondary_ranges = [{
@@ -201,14 +231,14 @@ def _handle_subnetworks(resource, data):
 
 def _self_link(s):
   'Removes initial part from self links.'
-  return s.removeprefix('https://www.googleapis.com/compute/v1/')
+  return '/'.join(s.split('/')[5:])
 
 
 def _url(resources):
   'Returns discovery URL'
   discovery_root = resources['config:discovery_root']
   asset_types = '&'.join(
-      f'assetTypes=compute.googleapis.com/{t}' for t in TYPES.values())
+      f'assetTypes={t}' for t in TYPES.values())
   return CAI_URL.format(root=discovery_root, asset_types=asset_types)
 
 
