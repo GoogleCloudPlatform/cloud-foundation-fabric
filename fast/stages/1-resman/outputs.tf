@@ -99,73 +99,84 @@ locals {
   providers = merge(
     {
       "2-0-networking" = templatefile(local._tpl_providers, {
-        bucket = module.branch-network-gcs.name
-        name   = "networking"
-        sa     = module.branch-network-sa.email
+        backend_extra = null
+        bucket        = module.branch-network-gcs.name
+        name          = "networking"
+        sa            = module.branch-network-sa.email
       })
       "2-0-security" = templatefile(local._tpl_providers, {
-        bucket = module.branch-security-gcs.name
-        name   = "security"
-        sa     = module.branch-security-sa.email
+        backend_extra = null
+        bucket        = module.branch-security-gcs.name
+        name          = "security"
+        sa            = module.branch-security-sa.email
       })
     },
     !var.fast_features.data_platform ? {} : {
       "3-0-data-platform-dev" = templatefile(local._tpl_providers, {
-        bucket = module.branch-dp-dev-gcs.0.name
-        name   = "dp-dev"
-        sa     = module.branch-dp-dev-sa.0.email
+        backend_extra = null
+        bucket        = module.branch-dp-dev-gcs.0.name
+        name          = "dp-dev"
+        sa            = module.branch-dp-dev-sa.0.email
       })
       "3-0-data-platform-prod" = templatefile(local._tpl_providers, {
-        bucket = module.branch-dp-prod-gcs.0.name
-        name   = "dp-prod"
-        sa     = module.branch-dp-prod-sa.0.email
+        backend_extra = null
+        bucket        = module.branch-dp-prod-gcs.0.name
+        name          = "dp-prod"
+        sa            = module.branch-dp-prod-sa.0.email
       })
     },
     !var.fast_features.gke ? {} : {
       "3-0-gke-dev" = templatefile(local._tpl_providers, {
-        bucket = module.branch-gke-dev-gcs.0.name
-        name   = "gke-dev"
-        sa     = module.branch-gke-dev-sa.0.email
+        backend_extra = null
+        bucket        = module.branch-gke-dev-gcs.0.name
+        name          = "gke-dev"
+        sa            = module.branch-gke-dev-sa.0.email
       })
       "3-0-gke-prod" = templatefile(local._tpl_providers, {
-        bucket = module.branch-gke-prod-gcs.0.name
-        name   = "gke-prod"
-        sa     = module.branch-gke-prod-sa.0.email
+        backend_extra = null
+        bucket        = module.branch-gke-prod-gcs.0.name
+        name          = "gke-prod"
+        sa            = module.branch-gke-prod-sa.0.email
       })
     },
     !var.fast_features.project_factory ? {} : {
       "3-0-project-factory-dev" = templatefile(local._tpl_providers, {
-        bucket = module.branch-pf-dev-gcs.0.name
-        name   = "team-dev"
-        sa     = module.branch-pf-dev-sa.0.email
+        backend_extra = null
+        bucket        = module.branch-pf-dev-gcs.0.name
+        name          = "team-dev"
+        sa            = module.branch-pf-dev-sa.0.email
       })
       "3-0-project-factory-prod" = templatefile(local._tpl_providers, {
-        bucket = module.branch-pf-prod-gcs.0.name
-        name   = "team-prod"
-        sa     = module.branch-pf-prod-sa.0.email
+        backend_extra = null
+        bucket        = module.branch-pf-prod-gcs.0.name
+        name          = "team-prod"
+        sa            = module.branch-pf-prod-sa.0.email
       })
     },
     !var.fast_features.sandbox ? {} : {
       "9-0-sandbox" = templatefile(local._tpl_providers, {
-        bucket = module.branch-sandbox-gcs.0.name
-        name   = "sandbox"
-        sa     = module.branch-sandbox-sa.0.email
+        backend_extra = null
+        bucket        = module.branch-sandbox-gcs.0.name
+        name          = "sandbox"
+        sa            = module.branch-sandbox-sa.0.email
       })
     },
     !var.fast_features.teams ? {} : merge(
       {
         "3-teams" = templatefile(local._tpl_providers, {
-          bucket = module.branch-teams-gcs.0.name
-          name   = "teams"
-          sa     = module.branch-teams-sa.0.email
+          backend_extra = null
+          bucket        = module.branch-teams-gcs.0.name
+          name          = "teams"
+          sa            = module.branch-teams-sa.0.email
         })
       },
       {
         for k, v in module.branch-teams-team-sa :
         "3-teams-${k}" => templatefile(local._tpl_providers, {
-          bucket = module.branch-teams-team-gcs[k].name
-          name   = "teams"
-          sa     = v.email
+          backend_extra = null
+          bucket        = module.branch-teams-team-gcs[k].name
+          name          = "teams"
+          sa            = v.email
         })
       }
     )

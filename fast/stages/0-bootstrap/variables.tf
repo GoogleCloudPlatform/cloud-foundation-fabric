@@ -93,19 +93,13 @@ variable "custom_role_names" {
 variable "fast_features" {
   description = "Selective control for top-level FAST features."
   type = object({
-    data_platform   = bool
-    gke             = bool
-    project_factory = bool
-    sandbox         = bool
-    teams           = bool
+    data_platform   = optional(bool, false)
+    gke             = optional(bool, false)
+    project_factory = optional(bool, false)
+    sandbox         = optional(bool, false)
+    teams           = optional(bool, false)
   })
-  default = {
-    data_platform   = true
-    gke             = true
-    project_factory = true
-    sandbox         = true
-    teams           = true
-  }
+  default  = {}
   nullable = false
 }
 

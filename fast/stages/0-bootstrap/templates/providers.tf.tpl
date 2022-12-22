@@ -18,8 +18,8 @@ terraform {
   backend "gcs" {
     bucket                      = "${bucket}"
     impersonate_service_account = "${sa}"
-    %{~ if try(prefix, null) != null ~}
-    prefix = "${prefix}"
+    %{~ if backend_extra != null ~}
+    ${indent(4, backend_extra)}
     %{~ endif ~}
   }
 }

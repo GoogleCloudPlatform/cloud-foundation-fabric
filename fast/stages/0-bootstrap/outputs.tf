@@ -39,21 +39,25 @@ locals {
   }
   providers = {
     "0-bootstrap" = templatefile(local._tpl_providers, {
-      bucket = module.automation-tf-bootstrap-gcs.name
-      name   = "bootstrap"
-      prefix = null
-      sa     = module.automation-tf-bootstrap-sa.email
+      backend_extra = null
+      bucket        = module.automation-tf-bootstrap-gcs.name
+      name          = "bootstrap"
+      sa            = module.automation-tf-bootstrap-sa.email
     })
     "1-resman" = templatefile(local._tpl_providers, {
-      bucket = module.automation-tf-resman-gcs.name
-      name   = "resman"
-      prefix = null
-      sa     = module.automation-tf-resman-sa.email
+      backend_extra = null
+      bucket        = module.automation-tf-resman-gcs.name
+      name          = "resman"
+      sa            = module.automation-tf-resman-sa.email
     })
-    "multitenant/0-mt-bootstrap" = templatefile(local._tpl_providers, {
+    "multitenant/0-bootstrap-tenant" = templatefile(local._tpl_providers, {
+      backend_extra = join("\n", [
+        "# remove the newline between quotes and set the tenant name as prefix",
+        "prefix = \"",
+        "\""
+      ])
       bucket = module.automation-tf-resman-gcs.name
-      name   = "resman"
-      prefix = "mt-bootstrap"
+      name   = "bootstrap-tenant"
       sa     = module.automation-tf-resman-sa.email
     })
   }

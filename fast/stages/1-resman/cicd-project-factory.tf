@@ -114,7 +114,7 @@ module "branch-pf-dev-sa-cicd" {
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
     ? {
-      "roles/iam.serviceAccountUser" = local.automation_resman_sa
+      "roles/iam.serviceAccountUser" = local.automation_resman_sa_iam
     }
     # impersonated via workload identity federation for external repos
     : {
@@ -162,7 +162,7 @@ module "branch-pf-prod-sa-cicd" {
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
     ? {
-      "roles/iam.serviceAccountUser" = local.automation_resman_sa
+      "roles/iam.serviceAccountUser" = local.automation_resman_sa_iam
     }
     # impersonated via workload identity federation for external repos
     : {

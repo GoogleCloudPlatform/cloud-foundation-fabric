@@ -17,11 +17,12 @@
 locals {
   # convenience flags that express where billing account resides
   automation_resman_sa = try(
-    [format(
-      "serviceAccount:%s",
-      data.google_client_openid_userinfo.provider_identity.0.email
-    )],
-    []
+    data.google_client_openid_userinfo.provider_identity.0.email, null
+  )
+  automation_resman_sa_iam = (
+    local.automation_resman_sa == null
+    ? []
+    : ["serviceAccount:${local.automation_resman_sa}"]
   )
   branch_optional_sa_lists = {
     dp-dev   = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])

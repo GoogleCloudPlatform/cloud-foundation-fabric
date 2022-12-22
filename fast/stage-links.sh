@@ -41,8 +41,9 @@ case $STAGE_NAME in
   TFVARS=""
   ;;
 "0-bootstrap-tenant")
+  MESSAGE="remember to set the prefix in the provider file"
   PROVIDER_CMD=$CP_CMD
-  PROVIDER="providers/multitenant/0-mt-bootstrap-providers.tf"
+  PROVIDER="providers/multitenant/0-bootstrap-tenant-providers.tf"
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
@@ -84,7 +85,7 @@ case $STAGE_NAME in
 
 esac
 
-echo "commands for '$STAGE_NAME'"
+echo -e "copy and paste the following commands for '$STAGE_NAME'\n"
 
 echo "$PROVIDER_CMD/$PROVIDER ./"
 echo "$CMD/$GLOBALS ./"
@@ -92,3 +93,7 @@ echo "$CMD/$GLOBALS ./"
 for f in $TFVARS; do
   echo "$CMD/$f ./"
 done
+
+if [[ -v MESSAGE ]]; then
+  echo -e "\n---> $MESSAGE <---"
+fi
