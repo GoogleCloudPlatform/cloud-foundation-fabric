@@ -24,7 +24,7 @@ module "test" {
   tables = {
     test-1 = {},
     test-2 = {
-      split_keys    = ["a", "b", "c"]
+      split_keys = ["a", "b", "c"]
     }
 
   }
