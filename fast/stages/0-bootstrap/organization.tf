@@ -34,10 +34,6 @@ locals {
       [module.automation-tf-bootstrap-sa.iam_email],
       local._iam_bootstrap_user
     )
-    # the following is useful if roles/browser is not desirable
-    # "roles/resourcemanager.organizationViewer" = [
-    #   "domain:${var.organization.domain}"
-    # ]
     "roles/resourcemanager.projectCreator" = concat(
       [
         module.automation-tf-bootstrap-sa.iam_email,
@@ -80,6 +76,10 @@ locals {
         local.groups_iam.gcp-security-admins,
         module.automation-tf-resman-sa.iam_email
       ]
+      # the following is useful if roles/browser is not desirable
+      # "roles/resourcemanager.organizationViewer" = [
+      #   "domain:${var.organization.domain}"
+      # ]
     },
     var.billing_account.is_org_level ? {
       "roles/billing.admin" = [

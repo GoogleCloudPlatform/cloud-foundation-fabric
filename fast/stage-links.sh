@@ -36,7 +36,7 @@ STAGE_NAME=$(basename "$(pwd)")
 case $STAGE_NAME in
 
 "0-bootstrap")
-  GLOBALS=""
+  unset GLOBALS
   PROVIDER="providers/multitenant/${STAGE_NAME}-providers.tf"
   TFVARS=""
   ;;
@@ -58,8 +58,10 @@ case $STAGE_NAME in
   ;;
 "1-resman-tenant")
   if [[ -z "$TENANT" ]]; then
-    TENANT="\${TENANT}"
+    echo "Please set a \$TENANT variable with the tenant shortname"
+    exit 1
   fi
+  unset GLOBALS
   PROVIDER="tenants/${TENANT}/providers/1-resman-providers.tf"
   TFVARS="tenants/${TENANT}/tfvars/0-bootstrap.auto.tfvars.json"
   ;;
@@ -70,7 +72,7 @@ case $STAGE_NAME in
   ;;
 *)
   # check for a "dev" stage 3
-  echo "trying for parent stage 3..."
+  echo "no stage found, trying for parent stage 3..."
   STAGE_NAME=$(basename $(dirname "$(pwd)"))
   if [[ "$STAGE_NAME" == "3-"* ]]; then
     PROVIDER="providers/${STAGE_NAME}-providers.tf"
@@ -88,7 +90,9 @@ esac
 echo -e "copy and paste the following commands for '$STAGE_NAME'\n"
 
 echo "$PROVIDER_CMD/$PROVIDER ./"
-echo "$CMD/$GLOBALS ./"
+if [[ -v GLOBALS ]]; then
+  echo "$CMD/$GLOBALS ./"
+fi
 
 for f in $TFVARS; do
   echo "$CMD/$f ./"

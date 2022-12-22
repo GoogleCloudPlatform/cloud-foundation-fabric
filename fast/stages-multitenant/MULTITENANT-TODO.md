@@ -6,4 +6,3 @@
 - [ ] multitenant stages READMEs
 - [ ] add test to ensure templates folder is the same in every stage
 - [ ] add test to ensure identity providers code is the same bootstrap and mt bootstrap
-- [ ] make tenant resman SA billing user and allow it to grant billing user at the org level?

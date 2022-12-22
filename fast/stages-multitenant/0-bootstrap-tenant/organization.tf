@@ -26,13 +26,20 @@ locals {
 module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
-  iam_additive = var.billing_account.is_org_level ? {
-    "roles/billing.admin" = [
-      "group:${local.groups.gcp-admins}",
-      module.automation-tf-resman-sa.iam_email
-    ]
-    "roles/billing.costsManager" = ["group:${local.groups.gcp-admins}"]
-  } : {}
+  iam_additive = merge(
+    {
+      "roles/resourcemanager.organizationViewer" = [
+        "group:${local.groups.gcp-admins}"
+      ]
+    },
+    var.billing_account.is_org_level ? {
+      "roles/billing.admin" = [
+        "group:${local.groups.gcp-admins}",
+        module.automation-tf-resman-sa.iam_email
+      ]
+      "roles/billing.costsManager" = ["group:${local.groups.gcp-admins}"]
+    } : {}
+  )
   tags = {
     tenant = {
       id = var.tag_keys.tenant
