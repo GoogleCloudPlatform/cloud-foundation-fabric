@@ -16,6 +16,15 @@
 
 locals {
   num_nodes = var.autoscaling_config == null ? var.num_nodes : null
+  gc_pairs = flatten([
+    for table, table_obj in var.tables : [
+      for cf, cf_obj in table_obj.column_families : {
+        table         = table
+        column_family = cf
+        gc_policy     = cf_obj.gc_policy == null ? var.default_gc_policy : cf_obj.gc_policy
+      }
+    ]
+  ])
 }
 
 resource "google_bigtable_instance" "default" {
@@ -61,7 +70,34 @@ resource "google_bigtable_table" "default" {
     for_each = each.value.column_families
 
     content {
-      family = column_family.value
+      family = column_family.key
+    }
+  }
+}
+
+resource "google_bigtable_gc_policy" "default" {
+  for_each = { for k, v in local.gc_pairs : k => v if v.gc_policy != null }
+
+  table         = each.value.table
+  column_family = each.value.column_family
+  instance_name = google_bigtable_instance.default.name
+  project       = var.project_id
+
+  gc_rules        = try(each.value.gc_policy.gc_rules, null)
+  mode            = try(each.value.gc_policy.mode, null)
+  deletion_policy = try(each.value.gc_policy.deletion_policy, null)
+
+  dynamic "max_age" {
+    for_each = try(each.value.gc_policy.max_age, null) != null ? [""] : []
+    content {
+      duration = each.value.gc_policy.max_age
+    }
+  }
+
+  dynamic "max_version" {
+    for_each = try(each.value.gc_policy.max_version, null) != null ? [""] : []
+    content {
+      number = each.value.gc_policy.max_version
     }
   }
 }
