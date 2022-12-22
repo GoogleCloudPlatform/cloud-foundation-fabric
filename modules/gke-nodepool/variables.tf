@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "cluster_id" {
+  description = "Cluster id. Optional, but providing cluster_id is recommended to prevent cluster misconfiguration in some of the edge cases."
+  type        = string
+  default     = null
+}
+
 variable "cluster_name" {
   description = "Cluster name."
   type        = string

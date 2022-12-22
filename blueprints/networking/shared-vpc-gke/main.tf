@@ -227,6 +227,7 @@ module "cluster-1-nodepool-1" {
   project_id   = module.project-svc-gke.project_id
   location     = module.cluster-1.0.location
   cluster_name = module.cluster-1.0.name
+  cluster_id   = module.cluster-1.0.id
   service_account = {
     create = true
   }
