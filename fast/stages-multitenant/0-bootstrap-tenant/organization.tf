@@ -42,6 +42,8 @@ module "organization" {
   }
 }
 
+# assign org policy admin with a tag-based condition to admin group and stage 1 SA
+
 resource "google_organization_iam_member" "org_policy_admin_stage0" {
   for_each = toset([
     "group:${local.groups.gcp-admins}",
@@ -58,6 +60,8 @@ resource "google_organization_iam_member" "org_policy_admin_stage0" {
     )
   }
 }
+
+# assign org policy admin with a tag-based condition to stage 2 and 3 SAs
 
 resource "google_organization_iam_member" "org_policy_admin_stage2_3" {
   for_each = {
