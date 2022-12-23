@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1073](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1073)] Allow setting no ranges in firewall module custom rules ([ludoo](https://github.com/ludoo)) <!-- 2022-12-23 08:03:31+00:00 -->
+- [[#1072](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1072)] **incompatible change:** Add gc_policy to Bigtable module, bump provider versions to 4.47 ([iht](https://github.com/iht)) <!-- 2022-12-22 23:58:08+00:00 -->
 - [[#1063](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1063)] Network dashboard: PSA ranges support, starting with Cloud SQL ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2022-12-22 12:14:42+00:00 -->
 - [[#1062](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1062)] Fixes for GKE ([wiktorn](https://github.com/wiktorn)) <!-- 2022-12-21 22:14:52+00:00 -->
 - [[#1060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1060)] Update src/README.md for Network Dashboard ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2022-12-21 15:30:10+00:00 -->
@@ -25,6 +27,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1073](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1073)] Allow setting no ranges in firewall module custom rules ([ludoo](https://github.com/ludoo)) <!-- 2022-12-23 08:03:31+00:00 -->
+- [[#1072](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1072)] **incompatible change:** Add gc_policy to Bigtable module, bump provider versions to 4.47 ([iht](https://github.com/iht)) <!-- 2022-12-22 23:58:08+00:00 -->
 - [[#1070](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1070)] Fix MIG health check variable ([ludoo](https://github.com/ludoo)) <!-- 2022-12-22 17:12:17+00:00 -->
 - [[#1069](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1069)] Allow tables with several column families in Bigtable ([iht](https://github.com/iht)) <!-- 2022-12-22 16:34:24+00:00 -->
 - [[#1068](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1068)] Added endpoint_attachment_hosts output to apigee module ([apichick](https://github.com/apichick)) <!-- 2022-12-22 14:57:25+00:00 -->
