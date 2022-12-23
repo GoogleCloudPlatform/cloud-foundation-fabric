@@ -23,19 +23,17 @@
 module "branch-teams-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.teams ? 1 : 0
-  parent = "organizations/${var.organization.id}"
+  parent = module.root-folder.id
   name   = "Teams"
   iam = {
-    "roles/logging.admin"                  = [module.branch-teams-sa.0.iam_email]
-    "roles/owner"                          = [module.branch-teams-sa.0.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-teams-sa.0.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-teams-sa.0.iam_email]
-    "roles/compute.xpnAdmin"               = [module.branch-teams-sa.0.iam_email]
+    "roles/logging.admin"                  = [local.automation_sas_iam.security.teams]
+    "roles/owner"                          = [local.automation_sas_iam.security.teams]
+    "roles/resourcemanager.folderAdmin"    = [local.automation_sas_iam.security.teams]
+    "roles/resourcemanager.projectCreator" = [local.automation_sas_iam.security.teams]
+    "roles/compute.xpnAdmin"               = [local.automation_sas_iam.security.teams]
   }
   tag_bindings = {
-    context = try(
-      module.organization.tag_values["${var.tag_names.context}/teams"].id, null
-    )
+    context = var.tags.values["${var.tags.names.context}/teams"]
   }
 }
 

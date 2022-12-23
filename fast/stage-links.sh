@@ -47,11 +47,11 @@ case $STAGE_NAME in
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
-"0-bootstrap-multitenant")
-  PROVIDER="providers/multitenant/0-mt-bootstrap-providers.tf"
-  TFVARS="tfvars/0-bootstrap.auto.tfvars.json
-  tfvars/1-resman.auto.tfvars.json"
-  ;;
+  # "0-bootstrap-multitenant")
+  #   PROVIDER="providers/multitenant/0-mt-bootstrap-providers.tf"
+  #   TFVARS="tfvars/0-bootstrap.auto.tfvars.json
+  #   tfvars/1-resman.auto.tfvars.json"
+  #   ;;
 "1-resman")
   PROVIDER="providers/${STAGE_NAME}-providers.tf"
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json"
@@ -62,8 +62,8 @@ case $STAGE_NAME in
     exit 1
   fi
   unset GLOBALS
-  PROVIDER="tenants/${TENANT}/providers/1-resman-providers.tf"
-  TFVARS="tenants/${TENANT}/tfvars/0-bootstrap.auto.tfvars.json"
+  PROVIDER="tenants/${TENANT}/providers/1-resman-tenant-providers.tf"
+  TFVARS="tenants/${TENANT}/tfvars/0-bootstrap-tenant.auto.tfvars.json"
   ;;
 "2-"*)
   PROVIDER="providers/multitenant/${STAGE_NAME}-providers.tf"

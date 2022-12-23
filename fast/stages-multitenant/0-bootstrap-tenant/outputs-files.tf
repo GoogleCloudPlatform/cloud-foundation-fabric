@@ -27,20 +27,20 @@ locals {
 resource "local_file" "providers" {
   count           = var.outputs_location == null ? 0 : 1
   file_permission = "0644"
-  filename        = "${local.outputs_root}/providers/1-resman-providers.tf"
+  filename        = "${local.outputs_root}/providers/1-resman-tenant-providers.tf"
   content         = try(local.provider, null)
 }
 
 resource "local_file" "tfvars" {
   count           = var.outputs_location == null ? 0 : 1
   file_permission = "0644"
-  filename        = "${local.outputs_root}/tfvars/0-bootstrap.auto.tfvars.json"
+  filename        = "${local.outputs_root}/tfvars/0-bootstrap-tenant.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
 }
 
 resource "local_file" "workflow" {
   count           = var.outputs_location == null || local.workflow == null ? 0 : 1
   file_permission = "0644"
-  filename        = "${local.outputs_root}/workflows/1-resman-${local.cicd_repository_type}.json"
+  filename        = "${local.outputs_root}/workflows/1-resman-tenant-${local.cicd_repository_type}.json"
   content         = try(local.workflow, null)
 }

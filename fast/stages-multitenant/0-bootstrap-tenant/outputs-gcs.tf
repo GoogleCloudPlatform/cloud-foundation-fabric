@@ -19,19 +19,19 @@
 resource "google_storage_bucket_object" "providers" {
   bucket = module.automation-tf-output-gcs.name
   # provider suffix allows excluding via .gitignore when linked from stages
-  name    = "tenants/${var.tenant_config.short_name}/providers/1-resman-providers.tf"
+  name    = "tenants/${var.tenant_config.short_name}/providers/1-resman-tenant-providers.tf"
   content = local.provider
 }
 
 resource "google_storage_bucket_object" "tfvars" {
   bucket  = module.automation-tf-output-gcs.name
-  name    = "tenants/${var.tenant_config.short_name}/tfvars/0-bootstrap.auto.tfvars.json"
+  name    = "tenants/${var.tenant_config.short_name}/tfvars/0-bootstrap-tenant.auto.tfvars.json"
   content = jsonencode(local.tfvars)
 }
 
 resource "google_storage_bucket_object" "workflows" {
   count   = local.workflow == null ? 0 : 1
   bucket  = module.automation-tf-output-gcs.name
-  name    = "tenants/${var.tenant_config.short_name}/workflows/1-resman.yaml"
+  name    = "tenants/${var.tenant_config.short_name}/workflows/1-resman-tenant-${local.cicd_repository_type}.yaml"
   content = local.workflow
 }

@@ -18,7 +18,7 @@
 
 module "branch-security-folder" {
   source = "../../../modules/folder"
-  parent = "organizations/${var.organization.id}"
+  parent = module.root-folder.id
   name   = "Security"
   group_iam = local.groups.gcp-security-admins == null ? {} : {
     (local.groups.gcp-security-admins) = [
@@ -34,26 +34,22 @@ module "branch-security-folder" {
     ]
   }
   iam = {
-    "roles/logging.admin"                  = [module.branch-security-sa.iam_email]
-    "roles/owner"                          = [module.branch-security-sa.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-security-sa.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-security-sa.iam_email]
+    "roles/logging.admin"                  = [local.automation_sas_iam.security]
+    "roles/owner"                          = [local.automation_sas_iam.security]
+    "roles/resourcemanager.folderAdmin"    = [local.automation_sas_iam.security]
+    "roles/resourcemanager.projectCreator" = [local.automation_sas_iam.security]
   }
   tag_bindings = {
-    context = try(
-      module.organization.tag_values["${var.tag_names.context}/security"].id, null
-    )
+    context = var.tags.values["${var.tags.names.context}/security"]
   }
 }
 
-# automation service account and bucket
-
 module "branch-security-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = var.automation.project_id
-  name         = "prod-resman-sec-0"
-  display_name = "Terraform resman security service account."
-  prefix       = var.prefix
+  source                 = "../../../modules/iam-service-account"
+  project_id             = var.automation.project_id
+  name                   = "prod-resman-sec-0"
+  prefix                 = var.prefix
+  service_account_create = false
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-security-sa-cicd.0.iam_email, null)
@@ -73,6 +69,6 @@ module "branch-security-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-security-sa.iam_email]
+    "roles/storage.objectAdmin" = [local.automation_sas_iam.security]
   }
 }

@@ -222,6 +222,7 @@ resource "google_organization_iam_binding" "org_admin_delegated" {
           "roles/compute.orgFirewallPolicyAdmin",
           "roles/compute.xpnAdmin",
           "roles/orgpolicy.policyAdmin",
+          "roles/resourcemanager.organizationViewer",
         ],
         var.billing_account.is_org_level ? [
           "roles/billing.admin",

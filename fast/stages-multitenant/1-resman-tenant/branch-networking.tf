@@ -55,10 +55,7 @@ module "branch-network-prod-folder" {
     )
   }
   tag_bindings = {
-    environment = try(
-      module.organization.tag_values["${var.tag_names.environment}/production"].id,
-      null
-    )
+    environment = var.tags.values["${var.tags.names.environment}/production"]
   }
 }
 
@@ -74,21 +71,18 @@ module "branch-network-dev-folder" {
     )
   }
   tag_bindings = {
-    environment = try(
-      module.organization.tag_values["${var.tag_names.environment}/development"].id,
-      null
-    )
+    environment = var.tags.values["${var.tags.names.environment}/development"]
   }
 }
 
 # automation service account and bucket
 
 module "branch-network-sa" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = var.automation.project_id
-  name         = "prod-resman-net-0"
-  display_name = "Terraform resman networking service account."
-  prefix       = var.prefix
+  source                 = "../../../modules/iam-service-account"
+  project_id             = var.automation.project_id
+  name                   = "prod-resman-net-0"
+  prefix                 = var.prefix
+  service_account_create = false
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-network-sa-cicd.0.iam_email, null)
@@ -108,6 +102,6 @@ module "branch-network-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-network-sa.iam_email]
+    "roles/storage.objectAdmin" = [local.automation_sas_iam.networking]
   }
 }

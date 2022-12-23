@@ -16,36 +16,24 @@
 
 # tfdoc:file:description Sandbox stage resources.
 
-moved {
-  from = module.branch-sandbox-folder
-  to   = module.branch-sandbox-folder.0
-}
-
 module "branch-sandbox-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.sandbox ? 1 : 0
-  parent = "organizations/${var.organization.id}"
+  parent = module.root-folder.id
   name   = "Sandbox"
   iam = {
-    "roles/logging.admin"                  = [module.branch-sandbox-sa.0.iam_email]
-    "roles/owner"                          = [module.branch-sandbox-sa.0.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-sandbox-sa.0.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-sandbox-sa.0.iam_email]
+    "roles/logging.admin"                  = [local.automation_sas_iam.sandbox]
+    "roles/owner"                          = [local.automation_sas_iam.sandbox]
+    "roles/resourcemanager.folderAdmin"    = [local.automation_sas_iam.sandbox]
+    "roles/resourcemanager.projectCreator" = [local.automation_sas_iam.sandbox]
   }
   org_policies = {
     "constraints/sql.restrictPublicIp"       = { enforce = false }
     "constraints/compute.vmExternalIpAccess" = { allow = { all = true } }
   }
   tag_bindings = {
-    context = try(
-      module.organization.tag_values["${var.tag_names.context}/sandbox"].id, null
-    )
+    context = var.tags.values["${var.tags.names.context}/sandbox"]
   }
-}
-
-moved {
-  from = module.branch-sandbox-gcs
-  to   = module.branch-sandbox-gcs.0
 }
 
 module "branch-sandbox-gcs" {
@@ -58,20 +46,6 @@ module "branch-sandbox-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-sandbox-sa.0.iam_email]
+    "roles/storage.objectAdmin" = [local.automation_sas_iam.sandbox]
   }
-}
-
-moved {
-  from = module.branch-sandbox-sa
-  to   = module.branch-sandbox-sa.0
-}
-
-module "branch-sandbox-sa" {
-  source       = "../../../modules/iam-service-account"
-  count        = var.fast_features.sandbox ? 1 : 0
-  project_id   = var.automation.project_id
-  name         = "dev-resman-sbox-0"
-  display_name = "Terraform resman sandbox service account."
-  prefix       = var.prefix
 }

@@ -75,7 +75,7 @@ locals {
       description = "security"
       flag        = "-"
     }
-    pf-prod = {
+    teams = {
       condition   = "resource.matchTag('${local.tag_keys.context}', 'teams')"
       description = "teams"
       flag        = "teams"
