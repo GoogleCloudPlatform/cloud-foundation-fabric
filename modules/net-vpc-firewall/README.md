@@ -77,7 +77,7 @@ module "firewall" {
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=9
 ```
 
 ### Controlling or turning off default rules
