@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: blueprints/cloud-operations/apigee
+module: blueprints/apigee/network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg
 
 tests:
   basic:

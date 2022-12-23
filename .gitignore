@@ -37,8 +37,11 @@ examples/cloud-operations/adfs/ansible/gssh.sh
 examples/cloud-operations/multi-cluster-mesh-gke-fleet-api/ansible/vars.yaml
 examples/cloud-operations/multi-cluster-mesh-gke-fleet-api/ansible/gssh.sh
 blueprints/cloud-operations/network-dashboard/cloud-function.zip
-blueprints/cloud-operations/apigee/bundle-export.zip
-blueprints/cloud-operations/apigee/bundle-gcs2bq.zip
-blueprints/cloud-operations/apigee/apiproxy.zip
-blueprints/cloud-operations/apigee/create-datastore.sh
-blueprints/cloud-operations/apigee/deploy-apiproxy.sh
+blueprints/apigee/bigquery-analytics/bundle-export.zip
+blueprints/apigee/bigquery-analytics/bundle-gcs2bq.zip
+blueprints/apigee/bigquery-analytics/apiproxy.zip
+blueprints/apigee/bigquery-analytics/create-datastore.sh
+blueprints/apigee/bigquery-analytics/deploy-apiproxy.sh
+blueprints/apigee/network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg/bundle/apiproxy/targets/default.xml
+blueprints/apigee/network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg/bundle.zip
+blueprints/apigee/network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg/deploy-apiproxy.sh

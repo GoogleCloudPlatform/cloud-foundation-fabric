@@ -1,0 +1,5 @@
+billing_account_id = "12345-12345-123456"
+parent             = "folders/123456789"
+apigee_project_id  = "my-apigee-project"
+onprem_project_id  = "my-onprem-project"
+hostname           = "test.myorg.org"
