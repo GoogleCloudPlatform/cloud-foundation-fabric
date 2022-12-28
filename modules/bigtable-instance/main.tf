@@ -15,7 +15,6 @@
  */
 
 locals {
-  num_nodes = var.autoscaling_config == null ? var.num_nodes : null
   gc_pairs = flatten([
     for table, table_obj in var.tables : [
       for cf, cf_obj in table_obj.column_families : {
@@ -25,30 +24,45 @@ locals {
       }
     ]
   ])
+
+  clusters_autoscaling = flatten([
+    for cluster, obj in var.clusters : [{
+      cluster_id   = cluster
+      zone         = obj.zone
+      storage_type = obj.storage_type
+      num_nodes    = obj.autoscaling == null && var.default_autoscaling == null ? obj.num_nodes : null
+      autoscaling  = obj.autoscaling == null ? var.default_autoscaling : obj.autoscaling
+    }]
+  ])
 }
 
 resource "google_bigtable_instance" "default" {
   project = var.project_id
   name    = var.name
-  cluster {
-    cluster_id   = var.cluster_id
-    zone         = var.zone
-    storage_type = var.storage_type
-    num_nodes    = local.num_nodes
-    dynamic "autoscaling_config" {
-      for_each = var.autoscaling_config == null ? [] : [""]
-      content {
-        min_nodes      = var.autoscaling_config.min_nodes
-        max_nodes      = var.autoscaling_config.max_nodes
-        cpu_target     = var.autoscaling_config.cpu_target
-        storage_target = var.autoscaling_config.storage_target
+
+  instance_type = var.instance_type
+  display_name        = var.display_name == null ? var.display_name : var.name
+  deletion_protection = var.deletion_protection
+
+  dynamic "cluster" {
+    for_each = { for k, v in local.clusters_autoscaling : k => v }
+    content {
+      cluster_id   = cluster.value.cluster_id
+      zone         = cluster.value.zone
+      storage_type = cluster.value.storage_type
+      num_nodes    = cluster.value.num_nodes
+
+      dynamic "autoscaling_config" {
+        for_each = cluster.value.autoscaling == null ? [] : [""]
+        content {
+          min_nodes      = cluster.value.autoscaling.min_nodes
+          max_nodes      = cluster.value.autoscaling.max_nodes
+          cpu_target     = cluster.value.autoscaling.cpu_target
+          storage_target = cluster.value.autoscaling.storage_target
+        }
       }
     }
   }
-  instance_type = var.instance_type
-
-  display_name        = var.display_name == null ? var.display_name : var.name
-  deletion_protection = var.deletion_protection
 }
 
 resource "google_bigtable_instance_iam_binding" "default" {

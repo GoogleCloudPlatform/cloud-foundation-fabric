@@ -28,5 +28,9 @@ module "test" {
     }
 
   }
-  zone = var.zone
+  clusters = {
+    test = {
+      zone = var.zone
+    }
+  }
 }
