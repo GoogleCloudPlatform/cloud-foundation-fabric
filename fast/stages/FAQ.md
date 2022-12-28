@@ -15,9 +15,14 @@
         <img src="IaC_SA.png" alt="CICD SA and IaC SA">
     </p>
 
-    
+## Authenciation 
+1. If you are seeing "Permission Issues" when doing terraform apply and the identity with which you are running terraform has correct permissions;
+   run below command so that correct auth credentials are picked by ADC when terraform commands are executed
+
+   ````
+   gcloud auth application-default login
+   ````
 
 
-
-
-
+   Refer to [GCP Authentication](https://cloud.google.com/docs/authentication
+    ) and [Terraform Provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference) for more information
