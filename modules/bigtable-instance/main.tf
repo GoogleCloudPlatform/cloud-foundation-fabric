@@ -40,7 +40,7 @@ resource "google_bigtable_instance" "default" {
   project = var.project_id
   name    = var.name
 
-  instance_type = var.instance_type
+  instance_type       = var.instance_type
   display_name        = var.display_name == null ? var.display_name : var.name
   deletion_protection = var.deletion_protection
 
