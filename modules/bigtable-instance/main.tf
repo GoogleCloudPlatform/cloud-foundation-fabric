@@ -25,15 +25,14 @@ locals {
     ]
   ])
 
-  clusters_autoscaling = flatten([
-    for cluster, obj in var.clusters : [{
-      cluster_id   = cluster
-      zone         = obj.zone
-      storage_type = obj.storage_type
-      num_nodes    = obj.autoscaling == null && var.default_autoscaling == null ? obj.num_nodes : null
-      autoscaling  = obj.autoscaling == null ? var.default_autoscaling : obj.autoscaling
-    }]
-  ])
+  clusters_autoscaling = {
+    for cluster_id, cluster in var.clusters : cluster_id => {
+      zone         = cluster.zone
+      storage_type = cluster.storage_type
+      num_nodes    = cluster.autoscaling == null && var.default_autoscaling == null ? cluster.num_nodes : null
+      autoscaling  = cluster.autoscaling == null ? var.default_autoscaling : cluster.autoscaling
+    }
+  }
 }
 
 resource "google_bigtable_instance" "default" {
@@ -45,9 +44,9 @@ resource "google_bigtable_instance" "default" {
   deletion_protection = var.deletion_protection
 
   dynamic "cluster" {
-    for_each = { for k, v in local.clusters_autoscaling : k => v }
+    for_each = local.clusters_autoscaling
     content {
-      cluster_id   = cluster.value.cluster_id
+      cluster_id   = cluster.key
       zone         = cluster.value.zone
       storage_type = cluster.value.storage_type
       num_nodes    = cluster.value.num_nodes
