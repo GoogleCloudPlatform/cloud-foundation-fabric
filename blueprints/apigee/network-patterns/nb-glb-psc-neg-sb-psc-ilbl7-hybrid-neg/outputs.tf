@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-module "firewall" {
-  source               = "../../../../modules/net-vpc-firewall"
-  project_id           = "test-project"
-  network              = "test-vpc"
-  default_rules_config = var.default_rules_config
-  egress_rules         = var.egress_rules
-  ingress_rules        = var.ingress_rules
-  factories_config     = var.factories_config
+output "ip_address" {
+  description = "GLB IP address."
+  value       = module.glb.address
 }
