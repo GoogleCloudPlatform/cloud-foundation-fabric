@@ -1,0 +1,75 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.folder-sink.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
+    role: roles/bigquery.dataEditor
+  module.folder-sink.google_folder.folder[0]:
+    display_name: my-folder
+    parent: folders/657104291943
+  module.folder-sink.google_logging_folder_exclusion.logging-exclusion["no-gce-instances"]:
+    description: no-gce-instances (Terraform-managed).
+    filter: resource.type=gce_instance
+    name: no-gce-instances
+  module.folder-sink.google_logging_folder_sink.sink["debug"]:
+    disabled: false
+    exclusions:
+    - description: null
+      disabled: false
+      filter: logName:compute
+      name: no-compute
+    filter: severity=DEBUG
+    include_children: true
+    name: debug
+  module.folder-sink.google_logging_folder_sink.sink["info"]:
+    disabled: false
+    exclusions: []
+    filter: severity=INFO
+    include_children: true
+    name: info
+  module.folder-sink.google_logging_folder_sink.sink["notice"]:
+    disabled: false
+    exclusions: []
+    filter: severity=NOTICE
+    include_children: true
+    name: notice
+  module.folder-sink.google_logging_folder_sink.sink["warnings"]:
+    description: warnings (Terraform-managed).
+    destination: storage.googleapis.com/gcs_sink
+    disabled: false
+    exclusions: []
+    filter: severity=WARNING
+    include_children: true
+    name: warnings
+  module.folder-sink.google_project_iam_member.bucket-sinks-binding["debug"]:
+    condition:
+    - title: debug bucket writer
+    role: roles/logging.bucketWriter
+  module.folder-sink.google_pubsub_topic_iam_member.pubsub-sinks-binding["notice"]:
+    condition: []
+    role: roles/pubsub.publisher
+  module.folder-sink.google_storage_bucket_iam_member.gcs-sinks-binding["warnings"]:
+    bucket: gcs_sink
+    condition: []
+    role: roles/storage.objectCreator
+
+counts:
+  google_bigquery_dataset_iam_member: 1
+  google_folder: 1
+  google_logging_folder_exclusion: 1
+  google_logging_folder_sink: 4
+  google_logging_project_bucket_config: 1
+  google_project_iam_member: 1
+  google_pubsub_topic_iam_member: 1
+  google_storage_bucket_iam_member: 1
