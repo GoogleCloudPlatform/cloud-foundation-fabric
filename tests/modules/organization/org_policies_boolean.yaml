@@ -34,11 +34,6 @@ values:
       reset: null
       rules:
       - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'FALSE'
-        values: []
-      - allow_all: null
         condition:
         - description: test condition
           expression: resource.matchTagId(aa, bb)
@@ -46,6 +41,11 @@ values:
           title: condition
         deny_all: null
         enforce: 'TRUE'
+        values: []
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
         values: []
     timeouts: null
 
