@@ -49,6 +49,11 @@ def test_example(plan_validator, tmp_path, example):
     summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
                              tf_var_files=[])
 
+    import yaml
+    print(yaml.dump({"values": summary.values}))
+    print(yaml.dump({"counts": summary.counts}))
+    print(yaml.dump({"outputs": summary.outputs}))
+
     counts = summary.counts
     num_modules, num_resources = counts['modules'], counts['resources']
     assert expected_modules == num_modules, 'wrong number of modules'

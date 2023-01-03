@@ -13,9 +13,10 @@
 # limitations under the License.
 
 values:
-  module.project.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
-    name: projects/foo-project-example/policies/compute.disableGuestAttributesAccess
-    parent: projects/foo-project-example
+  module.folder.google_folder.folder[0]:
+    display_name: Folder name
+    parent: organizations/1234567890
+  module.folder.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -25,9 +26,7 @@ values:
         deny_all: null
         enforce: 'TRUE'
         values: []
-  module.project.google_org_policy_policy.default["constraints/compute.skipDefaultNetworkCreation"]:
-    name: projects/foo-project-example/policies/constraints/compute.skipDefaultNetworkCreation
-    parent: projects/foo-project-example
+  module.folder.google_org_policy_policy.default["constraints/compute.skipDefaultNetworkCreation"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -37,9 +36,7 @@ values:
         deny_all: null
         enforce: 'TRUE'
         values: []
-  module.project.google_org_policy_policy.default["constraints/compute.trustedImageProjects"]:
-    name: projects/foo-project-example/policies/constraints/compute.trustedImageProjects
-    parent: projects/foo-project-example
+  module.folder.google_org_policy_policy.default["constraints/compute.trustedImageProjects"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -52,9 +49,7 @@ values:
         - allowed_values:
           - projects/my-project
           denied_values: null
-  module.project.google_org_policy_policy.default["constraints/compute.vmExternalIpAccess"]:
-    name: projects/foo-project-example/policies/constraints/compute.vmExternalIpAccess
-    parent: projects/foo-project-example
+  module.folder.google_org_policy_policy.default["constraints/compute.vmExternalIpAccess"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -64,9 +59,7 @@ values:
         deny_all: 'TRUE'
         enforce: null
         values: []
-  module.project.google_org_policy_policy.default["constraints/iam.allowedPolicyMemberDomains"]:
-    name: projects/foo-project-example/policies/constraints/iam.allowedPolicyMemberDomains
-    parent: projects/foo-project-example
+  module.folder.google_org_policy_policy.default["constraints/iam.allowedPolicyMemberDomains"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -80,9 +73,7 @@ values:
           - C0xxxxxxx
           - C0yyyyyyy
           denied_values: null
-  module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
-    name: projects/foo-project-example/policies/iam.disableServiceAccountKeyCreation
-    parent: projects/foo-project-example
+  module.folder.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -92,9 +83,7 @@ values:
         deny_all: null
         enforce: 'TRUE'
         values: []
-  module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
-    name: projects/foo-project-example/policies/iam.disableServiceAccountKeyUpload
-    parent: projects/foo-project-example
+  module.folder.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -113,13 +102,7 @@ values:
         deny_all: null
         enforce: 'FALSE'
         values: []
-  module.project.google_project.project[0]:
-    billing_account: 123456-123456-123456
-    folder_id: '1234567890'
-    name: foo-project-example
-    org_id: null
-    project_id: foo-project-example
 
 counts:
+  google_folder: 1
   google_org_policy_policy: 7
-  google_project: 1
