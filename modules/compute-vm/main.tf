@@ -17,7 +17,7 @@
 locals {
   attached_disks = {
     for disk in var.attached_disks :
-    disk.name => merge(disk, {
+    (disk.name != null ? disk.name : disk.device_name) => merge(disk, {
       options = disk.options == null ? var.attached_disk_defaults : disk.options
     })
   }
@@ -138,7 +138,7 @@ resource "google_compute_instance" "default" {
     for_each = local.attached_disks_zonal
     iterator = config
     content {
-      device_name = config.value.name
+      device_name = config.value.device_name != null ? config.value.device_name : config.value.name
       mode        = config.value.options.mode
       source = (
         config.value.source_type == "attach"
@@ -152,7 +152,7 @@ resource "google_compute_instance" "default" {
     for_each = local.attached_disks_regional
     iterator = config
     content {
-      device_name = config.value.name
+      device_name = config.value.device_name != null ? config.value.device_name : config.value.name
       mode        = config.value.options.mode
       source = (
         config.value.source_type == "attach"
@@ -285,7 +285,7 @@ resource "google_compute_instance_template" "default" {
     iterator = config
     content {
       auto_delete = config.value.options.auto_delete
-      device_name = config.value.name
+      device_name = config.value.device_name != null ? config.value.device_name : config.value.name
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
       disk_type = (
