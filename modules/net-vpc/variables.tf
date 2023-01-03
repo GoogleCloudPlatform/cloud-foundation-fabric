@@ -189,3 +189,9 @@ variable "vpc_create" {
   type        = bool
   default     = true
 }
+
+variable "vpc_subnet_create" {
+  description = "Create subnets in VPC. When set to false, uses a data source to reference existing VPC subnetworks."
+  type        = bool
+  default     = true
+}

@@ -71,8 +71,29 @@ locals {
   }
 }
 
+data "google_compute_subnetwork" "subnetwork" {
+  for_each = !var.vpc_subnet_create ? local.subnets : {}
+  project  = var.project_id
+  name     = each.value.name
+  region   = each.value.region
+}
+
+data "google_compute_subnetwork" "proxy_only" {
+  for_each = !var.vpc_subnet_create ? local.subnets_proxy_only : {}
+  project  = var.project_id
+  name     = each.value.name
+  region   = each.value.region
+}
+
+data "google_compute_subnetwork" "psc" {
+  for_each = !var.vpc_subnet_create ? local.subnets_psc : {}
+  project  = var.project_id
+  name     = each.value.name
+  region   = each.value.region
+}
+
 resource "google_compute_subnetwork" "subnetwork" {
-  for_each      = local.subnets
+  for_each      = try(var.vpc_subnet_create ? local.subnets : {}, {})
   project       = var.project_id
   network       = local.network.name
   name          = each.value.name
@@ -105,7 +126,7 @@ resource "google_compute_subnetwork" "subnetwork" {
 }
 
 resource "google_compute_subnetwork" "proxy_only" {
-  for_each      = local.subnets_proxy_only
+  for_each      = var.vpc_subnet_create ? local.subnets_proxy_only : {}
   project       = var.project_id
   network       = local.network.name
   name          = each.value.name
@@ -123,7 +144,7 @@ resource "google_compute_subnetwork" "proxy_only" {
 }
 
 resource "google_compute_subnetwork" "psc" {
-  for_each      = local.subnets_psc
+  for_each      = var.vpc_subnet_create ? local.subnets_psc : {}
   project       = var.project_id
   network       = local.network.name
   name          = each.value.name

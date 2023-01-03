@@ -70,46 +70,72 @@ output "self_link" {
 
 output "subnet_ips" {
   description = "Map of subnet address ranges keyed by name."
-  value = {
+  value = var.vpc_subnet_create ? {
     for k, v in google_compute_subnetwork.subnetwork : k => v.ip_cidr_range
+    } : {
+    for k, v in data.google_compute_subnetwork.subnetwork : k => v.ip_cidr_range
   }
 }
 
 output "subnet_regions" {
   description = "Map of subnet regions keyed by name."
-  value = {
+  value = var.vpc_subnet_create ? {
     for k, v in google_compute_subnetwork.subnetwork : k => v.region
+    } : {
+    for k, v in data.google_compute_subnetwork.subnetwork : k => v.region
   }
 }
 
 output "subnet_secondary_ranges" {
   description = "Map of subnet secondary ranges keyed by name."
-  value = {
+  value = var.vpc_subnet_create ? {
     for k, v in google_compute_subnetwork.subnetwork :
     k => {
       for range in v.secondary_ip_range :
       range.range_name => range.ip_cidr_range
     }
+    } : {
+    for k, v in data.google_compute_subnetwork.subnetwork :
+    k => {
+      for range in v.secondary_ip_range :
+      range.range_name => range.ip_cidr_range
+    } if v.secondary_ip_range != null
   }
 }
 
 output "subnet_self_links" {
   description = "Map of subnet self links keyed by name."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.self_link }
+  value = var.vpc_subnet_create ? {
+    for k, v in google_compute_subnetwork.subnetwork : k => v.self_link
+    } : {
+    for k, v in data.google_compute_subnetwork.subnetwork : k => v.self_link
+  }
 }
 
 # TODO(ludoo): use input names as keys
 output "subnets" {
   description = "Subnet resources."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v }
+  value = var.vpc_subnet_create ? {
+    for k, v in google_compute_subnetwork.subnetwork : k => v
+    } : {
+    for k, v in data.google_compute_subnetwork.subnetwork : k => v
+  }
 }
 
 output "subnets_proxy_only" {
   description = "L7 ILB or L7 Regional LB subnet resources."
-  value       = { for k, v in google_compute_subnetwork.proxy_only : k => v }
+  value = var.vpc_subnet_create ? {
+    for k, v in google_compute_subnetwork.proxy_only : k => v
+    } : {
+    for k, v in data.google_compute_subnetwork.proxy_only : k => v
+  }
 }
 
 output "subnets_psc" {
   description = "Private Service Connect subnet resources."
-  value       = { for k, v in google_compute_subnetwork.psc : k => v }
+  value = var.vpc_subnet_create ? {
+    for k, v in google_compute_subnetwork.psc : k => v
+    } : {
+    for k, v in data.google_compute_subnetwork.psc : k => v
+  }
 }
