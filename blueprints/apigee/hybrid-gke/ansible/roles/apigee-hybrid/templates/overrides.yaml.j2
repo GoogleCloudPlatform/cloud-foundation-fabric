@@ -1,0 +1,63 @@
+gcp:
+  region: {{ region }}
+  projectID: {{ project_id }}
+
+k8sCluster:
+  name: {{ cluster }}
+  region: CLUSTER_LOCATION # Must be the closest Google Cloud region to your cluster.
+org: {{ project_id }}
+
+instanceID: "instance-1"
+
+cassandra:
+  hostNetwork: false
+    # Set to false for single region installations and multi-region installations
+    # with connectivity between pods in different clusters, for example GKE installations.
+    # Set to true  for multi-region installations with no communication between
+    # pods in different clusters, for example GKE On-prem, GKE on AWS, Anthos on bare metal,
+    # AKS, EKS, and OpenShift installations.
+    # See Multi-region deployment: Prerequisites
+
+virtualhosts:
+  - name: {{ envgroup }}
+    selector:
+      app: apigee-ingressgateway
+    sslCertPath: ./certs/{{ envgroup }}.cert
+    sslKeyPath: ./certs/{{ envgroup }}.key
+
+ao:
+  args:
+  # This configuration is introduced in hybrid v1.8
+    disableIstioConfigInAPIServer: true
+
+# This configuration is introduced in hybrid v1.8
+ingressGateways:
+- name: ingress # maximum 17 characters. See Known issue 243167389.
+  replicaCountMin: 2
+  replicaCountMax: 10
+
+envs:
+  - name: {{ env }}
+    serviceAccountPaths:
+      synchronizer: ./service-accounts/{{ project_id }}-apigee-non-prod.json
+      udca: ./service-accounts/{{ project_id }}-apigee-non-prod.json
+      runtime: ./service-accounts/{{ project_id }}-apigee-non-prod.json
+
+mart:
+  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
+
+connectAgent:
+  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
+
+metrics:
+  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
+
+udca:
+  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
+
+watcher:
+  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
+
+logger:
+  enabled: true
+  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json

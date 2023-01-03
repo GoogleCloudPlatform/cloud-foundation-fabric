@@ -45,3 +45,7 @@ blueprints/apigee/bigquery-analytics/deploy-apiproxy.sh
 blueprints/apigee/network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg/bundle/apiproxy/targets/default.xml
 blueprints/apigee/network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg/bundle.zip
 blueprints/apigee/network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg/deploy-apiproxy.sh
+blueprints/apigee/hybrid-gke/apiproxy.zip
+blueprints/apigee/hybrid-gke/deploy-apiproxy.sh
+blueprints/apigee/hybrid-gke/ansible/gssh.sh
+blueprints/apigee/hybrid-gke/ansible/vars/vars.yaml

@@ -1,0 +1,143 @@
+# Copyright 2023 Google LLC
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Get cluster credentials
+  shell: >
+    gcloud container clusters get-credentials {{ cluster }} \
+    --region {{ region }} \
+    --project {{ project_id }} \
+    --internal-ip
+
+- name: Install cert-manager
+  shell: >
+    kubectl apply \
+    --validate=false \
+    -f https://github.com/jetstack/cert-manager/releases/download/v1.7.2/cert-manager.yaml
+
+- name: Wait until pods are ready in cert-manager namespace
+  shell: >
+    kubectl wait --for=condition=ready pods \
+    -l app.kubernetes.io/instance=cert-manager \
+    -n cert-manager \ 
+    --timeout=90s
+
+- name: Fetch apigeectl version
+  uri:
+    url: https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/current-version.txt?ignoreCache=1
+    return_content: yes
+  register: version
+
+- name: Download apigeectl bundle
+  uri:
+    url: https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/{{ version.content }}/apigeectl_linux_64.tar.gz
+    dest: "~/apigeectl.tar.gz"
+    status_code: [200, 304]
+
+- name: Extract apigeectl bundle
+  unarchive:
+    src: "~/apigeectl.tar.gz"
+    dest: "~"
+    remote_src: yes    
+
+- name: Move apigeectl folder
+  shell: >
+    mv ~/apigeectl_* ~/apigeectl
+
+- name: Create hybrid-files
+  file:
+    path: "~/hybrid-files/{{ item }}"
+    state: directory
+  with_items:
+    - overrides
+    - certs
+
+- name: Create a symbolic links
+  file:
+    src: ~/apigeectl/{{ item }}
+    dest: "~/hybrid-files/{{ item }}"
+    state: link    
+  with_items:
+    - tools
+    - config
+    - templates
+    - plugins    
+
+- name: Create service accounts
+  shell: >
+    ~/hybrid-files/tools/create-service-account -i {{ project_id }} -e non-prod -d ~/hybrid-files/service-accounts
+
+- name: Create certificates
+  shell: >
+    openssl req  \ 
+    -nodes \
+    -new \
+    -x509 \
+    -keyout ~/hybrid-files/certs/{{ envgroup }}.key \
+    -out ~/hybrid-files/certs/{{ envgroup }}.cert -subj '/CN='{{ hostname }}'' -days 3650
+
+- name: Create overrides.yaml
+  template:
+    src: templates/overrides.yaml.j2
+    dest: ~/hybrid-files/overrides/overrides.yaml
+
+- name: Enable syncronizer access
+  shell: >
+    curl -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    -H "Content-Type:application/json" \
+    "https://apigee.googleapis.com/v1/organizations/{{ project_id }}:setSyncAuthorization" \
+    -d '{"identities":["'"serviceAccount:apigee-non-prod@{{ project_id }}.iam.gserviceaccount.com"'"]}'
+
+- name: Dry-run (init)
+  shell: >
+    ~/apigeectl/apigeectl init -f overrides/overrides.yaml --dry-run=client  
+  args:
+    chdir: ~/hybrid-files
+
+- name: Install the Apigee deployment services Apigee Deployment Controller and Apigee Admission Webhook.
+  shell: >
+    ~/apigeectl/apigeectl init -f overrides/overrides.yaml 
+  args:
+    chdir: ~/hybrid-files    
+
+- name: Wait until pods are ready in apigee-system namespace
+  shell: >
+    kubectl wait --for=condition=ready pods \
+    -l app=apigee-controller \
+    -n apigee-system \ 
+    --timeout=300s    
+
+- name: Wait until pods are ready in apigee namespace
+  shell: >
+    kubectl wait --for=condition=ready pods \
+    -l app=apigee-ingressgateway-manager \
+    -n apigee \ 
+    --timeout=300s    
+
+- name: Dry-run (apply)
+  shell: >
+    ~/apigeectl/apigeectl apply -f overrides/overrides.yaml --dry-run=client  
+  args:
+    chdir: ~/hybrid-files
+
+- name: Install the Apigee runtime components
+  shell: >
+    ~/apigeectl/apigeectl apply -f overrides/overrides.yaml 
+  args:
+    chdir: ~/hybrid-files        
+
+- name: Check status of the deployment
+  shell: >
+    while [ -n "$(kubectl get pods -n apigee | tail -n +2 | grep -v Running | grep -v Completed)" ]; do sleep 1; done
+  args:
+    chdir: ~/hybrid-files
