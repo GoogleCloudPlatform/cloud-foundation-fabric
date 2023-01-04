@@ -38,11 +38,11 @@ module "branch-teams-folder" {
 }
 
 module "branch-teams-sa" {
-  source       = "../../../modules/iam-service-account"
-  count        = var.fast_features.teams ? 1 : 0
-  project_id   = var.automation.project_id
-  name         = "teams-0"
-  prefix       = var.prefix
+  source                 = "../../../modules/iam-service-account"
+  count                  = var.fast_features.teams ? 1 : 0
+  project_id             = var.automation.project_id
+  name                   = "teams-0"
+  prefix                 = var.prefix
   service_account_create = false
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
