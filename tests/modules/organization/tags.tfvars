@@ -45,6 +45,15 @@ tags = {
           ]
         }
       }
+      four = {
+        description = "Foobar 4."
+        id          = "tagValues/1234567890"
+        iam = {
+          "roles/resourcemanager.tagViewer" = [
+            "user:user4@example.com"
+          ]
+        }
+      }
     }
   }
 }
