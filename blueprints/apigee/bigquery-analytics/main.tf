@@ -94,8 +94,9 @@ module "glb" {
   use_classic_version = false
   backend_service_configs = {
     default = {
-      backends = [for k, v in var.instances : { backend = k }]
-      protocol = "HTTPS"
+      backends      = [for k, v in var.instances : { backend = k }]
+      protocol      = "HTTPS"
+      health_checks = []
     }
   }
   health_check_configs = {
@@ -116,8 +117,10 @@ module "glb" {
     }
   }
   ssl_certificates = {
-    managed_config = {
-      for k, v in var.envgroups : k => { domains = [v] }
+    managed_configs = {
+      default = {
+        domains = flatten([for k, v in var.envgroups : v])
+      }
     }
   }
 }
