@@ -321,7 +321,7 @@ module "nginx-mig" {
     }
   }
   stateful_disks = {
-    repd-1 = null
+    repd-1 = false
   }
 }
 # tftest modules=2 resources=3
