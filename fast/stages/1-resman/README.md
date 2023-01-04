@@ -36,6 +36,10 @@ Additionally, a few critical benefits are directly provided by this design:
 
 For a discussion on naming, please refer to the [Bootstrap stage documentation](../0-bootstrap/README.md#naming), as the same approach is shared by all stages.
 
+### Multitenancy
+
+Multitenancy is implemented via [separate additional stages](../../stages-multitenant/) that need to be run once for each tenant, and require this stage as a prerequisite.
+
 ### Workload Identity Federation and CI/CD
 
 This stage also implements optional support for CI/CD, much in the same way as the bootstrap stage. The only difference is on Workload Identity Federation, which is only configured in bootstrap and made available here via stage interface variables (the automatically generated `.tfvars` files).

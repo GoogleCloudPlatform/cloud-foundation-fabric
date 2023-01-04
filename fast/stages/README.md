@@ -28,6 +28,15 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
   Creates the base resource hierarchy (folders) and the automation resources required later to delegate deployment of each part of the hierarchy to separate stages. This stage also configures organization-level policies and any exceptions needed by different branches of the resource hierarchy.\
   Exports: folder ids, automation service account emails
 
+## Multitenancy
+
+Implemented via separate stages that configure separate FAST-enabled  hierarchies for each tenant:
+
+- [Tenant bootstrap](../stages-multitenant/0-bootstrap-tenant/)
+  Analogous to the organization-level bootstrap, configures the tenant-level root node (folder) and identities used for automation.
+- [Tenant resource management](../stages-multitenant/1-resman-tenant/)
+  Analogous to the organization-level resource management, configures the tenant-specific hierarchy rooted in the top-level tenant folder.
+
 ## Shared resources (2)
 
 - [Security](2-security/README.md)  
