@@ -25,10 +25,10 @@ module "root-folder" {
       local.automation_sas_iam.security
     ]
     "roles/compute.orgFirewallPolicyAdmin" = [
-      local.automation_sas_iam.network
+      local.automation_sas_iam.networking
     ]
     "roles/compute.xpnAdmin" = [
-      local.automation_sas_iam.network
+      local.automation_sas_iam.networking
     ]
   }
   org_policies_data_path = var.organization_policy_data_path

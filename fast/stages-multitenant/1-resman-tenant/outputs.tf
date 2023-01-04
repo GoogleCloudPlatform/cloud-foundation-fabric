@@ -144,13 +144,13 @@ locals {
         backend_extra = null
         bucket        = module.branch-pf-dev-gcs.0.name
         name          = "team-dev"
-        sa            = module.branch-pf-dev-sa.0.email
+        sa            = var.automation.service_accounts.pf-dev
       })
       "3-0-project-factory-prod" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-pf-prod-gcs.0.name
         name          = "team-prod"
-        sa            = module.branch-pf-prod-sa.0.email
+        sa            = var.automation.service_accounts.pf-prod
       })
     },
     !var.fast_features.sandbox ? {} : {
@@ -158,7 +158,7 @@ locals {
         backend_extra = null
         bucket        = module.branch-sandbox-gcs.0.name
         name          = "sandbox"
-        sa            = module.branch-sandbox-sa.0.email
+        sa            = var.automation.service_accounts.sandbox
       })
     },
     !var.fast_features.teams ? {} : merge(
@@ -181,29 +181,8 @@ locals {
       }
     )
   )
-  service_accounts = merge(
-    {
-      data-platform-dev    = try(module.branch-dp-dev-sa.0.email, null)
-      data-platform-prod   = try(module.branch-dp-prod-sa.0.email, null)
-      gke-dev              = try(module.branch-gke-dev-sa.0.email, null)
-      gke-prod             = try(module.branch-gke-prod-sa.0.email, null)
-      networking           = module.branch-network-sa.email
-      project-factory-dev  = try(module.branch-pf-dev-sa.0.email, null)
-      project-factory-prod = try(module.branch-pf-prod-sa.0.email, null)
-      sandbox              = try(module.branch-sandbox-sa.0.email, null)
-      security             = module.branch-security-sa.email
-      teams                = try(module.branch-teams-sa.0.email, null)
-    },
-    {
-      for k, v in module.branch-teams-team-sa : "team-${k}" => v.email
-    },
-  )
   tfvars = {
-    folder_ids       = local.folder_ids
-    service_accounts = local.service_accounts
-    tag_keys         = { for k, v in module.organization.tag_keys : k => v.id }
-    tag_names        = var.tag_names
-    tag_values       = { for k, v in module.organization.tag_values : k => v.id }
+    folder_ids = local.folder_ids
   }
 }
 
@@ -272,11 +251,11 @@ output "project_factories" {
   value = !var.fast_features.project_factory ? {} : {
     dev = {
       bucket = module.branch-pf-dev-gcs.0.name
-      sa     = module.branch-pf-dev-sa.0.email
+      sa     = var.automation.service_accounts.pf-dev
     }
     prod = {
       bucket = module.branch-pf-prod-gcs.0.name
-      sa     = module.branch-pf-prod-sa.0.email
+      sa     = var.automation.service_accounts.pf-prod
     }
   }
 }
@@ -297,7 +276,7 @@ output "sandbox" {
     ? {
       folder          = module.branch-sandbox-folder.0.id
       gcs_bucket      = module.branch-sandbox-gcs.0.name
-      service_account = module.branch-sandbox-sa.0.email
+      service_account = var.automation.service_accounts.sandbox
     }
     : null
   )

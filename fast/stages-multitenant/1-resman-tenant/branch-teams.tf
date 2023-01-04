@@ -26,11 +26,11 @@ module "branch-teams-folder" {
   parent = module.root-folder.id
   name   = "Teams"
   iam = {
-    "roles/logging.admin"                  = [local.automation_sas_iam.security.teams]
-    "roles/owner"                          = [local.automation_sas_iam.security.teams]
-    "roles/resourcemanager.folderAdmin"    = [local.automation_sas_iam.security.teams]
-    "roles/resourcemanager.projectCreator" = [local.automation_sas_iam.security.teams]
-    "roles/compute.xpnAdmin"               = [local.automation_sas_iam.security.teams]
+    "roles/logging.admin"                  = [local.automation_sas_iam.teams]
+    "roles/owner"                          = [local.automation_sas_iam.teams]
+    "roles/resourcemanager.folderAdmin"    = [local.automation_sas_iam.teams]
+    "roles/resourcemanager.projectCreator" = [local.automation_sas_iam.teams]
+    "roles/compute.xpnAdmin"               = [local.automation_sas_iam.teams]
   }
   tag_bindings = {
     context = var.tags.values["${var.tags.names.context}/teams"]
@@ -41,9 +41,9 @@ module "branch-teams-sa" {
   source       = "../../../modules/iam-service-account"
   count        = var.fast_features.teams ? 1 : 0
   project_id   = var.automation.project_id
-  name         = "prod-resman-teams-0"
-  display_name = "Terraform resman teams service account."
+  name         = "teams-0"
   prefix       = var.prefix
+  service_account_create = false
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }
@@ -132,7 +132,7 @@ module "branch-teams-team-dev-folder" {
   }
   tag_bindings = {
     environment = try(
-      module.organization.tag_values["${var.tag_names.environment}/development"].id, null
+      var.tags.values["${var.tags.names.environment}/development"], null
     )
   }
 }
@@ -157,7 +157,7 @@ module "branch-teams-team-prod-folder" {
   }
   tag_bindings = {
     environment = try(
-      module.organization.tag_values["${var.tag_names.environment}/production"].id, null
+      var.tags.values["${var.tags.names.environment}/production"], null
     )
   }
 }

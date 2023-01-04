@@ -15,6 +15,9 @@
  */
 
 locals {
+  automation_resman_sa_iam = [
+    "serviceAccount:${var.automation.service_accounts.resman}"
+  ]
   automation_sas_iam = {
     for k, v in var.automation.service_accounts :
     k => v == null ? null : "serviceAccount:${v}"
@@ -64,7 +67,7 @@ locals {
   )
   groups = {
     for k, v in var.groups :
-    k => "${v}@${var.organization.domain}"
+    k => v == null ? null : "${v}@${var.organization.domain}"
   }
   groups_iam = {
     for k, v in local.groups : k => v != null ? "group:${v}" : null

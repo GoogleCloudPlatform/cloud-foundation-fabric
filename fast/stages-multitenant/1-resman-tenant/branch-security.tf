@@ -47,7 +47,7 @@ module "branch-security-folder" {
 module "branch-security-sa" {
   source                 = "../../../modules/iam-service-account"
   project_id             = var.automation.project_id
-  name                   = "prod-resman-sec-0"
+  name                   = "security-0"
   prefix                 = var.prefix
   service_account_create = false
   iam = {

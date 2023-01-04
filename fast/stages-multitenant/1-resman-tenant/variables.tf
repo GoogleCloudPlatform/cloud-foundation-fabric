@@ -43,6 +43,7 @@ variable "automation" {
       pf-dev     = optional(string)
       pf-prod    = optional(string)
       sandbox    = optional(string)
+      teams      = optional(string)
     })
   })
 }

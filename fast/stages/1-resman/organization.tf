@@ -84,6 +84,9 @@ module "organization" {
   }
   org_policies_data_path = "${var.data_dir}/org-policies"
 
+  # do not assign tagViewer or tagUser roles here on tag keys and values as
+  # they are managed authoritatively and will break multitenant stages
+
   tags = {
     (var.tag_names.context) = {
       description = "Resource management context."

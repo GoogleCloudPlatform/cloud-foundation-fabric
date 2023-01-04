@@ -64,7 +64,7 @@ module "branch-gke-dev-sa" {
   source                 = "../../../modules/iam-service-account"
   count                  = var.fast_features.gke ? 1 : 0
   project_id             = var.automation.project_id
-  name                   = "dev-resman-gke-0"
+  name                   = "gke-dev-0"
   prefix                 = var.prefix
   service_account_create = false
   iam = {
@@ -88,7 +88,7 @@ module "branch-gke-prod-sa" {
   source                 = "../../../modules/iam-service-account"
   count                  = var.fast_features.gke ? 1 : 0
   project_id             = var.automation.project_id
-  name                   = "prod-resman-gke-0"
+  name                   = "gke-prod-0"
   prefix                 = var.prefix
   service_account_create = false
   iam = {

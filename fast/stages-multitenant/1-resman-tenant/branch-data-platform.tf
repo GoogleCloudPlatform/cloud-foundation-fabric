@@ -72,7 +72,7 @@ module "branch-dp-dev-sa" {
   source                 = "../../../modules/iam-service-account"
   count                  = var.fast_features.data_platform ? 1 : 0
   project_id             = var.automation.project_id
-  name                   = "dev-resman-dp-0"
+  name                   = "dp-dev-0"
   prefix                 = var.prefix
   service_account_create = false
   iam = {
@@ -89,7 +89,7 @@ module "branch-dp-prod-sa" {
   source                 = "../../../modules/iam-service-account"
   count                  = var.fast_features.data_platform ? 1 : 0
   project_id             = var.automation.project_id
-  name                   = "prod-resman-dp-0"
+  name                   = "dp-prod-0"
   prefix                 = var.prefix
   service_account_create = false
   iam = {

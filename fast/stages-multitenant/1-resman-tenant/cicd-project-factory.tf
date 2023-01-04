@@ -33,7 +33,7 @@ module "branch-pf-dev-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin"  = [module.branch-pf-dev-sa.0.iam_email]
+    "roles/source.admin"  = local.branch_optional_sa_lists.pf-dev
     "roles/source.reader" = [module.branch-pf-dev-sa-cicd.0.iam_email]
   }
   triggers = {
@@ -70,7 +70,7 @@ module "branch-pf-prod-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin"  = [module.branch-pf-prod-sa.0.iam_email]
+    "roles/source.admin"  = local.branch_optional_sa_lists.pf-prod
     "roles/source.reader" = [module.branch-pf-prod-sa-cicd.0.iam_email]
   }
   triggers = {

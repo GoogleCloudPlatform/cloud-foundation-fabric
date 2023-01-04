@@ -50,6 +50,20 @@ module "organization" {
   }
 }
 
+resource "google_tags_tag_value_iam_member" "resman_tag_user" {
+  for_each  = var.tag_values
+  tag_value = each.value
+  role      = "roles/resourcemanager.tagUser"
+  member    = module.automation-tf-resman-sa.iam_email
+}
+
+resource "google_tags_tag_value_iam_member" "admins_tag_viewer" {
+  for_each  = var.tag_values
+  tag_value = each.value
+  role      = "roles/resourcemanager.tagViewer"
+  member    = "group:${local.groups.gcp-admins}"
+}
+
 # assign org policy admin with a tag-based condition to admin group and stage 1 SA
 
 resource "google_organization_iam_member" "org_policy_admin_stage0" {

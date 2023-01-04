@@ -28,9 +28,7 @@ module "branch-dp-dev-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin" = compact([
-      try(module.branch-dp-dev-sa.0.iam_email, "")
-    ])
+    "roles/source.admin" = local.branch_optional_sa_lists.dp-dev
     "roles/source.reader" = compact([
       try(module.branch-dp-dev-sa-cicd.0.iam_email, "")
     ])
@@ -64,7 +62,7 @@ module "branch-dp-prod-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin"  = [module.branch-dp-prod-sa.0.iam_email]
+    "roles/source.admin"  = local.branch_optional_sa_lists.dp-prod
     "roles/source.reader" = [module.branch-dp-prod-sa-cicd.0.iam_email]
   }
   triggers = {

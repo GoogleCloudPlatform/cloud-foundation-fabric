@@ -80,7 +80,7 @@ module "branch-network-dev-folder" {
 module "branch-network-sa" {
   source                 = "../../../modules/iam-service-account"
   project_id             = var.automation.project_id
-  name                   = "prod-resman-net-0"
+  name                   = "networking-0"
   prefix                 = var.prefix
   service_account_create = false
   iam = {
