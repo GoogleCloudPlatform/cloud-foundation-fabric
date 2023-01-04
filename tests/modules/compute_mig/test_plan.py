@@ -84,7 +84,7 @@ def test_stateful_mig(plan_runner):
   "Test stateful instances - mig."
 
   stateful_disks = '''{
-    persistent-disk-1 = null
+    persistent-disk-1 = false
   }'''
   _, resources = plan_runner(stateful_disks=stateful_disks)
   assert len(resources) == 1

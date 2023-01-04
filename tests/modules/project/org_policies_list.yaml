@@ -21,14 +21,6 @@ values:
       reset: null
       rules:
       - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: null
-        values:
-        - allowed_values: null
-          denied_values:
-          - in:EXTERNAL
-      - allow_all: null
         condition:
         - description: test condition
           expression: resource.matchTagId(aa, bb)
@@ -49,6 +41,14 @@ values:
         deny_all: null
         enforce: null
         values: []
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values: null
+          denied_values:
+          - in:EXTERNAL
     timeouts: null
   google_org_policy_policy.default["compute.vmExternalIpAccess"]:
     name: projects/my-project/policies/compute.vmExternalIpAccess
