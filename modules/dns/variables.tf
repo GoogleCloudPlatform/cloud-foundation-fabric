@@ -98,6 +98,7 @@ variable "recordsets" {
       weight  = number
       records = list(string)
     })))
+    create_only = optional(bool, false)
   }))
   default  = {}
   nullable = false
