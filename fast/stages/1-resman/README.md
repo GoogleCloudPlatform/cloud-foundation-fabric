@@ -38,7 +38,7 @@ For a discussion on naming, please refer to the [Bootstrap stage documentation](
 
 ### Multitenancy
 
-Multitenancy is implemented via [separate additional stages](../../stages-multitenant/) that need to be run once for each tenant, and require this stage as a prerequisite.
+Fully multitenant hierarchies inside the same organization are implemented via [separate additional stages](../../stages-multitenant/) that need to be run once for each tenant, and require this stage as a prerequisite.
 
 ### Workload Identity Federation and CI/CD
 

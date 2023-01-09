@@ -1,4 +1,4 @@
-# Fast stages
+# FAST stages
 
 Each of the folders contained here is a separate "stage", or Terraform root module.
 
@@ -30,12 +30,7 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 
 ## Multitenancy
 
-Implemented via separate stages that configure separate FAST-enabled  hierarchies for each tenant:
-
-- [Tenant bootstrap](../stages-multitenant/0-bootstrap-tenant/)
-  Analogous to the organization-level bootstrap, configures the tenant-level root node (folder) and identities used for automation.
-- [Tenant resource management](../stages-multitenant/1-resman-tenant/)
-  Analogous to the organization-level resource management, configures the tenant-specific hierarchy rooted in the top-level tenant folder.
+Implemented via separate stages that configure separate FAST-enabled  hierarchies for each tenant, check the [multitenant stages folder](../stages-multitenant/).
 
 ## Shared resources (2)
 
