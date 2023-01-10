@@ -21,7 +21,7 @@ The approach adapts to different high-level requirements:
 - least privilege principle
 - rely on service account impersonation
 
-The code in this blueprint doesn't address Organization-level configurations (Organization policy, VPC-SC, centralized logs). We expect those elements to be managed by automation stages external to this script like those in [FAST](../../../fast).
+The code in this blueprint doesn't address Organization-level configurations (Organization policy, VPC-SC, centralized logs). We expect those elements to be managed by automation stages external to this script like those in [FAST](../../../fast) and this blueprint deployed on top of them as one of the [stage](../../../fast/stages/03-data-platform/dev/README.md).
 
 ### Project structure
 
@@ -39,14 +39,13 @@ This separation into projects allows adhering to the least-privilege principle b
 The script will create the following projects:
 
 - **Drop off** Used to store temporary data. Data is pushed to Cloud Storage, BigQuery, or Cloud PubSub. Resources are configured with a customizable lifecycle policy.
-- **Load** Used to load data from the drop off zone to the data warehouse. The load is made with minimal to zero transformation logic (mainly `cast`). Anonymization or tokenization of Personally Identifiable Information (PII) can be implemented here or in the transformation stage, depending on your requirements. The use of [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) is recommended.
+- **Load** Used to load data from the drop off zone to the data warehouse. The load is made with minimal to zero transformation logic (mainly `cast`). Anonymization or tokenization of Personally Identifiable Information (PII) can be implemented here or in the transformation stage, depending on your requirements. The use of [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) is recommended. When you need to handle workloads from different teams, if strong role separation is needed between them, we suggests to customize the scirpt and have separate `Load` projects.
 - **Data Warehouse** Several projects distributed across 3 separate layers, to host progressively processed and refined data:
   - **Landing - Raw data** Structured Data, stored in relevant formats: structured data stored in BigQuery, unstructured data stored on Cloud Storage with additional metadata stored in BigQuery (for example pictures stored in Cloud Storage and analysis of the images for Cloud Vision API stored in BigQuery).
   - **Curated - Cleansed, aggregated and curated data**
   - **Confidential - Curated and unencrypted layer**
-  - **Playground** Temporary tables that Data Analyst may use to perform R&D on data available in other Data Warehouse layers.
 - **Orchestration** Used to host Cloud Composer, which orchestrates all tasks that move data across layers.
-- **Transformation** Used to move data between Data Warehouse layers. We strongly suggest relying on BigQuery Engine to perform the transformations. If BigQuery doesn't have the features needed to perform your transformations, you can use Cloud Dataflow with [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates). This stage can also optionally  anonymize or tokenize PII.
+- **Transformation** Used to move data between Data Warehouse layers. We strongly suggest relying on BigQuery Engine to perform the transformations. If BigQuery doesn't have the features needed to perform your transformations, you can use Cloud Dataflow with [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates). This stage can also optionally anonymize or tokenize PII. When you need to handle workloads from different teams, if strong role separation is needed between them, we suggests to customize the scirpt and have separate `Tranformation` projects.
 - **Exposure** Used to host resources that share processed data with external systems. Depending on the access pattern, data can be presented via Cloud SQL, BigQuery, or Bigtable. For BigQuery data, we strongly suggest relying on [Authorized views](https://cloud.google.com/bigquery/docs/authorized-views).
 
 ### Roles
@@ -80,10 +79,10 @@ We use three groups to control access to resources:
 
 The table below shows a high level overview of roles for each group on each project, using `READ`, `WRITE` and `ADMIN` access patterns for simplicity. For detailed roles please refer to the code.
 
-|Group|Drop off|Load|Transformation|DHW Landing|DWH Curated|DWH Confidential|DWH Playground|Orchestration|Common|
+|Group|Drop off|Load|Transformation|DHW Landing|DWH Curated|DWH Confidential|Orchestration|Common|
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|Data Engineers|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|
-|Data Analysts|-|-|-|-|-|`READ`|`READ`/`WRITE`|-|-|
+|Data Engineers|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|
+|Data Analysts|-|-|-|-|-|`READ`|-|-|
 |Data Security|-|-|-|-|-|-|-|-|`ADMIN`|
 
 You can configure groups via the `groups` variable.
@@ -109,14 +108,13 @@ In both VPC scenarios, you also need these ranges for Composer:
 
 - one /24 for Cloud SQL
 - one /28 for the GKE control plane
-- one /28 for the web server
 
 ### Resource naming conventions
 
 Resources follow the naming convention described below.
 
 - `prefix-layer` for projects
-- `prefix-layer-prduct` for resources
+- `prefix-layer-product` for resources
 - `prefix-layer[2]-gcp-product[2]-counter` for services and service accounts
 
 ### Encryption

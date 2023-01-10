@@ -37,7 +37,6 @@ module "data-platform" {
     composer_ip_ranges = {
       cloudsql   = var.network_config_composer.cloudsql_range
       gke_master = var.network_config_composer.gke_master_range
-      web_server = var.network_config_composer.web_server_range
     }
     composer_secondary_ranges = {
       pods     = var.network_config_composer.gke_pods_name

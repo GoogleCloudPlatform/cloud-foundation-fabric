@@ -31,13 +31,13 @@ The Data Platform manages:
 As per our GCP best practices the Data Platform relies on user groups to assign roles to human identities. These are the specific groups used by the Data Platform and their access patterns, from the [module documentation](../../../../blueprints/data-solutions/data-platform-foundations/#groups):
 
 - *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
-- *Data Analysts*. They perform analysis on datasets, with read access to the data warehouse Curated or Confidential projects depending on their privileges, and BigQuery READ/WRITE access to the playground project.
+- *Data Analysts*. They perform analysis on datasets, with read access to the data warehouse Curated or Confidential projects depending on their privileges.
 - *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
 
-|Group|Landing|Load|Transformation|Data Warehouse Landing|Data Warehouse Curated|Data Warehouse Confidential|Data Warehouse Playground|Orchestration|Common|
-|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|Data Engineers|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|
-|Data Analysts|-|-|-|-|-|`READ`|`READ`/`WRITE`|-|-|
+|Group|Landing|Load|Transformation|Data Warehouse Landing|Data Warehouse Curated|Data Warehouse Confidential|Orchestration|Common|
+|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|Data Engineers|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|
+|Data Analysts|-|-|-|-|-|`READ`|-|-|
 |Data Security|-|-|-|-|-|-|-|-|`ADMIN`|
 
 ### Network
