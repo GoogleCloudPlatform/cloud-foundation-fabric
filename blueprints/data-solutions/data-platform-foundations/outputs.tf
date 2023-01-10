@@ -25,12 +25,12 @@ output "bigquery-datasets" {
 }
 
 output "demo_commands" {
-  description = "Demo commands."
+  description = "Demo commands. Relevant only if Composer is deployed."
   value = {
     01 = "gsutil -i ${module.drop-sa-cs-0.email} cp demo/data/*.csv gs://${module.drop-cs-0.name}"
-    02 = "gsutil -i ${module.orch-sa-cmp-0.email} cp demo/data/*.j* gs://${module.orch-cs-0.name}"
-    03 = "gsutil -i ${module.orch-sa-cmp-0.email} cp demo/*.py ${google_composer_environment.orch-cmp-0.config[0].dag_gcs_prefix}/"
-    04 = "Open ${google_composer_environment.orch-cmp-0.config.0.airflow_uri} and run uploaded DAG."
+    02 = try("gsutil -i ${module.orch-sa-cmp-0.email} cp demo/data/*.j* gs://${module.orch-cs-0.name}", "Composer not deployed.")
+    03 = try("gsutil -i ${module.orch-sa-cmp-0.email} cp demo/*.py ${google_composer_environment.orch-cmp-0[0].config[0].dag_gcs_prefix}/", "Composer not deployed")
+    04 = try("Open ${google_composer_environment.orch-cmp-0[0].config.0.airflow_uri} and run uploaded DAG.", "Composer not deployed")
     05 = <<EOT
            bq query --project_id=${module.dwh-conf-project.project_id} --use_legacy_sql=false 'SELECT * EXCEPT (name, surname) FROM `${module.dwh-conf-project.project_id}.${module.dwh-conf-bq-0.dataset_id}.customer_purchase` LIMIT 1000'"
          EOT
