@@ -1,0 +1,54 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_firewall.custom-rules["allow-healthchecks"]:
+    allow:
+      - ports:
+          - "80"
+          - "443"
+        protocol: tcp
+    deny: []
+    description: Allow ingress from healthchecks.
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-healthchecks
+    network: test-network
+    priority: 1000
+    project: test-project
+    source_ranges:
+      - 130.211.0.0/22
+      - 209.85.152.0/22
+      - 209.85.204.0/22
+      - 35.191.0.0/16
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags:
+      - lb-backends
+    timeouts: null
+
+counts:
+  google_compute_firewall: 1
+  modules: 0
+  resources: 1
+
+outputs:
+  default_rules:
+    admin: []
+    http: []
+    https: []
+    ssh: []
+  rules: __missing__

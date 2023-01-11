@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 output "custom_role_id" {
   description = "Map of custom role IDs created in the organization."
   value = {
@@ -43,6 +42,26 @@ output "firewall_policy_id" {
   value       = { for k, v in google_compute_firewall_policy.policy : k => v.id }
 }
 
+output "network_tag_keys" {
+  description = "Tag key resources."
+  value = {
+    for k, v in google_tags_tag_key.default : k => v if(
+      v.purpose != null && v.purpose != ""
+    )
+  }
+}
+
+output "network_tag_values" {
+  description = "Tag value resources."
+  value = {
+    for k, v in google_tags_tag_value.default
+    : k => v if(
+      google_tags_tag_key.default[split("/", k)[0]].purpose != null &&
+      google_tags_tag_key.default[split("/", k)[0]].purpose != ""
+    )
+  }
+}
+
 output "organization_id" {
   description = "Organization id dependent on module resources."
   value       = var.organization_id
@@ -52,8 +71,7 @@ output "organization_id" {
     google_organization_iam_custom_role.roles,
     google_organization_iam_member.additive,
     google_organization_iam_policy.authoritative,
-    google_organization_policy.boolean,
-    google_organization_policy.list,
+    google_org_policy_policy.default,
     google_tags_tag_key.default,
     google_tags_tag_key_iam_binding.default,
     google_tags_tag_value.default,
@@ -72,13 +90,19 @@ output "sink_writer_identities" {
 output "tag_keys" {
   description = "Tag key resources."
   value = {
-    for k, v in google_tags_tag_key.default : k => v
+    for k, v in google_tags_tag_key.default : k => v if(
+      v.purpose == null || v.purpose == ""
+    )
   }
 }
 
 output "tag_values" {
   description = "Tag value resources."
   value = {
-    for k, v in google_tags_tag_value.default : k => v
+    for k, v in google_tags_tag_value.default
+    : k => v if(
+      google_tags_tag_key.default[split("/", k)[0]].purpose == null ||
+      google_tags_tag_key.default[split("/", k)[0]].purpose == ""
+    )
   }
 }

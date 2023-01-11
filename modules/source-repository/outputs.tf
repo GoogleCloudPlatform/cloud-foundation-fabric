@@ -19,6 +19,11 @@ output "id" {
   value       = google_sourcerepo_repository.default.id
 }
 
+output "name" {
+  description = "Repository name."
+  value       = google_sourcerepo_repository.default.name
+}
+
 output "url" {
   description = "Repository URL."
   value       = google_sourcerepo_repository.default.url

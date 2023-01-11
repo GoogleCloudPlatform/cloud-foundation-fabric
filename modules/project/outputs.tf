@@ -26,8 +26,7 @@ output "name" {
   description = "Project name."
   value       = local.project.name
   depends_on = [
-    google_project_organization_policy.boolean,
-    google_project_organization_policy.list,
+    google_org_policy_policy.default,
     google_project_service.project_services,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
@@ -39,12 +38,16 @@ output "number" {
   description = "Project number."
   value       = local.project.number
   depends_on = [
-    google_project_organization_policy.boolean,
-    google_project_organization_policy.list,
+    google_org_policy_policy.default,
     google_project_service.project_services,
+    google_compute_shared_vpc_host_project.shared_vpc_host,
+    google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek
+    google_kms_crypto_key_iam_member.service_identity_cmek,
+    google_project_service_identity.jit_si,
+    google_project_service_identity.servicenetworking,
+    google_project_iam_member.servicenetworking
   ]
 }
 
@@ -54,12 +57,14 @@ output "project_id" {
   depends_on = [
     google_project.project,
     data.google_project.project,
-    google_project_organization_policy.boolean,
-    google_project_organization_policy.list,
+    google_org_policy_policy.default,
     google_project_service.project_services,
+    google_compute_shared_vpc_host_project.shared_vpc_host,
+    google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
     google_kms_crypto_key_iam_member.service_identity_cmek,
+    google_project_service_identity.jit_si,
     google_project_service_identity.servicenetworking,
     google_project_iam_member.servicenetworking
   ]

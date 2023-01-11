@@ -12,11 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "revision_annotations" {
+  description = "Configure revision template annotations."
+  type        = any
+  default     = null
+}
+
+variable "vpc_connector_create" {
+  description = "Populate this to create a VPC connector. You can then refer to it in the template annotations."
+  type        = any
+  default     = null
+}
+
 module "cloud_run" {
-  source        = "../../../../modules/cloud-run"
-  project_id    = "my-project"
-  name          = "hello"
-  revision_name = "blue"
+  source     = "../../../../modules/cloud-run"
+  project_id = "my-project"
+  name       = "hello"
+  audit_log_triggers = [
+    {
+      "service_name" : "cloudresourcemanager.googleapis.com",
+      "method_name" : "SetIamPolicy"
+    }
+  ]
   containers = [{
     image         = "us-docker.pkg.dev/cloudrun/container/hello"
     options       = null
@@ -24,17 +41,14 @@ module "cloud_run" {
     resources     = null
     volume_mounts = null
   }]
-  audit_log_triggers = [
-    {
-      "service_name" : "cloudresourcemanager.googleapis.com",
-      "method_name" : "SetIamPolicy"
-    }
-  ]
+  iam = {
+    "roles/run.invoker" = ["allUsers"]
+  }
   pubsub_triggers = [
     "topic1",
     "topic2"
   ]
-  iam = {
-    "roles/run.invoker" = ["allUsers"]
-  }
+  revision_name        = "blue"
+  revision_annotations = var.revision_annotations
+  vpc_connector_create = var.vpc_connector_create
 }

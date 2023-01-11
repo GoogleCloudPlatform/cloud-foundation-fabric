@@ -6,7 +6,7 @@ Simple Cloud NAT management, with optional router creation.
 
 ```hcl
 module "nat" {
-  source         = "./modules/net-cloudnat"
+  source         = "./fabric/modules/net-cloudnat"
   project_id     = "my-project"
   region         = "europe-west1"
   name           = "default"

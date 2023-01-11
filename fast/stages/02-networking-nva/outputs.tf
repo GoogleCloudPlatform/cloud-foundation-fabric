@@ -38,13 +38,19 @@ locals {
   }
 }
 
-# optionally generate tfvars file for subsequent stages
+# generate tfvars file for subsequent stages
 
 resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/tfvars/02-networking.auto.tfvars.json"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/tfvars/02-networking.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
+}
+
+resource "google_storage_bucket_object" "tfvars" {
+  bucket  = var.automation.outputs_bucket
+  name    = "tfvars/02-networking.auto.tfvars.json"
+  content = jsonencode(local.tfvars)
 }
 
 # outputs
@@ -64,6 +70,12 @@ output "shared_vpc_self_links" {
   value       = local.vpc_self_links
 }
 
+output "tfvars" {
+  description = "Terraform variables file for the following stages."
+  sensitive   = true
+  value       = local.tfvars
+}
+
 output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
   value = local.enable_onprem_vpn == false ? null : {
@@ -76,10 +88,4 @@ output "vpn_gateway_endpoints" {
       v.id => v.ip_address
     }
   }
-}
-
-output "tfvars" {
-  description = "Terraform variables file for the following stages."
-  sensitive   = true
-  value       = local.tfvars
 }

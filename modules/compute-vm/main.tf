@@ -17,7 +17,7 @@
 locals {
   attached_disks = {
     for disk in var.attached_disks :
-    disk.name => merge(disk, {
+    (disk.name != null ? disk.name : disk.device_name) => merge(disk, {
       options = disk.options == null ? var.attached_disk_defaults : disk.options
     })
   }
@@ -30,7 +30,7 @@ locals {
     k => v if try(v.options.replica_zone, null) == null
   }
   on_host_maintenance = (
-    var.options.preemptible || var.confidential_compute
+    var.options.spot || var.confidential_compute
     ? "TERMINATE"
     : "MIGRATE"
   )
@@ -60,13 +60,7 @@ locals {
       ]
     )
   )
-
-  network_interface_options = {
-    for i, v in var.network_interfaces : i => lookup(var.network_interface_options, i, {
-      alias_ips = null,
-      nic_type  = null
-    })
-  }
+  termination_action = var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
 }
 
 resource "google_compute_disk" "disks" {
@@ -144,7 +138,7 @@ resource "google_compute_instance" "default" {
     for_each = local.attached_disks_zonal
     iterator = config
     content {
-      device_name = config.value.name
+      device_name = config.value.device_name != null ? config.value.device_name : config.value.name
       mode        = config.value.options.mode
       source = (
         config.value.source_type == "attach"
@@ -158,7 +152,7 @@ resource "google_compute_instance" "default" {
     for_each = local.attached_disks_regional
     iterator = config
     content {
-      device_name = config.value.name
+      device_name = config.value.device_name != null ? config.value.device_name : config.value.name
       mode        = config.value.options.mode
       source = (
         config.value.source_type == "attach"
@@ -169,7 +163,7 @@ resource "google_compute_instance" "default" {
   }
 
   boot_disk {
-    auto_delete = var.boot_disk_delete
+    auto_delete = var.boot_disk.auto_delete
     initialize_params {
       type  = var.boot_disk.type
       image = var.boot_disk.image
@@ -200,21 +194,23 @@ resource "google_compute_instance" "default" {
         }
       }
       dynamic "alias_ip_range" {
-        for_each = local.network_interface_options[config.key].alias_ips != null ? local.network_interface_options[config.key].alias_ips : {}
+        for_each = config.value.alias_ips
         iterator = config_alias
         content {
           subnetwork_range_name = config_alias.key
           ip_cidr_range         = config_alias.value
         }
       }
-      nic_type = local.network_interface_options[config.key].nic_type
+      nic_type = config.value.nic_type
     }
   }
 
   scheduling {
-    automatic_restart   = !var.options.preemptible
-    on_host_maintenance = local.on_host_maintenance
-    preemptible         = var.options.preemptible
+    automatic_restart           = !var.options.spot
+    instance_termination_action = local.termination_action
+    on_host_maintenance         = local.on_host_maintenance
+    preemptible                 = var.options.spot
+    provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
   }
 
   dynamic "scratch_disk" {
@@ -270,7 +266,7 @@ resource "google_compute_instance_template" "default" {
   labels           = var.labels
 
   disk {
-    auto_delete  = var.boot_disk_delete
+    auto_delete  = var.boot_disk.auto_delete
     boot         = true
     disk_size_gb = var.boot_disk.size
     disk_type    = var.boot_disk.type
@@ -288,8 +284,8 @@ resource "google_compute_instance_template" "default" {
     for_each = local.attached_disks
     iterator = config
     content {
-      # auto_delete = config.value.options.auto_delete
-      device_name = config.value.name
+      auto_delete = config.value.options.auto_delete
+      device_name = config.value.device_name != null ? config.value.device_name : config.value.name
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
       disk_type = (
@@ -309,6 +305,12 @@ resource "google_compute_instance_template" "default" {
         config.value.source_type != "attach" ? config.value.name : null
       )
       type = "PERSISTENT"
+      dynamic "disk_encryption_key" {
+        for_each = var.encryption != null ? [""] : []
+        content {
+          kms_key_self_link = var.encryption.kms_key_self_link
+        }
+      }
     }
   }
 
@@ -326,26 +328,38 @@ resource "google_compute_instance_template" "default" {
         }
       }
       dynamic "alias_ip_range" {
-        for_each = local.network_interface_options[config.key].alias_ips != null ? local.network_interface_options[config.key].alias_ips : {}
+        for_each = config.value.alias_ips
         iterator = config_alias
         content {
           subnetwork_range_name = config_alias.key
           ip_cidr_range         = config_alias.value
         }
       }
-      nic_type = local.network_interface_options[config.key].nic_type
+      nic_type = config.value.nic_type
     }
   }
 
   scheduling {
-    automatic_restart   = !var.options.preemptible
-    on_host_maintenance = local.on_host_maintenance
-    preemptible         = var.options.preemptible
+    automatic_restart           = !var.options.spot
+    instance_termination_action = local.termination_action
+    on_host_maintenance         = local.on_host_maintenance
+    preemptible                 = var.options.spot
+    provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
   }
 
   service_account {
     email  = local.service_account_email
     scopes = local.service_account_scopes
+  }
+
+  dynamic "shielded_instance_config" {
+    for_each = var.shielded_config != null ? [var.shielded_config] : []
+    iterator = config
+    content {
+      enable_secure_boot          = config.value.enable_secure_boot
+      enable_vtpm                 = config.value.enable_vtpm
+      enable_integrity_monitoring = config.value.enable_integrity_monitoring
+    }
   }
 
   lifecycle {

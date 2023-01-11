@@ -15,7 +15,7 @@ Send a notification to an email when a set of projects reach $100 of spend.
 
 ```hcl
 module "budget" {
-  source          = "./modules/billing-budget"
+  source          = "./fabric/modules/billing-budget"
   billing_account = var.billing_account_id
   name            = "$100 budget"
   amount          = 100
@@ -29,7 +29,7 @@ module "budget" {
   ]
   email_recipients = {
     project_id = "my-project"
-    emails     =  ["user@example.com"]
+    emails     = ["user@example.com"]
   }
 }
 # tftest modules=1 resources=2
@@ -42,7 +42,7 @@ Send a notification to a PubSub topic the total spend of a billing account reach
 
 ```hcl
 module "budget" {
-  source          = "./modules/billing-budget"
+  source          = "./fabric/modules/billing-budget"
   billing_account = var.billing_account_id
   name            = "previous period budget"
   amount          = 0
@@ -54,7 +54,7 @@ module "budget" {
 }
 
 module "pubsub" {
-  source     = "./modules/pubsub"
+  source     = "./fabric/modules/pubsub"
   project_id = var.project_id
   name       = "budget-topic"
 }

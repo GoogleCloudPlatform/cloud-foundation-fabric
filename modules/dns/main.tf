@@ -15,10 +15,41 @@
  */
 
 locals {
-  _recordsets = var.recordsets == null ? {} : var.recordsets
-  recordsets = {
-    for key, attrs in local._recordsets :
+  # split record name and type and set as keys in a map
+  _recordsets_0 = {
+    for key, attrs in var.recordsets :
     key => merge(attrs, zipmap(["type", "name"], split(" ", key)))
+  }
+  # compute the final resource name for the recordset
+  _recordsets = {
+    for key, attrs in local._recordsets_0 :
+    key => merge(attrs, {
+      resource_name = (
+        attrs.name == ""
+        ? var.domain
+        : (
+          substr(attrs.name, -1, 1) == "."
+          ? attrs.name
+          : "${attrs.name}.${var.domain}"
+        )
+      )
+    })
+  }
+  # split recordsets between regular, geo and wrr
+  geo_recordsets = {
+    for k, v in local._recordsets :
+    k => v
+    if v.geo_routing != null
+  }
+  regular_recordsets = {
+    for k, v in local._recordsets :
+    k => v
+    if v.records != null
+  }
+  wrr_recordsets = {
+    for k, v in local._recordsets :
+    k => v
+    if v.wrr_routing != null
   }
   zone = (
     var.zone_create
@@ -35,13 +66,14 @@ locals {
 }
 
 resource "google_dns_managed_zone" "non-public" {
-  count       = (var.zone_create && var.type != "public") ? 1 : 0
-  provider    = google-beta
-  project     = var.project_id
-  name        = var.name
-  dns_name    = var.domain
-  description = var.description
-  visibility  = "private"
+  count          = (var.zone_create && var.type != "public") ? 1 : 0
+  provider       = google-beta
+  project        = var.project_id
+  name           = var.name
+  dns_name       = var.domain
+  description    = var.description
+  visibility     = "private"
+  reverse_lookup = (var.type == "reverse-managed")
 
   dynamic "forwarding_config" {
     for_each = (
@@ -103,8 +135,9 @@ resource "google_dns_managed_zone" "non-public" {
 }
 
 data "google_dns_managed_zone" "public" {
-  count = var.zone_create ? 0 : 1
-  name  = var.name
+  count   = var.zone_create ? 0 : 1
+  project = var.project_id
+  name    = var.name
 }
 
 resource "google_dns_managed_zone" "public" {
@@ -116,24 +149,25 @@ resource "google_dns_managed_zone" "public" {
   visibility  = "public"
 
   dynamic "dnssec_config" {
-    for_each = var.dnssec_config == {} ? [] : tolist([var.dnssec_config])
+    for_each = var.dnssec_config == null ? [] : [1]
     iterator = config
     content {
-      kind          = lookup(config.value, "kind", "dns#managedZoneDnsSecConfig")
-      non_existence = lookup(config.value, "non_existence", "nsec3")
-      state         = lookup(config.value, "state", "off")
+      kind          = "dns#managedZoneDnsSecConfig"
+      non_existence = var.dnssec_config.non_existence
+      state         = var.dnssec_config.state
 
       default_key_specs {
-        algorithm  = lookup(var.default_key_specs_key, "algorithm", "rsasha256")
-        key_length = lookup(var.default_key_specs_key, "key_length", 2048)
-        key_type   = lookup(var.default_key_specs_key, "key_type", "keySigning")
-        kind       = lookup(var.default_key_specs_key, "kind", "dns#dnsKeySpec")
+        algorithm  = var.dnssec_config.key_signing_key.algorithm
+        key_length = var.dnssec_config.key_signing_key.key_length
+        key_type   = "keySigning"
+        kind       = "dns#dnsKeySpec"
       }
+
       default_key_specs {
-        algorithm  = lookup(var.default_key_specs_zone, "algorithm", "rsasha256")
-        key_length = lookup(var.default_key_specs_zone, "key_length", 1024)
-        key_type   = lookup(var.default_key_specs_zone, "key_type", "zoneSigning")
-        kind       = lookup(var.default_key_specs_zone, "kind", "dns#dnsKeySpec")
+        algorithm  = var.dnssec_config.zone_signing_key.algorithm
+        key_length = var.dnssec_config.zone_signing_key.key_length
+        key_type   = "zoneSigning"
+        kind       = "dns#dnsKeySpec"
       }
     }
   }
@@ -148,23 +182,72 @@ data "google_dns_keys" "dns_keys" {
 resource "google_dns_record_set" "cloud-static-records" {
   for_each = (
     var.type == "public" || var.type == "private"
-    ? local.recordsets
+    ? local.regular_recordsets
     : {}
   )
   project      = var.project_id
   managed_zone = var.name
-  name = (
-    each.value.name == ""
-    ? var.domain
-    : (
-      substr(each.value.name, -1, 1) == "."
-      ? each.value.name
-      : "${each.value.name}.${var.domain}"
-    )
+  name         = each.value.resource_name
+  type         = each.value.type
+  ttl          = each.value.ttl
+  rrdatas      = each.value.records
+
+  depends_on = [
+    google_dns_managed_zone.non-public, google_dns_managed_zone.public
+  ]
+}
+
+resource "google_dns_record_set" "cloud-geo-records" {
+  for_each = (
+    var.type == "public" || var.type == "private"
+    ? local.geo_recordsets
+    : {}
   )
-  type    = each.value.type
-  ttl     = each.value.ttl
-  rrdatas = each.value.records
+  project      = var.project_id
+  managed_zone = var.name
+  name         = each.value.resource_name
+  type         = each.value.type
+  ttl          = each.value.ttl
+
+  routing_policy {
+    dynamic "geo" {
+      for_each = each.value.geo_routing
+      iterator = policy
+      content {
+        location = policy.value.location
+        rrdatas  = policy.value.records
+      }
+    }
+  }
+
+  depends_on = [
+    google_dns_managed_zone.non-public, google_dns_managed_zone.public
+  ]
+}
+
+resource "google_dns_record_set" "cloud-wrr-records" {
+  for_each = (
+    var.type == "public" || var.type == "private"
+    ? local.wrr_recordsets
+    : {}
+  )
+  project      = var.project_id
+  managed_zone = var.name
+  name         = each.value.resource_name
+  type         = each.value.type
+  ttl          = each.value.ttl
+
+  routing_policy {
+    dynamic "wrr" {
+      for_each = each.value.wrr_routing
+      iterator = policy
+      content {
+        weight  = policy.value.weight
+        rrdatas = policy.value.records
+      }
+    }
+  }
+
   depends_on = [
     google_dns_managed_zone.non-public, google_dns_managed_zone.public
   ]

@@ -22,18 +22,7 @@ variable "client_networks" {
   description = "List of VPC self links that can see this zone."
   type        = list(string)
   default     = []
-}
-
-variable "default_key_specs_key" {
-  description = "DNSSEC default key signing specifications: algorithm, key_length, key_type, kind."
-  type        = any
-  default     = {}
-}
-
-variable "default_key_specs_zone" {
-  description = "DNSSEC default zone signing specifications: algorithm, key_length, key_type, kind."
-  type        = any
-  default     = {}
+  nullable    = false
 }
 
 variable "description" {
@@ -43,14 +32,35 @@ variable "description" {
 }
 
 variable "dnssec_config" {
-  description = "DNSSEC configuration: kind, non_existence, state."
-  type        = any
-  default     = {}
+  description = "DNSSEC configuration for this zone."
+  type = object({
+    non_existence = optional(string, "nsec3")
+    state         = string
+    key_signing_key = optional(object(
+      { algorithm = string, key_length = number }),
+      { algorithm = "rsasha256", key_length = 2048 }
+    )
+    zone_signing_key = optional(object(
+      { algorithm = string, key_length = number }),
+      { algorithm = "rsasha256", key_length = 1024 }
+    )
+  })
+  default = {
+    state = "off"
+  }
+  nullable = false
 }
 
 variable "domain" {
   description = "Zone domain, must end with a period."
   type        = string
+}
+
+variable "enable_logging" {
+  description = "Enable query logging for this zone. Only valid for public zones."
+  type        = bool
+  default     = false
+  nullable    = false
 }
 
 variable "forwarders" {
@@ -78,16 +88,35 @@ variable "project_id" {
 variable "recordsets" {
   description = "Map of DNS recordsets in \"type name\" => {ttl, [records]} format."
   type = map(object({
-    ttl     = number
-    records = list(string)
+    ttl     = optional(number, 300)
+    records = optional(list(string))
+    geo_routing = optional(list(object({
+      location = string
+      records  = list(string)
+    })))
+    wrr_routing = optional(list(object({
+      weight  = number
+      records = list(string)
+    })))
   }))
-  default = {}
+  default  = {}
+  nullable = false
   validation {
     condition = alltrue([
-      for k, v in var.recordsets == null ? {} : var.recordsets :
+      for k, v in coalesce(var.recordsets, {}) :
       length(split(" ", k)) == 2
     ])
     error_message = "Recordsets must have keys in the format \"type name\"."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.recordsets, {}) : (
+        (v.records != null && v.wrr_routing == null && v.geo_routing == null) ||
+        (v.records == null && v.wrr_routing != null && v.geo_routing == null) ||
+        (v.records == null && v.wrr_routing == null && v.geo_routing != null)
+      )
+    ])
+    error_message = "Only one of records, wrr_routing or geo_routing can be defined for each recordset."
   }
 }
 
@@ -98,12 +127,12 @@ variable "service_directory_namespace" {
 }
 
 variable "type" {
-  description = "Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'."
+  description = "Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory','reverse-managed'."
   type        = string
   default     = "private"
   validation {
-    condition     = contains(["public", "private", "forwarding", "peering", "service-directory"], var.type)
-    error_message = "Zone must be one of 'public', 'private', 'forwarding', 'peering', 'service-directory'."
+    condition     = contains(["public", "private", "forwarding", "peering", "service-directory", "reverse-managed"], var.type)
+    error_message = "Zone must be one of 'public', 'private', 'forwarding', 'peering', 'service-directory','reverse-managed'."
   }
 }
 

@@ -25,6 +25,7 @@ locals {
     "dataflow" : ["dataflow", "compute"]
   }
   _service_accounts_robot_services = {
+    apigee            = "service-%s@gcp-sa-apigee"
     artifactregistry  = "service-%s@gcp-sa-artifactregistry"
     bq                = "bq-%s@bigquery-encryption"
     cloudasset        = "service-%s@gcp-sa-cloudasset"
@@ -37,12 +38,18 @@ locals {
     containerregistry = "service-%s@containerregistry"
     dataflow          = "service-%s@dataflow-service-producer-prod"
     dataproc          = "service-%s@dataproc-accounts"
+    fleet             = "service-%s@gcp-sa-gkehub"
     gae-flex          = "service-%s@gae-api-prod"
     # TODO: deprecate gcf
-    gcf           = "service-%s@gcf-admin-robot"
-    pubsub        = "service-%s@gcp-sa-pubsub"
-    secretmanager = "service-%s@gcp-sa-secretmanager"
-    storage       = "service-%s@gs-project-accounts"
+    gcf = "service-%s@gcf-admin-robot"
+    # TODO: jit?
+    gke-mcs                  = "service-%s@gcp-sa-mcsd"
+    monitoring-notifications = "service-%s@gcp-sa-monitoring-notification"
+    pubsub                   = "service-%s@gcp-sa-pubsub"
+    secretmanager            = "service-%s@gcp-sa-secretmanager"
+    sql                      = "service-%s@gcp-sa-cloud-sql"
+    sqladmin                 = "service-%s@gcp-sa-cloud-sql"
+    storage                  = "service-%s@gs-project-accounts"
   }
   service_accounts_default = {
     compute = "${local.project.number}-compute@developer.gserviceaccount.com"
@@ -51,14 +58,23 @@ locals {
   service_account_cloud_services = (
     "${local.project.number}@cloudservices.gserviceaccount.com"
   )
-  service_accounts_robots = {
-    for k, v in local._service_accounts_robot_services :
-    k => "${format(v, local.project.number)}.iam.gserviceaccount.com"
-  }
+  service_accounts_robots = merge(
+    {
+      for k, v in local._service_accounts_robot_services :
+      k => "${format(v, local.project.number)}.iam.gserviceaccount.com"
+    },
+    {
+      gke-mcs-importer = "${local.project.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]"
+    }
+  )
   service_accounts_jit_services = [
-    "secretmanager.googleapis.com",
+    "apigee.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "cloudasset.googleapis.com",
+    "gkehub.googleapis.com",
     "pubsub.googleapis.com",
-    "cloudasset.googleapis.com"
+    "secretmanager.googleapis.com",
+    "sqladmin.googleapis.com"
   ]
   service_accounts_cmek_service_keys = distinct(flatten([
     for s in keys(var.service_encryption_key_ids) : [
@@ -125,4 +141,12 @@ resource "google_kms_crypto_key_iam_member" "service_identity_cmek" {
     data.google_project.project,
     data.google_storage_project_service_account.gcs_sa,
   ]
+}
+
+resource "google_project_default_service_accounts" "default_service_accounts" {
+  count          = upper(var.default_service_account) == "KEEP" ? 0 : 1
+  action         = upper(var.default_service_account)
+  project        = local.project.project_id
+  restore_policy = "REVERT_AND_IGNORE_FAILURE"
+  depends_on     = [google_project_service.project_services]
 }

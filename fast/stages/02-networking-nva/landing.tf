@@ -22,10 +22,6 @@ module "landing-project" {
   name            = "prod-net-landing-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  service_config = {
-    disable_on_destroy         = false
-    disable_dependent_services = false
-  }
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",
@@ -34,14 +30,15 @@ module "landing-project" {
     "stackdriver.googleapis.com"
   ]
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
   iam = {
-    "roles/dns.admin" = [local.service_accounts.project-factory-prod]
-    (local.custom_roles.service_project_network_admin) = [
-      local.service_accounts.project-factory-prod
-    ]
+    "roles/dns.admin" = compact([
+      try(local.service_accounts.project-factory-prod, null)
+    ])
+    (local.custom_roles.service_project_network_admin) = compact([
+      try(local.service_accounts.project-factory-prod, null)
+    ])
   }
 }
 
@@ -52,26 +49,24 @@ module "landing-untrusted-vpc" {
   project_id = module.landing-project.project_id
   name       = "prod-untrusted-landing-0"
   mtu        = 1500
-
   dns_policy = {
-    inbound  = false
-    logging  = false
-    outbound = null
+    inbound = false
+    logging = false
   }
-
   data_folder = "${var.data_dir}/subnets/landing-untrusted"
 }
 
 module "landing-untrusted-firewall" {
-  source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.landing-project.project_id
-  network             = module.landing-untrusted-vpc.name
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/landing-untrusted"
-  cidr_template_file  = "${var.data_dir}/cidrs.yaml"
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.landing-untrusted-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.data_dir}/firewall-rules/landing-untrusted"
+  }
 }
 
 # NAT
@@ -111,37 +106,32 @@ module "landing-trusted-vpc" {
   routes = {
     private-googleapis = {
       dest_range    = "199.36.153.8/30"
-      priority      = 1000
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
     restricted-googleapis = {
       dest_range    = "199.36.153.4/30"
-      priority      = 1000
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
   }
 
   dns_policy = {
-    inbound  = true
-    logging  = false
-    outbound = null
+    inbound = true
   }
 
   data_folder = "${var.data_dir}/subnets/landing-trusted"
 }
 
 module "landing-trusted-firewall" {
-  source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.landing-project.project_id
-  network             = module.landing-trusted-vpc.name
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/landing-trusted"
-  cidr_template_file  = "${var.data_dir}/cidrs.yaml"
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.landing-trusted-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.data_dir}/firewall-rules/landing-trusted"
+  }
 }

@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+variable "automation" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Automation resources created by the bootstrap stage."
+  type = object({
+    outputs_bucket = string
+  })
+}
+
 variable "billing_account" {
   # tfdoc:variable:source 00-bootstrap
   description = "Billing account id and organization id ('nnnnnnnn' or null)."
@@ -155,6 +163,15 @@ variable "psa_ranges" {
   # }
 }
 
+variable "region_trigram" {
+  description = "Short names for GCP regions."
+  type        = map(string)
+  default = {
+    europe-west1 = "ew1"
+    europe-west3 = "ew3"
+  }
+}
+
 variable "router_onprem_configs" {
   description = "Configurations for routers used for onprem connectivity."
   type = map(object({
@@ -179,6 +196,8 @@ variable "service_accounts" {
   type = object({
     data-platform-dev    = string
     data-platform-prod   = string
+    gke-dev              = string
+    gke-prod             = string
     project-factory-dev  = string
     project-factory-prod = string
   })
@@ -194,10 +213,7 @@ variable "vpn_onprem_configs" {
     })
     peer_external_gateway = object({
       redundancy_type = string
-      interfaces = list(object({
-        id         = number
-        ip_address = string
-      }))
+      interfaces      = list(string)
     })
     tunnels = list(object({
       peer_asn                        = number
@@ -217,9 +233,7 @@ variable "vpn_onprem_configs" {
       }
       peer_external_gateway = {
         redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
-        interfaces = [
-          { id = 0, ip_address = "8.8.8.8" },
-        ]
+        interfaces      = ["8.8.8.8"]
       }
       tunnels = [
         {

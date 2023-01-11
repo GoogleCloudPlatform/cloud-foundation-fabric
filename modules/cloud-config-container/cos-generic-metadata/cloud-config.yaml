@@ -44,23 +44,20 @@ write_files:
       After=gcr-online.target docker.socket
       Wants=gcr-online.target docker.socket docker-events-collector.service
       [Service]
-%{ if authenticate_gcr && length(users) > 0 ~}
+      %{~ if authenticate_gcr && length(users) > 0 ~}
       Environment="HOME=/home/${users[0].username}"
       ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
-%{ endif ~}
-      ExecStart=/usr/bin/docker run --rm --name=${container_name}  \
-%{ if length(users) > 0 ~}
+      %{~ endif ~}
+      ExecStart=/usr/bin/docker run --rm --name=${container_name} \
+      %{~ if length(users) > 0 && run_as_first_user ~}
         --user=${users[0].uid} \
-%{ endif ~}
-%{ if gcp_logging == true ~}
-        --log-driver=gcplogs \
-%{ endif ~}
-%{ if docker_args != null ~}
+      %{~ endif ~}
+      %{~ if docker_args != null ~}
         ${docker_args} \
-%{ endif ~}
-%{ for volume in container_volumes ~}
+      %{~ endif ~}
+      %{~ for volume in container_volumes ~}
         -v ${volume.host}:${volume.container} \
-%{ endfor ~}
+      %{~ endfor ~}
         ${container_image} ${container_args}
       ExecStop=/usr/bin/docker stop ${container_name}
 %{ for path, data in files ~}

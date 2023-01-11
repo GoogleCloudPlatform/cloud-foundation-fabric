@@ -17,6 +17,15 @@
 # tfdoc:file:description IAM bindings.
 
 locals {
+  _iam_additive_pairs = flatten([
+    for role, members in var.iam_additive : [
+      for member in members : { role = role, member = member }
+    ]
+  ])
+  iam_additive = {
+    for pair in local._iam_additive_pairs :
+    "${pair.role}-${pair.member}" => pair
+  }
   iam_billing_pairs = flatten([
     for entity, roles in var.iam_billing_roles : [
       for role in roles : [
@@ -45,6 +54,13 @@ locals {
       ]
     ]
   ])
+  iam_sa_pairs = flatten([
+    for entity, roles in var.iam_sa_roles : [
+      for role in roles : [
+        { entity = entity, role = role }
+      ]
+    ]
+  ])
   iam_storage_pairs = flatten([
     for entity, roles in var.iam_storage_roles : [
       for role in roles : [
@@ -52,6 +68,13 @@ locals {
       ]
     ]
   ])
+}
+
+resource "google_service_account_iam_member" "roles" {
+  for_each           = local.iam_additive
+  service_account_id = local.service_account.name
+  role               = each.value.role
+  member             = each.value.member
 }
 
 resource "google_service_account_iam_binding" "roles" {
@@ -99,6 +122,16 @@ resource "google_project_iam_member" "project-roles" {
   project = each.value.entity
   role    = each.value.role
   member  = local.resource_iam_email
+}
+
+resource "google_service_account_iam_member" "additive" {
+  for_each = {
+    for pair in local.iam_sa_pairs :
+    "${pair.entity}-${pair.role}" => pair
+  }
+  service_account_id = each.value.entity
+  role               = each.value.role
+  member             = local.resource_iam_email
 }
 
 resource "google_storage_bucket_iam_member" "bucket-roles" {

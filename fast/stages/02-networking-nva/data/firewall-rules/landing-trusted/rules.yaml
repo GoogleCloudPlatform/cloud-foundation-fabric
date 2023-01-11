@@ -1,29 +1,19 @@
 # skip boilerplate check
 
-allow-hc-nva-ssh-trusted:
-  description: "Allow traffic from Google healthchecks to NVA appliances"
-  direction: INGRESS
-  action: allow
-  sources: []
-  ranges:
-    - $healthchecks
-  targets: []
-  use_service_accounts: false
-  rules:
-    - protocol: tcp
-      ports:
-        - 22
-
-allow-onprem-probes-trusted-example:
-  description: "Allow traffic from onprem probes"
-  direction: INGRESS
-  action: allow
-  sources: []
-  ranges:
-    - $onprem_probes
-  targets: []
-  use_service_accounts: false
-  rules:
-    - protocol: tcp
-      ports:
-        - 12345
+ingress:
+  allow-hc-nva-ssh-trusted:
+    description: "Allow traffic from Google healthchecks to NVA appliances"
+    source_ranges:
+      - healthchecks
+    rules:
+      - protocol: tcp
+        ports:
+          - 22
+  allow-onprem-probes-trusted-example:
+    description: "Allow traffic from onprem probes"
+    source_ranges:
+      - onprem_probes
+    rules:
+      - protocol: tcp
+        ports:
+          - 12345

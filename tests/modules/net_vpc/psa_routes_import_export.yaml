@@ -1,0 +1,60 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_global_address.psa_ranges["bar"]:
+    address: 172.16.100.0
+    address_type: INTERNAL
+    description: null
+    ip_version: null
+    name: bar
+    prefix_length: 24
+    project: test-project
+    purpose: VPC_PEERING
+  google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: test
+    project: test-project
+    routing_mode: GLOBAL
+  google_compute_network_peering_routes_config.psa_routes["1"]:
+    export_custom_routes: true
+    import_custom_routes: true
+    project: test-project
+  google_service_networking_connection.psa_connection["1"]:
+    reserved_peering_ranges:
+    - bar
+    service: servicenetworking.googleapis.com
+
+counts:
+  google_compute_global_address: 1
+  google_compute_network: 1
+  google_compute_network_peering_routes_config: 1
+  google_service_networking_connection: 1
+
+outputs:
+  bindings: {}
+  name: __missing__
+  network: __missing__
+  project_id: test-project
+  self_link: __missing__
+  subnet_ips: {}
+  subnet_regions: {}
+  subnet_secondary_ranges: {}
+  subnet_self_links: {}
+  subnets: {}
+  subnets_proxy_only: {}
+  subnets_psc: {}

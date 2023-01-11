@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+variable "bigquery_subscription_configs" {
+  description = "Configuration parameters for BigQuery subscriptions."
+  type = map(object({
+    table               = string
+    use_topic_schema    = bool
+    write_metadata      = bool
+    drop_unknown_fields = bool
+  }))
+  default = {}
+}
+
 variable "dead_letter_configs" {
   description = "Per-subscription dead letter policy configuration."
   type = map(object({
@@ -30,12 +41,14 @@ variable "defaults" {
     message_retention_duration = string
     retain_acked_messages      = bool
     expiration_policy_ttl      = string
+    filter                     = string
   })
   default = {
     ack_deadline_seconds       = null
     message_retention_duration = null
     retain_acked_messages      = null
     expiration_policy_ttl      = null
+    filter                     = null
   }
 }
 
@@ -55,6 +68,12 @@ variable "labels" {
   description = "Labels."
   type        = map(string)
   default     = {}
+}
+
+variable "message_retention_duration" {
+  description = "Minimum duration to retain a message after it is published to the topic."
+  type        = string
+  default     = null
 }
 
 variable "name" {
@@ -86,6 +105,16 @@ variable "regions" {
   default     = []
 }
 
+variable "schema" {
+  description = "Topic schema. If set, all messages in this topic should follow this schema."
+  type = object({
+    definition   = string
+    msg_encoding = optional(string, "ENCODING_UNSPECIFIED")
+    schema_type  = string
+  })
+  default = null
+}
+
 variable "subscription_iam" {
   description = "IAM bindings for subscriptions in {SUBSCRIPTION => {ROLE => [MEMBERS]}} format."
   type        = map(map(list(string)))
@@ -101,6 +130,7 @@ variable "subscriptions" {
       message_retention_duration = string
       retain_acked_messages      = bool
       expiration_policy_ttl      = string
+      filter                     = string
     })
   }))
   default = {}

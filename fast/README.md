@@ -20,6 +20,8 @@ From the perspective of FAST's overall design, stages also work as contacts or i
   <img src="stages.svg" alt="Stages diagram">
 </p>
 
+Please refer to the [stages](./stages/) section for further details on each stage.
+
 ### Security-first design
 
 Security was, from the beginning, one of the most critical elements in the design of Fabric FAST. Many of FAST's design decisions aim to build the foundations of a secure organization. In fact, the first two stages deal mainly with the organization-wide security setup.
@@ -32,10 +34,9 @@ A resource factory consumes a simple representation of a resource (e.g., in YAML
 
 FAST uses YAML-based factories to deploy subnets and firewall rules and, as its name suggests, in the [project factory](./stages/03-project-factory/) stage.
 
-## Stages and high level design
+### CI/CD
 
-As mentioned before, fast relies on multiple stages to progressively bring up your GCP organization(s).
-Please refer to the [stages](./stages/) section for further details.
+One of our objectives with FAST is to provide a lightweight reference design for the IaC repositories, and a built-in implementation for running our code in automated pipelines. Our CI/CD approach leverages [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation), and provides sample workflow configurations for several major providers. Refer to the [CI/CD section in the bootstrap stage](stages/00-bootstrap/README.md#cicd) for more details. We also provide separate [optional small stages](./extras/) to help you configure your CI/CD provider.
 
 ## Implementation
 
@@ -60,5 +61,5 @@ Besides the features already described, FAST roadmap includes:
 
 - Stage to deploy environment-specific multitenant GKE clusters following Google's best practices
 - Stage to deploy a fully featured data platform
-- Reference implementation to use FAST in CI/CD pipelines
+- Reference implementation to use FAST in CI/CD pipelines (in progress)
 - Static policy enforcement

@@ -70,7 +70,7 @@ OUT_RE = re.compile(r'''(?smx)
     # output open
     (?:^\s*output\s*"([^"]+)"\s*\{\s*$) |
     # attribute
-    (?:^\s{2}([a-z]+)\s*=\s*"?(.*?)"?\s*$) |
+    (?:^\n?\s{2}([a-z]+)\s*=\s*"?(.*?)"?\s*$) |
     # output close
     (?:^\s?(\})\s*$) |
     # comment
@@ -99,13 +99,13 @@ VAR_RE = re.compile(r'''(?smx)
 VAR_RE_TYPE = re.compile(r'([\(\{\}\)])')
 VAR_TEMPLATE = ('default', 'description', 'type', 'nullable')
 
+Document = collections.namedtuple('Document', 'content files variables outputs')
 File = collections.namedtuple('File', 'name description modules resources')
 Output = collections.namedtuple(
     'Output', 'name description sensitive consumers file line')
 Variable = collections.namedtuple(
     'Variable',
     'name description type default required nullable source file line')
-
 # parsing functions
 
 
@@ -206,7 +206,7 @@ def parse_variables(basepath, exclude_files=None):
     except (IOError, OSError) as e:
       raise SystemExit(f'Cannot open variables file {shortname}.')
     for item in _parse(body):
-      description = ''.join(item['description'])
+      description = (''.join(item['description'])).replace('|', '\\|')
       vtype = '\n'.join(item['type'])
       default = HEREDOC_RE.sub(r'\1', '\n'.join(item['default']))
       required = not item['default']
@@ -247,7 +247,7 @@ def format_doc(outputs, variables, files, show_extra=False):
 
 def format_files(items):
   'Format files table.'
-  items.sort(key=lambda i: i.name)
+  items = sorted(items, key=lambda i: i.name)
   num_modules = sum(len(i.modules) for i in items)
   num_resources = sum(len(i.resources) for i in items)
   yield '| name | description |{}{}'.format(
@@ -271,7 +271,7 @@ def format_outputs(items, show_extra=True):
   'Format outputs table.'
   if not items:
     return
-  items.sort(key=lambda i: i.name)
+  items = sorted(items, key=lambda i: i.name)
   yield '| name | description | sensitive |' + (' consumers |'
                                                 if show_extra else '')
   yield '|---|---|:---:|' + ('---|' if show_extra else '')
@@ -289,8 +289,7 @@ def format_variables(items, show_extra=True):
   'Format variables table.'
   if not items:
     return
-  items.sort(key=lambda i: i.name)
-  items.sort(key=lambda i: i.required, reverse=True)
+  items = sorted(items, key=lambda i: (not i.required, i.name))
   yield '| name | description | type | required | default |' + (
       ' producer |' if show_extra else '')
   yield '|---|---|:---:|:---:|:---:|' + (':---:|' if show_extra else '')
@@ -358,7 +357,8 @@ def create_doc(module_path, files=False, show_extra=False, exclude_files=None,
     mod_outputs = list(parse_outputs(module_path, exclude_files))
   except (IOError, OSError) as e:
     raise SystemExit(e)
-  return format_doc(mod_outputs, mod_variables, mod_files, show_extra)
+  doc = format_doc(mod_outputs, mod_variables, mod_files, show_extra)
+  return Document(doc, mod_files, mod_variables, mod_outputs)
 
 
 def get_readme(readme_path):
@@ -402,7 +402,7 @@ def main(module_path=None, exclude_file=None, files=False, replace=True,
   readme = get_readme(readme_path)
   doc = create_doc(module_path, files, show_extra, exclude_file, readme)
   if replace:
-    replace_doc(readme_path, doc, readme)
+    replace_doc(readme_path, doc.content, readme)
   else:
     print(doc)
 

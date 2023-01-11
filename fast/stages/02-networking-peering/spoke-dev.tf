@@ -22,10 +22,6 @@ module "dev-spoke-project" {
   name            = "dev-net-spoke-0"
   parent          = var.folder_ids.networking-dev
   prefix          = var.prefix
-  service_config = {
-    disable_on_destroy         = false
-    disable_dependent_services = false
-  }
   services = [
     "container.googleapis.com",
     "compute.googleapis.com",
@@ -36,36 +32,34 @@ module "dev-spoke-project" {
     "stackdriver.googleapis.com",
   ]
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
-    "roles/dns.admin" = [local.service_accounts.project-factory-dev]
+    "roles/dns.admin" = compact([
+      try(local.service_accounts.gke-dev, null),
+      try(local.service_accounts.project-factory-dev, null),
+    ])
   }
 }
 
 module "dev-spoke-vpc" {
-  source        = "../../../modules/net-vpc"
-  project_id    = module.dev-spoke-project.project_id
-  name          = "dev-spoke-0"
-  mtu           = 1500
-  data_folder   = "${var.data_dir}/subnets/dev"
-  psa_config    = try(var.psa_ranges.dev, null)
-  subnets_l7ilb = local.l7ilb_subnets.dev
+  source             = "../../../modules/net-vpc"
+  project_id         = module.dev-spoke-project.project_id
+  name               = "dev-spoke-0"
+  mtu                = 1500
+  data_folder        = "${var.data_dir}/subnets/dev"
+  psa_config         = try(var.psa_ranges.dev, null)
+  subnets_proxy_only = local.l7ilb_subnets.dev
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
       dest_range    = "199.36.153.8/30"
-      priority      = 1000
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
     restricted-googleapis = {
       dest_range    = "199.36.153.4/30"
-      priority      = 1000
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
@@ -73,15 +67,16 @@ module "dev-spoke-vpc" {
 }
 
 module "dev-spoke-firewall" {
-  source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.dev-spoke-project.project_id
-  network             = module.dev-spoke-vpc.name
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/dev"
-  cidr_template_file  = "${var.data_dir}/cidrs.yaml"
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.dev-spoke-project.project_id
+  network    = module.dev-spoke-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.data_dir}/firewall-rules/dev"
+  }
 }
 
 module "dev-spoke-cloudnat" {
@@ -89,7 +84,7 @@ module "dev-spoke-cloudnat" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.dev-spoke-project.project_id
   region         = each.value
-  name           = "dev-nat-${local.region_trigram[each.value]}"
+  name           = "dev-nat-${var.region_trigram[each.value]}"
   router_create  = true
   router_network = module.dev-spoke-vpc.name
   router_asn     = 4200001024
@@ -100,10 +95,11 @@ module "dev-spoke-cloudnat" {
 resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
   project = module.dev-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
-  members = [
-    local.service_accounts.data-platform-dev,
-    local.service_accounts.project-factory-dev,
-  ]
+  members = compact([
+    try(local.service_accounts.data-platform-dev, null),
+    try(local.service_accounts.project-factory-dev, null),
+    try(local.service_accounts.gke-dev, null),
+  ])
   condition {
     title       = "dev_stage3_sa_delegated_grants"
     description = "Development host project delegated grants."

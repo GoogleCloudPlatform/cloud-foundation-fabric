@@ -15,6 +15,11 @@
  */
 
 variable "bucket_name" {
-  type    = string
+  type    = any
   default = "test"
+}
+
+variable "v2" {
+  type    = any
+  default = false
 }

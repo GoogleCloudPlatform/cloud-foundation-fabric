@@ -12,7 +12,7 @@ See also the `logging_sinks` argument within the [project](../project/), [folder
 
 ```hcl
 module "bucket" {
-  source      = "./modules/logging-bucket"
+  source      = "./fabric/modules/logging-bucket"
   parent_type = "project"
   parent      = var.project_id
   id          = "mybucket"
@@ -25,13 +25,13 @@ module "bucket" {
 
 ```hcl
 module "folder" {
-  source = "./modules/folder"
+  source = "./fabric/modules/folder"
   parent = "folders/657104291943"
   name   = "my folder"
 }
 
 module "bucket-default" {
-  source      = "./modules/logging-bucket"
+  source      = "./fabric/modules/logging-bucket"
   parent_type = "folder"
   parent      = module.folder.id
   id          = "_Default"

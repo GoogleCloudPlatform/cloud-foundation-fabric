@@ -6,11 +6,11 @@ This module allows creating an API with its associated API config and API gatewa
 ## Basic example
 ```hcl
 module "gateway" {
-  source                = "./modules/api-gateway"
-  project_id            = "my-project"
-  api_id                = "api"
-  region                = "europe-west1"
-  spec                  = <<EOT
+  source     = "./fabric/modules/api-gateway"
+  project_id = "my-project"
+  api_id     = "api"
+  region     = "europe-west1"
+  spec       = <<EOT
   # The OpenAPI spec contents
   # ...
   EOT
@@ -21,7 +21,7 @@ module "gateway" {
 ## Basic example + customer service account
 ```hcl
 module "gateway" {
-  source                = "./modules/api-gateway"
+  source                = "./fabric/modules/api-gateway"
   project_id            = "my-project"
   api_id                = "api"
   region                = "europe-west1"
@@ -31,7 +31,7 @@ module "gateway" {
   EOT
   service_account_email = "sa@my-project.iam.gserviceaccount.com"
   iam = {
-    "roles/apigateway.admin" = [ "user:user@example.com" ]
+    "roles/apigateway.admin" = ["user:user@example.com"]
   }
 }
 # tftest modules=1 resources=7
@@ -40,18 +40,18 @@ module "gateway" {
 ## Basic example + service account creation
 ```hcl
 module "gateway" {
-  source                = "./modules/api-gateway"
-  project_id            = "my-project"
-  api_id                = "api"
-  region                = "europe-west1"
-  spec                  = <<EOT
+  source                 = "./fabric/modules/api-gateway"
+  project_id             = "my-project"
+  api_id                 = "api"
+  region                 = "europe-west1"
+  spec                   = <<EOT
   # The OpenAPI spec contents
   # ...
   EOT
   service_account_create = true
   iam = {
-    "roles/apigateway.admin" = [ "user:mirene@google.com" ]
-    "roles/apigateway.viewer" = [ "user:mirene@google.com" ]
+    "roles/apigateway.admin"  = ["user:mirene@google.com"]
+    "roles/apigateway.viewer" = ["user:mirene@google.com"]
   }
 }
 # tftest modules=1 resources=11
@@ -64,12 +64,12 @@ module "gateway" {
 |---|---|:---:|:---:|:---:|
 | [api_id](variables.tf#L17) | API identifier. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L34) | Project identifier. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L39) | Region | <code>string</code> | ✓ |  |
+| [region](variables.tf#L39) | Region. | <code>string</code> | ✓ |  |
 | [spec](variables.tf#L56) | String with the contents of the OpenAPI spec. | <code>string</code> | ✓ |  |
 | [iam](variables.tf#L22) | IAM bindings for the API in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
 | [labels](variables.tf#L28) | Map of labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L44) | Flag indicating whether a service account needs to be created | <code>bool</code> |  | <code>false</code> |
-| [service_account_email](variables.tf#L50) | Service account for creating API configs | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L44) | Flag indicating whether a service account needs to be created. | <code>bool</code> |  | <code>false</code> |
+| [service_account_email](variables.tf#L50) | Service account for creating API configs. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

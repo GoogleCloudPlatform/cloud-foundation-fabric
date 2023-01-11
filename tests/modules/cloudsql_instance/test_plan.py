@@ -35,8 +35,8 @@ def test_prefix(plan_runner):
   assert r['values']['name'] == 'prefix-db'
 
   replicas = """{
-    replica1 = "europe-west3"
-    replica2 = "us-central1"
+    replica1 = { region = "europe-west3", encryption_key_name = null }
+    replica2 = { region = "us-central1", encryption_key_name = null }
   }"""
 
   _, resources = plan_runner(prefix="prefix")
@@ -49,8 +49,8 @@ def test_replicas(plan_runner):
   "Test replicated instance."
 
   replicas = """{
-    replica1 = "europe-west3"
-    replica2 = "us-central1"
+    replica1 = { region = "europe-west3", encryption_key_name = null }
+    replica2 = { region = "us-central1", encryption_key_name = null }
   }"""
 
   _, resources = plan_runner(replicas=replicas, prefix="prefix")
@@ -80,11 +80,21 @@ def test_mysql_replicas_enables_backup(plan_runner):
   "Test MySQL backup setup with replicas."
 
   replicas = """{
-    replica1 = "europe-west3"
+    replica1 = { region = "europe-west3", encryption_key_name = null }
   }"""
-  _, resources = plan_runner(replicas=replicas,
-                             database_version="MYSQL_8_0")
+  _, resources = plan_runner(replicas=replicas, database_version="MYSQL_8_0")
   assert len(resources) == 2
+  primary = [r for r in resources if r['name'] == 'primary'][0]
+  backup_config = primary['values']['settings'][0]['backup_configuration'][0]
+  assert backup_config['enabled']
+  assert backup_config['binary_log_enabled']
+
+
+def test_mysql_binary_log_for_regional(plan_runner):
+  "Test that the binary log will be enabled for regional MySQL DBs."
+
+  _, resources = plan_runner(database_version="MYSQL_8_0", availability_type="REGIONAL")
+  assert len(resources) == 1
   primary = [r for r in resources if r['name'] == 'primary'][0]
   backup_config = primary['values']['settings'][0]['backup_configuration'][0]
   assert backup_config['enabled']
@@ -118,3 +128,25 @@ def test_databases(plan_runner):
   assert len(resources) == 2
   assert all(r['values']['instance'] == "db" for r in resources)
   assert sorted(r['values']['name'] for r in resources) == ["db1", "db2"]
+
+
+def test_simple_instance_ipv4_enable(plan_runner):
+  "Test instance ipv4_enabled."
+
+  _, resources = plan_runner(ipv4_enabled="true")
+  assert len(resources) == 1 
+  assert resources[0]['values']['settings'][0]['ip_configuration'][0]['ipv4_enabled']
+
+
+def test_replicas_ipv4_enable(plan_runner):
+  "Test replicas ipv4_enabled."
+
+  replicas = """{
+    replica1 = { region = "europe-west3", encryption_key_name = null }
+  }"""
+
+  _, resources = plan_runner(replicas=replicas, ipv4_enabled="true")
+  
+  assert len(resources) == 2
+  assert all([r['values']['settings'][0]['ip_configuration'][0]['ipv4_enabled'] for r in resources])
+  

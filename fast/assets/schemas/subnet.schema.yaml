@@ -16,14 +16,16 @@ region: str()
 description: str()
 ip_cidr_range: str()
 # optional attributes
-private_ip_google_access: bool(required=False) # defaults to true
+enable_private_access: bool(required=False) # defaults to true
 iam_users: list(str(), required=False)
 iam_groups: list(str(), required=False)
 iam_service_accounts: list(str(), required=False)
-secondary_ip_ranges: list(map(str()), key=str(), required=False)
+secondary_ip_ranges: map(str(), key=str(), required=False)
 flow_logs: any(include('flow_logs'), required=False)
 ---
 flow_logs:
   - aggregation_interval: enum('INTERVAL_5_SEC', 'INTERVAL_30_SEC', 'INTERVAL_1_MIN', 'INTERVAL_5_MIN', 'INTERVAL_10_MIN', 'INTERVAL_15_MIN', required=False)
+  - filter_expression: str()
   - flow_sampling: num(min=0, max=1, required=False)
   - metadata: enum('EXCLUDE_ALL_METADATA', 'INCLUDE_ALL_METADATA', 'CUSTOM_METADATA', required=False)
+  - metadata_fields: map(str(), key=str(), required=False)

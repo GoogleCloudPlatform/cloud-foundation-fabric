@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-variable "autoscaling_config" {
-  description = "Optional autoscaling configuration."
-  type = object({
-    min_node_count = number
-    max_node_count = number
-  })
-  default = null
+variable "cluster_id" {
+  description = "Cluster id. Optional, but providing cluster_id is recommended to prevent cluster misconfiguration in some of the edge cases."
+  type        = string
+  default     = null
 }
 
 variable "cluster_name" {
@@ -34,40 +31,16 @@ variable "gke_version" {
   default     = null
 }
 
-variable "initial_node_count" {
-  description = "Initial number of nodes for the pool."
-  type        = number
-  default     = 1
-}
-
-variable "kubelet_config" {
-  description = "Kubelet configuration."
-  type = object({
-    cpu_cfs_quota        = string
-    cpu_cfs_quota_period = string
-    cpu_manager_policy   = string
-  })
-  default = null
-}
-
-variable "linux_node_config_sysctls" {
-  description = "Linux node configuration."
+variable "labels" {
+  description = "Kubernetes labels applied to each node."
   type        = map(string)
-  default     = null
+  default     = {}
+  nullable    = false
 }
 
 variable "location" {
   description = "Cluster location."
   type        = string
-}
-
-variable "management_config" {
-  description = "Optional node management configuration."
-  type = object({
-    auto_repair  = bool
-    auto_upgrade = bool
-  })
-  default = null
 }
 
 variable "max_pods_per_node" {
@@ -82,147 +55,141 @@ variable "name" {
   default     = null
 }
 
-variable "node_boot_disk_kms_key" {
-  description = "Customer Managed Encryption Key used to encrypt the boot disk attached to each node."
-  type        = string
-  default     = null
+variable "node_config" {
+  description = "Node-level configuration."
+  type = object({
+    boot_disk_kms_key   = optional(string)
+    disk_size_gb        = optional(number)
+    disk_type           = optional(string)
+    ephemeral_ssd_count = optional(number)
+    gcfs                = optional(bool, false)
+    guest_accelerator = optional(object({
+      count              = number
+      type               = string
+      gpu_partition_size = optional(string)
+    }))
+    gvnic      = optional(bool, false)
+    image_type = optional(string)
+    kubelet_config = optional(object({
+      cpu_manager_policy   = string
+      cpu_cfs_quota        = optional(bool)
+      cpu_cfs_quota_period = optional(string)
+    }))
+    linux_node_config_sysctls = optional(map(string))
+    local_ssd_count           = optional(number)
+    machine_type              = optional(string)
+    metadata                  = optional(map(string))
+    min_cpu_platform          = optional(string)
+    preemptible               = optional(bool)
+    sandbox_config_gvisor     = optional(bool)
+    shielded_instance_config = optional(object({
+      enable_integrity_monitoring = optional(bool)
+      enable_secure_boot          = optional(bool)
+    }))
+    spot                          = optional(bool)
+    workload_metadata_config_mode = optional(string)
+  })
+  default = {
+    disk_type = "pd-balanced"
+  }
 }
 
 variable "node_count" {
-  description = "Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set."
-  type        = number
-  default     = null
-}
-
-variable "node_disk_size" {
-  description = "Node disk size, defaults to 100GB."
-  type        = number
-  default     = 100
-}
-
-variable "node_disk_type" {
-  description = "Node disk type, defaults to pd-standard."
-  type        = string
-  default     = "pd-standard"
-}
-
-variable "node_guest_accelerator" {
-  description = "Map of type and count of attached accelerator cards."
-  type        = map(number)
-  default     = {}
-}
-
-variable "node_image_type" {
-  description = "Nodes image type."
-  type        = string
-  default     = null
-}
-
-variable "node_labels" {
-  description = "Kubernetes labels attached to nodes."
-  type        = map(string)
-  default     = {}
-}
-
-variable "node_local_ssd_count" {
-  description = "Number of local SSDs attached to nodes."
-  type        = number
-  default     = 0
-}
-variable "node_locations" {
-  description = "Optional list of zones in which nodes should be located. Uses cluster locations if unset."
-  type        = list(string)
-  default     = null
-}
-
-variable "node_machine_type" {
-  description = "Nodes machine type."
-  type        = string
-  default     = "n1-standard-1"
-}
-
-variable "node_metadata" {
-  description = "Metadata key/value pairs assigned to nodes. Set disable-legacy-endpoints to true when using this variable."
-  type        = map(string)
-  default     = null
-}
-
-variable "node_min_cpu_platform" {
-  description = "Minimum CPU platform for nodes."
-  type        = string
-  default     = null
-}
-
-variable "node_preemptible" {
-  description = "Use preemptible VMs for nodes."
-  type        = bool
-  default     = null
-}
-
-variable "node_sandbox_config" {
-  description = "GKE Sandbox configuration. Needs image_type set to COS_CONTAINERD and node_version set to 1.12.7-gke.17 when using this variable."
-  type        = string
-  default     = null
-}
-
-variable "node_service_account" {
-  description = "Service account email. Unused if service account is auto-created."
-  type        = string
-  default     = null
-}
-
-variable "node_service_account_create" {
-  description = "Auto-create service account."
-  type        = bool
-  default     = false
-}
-
-# scopes and scope aliases list
-# https://cloud.google.com/sdk/gcloud/reference/compute/instances/create#--scopes
-variable "node_service_account_scopes" {
-  description = "Scopes applied to service account. Default to: 'cloud-platform' when creating a service account; 'devstorage.read_only', 'logging.write', 'monitoring.write' otherwise."
-  type        = list(string)
-  default     = []
-}
-
-variable "node_shielded_instance_config" {
-  description = "Shielded instance options."
+  description = "Number of nodes per instance group. Initial value can only be changed by recreation, current is ignored when autoscaling is used."
   type = object({
-    enable_secure_boot          = bool
-    enable_integrity_monitoring = bool
+    current = optional(number)
+    initial = number
+  })
+  default = {
+    initial = 1
+  }
+  nullable = false
+}
+
+variable "node_locations" {
+  description = "Node locations."
+  type        = list(string)
+  default     = null
+}
+
+variable "nodepool_config" {
+  description = "Nodepool-level configuration."
+  type = object({
+    autoscaling = optional(object({
+      location_policy = optional(string)
+      max_node_count  = optional(number)
+      min_node_count  = optional(number)
+      use_total_nodes = optional(bool, false)
+    }))
+    management = optional(object({
+      auto_repair  = optional(bool)
+      auto_upgrade = optional(bool)
+    }))
+    # placement_policy = optional(bool)
+    upgrade_settings = optional(object({
+      max_surge       = number
+      max_unavailable = number
+    }))
   })
   default = null
 }
 
-variable "node_tags" {
-  description = "Network tags applied to nodes."
-  type        = list(string)
-  default     = null
+variable "pod_range" {
+  description = "Pod secondary range configuration."
+  type = object({
+    secondary_pod_range = object({
+      cidr   = optional(string)
+      create = optional(bool)
+      name   = string
+    })
+  })
+  default = null
 }
-
-variable "node_taints" {
-  description = "Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule."
-  type        = list(string)
-  default     = []
-}
-
 
 variable "project_id" {
   description = "Cluster project id."
   type        = string
 }
 
-variable "upgrade_config" {
-  description = "Optional node upgrade configuration."
+variable "reservation_affinity" {
+  description = "Configuration of the desired reservation which instances could take capacity from."
   type = object({
-    max_surge       = number
-    max_unavailable = number
+    consume_reservation_type = string
+    key                      = optional(string)
+    values                   = optional(list(string))
   })
   default = null
 }
 
-variable "workload_metadata_config" {
-  description = "Metadata configuration to expose to workloads on the node pool."
+variable "service_account" {
+  description = "Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used."
+  type = object({
+    create       = optional(bool, false)
+    email        = optional(string, null)
+    oauth_scopes = optional(list(string), null)
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "sole_tenant_nodegroup" {
+  description = "Sole tenant node group."
   type        = string
-  default     = "GKE_METADATA"
+  default     = null
+}
+
+variable "tags" {
+  description = "Network tags applied to nodes."
+  type        = list(string)
+  default     = null
+}
+
+variable "taints" {
+  description = "Kubernetes taints applied to all nodes."
+  type = list(object({
+    key    = string
+    value  = string
+    effect = string
+  }))
+  default = null
 }

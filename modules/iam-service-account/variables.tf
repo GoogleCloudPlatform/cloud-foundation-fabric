@@ -39,36 +39,50 @@ variable "iam" {
   nullable    = false
 }
 
+variable "iam_additive" {
+  description = "IAM additive bindings on the service account in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "iam_billing_roles" {
-  description = "Billing account roles granted to the service account, by billing account id. Non-authoritative."
+  description = "Billing account roles granted to this service account, by billing account id. Non-authoritative."
   type        = map(list(string))
   default     = {}
   nullable    = false
 }
 
 variable "iam_folder_roles" {
-  description = "Folder roles granted to the service account, by folder id. Non-authoritative."
+  description = "Folder roles granted to this service account, by folder id. Non-authoritative."
   type        = map(list(string))
   default     = {}
   nullable    = false
 }
 
 variable "iam_organization_roles" {
-  description = "Organization roles granted to the service account, by organization id. Non-authoritative."
+  description = "Organization roles granted to this service account, by organization id. Non-authoritative."
   type        = map(list(string))
   default     = {}
   nullable    = false
 }
 
 variable "iam_project_roles" {
-  description = "Project roles granted to the service account, by project id."
+  description = "Project roles granted to this service account, by project id."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iam_sa_roles" {
+  description = "Service account roles granted to this service account, by service account name."
   type        = map(list(string))
   default     = {}
   nullable    = false
 }
 
 variable "iam_storage_roles" {
-  description = "Storage roles granted to the service account, by bucket name."
+  description = "Storage roles granted to this service account, by bucket name."
   type        = map(list(string))
   default     = {}
   nullable    = false
@@ -83,6 +97,10 @@ variable "prefix" {
   description = "Prefix applied to service account names."
   type        = string
   default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
+  }
 }
 
 variable "project_id" {

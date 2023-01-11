@@ -16,7 +16,7 @@
 
 # tfdoc:file:description temporary instances for testing
 
-# Untrusted (Landing)
+# # Untrusted (Landing)
 
 # module "test-vm-landing-untrusted-ew1-0" {
 #   source     = "../../../modules/compute-vm"
@@ -26,16 +26,15 @@
 #   network_interfaces = [{
 #     network    = module.landing-untrusted-vpc.self_link
 #     subnetwork = module.landing-untrusted-vpc.subnet_self_links["europe-west1/landing-untrusted-default-ew1"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ew1", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
 #     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
+#   }
+#   options = {
+#     spot                      = true
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -53,16 +52,15 @@
 #   network_interfaces = [{
 #     network    = module.landing-untrusted-vpc.self_link
 #     subnetwork = module.landing-untrusted-vpc.subnet_self_links["europe-west4/landing-untrusted-default-ew4"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ew4", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
 #     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
+#   }
+#   options = {
+#     spot                      = true
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -72,7 +70,7 @@
 #   }
 # }
 
-# Trusted (hub)
+# # Trusted (hub)
 
 # module "test-vm-landing-trusted-ew1-0" {
 #   source     = "../../../modules/compute-vm"
@@ -82,16 +80,15 @@
 #   network_interfaces = [{
 #     network    = module.landing-trusted-vpc.self_link
 #     subnetwork = module.landing-trusted-vpc.subnet_self_links["europe-west1/landing-trusted-default-ew1"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ew1", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
 #     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
+#   }
+#   options = {
+#     spot                      = true
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -109,16 +106,15 @@
 #   network_interfaces = [{
 #     network    = module.landing-trusted-vpc.self_link
 #     subnetwork = module.landing-trusted-vpc.subnet_self_links["europe-west4/landing-trusted-default-ew4"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ew4", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
 #     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
+#   }
+#   options = {
+#     spot                      = true
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -128,7 +124,7 @@
 #   }
 # }
 
-# Dev spoke
+# # Dev spoke
 
 # module "test-vm-dev-ew1-0" {
 #   source     = "../../../modules/compute-vm"
@@ -139,16 +135,15 @@
 #     network = module.dev-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
 #     subnetwork = module.dev-spoke-vpc.subnet_self_links["europe-west1/dev-default-ew1"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ew1", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
 #     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
+#   }
+#   options = {
+#     spot                      = true
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -167,16 +162,15 @@
 #     network = module.dev-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
 #     subnetwork = module.dev-spoke-vpc.subnet_self_links["europe-west4/dev-default-ew4"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ew4", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
 #     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
+#   }
+#   options = {
+#     spot                      = true
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -186,7 +180,7 @@
 #   }
 # }
 
-# Prod spoke
+# # Prod spoke
 
 # module "test-vm-prod-ew1-0" {
 #   source     = "../../../modules/compute-vm"
@@ -197,9 +191,6 @@
 #     network = module.prod-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
 #     subnetwork = module.prod-spoke-vpc.subnet_self_links["europe-west1/prod-default-ew1"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ew1", "ssh"]
 #   service_account_create = true
@@ -207,6 +198,10 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #     type  = "pd-balanced"
 #     size  = 10
+#   }
+#   options = {
+#     spot                      = true
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -225,16 +220,15 @@
 #     network = module.prod-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
 #     subnetwork = module.prod-spoke-vpc.subnet_self_links["europe-west4/prod-default-ew4"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ew4", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
 #     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
+#   }
+#   options = {
+#     spot                      = true
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF

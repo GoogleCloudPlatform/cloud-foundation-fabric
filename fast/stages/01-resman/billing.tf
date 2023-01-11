@@ -23,12 +23,12 @@ locals {
       module.branch-network-sa.iam_email,
       module.branch-security-sa.iam_email,
     ],
-    local.branch_dataplatform_sa_iam_emails,
-    # enable if individual teams can create their own projects
-    # [
-    #   for k, v in module.branch-teams-team-sa : v.iam_email
-    # ],
-    local.branch_teams_pf_sa_iam_emails,
+    local.branch_optional_sa_lists.dp-dev,
+    local.branch_optional_sa_lists.dp-prod,
+    local.branch_optional_sa_lists.gke-dev,
+    local.branch_optional_sa_lists.gke-prod,
+    local.branch_optional_sa_lists.pf-dev,
+    local.branch_optional_sa_lists.pf-prod,
   )
 }
 
@@ -41,7 +41,8 @@ module "billing-organization-ext" {
   count           = local.billing_org_ext ? 1 : 0
   organization_id = "organizations/${var.billing_account.organization_id}"
   iam_additive = {
-    "roles/billing.user" = local.billing_ext_users
+    "roles/billing.user"         = local.billing_ext_users
+    "roles/billing.costsManager" = local.billing_ext_users
   }
 }
 
@@ -53,5 +54,14 @@ resource "google_billing_account_iam_member" "billing_ext_admin" {
   )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.user"
+  member             = each.key
+}
+
+resource "google_billing_account_iam_member" "billing_ext_costsmanager" {
+  for_each = toset(
+    local.billing_ext ? local.billing_ext_users : []
+  )
+  billing_account_id = var.billing_account.id
+  role               = "roles/billing.costsManager"
   member             = each.key
 }

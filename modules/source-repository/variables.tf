@@ -14,8 +14,29 @@
  * limitations under the License.
  */
 
+variable "group_iam" {
+  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iam_additive" {
+  description = "IAM additive bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iam_additive_members" {
+  description = "IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values."
   type        = map(list(string))
   default     = {}
 }
@@ -28,4 +49,21 @@ variable "name" {
 variable "project_id" {
   description = "Project used for resources."
   type        = string
+}
+
+variable "triggers" {
+  description = "Cloud Build triggers."
+  type = map(object({
+    filename        = string
+    included_files  = list(string)
+    service_account = string
+    substitutions   = map(string)
+    template = object({
+      branch_name = string
+      project_id  = string
+      tag_name    = string
+    })
+  }))
+  default  = {}
+  nullable = false
 }

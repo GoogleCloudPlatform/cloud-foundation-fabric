@@ -19,18 +19,40 @@ output "bucket" {
   value       = google_storage_bucket.bucket
 }
 
+# We add `id` as an alias to `name` to simplify log sink handling.
+# Since all other log destinations (pubsub, logging-bucket, bigquery)
+# have an id output, it is convenient to have in this module too to
+# handle all log destination as homogeneous objects (i.e. you can
+# assume any valid log destination has an `id` output).
+
+output "id" {
+  description = "Bucket ID (same as name)."
+  value       = "${local.prefix}${lower(var.name)}"
+  depends_on = [
+    google_storage_bucket.bucket,
+    google_storage_bucket_iam_binding.bindings
+  ]
+}
+
 output "name" {
   description = "Bucket name."
-  value       = google_storage_bucket.bucket.name
+  value       = "${local.prefix}${lower(var.name)}"
+  depends_on = [
+    google_storage_bucket.bucket,
+    google_storage_bucket_iam_binding.bindings
+  ]
 }
+
 output "notification" {
   description = "GCS Notification self link."
   value       = local.notification ? google_storage_notification.notification[0].self_link : null
 }
+
 output "topic" {
   description = "Topic ID used by GCS."
   value       = local.notification ? google_pubsub_topic.topic[0].id : null
 }
+
 output "url" {
   description = "Bucket URL."
   value       = google_storage_bucket.bucket.url

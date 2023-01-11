@@ -40,24 +40,38 @@ module "branch-security-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-security-sa.iam_email]
   }
   tag_bindings = {
-    context = module.organization.tag_values["context/security"].id
+    context = try(
+      module.organization.tag_values["${var.tag_names.context}/security"].id, null
+    )
   }
 }
 
+# automation service account and bucket
+
 module "branch-security-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
-  name        = "prod-resman-sec-0"
-  description = "Terraform resman security service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  project_id   = var.automation.project_id
+  name         = "prod-resman-sec-0"
+  display_name = "Terraform resman security service account."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-security-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
 }
 
 module "branch-security-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
-  name       = "prod-resman-sec-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  project_id    = var.automation.project_id
+  name          = "prod-resman-sec-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-security-sa.iam_email]
   }

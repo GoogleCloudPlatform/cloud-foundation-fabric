@@ -17,6 +17,7 @@
 variable "attached_disk_defaults" {
   description = "Defaults for attached disks options."
   type = object({
+    auto_delete  = optional(bool, false)
     mode         = string
     replica_zone = string
     type         = string
@@ -27,20 +28,35 @@ variable "attached_disk_defaults" {
     replica_zone = null
     type         = "pd-balanced"
   }
+
+  validation {
+    condition     = var.attached_disk_defaults.mode == "READ_WRITE" || !var.attached_disk_defaults.auto_delete
+    error_message = "auto_delete can only be specified on READ_WRITE disks."
+  }
 }
 
 variable "attached_disks" {
   description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
     name        = string
+    device_name = optional(string)
     size        = string
-    source      = string
-    source_type = string
-    options = object({
-      mode         = string
-      replica_zone = string
-      type         = string
-    })
+    source      = optional(string)
+    source_type = optional(string)
+    options = optional(
+      object({
+        auto_delete  = optional(bool, false)
+        mode         = optional(string, "READ_WRITE")
+        replica_zone = optional(string)
+        type         = optional(string, "pd-balanced")
+      }),
+      {
+        auto_delete  = true
+        mode         = "READ_WRITE"
+        replica_zone = null
+        type         = "pd-balanced"
+      }
+    )
   }))
   default = []
   validation {
@@ -53,26 +69,30 @@ variable "attached_disks" {
     ]) == length(var.attached_disks)
     error_message = "Source type must be one of 'image', 'snapshot', 'attach', null."
   }
+
+  validation {
+    condition = length([
+      for d in var.attached_disks : d if d.options == null ||
+      d.options.mode == "READ_WRITE" || !d.options.auto_delete
+    ]) == length(var.attached_disks)
+    error_message = "auto_delete can only be specified on READ_WRITE disks."
+  }
 }
 
 variable "boot_disk" {
   description = "Boot disk properties."
   type = object({
-    image = string
-    size  = number
-    type  = string
+    auto_delete = optional(bool, true)
+    image       = optional(string, "projects/debian-cloud/global/images/family/debian-11")
+    size        = optional(number, 10)
+    type        = optional(string, "pd-balanced")
   })
   default = {
-    image = "projects/debian-cloud/global/images/family/debian-11"
-    type  = "pd-balanced"
-    size  = 10
+    auto_delete = true
+    image       = "projects/debian-cloud/global/images/family/debian-11"
+    type        = "pd-balanced"
+    size        = 10
   }
-}
-
-variable "boot_disk_delete" {
-  description = "Auto delete boot disk."
-  type        = bool
-  default     = true
 }
 
 variable "can_ip_forward" {
@@ -97,6 +117,7 @@ variable "description" {
   type        = string
   default     = "Managed by the compute-vm Terraform module."
 }
+
 variable "enable_display" {
   description = "Enable virtual display on the instances."
   type        = bool
@@ -106,9 +127,9 @@ variable "enable_display" {
 variable "encryption" {
   description = "Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk."
   type = object({
-    encrypt_boot            = bool
-    disk_encryption_key_raw = string
-    kms_key_self_link       = string
+    encrypt_boot            = optional(bool, false)
+    disk_encryption_key_raw = optional(string)
+    kms_key_self_link       = optional(string)
   })
   default = null
 }
@@ -162,39 +183,40 @@ variable "name" {
   type        = string
 }
 
-variable "network_interface_options" {
-  description = "Network interfaces extended options. The key is the index of the inteface to configure. The value is an object with alias_ips and nic_type. Set alias_ips or nic_type to null if you need only one of them."
-  type = map(object({
-    alias_ips = map(string)
-    nic_type  = string
-  }))
-  default = {}
-}
-
 variable "network_interfaces" {
   description = "Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed."
   type = list(object({
-    nat        = bool
+    nat        = optional(bool, false)
     network    = string
     subnetwork = string
-    addresses = object({
+    addresses = optional(object({
       internal = string
       external = string
-    })
+    }), null)
+    alias_ips = optional(map(string), {})
+    nic_type  = optional(string)
   }))
 }
 
 variable "options" {
   description = "Instance options."
   type = object({
-    allow_stopping_for_update = bool
-    deletion_protection       = bool
-    preemptible               = bool
+    allow_stopping_for_update = optional(bool, true)
+    deletion_protection       = optional(bool, false)
+    spot                      = optional(bool, false)
+    termination_action        = optional(string)
   })
   default = {
     allow_stopping_for_update = true
     deletion_protection       = false
-    preemptible               = false
+    spot                      = false
+    termination_action        = null
+  }
+  validation {
+    condition = (var.options.termination_action == null
+      ||
+    contains(["STOP", "DELETE"], coalesce(var.options.termination_action, "1")))
+    error_message = "Allowed values for options.termination_action are 'STOP', 'DELETE' and null."
   }
 }
 
@@ -261,5 +283,3 @@ variable "zone" {
   description = "Compute zone."
   type        = string
 }
-
-

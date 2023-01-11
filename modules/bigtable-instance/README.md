@@ -4,33 +4,225 @@ This module allows managing a single BigTable instance, including access configu
 
 ## TODO
 
-- [ ] support bigtable_gc_policy
 - [ ] support bigtable_app_profile
+- [ ] support IAM for tables
 
 ## Examples
 
-### Simple instance with access configuration
+### Instance with access configuration
 
 ```hcl
 
 module "bigtable-instance" {
-  source               = "./modules/bigtable-instance"
-  project_id           = "my-project"
-  name                 = "instance"
-  cluster_id           = "instance"
-  zone                 = "europe-west1-b"
-  tables               = {
-    test1 = null,
-    test2 = {
-      split_keys    = ["a", "b", "c"]
-      column_family = null
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  clusters = {
+    my-cluster = {
+      zone = "europe-west1-b"
     }
   }
-  iam       = {
+  tables = {
+    test1 = {},
+    test2 = {
+      split_keys = ["a", "b", "c"]
+    }
+  }
+  iam = {
     "roles/bigtable.user" = ["user:viewer@testdomain.com"]
   }
 }
 # tftest modules=1 resources=4
+```
+
+### Instance with tables and column families
+
+```hcl
+
+module "bigtable-instance" {
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  clusters = {
+    my-cluster = {
+      zone = "europe-west1-b"
+    }
+  }
+  tables = {
+    test1 = {},
+    test2 = {
+      split_keys = ["a", "b", "c"]
+      column_families = {
+        cf1 = {}
+        cf2 = {}
+        cf3 = {}
+      }
+    }
+    test3 = {
+      column_families = {
+        cf1 = {}
+      }
+    }
+  }
+}
+# tftest modules=1 resources=4
+```
+
+### Instance with replication enabled
+
+```hcl
+
+module "bigtable-instance" {
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  clusters = {
+    first-cluster = {
+      zone = "europe-west1-b"
+    }
+    second-cluster = {
+      zone = "europe-southwest1-a"
+    }
+    third-cluster = {
+      zone = "us-central1-b"
+    }
+  }
+}
+# tftest modules=1 resources=1
+```
+
+### Instance with garbage collection policy
+
+```hcl
+
+module "bigtable-instance" {
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  clusters = {
+    my-cluster = {
+      zone = "europe-west1-b"
+    }
+  }
+  tables = {
+    test1 = {
+      column_families = {
+        cf1 = {
+          gc_policy = {
+            deletion_policy = "ABANDON"
+            max_age         = "18h"
+          }
+        }
+        cf2 = {}
+      }
+    }
+  }
+}
+# tftest modules=1 resources=3
+```
+
+### Instance with default garbage collection policy
+
+The default garbage collection policy is applied to any column family that does
+not specify a `gc_policy`. If a column family specifies a `gc_policy`, the
+default garbage collection policy is ignored for that column family.
+
+```hcl
+
+module "bigtable-instance" {
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  clusters = {
+    my-cluster = {
+      zone = "europe-west1-b"
+    }
+  }
+  default_gc_policy = {
+    deletion_policy = "ABANDON"
+    max_age         = "18h"
+    max_version     = 7
+  }
+  tables = {
+    test1 = {
+      column_families = {
+        cf1 = {}
+        cf2 = {}
+      }
+    }
+  }
+}
+# tftest modules=1 resources=4
+```
+
+### Instance with static number of nodes
+
+If you are not using autoscaling settings, you must set a specific number of nodes with the variable `num_nodes`.
+
+```hcl
+
+module "bigtable-instance" {
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  clusters = {
+    my-cluster = {
+      zone      = "europe-west1-b"
+      num_nodes = 5
+    }
+  }
+}
+# tftest modules=1 resources=1
+```
+
+### Instance with autoscaling (based on CPU only)
+
+If you use autoscaling, you should not set the variable `num_nodes`.
+
+```hcl
+
+module "bigtable-instance" {
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  clusters = {
+    my-cluster = {
+      zone = "europe-southwest1-b"
+      autoscaling = {
+        min_nodes  = 3
+        max_nodes  = 7
+        cpu_target = 70
+      }
+    }
+  }
+
+
+}
+# tftest modules=1 resources=1
+```
+
+### Instance with autoscaling (based on CPU and/or storage)
+
+```hcl
+
+module "bigtable-instance" {
+  source     = "./fabric/modules/bigtable-instance"
+  project_id = "my-project"
+  name       = "instance"
+  clusters = {
+    my-cluster = {
+      zone         = "europe-southwest1-a"
+      storage_type = "SSD"
+      autoscaling = {
+        min_nodes      = 3
+        max_nodes      = 7
+        cpu_target     = 70
+        storage_target = 4096
+      }
+    }
+  }
+}
+# tftest modules=1 resources=1
 ```
 <!-- BEGIN TFDOC -->
 
@@ -38,18 +230,16 @@ module "bigtable-instance" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L45) | The name of the Cloud Bigtable instance. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L56) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
-| [zone](variables.tf#L88) | The zone to create the Cloud Bigtable cluster in. | <code>string</code> | ✓ |  |
-| [cluster_id](variables.tf#L17) | The ID of the Cloud Bigtable cluster. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [deletion_protection](variables.tf#L23) | Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail. | <code></code> |  | <code>true</code> |
-| [display_name](variables.tf#L28) | The human-readable display name of the Bigtable instance. | <code></code> |  | <code>null</code> |
-| [iam](variables.tf#L33) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [instance_type](variables.tf#L39) | (deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'. | <code>string</code> |  | <code>null</code> |
-| [num_nodes](variables.tf#L50) | The number of nodes in your Cloud Bigtable cluster. | <code>number</code> |  | <code>1</code> |
-| [storage_type](variables.tf#L61) | The storage type to use. | <code>string</code> |  | <code>&#34;SSD&#34;</code> |
-| [table_options_defaults](variables.tf#L67) | Default option of tables created in the BigTable instance. | <code title="object&#40;&#123;&#10;  split_keys    &#61; list&#40;string&#41;&#10;  column_family &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  split_keys    &#61; &#91;&#93;&#10;  column_family &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [tables](variables.tf#L79) | Tables to be created in the BigTable instance, options can be null. | <code title="map&#40;object&#40;&#123;&#10;  split_keys    &#61; list&#40;string&#41;&#10;  column_family &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [clusters](variables.tf#L17) | Clusters to be created in the BigTable instance. Set more than one cluster to enable replication. If you set autoscaling, num_nodes will be ignored. | <code title="map&#40;object&#40;&#123;&#10;  zone         &#61; optional&#40;string&#41;&#10;  storage_type &#61; optional&#40;string&#41;&#10;  num_nodes    &#61; optional&#40;number&#41;&#10;  autoscaling &#61; optional&#40;object&#40;&#123;&#10;    min_nodes      &#61; number&#10;    max_nodes      &#61; number&#10;    cpu_target     &#61; number&#10;    storage_target &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [name](variables.tf#L78) | The name of the Cloud Bigtable instance. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L83) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
+| [default_autoscaling](variables.tf#L33) | Default settings for autoscaling of clusters. This will be the default autoscaling for any cluster not specifying any autoscaling details. | <code title="object&#40;&#123;&#10;  min_nodes      &#61; number&#10;  max_nodes      &#61; number&#10;  cpu_target     &#61; number&#10;  storage_target &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [default_gc_policy](variables.tf#L44) | Default garbage collection policy, to be applied to all column families and all tables. Can be override in the tables variable for specific column families. | <code title="object&#40;&#123;&#10;  deletion_policy &#61; optional&#40;string&#41;&#10;  gc_rules        &#61; optional&#40;string&#41;&#10;  mode            &#61; optional&#40;string&#41;&#10;  max_age         &#61; optional&#40;string&#41;&#10;  max_version     &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [deletion_protection](variables.tf#L56) | Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail. | <code></code> |  | <code>true</code> |
+| [display_name](variables.tf#L61) | The human-readable display name of the Bigtable instance. | <code></code> |  | <code>null</code> |
+| [iam](variables.tf#L66) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [instance_type](variables.tf#L72) | (deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'. | <code>string</code> |  | <code>null</code> |
+| [tables](variables.tf#L88) | Tables to be created in the BigTable instance. | <code title="map&#40;object&#40;&#123;&#10;  split_keys &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  column_families &#61; optional&#40;map&#40;object&#40;&#10;    &#123;&#10;      gc_policy &#61; optional&#40;object&#40;&#123;&#10;        deletion_policy &#61; optional&#40;string&#41;&#10;        gc_rules        &#61; optional&#40;string&#41;&#10;        mode            &#61; optional&#40;string&#41;&#10;        max_age         &#61; optional&#40;string&#41;&#10;        max_version     &#61; optional&#40;string&#41;&#10;      &#125;&#41;, null&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

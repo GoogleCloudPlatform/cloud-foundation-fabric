@@ -11,38 +11,31 @@ This module depends on the [`cos-generic-metadata` module](../cos-generic-metada
 ### Default configuration
 
 ```hcl
-# Envoy TD config
 module "cos-envoy-td" {
-  source = "./modules/cloud-config-container/envoy-traffic-director"
+  source = "./fabric/modules/cloud-config-container/envoy-traffic-director"
 }
 
-# COS VM
-module "vm-cos" {
-  source     = "./modules/compute-vm"
-  project_id = local.project_id
-  region     = local.region
+module "vm" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "europe-west8-b"
   name       = "cos-envoy-td"
   network_interfaces = [{
-    network    = local.vpc.self_link,
-    subnetwork = local.vpc.subnet_self_link,
-    nat        = false,
-    addresses  = null
+    network    = "default"
+    subnetwork = "gce"
   }]
-  instance_count = 1
-  tags           = ["ssh", "http"]
-
   metadata = {
-    user-data = module.cos-envoy-td.cloud_config
+    user-data              = module.cos-envoy-td.cloud_config
+    google-logging-enabled = true
   }
-
   boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
     type  = "pd-ssd"
     size  = 10
   }
-
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  tags = ["http-server", "ssh"]
 }
+# tftest modules=1 resources=1
 ```
 <!-- BEGIN TFDOC -->
 
@@ -50,8 +43,7 @@ module "vm-cos" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [envoy_image](variables.tf#L17) | Envoy Proxy container image to use. | <code>string</code> |  | <code>&#34;envoyproxy&#47;envoy:v1.14.1&#34;</code> |
-| [gcp_logging](variables.tf#L23) | Should container logs be sent to Google Cloud Logging. | <code>bool</code> |  | <code>true</code> |
+| [envoy_image](variables.tf#L17) | Envoy Proxy container image to use. | <code>string</code> |  | <code>&#34;envoyproxy&#47;envoy:v1.15.5&#34;</code> |
 
 ## Outputs
 

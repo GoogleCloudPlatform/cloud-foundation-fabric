@@ -34,13 +34,17 @@ locals {
       [module.automation-tf-bootstrap-sa.iam_email],
       local._iam_bootstrap_user
     )
-    "roles/resourcemanager.organizationViewer" = [
-      "domain:${var.organization.domain}"
-    ]
+    # the following is useful if roles/browser is not desirable
+    # "roles/resourcemanager.organizationViewer" = [
+    #   "domain:${var.organization.domain}"
+    # ]
     "roles/resourcemanager.projectCreator" = concat(
       [module.automation-tf-bootstrap-sa.iam_email],
       local._iam_bootstrap_user
     )
+    "roles/resourcemanager.projectMover" = [
+      module.automation-tf-bootstrap-sa.iam_email
+    ]
     "roles/resourcemanager.tagAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
@@ -63,17 +67,26 @@ locals {
       ]
       # use additive to support cross-org roles for billing
       "roles/iam.organizationRoleAdmin" = [
+        # uncomment if roles/owner is removed to organization admins
+        # local.groups.gcp-organization-admins,
         local.groups_iam.gcp-security-admins,
         module.automation-tf-bootstrap-sa.iam_email
       ]
       "roles/orgpolicy.policyAdmin" = [
-        module.automation-tf-resman-sa.iam_email,
+        local.groups_iam.gcp-organization-admins,
         local.groups_iam.gcp-security-admins,
-        local.groups_iam.gcp-organization-admins
+        module.automation-tf-resman-sa.iam_email
       ]
     },
     local.billing_org ? {
       "roles/billing.admin" = [
+        local.groups_iam.gcp-billing-admins,
+        local.groups_iam.gcp-organization-admins,
+        module.automation-tf-bootstrap-sa.iam_email,
+        module.automation-tf-resman-sa.iam_email
+      ],
+      "roles/billing.costsManager" = [
+        local.groups_iam.gcp-billing-admins,
         local.groups_iam.gcp-organization-admins,
         module.automation-tf-bootstrap-sa.iam_email,
         module.automation-tf-resman-sa.iam_email
@@ -83,11 +96,6 @@ locals {
   _iam_bootstrap_user = (
     var.bootstrap_user == null ? [] : ["user:${var.bootstrap_user}"]
   )
-  _log_sink_destinations = {
-    bigquery = try(module.log-export-dataset.0.id, null),
-    logging  = try(module.log-export-logbucket.0.id, null),
-    storage  = try(module.log-export-gcs.0.name, null)
-  }
   iam = {
     for role in local.iam_roles : role => distinct(concat(
       try(sort(local._iam[role]), []),
@@ -106,13 +114,16 @@ locals {
   iam_roles_additive = distinct(concat(
     keys(local._iam_additive), keys(var.iam_additive)
   ))
-  log_sink_destinations = {
-    for k, v in var.log_sinks : k => (
-      v.type == "pubsub"
-      ? module.log-export-pubsub[k]
-      : local._log_sink_destinations[v.type]
-    )
-  }
+  log_sink_destinations = merge(
+    # use the same dataset for all sinks with `bigquery` as  destination
+    { for k, v in var.log_sinks : k => module.log-export-dataset.0 if v.type == "bigquery" },
+    # use the same gcs bucket for all sinks with `storage` as destination
+    { for k, v in var.log_sinks : k => module.log-export-gcs.0 if v.type == "storage" },
+    # use separate pubsub topics and logging buckets for sinks with
+    # destination `pubsub` and `logging`
+    module.log-export-pubsub,
+    module.log-export-logbucket
+  )
 }
 
 module "organization" {
@@ -126,6 +137,9 @@ module "organization" {
       "roles/compute.osAdminLogin",
       "roles/compute.osLoginExternalUser",
       "roles/owner",
+      # granted via additive roles
+      # roles/iam.organizationRoleAdmin
+      # roles/orgpolicy.policyAdmin
       "roles/resourcemanager.folderAdmin",
       "roles/resourcemanager.organizationAdmin",
       "roles/resourcemanager.projectCreator",
@@ -160,6 +174,13 @@ module "organization" {
     ]
     (var.custom_role_names.service_project_network_admin) = [
       "compute.globalOperations.get",
+      # compute.networks.updatePeering and compute.networks.get are
+      # used by automation service accounts who manage service
+      # projects where peering creation might be needed (e.g. GKE). If
+      # you remove them your network administrators should create
+      # peerings for service projects
+      "compute.networks.updatePeering",
+      "compute.networks.get",
       "compute.organizations.disableXpnResource",
       "compute.organizations.enableXpnResource",
       "compute.projects.get",
@@ -172,11 +193,8 @@ module "organization" {
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
-      destination          = local.log_sink_destinations[name]
-      exclusions           = {}
+      destination          = local.log_sink_destinations[name].id
       filter               = attrs.filter
-      iam                  = true
-      include_children     = true
       type                 = attrs.type
     }
   }

@@ -94,7 +94,7 @@ variable "region" {
 }
 
 variable "replicas" {
-  type    = map(any)
+  type    = any
   default = null
 }
 
@@ -109,6 +109,11 @@ variable "tier" {
 }
 
 variable "deletion_protection" {
+  type    = bool
+  default = false
+}
+
+variable "ipv4_enabled" {
   type    = bool
   default = false
 }

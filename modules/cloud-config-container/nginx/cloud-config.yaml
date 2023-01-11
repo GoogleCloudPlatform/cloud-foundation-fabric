@@ -20,6 +20,10 @@
 users:
   - name: nginx
     uid: 2000
+  %{ for user in users }
+  - name: ${user.username}
+    uid: ${user.uid}
+  %{ endfor }
 
 write_files:
   - path: /var/lib/docker/daemon.json
@@ -52,8 +56,10 @@ write_files:
       After=gcr-online.target docker.socket
       Wants=gcr-online.target docker.socket docker-events-collector.service
       [Service]
+      Environment="HOME=/home/nginx"
+      ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
       ExecStart=/usr/bin/docker run --rm --name=nginx  \
-        --log-driver=gcplogs --network host \
+        --network host \
         %{~ if etc_mount ~}
         -v /etc/nginx/conf.d:/etc/nginx/conf.d \
         %{~ endif ~}
@@ -65,13 +71,19 @@ write_files:
     owner: ${lookup(data, "owner", "root")}
     permissions: ${lookup(data, "permissions", "0644")}
     content: |
-      ${indent(4, data.content)}
+      ${indent(6, data.content)}
   %{ endfor }
 
 bootcmd:
   - systemctl start node-problem-detector
 
 runcmd:
+%{ for cmd in runcmd_pre ~}
+  - ${cmd}
+%{ endfor ~}
   - iptables -I INPUT 1 -p tcp -m tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT
   - systemctl daemon-reload
   - systemctl start nginx
+%{ for cmd in runcmd_post ~}
+  - ${cmd}
+%{ endfor ~}

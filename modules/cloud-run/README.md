@@ -10,22 +10,22 @@ This deploys a Cloud Run service and sets some environment variables.
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
-    image   = "us-docker.pkg.dev/cloudrun/container/hello"
+    image = "us-docker.pkg.dev/cloudrun/container/hello"
     options = {
       command = null
       args    = null
-      env     = {
-        "VAR1": "VALUE1",
-        "VAR2": "VALUE2",
+      env = {
+        "VAR1" : "VALUE1",
+        "VAR2" : "VALUE2",
       }
       env_from = null
     }
-    ports = null
-    resources = null
+    ports         = null
+    resources     = null
     volume_mounts = null
   }]
 }
@@ -36,24 +36,24 @@ module "cloud_run" {
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
     image = "us-docker.pkg.dev/cloudrun/container/hello"
     options = {
-      command   = null
-      args      = null
-      env       = null
-      env_from  = {
-        "CREDENTIALS": {
+      command = null
+      args    = null
+      env     = null
+      env_from = {
+        "CREDENTIALS" : {
           name = "credentials"
-          key = "1"
+          key  = "1"
         }
       }
     }
-    ports = null
-    resources = null
+    ports         = null
+    resources     = null
     volume_mounts = null
   }]
 }
@@ -64,26 +64,26 @@ module "cloud_run" {
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
-  project_id = var.project_id
-  name       = "hello"
-  region     = var.region
+  source        = "./fabric/modules/cloud-run"
+  project_id    = var.project_id
+  name          = "hello"
+  region        = var.region
   revision_name = "green"
   containers = [{
-    image         = "us-docker.pkg.dev/cloudrun/container/hello"
-    options       = null
-    ports         = null
-    resources     = null
+    image     = "us-docker.pkg.dev/cloudrun/container/hello"
+    options   = null
+    ports     = null
+    resources = null
     volume_mounts = {
-      "credentials": "/credentials"
+      "credentials" : "/credentials"
     }
   }]
   volumes = [
     {
-      name = "credentials"
+      name        = "credentials"
       secret_name = "credentials"
       items = [{
-        key = "1"
+        key  = "1"
         path = "v1.txt"
       }]
     }
@@ -98,9 +98,9 @@ This deploys a Cloud Run service with traffic split between two revisions.
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
-  project_id = "my-project"
-  name       = "hello"
+  source        = "./fabric/modules/cloud-run"
+  project_id    = "my-project"
+  name          = "hello"
   revision_name = "green"
   containers = [{
     image         = "us-docker.pkg.dev/cloudrun/container/hello"
@@ -110,7 +110,7 @@ module "cloud_run" {
     volume_mounts = null
   }]
   traffic = {
-    "blue" = 25
+    "blue"  = 25
     "green" = 75
   }
 }
@@ -123,7 +123,7 @@ This deploys a Cloud Run service that will be triggered when messages are publis
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -147,7 +147,7 @@ This deploys a Cloud Run service that will be triggered when specific log events
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -159,8 +159,8 @@ module "cloud_run" {
   }]
   audit_log_triggers = [
     {
-      service_name  = "cloudresourcemanager.googleapis.com"
-      method_name   = "SetIamPolicy"
+      service_name = "cloudresourcemanager.googleapis.com"
+      method_name  = "SetIamPolicy"
     }
   ]
 }
@@ -173,7 +173,7 @@ To use a custom service account managed by the module, set `service_account_crea
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -192,7 +192,7 @@ To use an externally managed service account, pass its email in `service_account
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -214,21 +214,21 @@ module "cloud_run" {
 |---|---|:---:|:---:|:---:|
 | [containers](variables.tf#L27) | Containers. | <code title="list&#40;object&#40;&#123;&#10;  image &#61; string&#10;  options &#61; object&#40;&#123;&#10;    command &#61; list&#40;string&#41;&#10;    args    &#61; list&#40;string&#41;&#10;    env     &#61; map&#40;string&#41;&#10;    env_from &#61; map&#40;object&#40;&#123;&#10;      key  &#61; string&#10;      name &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  resources &#61; object&#40;&#123;&#10;    limits &#61; object&#40;&#123;&#10;      cpu    &#61; string&#10;      memory &#61; string&#10;    &#125;&#41;&#10;    requests &#61; object&#40;&#123;&#10;      cpu    &#61; string&#10;      memory &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  ports &#61; list&#40;object&#40;&#123;&#10;    name           &#61; string&#10;    protocol       &#61; string&#10;    container_port &#61; string&#10;  &#125;&#41;&#41;&#10;  volume_mounts &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [name](variables.tf#L77) | Name used for cloud run service. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L88) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L92) | Project id used for all resources. | <code>string</code> | ✓ |  |
 | [audit_log_triggers](variables.tf#L18) | Event arc triggers (Audit log). | <code title="list&#40;object&#40;&#123;&#10;  service_name &#61; string&#10;  method_name  &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 | [iam](variables.tf#L59) | IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ingress_settings](variables.tf#L65) | Ingress settings. | <code>string</code> |  | <code>null</code> |
 | [labels](variables.tf#L71) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L82) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
-| [pubsub_triggers](variables.tf#L93) | Eventarc triggers (Pub/Sub). | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L99) | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [revision_name](variables.tf#L105) | Revision name. | <code>string</code> |  | <code>null</code> |
-| [service_account](variables.tf#L111) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L117) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [traffic](variables.tf#L123) | Traffic. | <code>map&#40;number&#41;</code> |  | <code>null</code> |
-| [volumes](variables.tf#L129) | Volumes. | <code title="list&#40;object&#40;&#123;&#10;  name        &#61; string&#10;  secret_name &#61; string&#10;  items &#61; list&#40;object&#40;&#123;&#10;    key  &#61; string&#10;    path &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [vpc_connector](variables.tf#L142) | VPC connector configuration. Set create to 'true' if a new connecto needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector_config](variables.tf#L152) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [pubsub_triggers](variables.tf#L97) | Eventarc triggers (Pub/Sub). | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L103) | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [revision_annotations](variables.tf#L109) | Configure revision template annotations. | <code title="object&#40;&#123;&#10;  autoscaling &#61; object&#40;&#123;&#10;    max_scale &#61; number&#10;    min_scale &#61; number&#10;  &#125;&#41;&#10;  cloudsql_instances  &#61; list&#40;string&#41;&#10;  vpcaccess_connector &#61; string&#10;  vpcaccess_egress    &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [revision_name](variables.tf#L123) | Revision name. | <code>string</code> |  | <code>null</code> |
+| [service_account](variables.tf#L129) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L135) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| [traffic](variables.tf#L141) | Traffic. | <code>map&#40;number&#41;</code> |  | <code>null</code> |
+| [volumes](variables.tf#L147) | Volumes. | <code title="list&#40;object&#40;&#123;&#10;  name        &#61; string&#10;  secret_name &#61; string&#10;  items &#61; list&#40;object&#40;&#123;&#10;    key  &#61; string&#10;    path &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [vpc_connector_create](variables.tf#L160) | Populate this to create a VPC connector. You can then refer to it in the template annotations. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  name          &#61; string&#10;  vpc_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

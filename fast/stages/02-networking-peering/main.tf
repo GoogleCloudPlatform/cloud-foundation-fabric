@@ -25,18 +25,17 @@ locals {
         name   = "${env}-l7ilb-${s.region}"
     })]
   }
-  region_trigram = {
-    europe-west1 = "ew1"
-    europe-west3 = "ew3"
-  }
   stage3_sas_delegated_grants = [
     "roles/composer.sharedVpcAgent",
     "roles/compute.networkUser",
+    "roles/compute.networkViewer",
     "roles/container.hostServiceAgentUser",
+    "roles/multiclusterservicediscovery.serviceAgent",
     "roles/vpcaccess.user",
   ]
   service_accounts = {
-    for k, v in coalesce(var.service_accounts, {}) : k => "serviceAccount:${v}"
+    for k, v in coalesce(var.service_accounts, {}) :
+    k => "serviceAccount:${v}" if v != null
   }
 }
 

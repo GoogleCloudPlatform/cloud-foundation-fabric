@@ -26,18 +26,6 @@ variable "config_variables" {
   default     = {}
 }
 
-variable "image" {
-  description = "Nginx container image."
-  type        = string
-  default     = "nginxdemos/hello:plain-text"
-}
-
-variable "nginx_config" {
-  description = "Nginx configuration path, if null container default will be used."
-  type        = string
-  default     = null
-}
-
 variable "file_defaults" {
   description = "Default owner and permissions for files."
   type = object({
@@ -58,4 +46,38 @@ variable "files" {
     permissions = string
   }))
   default = {}
+}
+
+variable "image" {
+  description = "Nginx container image."
+  type        = string
+  default     = "nginxdemos/hello:plain-text"
+}
+
+variable "nginx_config" {
+  description = "Nginx configuration path, if null container default will be used."
+  type        = string
+  default     = null
+}
+
+variable "runcmd_post" {
+  description = "Extra commands to run after starting nginx."
+  type        = list(string)
+  default     = []
+}
+
+variable "runcmd_pre" {
+  description = "Extra commands to run before starting nginx."
+  type        = list(string)
+  default     = []
+}
+
+variable "users" {
+  description = "List of additional usernames to be created."
+  type = list(object({
+    username = string,
+    uid      = number,
+  }))
+  default = [
+  ]
 }

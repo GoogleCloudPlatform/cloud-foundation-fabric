@@ -16,91 +16,124 @@
 
 # tfdoc:file:description Data Platform stages resources.
 
-# top-level Data Platform folder and service account
-
 module "branch-dp-folder" {
   source = "../../../modules/folder"
+  count  = var.fast_features.data_platform ? 1 : 0
   parent = "organizations/${var.organization.id}"
   name   = "Data Platform"
   tag_bindings = {
-    context = module.organization.tag_values["context/data"].id
+    context = try(
+      module.organization.tag_values["${var.tag_names.context}/data"].id, null
+    )
   }
 }
-
-# environment: development folder
 
 module "branch-dp-dev-folder" {
   source    = "../../../modules/folder"
-  parent    = module.branch-dp-folder.id
+  count     = var.fast_features.data_platform ? 1 : 0
+  parent    = module.branch-dp-folder.0.id
   name      = "Development"
   group_iam = {}
   iam = {
-    (local.custom_roles.service_project_network_admin) = [module.branch-dp-dev-sa.iam_email]
+    (local.custom_roles.service_project_network_admin) = [
+      module.branch-dp-dev-sa.0.iam_email
+    ]
     # remove owner here and at project level if SA does not manage project resources
-    "roles/owner"                          = [module.branch-dp-dev-sa.iam_email]
-    "roles/logging.admin"                  = [module.branch-dp-dev-sa.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-dp-dev-sa.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-dp-dev-sa.iam_email]
+    "roles/owner"                          = [module.branch-dp-dev-sa.0.iam_email]
+    "roles/logging.admin"                  = [module.branch-dp-dev-sa.0.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-dp-dev-sa.0.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-dp-dev-sa.0.iam_email]
   }
   tag_bindings = {
-    context = module.organization.tag_values["environment/development"].id
+    context = try(
+      module.organization.tag_values["${var.tag_names.environment}/development"].id,
+      null
+    )
   }
 }
-
-module "branch-dp-dev-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
-  name        = "dev-resman-dp-0"
-  description = "Terraform Data Platform development service account."
-  prefix      = var.prefix
-}
-
-module "branch-dp-dev-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
-  name       = "dev-resman-dp-0"
-  prefix     = var.prefix
-  versioning = true
-  iam = {
-    "roles/storage.objectAdmin" = [module.branch-dp-dev-sa.iam_email]
-  }
-}
-
-# environment: production folder
 
 module "branch-dp-prod-folder" {
   source    = "../../../modules/folder"
-  parent    = module.branch-dp-folder.id
+  count     = var.fast_features.data_platform ? 1 : 0
+  parent    = module.branch-dp-folder.0.id
   name      = "Production"
   group_iam = {}
   iam = {
-    (local.custom_roles.service_project_network_admin) = [module.branch-dp-prod-sa.iam_email]
+    (local.custom_roles.service_project_network_admin) = [module.branch-dp-prod-sa.0.iam_email]
     # remove owner here and at project level if SA does not manage project resources
-    "roles/owner"                          = [module.branch-dp-prod-sa.iam_email]
-    "roles/logging.admin"                  = [module.branch-dp-prod-sa.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-dp-prod-sa.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-dp-prod-sa.iam_email]
+    "roles/owner"                          = [module.branch-dp-prod-sa.0.iam_email]
+    "roles/logging.admin"                  = [module.branch-dp-prod-sa.0.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-dp-prod-sa.0.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-dp-prod-sa.0.iam_email]
   }
   tag_bindings = {
-    context = module.organization.tag_values["environment/production"].id
+    context = try(
+      module.organization.tag_values["${var.tag_names.environment}/production"].id,
+      null
+    )
+  }
+}
+
+# automation service accounts and buckets
+
+module "branch-dp-dev-sa" {
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.data_platform ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "dev-resman-dp-0"
+  display_name = "Terraform data platform development service account."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-dp-dev-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }
 }
 
 module "branch-dp-prod-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
-  name        = "prod-resman-dp-0"
-  description = "Terraform Data Platform production service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.data_platform ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "prod-resman-dp-0"
+  display_name = "Terraform data platform production service account."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-dp-prod-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
+}
+
+module "branch-dp-dev-gcs" {
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.data_platform ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "dev-resman-dp-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.branch-dp-dev-sa.0.iam_email]
+  }
 }
 
 module "branch-dp-prod-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
-  name       = "prod-resman-dp-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.data_platform ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "prod-resman-dp-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-dp-prod-sa.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-dp-prod-sa.0.iam_email]
   }
 }

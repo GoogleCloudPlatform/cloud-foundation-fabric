@@ -14,44 +14,23 @@
 
 name: "Tests"
 on:
-  schedule:
-    - cron: "45 2 * * *"
+  # schedule:
+  #   - cron: "45 2 * * *"
   pull_request:
     branches:
-      - fast-dev
-      - fast-dev-gke
       - master
     tags:
       - ci
       - test
 
 env:
-  TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   GOOGLE_APPLICATION_CREDENTIALS: "/home/runner/credentials.json"
   PYTEST_ADDOPTS: "--color=yes"
+  PYTHON_VERSION: "3.10"
+  TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
+  TF_VERSION: 1.3.2
 
 jobs:
-  doc-examples:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Config auth
-        run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' \
-            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
-
-      - name: Run tests on documentation examples
-        run: |
-          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
-          pip install -r tests/requirements.txt
-          pytest -vv tests/doc_examples
-
   examples:
     runs-on: ubuntu-latest
     steps:
@@ -65,19 +44,62 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.1.4
+          terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
-      - name: Run tests environments
+      # avoid conflicts with user-installed providers on local machines
+      - name: Pin provider versions
+        run: |
+          for f in $(find . -name versions.tf); do
+            sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+          done
+
+      - name: Run tests on documentation examples
+        id: pytest
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
           pytest -vv tests/examples
+
+  blueprints:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Config auth
+        run: |
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      # avoid conflicts with user-installed providers on local machines
+      - name: Pin provider versions
+        run: |
+          for f in $(find . -name versions.tf); do
+            sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+          done
+
+      - name: Run tests environments
+        id: pytest
+        run: |
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          pip install -r tests/requirements.txt
+          pytest -vv tests/blueprints
 
   modules:
     runs-on: ubuntu-latest
@@ -92,16 +114,59 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.1.4
+          terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      # avoid conflicts with user-installed providers on local machines
+      - name: Pin provider versions
+        run: |
+          for f in $(find . -name versions.tf); do
+            sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+          done
+
       - name: Run tests modules
+        id: pytest
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
           pytest -vv tests/modules
+
+  fast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Config auth
+        run: |
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      # avoid conflicts with user-installed providers on local machines
+      - name: Pin provider versions
+        run: |
+          for f in $(find . -name versions.tf); do
+            sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+          done
+
+      - name: Run tests on FAST stages
+        id: pytest
+        run: |
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          pip install -r tests/requirements.txt
+          pytest -vv tests/fast

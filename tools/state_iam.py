@@ -65,20 +65,49 @@ def get_bindings(resources, prefix=None, folders=None):
         member_type, _, member_id = member.partition(':')
         if member_type == 'user':
           continue
-        member_id = member_id.rpartition('@')[0]
+        try:
+          member_id, member_domain = member_id.split('@', 1)
+        except ValueError:
+          if member_type == 'domain':
+            member_id = 'GCP organization domain'
+          member_domain = ''
+          # raise SystemExit(f'Cannot parse binding {member_id}')
+        # Handle Cloud Services Service Account
+        if member_domain == 'cloudservices.gserviceaccount.com':
+          member_id = "PROJECT_CLOUD_SERVICES"
+        # Handle Cloud Service Identity Service Acocunt
+        if re.match("^service-\d{8}", member_id):
+          member_id = "SERVICE_IDENTITY_" + member_domain.split(".", 1)[0]
+        # Handle BQ Cloud Service Identity Service Acocunt
+        if re.match("^bq-\d{8}", member_id):
+          member_id = "IDENTITY_" + member_domain.split(".", 1)[0]
+          resource_type_output = "Service Identity - " + resource_type
+        else:
+          resource_type_output = resource_type
         if prefix and member_id.startswith(prefix):
           member_id = member_id[len(prefix) + 1:]
-        yield Binding(authoritative, resource_type, resource_id, role,
+        yield Binding(authoritative, resource_type_output, resource_id, role,
                       member_type, member_id, conditions)
 
 
 def get_folders(resources):
   'Parse resources and return folder id, name tuples.'
+  folders = {}
   for r in resources:
     if r['type'] != 'google_folder':
       continue
     for i in r['instances']:
-      yield i['attributes']['id'], i['attributes']['display_name']
+      folder_id = i['attributes']['id']
+      folder_name = i['attributes']['display_name']
+      if folder_name not in folders:
+        folders[folder_name] = []
+      folders[folder_name].append(folder_id)
+  for name, ids in folders.items():
+    for i, folder_id in enumerate(ids):
+      if len(ids) == 1:
+        yield folder_id, name
+      else:
+        yield folder_id, f'{name} [#{i}]'
 
 
 def output_csv(bindings):
@@ -95,7 +124,8 @@ def output_principals(bindings):
   print('# IAM bindings reference')
   print('\nLegend: <code>+</code> additive, <code>•</code> conditional.')
   for resource, resource_groups in resource_grouper:
-    print(f'\n## {resource[0].title()} <i>{resource[1].lower()}</i>\n')
+    resource_type, resource_name = resource
+    print(f'\n## {resource_type.title()} <i>{resource_name.lower()}</i>\n')
     principal_grouper = itertools.groupby(
         resource_groups, key=lambda b: (b.member_type, b.member_id))
     print('| members | roles |')

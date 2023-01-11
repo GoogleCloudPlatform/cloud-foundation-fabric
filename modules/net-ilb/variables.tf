@@ -20,33 +20,62 @@ variable "address" {
   default     = null
 }
 
-variable "backend_config" {
-  description = "Optional backend configuration."
+variable "backend_service_config" {
+  description = "Backend service level configuration."
   type = object({
-    session_affinity                = string
-    timeout_sec                     = number
-    connection_draining_timeout_sec = number
+    connection_draining_timeout_sec = optional(number)
+    connection_tracking = optional(object({
+      idle_timeout_sec          = optional(number)
+      persist_conn_on_unhealthy = optional(string)
+      track_per_session         = optional(bool)
+    }))
+    enable_subsetting = optional(bool)
+    failover_config = optional(object({
+      disable_conn_drain        = optional(bool)
+      drop_traffic_if_unhealthy = optional(bool)
+      ratio                     = optional(number)
+    }))
+    log_sample_rate  = optional(number)
+    session_affinity = optional(string)
+    timeout_sec      = optional(number)
   })
-  default = null
+  default  = {}
+  nullable = false
+  validation {
+    condition = contains(
+      [
+        "NONE", "CLIENT_IP", "CLIENT_IP_NO_DESTINATION",
+        "CLIENT_IP_PORT_PROTO", "CLIENT_IP_PROTO"
+      ],
+      coalesce(var.backend_service_config.session_affinity, "NONE")
+    )
+    error_message = "Invalid session affinity value."
+  }
 }
 
 variable "backends" {
   description = "Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'."
   type = list(object({
-    failover       = bool
     group          = string
-    balancing_mode = string
+    balancing_mode = optional(string, "CONNECTION")
+    description    = optional(string, "Terraform managed.")
+    failover       = optional(bool, false)
   }))
+  default  = []
+  nullable = false
+  validation {
+    condition = alltrue([
+      for b in var.backends : contains(
+        ["CONNECTION", "UTILIZATION"], coalesce(b.balancing_mode, "CONNECTION")
+    )])
+    error_message = "When specified balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
+  }
 }
 
-variable "failover_config" {
-  description = "Optional failover configuration."
-  type = object({
-    disable_connection_drain  = bool
-    drop_traffic_if_unhealthy = bool
-    ratio                     = number
-  })
-  default = null
+variable "description" {
+  description = "Optional description used for resources."
+  type        = string
+  default     = "Terraform managed."
 }
 
 variable "global_access" {
@@ -58,11 +87,12 @@ variable "global_access" {
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via outputs."
   type = map(object({
-    instances   = list(string)
-    named_ports = map(number)
     zone        = string
+    instances   = optional(list(string), [])
+    named_ports = optional(map(number), {})
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "health_check" {
@@ -72,20 +102,76 @@ variable "health_check" {
 }
 
 variable "health_check_config" {
-  description = "Configuration of the auto-created helth check."
+  description = "Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage."
   type = object({
-    type    = string      # http https tcp ssl http2
-    check   = map(any)    # actual health check block attributes
-    config  = map(number) # interval, thresholds, timeout
-    logging = bool
+    check_interval_sec  = optional(number)
+    description         = optional(string, "Terraform managed.")
+    enable_logging      = optional(bool, false)
+    healthy_threshold   = optional(number)
+    timeout_sec         = optional(number)
+    unhealthy_threshold = optional(number)
+    grpc = optional(object({
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      service_name       = optional(string)
+    }))
+    http = optional(object({
+      host               = optional(string)
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request_path       = optional(string)
+      response           = optional(string)
+    }))
+    http2 = optional(object({
+      host               = optional(string)
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request_path       = optional(string)
+      response           = optional(string)
+    }))
+    https = optional(object({
+      host               = optional(string)
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request_path       = optional(string)
+      response           = optional(string)
+    }))
+    tcp = optional(object({
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request            = optional(string)
+      response           = optional(string)
+    }))
+    ssl = optional(object({
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request            = optional(string)
+      response           = optional(string)
+    }))
   })
   default = {
-    type = "http"
-    check = {
+    tcp = {
       port_specification = "USE_SERVING_PORT"
     }
-    config  = {}
-    logging = false
+  }
+  validation {
+    condition = (
+      (try(var.health_check_config.grpc, null) == null ? 0 : 1) +
+      (try(var.health_check_config.http, null) == null ? 0 : 1) +
+      (try(var.health_check_config.tcp, null) == null ? 0 : 1) <= 1
+    )
+    error_message = "Only one health check type can be configured at a time."
   }
 }
 
@@ -97,11 +183,6 @@ variable "labels" {
 
 variable "name" {
   description = "Name used for all resources."
-  type        = string
-}
-
-variable "network" {
-  description = "Network used for resources."
   type        = string
 }
 
@@ -133,7 +214,11 @@ variable "service_label" {
   default     = null
 }
 
-variable "subnetwork" {
-  description = "Subnetwork used for the forwarding rule."
-  type        = string
+variable "vpc_config" {
+  description = "VPC-level configuration."
+  type = object({
+    network    = string
+    subnetwork = string
+  })
+  nullable = false
 }

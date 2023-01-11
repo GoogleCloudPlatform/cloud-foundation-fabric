@@ -8,11 +8,11 @@ This module allows simple management of ['Google Data Fusion'](https://cloud.goo
 
 ```hcl
 module "datafusion" {
-  source          = "./modules/datafusion"
-  name            = "my-datafusion"
-  region          = "europe-west1"
-  project_id      = "my-project"
-  network         = "my-network-name"
+  source     = "./fabric/modules/datafusion"
+  name       = "my-datafusion"
+  region     = "europe-west1"
+  project_id = "my-project"
+  network    = "my-network-name"
   # TODO: remove the following line
   firewall_create = false
 }
@@ -23,7 +23,7 @@ module "datafusion" {
 
 ```hcl
 module "datafusion" {
-  source               = "./modules/datafusion"
+  source               = "./fabric/modules/datafusion"
   name                 = "my-datafusion"
   region               = "europe-west1"
   project_id           = "my-project"

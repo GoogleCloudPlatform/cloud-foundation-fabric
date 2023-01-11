@@ -33,7 +33,7 @@ locals {
 }
 
 module "projects" {
-  source                 = "../../../../examples/factories/project-factory"
+  source                 = "../../../../blueprints/factories/project-factory"
   for_each               = local.projects
   defaults               = local.defaults
   project_id             = each.key
@@ -41,7 +41,7 @@ module "projects" {
   billing_alert          = try(each.value.billing_alert, null)
   dns_zones              = try(each.value.dns_zones, [])
   essential_contacts     = try(each.value.essential_contacts, [])
-  folder_id              = each.value.folder_id
+  folder_id              = try(each.value.folder_id, local.defaults.folder_id)
   group_iam              = try(each.value.group_iam, {})
   iam                    = try(each.value.iam, {})
   kms_service_agents     = try(each.value.kms, {})
@@ -49,8 +49,9 @@ module "projects" {
   org_policies           = try(each.value.org_policies, null)
   prefix                 = var.prefix
   service_accounts       = try(each.value.service_accounts, {})
+  service_accounts_iam   = try(each.value.service_accounts_iam, {})
   services               = try(each.value.services, [])
-  service_identities_iam = try(each.value.services_iam, {})
+  service_identities_iam = try(each.value.service_identities_iam, {})
   vpc                    = try(each.value.vpc, null)
 }
 

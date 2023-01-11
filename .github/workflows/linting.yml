@@ -16,8 +16,6 @@ name: "Linting"
 on:
   pull_request:
     branches:
-      - fast-dev
-      - fast-dev-gke
       - master
     tags:
       - ci
@@ -32,12 +30,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.0.9
+          terraform_version: 1.3.2
 
       - name: Install dependencies
         run: |
@@ -53,12 +51,12 @@ jobs:
         run: |
           terraform fmt -recursive -check -diff $GITHUB_WORKSPACE
 
-      - name: Check documentation (fabric)
+      - name: Check documentation
         id: documentation-fabric
         run: |
-          python3 tools/check_documentation.py examples modules fast
+          python3 tools/check_documentation.py modules fast blueprints
 
-      - name: Check documentation links (fabric)
+      - name: Check documentation links
         id: documentation-links-fabric
         run: |
           python3 tools/check_links.py .

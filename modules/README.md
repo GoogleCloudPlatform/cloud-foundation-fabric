@@ -13,12 +13,13 @@ These modules are not necessarily backward compatible. Changes breaking compatib
 These modules are used in the examples included in this repository. If you are using any of those examples in your own Terraform configuration, make sure that you are using the same version for all the modules, and switch module sources to GitHub format using references. The recommended approach to working with Fabric modules is the following:
 
 - Fork the repository and own the fork. This will allow you to:
-    - Evolve the existing modules.
-    - Create your own modules.
-    - Sync from the upstream repository to get all the updates.
- 
+  - Evolve the existing modules.
+  - Create your own modules.
+  - Sync from the upstream repository to get all the updates.
+
 - Use GitHub sources with refs to reference the modules. See an example below:
-    ```
+
+    ```terraform
     module "project" {
         source              = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v13.0.0"
         name                = "my-project"
@@ -30,62 +31,63 @@ These modules are used in the examples included in this repository. If you are u
 ## Foundational modules
 
 - [billing budget](./billing-budget)
+- [Cloud Identity group](./cloud-identity-group/)
 - [folder](./folder)
+- [service accounts](./iam-service-account)
 - [logging bucket](./logging-bucket)
-- [naming convention](./naming-convention)
 - [organization](./organization)
 - [project](./project)
 - [projects-data-source](./projects-data-source)
-- [service account](./iam-service-account)
 
 ## Networking modules
 
-- [address reservation](./net-address)
-- [Cloud DNS](./dns)
-- [Cloud NAT](./net-cloudnat)
+- [DNS](./dns)
 - [Cloud Endpoints](./endpoints)
-- [L4 Internal Load Balancer](./net-ilb)
-- [Service Directory](./service-directory)
+- [address reservation](./net-address)
+- [NAT](./net-cloudnat)
+- [Global Load Balancer (classic)](./net-glb/)
+- [L4 ILB](./net-ilb)
+- [L7 ILB](./net-ilb-l7)
 - [VPC](./net-vpc)
 - [VPC firewall](./net-vpc-firewall)
 - [VPC peering](./net-vpc-peering)
-- [VPN static](./net-vpn-static)
 - [VPN dynamic](./net-vpn-dynamic)
 - [HA VPN](./net-vpn-ha)
-- [ ] TODO: xLB modules
+- [VPN static](./net-vpn-static)
+- [Service Directory](./service-directory)
 
 ## Compute/Container
 
-- [COS container](./cloud-config-container/onprem/) (coredns, mysql, onprem, squid)
-- [GKE cluster](./gke-cluster)
-- [GKE nodepool](./gke-nodepool)
-- [GKE hub](./gke-hub)
-- [Managed Instance Group](./compute-mig)
 - [VM/VM group](./compute-vm)
+- [MIG](./compute-mig)
+- [COS container](./cloud-config-container/cos-generic-metadata/) (coredns/mysql/nva/onprem/squid)
+- [GKE cluster](./gke-cluster)
+- [GKE hub](./gke-hub)
+- [GKE nodepool](./gke-nodepool)
 
 ## Data
 
 - [BigQuery dataset](./bigquery-dataset)
-- [Datafusion](./datafusion)
-- [GCS](./gcs)
-- [Pub/Sub](./pubsub)
 - [Bigtable instance](./bigtable-instance)
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
+- [Datafusion](./datafusion)
+- [GCS](./gcs)
+- [Pub/Sub](./pubsub)
 
 ## Development
 
+- [API Gateway](./api-gateway)
+- [Apigee](./apigee)
 - [Artifact Registry](./artifact-registry)
 - [Container Registry](./container-registry)
-- [Source Repository](./source-repository)
-- [Apigee Organization](./apigee-organization)
-- [Apigee X Instance](./apigee-x-instance)
-- [API Gateway](./api-gateway)
+- [Cloud Source Repository](./source-repository)
 
 ## Security
 
-- [Cloud KMS](./kms)
-- [Secret Manager](./secret-manager)
+- [Binauthz](./binauthz/)
+- [KMS](./kms)
+- [SecretManager](./secret-manager)
 - [VPC Service Control](./vpc-sc)
 
 ## Serverless

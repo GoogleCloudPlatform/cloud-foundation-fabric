@@ -14,9 +14,52 @@
  * limitations under the License.
  */
 
+variable "group_iam" {
+  type    = any
+  default = {}
+}
+
+variable "iam" {
+  type     = any
+  default  = {}
+  nullable = false
+}
+
+variable "iam_additive" {
+  type     = any
+  default  = {}
+  nullable = false
+}
+
+variable "iam_additive_members" {
+  type    = any
+  default = {}
+}
+
+variable "name" {
+  description = "Repository name."
+  type        = string
+  default     = "test"
+}
+
+variable "project_id" {
+  description = "Project used for resources."
+  type        = string
+  default     = "test"
+}
+
+variable "triggers" {
+  type    = any
+  default = null
+}
+
 module "test" {
-  source     = "../../../../modules/source-repository"
-  project_id = var.project_id
-  name       = var.name
-  iam        = var.iam
+  source               = "../../../../modules/source-repository"
+  project_id           = var.project_id
+  name                 = var.name
+  group_iam            = var.group_iam
+  iam                  = var.iam
+  iam_additive         = var.iam_additive
+  iam_additive_members = var.iam_additive_members
+  triggers             = var.triggers
 }

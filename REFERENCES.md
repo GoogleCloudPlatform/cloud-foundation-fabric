@@ -21,6 +21,12 @@ This is a non-exhaustive list of Fabric usage in the wild. Send us a PR if you s
 
 ## GCP Reference Architectures
 
+- [Decide a resource hierarchy for your Google Cloud landing zone](https://cloud.google.com/architecture/landing-zones/decide-resource-hierarchy)
+- [Decide the network design for your Google Cloud landing zone](https://cloud.google.com/architecture/landing-zones/decide-network-design)
 - [Hub-and-spoke network architecture](https://cloud.google.com/architecture/deploy-hub-spoke-vpc-network-topology)
   - [Deploy a hub-and-spoke network using VPC Network Peering](https://cloud.google.com/architecture/deploy-hub-spoke-network-using-peering)
   - [Deploy a hub-and-spoke network using Cloud VPN](https://cloud.google.com/architecture/deploy-hub-spoke-network-using-vpn)
+
+## Third-party reviews
+
+- [Google Cloud Landing Zone Comparison](https://www.meshcloud.io/2022/09/09/gcp-landing-zone-comparison/) by Meshcloud.

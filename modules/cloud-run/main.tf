@@ -15,7 +15,47 @@
  */
 
 locals {
+  _vpcaccess_annotation = (
+    local.vpc_connector_create
+    ? {
+      "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.0.id
+    }
+    : (
+      try(var.revision_annotations.vpcaccess_connector, null) == null
+      ? {}
+      : {
+        "run.googleapis.com/vpc-access-connector" = var.revision_annotations.vpcaccess_connector
+      }
+    )
+  )
+  annotations = merge(
+    var.ingress_settings == null ? {} : {
+      "run.googleapis.com/ingress" = var.ingress_settings
+    }
+  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
+  revision_annotations = merge(
+    try(var.revision_annotations.autoscaling.max_scale, null) == null ? {} : {
+      "autoscaling.knative.dev/maxScale" = var.revision_annotations.autoscaling.max_scale
+    },
+    try(var.revision_annotations.autoscaling.min_scale, null) == null ? {} : {
+      "autoscaling.knative.dev/minScale" = var.revision_annotations.autoscaling.min_scale
+    },
+    try(var.revision_annotations.cloudsql_instances, null) == null ? {} : {
+      "run.googleapis.com/cloudsql-instances" = join(",", coalesce(
+        var.revision_annotations.cloudsql_instances, []
+      ))
+    },
+    local._vpcaccess_annotation,
+    try(var.revision_annotations.vpcaccess_egress, null) == null ? {} : {
+      "run.googleapis.com/vpc-access-egress" = var.revision_annotations.vpcaccess_egress
+    },
+  )
+  revision_name = (
+    try(var.revision_name, null) == null
+    ? null
+    : "${var.name}-${var.revision_name}"
+  )
   service_account_email = (
     var.service_account_create
     ? (
@@ -25,26 +65,16 @@ locals {
     )
     : var.service_account
   )
-
-  annotations = merge(var.ingress_settings == null ? {} : { "run.googleapis.com/ingress" = var.ingress_settings },
-    var.vpc_connector == null
-    ? {}
-    : try(var.vpc_connector.create, false)
-    ? { "run.googleapis.com/vpc-access-connector" = var.vpc_connector.name }
-    : { "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.0.id }
-    ,
-    try(var.vpc_connector.egress_settings, null) == null
-    ? {}
-  : { "run.googleapis.com/vpc-access-egress" = var.vpc_connector.egress_settings })
+  vpc_connector_create = var.vpc_connector_create != null
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count         = try(var.vpc_connector.create, false) == false ? 0 : 1
+  count         = local.vpc_connector_create ? 1 : 0
   project       = var.project_id
-  name          = var.vpc_connector.name
+  name          = var.vpc_connector_create.name
   region        = var.region
-  ip_cidr_range = var.vpc_connector_config.ip_cidr_range
-  network       = var.vpc_connector_config.network
+  ip_cidr_range = var.vpc_connector_create.ip_cidr_range
+  network       = var.vpc_connector_create.vpc_self_link
 }
 
 resource "google_cloud_run_service" "service" {
@@ -56,47 +86,68 @@ resource "google_cloud_run_service" "service" {
   template {
     spec {
       dynamic "containers" {
-        for_each = var.containers == null ? {} : { for i, container in var.containers : i => container }
+        for_each = var.containers == null ? {} : {
+          for i, container in var.containers : i => container
+        }
         content {
-          image   = containers.value["image"]
-          command = try(containers.value["options"]["command"], null)
-          args    = try(containers.value["options"]["args"], null)
+          image   = containers.value.image
+          command = try(containers.value.options.command, null)
+          args    = try(containers.value.options.args, null)
           dynamic "env" {
-            for_each = try(containers.value["options"]["env"], null) == null ? {} : containers.value["options"]["env"]
+            for_each = (
+              try(containers.value.options.env, null) == null
+              ? {}
+              : containers.value.options.env
+            )
             content {
               name  = env.key
               value = env.value
             }
           }
           dynamic "env" {
-            for_each = try(containers.value["options"]["env_from"], null) == null ? {} : containers.value["options"]["env_from"]
+            for_each = (
+              try(containers.value.options.env_from, null) == null
+              ? {}
+              : containers.value.options.env_from
+            )
             content {
               name = env.key
               value_from {
                 secret_key_ref {
-                  name = env.value["name"]
-                  key  = env.value["key"]
+                  name = env.value.name
+                  key  = env.value.key
                 }
               }
             }
           }
           dynamic "ports" {
-            for_each = containers.value["ports"] == null ? {} : { for port in containers.value["ports"] : "${port.name}-${port.container_port}" => port }
+            for_each = (
+              containers.value.ports == null
+              ? {}
+              : {
+                for port in containers.value.ports :
+                "${port.name}-${port.container_port}" => port
+              }
+            )
             content {
-              name           = ports.value["name"]
-              protocol       = ports.value["protocol"]
-              container_port = ports.value["container_port"]
+              name           = ports.value.name
+              protocol       = ports.value.protocol
+              container_port = ports.value.container_port
             }
           }
           dynamic "resources" {
-            for_each = containers.value["resources"] == null ? [] : [""]
+            for_each = containers.value.resources == null ? [] : [""]
             content {
-              limits   = containers.value["resources"]["limits"]
-              requests = containers.value["resources"]["requests"]
+              limits   = containers.value.resources.limits
+              requests = containers.value.resources.requests
             }
           }
           dynamic "volume_mounts" {
-            for_each = containers.value["volume_mounts"] == null ? {} : containers.value["volume_mounts"]
+            for_each = (
+              containers.value.volume_mounts == null
+              ? {}
+              : containers.value.volume_mounts
+            )
             content {
               name       = volume_mounts.key
               mount_path = volume_mounts.value
@@ -108,28 +159,27 @@ resource "google_cloud_run_service" "service" {
       dynamic "volumes" {
         for_each = var.volumes == null ? [] : var.volumes
         content {
-          name = volumes.value["name"]
+          name = volumes.value.name
           secret {
-            secret_name = volumes.value["secret_name"]
+            secret_name = volumes.value.secret_name
             dynamic "items" {
-              for_each = volumes.value["items"] == null ? [] : volumes.value["items"]
+              for_each = (
+                volumes.value.items == null ? [] : volumes.value.items
+              )
               content {
-                key  = items.value["key"]
-                path = items.value["path"]
+                key  = items.value.key
+                path = items.value.path
               }
             }
           }
         }
       }
     }
-    dynamic "metadata" {
-      for_each = var.revision_name == null ? [] : [""]
-      content {
-        name = "${var.name}-${var.revision_name}"
-      }
+    metadata {
+      name        = local.revision_name
+      annotations = local.revision_annotations
     }
   }
-
 
   metadata {
     annotations = local.annotations
@@ -162,7 +212,10 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_eventarc_trigger" "audit_log_triggers" {
-  for_each = var.audit_log_triggers == null ? {} : { for trigger in var.audit_log_triggers : "${trigger.service_name}-${trigger.method_name}" => trigger }
+  for_each = var.audit_log_triggers == null ? {} : {
+    for trigger in var.audit_log_triggers :
+    "${trigger.service_name}-${trigger.method_name}" => trigger
+  }
   name     = "${local.prefix}${each.key}-audit-log-trigger"
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
@@ -172,11 +225,11 @@ resource "google_eventarc_trigger" "audit_log_triggers" {
   }
   matching_criteria {
     attribute = "serviceName"
-    value     = each.value["service_name"]
+    value     = each.value.service_name
   }
   matching_criteria {
     attribute = "methodName"
-    value     = each.value["method_name"]
+    value     = each.value.method_name
   }
   destination {
     cloud_run_service {
@@ -188,7 +241,11 @@ resource "google_eventarc_trigger" "audit_log_triggers" {
 
 resource "google_eventarc_trigger" "pubsub_triggers" {
   for_each = var.pubsub_triggers == null ? [] : toset(var.pubsub_triggers)
-  name     = each.value == "" ? "${local.prefix}default-pubsub-trigger" : "${local.prefix}${each.value}-pubsub-trigger"
+  name = (
+    each.value == ""
+    ? "${local.prefix}default-pubsub-trigger"
+    : "${local.prefix}${each.value}-pubsub-trigger"
+  )
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   matching_criteria {
