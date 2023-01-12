@@ -1,6 +1,6 @@
 # Apigee X - Northbound GLB with PSC Neg, Southbouth PSC with ILB (L7) and Hybrid NEG
 
-The following example shows how to expose an on-prem target backend to clients in the internet.
+The following blueprint shows how to expose an on-prem target backend to clients in the Internet.
 
 The architecture is the one depicted below.
 

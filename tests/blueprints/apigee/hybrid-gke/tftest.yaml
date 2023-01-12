@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-counts:
-  modules: 9
-  resources: 60
+module: blueprints/apigee/hybrid-gke
+
+tests:
+  basic:
