@@ -23,30 +23,41 @@ variable "composer_config" {
   description = "Cloud Composer config."
   type = object({
     disable_deployment = optional(bool)
-    environment_size   = string
-    software_config = object({
+    environment_size   = optional(string, "ENVIRONMENT_SIZE_SMALL")
+    software_config = optional(object({
       airflow_config_overrides = optional(any)
       pypi_packages            = optional(any)
       env_variables            = optional(map(string))
       image_version            = string
+      }), {
+      image_version = "composer-2-airflow-2"
     })
-    workloads_config = object({
-      scheduler = object(
+    workloads_config = optional(object({
+      scheduler = optional(object(
         {
           cpu        = number
           memory_gb  = number
           storage_gb = number
           count      = number
         }
-      )
-      web_server = object(
+        ), {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        count      = 1
+      })
+      web_server = optional(object(
         {
           cpu        = number
           memory_gb  = number
           storage_gb = number
         }
-      )
-      worker = object(
+        ), {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+      })
+      worker = optional(object(
         {
           cpu        = number
           memory_gb  = number
@@ -54,15 +65,40 @@ variable "composer_config" {
           min_count  = number
           max_count  = number
         }
-      )
-    })
+        ), {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        min_count  = 1
+        max_count  = 3
+      })
+    }))
   })
   default = {
     environment_size = "ENVIRONMENT_SIZE_SMALL"
     software_config = {
       image_version = "composer-2-airflow-2"
     }
-    workloads_config = null
+    workloads_config = {
+      scheduler = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        count      = 1
+      }
+      web_server = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+      }
+      worker = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        min_count  = 1
+        max_count  = 3
+      }
+    }
   }
 }
 
