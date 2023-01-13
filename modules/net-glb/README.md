@@ -214,6 +214,33 @@ module "glb-0" {
 }
 # tftest modules=1 resources=6
 ```
+#### Managed Instance Groups
+
+This example shows how to use the module with a manage instance group as backend: 
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id = "myprj"
+  name       = "glb-test-0"
+
+
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = "projects/myprj/regions/europe-west8/instanceGroups/mig-a" }
+      ]
+    }
+  }
+
+  health_check_configs = {
+    default = {
+      tcp = { port = 80 }
+    }
+  }
+}
+# tftest modules=1 resources=5
+```
 
 #### Storage Buckets
 
