@@ -208,6 +208,12 @@ variable "release_channel" {
   default     = null
 }
 
+variable "tags" {
+  description = "Network tags applied to nodes."
+  type        = list(string)
+  default     = null
+}
+
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
