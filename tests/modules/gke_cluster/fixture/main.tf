@@ -25,4 +25,5 @@ module "test" {
   }
   enable_addons   = var.enable_addons
   enable_features = var.enable_features
+  tags            = var.tags
 }
