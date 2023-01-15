@@ -50,7 +50,7 @@ locals {
       name          = "resman"
       sa            = module.automation-tf-resman-sa.email
     })
-    "multitenant/0-bootstrap-tenant" = templatefile(local._tpl_providers, {
+    "0-bootstrap-tenant" = templatefile(local._tpl_providers, {
       backend_extra = join("\n", [
         "# remove the newline between quotes and set the tenant name as prefix",
         "prefix = \"",

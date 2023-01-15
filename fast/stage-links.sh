@@ -56,15 +56,10 @@ case $STAGE_NAME in
 "0-bootstrap-tenant")
   MESSAGE="remember to set the prefix in the provider file"
   PROVIDER_CMD=$CP_CMD
-  PROVIDER="providers/multitenant/0-bootstrap-tenant-providers.tf"
+  PROVIDER="providers/0-bootstrap-tenant-providers.tf"
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
-  # "0-bootstrap-multitenant")
-  #   PROVIDER="providers/multitenant/0-mt-bootstrap-providers.tf"
-  #   TFVARS="tfvars/0-bootstrap.auto.tfvars.json
-  #   tfvars/1-resman.auto.tfvars.json"
-  #   ;;
 "1-resman")
   PROVIDER="providers/${STAGE_NAME}-providers.tf"
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json"

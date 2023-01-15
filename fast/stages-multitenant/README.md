@@ -12,8 +12,10 @@ Once both tenant-level stages are run, a hierarchy and a set of resources is ava
 
 ## Tenant bootstrap (0)
 
-This stage creates the top-level root folder, tag, automation project, automation service accounts, and optionally sets up CI/CD for itself and the tenant resource management stage. It also sets up billing and organization-level roles for the tenant administrators group and the automation service accounts. The organization-level resource management service account is used to run it.
+This stage creates the top-level root folder and tag for the tenant, and the tenant-level automation project and automation service accounts. It also sets up billing and organization-level roles for the tenant administrators group and the automation service accounts. As in the organizational-level stages, it can optionally set up CI/CD for itself and the tenant resource management stage.
+
+This stage is run with the organization-level resource management service account as it leverages its permissions, and is the bridge between the organization-level stages and the tenant stages which are effectively decoupled from the rest of the organization.
 
 ## Tenant resource management (1)
 
-This stage populates the resource hierarchy for the tenant rooted in the dedicated top-level folder, assigns roles to the tenant automation service accounts, and optionally sets up CI/CD for the following stages. It is functionally equivalent to the organization-level resource management stage, and runs with a tenant-specific service account.
+This stage populates the resource hierarchy rooted in the top-level tenant folder, assigns roles to the tenant automation service accounts, and optionally sets up CI/CD for the following stages. It is functionally equivalent to the organization-level resource management stage, but runs with a tenant-specific service account and has no control over resources outside of the tenant context.
