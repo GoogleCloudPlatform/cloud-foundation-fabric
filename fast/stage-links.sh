@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -100,11 +100,13 @@ case $STAGE_NAME in
 
 esac
 
-echo -e "copy and paste the following commands for '$STAGE_NAME'\n"
+echo -e "# copy and paste the following commands for '$STAGE_NAME'\n"
 
 echo "$PROVIDER_CMD/$PROVIDER ./"
 
-if [[ -v GLOBALS ]]; then
+# if [[ -v GLOBALS ]]; then
+# OSX uses an old bash version
+if [[ ! -z ${GLOBALS+x} ]]; then
   echo "$CMD/$GLOBALS ./"
 fi
 
@@ -112,6 +114,6 @@ for f in $TFVARS; do
   echo "$CMD/$f ./"
 done
 
-if [[ -v MESSAGE ]]; then
-  echo -e "\n---> $MESSAGE <---"
+if [[ ! -z ${MESSAGE+x} ]]; then
+  echo -e "\n# ---> $MESSAGE <---"
 fi
