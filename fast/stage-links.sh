@@ -14,8 +14,21 @@
 # limitations under the License.
 
 if [ $# -eq 0 ]; then
-  echo "pass one argument with the path to the output files folder or GCS bucket"
+  echo "Error: no folder or GCS bucket specified. Use -h or --help for usage."
   exit 1
+fi
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  cat <<END
+Create commands to initialize stage provider and tfvars files.
+
+Usage with GCS output files bucket:
+  stage-links.sh GCS_BUCKET_URI
+
+Usage with local output files folder:
+  stage-links.sh FOLDER_PATH
+END
+  exit 0
 fi
 
 if [[ "$1" == "gs://"* ]]; then
@@ -90,6 +103,7 @@ esac
 echo -e "copy and paste the following commands for '$STAGE_NAME'\n"
 
 echo "$PROVIDER_CMD/$PROVIDER ./"
+
 if [[ -v GLOBALS ]]; then
   echo "$CMD/$GLOBALS ./"
 fi
