@@ -10,6 +10,12 @@ The multitenant stages have the following characteristics:
 
 Once both tenant-level stages are run, a hierarchy and a set of resources is available for the new tenant, including a separate automation project, service accounts for subsequent stages, etc.
 
+The tenant-level stages require that organization-level stage 0 (bootstrap) and 1 (resource management) have been applied. Their position and role in the FAST stage flow is shown in the following diagram:
+
+<p align="center">
+  <img src="stages.svg" alt="Stages diagram">
+</p>
+
 ## Tenant bootstrap (0)
 
 This stage creates the top-level root folder and tag for the tenant, and the tenant-level automation project and automation service accounts. It also sets up billing and organization-level roles for the tenant administrators group and the automation service accounts. As in the organizational-level stages, it can optionally set up CI/CD for itself and the tenant resource management stage.

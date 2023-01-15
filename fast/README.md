@@ -20,7 +20,7 @@ From the perspective of FAST's overall design, stages also work as contacts or i
   <img src="stages.svg" alt="Stages diagram">
 </p>
 
-Please refer to the [stages](./stages/) section for further details on each stage.
+Please refer to the [stages](./stages/) section for further details on each stage. For details on tenant-level stages which introduce a deeper level of autonomy via nested FAST setups rooted in a top-level folder, refer to the [multitenant stages](#multitenant-organizations) section below.
 
 ### Security-first design
 
@@ -40,7 +40,13 @@ One of our objectives with FAST is to provide a lightweight reference design for
 
 ### Multitenant organizations
 
-FAST has built-in support for complex multitenant organizations, where each tenant has complete control over a separate hierarchy rooted in a top-level folder. This approach is particularly suited for large enterprises where individual countries or business units have a large degree of autonomy. FAST implements multitenancy via [dedicated stages](stages-multitenant) for tenant-level bootstrap and resource management, which configure each separate hierarchy so that subsequent FAST stages (networking, security, data, etc.) can be bolted on for each tenant.
+FAST has built-in support for complex multitenant organizations, where each tenant has complete control over a separate hierarchy rooted in a top-level folder. This approach is particularly suited for large enterprises or governments, where country-level subsidiaries or government agencies have a wide degree of autonomy within a shared GCP organization managed by a central entity.
+
+FAST implements multitenancy via [dedicated stages](stages-multitenant) for tenant-level bootstrap and resource management, which configure separate hierarchies within the organization rooted in top-level folders, so that subsequent FAST stages (networking, security, data, etc.) can be used directly for each tenant. The diagram below shows the relationships between organization-level and tenant-level stages.
+
+<p align="center">
+  <img src="stages-multitenant/stages.svg" alt="Stages diagram">
+</p>
 
 ## Implementation
 
