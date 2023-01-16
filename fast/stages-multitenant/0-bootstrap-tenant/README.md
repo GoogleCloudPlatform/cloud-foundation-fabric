@@ -39,12 +39,11 @@ The following diagram is a high level reference of what this stage manages, show
 ```mermaid
 
 %%{
-  init: { "theme": "base", "themeVariables": { "primaryColor": "#E3F2FD" } }
+  init: { "theme": "base", "themeVariables": { "primaryColor": "#E3F2FD", "secondaryColor": "red" } }
 }%%
 
-classDiagram
 
-    direction TD
+classDiagram
 
     Organization -- Tenant0
     Organization -- Tenant1
@@ -83,6 +82,8 @@ classDiagram
         IAM bindings()
     }
 ```
+
+<img src="diagram.svg>
 
 ## Design overview and choices
 
