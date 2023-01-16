@@ -34,14 +34,47 @@ variable "billing_account" {
 variable "composer_config" {
   description = "Cloud Composer configuration options."
   type = object({
-    node_count      = number
-    airflow_version = string
-    env_variables   = map(string)
+    disable_deployment = optional(bool)
+    environment_size   = string
+    software_config = object({
+      airflow_config_overrides = optional(any)
+      pypi_packages            = optional(any)
+      env_variables            = optional(map(string))
+      image_version            = string
+    })
+    workloads_config = object({
+      scheduler = object(
+        {
+          cpu        = number
+          memory_gb  = number
+          storage_gb = number
+          count      = number
+        }
+      )
+      web_server = object(
+        {
+          cpu        = number
+          memory_gb  = number
+          storage_gb = number
+        }
+      )
+      worker = object(
+        {
+          cpu        = number
+          memory_gb  = number
+          storage_gb = number
+          min_count  = number
+          max_count  = number
+        }
+      )
+    })
   })
   default = {
-    node_count      = 3
-    airflow_version = "composer-1.17.5-airflow-2.1.4"
-    env_variables   = {}
+    environment_size = "ENVIRONMENT_SIZE_SMALL"
+    software_config = {
+      image_version = "composer-2-airflow-2"
+    }
+    workloads_config = null
   }
 }
 
@@ -101,14 +134,12 @@ variable "network_config_composer" {
     gke_master_range  = string
     gke_pods_name     = string
     gke_services_name = string
-    web_server_range  = string
   })
   default = {
     cloudsql_range    = "192.168.254.0/24"
     gke_master_range  = "192.168.255.0/28"
     gke_pods_name     = "pods"
     gke_services_name = "services"
-    web_server_range  = "192.168.255.16/28"
   }
 }
 
