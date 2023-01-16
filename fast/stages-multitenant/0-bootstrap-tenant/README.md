@@ -16,7 +16,7 @@ The stage is intentionally simple as it still operates at the organization level
 
 <!-- https://mdigi.tools/darken-color/#f1f8e9 -->
 
-<style>
+<!-- style>
   svg .edgePaths path {
     stroke: #bebebe !important;
   }
@@ -32,14 +32,14 @@ The stage is intentionally simple as it still operates at the organization level
     fill: #F1F8E9 !important;
     stroke: #abd57b !important;
   }
-</style>
+</style -->
 
 The following diagram is a high level reference of what this stage manages, showing two hypothetical tenants (which would need two distinct copies of this stage):
 
 ```mermaid
 
 %%{
-  init: { "theme": "base", "themeVariables": { "primaryColor": "#E3F2FD", "secondaryColor": "red" } }
+  init: { "theme": "base", "themeVariables": { "primaryColor": "#E3F2FD" } }
 }%%
 
 
@@ -83,7 +83,7 @@ classDiagram
     }
 ```
 
-<img src="diagram.svg>
+<img src="diagram.svg">
 
 ## Design overview and choices
 
