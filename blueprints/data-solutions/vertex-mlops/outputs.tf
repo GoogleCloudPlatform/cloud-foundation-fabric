@@ -22,7 +22,7 @@ locals {
   docker_repo  = try("${local.docker_split[3]}-docker.pkg.dev/${local.docker_split[1]}/${local.docker_split[5]}", null)
   gh_config = {
     WORKLOAD_ID_PROVIDER = try(google_iam_workload_identity_pool_provider.github_provider[0].name, null)
-    SERVICE_ACCOUNT      = try(module.service-accounts["sa-github"].email, null)
+    SERVICE_ACCOUNT      = try(module.service-account-github.email, null)
     PROJECT_ID           = try(module.project.project_id, null)
     DOCKER_REPO          = local.docker_repo
   }
@@ -44,8 +44,7 @@ output "project" {
   value       = module.project
 
   depends_on = [
-    google_compute_subnetwork_iam_member.default,
-    module.dns
+    google_compute_subnetwork_iam_member.default
   ]
 }
 
@@ -53,8 +52,7 @@ output "project_id" {
   description = "Project ID."
   value       = module.project.project_id
   depends_on = [
-    google_compute_subnetwork_iam_member.default,
-    module.dns
+    google_compute_subnetwork_iam_member.default
   ]
 }
 

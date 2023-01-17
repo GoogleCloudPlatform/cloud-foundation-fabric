@@ -15,7 +15,7 @@
  */
 
 resource "google_iam_workload_identity_pool" "github_pool" {
-  count                     = var.workload_identity == null ? 0 : 1
+  count                     = var.identity_pool_claims == null ? 0 : 1
   provider                  = google-beta
   project                   = module.project.project_id
   workload_identity_pool_id = "gh-pool"
@@ -24,7 +24,7 @@ resource "google_iam_workload_identity_pool" "github_pool" {
 }
 
 resource "google_iam_workload_identity_pool_provider" "github_provider" {
-  count                              = var.workload_identity == null ? 0 : 1
+  count                              = var.identity_pool_claims == null ? 0 : 1
   provider                           = google-beta
   project                            = module.project.project_id
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool[0].workload_identity_pool_id
@@ -41,22 +41,41 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
 }
 
 
-resource "google_service_account_iam_member" "sa-gh-roles" {
-  count              = var.workload_identity == null ? 0 : 1
-  service_account_id = module.service-accounts["sa-github"].name
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool[0].name}/${var.workload_identity.identity_pool_claims}"
-}
+
 
 
 module "artifact_registry" {
-  for_each   = var.artifact_registry
-  source     = "../../../../../modules/artifact-registry"
-  id         = each.key
+  source     = "../../../modules/artifact-registry"
+  id         = "docker-repo"
   project_id = module.project.project_id
-  location   = each.value.region
-  format     = each.value.format
+  location   = var.region
+  format     = "DOCKER"
   #  iam = {
   #    "roles/artifactregistry.admin" = ["group:cicd@example.com"]
   #  }
+}
+
+module "service-account-github" {
+  source     = "../../../modules/iam-service-account"
+  name       = "sa-github"
+  project_id = module.project.project_id
+  iam = {
+    "roles/iam.workloadIdentityUser" = ["principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool[0].name}/${var.identity_pool_claims}"]
+  }
+}
+
+module "secret-manager" {
+  project_id = module.project.project_id
+  source     = "../../../modules/secret-manager"
+  secrets = {
+    github-key = [var.region]
+  }
+  iam = {
+    github-key = {
+      "roles/secretmanager.secretAccessor" = [
+        "serviceAccount:${module.project.service_accounts.robots.cloudbuild}",
+        module.service-account-mlops.iam_email
+      ]
+    }
+  }
 }

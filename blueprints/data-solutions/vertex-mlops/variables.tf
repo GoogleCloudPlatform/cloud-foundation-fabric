@@ -14,82 +14,28 @@
  * limitations under the License.
  */
 
-variable "artifact_registry" {
-  description = "Artifact Refistry repositories for the project."
-  type = map(object({
-    format = string
-    region = string
-    }
-  ))
-  default = null
-}
 
 variable "billing_account_id" {
   description = "Billing account id."
   type        = string
 }
 
-variable "billing_alert" {
-  description = "Billing alert configuration."
-  type = object({
-    amount = number
-    thresholds = object({
-      current    = list(number)
-      forecasted = list(number)
-    })
-    credit_treatment = string
-  })
-  default = null
+variable "bucket_name" {
+  description = "Create GCS Bucket."
+  type        = string
+  default     = null
 }
 
-variable "buckets" {
-  description = "Create GCS Buckets."
-  type = map(object({
-    region = string
-  }))
-  default = null
-}
-
-variable "datasets" {
+variable "dataset_name" {
   description = "Create BigQuery Datasets."
-  type = map(object({
-    region = string
-  }))
-  default = null
+  type        = string
+  default     = null
 }
 
-variable "defaults" {
-  description = "Project factory default values."
-  type = object({
-    billing_account_id = string
-    billing_alert = object({
-      amount = number
-      thresholds = object({
-        current    = list(number)
-        forecasted = list(number)
-      })
-      credit_treatment = string
-    })
-    environment_dns_zone  = string
-    essential_contacts    = list(string)
-    labels                = map(string)
-    notification_channels = list(string)
-    shared_vpc_self_link  = string
-    vpc_host_project      = string
-  })
-  default = null
-}
-
-variable "dns_zones" {
-  description = "DNS private zones to create as child of var.defaults.environment_dns_zone."
-  type        = list(string)
-  default     = []
-}
-
-variable "essential_contacts" {
-  description = "Email contacts to be used for billing and GCP notifications."
-  type        = list(string)
-  default     = []
+variable "env" {
+  description = "Environment (dev,stg,prd)"
+  type        = string
+  default     = "dev"
 }
 
 variable "folder_id" {
@@ -97,16 +43,19 @@ variable "folder_id" {
   type        = string
 }
 
-variable "group_iam" {
-  description = "Custom IAM settings in group => [role] format."
-  type        = map(list(string))
-  default     = {}
+variable "groups" {
+  description = "User groups."
+  type        = map(string)
+  default = {
+    data-scientists = "gcp-ml-ds"
+    ml-engineers    = "gcp-ml-eng"
+  }
 }
 
-variable "iam" {
-  description = "Custom IAM settings in role => [principal] format."
-  type        = map(list(string))
-  default     = {}
+variable "identity_pool_claims" {
+  description = "Claims to be used by Workload Identity Federation. i.e.: attribute.repository/ORGANIZATION/REPO"
+  type        = string
+  default     = null
 }
 
 variable "kms_service_agents" {
@@ -121,6 +70,7 @@ variable "labels" {
   default     = {}
 }
 
+
 variable "notebooks" {
   description = "Vertex AI workbenchs to be deployed."
   type = map(object({
@@ -132,7 +82,6 @@ variable "notebooks" {
   }))
   default = null
 }
-
 
 variable "org_policies" {
   description = "Org-policy overrides at project level."
@@ -174,61 +123,57 @@ variable "org_policies" {
   nullable = false
 }
 
+variable "organization_domain" {
+  description = "Organization domain."
+  type        = string
+}
+
 variable "prefix" {
   description = "Prefix used for the project id."
   type        = string
   default     = null
 }
 
+variable "project_create" {
+  description = "Create project. When set to false, uses a data source to reference existing project."
+  type        = bool
+  default     = true
+}
+
 variable "project_id" {
   description = "Project id."
   type        = string
+}
+variable "project_services" {
+  description = "List of core services enabled on all projects."
+  type        = list(string)
+  default = [
+    "aiplatform.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "bigquery.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "compute.googleapis.com",
+    "datacatalog.googleapis.com",
+    "dataflow.googleapis.com",
+    "iam.googleapis.com",
+    "monitoring.googleapis.com",
+    "notebooks.googleapis.com",
+    "secretmanager.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "serviceusage.googleapis.com"
+  ]
+}
+
+variable "region" {
+  description = "Region used for regional resources."
+  type        = string
+  default     = "europe-west4"
 }
 
 variable "repo_name" {
   description = "Cloud Source Repository name. null to avoid to create it."
   type        = string
   default     = null
-}
-
-variable "secrets" {
-  description = "Secrets to be created, and roles to assign them."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "secrets_iam" {
-  description = "IAM bindings on secrets resources. Format is KEY => {ROLE => [MEMBERS]}."
-  type        = map(map(list(string)))
-  default     = {}
-  nullable    = false
-}
-
-variable "service_accounts" {
-  description = "Service accounts to be created, and roles to assign them."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "service_accounts_iam" {
-  description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}."
-  type        = map(map(list(string)))
-  default     = {}
-  nullable    = false
-}
-
-variable "service_identities_iam" {
-  description = "Custom IAM settings for service identities in service => [role] format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "services" {
-  description = "Services to be enabled for the project."
-  type        = list(string)
-  default     = []
-  nullable    = false
 }
 
 variable "vpc" {
@@ -258,15 +203,26 @@ variable "vpc_local" {
     ))
     }
   )
-  default = null
-}
-
-variable "workload_identity" {
-  description = "Create Workload Identity Pool for Github."
-  type = object({
-    identity_pool_claims = string
-  })
-  default = null
+  default = {
+    "name" : "default",
+    "subnets" : [
+      {
+        "name" : "default",
+        "region" : "europe-west1",
+        "ip_cidr_range" : "10.1.0.0/24",
+        "secondary_ip_range" : null
+      },
+      {
+        "name" : "default",
+        "region" : "europe-west4",
+        "ip_cidr_range" : "10.4.0.0/24",
+        "secondary_ip_range" : null
+      }
+    ],
+    "psa_config_ranges" : {
+      "vertex" : "10.13.0.0/18"
+    }
+  }
 }
 
 

@@ -15,17 +15,26 @@
  */
 
 module "projects" {
-  source               = "../../../../../blueprints/data-solutions/vertex-mlops/01-development/"
-  data_dir             = "./data/projects/"
-  defaults_file        = "./data/defaults.yaml"
-  prefix               = "test"
-  environment_dns_zone = "dev"
-  billing_account = {
-    id              = "000000-111111-222222"
-    organization_id = 123456789012
+  source             = "../../../../../blueprints/data-solutions/vertex-mlops/"
+  billing_account_id = "000000-123456-123456"
+  folder_id          = "folders/111111111111"
+  labels = {
+    "env" : "dev",
+    "team" : "ml"
   }
-  vpc_self_links = {
-    dev-spoke-0 = "link"
+  bucket_name          = "test-dev"
+  dataset_name         = "test"
+  identity_pool_claims = "attribute.repository/ORGANIZATION/REPO"
+  notebooks = {
+    "myworkbench" : {
+      "owner" : "user@example.com",
+      "region" : "europe-west4",
+      "subnet" : "default",
+      "internal_ip_only" : false,
+      "idle_shutdown_timeout" : true
+    }
   }
+  organization_domain = "example.com"
+  prefix              = "pref"
+  project_id          = "test-dev"
 }
-

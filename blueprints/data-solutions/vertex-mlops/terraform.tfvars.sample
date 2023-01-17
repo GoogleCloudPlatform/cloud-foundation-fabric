@@ -1,0 +1,21 @@
+billing_account_id = "000000-123456-123456"
+folder_id          = "folders/111111111111"
+labels = {
+  "env" : "dev",
+  "team" : "ml"
+}
+bucket_name          = "creditcards-dev"
+dataset_name         = "creditcards"
+identity_pool_claims = "attribute.repository/ORGANIZATION/REPO"
+notebooks = {
+  "myworkbench" : {
+    "owner" : "user@example.com",
+    "region" : "europe-west4",
+    "subnet" : "default",
+    "internal_ip_only" : false,
+    "idle_shutdown_timeout" : true
+  }
+}
+organization_domain = "example.com"
+prefix              = "pref"
+project_id          = "creditcards-dev"
