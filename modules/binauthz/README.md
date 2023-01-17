@@ -8,8 +8,8 @@ This module simplifies the creation of a Binary Authorization policy, attestors 
 
 ```hcl
 module "binauthz" {
-  source     = "./fabric/modules/binauthz"
-  project_id = "my_project"
+  source                        = "./fabric/modules/binauthz"
+  project_id                    = "my_project"
   global_policy_evaluation_mode = "DISABLE"
   default_admission_rule = {
     evaluation_mode  = "ALWAYS_DENY"
@@ -18,16 +18,16 @@ module "binauthz" {
   }
   cluster_admission_rules = {
     "europe-west1-c.cluster" = {
-        evaluation_mode  = "REQUIRE_ATTESTATION"
-        enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
-        attestors = [ "test" ]
+      evaluation_mode  = "REQUIRE_ATTESTATION"
+      enforcement_mode = "ENFORCED_BLOCK_AND_AUDIT_LOG"
+      attestors        = ["test"]
     }
   }
   attestors_config = {
-    "test": {
-        note_reference  = null
-        pgp_public_keys = [
-            <<EOT
+    "test" : {
+      note_reference = null
+      pgp_public_keys = [
+        <<EOT
             mQENBFtP0doBCADF+joTiXWKVuP8kJt3fgpBSjT9h8ezMfKA4aXZctYLx5wslWQl
             bB7Iu2ezkECNzoEeU7WxUe8a61pMCh9cisS9H5mB2K2uM4Jnf8tgFeXn3akJDVo0
             oR1IC+Dp9mXbRSK3MAvKkOwWlG99sx3uEdvmeBRHBOO+grchLx24EThXFOyP9Fk6
@@ -44,11 +44,11 @@ module "binauthz" {
             qoIRW6y0+UlAc+MbqfL0ziHDOAmcqz1GnROg
             =6Bvm
             EOT
-        ]
-        pkix_public_keys = null
-        iam = {
-            "roles/viewer" = ["user:user1@my_org.com"]
-        }
+      ]
+      pkix_public_keys = null
+      iam = {
+        "roles/viewer" = ["user:user1@my_org.com"]
+      }
     }
   }
 }

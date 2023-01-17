@@ -70,7 +70,7 @@ resource "google_service_account" "service_account" {
 resource "google_container_node_pool" "nodepool" {
   provider           = google-beta
   project            = var.project_id
-  cluster            = var.cluster_name
+  cluster            = coalesce(var.cluster_id, var.cluster_name)
   location           = var.location
   name               = var.name
   version            = var.gke_version

@@ -54,6 +54,9 @@ module "orch-project" {
     "roles/bigquery.jobUser" = [
       module.orch-sa-cmp-0.iam_email,
     ]
+    "roles/composer.ServiceAgentV2Ext" = [
+      "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
+    ]
     "roles/composer.worker" = [
       module.orch-sa-cmp-0.iam_email
     ]
@@ -67,11 +70,6 @@ module "orch-project" {
     "roles/storage.objectViewer" = [module.load-sa-df-0.iam_email]
   }
   oslogin = false
-  org_policies = {
-    "constraints/compute.requireOsLogin" = {
-      enforce = false
-    }
-  }
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",

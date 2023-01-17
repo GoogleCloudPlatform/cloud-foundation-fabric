@@ -25,14 +25,14 @@ module "apigee" {
   }
   environments = {
     apis-test = {
-      display_name    = "APIs test"
-      description     = "APIs Test"
-      envgroups       = ["test"]
+      display_name = "APIs test"
+      description  = "APIs Test"
+      envgroups    = ["test"]
     }
     apis-prod = {
-      display_name    = "APIs prod"
-      description     = "APIs prod"
-      envgroups       = ["prod"]
+      display_name = "APIs prod"
+      description  = "APIs prod"
+      envgroups    = ["prod"]
       iam = {
         "roles/viewer" = ["group:devops@myorg.com"]
       }
@@ -71,10 +71,10 @@ module "apigee" {
   source     = "./fabric/modules/apigee"
   project_id = "my-project"
   organization = {
-    display_name            = "My Organization"
-    description             = "My Organization"
-    runtime_type            = "HYBRID"
-    analytics_region        = "europe-west1"
+    display_name     = "My Organization"
+    description      = "My Organization"
+    runtime_type     = "HYBRID"
+    analytics_region = "europe-west1"
   }
   envgroups = {
     test = ["test.example.com"]
@@ -82,14 +82,14 @@ module "apigee" {
   }
   environments = {
     apis-test = {
-      display_name    = "APIs test"
-      description     = "APIs Test"
-      envgroups       = ["test"]
+      display_name = "APIs test"
+      description  = "APIs Test"
+      envgroups    = ["test"]
     }
     apis-prod = {
-      display_name    = "APIs prod"
-      description     = "APIs prod"
-      envgroups       = ["prod"]
+      display_name = "APIs prod"
+      description  = "APIs prod"
+      envgroups    = ["prod"]
       iam = {
         "roles/viewer" = ["group:devops@myorg.com"]
       }
@@ -120,9 +120,9 @@ module "apigee" {
   project_id = "my-project"
   environments = {
     apis-test = {
-      display_name    = "APIs test"
-      description     = "APIs Test"
-      envgroups       = ["test"]
+      display_name = "APIs test"
+      description  = "APIs Test"
+      envgroups    = ["test"]
     }
   }
 }
@@ -180,12 +180,13 @@ module "apigee" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [envgroups](outputs.tf#L17) | Environment groups. |  |
-| [environments](outputs.tf#L22) | Environment. |  |
-| [instances](outputs.tf#L27) | Instances. |  |
-| [org_id](outputs.tf#L32) | Organization ID. |  |
-| [org_name](outputs.tf#L37) | Organization name. |  |
-| [organization](outputs.tf#L42) | Organization. |  |
-| [service_attachments](outputs.tf#L47) | Service attachments. |  |
+| [endpoint_attachment_hosts](outputs.tf#L17) | Endpoint hosts. |  |
+| [envgroups](outputs.tf#L22) | Environment groups. |  |
+| [environments](outputs.tf#L27) | Environment. |  |
+| [instances](outputs.tf#L32) | Instances. |  |
+| [org_id](outputs.tf#L37) | Organization ID. |  |
+| [org_name](outputs.tf#L42) | Organization name. |  |
+| [organization](outputs.tf#L47) | Organization. |  |
+| [service_attachments](outputs.tf#L52) | Service attachments. |  |
 
 <!-- END TFDOC -->

@@ -35,3 +35,9 @@ variable "monitoring_config" {
     managed_prometheus = true
   }
 }
+
+variable "tags" {
+  description = "Network tags applied to nodes."
+  type        = list(string)
+  default     = null
+}

@@ -1,0 +1,8 @@
+projects:
+  tf-playground-svpc-net:
+    global:
+      INTERNAL_FORWARDING_RULES_PER_NETWORK: 750
+networks:
+  # TODO: what are the quotas that can be overridden at the network level?
+  projects/tf-playground-svpc-net/global/networks/shared-vpc:
+    PEERINGS_PER_NETWORK: 40

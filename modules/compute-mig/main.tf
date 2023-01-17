@@ -71,7 +71,7 @@ resource "google_compute_instance_group_manager" "default" {
     for_each = var.stateful_disks
     content {
       device_name = stateful_disk.key
-      delete_rule = stateful_disk.value
+      delete_rule = stateful_disk.value ? "ON_PERMANENT_INSTANCE_DELETION" : "NEVER"
     }
   }
 
@@ -161,7 +161,7 @@ resource "google_compute_region_instance_group_manager" "default" {
     for_each = var.stateful_disks
     content {
       device_name = stateful_disk.key
-      delete_rule = stateful_disk.value
+      delete_rule = stateful_disk.value ? "ON_PERMANENT_INSTANCE_DELETION" : "NEVER"
     }
   }
 

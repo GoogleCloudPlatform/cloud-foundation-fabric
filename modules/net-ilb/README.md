@@ -37,7 +37,7 @@ module "ilb" {
     }
   }
   backends = [{
-    group          = module.ilb.groups.my-group.self_link
+    group = module.ilb.groups.my-group.self_link
   }]
   health_check_config = {
     http = {
@@ -96,7 +96,7 @@ module "ilb" {
   vpc_config = {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
-    }
+  }
   ports = [80]
   backends = [
     for z, mod in module.instance-group : {

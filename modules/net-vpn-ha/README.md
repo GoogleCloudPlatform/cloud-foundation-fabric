@@ -13,7 +13,7 @@ module "vpn-1" {
   name         = "net1-to-net-2"
   peer_gateway = { gcp = module.vpn-2.self_link }
   router_config = {
-    asn       = 64514
+    asn = 64514
     custom_advertise = {
       all_subnets = true
       ip_ranges = {
@@ -48,7 +48,7 @@ module "vpn-2" {
   network       = var.vpc2.self_link
   name          = "net2-to-net1"
   router_config = { asn = 64513 }
-  peer_gateway  = { gcp = module.vpn-1.self_link}
+  peer_gateway  = { gcp = module.vpn-1.self_link }
   tunnels = {
     remote-0 = {
       bgp_peer = {

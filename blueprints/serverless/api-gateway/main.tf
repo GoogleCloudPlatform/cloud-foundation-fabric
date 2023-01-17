@@ -103,26 +103,16 @@ module "gateways" {
 
 module "glb" {
   source     = "../../../modules/net-glb"
-  name       = "glb"
   project_id = module.project.project_id
-  # This is important as serverless backends require no HCs
-  health_checks_config_defaults = null
-  reserve_ip_address            = true
-  backend_services_config = {
-    serverless-backend = {
-      bucket_config = null
-      enable_cdn    = false
-      cdn_config    = null
-      group_config = {
-        backends = [for region in var.regions : {
-          group   = google_compute_region_network_endpoint_group.serverless-negs[region].id
-          options = null
-          }
-        ],
-        health_checks = []
-        log_config    = null
-        options       = null
-      }
+  name       = "glb"
+  backend_service_configs = {
+    default = {
+      backends = [
+        for region in var.regions : {
+          backend = google_compute_region_network_endpoint_group.serverless-negs[region].id
+        }
+      ]
+      health_checks = []
     }
   }
 }

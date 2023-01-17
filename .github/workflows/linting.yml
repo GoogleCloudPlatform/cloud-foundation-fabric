@@ -16,8 +16,6 @@ name: "Linting"
 on:
   pull_request:
     branches:
-      - fast-dev
-      - fast-dev-gke
       - master
     tags:
       - ci

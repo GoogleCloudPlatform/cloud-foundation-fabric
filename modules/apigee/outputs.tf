@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "endpoint_attachment_hosts" {
+  description = "Endpoint hosts."
+  value       = { for k, v in google_apigee_endpoint_attachment.endpoint_attachments : k => v.host }
+}
+
 output "envgroups" {
   description = "Environment groups."
   value       = try(google_apigee_envgroup.envgroups, null)

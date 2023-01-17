@@ -13,8 +13,9 @@
 # limitations under the License.
 
 
-def test_counts(recursive_e2e_plan_runner):
+def test_counts(plan_summary):
   "Test stage."
-  num_modules, num_resources = recursive_e2e_plan_runner()
-  # TODO: to re-enable per-module resource count check print _, then test
-  assert num_modules > 0 and num_resources > 0
+  summary = plan_summary("fast/stages/02-networking-vpn",
+                         tf_var_files=["common.tfvars"])
+  assert summary.counts["modules"] > 0
+  assert summary.counts["resources"] > 0

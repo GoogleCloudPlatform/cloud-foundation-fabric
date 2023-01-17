@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -128,14 +128,14 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
         elif nc := [v.name for v in newvars if not v.description.endswith('.')]:
           state = state.FAIL_VARIABLE_PERIOD
           diff = "\n".join([
-              f'----- {mod_name} variables missing colons -----',
+              f'----- {mod_name} variable descriptions missing ending period -----',
               ', '.join(nc),
           ])
 
         elif nc := [o.name for o in newouts if not o.description.endswith('.')]:
           state = state.FAIL_VARIABLE_PERIOD
           diff = "\n".join([
-              f'----- {mod_name} outputs missing colons -----',
+              f'----- {mod_name} output descriptions missing ending period -----',
               ', '.join(nc),
           ])
 
