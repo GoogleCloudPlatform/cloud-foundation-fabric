@@ -75,9 +75,9 @@ project_id          = "creditcards-dev"
 | [project_id](variables.tf#L143) | Project id. | <code>string</code> | ✓ |  |
 | [bucket_name](variables.tf#L23) | Create GCS Bucket. | <code>string</code> |  | <code>null</code> |
 | [dataset_name](variables.tf#L29) | Create BigQuery Datasets. | <code>string</code> |  | <code>null</code> |
-| [env](variables.tf#L35) | Environment (dev,stg,prd) | <code>string</code> |  | <code>&#34;dev&#34;</code> |
+| [env](variables.tf#L35) | Environment (dev,stg,prd). | <code>string</code> |  | <code>&#34;dev&#34;</code> |
 | [groups](variables.tf#L46) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-scientists &#61; &#34;gcp-ml-ds&#34;&#10;  ml-engineers    &#61; &#34;gcp-ml-eng&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [identity_pool_claims](variables.tf#L55) | Claims to be used by Workload Identity Federation. i.e.: attribute.repository/ORGANIZATION/REPO | <code>string</code> |  | <code>null</code> |
+| [identity_pool_claims](variables.tf#L55) | Claims to be used by Workload Identity Federation (i.e.: attribute.repository/ORGANIZATION/REPO). | <code>string</code> |  | <code>null</code> |
 | [kms_service_agents](variables.tf#L61) | KMS IAM configuration in as service => [key]. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L67) | Labels to be assigned at project level. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notebooks](variables.tf#L74) | Vertex AI workbenchs to be deployed. | <code title="map&#40;object&#40;&#123;&#10;  owner                 &#61; string&#10;  region                &#61; string&#10;  subnet                &#61; string&#10;  internal_ip_only      &#61; bool&#10;  idle_shutdown_timeout &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |

@@ -33,7 +33,7 @@ variable "dataset_name" {
 }
 
 variable "env" {
-  description = "Environment (dev,stg,prd)"
+  description = "Environment (dev,stg,prd)."
   type        = string
   default     = "dev"
 }
@@ -53,7 +53,7 @@ variable "groups" {
 }
 
 variable "identity_pool_claims" {
-  description = "Claims to be used by Workload Identity Federation. i.e.: attribute.repository/ORGANIZATION/REPO"
+  description = "Claims to be used by Workload Identity Federation (i.e.: attribute.repository/ORGANIZATION/REPO)."
   type        = string
   default     = null
 }
