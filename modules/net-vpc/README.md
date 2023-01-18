@@ -30,7 +30,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=simple.yaml
 ```
 
 ### Peering
@@ -65,7 +65,7 @@ module "vpc-spoke-1" {
     import_routes      = true
   }
 }
-# tftest modules=2 resources=6
+# tftest modules=2 resources=6 inventory=peering.yaml
 ```
 
 ### Shared VPC
@@ -116,7 +116,7 @@ module "vpc-host" {
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=7 inventory=shared-vpc.yaml
 ```
 
 ### Private Service Networking
@@ -137,7 +137,7 @@ module "vpc" {
     ranges = { myrange = "10.0.1.0/24" }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=psc.yaml
 ```
 
 ### Private Service Networking with peering routes
@@ -162,7 +162,7 @@ module "vpc" {
     import_routes = true
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=psc-routes.yaml
 ```
 
 ### Subnets for Private Service Connect, Proxy-only subnets
@@ -194,7 +194,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=proxy-only-subnets.yaml
 ```
 
 ### DNS Policies
@@ -219,7 +219,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=dns-policies.yaml
 ```
 
 ### Subnet Factory
