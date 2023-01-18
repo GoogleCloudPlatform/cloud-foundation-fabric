@@ -38,7 +38,7 @@ resource "google_gke_hub_membership" "default" {
   provider      = google-beta
   for_each      = var.clusters
   project       = var.project_id
-  membership_id = each.key
+  membership_id = reverse(split("/", each.value))[0] # forces re-enrollment of the cluster in the fleet in case when cluster is recreated
   endpoint {
     gke_cluster {
       resource_link = each.value
@@ -67,6 +67,20 @@ resource "google_gke_hub_feature" "default" {
         config_membership = google_gke_hub_membership.default[each.value].id
       }
     }
+  }
+}
+
+resource "google_gke_hub_feature_membership" "servicemesh" {
+  provider   = google-beta
+  for_each   = var.features.servicemesh ? var.clusters : {}
+  project    = var.project_id
+  location   = "global"
+  feature    = google_gke_hub_feature.default["servicemesh"].name
+  membership = google_gke_hub_membership.default[each.key].membership_id
+
+  mesh {
+    management    = "MANAGEMENT_AUTOMATIC"
+    control_plane = "AUTOMATIC"
   }
 }
 
