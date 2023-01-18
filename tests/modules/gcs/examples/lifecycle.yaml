@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,32 +13,26 @@
 # limitations under the License.
 
 values:
-  google_storage_bucket.bucket:
-    force_destroy: true
-    labels:
-      environment: test
-    location: EU
-    logging:
-      - log_bucket: foo
-    name: foo-test
-    project: test-project
-    retention_policy:
-      - is_locked: false
-        retention_period: 5
-    storage_class: MULTI_REGIONAL
-    uniform_bucket_level_access: true
-    versioning:
-      - enabled: true
+  module.bucket.google_storage_bucket.bucket:
+    lifecycle_rule:
+    - action:
+      - storage_class: STANDARD
+        type: SetStorageClass
+      condition:
+      - age: 30
+        created_before: ''
+        custom_time_before: ''
+        days_since_custom_time: null
+        days_since_noncurrent_time: null
+        matches_prefix: []
+        matches_storage_class: []
+        matches_suffix: []
+        noncurrent_time_before: ''
+        num_newer_versions: null
+    name: my-bucket
+    project: myproject
 
 counts:
   google_storage_bucket: 1
-  modules: 0
-  resources: 1
 
-outputs:
-  bucket: __missing__
-  id: foo-test
-  name: foo-test
-  notification: null
-  topic: null
-  url: __missing__
+outputs: {}

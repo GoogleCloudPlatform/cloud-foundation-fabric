@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/gcs
-common_tfvars:
-  - common.tfvars
-tests:
-  prefix:
-  iam:
+values:
+  module.bucket.google_storage_bucket.bucket:
+    logging:
+    - log_bucket: log-bucket
+    name: my-bucket
+    project: myproject
+    retention_policy:
+    - is_locked: true
+      retention_period: 100
+
+counts:
+  google_storage_bucket: 1
