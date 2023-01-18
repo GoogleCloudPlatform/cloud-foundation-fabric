@@ -31,7 +31,7 @@ variable "features" {
     configmanagement             = true
     identityservice              = false
     multiclusteringress          = null
-    servicemesh                  = false
+    servicemesh                  = true
     multiclusterservicediscovery = false
   }
 }
