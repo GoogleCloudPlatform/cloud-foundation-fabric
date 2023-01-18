@@ -219,6 +219,50 @@ module "glb-0" {
 This example shows how to use the module with a manage instance group as backend: 
 
 ```hcl
+module "win-template" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "myprj"
+  zone       = "europe-west8-a"
+  name       = "win-template"
+
+  instance_type = "n2d-standard-2"
+
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+  }]
+
+  boot_disk = {
+    image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
+    type  = "pd-balanced"
+    size  = 70
+  }
+
+  create_template = true
+}
+
+module "win-mig" {
+  source     = "./fabric/modules/compute-mig"
+  project_id = "myprj"
+  location   = "europe-west8-a"
+  name       = "win-mig"
+
+  instance_template = module.win-template.template.self_link
+
+  autoscaler_config = {
+    max_replicas    = 3
+    min_replicas    = 1
+    cooldown_period = 30
+    scaling_signals = {
+      cpu_utilization = {
+        target = 0.80
+      }
+    }
+  }
+}
+
 module "glb-0" {
   source     = "./fabric/modules/net-glb"
   project_id = "myprj"
@@ -228,7 +272,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/regions/europe-west8/instanceGroups/mig-a" }
+        { backend = module.win-mig.group_manager.instance_group }
       ]
     }
   }
@@ -239,7 +283,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=8
 ```
 
 #### Storage Buckets
