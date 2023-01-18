@@ -33,6 +33,87 @@ module "vpc" {
 # tftest modules=1 resources=3 inventory=simple.yaml
 ```
 
+### Subnet Options
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-network"
+  subnets = [
+    # simple subnet
+    {
+      name          = "simple"
+      region        = "europe-west1"
+      ip_cidr_range = "10.0.0.0/24"
+    },
+    # custom description and PGA disabled
+    {
+      name                  = "no-pga"
+      region                = "europe-west1"
+      ip_cidr_range         = "10.0.1.0/24",
+      description           = "Subnet b"
+      enable_private_access = false
+    },
+    # secondary ranges
+    {
+      name          = "with-secondary-ranges"
+      region        = "europe-west1"
+      ip_cidr_range = "10.0.2.0/24"
+      secondary_ip_ranges = {
+        a = "192.168.0.0/24"
+        b = "192.168.1.0/24"
+      }
+    },
+    # enable flow logs
+    {
+      name          = "with-flow-logs"
+      region        = "europe-west1"
+      ip_cidr_range = "10.0.3.0/24"
+      flow_logs_config = {
+        flow_sampling        = 0.5
+        aggregation_interval = "INTERVAL_10_MIN"
+      }
+    }
+  ]
+}
+# tftest modules=1 resources=5 inventory=subnet-options.yaml
+```
+
+### Subnet IAM
+
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-network"
+  subnets = [
+    {
+      name          = "subnet-1"
+      region        = "europe-west1"
+      ip_cidr_range = "10.0.1.0/24"
+    },
+    {
+      name          = "subnet-2"
+      region        = "europe-west1"
+      ip_cidr_range = "10.0.1.0/24"
+    }
+  ]
+  subnet_iam = {
+    "europe-west1/subnet-1" = {
+      "roles/compute.networkUser" = [
+        "user:user1@example.com", "group:group1@example.com"
+      ]
+    }
+    "europe-west1/subnet-2" = {
+      "roles/compute.networkUser" = [
+        "user:user2@example.com", "group:group2@example.com"
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=5 inventory=subnet-iam.yaml
+```
+
 ### Peering
 
 A single peering can be configured for the VPC, so as to allow management of simple scenarios, and more complex configurations like hub and spoke by defining the peering configuration on the spoke VPCs. Care must be taken so as a single peering is created/changed/destroyed at a time, due to the specific behaviour of the peering API calls.
