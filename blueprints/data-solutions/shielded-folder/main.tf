@@ -15,6 +15,13 @@
 # tfdoc:file:description Folder resources.
 
 locals {
+  _vpc_sc_vpc_accessible_services = yamldecode(
+    file("${var.data_dir}/vpc-sc/restricted-services.yaml")
+  )
+  _vpc_sc_restricted_services = yamldecode(
+    file("${var.data_dir}/vpc-sc/restricted-services.yaml")
+  )
+
   groups = {
     for k, v in var.groups : k => "${v}@${var.organization_domain}"
   }
@@ -66,11 +73,11 @@ module "vpc-sc" {
       status = {
         access_levels       = keys(var.vpc_sc_access_levels)
         resources           = local.vpc_sc_resources
-        restricted_services = var.vpc_sc_restricted_services
+        restricted_services = local._vpc_sc_restricted_services
         egress_policies     = keys(var.vpc_sc_egress_policies)
         ingress_policies    = keys(var.vpc_sc_ingress_policies)
         vpc_accessible_services = {
-          allowed_services   = var.vpc_sc_accessible_services
+          allowed_services   = local._vpc_sc_vpc_accessible_services
           enable_restriction = true
         }
       }

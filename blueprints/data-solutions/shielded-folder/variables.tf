@@ -25,6 +25,7 @@ variable "access_policy_create" {
   type = object({
     parent = string
     title  = string
+    scopes = optional(list(string))
   })
   default = null
 }
@@ -92,18 +93,6 @@ variable "vpc_sc_access_levels" {
   }))
   default  = {}
   nullable = false
-}
-
-variable "vpc_sc_accessible_services" {
-  description = "VPC SC accessible services."
-  type        = list(string)
-  default     = ["storage.googleapis.com"]
-}
-
-variable "vpc_sc_restricted_services" {
-  description = "VPC SC restricted services."
-  type        = list(string)
-  default     = ["storage.googleapis.com"]
 }
 
 variable "vpc_sc_egress_policies" {
