@@ -15,48 +15,6 @@
  */
 
 locals {
-  groups = {
-    for k, v in var.groups : k => "${v}@${var.organization_domain}"
-  }
-  groups_iam = {
-    for k, v in local.groups : k => "group:${v}"
-  }
-
-  project_groups_iam = {
-    (local.groups.data-scientists) = [
-      "roles/aiplatform.admin",
-      "roles/artifactregistry.admin",
-      "roles/bigquery.dataEditor",
-      "roles/bigquery.jobUser",
-      "roles/bigquery.user",
-      "roles/cloudbuild.builds.editor",
-      "roles/cloudfunctions.developer",
-      "roles/dataflow.developer",
-      "roles/dataflow.worker",
-      "roles/iam.serviceAccountUser",
-      "roles/logging.logWriter",
-      "roles/logging.viewer",
-      "roles/notebooks.admin",
-      "roles/pubsub.editor",
-      "roles/serviceusage.serviceUsageConsumer",
-      "roles/storage.admin"
-    ],
-    (local.groups.ml-engineers) = [
-      "roles/aiplatform.admin",
-      "roles/artifactregistry.admin",
-      "roles/bigquery.dataEditor",
-      "roles/bigquery.jobUser",
-      "roles/bigquery.user",
-      "roles/dataflow.developer",
-      "roles/dataflow.worker",
-      "roles/iam.serviceAccountUser",
-      "roles/logging.logWriter",
-      "roles/logging.viewer",
-      "roles/serviceusage.serviceUsageConsumer",
-      "roles/storage.admin"
-    ]
-  }
-
   # internal structure for Shared VPC service project IAM bindings
   _vpc_subnet_bindings = (
     local.vpc.subnets_iam == null || local.vpc.host_project == null
@@ -178,13 +136,14 @@ module "nat-ew1" {
   ]
 }
 
-
 module "project" {
   source          = "../../../modules/project"
-  billing_account = var.billing_account_id
   name            = var.project_id
+  parent          = try(var.project_create.parent, null)
+  billing_account = try(var.project_create.billing_account_id, null)
+  project_create  = var.project_create != null
   prefix          = var.prefix
-  group_iam       = local.project_groups_iam
+  group_iam       = var.group_iam
   iam = {
     "roles/aiplatform.user"         = [module.service-account-mlops.iam_email]
     "roles/artifactregistry.reader" = [module.service-account-mlops.iam_email]
@@ -216,9 +175,6 @@ module "project" {
     ]
   }
   labels                     = var.labels
-  org_policies               = try(var.org_policies, {})
-  parent                     = var.folder_id
-  project_create             = var.project_create
   service_encryption_key_ids = var.kms_service_agents
   services                   = var.project_services
   shared_vpc_service_config = var.vpc == null ? null : {
@@ -242,7 +198,7 @@ module "project" {
 
 module "service-account-mlops" {
   source     = "../../../modules/iam-service-account"
-  name       = "sa-mlops-${var.env}"
+  name       = var.sa_mlops_name
   project_id = module.project.project_id
   iam = {
     "roles/iam.serviceAccountUser" = [module.service-account-github.iam_email]

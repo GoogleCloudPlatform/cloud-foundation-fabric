@@ -16,8 +16,6 @@
 
 module "projects" {
   source             = "../../../../../blueprints/data-solutions/vertex-mlops/"
-  billing_account_id = "000000-123456-123456"
-  folder_id          = "folders/111111111111"
   labels = {
     "env" : "dev",
     "team" : "ml"
@@ -34,7 +32,10 @@ module "projects" {
       "idle_shutdown_timeout" : true
     }
   }
-  organization_domain = "example.com"
   prefix              = "pref"
   project_id          = "test-dev"
+  project_create = {
+    billing_account_id = "000000-123456-123456"
+    parent             = "folders/111111111111"
+}
 }

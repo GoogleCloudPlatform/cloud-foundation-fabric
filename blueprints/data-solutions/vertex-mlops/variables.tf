@@ -15,45 +15,28 @@
  */
 
 
-variable "billing_account_id" {
-  description = "Billing account id."
-  type        = string
-}
-
 variable "bucket_name" {
-  description = "Create GCS Bucket."
+  description = "GCS bucket name to store the Vertex AI artifacts."
   type        = string
   default     = null
 }
 
 variable "dataset_name" {
-  description = "Create BigQuery Datasets."
+  description = "BigQuery Dataset to store the training data."
   type        = string
   default     = null
 }
 
-variable "env" {
-  description = "Environment (dev,stg,prd)."
-  type        = string
-  default     = "dev"
-}
 
-variable "folder_id" {
-  description = "Folder ID for the folder where the project will be created."
-  type        = string
-}
-
-variable "groups" {
-  description = "User groups."
-  type        = map(string)
-  default = {
-    data-scientists = "gcp-ml-ds"
-    ml-engineers    = "gcp-ml-eng"
-  }
+variable "group_iam" {
+  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "identity_pool_claims" {
-  description = "Claims to be used by Workload Identity Federation (i.e.: attribute.repository/ORGANIZATION/REPO)."
+  description = "Claims to be used by Workload Identity Federation (i.e.: attribute.repository/ORGANIZATION/REPO). If a not null value is provided, then google_iam_workload_identity_pool resource will be created."
   type        = string
   default     = null
 }
@@ -83,51 +66,6 @@ variable "notebooks" {
   default = null
 }
 
-variable "org_policies" {
-  description = "Org-policy overrides at project level."
-  type = map(object({
-    inherit_from_parent = optional(bool) # for list policies only.
-    reset               = optional(bool)
-
-    # default (unconditional) values
-    allow = optional(object({
-      all    = optional(bool)
-      values = optional(list(string))
-    }))
-    deny = optional(object({
-      all    = optional(bool)
-      values = optional(list(string))
-    }))
-    enforce = optional(bool, true) # for boolean policies only.
-
-    # conditional values
-    rules = optional(list(object({
-      allow = optional(object({
-        all    = optional(bool)
-        values = optional(list(string))
-      }))
-      deny = optional(object({
-        all    = optional(bool)
-        values = optional(list(string))
-      }))
-      enforce = optional(bool, true) # for boolean policies only.
-      condition = object({
-        description = optional(string)
-        expression  = optional(string)
-        location    = optional(string)
-        title       = optional(string)
-      })
-    })), [])
-  }))
-  default  = {}
-  nullable = false
-}
-
-variable "organization_domain" {
-  description = "Organization domain."
-  type        = string
-}
-
 variable "prefix" {
   description = "Prefix used for the project id."
   type        = string
@@ -135,15 +73,19 @@ variable "prefix" {
 }
 
 variable "project_create" {
-  description = "Create project. When set to false, uses a data source to reference existing project."
-  type        = bool
-  default     = true
+  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
 }
 
 variable "project_id" {
-  description = "Project id."
+  description = "Project id, references existing project if `project_create` is null."
   type        = string
 }
+
 variable "project_services" {
   description = "List of core services enabled on all projects."
   type        = list(string)
@@ -174,6 +116,12 @@ variable "repo_name" {
   description = "Cloud Source Repository name. null to avoid to create it."
   type        = string
   default     = null
+}
+
+variable "sa_mlops_name" {
+  description = "Name for the MLOPs Service Account."
+  type        = string
+  default     = "sa-mlops"
 }
 
 variable "vpc" {
