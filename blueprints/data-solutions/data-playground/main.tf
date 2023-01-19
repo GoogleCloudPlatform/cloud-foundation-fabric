@@ -30,6 +30,26 @@ locals {
     : module.vpc.0.self_link
   )
   use_shared_vpc = var.network_config != null
+
+  shared_vpc_bindings = {
+    "roles/compute.networkUser" = [
+      "robot-df", "notebooks"
+    ]
+  }
+
+  shared_vpc_role_members = {
+    robot-df  = "serviceAccount:${module.project.service_accounts.robots.dataflow}"
+    notebooks = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
+  }
+
+  # reassemble in a format suitable for for_each
+  shared_vpc_bindings_map = {
+    for binding in flatten([
+      for role, members in local.shared_vpc_bindings : [
+        for member in members : { role = role, member = member }
+      ]
+    ]) : "${binding.role}-${binding.member}" => binding
+  }
 }
 
 module "project" {
