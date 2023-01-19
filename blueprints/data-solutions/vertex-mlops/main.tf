@@ -118,22 +118,13 @@ module "firewall" {
 
 }
 
-
 module "nat-ew1" {
-  count                 = var.vpc_local == null ? 0 : 1
-  source                = "../../../modules/net-cloudnat"
-  project_id            = module.project.project_id
-  region                = "europe-west1"
-  name                  = "default"
-  router_network        = module.vpc-local[0].name
-  config_source_subnets = "LIST_OF_SUBNETWORKS"
-  subnetworks = [
-    {
-      self_link            = module.vpc-local[0].subnets["europe-west1/default"].self_link
-      config_source_ranges = ["ALL_IP_RANGES"]
-      secondary_ranges     = null
-    },
-  ]
+  count          = var.vpc_local == null ? 0 : 1
+  source         = "../../../modules/net-cloudnat"
+  project_id     = module.project.project_id
+  region         = var.region
+  name           = "default"
+  router_network = module.vpc-local[0].self_link
 }
 
 module "project" {

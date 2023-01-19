@@ -26,7 +26,7 @@ resource "google_notebooks_runtime" "runtime" {
   }
   software_config {
     enable_health_monitoring = true
-    idle_shutdown            = var.notebooks[each.key].idle_shutdown_timeout
+    idle_shutdown            = var.notebooks[each.key].idle_shutdown
     idle_shutdown_timeout    = 1800
   }
   virtual_machine {

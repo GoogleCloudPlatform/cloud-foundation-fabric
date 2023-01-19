@@ -57,11 +57,11 @@ variable "labels" {
 variable "notebooks" {
   description = "Vertex AI workbenchs to be deployed."
   type = map(object({
-    owner                 = string
-    region                = string
-    subnet                = string
-    internal_ip_only      = bool
-    idle_shutdown_timeout = bool
+    owner            = string
+    region           = string
+    subnet           = string
+    internal_ip_only = optional(bool, false)
+    idle_shutdown    = optional(bool)
   }))
   default = null
 }
