@@ -15,7 +15,7 @@
  */
 
 module "projects" {
-  source             = "../../../../../blueprints/data-solutions/vertex-mlops/"
+  source = "../../../../../blueprints/data-solutions/vertex-mlops/"
   labels = {
     "env" : "dev",
     "team" : "ml"
@@ -30,10 +30,10 @@ module "projects" {
       "subnet" : "default",
     }
   }
-  prefix              = "pref"
-  project_id          = "test-dev"
+  prefix     = "pref"
+  project_id = "test-dev"
   project_create = {
     billing_account_id = "000000-123456-123456"
     parent             = "folders/111111111111"
-}
+  }
 }
