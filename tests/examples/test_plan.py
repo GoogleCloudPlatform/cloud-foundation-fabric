@@ -18,7 +18,7 @@ from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
 COUNT_TEST_RE = re.compile(r'# tftest +modules=(\d+) +resources=(\d+)' +
-                           r'(?: +files=([\w,-.]+))?' +
+                           r'(?: +files=([\w,_-]+))?' +
                            r'(?: +inventory=([\w\-.]+))?')
 
 
@@ -49,10 +49,10 @@ def test_example(plan_validator, tmp_path, example):
     summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
                              tf_var_files=[])
 
-    # import yaml
-    # print(yaml.dump({"values": summary.values}))
-    # print(yaml.dump({"counts": summary.counts}))
-    # print(yaml.dump({"outputs": summary.outputs}))
+    import yaml
+    print(yaml.dump({"values": summary.values}))
+    print(yaml.dump({"counts": summary.counts}))
+    print(yaml.dump({"outputs": summary.outputs}))
 
     counts = summary.counts
     num_modules, num_resources = counts['modules'], counts['resources']
