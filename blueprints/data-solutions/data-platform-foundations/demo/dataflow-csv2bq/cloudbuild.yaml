@@ -1,0 +1,16 @@
+steps:
+- name: gcr.io/cloud-builders/gcloud
+  id: "Build docker image"
+  args: ['builds', 'submit', '--tag', '$_TEMPLATE_IMAGE', '.']
+  dir: '$_DOCKER_DIR'
+  waitFor: ['-']
+- name: gcr.io/cloud-builders/gcloud
+  id: "Build template"
+  args: ['dataflow',
+         'flex-template',
+         'build',
+         '$_TEMPLATE_PATH',
+         '--image=$_TEMPLATE_IMAGE',
+         '--sdk-language=PYTHON'
+  ]
+  waitFor: ['Build docker image']
