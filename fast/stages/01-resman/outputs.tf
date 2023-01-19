@@ -76,11 +76,11 @@ locals {
       data-platform-prod = try(module.branch-dp-prod-folder.0.id, null)
       gke-dev            = try(module.branch-gke-dev-folder.0.id, null)
       gke-prod           = try(module.branch-gke-prod-folder.0.id, null)
-      networking         = module.branch-network-folder.id
-      networking-dev     = module.branch-network-dev-folder.id
-      networking-prod    = module.branch-network-prod-folder.id
+      networking         = try(module.branch-network-folder.id, null)
+      networking-dev     = try(module.branch-network-dev-folder.id, null)
+      networking-prod    = try(module.branch-network-prod-folder.id, null)
       sandbox            = try(module.branch-sandbox-folder.0.id, null)
-      security           = module.branch-security-folder.id
+      security           = try(module.branch-security-folder.id, null)
       teams              = try(module.branch-teams-folder.0.id, null)
     },
     {
