@@ -16,7 +16,7 @@ The stage is intentionally simple as it still operates at the organization level
 
 <!-- https://mdigi.tools/darken-color/#f1f8e9 -->
 
-<!-- style>
+<style>
   svg .edgePaths path {
     stroke: #bebebe !important;
   }
@@ -32,58 +32,13 @@ The stage is intentionally simple as it still operates at the organization level
     fill: #F1F8E9 !important;
     stroke: #abd57b !important;
   }
-</style -->
+</style>
 
 The following diagram is a high level reference of what this stage manages, showing two hypothetical tenants (which would need two distinct copies of this stage):
 
-```mermaid
-
-%%{
-  init: { "theme": "base", "themeVariables": { "primaryColor": "#E3F2FD" } }
-}%%
-
-
-classDiagram
-
-    Organization -- Tenant0
-    Organization -- Tenant1
-    Tenant0 -- Tenant0_IaC
-    Tenant1 -- Tenant1_IaC
-
-    class Organization:::mermaidExternal {
-        tag value [tenant]
-        IAM bindings()
-        organization policies()
-    }
-    class Tenant0:::mermaidFolder {
-        <<folder>>
-        IAM bindings()
-        organization policies()
-        tag bindings()
-    }
-    class Tenant0_IaC {
-        <<project>>
-        service accounts [all stages]
-        storage buckets [stage 0+1]
-        optional CI/CD  [stage 0+1]
-        IAM bindings()
-    }
-    class Tenant1:::mermaidFolder {
-        <<folder>>
-        IAM bindings()
-        organization policies()
-        tag bindings()
-    }
-    class Tenant1_IaC {
-        <<project>>
-        service accounts [all stages]
-        storage buckets [stage 0+1]
-        optional CI/CD  [stage 0+1]
-        IAM bindings()
-    }
-```
-
-<img src="diagram.svg">
+<p align="center">
+  <img src="diagram.svg" alt="Tenant-level bootstrap">
+</p>
 
 ## Design overview and choices
 
