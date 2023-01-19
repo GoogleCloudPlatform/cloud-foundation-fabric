@@ -314,11 +314,17 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=2 files=subnets
+# tftest modules=1 resources=3 files=subnet-simple,subnet-detailed inventory=factory.yaml
 ```
 
 ```yaml
-# tftest-file id=subnets path=config/subnets/subnet-name.yaml
+# tftest-file id=subnet-simple path=config/subnets/subnet-simple.yaml
+region: europe-west4
+ip_cidr_range: 10.0.1.0/24
+```
+
+```yaml
+# tftest-file id=subnet-detailed path=config/subnets/subnet-detailed.yaml
 region: europe-west1
 description: Sample description
 ip_cidr_range: 10.0.0.0/24
@@ -336,6 +342,45 @@ flow_logs:                        # enable, set to empty map to use defaults
   filter_expression: null
 ```
 <!-- BEGIN TFDOC -->
+
+### Custom Routes
+
+VPC routes can be configured through the `routes` variable.
+
+```hcl
+locals {
+  route_types = {
+    gateway    = "global/gateways/default-internet-gateway"
+    instance   = "zones/europe-west1-b/test"
+    ip         = "192.168.0.128"
+    ilb        = "regions/europe-west1/forwardingRules/test"
+    vpn_tunnel = "regions/europe-west1/vpnTunnels/foo"
+  }
+}
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  for_each   = local.route_types
+  project_id = "my-project"
+  name       = "my-network-with-route-${replace(each.key, "_", "-")}"
+  routes = {
+    next-hop = {
+      dest_range    = "192.168.128.0/24"
+      tags          = null
+      next_hop_type = each.key
+      next_hop      = each.value
+    }
+    gateway = {
+      dest_range    = "0.0.0.0/0",
+      priority      = 100
+      tags          = ["tag-a"]
+      next_hop_type = "gateway",
+      next_hop      = "global/gateways/default-internet-gateway"
+    }
+  }
+}
+# tftest modules=5 resources=15 inventory=routes.yaml
+```
+
 
 ## Variables
 

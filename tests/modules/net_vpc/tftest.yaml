@@ -18,7 +18,6 @@ common_tfvars:
 
 tests:
   shared_vpc:
-  factory:
   psa_routes_export:
   psa_routes_import:
   psa_routes_import_export:
