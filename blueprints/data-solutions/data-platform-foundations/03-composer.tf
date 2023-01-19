@@ -40,6 +40,7 @@ locals {
     LOD_SA_DF                   = module.load-sa-df-0.email
     ORC_PRJ                     = module.orch-project.project_id
     ORC_GCS                     = module.orch-cs-0.url
+    ORC_GCS_TMP_DF              = module.orch-cs-df-template.url
     TRF_PRJ                     = module.transf-project.project_id
     TRF_GCS_STAGING             = module.transf-cs-df-0.url
     TRF_NET_VPC                 = local.transf_vpc
