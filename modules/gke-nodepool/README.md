@@ -16,7 +16,7 @@ module "cluster-1-nodepool-1" {
   location     = "europe-west1-b"
   name         = "nodepool-1"
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=basic.yaml
 ```
 
 ### Internally managed service account
@@ -27,22 +27,11 @@ If you create a new service account, its resource and email (in both plain and I
 
 #### GCE default service account
 
-To use the GCE default service account, you can ignore the variable which is equivalent to `{ create = null, email = null }`.
-
-```hcl
-module "cluster-1-nodepool-1" {
-  source       = "./fabric/modules/gke-nodepool"
-  project_id   = "myproject"
-  cluster_name = "cluster-1"
-  location     = "europe-west1-b"
-  name         = "nodepool-1"
-}
-# tftest modules=1 resources=1
-```
+To use the GCE default service account, you can ignore the variable which is equivalent to `{ create = null, email = null }`. This is what the first example of this document does.
 
 #### Externally defined service account
 
-To use an existing service account, pass in just the `email` attribute.
+To use an existing service account, pass in just the `email` attribute. If you do this, will most likely want to use the `cloud-platform` scope.
 
 ```hcl
 module "cluster-1-nodepool-1" {
@@ -52,10 +41,11 @@ module "cluster-1-nodepool-1" {
   location     = "europe-west1-b"
   name         = "nodepool-1"
   service_account = {
-    email = "foo-bar@myproject.iam.gserviceaccount.com"
+    email        = "foo-bar@myproject.iam.gserviceaccount.com"
+    oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=external-sa.yaml
 ```
 
 #### Auto-created service account
@@ -70,13 +60,50 @@ module "cluster-1-nodepool-1" {
   location     = "europe-west1-b"
   name         = "nodepool-1"
   service_account = {
-    create = true
-    # optional
-    email = "spam-eggs"
+    create       = true
+    email        = "spam-eggs" # optional
+    oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=create-sa.yaml
 ```
+### Node & node pool configuration
+
+```hcl
+module "cluster-1-nodepool-1" {
+  source       = "./fabric/modules/gke-nodepool"
+  project_id   = "myproject"
+  cluster_name = "cluster-1"
+  location     = "europe-west1-b"
+  name         = "nodepool-1"
+  labels       = { environment = "dev" }
+  service_account = {
+    create       = true
+    email        = "nodepool-1" # optional
+    oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+  node_config = {
+    machine_type        = "n2-standard-2"
+    disk_size_gb        = 50
+    disk_type           = "pd-ssd"
+    ephemeral_ssd_count = 1
+    gvnic               = true
+    spot                = true
+  }
+  nodepool_config = {
+    autoscaling = {
+      max_node_count = 10
+      min_node_count = 1
+    }
+    management = {
+      auto_repair  = true
+      auto_upgrade = false
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=config.yaml
+```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
