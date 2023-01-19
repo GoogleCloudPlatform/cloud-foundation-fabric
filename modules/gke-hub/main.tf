@@ -38,7 +38,7 @@ resource "google_gke_hub_membership" "default" {
   provider      = google-beta
   for_each      = var.clusters
   project       = var.project_id
-  membership_id = reverse(split("/", each.value))[0] # forces re-enrollment of the cluster in the fleet in case when cluster is recreated
+  membership_id = each.key
   endpoint {
     gke_cluster {
       resource_link = each.value
