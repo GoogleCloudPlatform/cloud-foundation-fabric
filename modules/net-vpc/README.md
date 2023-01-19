@@ -341,7 +341,6 @@ flow_logs:                        # enable, set to empty map to use defaults
   metadata: "INCLUDE_ALL_METADATA"
   filter_expression: null
 ```
-<!-- BEGIN TFDOC -->
 
 ### Custom Routes
 

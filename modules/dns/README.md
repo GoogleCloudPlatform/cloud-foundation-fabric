@@ -101,7 +101,6 @@ module "private-dns" {
 }
 # tftest modules=1 resources=1 inventory=reverse-zone.yaml
 ```
-<!-- BEGIN TFDOC -->
 
 ### Public Zone
 
@@ -119,8 +118,6 @@ module "public-dns" {
 # tftest modules=1 resources=3 inventory=public-zone.yaml
 ```
 <!-- BEGIN TFDOC -->
-
-
 
 ## Variables
 
