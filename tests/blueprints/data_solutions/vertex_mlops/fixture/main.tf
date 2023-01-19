@@ -28,8 +28,6 @@ module "projects" {
       "owner" : "user@example.com",
       "region" : "europe-west4",
       "subnet" : "default",
-      "internal_ip_only" : false,
-      "idle_shutdown_timeout" : true
     }
   }
   prefix              = "pref"
