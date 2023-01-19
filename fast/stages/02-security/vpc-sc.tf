@@ -37,8 +37,16 @@ locals {
     )
   }
   # compute spec/status for each perimeter
-  vpc_sc_perimeters = {
+  vpc_sc_perimeters_spec_status = {
     dev = merge(var.vpc_sc_perimeters.dev, {
+      restricted_services     = local._vpc_sc_restricted_services
+      vpc_accessible_services = local._vpc_sc_vpc_accessible_services
+    })
+    landing = merge(var.vpc_sc_perimeters.landing, {
+      restricted_services     = local._vpc_sc_restricted_services
+      vpc_accessible_services = local._vpc_sc_vpc_accessible_services
+    })
+    prod = merge(var.vpc_sc_perimeters.prod, {
       restricted_services     = local._vpc_sc_restricted_services
       vpc_accessible_services = local._vpc_sc_vpc_accessible_services
     })
@@ -98,13 +106,13 @@ module "vpc-sc" {
       dev = {
         spec = (
           local.vpc_sc_explicit_dry_run_spec
-          ? var.vpc_sc_perimeters.dev
+          ? local.vpc_sc_perimeters_spec_status.dev
           : null
         )
         status = (
           local.vpc_sc_explicit_dry_run_spec
           ? null
-          : var.vpc_sc_perimeters.dev
+          : local.vpc_sc_perimeters_spec_status.dev
         )
         use_explicit_dry_run_spec = local.vpc_sc_explicit_dry_run_spec
       }
@@ -114,13 +122,13 @@ module "vpc-sc" {
       landing = {
         spec = (
           local.vpc_sc_explicit_dry_run_spec
-          ? var.vpc_sc_perimeters.landing
+          ? local.vpc_sc_perimeters_spec_status.landing
           : null
         )
         status = (
           local.vpc_sc_explicit_dry_run_spec
           ? null
-          : var.vpc_sc_perimeters.landing
+          : local.vpc_sc_perimeters_spec_status.landing
         )
         use_explicit_dry_run_spec = local.vpc_sc_explicit_dry_run_spec
       }
@@ -130,13 +138,13 @@ module "vpc-sc" {
       prod = {
         spec = (
           local.vpc_sc_explicit_dry_run_spec
-          ? var.vpc_sc_perimeters.prod
+          ? local.vpc_sc_perimeters_spec_status.prod
           : null
         )
         status = (
           local.vpc_sc_explicit_dry_run_spec
           ? null
-          : var.vpc_sc_perimeters.prod
+          : local.vpc_sc_perimeters_spec_status.prod
         )
         use_explicit_dry_run_spec = local.vpc_sc_explicit_dry_run_spec
       }

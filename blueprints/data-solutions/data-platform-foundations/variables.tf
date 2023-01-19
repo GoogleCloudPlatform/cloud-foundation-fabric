@@ -22,14 +22,83 @@ variable "billing_account_id" {
 variable "composer_config" {
   description = "Cloud Composer config."
   type = object({
-    node_count      = number
-    airflow_version = string
-    env_variables   = map(string)
+    disable_deployment = optional(bool)
+    environment_size   = optional(string, "ENVIRONMENT_SIZE_SMALL")
+    software_config = optional(object({
+      airflow_config_overrides = optional(any)
+      pypi_packages            = optional(any)
+      env_variables            = optional(map(string))
+      image_version            = string
+      }), {
+      image_version = "composer-2-airflow-2"
+    })
+    workloads_config = optional(object({
+      scheduler = optional(object(
+        {
+          cpu        = number
+          memory_gb  = number
+          storage_gb = number
+          count      = number
+        }
+        ), {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        count      = 1
+      })
+      web_server = optional(object(
+        {
+          cpu        = number
+          memory_gb  = number
+          storage_gb = number
+        }
+        ), {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+      })
+      worker = optional(object(
+        {
+          cpu        = number
+          memory_gb  = number
+          storage_gb = number
+          min_count  = number
+          max_count  = number
+        }
+        ), {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        min_count  = 1
+        max_count  = 3
+      })
+    }))
   })
   default = {
-    node_count      = 3
-    airflow_version = "composer-1-airflow-2"
-    env_variables   = {}
+    environment_size = "ENVIRONMENT_SIZE_SMALL"
+    software_config = {
+      image_version = "composer-2-airflow-2"
+    }
+    workloads_config = {
+      scheduler = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        count      = 1
+      }
+      web_server = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+      }
+      worker = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        min_count  = 1
+        max_count  = 3
+      }
+    }
   }
 }
 
@@ -84,7 +153,6 @@ variable "network_config" {
     composer_ip_ranges = object({
       cloudsql   = string
       gke_master = string
-      web_server = string
     })
     composer_secondary_ranges = object({
       pods     = string

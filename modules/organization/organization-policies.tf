@@ -95,23 +95,6 @@ resource "google_org_policy_policy" "default" {
     inherit_from_parent = each.value.inherit_from_parent
     reset               = each.value.reset
 
-    rules {
-      allow_all = try(each.value.allow.all, null) == true ? "TRUE" : null
-      deny_all  = try(each.value.deny.all, null) == true ? "TRUE" : null
-      enforce = (
-        each.value.is_boolean_policy && each.value.enforce != null
-        ? upper(tostring(each.value.enforce))
-        : null
-      )
-      dynamic "values" {
-        for_each = each.value.has_values ? [1] : []
-        content {
-          allowed_values = try(each.value.allow.values, null)
-          denied_values  = try(each.value.deny.values, null)
-        }
-      }
-    }
-
     dynamic "rules" {
       for_each = each.value.rules
       iterator = rule
@@ -135,6 +118,23 @@ resource "google_org_policy_policy" "default" {
             allowed_values = try(rule.value.allow.values, null)
             denied_values  = try(rule.value.deny.values, null)
           }
+        }
+      }
+    }
+
+    rules {
+      allow_all = try(each.value.allow.all, null) == true ? "TRUE" : null
+      deny_all  = try(each.value.deny.all, null) == true ? "TRUE" : null
+      enforce = (
+        each.value.is_boolean_policy && each.value.enforce != null
+        ? upper(tostring(each.value.enforce))
+        : null
+      )
+      dynamic "values" {
+        for_each = each.value.has_values ? [1] : []
+        content {
+          allowed_values = try(each.value.allow.values, null)
+          denied_values  = try(each.value.deny.values, null)
         }
       }
     }

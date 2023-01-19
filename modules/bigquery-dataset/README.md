@@ -21,7 +21,7 @@ The access variables are split into `access` and `access_identities` variables, 
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id          = "my-dataset"
+  id         = "my-dataset"
   access = {
     reader-group   = { role = "READER", type = "group" }
     owner          = { role = "OWNER", type = "user" }
@@ -46,7 +46,7 @@ Access configuration can also be specified via IAM instead of basic roles via th
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id          = "my-dataset"
+  id         = "my-dataset"
   iam = {
     "roles/bigquery.dataOwner" = ["user:user1@example.org"]
   }

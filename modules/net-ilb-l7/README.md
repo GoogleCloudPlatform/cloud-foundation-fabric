@@ -176,7 +176,7 @@ module "ilb-l7" {
   backend_service_configs = {
     default = {
       port_name = "http"
-      backends  = [
+      backends = [
         { group = "default" }
       ]
     }
@@ -228,6 +228,14 @@ module "ilb-l7" {
 Similarly to instance groups, NEGs can also be managed by this module which supports GCE, hybrid, and serverless NEGs:
 
 ```hcl
+resource "google_compute_address" "test" {
+  name         = "neg-test"
+  subnetwork   = var.subnet.self_link
+  address_type = "INTERNAL"
+  address      = "10.0.0.10"
+  region       = "europe-west1"
+}
+
 module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
@@ -237,7 +245,7 @@ module "ilb-l7" {
     default = {
       backends = [{
         balancing_mode = "RATE"
-        group = "my-neg"
+        group          = "my-neg"
         max_rate       = { per_endpoint = 1 }
       }]
     }
@@ -245,12 +253,15 @@ module "ilb-l7" {
   neg_configs = {
     my-neg = {
       gce = {
-        zone      = "europe-west1-b"
-        endpoints = [{
-          instance   = "test-1"
-          ip_address = "10.0.0.10"
-          port = 80
-        }]
+        zone = "europe-west1-b"
+        endpoints = {
+          e-0 = {
+            instance   = "test-1"
+            ip_address = google_compute_address.test.address
+            # ip_address = "10.0.0.10"
+            port = 80
+          }
+        }
       }
     }
   }
@@ -259,7 +270,7 @@ module "ilb-l7" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=8
 ```
 
 Hybrid NEGs are also supported:
@@ -274,7 +285,7 @@ module "ilb-l7" {
     default = {
       backends = [{
         balancing_mode = "RATE"
-        group = "my-neg"
+        group          = "my-neg"
         max_rate       = { per_endpoint = 1 }
       }]
     }
@@ -282,11 +293,13 @@ module "ilb-l7" {
   neg_configs = {
     my-neg = {
       hybrid = {
-        zone      = "europe-west1-b"
-        endpoints = [{
-          ip_address = "10.0.0.10"
-          port = 80
-        }]
+        zone = "europe-west1-b"
+        endpoints = {
+          e-0 = {
+            ip_address = "10.0.0.10"
+            port       = 80
+          }
+        }
       }
     }
   }
@@ -310,7 +323,7 @@ module "ilb-l7" {
     default = {
       backends = [{
         balancing_mode = "RATE"
-        group = "my-neg"
+        group          = "my-neg"
         max_rate       = { per_endpoint = 1 }
       }]
     }
@@ -367,7 +380,7 @@ module "ilb-l7" {
       pathmap = {
         default_service = "default"
         path_rules = [{
-          paths = ["/video", "/video/*"]
+          paths   = ["/video", "/video/*"]
           service = "video"
         }]
       }
@@ -512,20 +525,24 @@ module "ilb-l7" {
     neg-nginx-ew8-c = {
       gce = {
         zone = "europe-west8-c"
-        endpoints = [{
-          instance   = "nginx-ew8-c"
-          ip_address = "10.24.32.26"
-          port       = 80
-        }]
+        endpoints = {
+          e-0 = {
+            instance   = "nginx-ew8-c"
+            ip_address = "10.24.32.26"
+            port       = 80
+          }
+        }
       }
     }
     neg-home-hello = {
       hybrid = {
-        zone      = "europe-west8-b"
-        endpoints = [{
-          ip_address = "192.168.0.3"
-          port       = 443
-        }]
+        zone = "europe-west8-b"
+        endpoints = {
+          e-0 = {
+            ip_address = "192.168.0.3"
+            port       = 443
+          }
+        }
       }
     }
   }
@@ -597,7 +614,7 @@ module "ilb-l7" {
 | [group_configs](variables.tf#L36) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  zone        &#61; string&#10;  instances   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  named_ports &#61; optional&#40;map&#40;number&#41;, &#123;&#125;&#41;&#10;  project_id  &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [health_check_configs](variables-health-check.tf#L19) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="map&#40;object&#40;&#123;&#10;  check_interval_sec  &#61; optional&#40;number&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  enable_logging      &#61; optional&#40;bool, false&#41;&#10;  healthy_threshold   &#61; optional&#40;number&#41;&#10;  project_id          &#61; optional&#40;string&#41;&#10;  timeout_sec         &#61; optional&#40;number&#41;&#10;  unhealthy_threshold &#61; optional&#40;number&#41;&#10;  grpc &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    service_name       &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http2 &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  https &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  tcp &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ssl &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  default &#61; &#123;&#10;    http &#61; &#123;&#10;      port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [labels](variables.tf#L48) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L59) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  project_id &#61; optional&#40;string&#41;&#10;  cloudrun &#61; optional&#40;object&#40;&#123;&#10;    region &#61; string&#10;    target_service &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      tag  &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    target_urlmask &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gce &#61; optional&#40;object&#40;&#123;&#10;    zone &#61; string&#10;    network    &#61; optional&#40;string&#41;&#10;    subnetwork &#61; optional&#40;string&#41;&#10;    endpoints &#61; optional&#40;list&#40;object&#40;&#123;&#10;      instance   &#61; string&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;&#10;&#10;  &#125;&#41;&#41;&#10;  hybrid &#61; optional&#40;object&#40;&#123;&#10;    zone    &#61; string&#10;    network &#61; optional&#40;string&#41;&#10;    endpoints &#61; optional&#40;list&#40;object&#40;&#123;&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L59) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  project_id &#61; optional&#40;string&#41;&#10;  cloudrun &#61; optional&#40;object&#40;&#123;&#10;    region &#61; string&#10;    target_service &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      tag  &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    target_urlmask &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gce &#61; optional&#40;object&#40;&#123;&#10;    zone &#61; string&#10;    network    &#61; optional&#40;string&#41;&#10;    subnetwork &#61; optional&#40;string&#41;&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      instance   &#61; string&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;&#10;&#10;  &#125;&#41;&#41;&#10;  hybrid &#61; optional&#40;object&#40;&#123;&#10;    zone    &#61; string&#10;    network &#61; optional&#40;string&#41;&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [network_tier_premium](variables.tf#L119) | Use premium network tier. Defaults to true. | <code>bool</code> |  | <code>true</code> |
 | [ports](variables.tf#L126) | Optional ports for HTTP load balancer, valid ports are 80 and 8080. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [protocol](variables.tf#L137) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |

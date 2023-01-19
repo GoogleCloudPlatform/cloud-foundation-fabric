@@ -16,5 +16,5 @@
 
 output "ip_address" {
   description = "The reserved global IP address."
-  value       = module.glb.ip_address
+  value       = module.glb.address
 }

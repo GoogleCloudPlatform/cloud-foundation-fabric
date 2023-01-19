@@ -34,7 +34,7 @@ The `repositories` variable is where you configure which repositories to create,
 
 This is an example that creates repositories for stages 00 and 01, defines an existing repositories as the source for modules, and populates initial files for stages 00, 01, and 02:
 
-```hcl
+```tfvars
 organization = "ludomagno"
 repositories = {
   fast_00_bootstrap = {

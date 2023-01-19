@@ -14,14 +14,14 @@ Nested folder structure for yaml configurations is optionally supported, which a
 module "prod-firewall" {
   source = "./fabric/blueprints/factories/net-vpc-firewall-yaml"
 
-  project_id         = "my-prod-project"
-  network            = "my-prod-network"
+  project_id = "my-prod-project"
+  network    = "my-prod-network"
   config_directories = [
     "./prod",
     "./common"
   ]
 
-  log_config  = {
+  log_config = {
     metadata = "INCLUDE_ALL_METADATA"
   }
 }
@@ -29,8 +29,8 @@ module "prod-firewall" {
 module "dev-firewall" {
   source = "./fabric/blueprints/factories/net-vpc-firewall-yaml"
 
-  project_id         = "my-dev-project"
-  network            = "my-dev-network"
+  project_id = "my-dev-project"
+  network    = "my-dev-network"
   config_directories = [
     "./dev",
     "./common"

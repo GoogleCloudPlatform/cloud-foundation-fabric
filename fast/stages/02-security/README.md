@@ -114,7 +114,7 @@ To support these scenarios, key IAM bindings are configured by default to be add
 
 An example of how to configure keys:
 
-```hcl
+```tfvars
 # terraform.tfvars
 
 kms_defaults = {
@@ -128,14 +128,14 @@ kms_keys = {
         "user:user1@example.com"
       ]
     }
-    labels = { service = "compute" }
-    locations = null
+    labels          = { service = "compute" }
+    locations       = null
     rotation_period = null
   }
   storage = {
-    iam = null
-    labels = { service = "compute" }
-    locations = ["europe"]
+    iam             = null
+    labels          = { service = "compute" }
+    locations       = ["europe"]
     rotation_period = null
   }
 }
@@ -162,7 +162,7 @@ The VPC SC configuration is set up by default in dry-run mode to allow easy expe
 
 Access levels are defined via the `vpc_sc_access_levels` variable, and referenced by key in perimeter definitions:
 
-```hcl
+```tfvars
 vpc_sc_access_levels = {
   onprem = {
     conditions = [{
@@ -176,7 +176,7 @@ vpc_sc_access_levels = {
 
 Ingress and egress policy are defined via the `vpc_sc_egress_policies` and `vpc_sc_ingress_policies`, and referenced by key in perimeter definitions:
 
-```hcl
+```tfvars
 vpc_sc_egress_policies = {
   iac-gcs = {
     from = {
@@ -187,7 +187,7 @@ vpc_sc_egress_policies = {
     to = {
       operations = [{
         method_selectors = ["*"]
-        service_name = "storage.googleapis.com"
+        service_name     = "storage.googleapis.com"
       }]
       resources = ["projects/123456782"]
     }
@@ -217,7 +217,7 @@ Support for independently adding projects to perimeters outside of this Terrafor
 
 Access levels and egress/ingress policies are referenced in perimeters via keys.
 
-```hcl
+```tfvars
 vpc_sc_perimeters = {
   dev = {
     egress_policies  = ["iac-gcs"]

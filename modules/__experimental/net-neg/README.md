@@ -7,11 +7,11 @@ Note: this module will integrated into a general-purpose load balancing module i
 ## Example
 ```hcl
 module "neg" {
-  source     = "./fabric/modules/net-neg"
+  source     = "./fabric/modules/__experimental/net-neg/"
   project_id = "myproject"
   name       = "myneg"
-  network    = module.vpc.self_link
-  subnetwork = module.vpc.subnet_self_links["europe-west1/default"]
+  network    = var.vpc.self_link
+  subnetwork = var.subnet.self_link
   zone       = "europe-west1-b"
   endpoints = [
     for instance in module.vm.instances :
@@ -22,6 +22,7 @@ module "neg" {
     }
   ]
 }
+# tftest skip
 ```
 <!-- BEGIN TFDOC -->
 

@@ -61,8 +61,9 @@ resource "google_sql_database_instance" "primary" {
     user_labels       = var.labels
 
     ip_configuration {
-      ipv4_enabled    = var.ipv4_enabled
-      private_network = var.network
+      ipv4_enabled       = var.ipv4_enabled
+      private_network    = var.network
+      allocated_ip_range = var.allocated_ip_ranges.primary
       dynamic "authorized_networks" {
         for_each = var.authorized_networks != null ? var.authorized_networks : {}
         iterator = network
@@ -126,8 +127,9 @@ resource "google_sql_database_instance" "replicas" {
     user_labels = var.labels
 
     ip_configuration {
-      ipv4_enabled    = var.ipv4_enabled
-      private_network = var.network
+      ipv4_enabled       = var.ipv4_enabled
+      private_network    = var.network
+      allocated_ip_range = var.allocated_ip_ranges.replica
       dynamic "authorized_networks" {
         for_each = var.authorized_networks != null ? var.authorized_networks : {}
         iterator = network
@@ -174,4 +176,11 @@ resource "google_sql_user" "users" {
   name     = each.value.name
   host     = each.value.host
   password = each.value.password
+}
+
+resource "google_sql_ssl_cert" "postgres_client_certificates" {
+  for_each    = var.postgres_client_certificates != null ? toset(var.postgres_client_certificates) : toset([])
+  provider    = google-beta
+  instance    = google_sql_database_instance.primary.name
+  common_name = each.key
 }
