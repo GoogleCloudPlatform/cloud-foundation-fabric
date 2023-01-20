@@ -45,6 +45,7 @@ locals {
     # TODO: jit?
     gke-mcs                  = "service-%s@gcp-sa-mcsd"
     monitoring-notifications = "service-%s@gcp-sa-monitoring-notification"
+    notebooks                = "service-%s@gcp-sa-notebooks"
     pubsub                   = "service-%s@gcp-sa-pubsub"
     secretmanager            = "service-%s@gcp-sa-secretmanager"
     sql                      = "service-%s@gcp-sa-cloud-sql"

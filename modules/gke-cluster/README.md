@@ -33,7 +33,7 @@ module "cluster-1" {
     environment = "dev"
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=basic.yaml
 ```
 
 ### GKE Cluster with Dataplane V2 enabled
@@ -42,7 +42,7 @@ module "cluster-1" {
 module "cluster-1" {
   source     = "./fabric/modules/gke-cluster"
   project_id = "myproject"
-  name       = "cluster-1"
+  name       = "cluster-dataplane-v2"
   location   = "europe-west1-b"
   vpc_config = {
     network    = var.vpc.self_link
@@ -68,8 +68,36 @@ module "cluster-1" {
     environment = "dev"
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=dataplane-v2.yaml
 ```
+### Autopilot Cluster
+
+```hcl
+module "cluster-autopilot" {
+  source     = "./fabric/modules/gke-cluster"
+  project_id = "myproject"
+  name       = "cluster-autopilot"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    secondary_range_names = {
+      pods     = "pods"
+      services = "services"
+    }
+    master_authorized_ranges = {
+      internal-vms = "10.0.0.0/8"
+    }
+    master_ipv4_cidr_block = "192.168.0.0/28"
+  }
+  enable_features = {
+    autopilot = true
+  }
+}
+# tftest modules=1 resources=1 inventory=autopilot.yaml
+```
+
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
