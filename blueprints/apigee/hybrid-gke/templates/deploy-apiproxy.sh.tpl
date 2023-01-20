@@ -14,8 +14,13 @@
  
 #!/bin/bash
 
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 ENVIRONMENT"
+    exit 1
+fi  
+
 ORG_NAME=${org}
-ENV_NAME=${env}
+ENV_NAME=$1
 
 wget https://github.com/apigee/api-platform-samples/raw/master/sample-proxies/apigee-quickstart/httpbin_rev1_2020_02_02.zip -O apiproxy.zip 
 

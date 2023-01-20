@@ -40,5 +40,12 @@ module "project" {
     "roles/resourcemanager.projectIamAdmin" = [module.mgmt_server.service_account_iam_email]
     "roles/iam.serviceAccountAdmin"         = [module.mgmt_server.service_account_iam_email]
     "roles/iam.serviceAccountKeyAdmin"      = [module.mgmt_server.service_account_iam_email]
+    "roles/monitoring.metricWriter"         = [module.sas["apigee-metrics"].iam_email]
+    "roles/storage.objectAdmin"             = [module.sas["apigee-cassandra"].iam_email]
+    "roles/apigeeconnect.Agent"             = [module.sas["apigee-mart"].iam_email]
+    "roles/apigee.runtimeAgent"             = [module.sas["apigee-watcher"].iam_email]
+    "roles/apigee.analyticsAgent"           = [module.sas["apigee-udca"].iam_email]
+    "roles/apigee.synchronizerManager"      = [module.sas["apigee-synchronizer"].iam_email]
+    "roles/cloudtrace.agent"                = [module.sas["apigee-runtime"].iam_email]
   }
 }
