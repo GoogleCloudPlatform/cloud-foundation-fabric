@@ -22,7 +22,7 @@ import os
 import time
 
 from airflow import models
-from airflow.providers.google.cloud.operators.dataflow import DataflowTemplatedJobStartOperator, DataflowStartFlexTemplateOperator
+from airflow.providers.google.cloud.operators.dataflow import DataflowStartFlexTemplateOperator
 from airflow.operators import dummy
 from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
 
