@@ -754,7 +754,7 @@ def test_name(plan_summary, tfvars_to_yaml, tmp_path):
   assert s.values[address]['project'] == 'my-project'
 ```
 
-For more examples on how to write python tests, the tests for  [`organization`](./tests/modules/organization/test_plan_org_policies.py) and [`net-vpc`](./tests/modules/net_vpc/test_routes.py) modules.
+For more examples on how to write python tests, check the tests for the [`organization`](./tests/modules/organization/test_plan_org_policies.py) module.
 
 #### Testing documentation examples
 
