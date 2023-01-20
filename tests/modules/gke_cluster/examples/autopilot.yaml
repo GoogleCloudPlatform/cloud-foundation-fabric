@@ -12,12 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-vpc
-common_tfvars:
-  - common.tfvars
+values:
+  module.cluster-autopilot.google_container_cluster.cluster:
+    enable_autopilot: true
+    ip_allocation_policy:
+    - cluster_secondary_range_name: pods
+      services_secondary_range_name: services
+    location: europe-west1-b
+    master_authorized_networks_config:
+    - cidr_blocks:
+      - cidr_block: 10.0.0.0/8
+        display_name: internal-vms
+    name: cluster-autopilot
+    network: projects/xxx/global/networks/aaa
+    project: myproject
+    subnetwork: subnet_self_link
 
-tests:
-  shared_vpc:
-  psa_routes_export:
-  psa_routes_import:
-  psa_routes_import_export:
+counts:
+  google_container_cluster: 1

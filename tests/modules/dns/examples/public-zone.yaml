@@ -12,12 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-vpc
-common_tfvars:
-  - common.tfvars
+values:
+  module.public-dns.google_dns_managed_zone.public[0]:
+    dns_name: example.com.
+    name: example
+    project: myproject
+    visibility: public
+  module.public-dns.google_dns_record_set.cloud-static-records["A myhost"]:
+    managed_zone: example
+    name: myhost.example.com.
+    project: myproject
+    routing_policy: []
+    rrdatas:
+    - 127.0.0.1
+    ttl: 300
+    type: A
 
-tests:
-  shared_vpc:
-  psa_routes_export:
-  psa_routes_import:
-  psa_routes_import_export:
+counts:
+  google_dns_keys: 1
+  google_dns_managed_zone: 1
+  google_dns_record_set: 1
+  modules: 1
+  resources: 3
+
+outputs: {}

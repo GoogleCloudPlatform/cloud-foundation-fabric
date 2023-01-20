@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-vpc
-common_tfvars:
-  - common.tfvars
+values:
+  module.bucket.google_storage_bucket.bucket:
+    logging:
+    - log_bucket: log-bucket
+    name: my-bucket
+    project: myproject
+    retention_policy:
+    - is_locked: true
+      retention_period: 100
 
-tests:
-  shared_vpc:
-  psa_routes_export:
-  psa_routes_import:
-  psa_routes_import_export:
+counts:
+  google_storage_bucket: 1

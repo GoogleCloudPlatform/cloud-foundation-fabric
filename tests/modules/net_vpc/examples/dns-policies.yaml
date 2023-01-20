@@ -1,0 +1,42 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.vpc.google_compute_network.network[0]:
+    name: my-network
+    project: my-project
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]: {}
+  module.vpc.google_dns_policy.default[0]:
+    alternative_name_server_config:
+    - target_name_servers:
+      - forwarding_path: ''
+        ipv4_address: '8.8.8.8'
+      - forwarding_path: private
+        ipv4_address: '10.0.0.1'
+    description: Managed by Terraform
+    enable_inbound_forwarding: true
+    enable_logging: null
+    name: my-network
+    networks:
+    - {}
+    project: my-project
+
+counts:
+  google_compute_network: 1
+  google_compute_subnetwork: 1
+  google_dns_policy: 1
+  modules: 1
+  resources: 3
+
+outputs: {}
