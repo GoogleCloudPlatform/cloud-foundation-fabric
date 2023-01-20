@@ -1,3 +1,8 @@
+## Pipeline summary
+This demo serves as a simple example of building and launching a Flex Template Dataflow pipeline. The code mainly focuses on reading a CSV file as input along with a JSON schema file as side input. The pipeline Parses both inputs and writes the data to the relevant BigQuery table while applying the schema passed from input.
+
+![Dataflow pipeline overview](../../images/df_demo_pipeline.png "Dataflow pipeline overview")
+
 ## Example build run
 
 Below is an example for triggering the Dataflow flex template build pipeline defined in `cloudbuild.yaml`. The Terraform output provides an example as well filled with the parameters values based on the generated resources in the data platform.
@@ -21,7 +26,9 @@ gcloud builds submit \
 
 ## Example Dataflow pipeline launch in bash (from flex template)
 
-Below is an example of launching a dataflow pipeline manually, based on the built template, in the data platform, the launch of this pipeline is handled by an airflow operator.
+Below is an example of launching a dataflow pipeline manually, based on the built template
+
+**Note:** In the data platform demo, the launch of this Dataflow pipeline is handled by the airflow operator (DataflowStartFlexTemplateOperator).
 
 ```
 #!/bin/bash
