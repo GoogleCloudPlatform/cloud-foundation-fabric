@@ -46,6 +46,15 @@ output "demo_commands" {
   }
 }
 
+output "df_template" {
+  description = "Dataflow template image and template details."
+  value = {
+    df_template_img  = "${local.orch_docker_path}/[image-name]:[version]"
+    df_template_cs   = "gs://${module.orch-cs-df-template.name}"
+    build_staging_cs = "gs://${module.orch-cs-build-staging.name}"
+  }
+}
+
 output "gcs-buckets" {
   description = "GCS buckets."
   value = {
@@ -108,11 +117,3 @@ output "vpc_subnet" {
   }
 }
 
-output "df_template" {
-  description = "Dataflow template image and template details"
-  value = {
-    df_template_img  = "${local.orch_docker_path}/[image-name]:[version]"
-    df_template_cs   = "gs://${module.orch-cs-df-template.name}"
-    build_staging_cs = "gs://${module.orch-cs-build-staging.name}"
-  }
-}
