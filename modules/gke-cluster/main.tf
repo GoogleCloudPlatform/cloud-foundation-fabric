@@ -63,6 +63,7 @@ resource "google_container_cluster" "cluster" {
         enable_integrity_monitoring = true
       }
     }
+    tags = var.tags
   }
 
 

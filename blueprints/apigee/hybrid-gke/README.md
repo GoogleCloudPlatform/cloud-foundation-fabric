@@ -25,20 +25,20 @@ The diagram below depicts the architecture.
     terraform apply
     ```
 
+Create an A record in your DNS registrar to point the environment group hostname to the public IP address returned after the terraform configuration was applied. You might need to wait some time until the certificate is provisioned.    
+
 ## Testing the blueprint
 
 2. Deploy an api proxy
 
     ```
-    ./deploy-apiproxy.sh
+    ./deploy-apiproxy.sh apis-test
     ```
 
-3. In the console check the IP address that has been allocated to the Apigee ingress gateway and send some traffic to the deployed API proxy.
+3. Send a request
 
     ```
-    curl -k -v -H "Host:HOSTNAME" \
-    --resolve HOSTNAME:443:IP_ADDRESS \
-    https://HOSTNAME/httpbin/headers
+    curl -v https://HOSTNAME/httpbin/headers
     ```
 <!-- BEGIN TFDOC -->
 
@@ -55,5 +55,11 @@ The diagram below depicts the architecture.
 | [project_create](variables.tf#L70) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [region](variables.tf#L84) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | [zone](variables.tf#L90) | Zone. | <code>string</code> |  | <code>&#34;europe-west1-c&#34;</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [ip_address](outputs.tf#L17) | GLB IP address. |  |
 
 <!-- END TFDOC -->

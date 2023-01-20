@@ -18,12 +18,13 @@
 
 resource "local_file" "vars_file" {
   content = yamlencode({
-    cluster    = module.cluster.name
-    region     = var.region
-    project_id = module.project.project_id
-    envgroup   = local.envgroup
-    env        = local.environment
-    hostname   = var.hostname
+    cluster          = module.cluster.name
+    region           = var.region
+    project_id       = module.project.project_id
+    envgroups        = local.envgroups
+    environments     = local.environments
+    service_accounts = local.google_sas
+    ingress_ip_name  = local.ingress_ip_name
   })
   filename        = "${path.module}/ansible/vars/vars.yaml"
   file_permission = "0666"

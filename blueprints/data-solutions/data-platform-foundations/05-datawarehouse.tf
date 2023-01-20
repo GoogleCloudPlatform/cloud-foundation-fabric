@@ -30,21 +30,6 @@ locals {
       "roles/storage.objectViewer",
     ]
   }
-  dwh_plg_group_iam = {
-    (local.groups.data-engineers) = [
-      "roles/bigquery.dataEditor",
-      "roles/storage.admin",
-    ],
-    (local.groups.data-analysts) = [
-      "roles/bigquery.dataEditor",
-      "roles/bigquery.jobUser",
-      "roles/bigquery.metadataViewer",
-      "roles/bigquery.user",
-      "roles/datacatalog.viewer",
-      "roles/datacatalog.tagTemplateViewer",
-      "roles/storage.objectAdmin",
-    ]
-  }
   dwh_lnd_iam = {
     "roles/bigquery.dataOwner" = [
       module.load-sa-df-0.iam_email,
@@ -140,21 +125,6 @@ module "dwh-conf-project" {
   }
 }
 
-module "dwh-plg-project" {
-  source          = "../../../modules/project"
-  parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "dwh-plg${local.project_suffix}"
-  group_iam       = local.dwh_plg_group_iam
-  iam             = {}
-  services        = local.dwh_services
-  service_encryption_key_ids = {
-    bq      = [try(local.service_encryption_keys.bq, null)]
-    storage = [try(local.service_encryption_keys.storage, null)]
-  }
-}
-
 # Bigquery
 
 module "dwh-lnd-bq-0" {
@@ -177,14 +147,6 @@ module "dwh-conf-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.dwh-conf-project.project_id
   id             = "${replace(var.prefix, "-", "_")}_dwh_conf_bq_0"
-  location       = var.location
-  encryption_key = try(local.service_encryption_keys.bq, null)
-}
-
-module "dwh-plg-bq-0" {
-  source         = "../../../modules/bigquery-dataset"
-  project_id     = module.dwh-plg-project.project_id
-  id             = "${replace(var.prefix, "-", "_")}_dwh_plg_bq_0"
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
@@ -218,17 +180,6 @@ module "dwh-conf-cs-0" {
   project_id     = module.dwh-conf-project.project_id
   prefix         = var.prefix
   name           = "dwh-conf-cs-0"
-  location       = var.location
-  storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
-  force_destroy  = var.data_force_destroy
-}
-
-module "dwh-plg-cs-0" {
-  source         = "../../../modules/gcs"
-  project_id     = module.dwh-plg-project.project_id
-  prefix         = var.prefix
-  name           = "dwh-plg-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
