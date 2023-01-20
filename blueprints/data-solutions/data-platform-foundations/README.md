@@ -265,11 +265,12 @@ You can find examples in the `[demo](./demo)` folder.
 |---|---|:---:|
 | [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
 | [demo_commands](outputs.tf#L27) | Demo commands. Relevant only if Composer is deployed. |  |
-| [gcs-buckets](outputs.tf#L40) | GCS buckets. |  |
-| [kms_keys](outputs.tf#L53) | Cloud MKS keys. |  |
-| [projects](outputs.tf#L58) | GCP Projects informations. |  |
-| [vpc_network](outputs.tf#L84) | VPC network. |  |
-| [vpc_subnet](outputs.tf#L93) | VPC subnetworks. |  |
+| [df_template](outputs.tf#L111) | Dataflow template image and template details |  |
+| [gcs-buckets](outputs.tf#L49) | GCS buckets. |  |
+| [kms_keys](outputs.tf#L62) | Cloud MKS keys. |  |
+| [projects](outputs.tf#L67) | GCP Projects informations. |  |
+| [vpc_network](outputs.tf#L93) | VPC network. |  |
+| [vpc_subnet](outputs.tf#L102) | VPC subnetworks. |  |
 
 <!-- END TFDOC -->
 ## TODOs
