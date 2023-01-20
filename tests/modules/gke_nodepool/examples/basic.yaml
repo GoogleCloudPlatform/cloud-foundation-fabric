@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-vpc
-common_tfvars:
-  - common.tfvars
+values:
+  module.cluster-1-nodepool-1.google_container_node_pool.nodepool:
+    cluster: cluster-1
+    location: europe-west1-b
+    name: nodepool-1
+    project: myproject
 
-tests:
-  shared_vpc:
-  psa_routes_export:
-  psa_routes_import:
-  psa_routes_import_export:
+counts:
+  google_container_node_pool: 1

@@ -1,0 +1,42 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.gateway.google_api_gateway_api.api:
+    api_id: api
+    display_name: api
+    project: my-project
+  module.gateway.google_api_gateway_api_config.api_config:
+    api: api
+    gateway_config: []
+    grpc_services: []
+    labels: null
+    managed_service_configs: []
+    project: my-project
+  module.gateway.google_api_gateway_gateway.gateway:
+    display_name: gw-api
+    gateway_id: gw-api
+    labels: null
+    project: my-project
+    region: europe-west1
+  module.gateway.google_project_service.service:
+    disable_dependent_services: true
+    disable_on_destroy: true
+    project: my-project
+
+counts:
+  google_api_gateway_api: 1
+  google_api_gateway_api_config: 1
+  google_api_gateway_gateway: 1
+  google_project_service: 1

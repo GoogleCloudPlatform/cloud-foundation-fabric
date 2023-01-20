@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-vpc
-common_tfvars:
-  - common.tfvars
+values:
+  google_dns_managed_zone.non-public[0]:
+    dns_name: test.example.
+    name: test
+    private_visibility_config: []
+    visibility: private
 
-tests:
-  shared_vpc:
-  psa_routes_export:
-  psa_routes_import:
-  psa_routes_import_export:
+counts:
+  google_dns_managed_zone: 1
+  modules: 0
+  resources: 1
