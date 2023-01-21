@@ -84,8 +84,8 @@ def do_discovery(resources):
       {k: len(v) for k, v in resources.items() if not isinstance(v, str)}))
 
 
-def do_init(resources, discovery_root, monitoring_project, folders=None, projects=None,
-            custom_quota=None):
+def do_init(resources, discovery_root, monitoring_project, folders=None,
+            projects=None, custom_quota=None):
   '''Calls init plugins to configure keys in the shared resource map.
 
   Args:

@@ -62,8 +62,8 @@ def _handle_discovery(resources, response, data):
   'Processes the asset API response and returns parsed resources or next URL.'
   LOGGER.info('discovery handle request')
   for result in parse_cai_results(data, 'cai-compute', method='list'):
-    resource = _handle_resource(
-        resources, result['assetType'], result['resource'])
+    resource = _handle_resource(resources, result['assetType'],
+                                result['resource'])
     if not resource:
       continue
     yield resource
@@ -214,6 +214,7 @@ def _handle_sql_instances(resource, data):
       'availabilityType': data['settings']['availabilityType'],
   }
 
+
 def _handle_subnetworks(resource, data):
   'Handles subnetwork type resource data.'
   secondary_ranges = [{
@@ -237,8 +238,7 @@ def _self_link(s):
 def _url(resources):
   'Returns discovery URL'
   discovery_root = resources['config:discovery_root']
-  asset_types = '&'.join(
-      f'assetTypes={t}' for t in TYPES.values())
+  asset_types = '&'.join(f'assetTypes={t}' for t in TYPES.values())
   return CAI_URL.format(root=discovery_root, asset_types=asset_types)
 
 
