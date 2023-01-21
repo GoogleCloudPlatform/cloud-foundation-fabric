@@ -30,6 +30,11 @@ variable "access_policy_create" {
   default = null
 }
 
+variable "bootstrap_service_account" {
+  description = "Folder bootstrap service account: owner of the folder."
+  type        = string
+}
+
 variable "data_dir" {
   description = "Relative path for the folder storing configuration data."
   type        = string
@@ -57,13 +62,92 @@ variable "groups" {
   default = {
     #TODO data-analysts  = "gcp-data-analysts"
     data-engineers = "gcp-data-engineers"
-    #TODO data-security  = "gcp-data-security"
+    data-security  = "gcp-data-security"
   }
 }
 
-variable "organization_domain" {
-  description = "Organization domain."
+variable "kms_keys" {
+  description = "KMS keys to create, keyed by name."
+  type = map(object({
+    iam             = optional(map(list(string)), {})
+    labels          = optional(map(string), {})
+    locations       = optional(list(string), ["global", "europe", "europe-west1"])
+    rotation_period = optional(string, "7776000s")
+  }))
+  default = {}
+}
+
+variable "log_locations" {
+  description = "Optional locations for GCS, BigQuery, and logging buckets created here."
+  type = object({
+    bq      = optional(string, "europe")
+    gcs     = optional(string, "europe")
+    logging = optional(string, "global")
+    pubsub  = optional(string, null)
+  })
+  default = {
+    bq      = "europe"
+    gcs     = "europe"
+    logging = "global"
+    pubsub  = null
+  }
+  nullable = false
+}
+
+variable "log_sinks" {
+  description = "Org-level log sinks, in name => {type, filter} format."
+  type = map(object({
+    filter = string
+    type   = string
+  }))
+  default = {
+    audit-logs = {
+      filter = "logName:\"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName:\"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
+      type   = "bigquery"
+    }
+    vpc-sc = {
+      filter = "protoPayload.metadata.@type=\"type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata\""
+      type   = "bigquery"
+    }
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.log_sinks :
+      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+    ])
+    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+  }
+}
+
+variable "organization" {
+  description = "Organization details."
+  type = object({
+    domain = string
+  })
+}
+
+variable "prefix" {
+  description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
+
+  validation {
+    condition     = try(length(var.prefix), 0) < 10
+    error_message = "Use a maximum of 9 characters for prefix."
+  }
+}
+
+variable "projects_create" {
+  description = "Provide values if projects creation is needed, uses existing project if null. Projects will be created in the shielded folder."
+  type = object({
+    billing_account_id = string
+  })
+  default = null
+}
+
+variable "projects_id" {
+  description = "Project id, references existing project if `project_create` is null. Projects will be moved into the shielded folder."
+  type        = map(string)
+  default     = null
 }
 
 variable "vpc_sc_access_levels" {

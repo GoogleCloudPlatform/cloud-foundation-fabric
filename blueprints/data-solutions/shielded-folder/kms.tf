@@ -1,0 +1,100 @@
+/**
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+locals {
+  kms_locations = distinct(flatten([
+    for k, v in var.kms_keys : v.locations
+  ]))
+  kms_locations_keys = {
+    for loc in local.kms_locations : loc => {
+      for k, v in var.kms_keys : k => v if contains(v.locations, loc)
+    }
+  }
+
+  kms_log_locations = distinct(flatten([
+    for k, v in local.kms_log_sink_keys : compact(v.locations)
+  ]))
+
+  # Log sink keys
+  kms_log_sink_keys = {
+    "log-gcs" = {
+      labels          = {}
+      locations       = [var.log_locations.gcs]
+      rotation_period = "7776000s"
+    }
+    "log-bq" = {
+      labels          = {}
+      locations       = [var.log_locations.bq]
+      rotation_period = "7776000s"
+    }
+    "log-pubsub" = {
+      labels          = {}
+      locations       = [var.log_locations.pubsub]
+      rotation_period = "7776000s"
+    }
+  }
+  kms_log_locations_keys = {
+    for loc in local.kms_log_locations : loc => {
+      for k, v in local.kms_log_sink_keys : k => v if contains(v.locations, loc)
+    }
+  }
+}
+
+module "sec-project" {
+  source          = "../../../modules/project"
+  name            = "sec-core"
+  parent          = module.folder.id
+  billing_account = try(var.projects_create.billing_account_id, null)
+  project_create  = var.projects_create != null
+  prefix          = var.projects_create == null ? null : var.prefix
+  group_iam = {
+    (local.groups.data-engineers) = [
+      "roles/cloudkms.admin",
+      "roles/viewer",
+    ]
+  }
+  services = [
+    "cloudkms.googleapis.com",
+    "secretmanager.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
+}
+
+module "sec-kms" {
+  for_each   = toset(local.kms_locations)
+  source     = "../../../modules/kms"
+  project_id = module.sec-project.project_id
+  keyring = {
+    location = each.key
+    name     = "${each.key}"
+  }
+  # rename to `key_iam` to switch to authoritative bindings
+  key_iam_additive = {
+    for k, v in local.kms_locations_keys[each.key] : k => v.iam
+  }
+  keys = local.kms_locations_keys[each.key]
+}
+
+module "log-kms" {
+  for_each   = toset(local.kms_log_locations)
+  source     = "../../../modules/kms"
+  project_id = module.sec-project.project_id
+  keyring = {
+    location = each.key
+    name     = "log-${each.key}"
+  }
+  keys = local.kms_log_locations_keys[each.key]
+}

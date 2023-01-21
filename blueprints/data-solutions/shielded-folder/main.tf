@@ -23,7 +23,7 @@ locals {
   )
 
   groups = {
-    for k, v in var.groups : k => "${v}@${var.organization_domain}"
+    for k, v in var.groups : k => "${v}@${var.organization.domain}"
   }
   groups_iam = {
     for k, v in local.groups : k => "group:${v}"
@@ -38,14 +38,28 @@ locals {
     for k, v in data.google_projects.folder-projects.projects : format("projects/%s", v.number)
   ]
 
+  log_sink_destinations = merge(
+    # use the same dataset for all sinks with `bigquery` as  destination
+    { for k, v in var.log_sinks : k => module.log-export-dataset.0 if v.type == "bigquery" },
+    # use the same gcs bucket for all sinks with `storage` as destination
+    { for k, v in var.log_sinks : k => module.log-export-gcs.0 if v.type == "storage" },
+    # use separate pubsub topics and logging buckets for sinks with
+    # destination `pubsub` and `logging`
+    module.log-export-pubsub,
+    module.log-export-logbucket
+  )
 }
 
 module "folder" {
-  source                 = "../../../modules/folder"
-  folder_create          = var.folder_create != null
-  parent                 = try(var.folder_create.parent, null)
-  name                   = try(var.folder_create.display_name, null)
-  id                     = var.folder_id
+  source        = "../../../modules/folder"
+  folder_create = var.folder_create != null
+  parent        = try(var.folder_create.parent, null)
+  name          = try(var.folder_create.display_name, null)
+  id            = var.folder_id
+  iam = {
+    "roles/owner"                          = ["serviceAccount:${var.bootstrap_service_account}"]
+    "roles/resourcemanager.projectCreator" = ["serviceAccount:${var.bootstrap_service_account}"]
+  }
   group_iam              = local.group_iam
   org_policies_data_path = "${var.data_dir}/org-policies"
   firewall_policy_factory = {
@@ -53,7 +67,14 @@ module "folder" {
     policy_name = "hierarchical-policy"
     rules_file  = "${var.data_dir}/firewall-policies/hierarchical-policy-rules.yaml"
   }
-  #TODO logsink
+  logging_sinks = {
+    for name, attrs in var.log_sinks : name => {
+      bq_partitioned_table = attrs.type == "bigquery"
+      destination          = local.log_sink_destinations[name].id
+      filter               = attrs.filter
+      type                 = attrs.type
+    }
+  }
 }
 
 #TODO VPCSC
@@ -72,7 +93,7 @@ module "vpc-sc" {
     shielded = {
       status = {
         access_levels       = keys(var.vpc_sc_access_levels)
-        resources           = local.vpc_sc_resources
+        resources           = null #TODO local.vpc_sc_resources
         restricted_services = local._vpc_sc_restricted_services
         egress_policies     = keys(var.vpc_sc_egress_policies)
         ingress_policies    = keys(var.vpc_sc_ingress_policies)
