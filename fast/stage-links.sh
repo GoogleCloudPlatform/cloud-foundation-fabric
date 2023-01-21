@@ -50,7 +50,7 @@ case $STAGE_NAME in
 
 "0-bootstrap")
   unset GLOBALS
-  PROVIDER="providers/multitenant/${STAGE_NAME}-providers.tf"
+  PROVIDER="providers/0-bootstrap-providers.tf"
   TFVARS=""
   ;;
 "0-bootstrap-tenant")
