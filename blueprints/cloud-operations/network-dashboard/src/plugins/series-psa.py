@@ -47,7 +47,8 @@ def timeseries(resources):
                            dtype.endswith('ratio'))
   psa_nets = {
       k: ipaddress.ip_network('{}/{}'.format(v['address'], v['prefixLength']))
-      for k, v in resources['global_addresses'].items() if v['prefixLength']
+      for k, v in resources['global_addresses'].items()
+      if v['prefixLength']
   }
   psa_counts = {}
   for address, ip_count in _sql_addresses(resources.get('sql_instances', {})):
