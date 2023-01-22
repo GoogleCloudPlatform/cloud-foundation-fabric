@@ -14,42 +14,42 @@
  * limitations under the License.
  */
 
-locals {
-  # internal structure for Shared VPC service project IAM bindings
-  _vpc_subnet_bindings = (
-    local.vpc.subnets_iam == null || local.vpc.host_project == null
-    ? []
-    : flatten([
-      for subnet, members in local.vpc.subnets_iam : [
-        for member in members : {
-          region = split("/", subnet)[0]
-          subnet = split("/", subnet)[1]
-          member = member
-        }
-      ]
-    ])
-  )
 
-  # structures for Shared VPC resources in host project
-  vpc = coalesce(var.vpc, {
-    host_project = null, gke_setup = null, subnets_iam = null
-  })
-  vpc_cloudservices = (
-    local.vpc_gke_service_agent
+locals {
+  shared_vpc_project = try(var.network_config.host_project, null)
+
+  subnet = (
+    local.use_shared_vpc
+    ? var.network_config.subnet_self_link
+    : values(module.vpc-local.0.subnet_self_links)[0]
   )
-  vpc_gke_security_admin = coalesce(
-    try(local.vpc.gke_setup.enable_security_admin, null), false
+  vpc = (
+    local.use_shared_vpc
+    ? var.network_config.network_self_link
+    : module.vpc-local.0.self_link
   )
-  vpc_gke_service_agent = coalesce(
-    try(local.vpc.gke_setup.enable_host_service_agent, null), false
-  )
-  vpc_subnet_bindings = {
-    for binding in local._vpc_subnet_bindings :
-    "${binding.subnet}:${binding.member}" => binding
+  use_shared_vpc = var.network_config != null
+
+  shared_vpc_bindings = {
+    "roles/compute.networkUser" = [
+      "robot-df", "notebooks"
+    ]
   }
 
-}
+  shared_vpc_role_members = {
+    robot-df  = "serviceAccount:${module.project.service_accounts.robots.dataflow}"
+    notebooks = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
+  }
 
+  # reassemble in a format suitable for for_each
+  shared_vpc_bindings_map = {
+    for binding in flatten([
+      for role, members in local.shared_vpc_bindings : [
+        for member in members : { role = role, member = member }
+      ]
+    ]) : "${binding.role}-${binding.member}" => binding
+  }
+}
 
 module "gcs-bucket" {
   count         = var.bucket_name == null ? 0 : 1
@@ -83,19 +83,28 @@ module "bq-dataset" {
 }
 
 module "vpc-local" {
-  count      = var.vpc_local == null ? 0 : 1
+  count      = local.use_shared_vpc ? 0 : 1
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = var.vpc_local.name
-  subnets    = var.vpc_local.subnets
+  name       = "default"
+  subnets = [
+    {
+      "name" : "default",
+      "region" : "europe-west4",
+      "ip_cidr_range" : "10.4.0.0/24",
+      "secondary_ip_range" : null
+    }
+  ]
   psa_config = {
-    ranges = var.vpc_local.psa_config_ranges
+    ranges = {
+      "vertex" : "10.13.0.0/18"
+    }
     routes = null
   }
 }
 
 module "firewall" {
-  count      = var.vpc_local == null ? 0 : 1
+  count      = local.use_shared_vpc ? 0 : 1
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.project.project_id
   network    = module.vpc-local[0].name
@@ -118,8 +127,8 @@ module "firewall" {
 
 }
 
-module "nat-ew1" {
-  count          = var.vpc_local == null ? 0 : 1
+module "cloudnat" {
+  count          = local.use_shared_vpc ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.project.project_id
   region         = var.region
@@ -165,24 +174,22 @@ module "project" {
       module.service-account-github.iam_email
     ]
   }
-  labels                     = var.labels
+  labels = var.labels
+
+  org_policies = {
+    # "constraints/compute.requireOsLogin" = {
+    #   enforce = false
+    # }
+    # Example of applying a project wide policy, mainly useful for Composer 1
+  }
+
   service_encryption_key_ids = var.kms_service_agents
   services                   = var.project_services
-  shared_vpc_service_config = var.vpc == null ? null : {
-    host_project = local.vpc.host_project
-    # these are non-authoritative
-    service_identity_iam = {
-      "roles/compute.networkUser" = compact([
-        local.vpc_gke_service_agent ? "container-engine" : null,
-        local.vpc_cloudservices ? "cloudservices" : null
-      ])
-      "roles/compute.securityAdmin" = compact([
-        local.vpc_gke_security_admin ? "container-engine" : null,
-      ])
-      "roles/container.hostServiceAgentUser" = compact([
-        local.vpc_gke_service_agent ? "container-engine" : null
-      ])
-    }
+
+
+  shared_vpc_service_config = local.shared_vpc_project == null ? null : {
+    attach       = true
+    host_project = local.shared_vpc_project
   }
 
 }
@@ -196,14 +203,13 @@ module "service-account-mlops" {
   }
 }
 
-resource "google_compute_subnetwork_iam_member" "default" {
-  for_each   = local.vpc_subnet_bindings
-  project    = local.vpc.host_project
-  subnetwork = "projects/${local.vpc.host_project}/regions/${each.value.region}/subnetworks/${each.value.subnet}"
-  region     = each.value.region
-  role       = "roles/compute.networkUser"
-  member     = each.value.member
+resource "google_project_iam_member" "shared_vpc" {
+  count   = local.use_shared_vpc ? 1 : 0
+  project = var.network_config.host_project
+  role    = "roles/compute.networkUser"
+  member  = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
 }
+
 
 resource "google_sourcerepo_repository" "code-repo" {
   count   = var.repo_name == null ? 0 : 1

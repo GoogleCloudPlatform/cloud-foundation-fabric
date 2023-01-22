@@ -53,6 +53,21 @@ variable "labels" {
   default     = {}
 }
 
+variable "location" {
+  description = "Location used for multi-regional resources."
+  type        = string
+  default     = "eu"
+}
+
+variable "network_config" {
+  description = "Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values."
+  type = object({
+    host_project      = string
+    network_self_link = string
+    subnet_self_link  = string
+  })
+  default = null
+}
 
 variable "notebooks" {
   description = "Vertex AI workbenchs to be deployed."
@@ -123,54 +138,4 @@ variable "sa_mlops_name" {
   type        = string
   default     = "sa-mlops"
 }
-
-variable "vpc" {
-  description = "Shared VPC configuration for the project."
-  type = object({
-    host_project = string
-    gke_setup = object({
-      enable_security_admin     = bool
-      enable_host_service_agent = bool
-    })
-    subnets_iam = map(list(string))
-  })
-  default = null
-}
-
-variable "vpc_local" {
-  description = "Local VPC configuration for the project."
-  type = object({
-    name              = string
-    psa_config_ranges = map(string)
-    subnets = list(object({
-      name               = string
-      region             = string
-      ip_cidr_range      = string
-      secondary_ip_range = map(string)
-      }
-    ))
-    }
-  )
-  default = {
-    "name" : "default",
-    "subnets" : [
-      {
-        "name" : "default",
-        "region" : "europe-west1",
-        "ip_cidr_range" : "10.1.0.0/24",
-        "secondary_ip_range" : null
-      },
-      {
-        "name" : "default",
-        "region" : "europe-west4",
-        "ip_cidr_range" : "10.4.0.0/24",
-        "secondary_ip_range" : null
-      }
-    ],
-    "psa_config_ranges" : {
-      "vertex" : "10.13.0.0/18"
-    }
-  }
-}
-
 

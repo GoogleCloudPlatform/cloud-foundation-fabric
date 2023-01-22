@@ -65,31 +65,29 @@ project_id          = "creditcards-dev"
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L84) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L99) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
 | [bucket_name](variables.tf#L18) | GCS bucket name to store the Vertex AI artifacts. | <code>string</code> |  | <code>null</code> |
 | [dataset_name](variables.tf#L24) | BigQuery Dataset to store the training data. | <code>string</code> |  | <code>null</code> |
 | [group_iam](variables.tf#L31) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [identity_pool_claims](variables.tf#L38) | Claims to be used by Workload Identity Federation (i.e.: attribute.repository/ORGANIZATION/REPO). If a not null value is provided, then google_iam_workload_identity_pool resource will be created. | <code>string</code> |  | <code>null</code> |
 | [kms_service_agents](variables.tf#L44) | KMS IAM configuration in as service => [key]. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L50) | Labels to be assigned at project level. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [notebooks](variables.tf#L57) | Vertex AI workbenchs to be deployed. | <code title="map&#40;object&#40;&#123;&#10;  owner            &#61; string&#10;  region           &#61; string&#10;  subnet           &#61; string&#10;  internal_ip_only &#61; optional&#40;bool, false&#41;&#10;  idle_shutdown    &#61; optional&#40;bool&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [prefix](variables.tf#L69) | Prefix used for the project id. | <code>string</code> |  | <code>null</code> |
-| [project_create](variables.tf#L75) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_services](variables.tf#L89) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;aiplatform.googleapis.com&#34;,&#10;  &#34;artifactregistry.googleapis.com&#34;,&#10;  &#34;bigquery.googleapis.com&#34;,&#10;  &#34;cloudbuild.googleapis.com&#34;,&#10;  &#34;compute.googleapis.com&#34;,&#10;  &#34;datacatalog.googleapis.com&#34;,&#10;  &#34;dataflow.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;monitoring.googleapis.com&#34;,&#10;  &#34;notebooks.googleapis.com&#34;,&#10;  &#34;secretmanager.googleapis.com&#34;,&#10;  &#34;servicenetworking.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [region](variables.tf#L109) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west4&#34;</code> |
-| [repo_name](variables.tf#L115) | Cloud Source Repository name. null to avoid to create it. | <code>string</code> |  | <code>null</code> |
-| [sa_mlops_name](variables.tf#L121) | Name for the MLOPs Service Account. | <code>string</code> |  | <code>&#34;sa-mlops&#34;</code> |
-| [vpc](variables.tf#L127) | Shared VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; object&#40;&#123;&#10;    enable_security_admin     &#61; bool&#10;    enable_host_service_agent &#61; bool&#10;  &#125;&#41;&#10;  subnets_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_local](variables.tf#L140) | Local VPC configuration for the project. | <code title="object&#40;&#123;&#10;  name              &#61; string&#10;  psa_config_ranges &#61; map&#40;string&#41;&#10;  subnets &#61; list&#40;object&#40;&#123;&#10;    name               &#61; string&#10;    region             &#61; string&#10;    ip_cidr_range      &#61; string&#10;    secondary_ip_range &#61; map&#40;string&#41;&#10;    &#125;&#10;  &#41;&#41;&#10;  &#125;&#10;&#41;">object&#40;&#123;&#8230;&#41;</code> |  | <code title="&#123;&#10;  &#34;name&#34; : &#34;default&#34;,&#10;  &#34;subnets&#34; : &#91;&#10;    &#123;&#10;      &#34;name&#34; : &#34;default&#34;,&#10;      &#34;region&#34; : &#34;europe-west1&#34;,&#10;      &#34;ip_cidr_range&#34; : &#34;10.1.0.0&#47;24&#34;,&#10;      &#34;secondary_ip_range&#34; : null&#10;    &#125;,&#10;    &#123;&#10;      &#34;name&#34; : &#34;default&#34;,&#10;      &#34;region&#34; : &#34;europe-west4&#34;,&#10;      &#34;ip_cidr_range&#34; : &#34;10.4.0.0&#47;24&#34;,&#10;      &#34;secondary_ip_range&#34; : null&#10;    &#125;&#10;  &#93;,&#10;  &#34;psa_config_ranges&#34; : &#123;&#10;    &#34;vertex&#34; : &#34;10.13.0.0&#47;18&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [location](variables.tf#L56) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
+| [network_config](variables.tf#L62) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [notebooks](variables.tf#L72) | Vertex AI workbenchs to be deployed. | <code title="map&#40;object&#40;&#123;&#10;  owner            &#61; string&#10;  region           &#61; string&#10;  subnet           &#61; string&#10;  internal_ip_only &#61; optional&#40;bool, false&#41;&#10;  idle_shutdown    &#61; optional&#40;bool&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L84) | Prefix used for the project id. | <code>string</code> |  | <code>null</code> |
+| [project_create](variables.tf#L90) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_services](variables.tf#L104) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;aiplatform.googleapis.com&#34;,&#10;  &#34;artifactregistry.googleapis.com&#34;,&#10;  &#34;bigquery.googleapis.com&#34;,&#10;  &#34;cloudbuild.googleapis.com&#34;,&#10;  &#34;compute.googleapis.com&#34;,&#10;  &#34;datacatalog.googleapis.com&#34;,&#10;  &#34;dataflow.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;monitoring.googleapis.com&#34;,&#10;  &#34;notebooks.googleapis.com&#34;,&#10;  &#34;secretmanager.googleapis.com&#34;,&#10;  &#34;servicenetworking.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [region](variables.tf#L124) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west4&#34;</code> |
+| [repo_name](variables.tf#L130) | Cloud Source Repository name. null to avoid to create it. | <code>string</code> |  | <code>null</code> |
+| [sa_mlops_name](variables.tf#L136) | Name for the MLOPs Service Account. | <code>string</code> |  | <code>&#34;sa-mlops&#34;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [github](outputs.tf#L31) | Github Configuration. |  |
-| [google_iam_workload_identity_pool_provider](outputs.tf#L37) | Id for the Workload Identity Pool Provider. |  |
-| [project](outputs.tf#L42) | The project resource as return by the `project` module. |  |
-| [project_id](outputs.tf#L51) | Project ID. |  |
-| [workload_identity_pool_name](outputs.tf#L59) | Resource name for the Workload Identity Pool. |  |
+| [project](outputs.tf#L37) | The project resource as return by the `project` module. |  |
+| [project_id](outputs.tf#L42) | Project ID. |  |
 
 <!-- END TFDOC -->

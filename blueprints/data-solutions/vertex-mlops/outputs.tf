@@ -34,29 +34,12 @@ output "github" {
   value       = local.gh_config
 }
 
-output "google_iam_workload_identity_pool_provider" {
-  description = "Id for the Workload Identity Pool Provider."
-  value       = [google_iam_workload_identity_pool_provider.github_provider.*.name]
-}
-
 output "project" {
   description = "The project resource as return by the `project` module."
   value       = module.project
-
-  depends_on = [
-    google_compute_subnetwork_iam_member.default
-  ]
 }
 
 output "project_id" {
   description = "Project ID."
   value       = module.project.project_id
-  depends_on = [
-    google_compute_subnetwork_iam_member.default
-  ]
-}
-
-output "workload_identity_pool_name" {
-  description = "Resource name for the Workload Identity Pool."
-  value       = [google_iam_workload_identity_pool.github_pool.*.name]
 }
