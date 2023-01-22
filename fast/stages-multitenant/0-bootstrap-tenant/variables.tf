@@ -169,7 +169,7 @@ variable "tenant_config" {
       type              = string
     }))
     group_iam = optional(map(list(string)), {})
-    iam       = optional(map(map(list(string))), {})
+    iam       = optional(map(list(string)), {})
     locations = optional(object({
       bq      = optional(string)
       gcs     = optional(string)

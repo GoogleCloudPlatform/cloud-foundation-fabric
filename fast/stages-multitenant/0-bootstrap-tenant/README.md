@@ -17,12 +17,11 @@ The resources and policies managed here are:
 - optional CI/CD setup for this and the resource management tenant stages
 - tenant-specific Workload Identity Federation pool and providers (planned)
 
-<!-- https://mdigi.tools/darken-color/#f1f8e9 -->
-
-One notable difference compared to organization-level bootstrap is the creation of service accounts for all tenant stages: this is handled here so that billing and Organization Policy Admin bindings can be set. These bindings require broad permissions which the org-level resman service account used to run this stage already has, avoiding the need to grant them to tenant-level service accounts and effectively decoupling the tenant from the organization.
+One notable difference compared to organization-level bootstrap is the creation of service accounts for all tenant stages: this is done here so that Billing and Organization Policy Admin bindings can be set, leveraging permissions of  the org-level resman service account which is used to run this stage. Doing this here avoids the need to grant broad scoped permissions on the organization to tenant-level service accounts, and effectively decouples the tenant from the organization.
 
 The following diagram is a high level reference of what this stage manages, showing two hypothetical tenants (which would need two distinct copies of this stage):
 
+<!-- https://mdigi.tools/darken-color/#f1f8e9 -->
 <p align="center">
   <img src="diagram.svg" alt="Tenant-level bootstrap">
 </p>
@@ -31,15 +30,147 @@ As most of the features of this stage follow the same design and configurations 
 
 ## Naming
 
+This stage sets the prefix used to name tenant resources, and passes it downstream to the other tenant stages together with the other globals needed by the tenant. The default is to append the tenant short name (a 3 or 4 letter acronym or abbreviation) to the organization-level prefix, if that is not desired this can be changed by editing local definitions in the `main.tf` file. Just be aware that some resources have name length constraints.
+
 ## How to run this stage
 
-### Tenant-level configuration
+The tenant bootstrap stage is the effective boundary between organization and tenant-level resources: it uses the same inputs as the organization-level resource management stage, and produces outputs which provide the needed context to all other tenant stages.
 
 ### Output files and cross-stage variables
 
+As mentioned above, the organization-level set of output files are used here with one exception: the provider file is different since state is specific to this stage. The `stage-links.sh` script can be used to get the commands needed for the provider and output files, just pass a single argument with your FAST output files folder path, or GCS bucket URI:
+
+```bash
+../../stage-links.sh ~/fast-config
+```
+
+The script output can be copy/pasted to a terminal:
+
+```bash
+# copy and paste the following commands for '0-bootstrap-tenant'
+
+cp ~/fast-config/providers/0-bootstrap-tenant-providers.tf ./
+ln -s ~/fast-config/tfvars/globals.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+
+# ---> remember to set the prefix in the provider file <---
+```
+
+As shown in the script output above, the provider file is a template used as a source for potentially multiple tenant installations, so it needs to be specifically configured for this tenant by setting the backend `prefix` to a unique string so that the Terraform state file will not overlap with other tenants. Open it in an editor and perform the change before proceeding.
+
+### Global overrides
+
+The globals variable file linekd above contains definition which were set for the organization, for example the locations used for log sink destinations. These might not be correct for each tenant, so this stage allows overriding them via the tenant configuration variable described in the next section.
+
+### Tenant-level configuration
+
+The tenant configuration resides in the `tenant_config` variable, this is an example configuration for a tenant with comments explaining the different choices that need to be made:
+
+```hcl
+tenant_config = {
+  # used for the top-level folder name
+  descriptive_name = "My First Tenant"
+  # tenant-specific groups, only the admin group is required
+  # the organization domain is automatically added after the group name
+  groups = {
+    gcp-admins          = "tn01-admins"
+    # gcp-devops          = "tn01-devops"
+    # gcp-network-admins  = "tn01-networking"
+    # gcp-security-admins = "tn01-security"
+  }
+  # the 3 or 4 letter acronym or abbreviation used in resource names
+  short_name = "tn01"
+  # optional CI/CD configuration, refer to the org-level stages for information 
+  # cicd = {
+  #   branch            = null
+  #   identity_provider = "foo-provider"
+  #   name              = "myorg/tn01-bootstrap"
+  #   type              = "github"
+  # }
+  # optional group-level IAM bindings to add to the top-level folder
+  # group_iam = {
+  #   tn01-support = ["roles/viewer"]
+  # }
+  # optional IAM bindings to add to the top-level folder
+  # iam       = {
+  #   "roles/logging.admin" = [
+  #     "serviceAccount:foo@myprj.iam.gserviceaccount.com"
+  #   ]
+  # }
+  # optional location overrides to global locations
+  # locations = {
+  #   bq      = null
+  #   gcs     = null
+  #   logging = null
+  #   pubsub  = null
+  # }
+  # optional folder ids for automation and logging project folders, typically
+  # added in later stages and entered here once created
+  # project_parent_ids = {
+  #   automation = "folders/012345678"
+  #   logging    = "folders/0123456789"
+  # }
+}
+```
+
+Configure the tenant variable in a tfvars file for this stage. A few minor points worth noting:
+
+- the administrator group is the only one required here, specifying other groups only has the effect of populating the output file with group names for reuse in later stages
+- the `iam` variable is merged with the IAM bindings for service accounts in the `main.tf` file, which take precedence; if a role specified in the variable is ignored, that's probably the case
+- locations can be overridden at the attribute level, there's no need to specify those that are equal to the ones in the organization globals file
+
 ### Running the stage
+
+Once the configuration is done just go through the usual `init/apply` cycle. On successful apply, a tfvars file specific for this tenant and a set of provider files will be created.
+
+### TODO
+
+- [ ] tenant-level Workload Identity Federation pool and providers configuration
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
+
+## Files
+
+| name | description | modules | resources |
+|---|---|---|---|
+| [automation-sas.tf](./automation-sas.tf) | Tenant automation stage 2 and 3 service accounts. | <code>iam-service-account</code> | <code>google_organization_iam_member</code> |
+| [automation.tf](./automation.tf) | Tenant automation project and resources. | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
+| [billing.tf](./billing.tf) | Billing roles for standalone billing accounts. |  | <code>google_billing_account_iam_member</code> |
+| [cicd.tf](./cicd.tf) | Workload Identity Federation configurations for CI/CD. | <code>iam-service-account</code> · <code>source-repository</code> |  |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>folder</code> |  |
+| [organization.tf](./organization.tf) | Organization tag and conditional IAM grant. | <code>organization</code> | <code>google_organization_iam_member</code> · <code>google_tags_tag_value_iam_member</code> |
+| [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>local_file</code> |
+| [outputs-gcs.tf](./outputs-gcs.tf) | Output files persistence to automation GCS bucket. |  | <code>google_storage_bucket_object</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |  |
+| [variables.tf](./variables.tf) | Module variables. |  |  |
+
+## Variables
+
+| name | description | type | required | default | producer |
+|---|---|:---:|:---:|:---:|:---:|
+| [automation](variables.tf#L20) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket          &#61; string&#10;  project_id              &#61; string&#10;  project_number          &#61; string&#10;  federated_identity_pool &#61; string&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    issuer           &#61; string&#10;    issuer_uri       &#61; string&#10;    name             &#61; string&#10;    principal_tpl    &#61; string&#10;    principalset_tpl &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-0-bootstrap</code> |
+| [billing_account](variables.tf#L38) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-0-bootstrap</code> |
+| [organization](variables.tf#L99) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-0-bootstrap</code> |
+| [prefix](variables.tf#L115) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [tag_keys](variables.tf#L125) | Organization tag keys. | <code title="object&#40;&#123;&#10;  context     &#61; string&#10;  environment &#61; string&#10;  tenant      &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
+| [tag_names](variables.tf#L136) | Customized names for resource management tags. | <code title="object&#40;&#123;&#10;  context     &#61; string&#10;  environment &#61; string&#10;  tenant      &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
+| [tag_values](variables.tf#L147) | Organization resource management tag values. | <code>map&#40;string&#41;</code> | ✓ |  | <code>1-resman</code> |
+| [tenant_config](variables.tf#L154) | Tenant configuration. Short name must be 4 characters or less. | <code title="object&#40;&#123;&#10;  descriptive_name &#61; string&#10;  groups &#61; object&#40;&#123;&#10;    gcp-admins          &#61; string&#10;    gcp-devops          &#61; optional&#40;string&#41;&#10;    gcp-network-admins  &#61; optional&#40;string&#41;&#10;    gcp-security-admins &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;  short_name &#61; string&#10;  cicd &#61; optional&#40;object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#41;&#10;  group_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam       &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  locations &#61; optional&#40;object&#40;&#123;&#10;    bq      &#61; optional&#40;string&#41;&#10;    gcs     &#61; optional&#40;string&#41;&#10;    logging &#61; optional&#40;string&#41;&#10;    pubsub  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  project_parent_ids &#61; optional&#40;object&#40;&#123;&#10;    automation &#61; optional&#40;string&#41;&#10;    logging    &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [custom_roles](variables.tf#L52) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  service_project_network_admin &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-0-bootstrap</code> |
+| [fast_features](variables.tf#L61) | Selective control for top-level FAST features. | <code title="object&#40;&#123;&#10;  data_platform   &#61; bool&#10;  gke             &#61; bool&#10;  project_factory &#61; bool&#10;  sandbox         &#61; bool&#10;  teams           &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_platform   &#61; true&#10;  gke             &#61; true&#10;  project_factory &#61; true&#10;  sandbox         &#61; true&#10;  teams           &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> | <code>0-0-bootstrap</code> |
+| [locations](variables.tf#L81) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; string&#10;  gcs     &#61; string&#10;  logging &#61; string&#10;  pubsub  &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  bq      &#61; &#34;EU&#34;&#10;  gcs     &#61; &#34;EU&#34;&#10;  logging &#61; &#34;global&#34;&#10;  pubsub  &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>0-0-bootstrap</code> |
+| [outputs_location](variables.tf#L109) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable. | <code>string</code> |  | <code>null</code> |  |
+| [test_principal](variables.tf#L199) | Used when testing to bypass the data source returning the current identity. | <code>string</code> |  | <code>null</code> |  |
+
+## Outputs
+
+| name | description | sensitive | consumers |
+|---|---|:---:|---|
+| [provider](outputs.tf#L84) | Terraform provider file for tenant resource management stage. | ✓ | <code>stage-01</code> |
+| [tenant_resources](outputs.tf#L73) | Tenant-level resources. |  |  |
+| [tfvars](outputs.tf#L91) | Terraform variable files for the following tenant stages. | ✓ |  |
+| [workflow](outputs.tf#L97) | CI/CD workflow for tenant resource management stage. | ✓ |  |
 
 <!-- END TFDOC -->
