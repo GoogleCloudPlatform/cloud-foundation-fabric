@@ -153,6 +153,11 @@ variable "replicas" {
   default = {}
 }
 
+variable "require_ssl" {
+  description = "Whether SSL connections over IP are enforced or not"
+  type        = bool
+  default     = false
+}
 variable "root_password" {
   description = "Root password of the Cloud SQL instance. Required for MS SQL Server."
   type        = string
