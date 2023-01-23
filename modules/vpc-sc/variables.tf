@@ -59,10 +59,11 @@ variable "access_policy" {
 }
 
 variable "access_policy_create" {
-  description = "Access Policy configuration, fill in to create. Parent is in 'organizations/123456' format."
+  description = "Access Policy configuration, fill in to create. Parent is in 'organizations/123456' format, scopes are in 'folders/456789' or 'projects/project_id' format."
   type = object({
     parent = string
     title  = string
+    scopes = optional(list(string), null)
   })
   default = null
 }

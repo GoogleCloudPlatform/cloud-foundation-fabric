@@ -37,5 +37,5 @@ output "project" {
 
 output "vpc" {
   description = "VPC Network."
-  value       = module.vpc.name
+  value       = local.vpc
 }

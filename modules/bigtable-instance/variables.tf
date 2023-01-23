@@ -14,21 +14,43 @@
  * limitations under the License.
  */
 
-variable "autoscaling_config" {
-  description = "Settings for autoscaling of the instance. If you set this variable, the variable num_nodes is ignored."
+variable "clusters" {
+  description = "Clusters to be created in the BigTable instance. Set more than one cluster to enable replication. If you set autoscaling, num_nodes will be ignored."
+  nullable    = false
+  type = map(object({
+    zone         = optional(string)
+    storage_type = optional(string)
+    num_nodes    = optional(number)
+    autoscaling = optional(object({
+      min_nodes      = number
+      max_nodes      = number
+      cpu_target     = number
+      storage_target = optional(number)
+    }))
+  }))
+}
+
+variable "default_autoscaling" {
+  description = "Default settings for autoscaling of clusters. This will be the default autoscaling for any cluster not specifying any autoscaling details."
   type = object({
     min_nodes      = number
     max_nodes      = number
-    cpu_target     = number,
-    storage_target = optional(number, null)
+    cpu_target     = number
+    storage_target = optional(number)
   })
   default = null
 }
 
-variable "cluster_id" {
-  description = "The ID of the Cloud Bigtable cluster."
-  type        = string
-  default     = "europe-west1"
+variable "default_gc_policy" {
+  description = "Default garbage collection policy, to be applied to all column families and all tables. Can be override in the tables variable for specific column families."
+  type = object({
+    deletion_policy = optional(string)
+    gc_rules        = optional(string)
+    mode            = optional(string)
+    max_age         = optional(string)
+    max_version     = optional(string)
+  })
+  default = null
 }
 
 variable "deletion_protection" {
@@ -58,45 +80,26 @@ variable "name" {
   type        = string
 }
 
-variable "num_nodes" {
-  description = "The number of nodes in your Cloud Bigtable cluster. This value is ignored if you are using autoscaling."
-  type        = number
-  default     = 1
-}
-
 variable "project_id" {
   description = "Id of the project where datasets will be created."
   type        = string
 }
 
-variable "storage_type" {
-  description = "The storage type to use."
-  type        = string
-  default     = "SSD"
-}
-
-variable "table_options_defaults" {
-  description = "Default option of tables created in the BigTable instance."
-  type = object({
-    split_keys    = list(string)
-    column_family = string
-  })
-  default = {
-    split_keys    = []
-    column_family = null
-  }
-}
-
 variable "tables" {
-  description = "Tables to be created in the BigTable instance, options can be null."
+  description = "Tables to be created in the BigTable instance."
+  nullable    = false
   type = map(object({
-    split_keys    = list(string)
-    column_family = string
+    split_keys = optional(list(string), [])
+    column_families = optional(map(object(
+      {
+        gc_policy = optional(object({
+          deletion_policy = optional(string)
+          gc_rules        = optional(string)
+          mode            = optional(string)
+          max_age         = optional(string)
+          max_version     = optional(string)
+        }), null)
+    })), {})
   }))
   default = {}
-}
-
-variable "zone" {
-  description = "The zone to create the Cloud Bigtable cluster in."
-  type        = string
 }

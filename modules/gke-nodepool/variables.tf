@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+variable "cluster_id" {
+  description = "Cluster id. Optional, but providing cluster_id is recommended to prevent cluster misconfiguration in some of the edge cases."
+  type        = string
+  default     = null
+}
 
 variable "cluster_name" {
   description = "Cluster name."
@@ -159,8 +165,8 @@ variable "service_account" {
   description = "Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used."
   type = object({
     create       = optional(bool, false)
-    email        = optional(string, null)
-    oauth_scopes = optional(list(string), null)
+    email        = optional(string)
+    oauth_scopes = optional(list(string))
   })
   default  = {}
   nullable = false

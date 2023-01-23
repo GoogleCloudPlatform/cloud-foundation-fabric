@@ -19,6 +19,16 @@ variable "location" {
   default     = "EU"
 }
 
+variable "network_config" {
+  description = "Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values."
+  type = object({
+    host_project      = string
+    network_self_link = string
+    subnet_self_link  = string
+  })
+  default = null
+}
+
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
@@ -56,14 +66,4 @@ variable "service_encryption_keys" { # service encription key
     storage = string
   })
   default = null
-}
-
-variable "vpc_config" {
-  description = "Parameters to create a VPC."
-  type = object({
-    ip_cidr_range = string
-  })
-  default = {
-    ip_cidr_range = "10.0.0.0/20"
-  }
 }

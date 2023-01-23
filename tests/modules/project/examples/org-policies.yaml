@@ -100,11 +100,6 @@ values:
       reset: null
       rules:
       - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'FALSE'
-        values: []
-      - allow_all: null
         condition:
         - description: test condition
           expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
@@ -112,6 +107,11 @@ values:
           title: condition
         deny_all: null
         enforce: 'TRUE'
+        values: []
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
         values: []
   module.project.google_project.project[0]:
     billing_account: 123456-123456-123456
