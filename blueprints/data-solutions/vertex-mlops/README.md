@@ -11,8 +11,8 @@ A terraform script is provided to setup all the required resources:
 - Isolated VPC network and a subnet to be used by Vertex and Dataflow (using a Shared VPC is also possible). 
 - Firewall rule to allow the internal subnet communication required by Dataflow
 - Cloud NAT required to reach the internet from the different computing resources (Vertex and Dataflow)
-- GCS buckets to host Vertex AI and Cloud Build Artifacts.
-- BigQuery Dataset where the training data will be stored
+- GCS buckets to host Vertex AI and Cloud Build Artifacts. By default the buckets will be regional and should match the Vertex AI region for the different resources (i.e. Vertex Managed Dataset) and processes (i.e. Vertex trainining)
+- BigQuery Dataset where the training data will be stored. This is optional, since the training data could be already hosted in an existing BigQuery dataset.
 - Service account `mlops-[env]@` with the minimum permissions required by Vertex and Dataflow
 - Service account `github` to be used by Workload Identity Federation, to federate Github identity.
 - Secret to store the Github SSH key to get access the CICD code repo.
@@ -74,7 +74,7 @@ project_id          = "creditcards-dev"
 | [labels](variables.tf#L50) | Labels to be assigned at project level. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location](variables.tf#L56) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
 | [network_config](variables.tf#L62) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [notebooks](variables.tf#L72) | Vertex AI workbenchs to be deployed. | <code title="map&#40;object&#40;&#123;&#10;  owner            &#61; string&#10;  region           &#61; string&#10;  subnet           &#61; string&#10;  internal_ip_only &#61; optional&#40;bool, false&#41;&#10;  idle_shutdown    &#61; optional&#40;bool&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [notebooks](variables.tf#L72) | Vertex AI workbenchs to be deployed. | <code title="map&#40;object&#40;&#123;&#10;  owner            &#61; string&#10;  region           &#61; string&#10;  subnet           &#61; string&#10;  internal_ip_only &#61; optional&#40;bool, false&#41;&#10;  idle_shutdown    &#61; optional&#40;bool&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L84) | Prefix used for the project id. | <code>string</code> |  | <code>null</code> |
 | [project_create](variables.tf#L90) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [project_services](variables.tf#L104) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;aiplatform.googleapis.com&#34;,&#10;  &#34;artifactregistry.googleapis.com&#34;,&#10;  &#34;bigquery.googleapis.com&#34;,&#10;  &#34;cloudbuild.googleapis.com&#34;,&#10;  &#34;compute.googleapis.com&#34;,&#10;  &#34;datacatalog.googleapis.com&#34;,&#10;  &#34;dataflow.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;monitoring.googleapis.com&#34;,&#10;  &#34;notebooks.googleapis.com&#34;,&#10;  &#34;secretmanager.googleapis.com&#34;,&#10;  &#34;servicenetworking.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |

@@ -67,7 +67,7 @@ module "gcs-bucket-cloudbuild" {
   # https://stackoverflow.com/questions/53206667/cloud-build-fails-with-resource-location-constraint
   source        = "../../../modules/gcs"
   project_id    = module.project.project_id
-  name          = "${var.project_id}_cloudbuild"
+  name          = "${module.project.project_id}_cloudbuild"
   prefix        = var.prefix
   location      = var.region
   storage_class = "REGIONAL"

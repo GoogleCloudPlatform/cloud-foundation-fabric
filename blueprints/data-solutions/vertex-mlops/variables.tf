@@ -78,7 +78,7 @@ variable "notebooks" {
     internal_ip_only = optional(bool, false)
     idle_shutdown    = optional(bool)
   }))
-  default = null
+  default = {}
 }
 
 variable "prefix" {
