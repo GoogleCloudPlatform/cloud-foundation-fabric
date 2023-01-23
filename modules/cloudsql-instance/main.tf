@@ -64,6 +64,7 @@ resource "google_sql_database_instance" "primary" {
       ipv4_enabled       = var.ipv4_enabled
       private_network    = var.network
       allocated_ip_range = var.allocated_ip_ranges.primary
+      require_ssl        = var.require_ssl
       dynamic "authorized_networks" {
         for_each = var.authorized_networks != null ? var.authorized_networks : {}
         iterator = network
