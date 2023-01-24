@@ -34,6 +34,11 @@ output "github" {
   value       = local.gh_config
 }
 
+output "notebook" {
+  description = "Vertex AI managed notebook details."
+  value       = { for k, v in resource.google_notebooks_runtime.runtime : k => v.id }
+}
+
 output "project" {
   description = "The project resource as return by the `project` module."
   value       = module.project

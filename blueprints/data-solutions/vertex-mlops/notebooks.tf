@@ -35,7 +35,12 @@ resource "google_notebooks_runtime" "runtime" {
       network          = local.vpc
       subnet           = local.subnet
       internal_ip_only = var.notebooks[each.key].internal_ip_only
-
+      dynamic "encryption_config" {
+        for_each = try(local.service_encryption_keys.compute, null) == null ? [] : [1]
+        content {
+          kms_key = local.service_encryption_keys.compute
+        }
+      }
       metadata = {
         notebook-disable-nbconvert = "false"
         notebook-disable-downloads = "false"

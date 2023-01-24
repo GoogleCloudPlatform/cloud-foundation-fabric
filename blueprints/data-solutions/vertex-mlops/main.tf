@@ -16,7 +16,8 @@
 
 
 locals {
-  shared_vpc_project = try(var.network_config.host_project, null)
+  service_encryption_keys = var.service_encryption_keys
+  shared_vpc_project      = try(var.network_config.host_project, null)
 
   subnet = (
     local.use_shared_vpc
@@ -52,34 +53,37 @@ locals {
 }
 
 module "gcs-bucket" {
-  count         = var.bucket_name == null ? 0 : 1
-  source        = "../../../modules/gcs"
-  project_id    = module.project.project_id
-  name          = var.bucket_name
-  prefix        = var.prefix
-  location      = var.region
-  storage_class = "REGIONAL"
-  versioning    = false
+  count          = var.bucket_name == null ? 0 : 1
+  source         = "../../../modules/gcs"
+  project_id     = module.project.project_id
+  name           = var.bucket_name
+  prefix         = var.prefix
+  location       = var.region
+  storage_class  = "REGIONAL"
+  versioning     = false
+  encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
 }
 
+# Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘constraints/gcp.resourceLocations’"
+# https://stackoverflow.com/questions/53206667/cloud-build-fails-with-resource-location-constraint
 module "gcs-bucket-cloudbuild" {
-  # Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘constraints/gcp.resourceLocations’"
-  # https://stackoverflow.com/questions/53206667/cloud-build-fails-with-resource-location-constraint
-  source        = "../../../modules/gcs"
-  project_id    = module.project.project_id
-  name          = "${module.project.project_id}_cloudbuild"
-  prefix        = var.prefix
-  location      = var.region
-  storage_class = "REGIONAL"
-  versioning    = false
+  source         = "../../../modules/gcs"
+  project_id     = module.project.project_id
+  name           = "${module.project.project_id}_cloudbuild"
+  prefix         = var.prefix
+  location       = var.region
+  storage_class  = "REGIONAL"
+  versioning     = false
+  encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
 }
 
 module "bq-dataset" {
-  count      = var.dataset_name == null ? 0 : 1
-  source     = "../../../modules/bigquery-dataset"
-  project_id = module.project.project_id
-  id         = var.dataset_name
-  location   = var.region
+  count          = var.dataset_name == null ? 0 : 1
+  source         = "../../../modules/bigquery-dataset"
+  project_id     = module.project.project_id
+  id             = var.dataset_name
+  location       = var.region
+  encryption_key = try(local.service_encryption_keys.bq, null) # Example assignment of an encryption key
 }
 
 module "vpc-local" {
@@ -90,7 +94,7 @@ module "vpc-local" {
   subnets = [
     {
       "name" : "default",
-      "region" : "europe-west4",
+      "region" : "${var.region}",
       "ip_cidr_range" : "10.4.0.0/24",
       "secondary_ip_range" : null
     }
@@ -183,8 +187,14 @@ module "project" {
     # Example of applying a project wide policy, mainly useful for Composer 1
   }
 
-  service_encryption_key_ids = var.kms_service_agents
-  services                   = var.project_services
+  service_encryption_key_ids = {
+    bq         = [try(local.service_encryption_keys.bq, null)]
+    compute    = [try(local.service_encryption_keys.compute, null)]
+    cloudbuild = [try(local.service_encryption_keys.storage, null)]
+    notebooks  = [try(local.service_encryption_keys.compute, null)]
+    storage    = [try(local.service_encryption_keys.storage, null)]
+  }
+  services = var.project_services
 
 
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {

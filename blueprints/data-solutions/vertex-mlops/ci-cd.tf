@@ -60,6 +60,7 @@ module "service-account-github" {
   }
 }
 
+# NOTE: Secret manager module at the moment does not support CMEK
 module "secret-manager" {
   project_id = module.project.project_id
   source     = "../../../modules/secret-manager"

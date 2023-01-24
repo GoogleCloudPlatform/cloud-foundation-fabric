@@ -29,7 +29,7 @@ variable "dataset_name" {
 
 
 variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format."
+  description = "Authoritative IAM binding for the project, in {GROUP_EMAIL => [ROLES]} format."
   type        = map(list(string))
   default     = {}
   nullable    = false
@@ -39,12 +39,6 @@ variable "identity_pool_claims" {
   description = "Claims to be used by Workload Identity Federation (i.e.: attribute.repository/ORGANIZATION/REPO). If a not null value is provided, then google_iam_workload_identity_pool resource will be created."
   type        = string
   default     = null
-}
-
-variable "kms_service_agents" {
-  description = "KMS IAM configuration in as service => [key]."
-  type        = map(list(string))
-  default     = {}
 }
 
 variable "labels" {
@@ -139,3 +133,12 @@ variable "sa_mlops_name" {
   default     = "sa-mlops"
 }
 
+variable "service_encryption_keys" { # service encription key
+  description = "Cloud KMS to use to encrypt different services. Key location should match service region."
+  type = object({
+    bq      = string
+    compute = string
+    storage = string
+  })
+  default = null
+}
