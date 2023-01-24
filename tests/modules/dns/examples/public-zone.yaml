@@ -1,0 +1,38 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.public-dns.google_dns_managed_zone.public[0]:
+    dns_name: example.com.
+    name: example
+    project: myproject
+    visibility: public
+  module.public-dns.google_dns_record_set.cloud-static-records["A myhost"]:
+    managed_zone: example
+    name: myhost.example.com.
+    project: myproject
+    routing_policy: []
+    rrdatas:
+    - 127.0.0.1
+    ttl: 300
+    type: A
+
+counts:
+  google_dns_keys: 1
+  google_dns_managed_zone: 1
+  google_dns_record_set: 1
+  modules: 1
+  resources: 3
+
+outputs: {}

@@ -12,11 +12,14 @@ This sample creates several distinct groups of resources:
 
 - project
 - networking
-    - VPC network with a default subnet and CloudNat
-    - Firewall rules for [SSH access via IAP](https://cloud.google.com/iap/docs/using-tcp-forwarding) and open communication within the VPC
 - Vertex AI Workbench notebook configured with a private IP and using a dedicated Service Account
 - One GCS bucket
 - One BigQuery dataset
+
+## Virtual Private Cloud (VPC) design
+As is often the case in real-world configurations, this blueprint accepts as input an existing Shared-VPC via the network_config variable. Make sure that 'container.googleapis.com', 'notebooks.googleapis.com' and 'servicenetworking.googleapis.com' are enabled in the VPC host project.
+
+If the network_config variable is not provided, one VPC will be created in each project that supports network resources (load, transformation and orchestration).
 
 ## Deploy your enviroment
 We assume the identiy running the following steps has the following role:
@@ -47,12 +50,12 @@ You can now connect to the Vertex AI notbook to perform your data analysy.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L22) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L40) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L32) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L50) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
 | [location](variables.tf#L16) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
-| [project_create](variables.tf#L31) | Provide values if project creation is needed, uses existing project if null. Parent format:  folders/folder_id or organizations/org_id. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L45) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [vpc_config](variables.tf#L61) | Parameters to create a VPC. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  ip_cidr_range &#61; &#34;10.0.0.0&#47;20&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [network_config](variables.tf#L22) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_create](variables.tf#L41) | Provide values if project creation is needed, uses existing project if null. Parent format:  folders/folder_id or organizations/org_id. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L55) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 
