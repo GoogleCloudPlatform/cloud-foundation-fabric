@@ -93,7 +93,7 @@ resource "google_apigee_instance" "instances" {
   description              = each.value.description
   location                 = each.value.region
   org_id                   = local.org_id
-  ip_range                 = each.value.psa_ip_cidr_range
+  ip_range                 = "${each.value.runtime_ip_cidr_range},${each.value.troubleshooting_ip_cidr_range}"
   disk_encryption_key_name = each.value.disk_encryption_key
   consumer_accept_list     = each.value.consumer_accept_list
 }
