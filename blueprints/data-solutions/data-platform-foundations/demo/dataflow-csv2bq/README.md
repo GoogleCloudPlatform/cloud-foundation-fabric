@@ -18,7 +18,7 @@ REGION="[YOUR-REGION]"
 gcloud builds submit \
            --config=cloudbuild.yaml \
            --project=$GCP_PROJECT \
-           --region="europe-west1" \
+           --region=$REGION \
            --gcs-log-dir=$LOG_PATH \
            --gcs-source-staging-dir=$STAGIN_PATH \
            --substitutions=_TEMPLATE_IMAGE=$TEMPLATE_IMAGE,_TEMPLATE_PATH=$TEMPLATE_PATH,_DOCKER_DIR="."
