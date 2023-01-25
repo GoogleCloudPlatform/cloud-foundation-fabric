@@ -77,7 +77,7 @@ module "folder" {
   } : null
 }
 
-#TODO VPCSC
+#TODO VPCSC: Access levels 
 data "google_projects" "folder-projects" {
   filter = "parent.id:${split("/", module.folder.id)[1]}"
 }
