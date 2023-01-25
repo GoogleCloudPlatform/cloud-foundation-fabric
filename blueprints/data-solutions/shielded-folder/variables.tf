@@ -92,15 +92,15 @@ variable "log_locations" {
   description = "Optional locations for GCS, BigQuery, and logging buckets created here."
   type = object({
     bq      = optional(string, "europe")
-    gcs     = optional(string, "europe")
+    storage = optional(string, "europe")
     logging = optional(string, "global")
     pubsub  = optional(string, "global")
   })
   default = {
     bq      = "europe"
-    gcs     = "europe"
+    storage = "europe"
     logging = "global"
-    pubsub  = "global"
+    pubsub  = null
   }
   nullable = false
 }

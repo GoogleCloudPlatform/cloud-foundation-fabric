@@ -38,7 +38,7 @@ locals {
     for k, v in data.google_projects.folder-projects.projects : format("projects/%s", v.number)
   ]
 
-  log_sink_destinations = merge(
+  log_sink_destinations = var.enable_features.log_sink ? merge(
     # use the same dataset for all sinks with `bigquery` as  destination
     { for k, v in var.log_sinks : k => module.log-export-dataset.0 if v.type == "bigquery" },
     # use the same gcs bucket for all sinks with `storage` as destination
@@ -47,7 +47,7 @@ locals {
     # destination `pubsub` and `logging`
     module.log-export-pubsub,
     module.log-export-logbucket
-  )
+  ) : null
 }
 
 module "folder" {
@@ -64,7 +64,7 @@ module "folder" {
   org_policies_data_path = "${var.data_dir}/org-policies"
   firewall_policy_factory = {
     cidr_file   = "${var.data_dir}/firewall-policies/cidrs.yaml"
-    policy_name = "hierarchical-policy"
+    policy_name = "${var.prefix}-fw-policy"
     rules_file  = "${var.data_dir}/firewall-policies/hierarchical-policy-rules.yaml"
   }
   logging_sinks = var.enable_features.log_sink ? {

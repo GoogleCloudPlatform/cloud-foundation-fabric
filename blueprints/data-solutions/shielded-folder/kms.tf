@@ -32,7 +32,7 @@ locals {
   kms_log_sink_keys = {
     "storage" = {
       labels          = {}
-      locations       = [var.log_locations.gcs]
+      locations       = [var.log_locations.storage]
       rotation_period = "7776000s"
     }
     "bq" = {
@@ -54,6 +54,7 @@ locals {
 }
 
 module "sec-project" {
+  count           = var.enable_features.kms ? 1 : 0
   source          = "../../../modules/project"
   name            = "sec-core"
   parent          = module.folder.id
@@ -74,9 +75,9 @@ module "sec-project" {
 }
 
 module "sec-kms" {
-  for_each   = toset(local.kms_locations)
+  for_each   = var.enable_features.log_sink ? toset(local.kms_locations) : toset([])
   source     = "../../../modules/kms"
-  project_id = module.sec-project.project_id
+  project_id = module.sec-project[0].project_id
   keyring = {
     location = each.key
     name     = "${each.key}"
@@ -89,12 +90,12 @@ module "sec-kms" {
 }
 
 module "log-kms" {
-  for_each   = toset(local.kms_log_locations)
+  for_each   = var.enable_features.log_sink ? toset(local.kms_log_locations) : toset([])
   source     = "../../../modules/kms"
-  project_id = module.sec-project.project_id
+  project_id = module.sec-project[0].project_id
   keyring = {
     location = each.key
-    name     = "log-${each.key}"
+    name     = "${each.key}"
   }
   keys = local.kms_log_locations_keys[each.key]
 }
