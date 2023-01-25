@@ -35,7 +35,7 @@ Below is an example of launching a dataflow pipeline manually, based on the buil
 
 PROJECT_ID=[LOAD-PROJECT]
 REGION=europe-west1
-SERVICE_ACCOUNT=[LOAD-DF-SA]0@ff-lod.iam.gserviceaccount.com
+SERVICE_ACCOUNT=orchestrator@[SERVICE_PROJECT_ID].iam.gserviceaccount.com
 
 PIPELINE_STAGIN_PATH="gs://[LOAD-STAGING-BUCKET]/build"
 CSV_FILE=gs://[DROP-ZONE-BUCKET]/customers.csv
