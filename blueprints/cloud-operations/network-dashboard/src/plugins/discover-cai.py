@@ -90,7 +90,7 @@ def _handle_resource(resources, asset_type, data):
           attrs['name'],
       # Some resources (ex: Filestore) don't have a self_link, using parent + name in that case
       'self_link':
-          data['parent'] + '/' + attrs['name']
+          f'{data["parent"]}/{attrs["name"]}'
           if not 'selfLink' in attrs else _self_link(attrs['selfLink']),
       'assetType':
           asset_type
