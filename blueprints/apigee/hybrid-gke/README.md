@@ -25,7 +25,11 @@ The diagram below depicts the architecture.
     terraform apply
     ```
 
-Create an A record in your DNS registrar to point the environment group hostname to the public IP address returned after the terraform configuration was applied. You might need to wait some time until the certificate is provisioned.    
+    Create an A record in your DNS registrar to point the environment group hostname to the public IP address returned after the terraform configuration was applied. You might need to wait some time until the certificate is provisioned.  
+ 
+5. Install Apigee hybrid using de ansible playbook that is in the ansible folder by running this command
+
+    ansible-playbook playbook.yaml -vvvß
 
 ## Testing the blueprint
 
