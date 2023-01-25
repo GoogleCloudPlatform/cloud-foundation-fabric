@@ -69,7 +69,7 @@ module "gcs-bucket" {
 module "gcs-bucket-cloudbuild" {
   source         = "../../../modules/gcs"
   project_id     = module.project.project_id
-  name           = "${module.project.project_id}_cloudbuild"
+  name           = "${var.project_id}_cloudbuild"
   prefix         = var.prefix
   location       = var.region
   storage_class  = "REGIONAL"
