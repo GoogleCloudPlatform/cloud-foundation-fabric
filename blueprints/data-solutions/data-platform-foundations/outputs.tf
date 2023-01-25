@@ -13,7 +13,6 @@
 # limitations under the License.
 
 # tfdoc:file:description Output variables.
-
 output "bigquery-datasets" {
   description = "BigQuery datasets."
   value = {
@@ -37,6 +36,7 @@ output "demo_commands" {
       --region="${var.region}" \
       --gcs-log-dir=gs://${module.orch-cs-build-staging.name}/log \
       --gcs-source-staging-dir=gs://${module.orch-cs-build-staging.name}/staging \
+      --impersonate-service-account=${module.orch-sa-df-build.email} \
       --substitutions=_TEMPLATE_IMAGE="${local.orch_docker_path}/csv2bq:latest",_TEMPLATE_PATH="gs://${module.orch-cs-df-template.name}/csv2bq.json",_DOCKER_DIR="./demo/dataflow-csv2bq"
     EOT
     05 = try("Open ${google_composer_environment.orch-cmp-0[0].config.0.airflow_uri} and run uploaded DAG.", "Composer not deployed")

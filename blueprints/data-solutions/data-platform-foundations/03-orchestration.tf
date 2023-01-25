@@ -72,14 +72,15 @@ module "orch-project" {
     ]
     "roles/storage.objectAdmin" = [
       module.orch-sa-cmp-0.iam_email,
+      module.orch-sa-df-build.iam_email,
       "serviceAccount:${module.orch-project.service_accounts.robots.composer}",
-      "serviceAccount:${module.orch-project.service_accounts.robots.cloudbuild}",
-    ]
-    "roles/serviceusage.serviceUsageConsumer" = [
       "serviceAccount:${module.orch-project.service_accounts.robots.cloudbuild}",
     ]
     "roles/artifactregistry.reader" = [
       module.load-sa-df-0.iam_email,
+    ]
+    "roles/cloudbuild.serviceAgent" = [
+      module.orch-sa-df-build.iam_email,
     ]
     "roles/storage.objectViewer" = [module.load-sa-df-0.iam_email]
   }
@@ -191,4 +192,18 @@ module "orch-cs-build-staging" {
   location       = var.region
   storage_class  = "REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
+}
+
+module "orch-sa-df-build" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.orch-project.project_id
+  prefix       = var.prefix
+  name         = "orc-sa-df-build"
+  display_name = "Data platform Dataflow build service account"
+  # Note values below should pertain to the system / group / users who are able to 
+  # invoke the build via this service account
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
+    "roles/iam.serviceAccountUser"         = [local.groups_iam.data-engineers]
+  }
 }
