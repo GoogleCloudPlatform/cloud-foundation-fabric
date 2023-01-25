@@ -198,7 +198,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "gateway_api_config" {
-    for_each = var.enable_features.gateway_api ?  [""] : []
+    for_each = var.enable_features.gateway_api ? [""] : []
     content {
       channel = "CHANNEL_STANDARD"
     }
