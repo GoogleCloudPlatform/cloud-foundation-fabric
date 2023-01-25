@@ -8,12 +8,12 @@ This demo serves as a simple example of building and launching a Flex Template D
 Below is an example for triggering the Dataflow flex template build pipeline defined in `cloudbuild.yaml`. The Terraform output provides an example as well filled with the parameters values based on the generated resources in the data platform.
 
 ```
-GCP_PROJECT="ff-orc"
+GCP_PROJECT="[ORCHESTRATION-PROJECT]"
 TEMPLATE_IMAGE="[REGION].pkg.dev/[ORCHESTRATION-PROJECT]/[REPOSITORY]/csv2bq:latest"
 TEMPLATE_PATH="gs://[DATAFLOW-TEMPLATE-BUCKEt]/csv2bq.json"
 STAGIN_PATH="gs://[ORCHESTRATION-STAGING-BUCKET]/build"
 LOG_PATH="gs://[ORCHESTRATION-LOGS-BUCKET]/logs"
-REGION="[YOUR-REGION]"
+REGION="[REGION]"
 
 gcloud builds submit \
            --config=cloudbuild.yaml \
@@ -34,8 +34,9 @@ Below is an example of launching a dataflow pipeline manually, based on the buil
 #!/bin/bash
 
 PROJECT_ID=[LOAD-PROJECT]
-REGION=europe-west1
+REGION=[REGION]
 SERVICE_ACCOUNT=orchestrator@[SERVICE_PROJECT_ID].iam.gserviceaccount.com
+SUBNET=[SUBNET-NAME]
 
 PIPELINE_STAGIN_PATH="gs://[LOAD-STAGING-BUCKET]/build"
 CSV_FILE=gs://[DROP-ZONE-BUCKET]/customers.csv
@@ -53,6 +54,6 @@ gcloud dataflow flex-template run "csv2bq-`date +%Y%m%d-%H%M%S`" \
     --parameters output_table=$OUTPUT_TABLE \
     --region $REGION \
     --project $PROJECT_ID \
-    --subnetwork="regions/europe-west1/subnetworks/default" \
+    --subnetwork="regions/$REGION/subnetworks/$SUBNET" \
     --service-account-email=$SERVICE_ACCOUNT
 ```
