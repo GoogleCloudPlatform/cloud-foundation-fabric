@@ -41,8 +41,19 @@ variable "data_dir" {
   default     = "data"
 }
 
+variable "enable_features" {
+  description = "Flag to enable features on the solution."
+  type = object({
+    kms      = bool
+    log_sink = bool
+  })
+  default = {
+    kms      = true
+    log_sink = true
+  }
+}
 variable "folder_create" {
-  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  description = "Provide values if folder creation is needed, uses existing folder if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
   type = object({
     display_name = string
     parent       = string
@@ -83,13 +94,13 @@ variable "log_locations" {
     bq      = optional(string, "europe")
     gcs     = optional(string, "europe")
     logging = optional(string, "global")
-    pubsub  = optional(string, null)
+    pubsub  = optional(string, "global")
   })
   default = {
     bq      = "europe"
     gcs     = "europe"
     logging = "global"
-    pubsub  = null
+    pubsub  = "global"
   }
   nullable = false
 }

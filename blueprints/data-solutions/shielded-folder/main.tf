@@ -67,14 +67,14 @@ module "folder" {
     policy_name = "hierarchical-policy"
     rules_file  = "${var.data_dir}/firewall-policies/hierarchical-policy-rules.yaml"
   }
-  logging_sinks = {
+  logging_sinks = var.enable_features.log_sink ? {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
       destination          = local.log_sink_destinations[name].id
       filter               = attrs.filter
       type                 = attrs.type
     }
-  }
+  } : null
 }
 
 #TODO VPCSC

@@ -30,17 +30,17 @@ locals {
 
   # Log sink keys
   kms_log_sink_keys = {
-    "log-gcs" = {
+    "storage" = {
       labels          = {}
       locations       = [var.log_locations.gcs]
       rotation_period = "7776000s"
     }
-    "log-bq" = {
+    "bq" = {
       labels          = {}
       locations       = [var.log_locations.bq]
       rotation_period = "7776000s"
     }
-    "log-pubsub" = {
+    "pubsub" = {
       labels          = {}
       locations       = [var.log_locations.pubsub]
       rotation_period = "7776000s"
@@ -58,7 +58,7 @@ module "sec-project" {
   name            = "sec-core"
   parent          = module.folder.id
   billing_account = try(var.projects_create.billing_account_id, null)
-  project_create  = var.projects_create != null
+  project_create  = var.projects_create != null && var.enable_features.kms
   prefix          = var.projects_create == null ? null : var.prefix
   group_iam = {
     (local.groups.data-engineers) = [

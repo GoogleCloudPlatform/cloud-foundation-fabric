@@ -24,9 +24,9 @@ locals {
   )
   log_types = toset([for k, v in var.log_sinks : v.type])
   _log_keys = {
-    bq      = [module.log-kms[var.log_locations.bq].keys["log-bq"].id]
-    pubsub  = try([module.log-kms[var.log_locations.pubsub].keys["log-pubsub"].id], null)
-    storage = [module.log-kms[var.log_locations.gcs].keys["log-gcs"].id]
+    bq      = [module.log-kms[var.log_locations.bq].keys["bq"].id]
+    pubsub  = try([module.log-kms[var.log_locations.pubsub].keys["pubsub"].id], null)
+    storage = [module.log-kms[var.log_locations.gcs].keys["storage"].id]
   }
 
   log_keys = {
@@ -39,7 +39,7 @@ module "log-export-project" {
   name            = "audit-logs"
   parent          = module.folder.id
   billing_account = try(var.projects_create.billing_account_id, null)
-  project_create  = var.projects_create != null
+  project_create  = var.projects_create != null && var.enable_features.log_sink
   prefix          = var.projects_create == null ? null : var.prefix
   iam = {
     # "roles/owner" = [module.automation-tf-bootstrap-sa.iam_email]
@@ -61,7 +61,7 @@ module "log-export-dataset" {
   id             = "${var.prefix}_audit_export"
   friendly_name  = "Audit logs export."
   location       = replace(var.log_locations.bq, "europe", "EU")
-  encryption_key = module.log-kms[var.log_locations.bq].keys["log-bq"].id
+  encryption_key = var.enable_features.kms ? module.log-kms[var.log_locations.bq].keys["bq"].id : false
 }
 
 module "log-export-gcs" {
@@ -72,7 +72,7 @@ module "log-export-gcs" {
   prefix         = var.prefix
   location       = replace(var.log_locations.gcs, "europe", "EU")
   storage_class  = local.gcs_storage_class
-  encryption_key = module.log-kms[var.log_locations.gcs].keys["log-gcs"].id
+  encryption_key = var.enable_features.kms ? module.log-kms[var.log_locations.gcs].keys["storage"].id : null
 }
 
 module "log-export-logbucket" {
@@ -91,5 +91,5 @@ module "log-export-pubsub" {
   project_id = module.log-export-project.project_id
   name       = "audit-logs-${each.key}"
   regions    = [var.log_locations.pubsub]
-  kms_key    = module.log-kms[var.log_locations.pubsub].keys["log-pubsub"].id
+  kms_key    = var.enable_features.kms ? module.log-kms[var.log_locations.pubsub].keys["pubsub"].id : null
 }
