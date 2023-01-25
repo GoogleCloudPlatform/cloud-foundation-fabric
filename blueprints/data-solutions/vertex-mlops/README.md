@@ -1,10 +1,10 @@
 # MLOps with Vertex AI - Infra setup
 
 ## Introduction
-This example implements the infrastructure required to deploy an end-to-end [MLOps process](https://services.google.com/fh/files/misc/practitioners_guide_to_mlops_whitepaper.pdf) using [Vertex AI](https://cloud.google.com/vertex-ai) platform. Once the environment is deployed, you can follow this [guide](https://github.com/javiergp/professional-services/blob/main/examples/vertex_mlops_enterprise/README.md) to setup the ML pipeline. 
+This example implements the infrastructure required to deploy an end-to-end [MLOps process](https://services.google.com/fh/files/misc/practitioners_guide_to_mlops_whitepaper.pdf) using [Vertex AI](https://cloud.google.com/vertex-ai) platform. 
 
 ##  GCP resources
-A terraform script is provided to setup all the required resources:
+The blueprint will deploy all the required resources to have a fully functional MLOPs environment containing:
 
 - GCP Project  to host all the resources
 - Isolated VPC network and a subnet to be used by Vertex and Dataflow (using a Shared VPC is also possible). 
@@ -12,8 +12,8 @@ A terraform script is provided to setup all the required resources:
 - Cloud NAT required to reach the internet from the different computing resources (Vertex and Dataflow)
 - GCS buckets to host Vertex AI and Cloud Build Artifacts. By default the buckets will be regional and should match the Vertex AI region for the different resources (i.e. Vertex Managed Dataset) and processes (i.e. Vertex trainining)
 - BigQuery Dataset where the training data will be stored. This is optional, since the training data could be already hosted in an existing BigQuery dataset.
-- Service account `mlops-[env]@` with the minimum permissions required by Vertex and Dataflow
-- Service account `github` to be used by Workload Identity Federation, to federate Github identity.
+- Service account (`mlops-[env]@`) with the minimum permissions required by Vertex and Dataflow
+- Service account (`github@`) to be used by Workload Identity Federation, to federate Github identity (Optional). 
 - Secret to store the Github SSH key to get access the CICD code repo.
 
 ![MLOps project description](./images/mlops_projects.png "MLOps project description")
@@ -31,14 +31,6 @@ We use the following groups to control access to resources:
 
 These groups are not suitable for production grade environments. You can configure the group names through the `groups`variable. 
 
-### Git environment for the ML Pipelines
-
-Make sure you have ready a Github repo with the ML pipeline code. 
-You can clone the following example for setting up the repo: https://github.com/javiergp/professional-services/tree/main/examples/vertex_mlops_enterprise
-This repo should have at least one of the following branches: `dev`, `staging`, `prod`
-
-You will need to configure the Github organization and repo name in the `identity_pool_claims` variable.
-
 ##  Instructions
 ###  Deploy the experimentation environment
 
@@ -46,6 +38,12 @@ You will need to configure the Github organization and repo name in the `identit
 - Make sure you have the right authentication setup (application default credentials, or a service account key)
 - Run `terraform init` and `terraform apply`
 - It is possible that some errors like `googleapi: Error 400: Service account xxxx does not exist.` appears. This is due to some dependencies with the Project IAM authoritative bindings of the service accounts. In this case, re-run again the process with `terraform apply`
+
+## What's next?
+
+Once the environment is deployed, you can follow this [guide](https://github.com/javiergp/professional-services/blob/main/examples/vertex_mlops_enterprise/README.md) to setup the Vertex AI pipeline and run it on the deployed infraestructure. 
+
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
