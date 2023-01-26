@@ -26,3 +26,9 @@ variable "glb_create" {
   type        = bool
   default     = false
 }
+
+variable "custom_domain" {
+  description = "Custom domain for the Load Balancer"
+  type        = string
+  default     = null
+}

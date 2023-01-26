@@ -54,7 +54,7 @@ module "glb" {
   ssl_certificates = {
     managed_configs = {
       default = {
-        domains = ["cloud-run-explore.comenube.com"]
+        domains = [var.custom_domain]
       }
     }
   }
