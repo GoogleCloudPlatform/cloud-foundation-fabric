@@ -16,7 +16,6 @@
 
 resource "google_iam_workload_identity_pool" "github_pool" {
   count                     = var.identity_pool_claims == null ? 0 : 1
-  provider                  = google-beta
   project                   = module.project.project_id
   workload_identity_pool_id = "gh-pool"
   display_name              = "Github Actions Identity Pool"
@@ -25,7 +24,6 @@ resource "google_iam_workload_identity_pool" "github_pool" {
 
 resource "google_iam_workload_identity_pool_provider" "github_provider" {
   count                              = var.identity_pool_claims == null ? 0 : 1
-  provider                           = google-beta
   project                            = module.project.project_id
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool[0].workload_identity_pool_id
   workload_identity_pool_provider_id = "gh-provider"
@@ -55,9 +53,7 @@ module "service-account-github" {
   source     = "../../../modules/iam-service-account"
   name       = "sa-github"
   project_id = module.project.project_id
-  iam = {
-    "roles/iam.workloadIdentityUser" = ["principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool[0].name}/${var.identity_pool_claims}"]
-  }
+  iam        = var.identity_pool_claims == null ? {} : { "roles/iam.workloadIdentityUser" = ["principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool[0].name}/${var.identity_pool_claims}"] }
 }
 
 # NOTE: Secret manager module at the moment does not support CMEK

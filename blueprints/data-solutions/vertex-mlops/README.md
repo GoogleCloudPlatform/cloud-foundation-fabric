@@ -41,9 +41,7 @@ These groups are not suitable for production grade environments. You can configu
 
 ## What's next?
 
-Once the environment is deployed, you can follow this [guide](https://github.com/javiergp/professional-services/blob/main/examples/vertex_mlops_enterprise/README.md) to setup the Vertex AI pipeline and run it on the deployed infraestructure. 
-
-
+Once the environment is deployed, you can follow this [guide](https://github.com/javiergp/professional-services/blob/main/examples/vertex_mlops_enterprise/README.md) to setup the Vertex AI pipeline and run it on the deployed infraestructure.
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -70,9 +68,9 @@ Once the environment is deployed, you can follow this [guide](https://github.com
 
 | name | description | sensitive |
 |---|---|:---:|
-| [github](outputs.tf#L31) | Github Configuration. |  |
-| [notebook](outputs.tf#L37) | Vertex AI managed notebook details. |  |
-| [project](outputs.tf#L42) | The project resource as return by the `project` module. |  |
-| [project_id](outputs.tf#L47) | Project ID. |  |
+| [github](outputs.tf#L33) | Github Configuration. |  |
+| [notebook](outputs.tf#L39) | Vertex AI managed notebook details. |  |
+| [project](outputs.tf#L44) | The project resource as return by the `project` module. |  |
+| [project_id](outputs.tf#L49) | Project ID. |  |
 
 <!-- END TFDOC -->

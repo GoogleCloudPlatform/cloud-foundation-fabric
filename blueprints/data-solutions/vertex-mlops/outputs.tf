@@ -18,13 +18,15 @@
 
 
 locals {
-  docker_split = try(split("/", module.artifact_registry["docker-repo"].id), null)
+  docker_split = try(split("/", module.artifact_registry.id), null)
   docker_repo  = try("${local.docker_split[3]}-docker.pkg.dev/${local.docker_split[1]}/${local.docker_split[5]}", null)
   gh_config = {
     WORKLOAD_ID_PROVIDER = try(google_iam_workload_identity_pool_provider.github_provider[0].name, null)
     SERVICE_ACCOUNT      = try(module.service-account-github.email, null)
-    PROJECT_ID           = try(module.project.project_id, null)
+    PROJECT_ID           = module.project.project_id
     DOCKER_REPO          = local.docker_repo
+    SA_MLOPS             = module.service-account-mlops.email
+    SUBNETWORK           = local.subnet
   }
 }
 
