@@ -240,6 +240,22 @@ The application layer is out of scope of this script. As a demo purpuse only, se
 You can find examples in the `[demo](./demo)` folder.
 <!-- BEGIN TFDOC -->
 
+## Files
+
+| name | description | modules | resources |
+|---|---|---|---|
+| [01-dropoff.tf](./01-dropoff.tf) | drop off project and resources. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> · <code>pubsub</code> |  |
+| [02-load.tf](./02-load.tf) | Load project and VPC. | <code>gcs</code> · <code>iam-service-account</code> · <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [03-composer.tf](./03-composer.tf) | Orchestration Cloud Composer definition. | <code>iam-service-account</code> | <code>google_composer_environment</code> |
+| [03-orchestration.tf](./03-orchestration.tf) | Orchestration project and VPC. | <code>artifact-registry</code> · <code>gcs</code> · <code>iam-service-account</code> · <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [04-transformation.tf](./04-transformation.tf) | Trasformation project and VPC. | <code>gcs</code> · <code>iam-service-account</code> · <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [05-datawarehouse.tf](./05-datawarehouse.tf) | Data Warehouse projects. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>project</code> |  |
+| [06-common.tf](./06-common.tf) | common project. | <code>data-catalog-policy-tag</code> · <code>kms</code> · <code>project</code> |  |
+| [07-exposure.tf](./07-exposure.tf) | common project. | <code>project</code> |  |
+| [main.tf](./main.tf) | Core locals. |  | <code>google_project_iam_member</code> |
+| [outputs.tf](./outputs.tf) | Output variables. |  |  |
+| [variables.tf](./variables.tf) | Terraform Variables. |  |  |
+
 ## Variables
 
 | name | description | type | required | default |
@@ -263,8 +279,8 @@ You can find examples in the `[demo](./demo)` folder.
 
 | name | description | sensitive |
 |---|---|:---:|
-| [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
-| [demo_commands](outputs.tf#L27) | Demo commands. Relevant only if Composer is deployed. |  |
+| [bigquery-datasets](outputs.tf#L16) | BigQuery datasets. |  |
+| [demo_commands](outputs.tf#L26) | Demo commands. Relevant only if Composer is deployed. |  |
 | [df_template](outputs.tf#L49) | Dataflow template image and template details. |  |
 | [gcs-buckets](outputs.tf#L58) | GCS buckets. |  |
 | [kms_keys](outputs.tf#L71) | Cloud MKS keys. |  |
