@@ -36,7 +36,7 @@ module "glb" {
         { backend = "neg-0" }
       ]
       health_checks = []
-      port_name = "http"
+      port_name     = "http"
     }
   }
   health_check_configs = {}
