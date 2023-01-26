@@ -108,14 +108,13 @@ variable "labels" {
   default     = null
 }
 
-variable "maintenance_window" {
-  description = "A one-hour maintenance window when an instance can automatically restart to apply updates"
-  type = map(object({
-    day              = optional(string)
-    hour = optional(string)
-    update_track = optional(string)
-  }))
-  default = {}
+variable "maintenance_window_day" {
+  description = "Day at which maintenance will occur"
+  type        = number
+}
+variable "maintenance_window_hour" {
+  description = "Hour at which the maintenance will occur"
+  type        = number
 }
 variable "name" {
   description = "Name of primary instance."
