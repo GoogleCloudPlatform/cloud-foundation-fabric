@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import marko
 
 FABRIC_ROOT = Path(__file__).parents[2]
 
-FILE_TEST_RE = re.compile(r'# tftest-file +id=(\w+) +path=([\S]+)')
+FILE_TEST_RE = re.compile(r'# tftest-file +id=([\w_.-]+) +path=([\S]+)')
 
 Example = collections.namedtuple('Example', 'name code module files')
 File = collections.namedtuple('File', 'path content')

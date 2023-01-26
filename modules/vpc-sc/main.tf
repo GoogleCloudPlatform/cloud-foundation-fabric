@@ -25,4 +25,5 @@ resource "google_access_context_manager_access_policy" "default" {
   count  = var.access_policy_create != null ? 1 : 0
   parent = var.access_policy_create.parent
   title  = var.access_policy_create.title
+  scopes = var.access_policy_create.scopes
 }

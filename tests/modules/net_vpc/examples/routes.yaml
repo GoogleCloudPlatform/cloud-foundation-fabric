@@ -1,0 +1,146 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.vpc["gateway"].google_compute_network.network[0]:
+    name: my-network-with-route-gateway
+    project: my-project
+    routing_mode: GLOBAL
+  module.vpc["gateway"].google_compute_route.gateway["gateway"]:
+    dest_range: 0.0.0.0/0
+    name: my-network-with-route-gateway-gateway
+    next_hop_gateway: global/gateways/default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 100
+    project: my-project
+    tags:
+    - tag-a
+  module.vpc["gateway"].google_compute_route.gateway["next-hop"]:
+    dest_range: 192.168.128.0/24
+    name: my-network-with-route-gateway-next-hop
+    next_hop_gateway: global/gateways/default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+  module.vpc["ilb"].google_compute_network.network[0]:
+    name: my-network-with-route-ilb
+    project: my-project
+    routing_mode: GLOBAL
+  module.vpc["ilb"].google_compute_route.gateway["gateway"]:
+    dest_range: 0.0.0.0/0
+    name: my-network-with-route-ilb-gateway
+    next_hop_gateway: global/gateways/default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 100
+    project: my-project
+    tags:
+    - tag-a
+  module.vpc["ilb"].google_compute_route.ilb["next-hop"]:
+    dest_range: 192.168.128.0/24
+    name: my-network-with-route-ilb-next-hop
+    next_hop_gateway: null
+    next_hop_ilb: regions/europe-west1/forwardingRules/test
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+  module.vpc["instance"].google_compute_network.network[0]:
+    name: my-network-with-route-instance
+    project: my-project
+    routing_mode: GLOBAL
+  module.vpc["instance"].google_compute_route.gateway["gateway"]:
+    dest_range: 0.0.0.0/0
+    name: my-network-with-route-instance-gateway
+    next_hop_gateway: global/gateways/default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 100
+    project: my-project
+    tags:
+    - tag-a
+  module.vpc["instance"].google_compute_route.instance["next-hop"]:
+    dest_range: 192.168.128.0/24
+    name: my-network-with-route-instance-next-hop
+    next_hop_gateway: null
+    next_hop_ilb: null
+    next_hop_instance: zones/europe-west1-b/test
+    next_hop_instance_zone: europe-west1-b
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+  module.vpc["ip"].google_compute_network.network[0]:
+    name: my-network-with-route-ip
+    project: my-project
+    routing_mode: GLOBAL
+  module.vpc["ip"].google_compute_route.gateway["gateway"]:
+    dest_range: 0.0.0.0/0
+    name: my-network-with-route-ip-gateway
+    next_hop_gateway: global/gateways/default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 100
+    project: my-project
+    tags:
+    - tag-a
+  module.vpc["ip"].google_compute_route.ip["next-hop"]:
+    dest_range: 192.168.128.0/24
+    name: my-network-with-route-ip-next-hop
+    next_hop_gateway: null
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_ip: 192.168.0.128
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+  module.vpc["vpn_tunnel"].google_compute_network.network[0]:
+    name: my-network-with-route-vpn-tunnel
+    project: my-project
+    routing_mode: GLOBAL
+  module.vpc["vpn_tunnel"].google_compute_route.gateway["gateway"]:
+    dest_range: 0.0.0.0/0
+    name: my-network-with-route-vpn-tunnel-gateway
+    next_hop_gateway: global/gateways/default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 100
+    project: my-project
+    tags:
+    - tag-a
+  module.vpc["vpn_tunnel"].google_compute_route.vpn_tunnel["next-hop"]:
+    dest_range: 192.168.128.0/24
+    name: my-network-with-route-vpn-tunnel-next-hop
+    next_hop_gateway: null
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: regions/europe-west1/vpnTunnels/foo
+    priority: 1000
+    project: my-project
+    tags: null
+
+counts:
+  google_compute_network: 5
+  google_compute_route: 10
