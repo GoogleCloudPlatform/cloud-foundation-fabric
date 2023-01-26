@@ -105,6 +105,8 @@ resource "google_sql_database_instance" "primary" {
         value = flag.value
       }
     }
+
+    maintenance_window = var.maintenance_window
   }
   deletion_protection = var.deletion_protection
 }
