@@ -451,7 +451,7 @@ module "glb-0" {
         { backend = "neg-0" }
       ]
       health_checks = []
-      port_name = "http"
+      port_name     = "http"
     }
   }
   # with a single serverless NEG the implied default health check is not needed
@@ -475,7 +475,7 @@ module "glb-0" {
     }
   }
 }
-# tftest ...
+# tftest modules=1 resources=6 inventory=https-sneg.yaml
 ```
 
 ### URL Map
