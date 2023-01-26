@@ -18,6 +18,7 @@ variable "run_svc_name" {
 variable "image" {
   description = "Container image to deploy"
   type        = string
+  default     = "us-docker.pkg.dev/cloudrun/container/hello"
 }
 
 variable "glb_create" {
