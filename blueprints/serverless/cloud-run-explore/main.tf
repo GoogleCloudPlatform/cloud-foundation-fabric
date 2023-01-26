@@ -1,3 +1,4 @@
+# Cloud Run service
 module "cloud_run" {
   source     = "../../../modules/cloud-run"
   project_id = var.project_id
@@ -15,17 +16,27 @@ module "cloud_run" {
   }
 }
 
+# Reserved static IP for the Load Balancer
+resource "google_compute_global_address" "default" {
+  count   = var.glb_create ? 1 : 0
+  project = var.project_id
+  name    = "glb-ip"
+}
+
+# Global L7 HTTPS Load Balancer in front of Cloud Run
 module "glb" {
   source     = "../../../modules/net-glb"
   count      = var.glb_create ? 1 : 0
   project_id = var.project_id
   name       = "glb"
+  address    = google_compute_global_address.default[0].id
   backend_service_configs = {
     default = {
       backends = [
         { backend = "neg-0" }
       ]
       health_checks = []
+      port_name = "http"
     }
   }
   health_check_configs = {}
@@ -36,6 +47,14 @@ module "glb" {
         target_service = {
           name = var.run_svc_name
         }
+      }
+    }
+  }
+  protocol = "HTTPS"
+  ssl_certificates = {
+    managed_configs = {
+      default = {
+        domains = ["cloud-run-explore.comenube.com"]
       }
     }
   }
