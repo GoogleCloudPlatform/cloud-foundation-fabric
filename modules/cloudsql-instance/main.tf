@@ -154,11 +154,6 @@ resource "google_sql_database_instance" "replicas" {
         value = flag.value
       }
     }
-
-    maintenance_window {
-      day  = var.maintenance_window_day
-      hour = var.maintenance_window_hour
-    }
   }
   deletion_protection = var.deletion_protection
 }
