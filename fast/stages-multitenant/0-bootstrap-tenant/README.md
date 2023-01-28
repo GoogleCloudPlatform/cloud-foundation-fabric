@@ -19,12 +19,35 @@ The resources and policies managed here are:
 
 One notable difference compared to organization-level bootstrap is the creation of service accounts for all tenant stages: this is done here so that Billing and Organization Policy Admin bindings can be set, leveraging permissions of  the org-level resman service account which is used to run this stage. Doing this here avoids the need to grant broad scoped permissions on the organization to tenant-level service accounts, and effectively decouples the tenant from the organization.
 
-The following diagram is a high level reference of what this stage manages, showing two hypothetical tenants (which would need two distinct copies of this stage):
+The following diagram is a high level reference of what this stage manages, showing one hypothetical tenant (additional tenants require additional instances of this stage being deployed):
 
-<!-- https://mdigi.tools/darken-color/#f1f8e9 -->
-<p align="center">
-  <img src="diagram.svg" alt="Tenant-level bootstrap">
-</p>
+```mermaid
+%%{init: {'theme':'base'}}%%
+classDiagram
+    Organization~🏢~ -- Tenant 0~📁~
+    Tenant 0~📁~ -- tn0_automation
+    Tenant 0~📁~ -- tn0_logging
+    class Organization~🏢~ {
+        - tag value
+        - IAM bindings()
+        - org policies()
+    }
+    class Tenant 0~📁~ {
+        - log sinks
+        - IAM bindings()
+        - org policies()
+        - tag bindings()
+    }
+    class tn0_automation {
+        - GCS buckets
+        - service accounts
+        - optional CI/CD
+        - IAM bindings()
+    }
+    class tn0_logging {
+        - log sink destinations
+    }
+```
 
 As most of the features of this stage follow the same design and configurations of the [organization-level bootstrap stage](../../stages/0-bootstrap/), we will only focus on the tenant-specific configuration in this document.
 
@@ -127,6 +150,7 @@ Once the configuration is done just go through the usual `init/apply` cycle. On 
 ### TODO
 
 - [ ] tenant-level Workload Identity Federation pool and providers configuration
+- [ ] tenant-level logging project and sinks
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
