@@ -119,7 +119,7 @@ module "hub" {
   }
 }
 
-# tftest modules=4 resources=15
+# tftest modules=4 resources=16
 ```
 
 ## Multi-cluster mesh on GKE
