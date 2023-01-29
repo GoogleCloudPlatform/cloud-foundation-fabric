@@ -91,7 +91,8 @@ module "cluster-autopilot" {
     master_ipv4_cidr_block = "192.168.0.0/28"
   }
   enable_features = {
-    autopilot = true
+    autopilot         = true
+    workload_identity = false
   }
 }
 # tftest modules=1 resources=1 inventory=autopilot.yaml
