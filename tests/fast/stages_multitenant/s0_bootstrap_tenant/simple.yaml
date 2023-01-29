@@ -16,13 +16,13 @@ counts:
   google_bigquery_default_service_account: 1
   google_folder: 2
   google_folder_iam_binding: 5
-  google_organization_iam_member: 28
+  google_organization_iam_member: 38
   google_project: 1
   google_project_iam_binding: 7
   google_project_iam_member: 1
   google_project_service: 23
-  google_project_service_identity: 2
-  google_service_account: 8
+  google_project_service_identity: 3
+  google_service_account: 11
   google_service_account_iam_binding: 1
   google_storage_bucket: 2
   google_storage_bucket_iam_binding: 1
@@ -31,5 +31,5 @@ counts:
   google_storage_project_service_account: 1
   google_tags_tag_binding: 1
   google_tags_tag_value: 1
-  modules: 14
-  resources: 88
+  modules: 17
+  resources: 118
