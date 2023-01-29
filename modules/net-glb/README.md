@@ -255,9 +255,8 @@ module "win-mig" {
       }
     }
   }
-  named_port {
-    name = "http"
-    port = 80
+  named_ports {
+    http = 80
   }
 }
 
@@ -590,7 +589,6 @@ The module also allows managing managed and self-managed SSL certificates via th
 THe [HTTPS example above](#minimal-https-examples) shows how to configure manage certificated, the following example shows how to use an unmanaged (or self managed) certificate. The example uses Terraform resource for the key and certificate so that the we don't depend on external files when running tests,  in real use the key and certificate are generally provided via external files read by the Terraform `file()` function.
 
 ```hcl
-
 resource "tls_private_key" "default" {
   algorithm = "RSA"
   rsa_bits  = 4096
