@@ -134,6 +134,7 @@ tenant_config = {
   #   logging    = "folders/0123456789"
   # }
 }
+# tftest: skip
 ```
 
 Configure the tenant variable in a tfvars file for this stage. A few minor points worth noting:
