@@ -509,6 +509,46 @@ module "glb-0" {
 # tftest modules=1 resources=5
 ```
 
+Serverless NEGs don't use the port name but it should be set to `http`. An HTTPS frontend requires the protocol to be set to `HTTPS`, and the port name field will infer this value if omitted so you need to set it explicitly:
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id = "myprj"
+  name       = "glb-test-0"
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = "neg-0" }
+      ]
+      health_checks = []
+      port_name     = "http"
+    }
+  }
+  # with a single serverless NEG the implied default health check is not needed
+  health_check_configs = {}
+  neg_configs = {
+    neg-0 = {
+      cloudrun = {
+        region = "europe-west8"
+        target_service = {
+          name = "hello"
+        }
+      }
+    }
+  }
+  protocol = "HTTPS"
+  ssl_certificates = {
+    managed_configs = {
+      default = {
+        domains = ["glb-test-0.example.org"]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=https-sneg.yaml
+```
+
 ### URL Map
 
 The module exposes the full URL map resource configuration, with some minor changes to the interface to decrease verbosity, and support for aliasing backend services via keys.

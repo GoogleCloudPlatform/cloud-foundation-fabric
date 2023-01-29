@@ -32,8 +32,10 @@ variable "envgroups" {
 variable "environments" {
   description = "Environments."
   type = map(object({
-    display_name = optional(string)
-    description  = optional(string, "Terraform-managed")
+    display_name    = optional(string)
+    description     = optional(string, "Terraform-managed")
+    deployment_type = optional(string)
+    api_proxy_type  = optional(string)
     node_config = optional(object({
       min_node_count = optional(number)
       max_node_count = optional(number)
