@@ -35,7 +35,6 @@ classDiagram
     class Tenant 0~📁~ {
         - log sinks
         - IAM bindings()
-        - org policies()
         - tag bindings()
     }
     class tn0_automation {

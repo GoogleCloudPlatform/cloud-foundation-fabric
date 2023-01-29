@@ -1,153 +1,122 @@
-# Resource hierarchy
+# Tenant resource management
 
-This stage performs two important tasks:
+This stage is run for a specific tenant after [tenant bootstrap](../0-bootstrap-tenant/) has successfully created initial resources for the tenant, which is then decoupled from the organization.
 
-- create the top-level hierarchy of folders, and the associated resources used later on to automate each part of the hierarchy (eg. Networking)
-- set organization policies on the organization, and any exception required on specific folders
+It is logically equivalent and almost identical in code to the corresponding [organization resource management stage](../../stages/1-resman/), with a few notable differences:
 
-The code is intentionally simple, as it's intended to provide a generic initial setup (Networking, Security, etc.), and then allow easy customizations to complete the implementation of the intended hierarchy design.
+- the hierarchy is rooted in the tenant top-level folder instead of the organization
+- there's no management of tag values and keys since they organization-level resources (it could be implemented for tenant-specific tags if the need arises)
+- automation service accounts for subsequent stages are configured but not created here (tenant-level bootstrap creates them and assigns organization-level permissions)
 
-The following diagram is a high level reference of the resources created and managed here:
+The stage runs with a dedicated service account for the tenant, which has no permissions at the organization level except for billing and organization policies, constrained by a condition on the tenant tag.
 
-<p align="center">
-  <img src="diagram.svg" alt="Resource-management diagram">
-</p>
+The following diagram is a high level reference of what this stage manages, showing one hypothetical tenant (additional tenants require additional instances of this stage being deployed):
 
-## Design overview and choices
+```mermaid
+%%{init: {'theme':'base'}}%%
+classDiagram
+    Tenant_root~📁~ -- tn0_automation
+    Tenant_root~📁~ -- Networking~📁~
+    Tenant_root~📁~ -- Security~📁~
+    Tenant_root~📁~ -- Data_Platform~📁~
+    Data_Platform~📁~ -- DP_Dev~📁~
+    Data_Platform~📁~ -- DP_Prod~📁~
+    Tenant_root~📁~ -- GKE~📁~
+    GKE~📁~ -- GKE_Dev~📁~
+    GKE~📁~ -- GKE_Prod~📁~
+    Tenant_root~📁~ -- Teams~📁~
+    Teams~📁~ -- Team_0~📁~
+    Team_0~📁~ -- Team_0_Dev~📁~
+    Team_0~📁~ -- Team_0_Prod~📁~
+    Tenant_root~📁~ -- Sandbox~📁~
+    class Tenant_root~📁~ {
+        - IAM bindings()
+        - org policies()
+    }
+    class tn0_automation {
+        - GCS buckets
+        - IAM bindings()
+    }
+    class Data_Platform~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class DP_Dev~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class DP_Prod~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class GKE~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class GKE_Dev~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class GKE_Prod~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class Networking~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class Security~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class Sandbox~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class Teams~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class Team_0~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class Team_0_Dev~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+    class Team_0_Prod~📁~ {
+      - IAM bindings()
+      - tag bindings()
+    }
+```
 
-Despite its simplicity, this stage implements the basics of a design that we've seen working well for a variety of customers, where the hierarchy is laid out following two conceptually different approaches:
-
-- core or shared resources are grouped in hierarchy branches that map to their type or purpose (e.g. Networking)
-- team or application resources are grouped in lower level hierarchy branches that map to management or operational considerations (e.g. which team manages a set of applications, or owns a subset of company data, etc.)
-
-This split approach usually represents well functional and operational patterns, where core resources are centrally managed by individual teams (e.g. networking, security, fleets of similar VMS, etc.), while teams need more granularity to access managed services used by the applications they maintain.
-
-The approach also adapts to different high level requirements:
-
-- it can be used either for single organizations containing multiple environments, or with multiple organizations dedicated to specific environments (e.g. prod/nonprod), as the environment split is implemented at the project or lower folder level
-- it adapts to complex scenarios, with different countries or corporate entities using the same GCP organization, as core services are typically shared, and/or an extra layer on top can be used as a drop-in to implement the country/entity separation
-
-Additionally, a few critical benefits are directly provided by this design:
-
-- core services are clearly separated, with very few touchpoints where IAM and security policies need to be applied (typically their top-level folder)
-- adding a new set of core services (e.g. shared GKE clusters) is a trivial operation that does not break the existing design
-- grouping application resources and services using teams or business logic is a flexible approach, which maps well to typical operational or budget requirements
-- automation stages (e.g. Networking) can be segregated in a simple and effective way, by creating the required service accounts and buckets for each stage here, and applying a handful of IAM roles to the relevant folder
-
-For a discussion on naming, please refer to the [Bootstrap stage documentation](../0-bootstrap/README.md#naming), as the same approach is shared by all stages.
-
-### Workload Identity Federation and CI/CD
-
-This stage also implements optional support for CI/CD, much in the same way as the bootstrap stage. The only difference is on Workload Identity Federation, which is only configured in bootstrap and made available here via stage interface variables (the automatically generated `.tfvars` files).
-
-For details on how to configure CI/CD please refer to the [relevant section in the bootstrap stage documentation](../0-bootstrap/README.md#cicd-repositories).
+As most of the features of this stage follow the same design and configurations of the [organization-level resource management stage](../../stages/1-resman/), we will only focus on the tenant-specific configuration in this document.
 
 ## How to run this stage
 
-This stage is meant to be executed after the [bootstrap](../0-bootstrap) stage has run, as it leverages the automation service account and bucket created there. The relevant user groups must also exist, but that's one of the requirements for the previous stage too, so if you ran that successfully, you're good to go.
+As mentioned above this stage stage is effectively decoupled from organization-level stages, and as such it uses a service account and state bucket from the tenant-specific automation project, and terraform variable values and provider files which are also tenant-specific.
 
-It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the bootstrap stage for the actual roles needed.
-
-Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
-
-### Providers configuration
-
-The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage during bootstrap, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
-
-To simplify setup, the previous stage pre-configures a valid providers file in its output, and optionally writes it to a local file if the `outputs_location` variable is set to a valid path.
-
-If you have set a valid value for `outputs_location` in the bootstrap stage (see the [bootstrap stage README](../0-bootstrap/#output-files-and-cross-stage-variables) for more details), simply link the relevant `providers.tf` file from this stage's folder in the path you specified:
+The `stage-links.sh` script can be used to get the commands needed for the provider and output files, just set the variable for the tenant shortname (the same one specified in the tenant bootstrap stage) and pass a single argument with your FAST output files folder path, or GCS bucket URI:
 
 ```bash
-# `outputs_location` is set to `~/fast-config`
-ln -s ~/fast-config/providers/01-resman-providers.tf .
+TENANT=tn0 ~/fast-config
 ```
 
-If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
+The script output can be copy/pasted to a terminal:
 
 ```bash
-cd ../0-bootstrap
-terraform output -json providers | jq -r '.["01-resman"]' \
-  > ../1-resman/providers.tf
+# copy and paste the following commands for '1-resman-tenant'
+
+ln -s ~/fast-config/tenants/tn0/providers/1-resman-tenant-providers.tf ./
+ln -s ~/fast-config/tenants/tn0/tfvars/0-bootstrap-tenant.auto.tfvars.json ./
 ```
 
-If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as described [here](../0-bootstrap/#output-files-and-cross-stage-variables).
+Once that is done, stage-level configuration variables are the same as the corresponding organization-level stage.
 
-### Variable configuration
+### Running the stage
 
-There are two broad sets of variables you will need to fill in:
-
-- variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
-- variables specific to resources managed by this stage
-
-To avoid the tedious job of filling in the first group of variable with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
-
-If you configured a valid path for `outputs_location` in the bootstrap stage, simply link the relevant `*.auto.tfvars.json` files from the outputs folder. For this stage, you need the `globals.auto.tfvars.json` file containing global values compiled manually for the bootstrap stage, and `0-bootstrap.auto.tfvars.json` containing values derived from resources managed by the bootstrap stage:
-
-```bash
-# `outputs_location` is set to `~/fast-config`
-ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json .
-```
-
-A second set of variables is specific to this stage, they are all optional so if you need to customize them, create an extra `terraform.tfvars` file.
-
-Refer to the [Variables](#variables) table at the bottom of this document, for a full list of variables, their origin (e.g. a stage or specific to this one), and descriptions explaining their meaning. The sections below also describe some of the possible customizations. For billing configurations, refer to the [Bootstrap documentation on billing](../0-bootstrap/README.md#billing-account) as the `billing_account` variable is identical across all stages.
-
-Once done, you can run this stage:
-
-```bash
-terraform init
-terraform apply
-```
-
-## Customizations
-
-### Team folders
-
-This stage provides a single built-in customization that offers a minimal (but usable) implementation of the "application" or "business" grouping for resources discussed above. The `team_folders` variable allows you to specify a map of team name and groups, that will result in folders, automation service accounts, and IAM policies applied.
-
-Consider the following example in a `tfvars` file:
-
-```tfvars
-team_folders = {
-  team-a = {
-    descriptive_name = "Team A"
-    group_iam = {
-      "team-a@gcp-pso-italy.net" = [
-        "roles/viewer"
-      ]
-    }
-    impersonation_groups = ["team-a-admins@gcp-pso-italy.net"]
-  }
-}
-```
-
-This will result in
-
-- a "Team A" folder under the "Teams" folder
-- one GCS bucket in the automation project
-- one service account in the automation project with the correct IAM policies on the folder and bucket
-- a IAM policy on the folder that assigns `roles/viewer` to the `team-a` group
-- a IAM policy on the service account that allows `team-a` to impersonate it
-
-This allows to centralize the minimum set of resources to delegate control of each team's folder to a pipeline, and/or to the team group. This can be used as a starting point for scenarios that implement more complex requirements (e.g. environment folders per team, etc.).
-
-### Organization policies
-
-Organization policies are laid out in an explicit manner in the `organization.tf` file, so it's fairly easy to add or remove specific policies.
-
-For policies where additional data is needed, a root-level `organization_policy_configs` variable allows passing in specific data. Its built-in use to add additional organizations to the [Domain Restricted Sharing](https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains) policy, can be taken as an example on how to leverage it for additional customizations.
-
-### IAM
-
-IAM roles can be easily edited in the relevant `branch-xxx.tf` file, following the best practice outlined in the [bootstrap stage](../0-bootstrap#customizations) documentation of separating user-level and service-account level IAM policies in modules' `iam_groups`, `iam`, and `iam_additive` variables.
-
-A full reference of IAM roles managed by this stage [is available here](./IAM.md).
-
-### Additional folders
-
-Due to its simplicity, this stage lends itself easily to customizations: adding a new top-level branch (e.g. for shared GKE clusters) is as easy as cloning one of the `branch-xxx.tf` files, and changing names.
+Once the configuration is done just go through the usual `init/apply` cycle. On successful apply, a tfvars file specific for this tenant and a set of provider files will be created.
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
