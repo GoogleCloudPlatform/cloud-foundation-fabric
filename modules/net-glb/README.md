@@ -224,23 +224,19 @@ module "win-template" {
   project_id = "myprj"
   zone       = "europe-west8-a"
   name       = "win-template"
-
   instance_type = "n2d-standard-2"
-
+  create_template = true
+  boot_disk = {
+    image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
+    type  = "pd-balanced"
+    size  = 70
+  }
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
   }]
-
-  boot_disk = {
-    image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
-    type  = "pd-balanced"
-    size  = 70
-  }
-
-  create_template = true
 }
 
 module "win-mig" {
@@ -248,9 +244,7 @@ module "win-mig" {
   project_id = "myprj"
   location   = "europe-west8-a"
   name       = "win-mig"
-
   instance_template = module.win-template.template.self_link
-
   autoscaler_config = {
     max_replicas    = 3
     min_replicas    = 1
@@ -261,25 +255,21 @@ module "win-mig" {
       }
     }
   }
+  named_port {
+    name = "http"
+    port = 80
+  }
 }
 
 module "glb-0" {
   source     = "./fabric/modules/net-glb"
   project_id = "myprj"
   name       = "glb-test-0"
-
-
   backend_service_configs = {
     default = {
       backends = [
         { backend = module.win-mig.group_manager.instance_group }
       ]
-    }
-  }
-
-  health_check_configs = {
-    default = {
-      tcp = { port = 80 }
     }
   }
 }
