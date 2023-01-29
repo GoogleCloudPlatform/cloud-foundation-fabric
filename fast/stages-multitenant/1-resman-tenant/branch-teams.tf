@@ -43,7 +43,7 @@ module "branch-teams-sa" {
   project_id             = var.automation.project_id
   name                   = "teams-0"
   prefix                 = var.prefix
-  service_account_create = false
+  service_account_create = var.test_skip_data_sources
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }

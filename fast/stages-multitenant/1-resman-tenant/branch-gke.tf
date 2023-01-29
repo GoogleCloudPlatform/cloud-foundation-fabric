@@ -66,7 +66,7 @@ module "branch-gke-dev-sa" {
   project_id             = var.automation.project_id
   name                   = "gke-dev-0"
   prefix                 = var.prefix
-  service_account_create = false
+  service_account_create = var.test_skip_data_sources
   iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
       (
@@ -90,7 +90,7 @@ module "branch-gke-prod-sa" {
   project_id             = var.automation.project_id
   name                   = "gke-prod-0"
   prefix                 = var.prefix
-  service_account_create = false
+  service_account_create = var.test_skip_data_sources
   iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
       (

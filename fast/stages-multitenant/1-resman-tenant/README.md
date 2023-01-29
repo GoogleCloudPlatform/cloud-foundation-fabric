@@ -164,6 +164,7 @@ Once the configuration is done just go through the usual `init/apply` cycle. On 
 | [organization_policy_data_path](variables.tf#L216) | Path for the data folder used by the organization policies factory. | <code>string</code> |  | <code>null</code> |  |
 | [outputs_location](variables.tf#L222) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable. | <code>string</code> |  | <code>null</code> |  |
 | [team_folders](variables.tf#L267) | Team folders to be created. Format is described in a code comment. | <code title="map&#40;object&#40;&#123;&#10;  descriptive_name     &#61; string&#10;  group_iam            &#61; map&#40;list&#40;string&#41;&#41;&#10;  impersonation_groups &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |  |
+| [test_skip_data_sources](variables.tf#L277) | Used when testing to bypass data sources. | <code>bool</code> |  | <code>false</code> |  |
 
 ## Outputs
 

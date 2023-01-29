@@ -273,3 +273,9 @@ variable "team_folders" {
   }))
   default = null
 }
+
+variable "test_skip_data_sources" {
+  description = "Used when testing to bypass data sources."
+  type        = bool
+  default     = false
+}

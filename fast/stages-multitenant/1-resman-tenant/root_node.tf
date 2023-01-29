@@ -19,7 +19,13 @@
 module "root-folder" {
   source        = "../../../modules/folder"
   id            = var.root_node
-  folder_create = false
+  folder_create = var.test_skip_data_sources
+  # start test attributes
+  parent = (
+    var.test_skip_data_sources ? "organizations/${var.organization.id}" : null
+  )
+  name = var.test_skip_data_sources ? "Test" : null
+  # end test attributes
   iam_additive = {
     "roles/accesscontextmanager.policyAdmin" = [
       local.automation_sas_iam.security

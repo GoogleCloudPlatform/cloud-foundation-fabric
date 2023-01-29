@@ -57,4 +57,4 @@ tenant_config = {
   }
   short_name = "tn01"
 }
-test_principal = "foo--prod-resman-0@foo-prod-iac-core-0.iam.gserviceaccount.com"
+test_principal = "foo-prod-resman-0@foo-prod-iac-core-0.iam.gserviceaccount.com"

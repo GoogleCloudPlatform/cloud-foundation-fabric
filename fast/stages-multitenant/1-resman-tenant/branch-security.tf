@@ -49,7 +49,7 @@ module "branch-security-sa" {
   project_id             = var.automation.project_id
   name                   = "security-0"
   prefix                 = var.prefix
-  service_account_create = false
+  service_account_create = var.test_skip_data_sources
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-security-sa-cicd.0.iam_email, null)

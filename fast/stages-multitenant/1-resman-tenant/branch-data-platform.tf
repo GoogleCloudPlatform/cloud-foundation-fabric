@@ -74,7 +74,7 @@ module "branch-dp-dev-sa" {
   project_id             = var.automation.project_id
   name                   = "dp-dev-0"
   prefix                 = var.prefix
-  service_account_create = false
+  service_account_create = var.test_skip_data_sources
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-dp-dev-sa-cicd.0.iam_email, null)
@@ -91,7 +91,7 @@ module "branch-dp-prod-sa" {
   project_id             = var.automation.project_id
   name                   = "dp-prod-0"
   prefix                 = var.prefix
-  service_account_create = false
+  service_account_create = var.test_skip_data_sources
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-dp-prod-sa-cicd.0.iam_email, null)
