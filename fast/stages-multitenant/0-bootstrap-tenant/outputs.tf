@@ -70,6 +70,13 @@ locals {
   )
 }
 
+output "provider" {
+  # tfdoc:output:consumers stage-01
+  description = "Terraform provider file for tenant resource management stage."
+  sensitive   = true
+  value       = local.provider
+}
+
 output "tenant_resources" {
   description = "Tenant-level resources."
   value = {
@@ -79,13 +86,6 @@ output "tenant_resources" {
     project_number  = module.automation-project.number
     service_account = module.automation-tf-resman-sa.email
   }
-}
-
-output "provider" {
-  # tfdoc:output:consumers stage-01
-  description = "Terraform provider file for tenant resource management stage."
-  sensitive   = true
-  value       = local.provider
 }
 
 output "tfvars" {

@@ -191,8 +191,8 @@ Once the configuration is done just go through the usual `init/apply` cycle. On 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [provider](outputs.tf#L84) | Terraform provider file for tenant resource management stage. | ✓ | <code>stage-01</code> |
-| [tenant_resources](outputs.tf#L73) | Tenant-level resources. |  |  |
+| [provider](outputs.tf#L73) | Terraform provider file for tenant resource management stage. | ✓ | <code>stage-01</code> |
+| [tenant_resources](outputs.tf#L80) | Tenant-level resources. |  |  |
 | [tfvars](outputs.tf#L91) | Terraform variable files for the following tenant stages. | ✓ |  |
 | [workflow](outputs.tf#L97) | CI/CD workflow for tenant resource management stage. | ✓ |  |
 
