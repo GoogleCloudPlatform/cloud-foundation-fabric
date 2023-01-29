@@ -23,25 +23,6 @@
   set_fact:
     context: "gke_{{ project_id }}_{{ region }}_{{ cluster }}"
 
-- name: Install ASM in cluster
-  shell: > 
-    gcloud container fleet mesh update \
-    --control-plane automatic \
-    --memberships {{ cluster }} \
-    --project {{ project_id }}
-
-- name: Wait until MCP is provisioned
-  shell: > 
-    for i in $(seq 12); do
-      result=$(gcloud container fleet mesh describe --project {{ project_id }} --format json \
-      | jq -r '.membershipStates | to_entries[] | select(.key | endswith("{{ cluster }}")) | .value.servicemesh.controlPlaneManagement.state')
-      if [ "$result" = "ACTIVE" ]; then
-        break
-      fi
-      echo "ASM control plane is not ready yet..."
-      sleep 60
-    done
- 
 - name: Get endpoint IP
   shell: > 
     gcloud container clusters describe "{{ cluster }}" \

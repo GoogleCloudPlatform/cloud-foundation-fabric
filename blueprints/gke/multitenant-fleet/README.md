@@ -224,7 +224,7 @@ module "gke" {
   }
 }
 
-# tftest modules=8 resources=35
+# tftest modules=8 resources=37
 ```
 
 <!-- TFDOC OPTS files:1 -->

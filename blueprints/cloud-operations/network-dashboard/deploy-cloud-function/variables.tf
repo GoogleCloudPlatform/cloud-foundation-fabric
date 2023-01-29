@@ -101,5 +101,5 @@ variable "region" {
 variable "schedule_config" {
   description = "Schedule timer configuration in crontab format."
   type        = string
-  default     = "0/30 * * * *"
+  default     = "*/30 * * * *"
 }

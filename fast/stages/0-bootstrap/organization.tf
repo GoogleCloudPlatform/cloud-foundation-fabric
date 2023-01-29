@@ -23,9 +23,10 @@ locals {
     "roles/browser" = [
       "domain:${var.organization.domain}"
     ]
-    "roles/logging.admin" = [
-      module.automation-tf-bootstrap-sa.iam_email
-    ]
+    "roles/logging.admin" = concat(
+      [module.automation-tf-bootstrap-sa.iam_email],
+      local._iam_bootstrap_user
+    )
     "roles/owner" = local._iam_bootstrap_user
     "roles/resourcemanager.folderAdmin" = [
       module.automation-tf-resman-sa.iam_email
