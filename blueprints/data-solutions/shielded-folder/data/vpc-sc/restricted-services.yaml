@@ -1,3 +1,5 @@
+# skip boilerplate check
+
 - accessapproval.googleapis.com
 - adsdatahub.googleapis.com
 - aiplatform.googleapis.com
