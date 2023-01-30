@@ -34,4 +34,12 @@ module "mgmt_server" {
     type  = var.mgmt_server_config.disk_type
     size  = var.mgmt_server_config.disk_size
   }
+  metadata = {
+    startup-script = <<EOT
+#!/bin/bash
+apt update -y
+apt install python3-pip -y
+pip3 install kubernetes
+EOT
+  }
 }

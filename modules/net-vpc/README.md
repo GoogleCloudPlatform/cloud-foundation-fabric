@@ -30,7 +30,88 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=simple.yaml
+```
+
+### Subnet Options
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-network"
+  subnets = [
+    # simple subnet
+    {
+      name          = "simple"
+      region        = "europe-west1"
+      ip_cidr_range = "10.0.0.0/24"
+    },
+    # custom description and PGA disabled
+    {
+      name                  = "no-pga"
+      region                = "europe-west1"
+      ip_cidr_range         = "10.0.1.0/24",
+      description           = "Subnet b"
+      enable_private_access = false
+    },
+    # secondary ranges
+    {
+      name          = "with-secondary-ranges"
+      region        = "europe-west1"
+      ip_cidr_range = "10.0.2.0/24"
+      secondary_ip_ranges = {
+        a = "192.168.0.0/24"
+        b = "192.168.1.0/24"
+      }
+    },
+    # enable flow logs
+    {
+      name          = "with-flow-logs"
+      region        = "europe-west1"
+      ip_cidr_range = "10.0.3.0/24"
+      flow_logs_config = {
+        flow_sampling        = 0.5
+        aggregation_interval = "INTERVAL_10_MIN"
+      }
+    }
+  ]
+}
+# tftest modules=1 resources=5 inventory=subnet-options.yaml
+```
+
+### Subnet IAM
+
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-network"
+  subnets = [
+    {
+      name          = "subnet-1"
+      region        = "europe-west1"
+      ip_cidr_range = "10.0.1.0/24"
+    },
+    {
+      name          = "subnet-2"
+      region        = "europe-west1"
+      ip_cidr_range = "10.0.1.0/24"
+    }
+  ]
+  subnet_iam = {
+    "europe-west1/subnet-1" = {
+      "roles/compute.networkUser" = [
+        "user:user1@example.com", "group:group1@example.com"
+      ]
+    }
+    "europe-west1/subnet-2" = {
+      "roles/compute.networkUser" = [
+        "user:user2@example.com", "group:group2@example.com"
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=5 inventory=subnet-iam.yaml
 ```
 
 ### Peering
@@ -65,7 +146,7 @@ module "vpc-spoke-1" {
     import_routes      = true
   }
 }
-# tftest modules=2 resources=6
+# tftest modules=2 resources=6 inventory=peering.yaml
 ```
 
 ### Shared VPC
@@ -116,7 +197,7 @@ module "vpc-host" {
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=7 inventory=shared-vpc.yaml
 ```
 
 ### Private Service Networking
@@ -137,7 +218,7 @@ module "vpc" {
     ranges = { myrange = "10.0.1.0/24" }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=psc.yaml
 ```
 
 ### Private Service Networking with peering routes
@@ -162,7 +243,7 @@ module "vpc" {
     import_routes = true
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=psc-routes.yaml
 ```
 
 ### Subnets for Private Service Connect, Proxy-only subnets
@@ -194,7 +275,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=proxy-only-subnets.yaml
 ```
 
 ### DNS Policies
@@ -219,7 +300,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=dns-policies.yaml
 ```
 
 ### Subnet Factory
@@ -233,11 +314,17 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=2 files=subnets
+# tftest modules=1 resources=3 files=subnet-simple,subnet-detailed inventory=factory.yaml
 ```
 
 ```yaml
-# tftest-file id=subnets path=config/subnets/subnet-name.yaml
+# tftest-file id=subnet-simple path=config/subnets/subnet-simple.yaml
+region: europe-west4
+ip_cidr_range: 10.0.1.0/24
+```
+
+```yaml
+# tftest-file id=subnet-detailed path=config/subnets/subnet-detailed.yaml
 region: europe-west1
 description: Sample description
 ip_cidr_range: 10.0.0.0/24
@@ -254,7 +341,45 @@ flow_logs:                        # enable, set to empty map to use defaults
   metadata: "INCLUDE_ALL_METADATA"
   filter_expression: null
 ```
-<!-- BEGIN TFDOC -->
+
+### Custom Routes
+
+VPC routes can be configured through the `routes` variable.
+
+```hcl
+locals {
+  route_types = {
+    gateway    = "global/gateways/default-internet-gateway"
+    instance   = "zones/europe-west1-b/test"
+    ip         = "192.168.0.128"
+    ilb        = "regions/europe-west1/forwardingRules/test"
+    vpn_tunnel = "regions/europe-west1/vpnTunnels/foo"
+  }
+}
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  for_each   = local.route_types
+  project_id = "my-project"
+  name       = "my-network-with-route-${replace(each.key, "_", "-")}"
+  routes = {
+    next-hop = {
+      dest_range    = "192.168.128.0/24"
+      tags          = null
+      next_hop_type = each.key
+      next_hop      = each.value
+    }
+    gateway = {
+      dest_range    = "0.0.0.0/0",
+      priority      = 100
+      tags          = ["tag-a"]
+      next_hop_type = "gateway",
+      next_hop      = "global/gateways/default-internet-gateway"
+    }
+  }
+}
+# tftest modules=5 resources=15 inventory=routes.yaml
+```
+
 
 ## Variables
 

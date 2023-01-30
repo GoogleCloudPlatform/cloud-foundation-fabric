@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
 COUNT_TEST_RE = re.compile(r'# tftest +modules=(\d+) +resources=(\d+)' +
-                           r'(?: +files=([\w,-.]+))?' +
+                           r'(?: +files=([\w,_-]+))?' +
                            r'(?: +inventory=([\w\-.]+))?')
 
 

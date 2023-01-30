@@ -8,50 +8,46 @@ module "bucket" {
   project_id = "myproject"
   prefix     = "test"
   name       = "my-bucket"
+  versioning = true
   iam = {
     "roles/storage.admin" = ["group:storage@example.com"]
   }
+  labels = {
+    cost-center = "devops"
+  }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=simple.yaml
 ```
 
 ### Example with Cloud KMS
 
 ```hcl
 module "bucket" {
-  source     = "./fabric/modules/gcs"
-  project_id = "myproject"
-  prefix     = "test"
-  name       = "my-bucket"
-  iam = {
-    "roles/storage.admin" = ["group:storage@example.com"]
-  }
+  source         = "./fabric/modules/gcs"
+  project_id     = "myproject"
+  name           = "my-bucket"
   encryption_key = "my-encryption-key"
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=1 inventory=cmek.yaml
 ```
 
-### Example with retention policy
+### Example with retention policy and logging
 
 ```hcl
 module "bucket" {
   source     = "./fabric/modules/gcs"
   project_id = "myproject"
-  prefix     = "test"
   name       = "my-bucket"
-  iam = {
-    "roles/storage.admin" = ["group:storage@example.com"]
-  }
   retention_policy = {
     retention_period = 100
     is_locked        = true
   }
   logging_config = {
-    log_bucket        = var.bucket
+    log_bucket        = "log-bucket"
     log_object_prefix = null
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=1 inventory=retention-logging.yaml
 ```
 
 ### Example with lifecycle rule
@@ -60,11 +56,7 @@ module "bucket" {
 module "bucket" {
   source     = "./fabric/modules/gcs"
   project_id = "myproject"
-  prefix     = "test"
   name       = "my-bucket"
-  iam = {
-    "roles/storage.admin" = ["group:storage@example.com"]
-  }
   lifecycle_rules = {
     lr-0 = {
       action = {
@@ -77,7 +69,7 @@ module "bucket" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=1 inventory=lifecycle.yaml
 ```
 
 ### Minimal example with GCS notifications
@@ -86,7 +78,6 @@ module "bucket" {
 module "bucket-gcs-notification" {
   source     = "./fabric/modules/gcs"
   project_id = "myproject"
-  prefix     = "test"
   name       = "my-bucket"
   notification_config = {
     enabled           = true
@@ -97,7 +88,7 @@ module "bucket-gcs-notification" {
     custom_attributes = {}
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=notification.yaml
 ```
 <!-- BEGIN TFDOC -->
 
