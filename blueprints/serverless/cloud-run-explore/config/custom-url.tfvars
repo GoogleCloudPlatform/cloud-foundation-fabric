@@ -1,3 +1,10 @@
+###
+### Purpose of this configuration file.
+###
+### Create a Cloud Run service with a custom domain using an HTTPS LB.
+### Block requests not coming from the LB.
+###
+
 # Add an HTTPS Load Balancer in front of the Cloud Run service
 glb_create = true
 
@@ -7,5 +14,6 @@ glb_create = true
 # https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#update-dns
 custom_domain = "cloud-run-explore.example.org"
 
-# Ingress sources. Allow internal traffic and requests from the LB
+# Ingress sources. Allow internal traffic and requests from the LB.
+# To allow access through the default URL set this value to "all"
 ingress_settings = "internal-and-cloud-load-balancing"
