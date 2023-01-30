@@ -15,12 +15,12 @@
 # tfdoc:file:description Folder resources.
 
 locals {
-  _vpc_sc_vpc_accessible_services = yamldecode(
+  _vpc_sc_vpc_accessible_services = var.data_dir != null ? yamldecode(
     file("${var.data_dir}/vpc-sc/restricted-services.yaml")
-  )
-  _vpc_sc_restricted_services = yamldecode(
+  ) : null
+  _vpc_sc_restricted_services = var.data_dir != null ? yamldecode(
     file("${var.data_dir}/vpc-sc/restricted-services.yaml")
-  )
+  ) : null
 
   access_policy_create = var.access_policy == null ? {
     parent = "organizations/${var.organization.id}"
@@ -63,12 +63,12 @@ module "folder" {
   name                   = try(var.folder_create.display_name, null)
   id                     = var.folder_create != null ? null : var.folder_id
   group_iam              = local.group_iam
-  org_policies_data_path = "${var.data_dir}/org-policies"
-  firewall_policy_factory = {
+  org_policies_data_path = var.data_dir != null ? "${var.data_dir}/org-policies" : null
+  firewall_policy_factory = var.data_dir != null ? {
     cidr_file   = "${var.data_dir}/firewall-policies/cidrs.yaml"
     policy_name = "${var.prefix}-fw-policy"
     rules_file  = "${var.data_dir}/firewall-policies/hierarchical-policy-rules.yaml"
-  }
+  } : null
   logging_sinks = var.enable_features.log_sink ? {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"

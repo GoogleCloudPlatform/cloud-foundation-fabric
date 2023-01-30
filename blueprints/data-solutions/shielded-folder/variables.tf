@@ -43,7 +43,7 @@ variable "enable_features" {
     log_sink = bool
   })
   default = {
-    kms      = true
+    kms      = false
     log_sink = true
   }
 }

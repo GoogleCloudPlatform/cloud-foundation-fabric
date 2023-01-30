@@ -65,6 +65,7 @@ The shielded Folfer blueprint assumes [groups described](#groups) are created in
 There are three sets of variables you will need to fill in:
 ```
 organization = {
+  id     = "12345678"
   domain = "example.com"
 }
 prefix = "prefix"
