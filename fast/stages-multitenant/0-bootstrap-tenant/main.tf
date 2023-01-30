@@ -56,7 +56,7 @@ module "tenant-folder-iam" {
   source        = "../../../modules/folder"
   id            = module.tenant-folder.id
   folder_create = false
-  group_iam = merge(var.tenant_config.group_iam, {
+  group_iam = merge(var.group_iam, {
     (local.groups.gcp-admins) = [
       "roles/logging.admin",
       "roles/owner",
@@ -65,7 +65,7 @@ module "tenant-folder-iam" {
       "roles/compute.xpnAdmin"
     ]
   })
-  iam = merge(var.tenant_config.iam, {
+  iam = merge(var.iam, {
     "roles/compute.xpnAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
@@ -82,5 +82,6 @@ module "tenant-folder-iam" {
       module.automation-tf-resman-sa.iam_email
     ]
   })
-  depends_on = [module.automation-project]
+  iam_additive = var.iam_additive
+  depends_on   = [module.automation-project]
 }

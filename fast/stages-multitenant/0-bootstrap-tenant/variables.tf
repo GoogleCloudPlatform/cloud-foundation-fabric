@@ -78,6 +78,24 @@ variable "fast_features" {
   # nullable = false
 }
 
+variable "group_iam" {
+  description = "Tenant-level custom group IAM settings in group => [roles] format."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "iam" {
+  description = "Tenant-level custom IAM settings in role => [principal] format."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "iam_additive" {
+  description = "Tenant-level custom IAM settings in role => [principal] format for non-authoritative bindings."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "locations" {
   # tfdoc:variable:source 0-0-bootstrap
   description = "Optional locations for GCS, BigQuery, and logging buckets created here."
@@ -204,8 +222,6 @@ variable "tenant_config" {
       name              = string
       type              = string
     }))
-    group_iam = optional(map(list(string)), {})
-    iam       = optional(map(list(string)), {})
     locations = optional(object({
       bq      = optional(string)
       gcs     = optional(string)
