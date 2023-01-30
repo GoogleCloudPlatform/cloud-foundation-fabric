@@ -14,6 +14,7 @@ module "cloud_run" {
   iam = {
     "roles/run.invoker" = ["allUsers"]
   }
+  ingress_settings = var.ingress_settings
 }
 
 # Reserved static IP for the Load Balancer

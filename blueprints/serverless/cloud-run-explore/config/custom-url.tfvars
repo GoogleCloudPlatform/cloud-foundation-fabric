@@ -6,3 +6,6 @@ glb_create = true
 # address with an A/AAAA DNS record at your registrar:
 # https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#update-dns
 custom_domain = "cloud-run-explore.example.org"
+
+# Ingress sources. Allow internal traffic and requests from the LB
+ingress_settings = "internal-and-cloud-load-balancing"

@@ -32,3 +32,9 @@ variable "custom_domain" {
   type        = string
   default     = null
 }
+
+variable "ingress_settings" {
+  description = "Ingress traffic sources allowed to call the service"
+  type        = string
+  default     = "all"
+}
