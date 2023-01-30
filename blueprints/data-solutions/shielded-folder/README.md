@@ -104,14 +104,3 @@ terraform apply
 | [vpc_sc_perimeters](variables.tf#L233) | VPC SC regular perimeter definitions for shielded folder. All projects in the perimeter will be added. | <code title="object&#40;&#123;&#10;  access_levels    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  egress_policies  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  ingress_policies &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 <!-- END TFDOC -->
-#TODO Proper README (after deciding if this is a blueprint or a FAST stage)
-
-# Implemented
-- Use of Scoped Policies (create or inherit)
-- VPC SC adding all Folder's project into the perimeter
-- Org policies
-- Hierarchical firewall rules
-
-# TODO
-- Log sync
-- KMS
