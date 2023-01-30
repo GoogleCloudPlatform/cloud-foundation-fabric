@@ -13,8 +13,7 @@
 # limitations under the License.
 
 counts:
-  google_bigquery_dataset: 2
-  google_bigquery_dataset_iam_member: 2
+  google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3
   google_logging_organization_sink: 2
   google_organization_iam_binding: 19
@@ -22,7 +21,7 @@ counts:
   google_organization_iam_member: 16
   google_project: 3
   google_project_iam_binding: 9
-  google_project_iam_member: 1
+  google_project_iam_member: 3
   google_project_service: 29
   google_project_service_identity: 3
   google_service_account: 2
