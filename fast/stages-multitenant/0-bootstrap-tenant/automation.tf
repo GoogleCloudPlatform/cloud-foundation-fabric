@@ -21,7 +21,7 @@ module "automation-project" {
   billing_account = var.billing_account.id
   name            = "iac-core-0"
   parent = coalesce(
-    var.tenant_config.project_parent_ids.automation,
+    var.project_parent_ids.automation,
     module.tenant-folder.id
   )
   prefix = local.prefix

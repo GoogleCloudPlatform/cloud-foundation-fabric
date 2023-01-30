@@ -96,6 +96,29 @@ variable "locations" {
   nullable = false
 }
 
+# See https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics
+# for additional logging filter examples
+variable "log_sinks" {
+  description = "Tenant-level log sinks, in name => {type, filter} format."
+  type = map(object({
+    filter = string
+    type   = string
+  }))
+  default = {
+    audit-logs = {
+      filter = "logName:\"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName:\"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
+      type   = "logging"
+    }
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.log_sinks :
+      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+    ])
+    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+  }
+}
+
 variable "organization" {
   # tfdoc:variable:source 0-0-bootstrap
   description = "Organization details."
@@ -120,6 +143,19 @@ variable "prefix" {
     condition     = try(length(var.prefix), 0) < 10
     error_message = "Use a maximum of 9 characters for prefix."
   }
+}
+
+variable "project_parent_ids" {
+  description = "Optional parents for projects created here in folders/nnnnnnn format. Null values will use the organization as parent."
+  type = object({
+    automation = string
+    logging    = string
+  })
+  default = {
+    automation = null
+    logging    = null
+  }
+  nullable = false
 }
 
 variable "tag_keys" {
@@ -175,10 +211,6 @@ variable "tenant_config" {
       gcs     = optional(string)
       logging = optional(string)
       pubsub  = optional(list(string))
-    }), {})
-    project_parent_ids = optional(object({
-      automation = optional(string)
-      logging    = optional(string)
     }), {})
   })
   nullable = false
