@@ -14,6 +14,7 @@ TEMPLATE_PATH="gs://[DATAFLOW-TEMPLATE-BUCKEt]/csv2bq.json"
 STAGIN_PATH="gs://[ORCHESTRATION-STAGING-BUCKET]/build"
 LOG_PATH="gs://[ORCHESTRATION-LOGS-BUCKET]/logs"
 REGION="[REGION]"
+SERVICE_ACCOUNT=orc-sa-df-build@[SERVICE_PROJECT_ID].iam.gserviceaccount.com
 
 gcloud builds submit \
            --config=cloudbuild.yaml \
@@ -21,7 +22,8 @@ gcloud builds submit \
            --region=$REGION \
            --gcs-log-dir=$LOG_PATH \
            --gcs-source-staging-dir=$STAGIN_PATH \
-           --substitutions=_TEMPLATE_IMAGE=$TEMPLATE_IMAGE,_TEMPLATE_PATH=$TEMPLATE_PATH,_DOCKER_DIR="."
+           --substitutions=_TEMPLATE_IMAGE=$TEMPLATE_IMAGE,_TEMPLATE_PATH=$TEMPLATE_PATH,_DOCKER_DIR="." \
+           --impersonate-service-account=$SERVICE_ACCOUNT
 ```
 
 ## Example Dataflow pipeline launch in bash (from flex template)
