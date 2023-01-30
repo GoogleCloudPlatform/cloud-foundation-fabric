@@ -32,7 +32,7 @@ module "prod-sec-project" {
   iam = {
     "roles/cloudkms.viewer" = local.prod_kms_restricted_admins
   }
-  labels   = { environment = "prod", team = "security" }
+  labels   = { environment = "prod", team = "security", fast_created_stage = "security" }
   services = local.project_services
 }
 

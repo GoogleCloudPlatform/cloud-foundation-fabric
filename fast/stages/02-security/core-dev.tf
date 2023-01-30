@@ -31,8 +31,9 @@ module "dev-sec-project" {
   billing_account = var.billing_account.id
   iam = {
     "roles/cloudkms.viewer" = local.dev_kms_restricted_admins
+    #"roles/owner" = [ ]
   }
-  labels   = { environment = "dev", team = "security" }
+  labels   = { environment = "dev", team = "security", fast_created_stage = "security" }
   services = local.project_services
 }
 

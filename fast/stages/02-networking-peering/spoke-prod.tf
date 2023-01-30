@@ -41,6 +41,7 @@ module "prod-spoke-project" {
       try(local.service_accounts.project-factory-prod, null),
     ])
   }
+  labels = { environment = "prod", team = "networking", fast_created_stage = "networking" }
 }
 
 module "prod-spoke-vpc" {

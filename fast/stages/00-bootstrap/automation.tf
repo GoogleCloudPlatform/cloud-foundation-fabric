@@ -56,6 +56,7 @@ module "automation-project" {
       module.automation-tf-resman-sa.iam_email
     ]
   }
+  labels = { environment = "prod", fast_created_stage = "bootstrap" }
   services = [
     "accesscontextmanager.googleapis.com",
     "bigquery.googleapis.com",

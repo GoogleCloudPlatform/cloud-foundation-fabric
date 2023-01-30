@@ -40,6 +40,7 @@ module "dev-spoke-project" {
       try(local.service_accounts.project-factory-dev, null),
     ])
   }
+  labels = { environment = "dev", team = "networking", fast_created_stage = "networking" }
 }
 
 module "dev-spoke-vpc" {

@@ -40,6 +40,7 @@ module "billing-export-project" {
   iam = {
     "roles/owner" = [module.automation-tf-bootstrap-sa.iam_email]
   }
+  labels = { environment = "prod", fast_created_stage = "bootstrap" }
   services = [
     # "cloudresourcemanager.googleapis.com",
     # "iam.googleapis.com",
