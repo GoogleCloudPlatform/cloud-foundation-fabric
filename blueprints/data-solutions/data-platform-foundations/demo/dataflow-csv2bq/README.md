@@ -14,7 +14,7 @@ TEMPLATE_PATH="gs://[DATAFLOW-TEMPLATE-BUCKEt]/csv2bq.json"
 STAGIN_PATH="gs://[ORCHESTRATION-STAGING-BUCKET]/build"
 LOG_PATH="gs://[ORCHESTRATION-LOGS-BUCKET]/logs"
 REGION="[REGION]"
-SERVICE_ACCOUNT=orc-sa-df-build@[SERVICE_PROJECT_ID].iam.gserviceaccount.com
+BUILD_SERVICE_ACCOUNT=orc-sa-df-build@[SERVICE_PROJECT_ID].iam.gserviceaccount.com
 
 gcloud builds submit \
            --config=cloudbuild.yaml \
@@ -23,7 +23,7 @@ gcloud builds submit \
            --gcs-log-dir=$LOG_PATH \
            --gcs-source-staging-dir=$STAGIN_PATH \
            --substitutions=_TEMPLATE_IMAGE=$TEMPLATE_IMAGE,_TEMPLATE_PATH=$TEMPLATE_PATH,_DOCKER_DIR="." \
-           --impersonate-service-account=$SERVICE_ACCOUNT
+           --impersonate-service-account=$BUILD_SERVICE_ACCOUNT
 ```
 
 **Note:** For the scope of the demo, the launch of this build is manual, but in production, this build would be launched via a configured cloud build trigger when new changes are merged into the code branch of the Dataflow template.
