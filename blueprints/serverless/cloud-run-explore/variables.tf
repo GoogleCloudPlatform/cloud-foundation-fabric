@@ -38,3 +38,17 @@ variable "ingress_settings" {
   type        = string
   default     = "all"
 }
+
+variable "security_policy" {
+  description = "Security policy to enforce in the LB"
+  type = object({
+    enabled      = bool
+    ip_blacklist = list(string)
+    path_blocked = string
+  })
+  default = {
+    enabled      = false
+    ip_blacklist = null
+    path_blocked = null
+  }
+}

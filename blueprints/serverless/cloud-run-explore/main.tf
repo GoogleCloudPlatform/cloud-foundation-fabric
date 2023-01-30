@@ -36,8 +36,9 @@ module "glb" {
       backends = [
         { backend = "neg-0" }
       ]
-      health_checks = []
-      port_name     = "http"
+      health_checks   = []
+      port_name       = "http"
+      security_policy = try(google_compute_security_policy.policy[0].name, null)
     }
   }
   health_check_configs = {}
@@ -58,5 +59,43 @@ module "glb" {
         domains = [var.custom_domain]
       }
     }
+  }
+}
+
+resource "google_compute_security_policy" "policy" {
+  count   = var.glb_create ? (var.security_policy.enabled ? 1 : 0) : 0
+  name    = "cloud-run-policy"
+  project = var.project_id
+  rule {
+    action   = "deny(403)"
+    priority = 1000
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = var.security_policy.ip_blacklist
+      }
+    }
+    description = "Deny access to list of IPs"
+  }
+  rule {
+    action   = "deny(403)"
+    priority = 900
+    match {
+      expr {
+        expression = "request.path.matches(\"${var.security_policy.path_blocked}\")"
+      }
+    }
+    description = "Deny access to specific URL paths"
+  }
+  rule {
+    action   = "allow"
+    priority = "2147483647"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+    description = "Default rule"
   }
 }
