@@ -26,9 +26,11 @@ gcloud builds submit \
            --impersonate-service-account=$SERVICE_ACCOUNT
 ```
 
+**Note:** For the scope of the demo, the launch of this build is manual, but in production, this build would be launched via a configured cloud build trigger when new changes are merged into the code branch of the Dataflow template.
+
 ## Example Dataflow pipeline launch in bash (from flex template)
 
-Below is an example of launching a dataflow pipeline manually, based on the built template
+Below is an example of launching a dataflow pipeline manually, based on the built template. When launched manually, the Dataflow pipeline would be launched via the orchestration service account, which is what the Airflow DAG is also using in the scope of this demo.
 
 **Note:** In the data platform demo, the launch of this Dataflow pipeline is handled by the airflow operator (DataflowStartFlexTemplateOperator).
 
@@ -37,7 +39,7 @@ Below is an example of launching a dataflow pipeline manually, based on the buil
 
 PROJECT_ID=[LOAD-PROJECT]
 REGION=[REGION]
-SERVICE_ACCOUNT=orchestrator@[SERVICE_PROJECT_ID].iam.gserviceaccount.com
+ORCH_SERVICE_ACCOUNT=orchestrator@[SERVICE_PROJECT_ID].iam.gserviceaccount.com
 SUBNET=[SUBNET-NAME]
 
 PIPELINE_STAGIN_PATH="gs://[LOAD-STAGING-BUCKET]/build"
@@ -57,5 +59,5 @@ gcloud dataflow flex-template run "csv2bq-`date +%Y%m%d-%H%M%S`" \
     --region $REGION \
     --project $PROJECT_ID \
     --subnetwork="regions/$REGION/subnetworks/$SUBNET" \
-    --service-account-email=$SERVICE_ACCOUNT
+    --service-account-email=$ORCH_SERVICE_ACCOUNT
 ```
