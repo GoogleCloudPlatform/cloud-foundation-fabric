@@ -22,6 +22,12 @@ locals {
     file("${var.data_dir}/vpc-sc/restricted-services.yaml")
   )
 
+  access_policy_create = var.access_policy == null ? {
+    parent = "organizations/${var.organization.id}"
+    title  = "shielded-folder"
+    scopes = [module.folder.id]
+  } : null
+
   groups = {
     for k, v in var.groups : k => "${v}@${var.organization.domain}"
   }
@@ -51,15 +57,11 @@ locals {
 }
 
 module "folder" {
-  source        = "../../../modules/folder"
-  folder_create = var.folder_create != null
-  parent        = try(var.folder_create.parent, null)
-  name          = try(var.folder_create.display_name, null)
-  id            = var.folder_id
-  iam = {
-    "roles/owner"                          = ["serviceAccount:${var.bootstrap_service_account}"]
-    "roles/resourcemanager.projectCreator" = ["serviceAccount:${var.bootstrap_service_account}"]
-  }
+  source                 = "../../../modules/folder"
+  folder_create          = var.folder_create != null
+  parent                 = try(var.folder_create.parent, null)
+  name                   = try(var.folder_create.display_name, null)
+  id                     = var.folder_create != null ? null : var.folder_id
   group_iam              = local.group_iam
   org_policies_data_path = "${var.data_dir}/org-policies"
   firewall_policy_factory = {
@@ -77,6 +79,13 @@ module "folder" {
   } : null
 }
 
+module "folder-workload" {
+  source = "../../../modules/folder"
+  parent = module.folder.id
+  name   = "${var.prefix}-workload"
+}
+
+
 #TODO VPCSC: Access levels 
 data "google_projects" "folder-projects" {
   filter = "parent.id:${split("/", module.folder.id)[1]}"
@@ -85,15 +94,19 @@ data "google_projects" "folder-projects" {
 module "vpc-sc" {
   source               = "../../../modules/vpc-sc"
   access_policy        = var.access_policy
-  access_policy_create = var.access_policy_create
+  access_policy_create = local.access_policy_create
   access_levels        = var.vpc_sc_access_levels
   egress_policies      = var.vpc_sc_egress_policies
   ingress_policies     = var.vpc_sc_ingress_policies
   service_perimeters_regular = {
     shielded = {
-      status = {
+      # Move `spec` definition to `status` and comment `use_explicit_dry_run_spec` variable to enforce VPC-SC configuration
+      # Before enforing configuration check logs and create Access Level, Ingress/Egress policy as needed
+
+      status = null
+      spec = {
         access_levels       = keys(var.vpc_sc_access_levels)
-        resources           = null #TODO local.vpc_sc_resources
+        resources           = local.vpc_sc_resources
         restricted_services = local._vpc_sc_restricted_services
         egress_policies     = keys(var.vpc_sc_egress_policies)
         ingress_policies    = keys(var.vpc_sc_ingress_policies)
@@ -102,6 +115,8 @@ module "vpc-sc" {
           enable_restriction = true
         }
       }
+      use_explicit_dry_run_spec = true
+
     }
   }
 }

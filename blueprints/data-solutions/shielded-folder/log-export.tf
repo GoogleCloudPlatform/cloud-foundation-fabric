@@ -23,11 +23,12 @@ locals {
     : "REGIONAL"
   )
   log_types = toset([for k, v in var.log_sinks : v.type])
-  _log_keys = {
-    bq      = var.enable_features.log_sink ? ["projects/${module.sec-project.project_id}/locations/${var.log_locations.bq}/keyRings/${var.log_locations.bq}/cryptoKeys/bq"] : null
-    pubsub  = var.enable_features.log_sink ? ["projects/${module.sec-project.project_id}/locations/${var.log_locations.pubsub}/keyRings/${var.log_locations.pubsub}/cryptoKeys/pubsub"] : null
-    storage = var.enable_features.log_sink ? ["projects/${module.sec-project.project_id}/locations/${var.log_locations.storage}/keyRings/${var.log_locations.storage}/cryptoKeys/storage"] : null
-  }
+
+  _log_keys = var.enable_features.kms ? {
+    bq      = var.enable_features.log_sink ? ["projects/${module.sec-project.0.project_id}/locations/${var.log_locations.bq}/keyRings/${var.log_locations.bq}/cryptoKeys/bq"] : null
+    pubsub  = var.enable_features.log_sink ? ["projects/${module.sec-project.0.project_id}/locations/${var.log_locations.pubsub}/keyRings/${var.log_locations.pubsub}/cryptoKeys/pubsub"] : null
+    storage = var.enable_features.log_sink ? ["projects/${module.sec-project.0.project_id}/locations/${var.log_locations.storage}/keyRings/${var.log_locations.storage}/cryptoKeys/storage"] : null
+  } : {}
 
   log_keys = {
     for service, key in local._log_keys : service => key if key != null
@@ -37,7 +38,7 @@ locals {
 module "log-export-project" {
   count           = var.enable_features.log_sink ? 1 : 0
   source          = "../../../modules/project"
-  name            = "audit-logs"
+  name            = var.projects_create != null ? "audit-logs" : var.projects_id["audit-logs"]
   parent          = module.folder.id
   billing_account = try(var.projects_create.billing_account_id, null)
   project_create  = var.projects_create != null
@@ -51,7 +52,7 @@ module "log-export-project" {
     "storage.googleapis.com",
     "stackdriver.googleapis.com"
   ]
-  service_encryption_key_ids = var.enable_features.kms ? local.log_keys : null
+  service_encryption_key_ids = var.enable_features.kms ? local.log_keys : {}
 
   depends_on = [
     module.log-kms

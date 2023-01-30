@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Security project, Cloud KMS and Secret Manager resources.
+
 locals {
   kms_locations = distinct(flatten([
     for k, v in var.kms_keys : v.locations
@@ -56,7 +58,7 @@ locals {
 module "sec-project" {
   count           = var.enable_features.kms ? 1 : 0
   source          = "../../../modules/project"
-  name            = "sec-core"
+  name            = var.projects_create != null ? "sec-core" : var.projects_id["sec-core"]
   parent          = module.folder.id
   billing_account = try(var.projects_create.billing_account_id, null)
   project_create  = var.projects_create != null && var.enable_features.kms
@@ -75,7 +77,7 @@ module "sec-project" {
 }
 
 module "sec-kms" {
-  for_each   = var.enable_features.log_sink ? toset(local.kms_locations) : toset([])
+  for_each   = var.enable_features.kms ? toset(local.kms_locations) : toset([])
   source     = "../../../modules/kms"
   project_id = module.sec-project[0].project_id
   keyring = {
@@ -90,7 +92,7 @@ module "sec-kms" {
 }
 
 module "log-kms" {
-  for_each   = var.enable_features.log_sink ? toset(local.kms_log_locations) : toset([])
+  for_each   = var.enable_features.kms ? toset(local.kms_log_locations) : toset([])
   source     = "../../../modules/kms"
   project_id = module.sec-project[0].project_id
   keyring = {

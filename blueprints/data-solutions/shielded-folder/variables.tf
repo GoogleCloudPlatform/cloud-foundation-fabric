@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Folder resources.
+# tfdoc:file:description Variables definition.
 
 variable "access_policy" {
   description = "Access Policy name, set to null if creating one."
   type        = string
-
+  default     = null
 }
 
 variable "access_policy_create" {
@@ -28,11 +28,6 @@ variable "access_policy_create" {
     scopes = optional(list(string))
   })
   default = null
-}
-
-variable "bootstrap_service_account" {
-  description = "Folder bootstrap service account: owner of the folder."
-  type        = string
 }
 
 variable "data_dir" {
@@ -134,6 +129,7 @@ variable "organization" {
   description = "Organization details."
   type = object({
     domain = string
+    id     = string
   })
 }
 
@@ -156,9 +152,12 @@ variable "projects_create" {
 }
 
 variable "projects_id" {
-  description = "Project id, references existing project if `project_create` is null. Projects will be moved into the shielded folder."
-  type        = map(string)
-  default     = null
+  description = "Project id, references existing projects if `project_create` is null. Projects will be moved into the shielded folder."
+  type = object({
+    sec-core   = string
+    audit-logs = string
+  })
+  default = null
 }
 
 variable "vpc_sc_access_levels" {
