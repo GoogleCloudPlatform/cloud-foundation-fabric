@@ -75,7 +75,8 @@ locals {
     "gkehub.googleapis.com",
     "pubsub.googleapis.com",
     "secretmanager.googleapis.com",
-    "sqladmin.googleapis.com"
+    "sqladmin.googleapis.com",
+    "cloudbuild.googleapis.com",
   ]
   service_accounts_cmek_service_keys = distinct(flatten([
     for s in keys(var.service_encryption_key_ids) : [
