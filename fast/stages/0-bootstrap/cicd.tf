@@ -32,18 +32,13 @@ locals {
     )
   }
   cicd_workflow_providers = {
-    bootstrap = "00-bootstrap-providers.tf"
-    cicd      = "00-cicd-providers.tf"
-    resman    = "01-resman-providers.tf"
+    bootstrap = "0-bootstrap-providers.tf"
+    resman    = "1-resman-providers.tf"
   }
   cicd_workflow_var_files = {
     bootstrap = []
-    cicd = [
-      "00-bootstrap.auto.tfvars.json",
-      "globals.auto.tfvars.json"
-    ]
     resman = [
-      "00-bootstrap.auto.tfvars.json",
+      "0-bootstrap.auto.tfvars.json",
       "globals.auto.tfvars.json"
     ]
   }
@@ -69,7 +64,7 @@ module "automation-tf-cicd-repo" {
     ]
   }
   triggers = {
-    "fast-00-${each.key}" = {
+    "fast-0-${each.key}" = {
       filename        = ".cloudbuild/workflow.yaml"
       included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
       service_account = module.automation-tf-cicd-sa[each.key].id
