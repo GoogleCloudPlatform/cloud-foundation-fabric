@@ -29,7 +29,7 @@ module "glb" {
   count      = var.glb_create ? 1 : 0
   project_id = var.project_id
   name       = "glb"
-  address    = google_compute_global_address.default[0].id
+  address    = google_compute_global_address.default[0].address
   backend_service_configs = {
     default = {
       backends = [
