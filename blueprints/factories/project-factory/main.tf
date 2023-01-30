@@ -96,9 +96,9 @@ locals {
     ? try(var.defaults.billing_alert, null)
     : var.billing_alert
   )
-  essential_contacts = concat(
-    try(var.defaults.essential_contacts, []), var.essential_contacts
-  )
+  #essential_contacts = concat(
+    #try(var.defaults.essential_contacts, []), var.essential_contacts
+  #)
   iam = {
     for role in distinct(concat(
       keys(var.iam),
