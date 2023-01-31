@@ -45,6 +45,8 @@ locals {
     # TODO: jit?
     gke-mcs                  = "service-%s@gcp-sa-mcsd"
     monitoring-notifications = "service-%s@gcp-sa-monitoring-notification"
+    multicluster-ingress     = "service-%s@gcp-sa-multiclusteringress"
+    multicluster-discovery   = "service-%s@gcp-sa-mcsd"
     notebooks                = "service-%s@gcp-sa-notebooks"
     pubsub                   = "service-%s@gcp-sa-pubsub"
     secretmanager            = "service-%s@gcp-sa-secretmanager"
@@ -73,6 +75,7 @@ locals {
     "artifactregistry.googleapis.com",
     "cloudasset.googleapis.com",
     "gkehub.googleapis.com",
+    "multiclusteringress.googleapis.com",
     "pubsub.googleapis.com",
     "secretmanager.googleapis.com",
     "sqladmin.googleapis.com",
