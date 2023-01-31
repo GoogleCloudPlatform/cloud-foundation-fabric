@@ -116,7 +116,6 @@ module "vpc-sc" {
         }
       }
       use_explicit_dry_run_spec = true
-
     }
   }
 }

@@ -17,7 +17,7 @@ The following diagram is a high-level reference of the resources created and man
 
 ![Shielded architecture overview](./images/overview_diagram.png "Shielded architecture overview")
 
-# Design overview and choices
+## Design overview and choices
 
 Despite its simplicity, this blueprint implements the basics of a design that we've seen working well for various customers.
 
@@ -28,26 +28,26 @@ The approach adapts to different high-level requirements:
 - VPC Service Control
 - Cloud KMS
 
-# Project structure
+## Project structure
 The Shielded Folder blueprint is designed to rely on several projects:
 - `audit-log`: to host Audit logging buckets and Audit log sync to GCS, BigQuery or PubSub
 - `sec-core`: to host security related resources such as Cloud KMS and Cloud Secrets Manager
 
 This separation into projects allows adhering to the least-privilege principle by using project-level roles.
 
-# User groups
+## User groups
 User groups provide a stable frame of reference that allows decoupling the final set of permissions from the stage where entities and resources are created, and their IAM bindings defined.
 
 We use three groups to control access to resources:
 - `data-engineers`: They handle and run workloads on the `wokload` subfolder. They have owner access to all resources in the `workload` folder in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
 - `data-security`: They handle security configurations for the shielded folder. They have owner access to the `audit-log` and `sec-core` projects.
 
-# Encryption
+## Encryption
 The blueprint support the configuration of an instance of Cloud KMS to handle encryption on the resources. The encryption is disabled by default, but you can enble it configuring the `enable_features.kms` variable.
 
 The script will create keys to encrypt log sink bucket/dataset/topic in the specified regions. Configuring the `kms_keys` variable, you can create additional KMS keys needed by your workload.
 
-# How to run this script
+## How to run this script
 To deploy this blueprint on your GCP organization, you will need
 - a folder or organization where resources will be created
 - a billing account that will be associated with the new projects
@@ -61,7 +61,7 @@ The Shielded Folder blueprint is meant to be executed by a Service Account (or a
 
 The shielded Folfer blueprint assumes [groups described](#groups) are created in your GCP organization.
 
-## Variable configuration
+### Variable configuration
 There are three sets of variables you will need to fill in:
 ```
 organization = {
@@ -71,7 +71,7 @@ organization = {
 prefix = "prefix"
 ```
 
-## Deploying the blueprint
+### Deploying the blueprint
 Once the configuration is complete, run the project factory by running
 
 ```bash
@@ -89,7 +89,7 @@ terraform apply
 | [access_policy](variables.tf#L17) | Access Policy name, set to null if creating one. | <code>string</code> |  | <code>null</code> |
 | [access_policy_create](variables.tf#L23) | Access Policy configuration, fill in to create. Parent is in 'organizations/123456' format. | <code title="object&#40;&#123;&#10;  parent &#61; string&#10;  title  &#61; string&#10;  scopes &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [data_dir](variables.tf#L33) | Relative path for the folder storing configuration data. | <code>string</code> |  | <code>&#34;data&#34;</code> |
-| [enable_features](variables.tf#L39) | Flag to enable features on the solution. | <code title="object&#40;&#123;&#10;  kms      &#61; bool&#10;  log_sink &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  kms      &#61; true&#10;  log_sink &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [enable_features](variables.tf#L39) | Flag to enable features on the solution. | <code title="object&#40;&#123;&#10;  kms      &#61; bool&#10;  log_sink &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  kms      &#61; false&#10;  log_sink &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [folder_create](variables.tf#L50) | Provide values if folder creation is needed, uses existing folder if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  display_name &#61; string&#10;  parent       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [folder_id](variables.tf#L59) | Folder ID in case you use folder_create=null. | <code>string</code> |  | <code>null</code> |
 | [groups](variables.tf#L65) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
