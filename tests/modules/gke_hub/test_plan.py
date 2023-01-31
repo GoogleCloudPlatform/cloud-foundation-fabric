@@ -61,6 +61,7 @@ def test_configmanagement_setup(resources):
               'sync_wait_secs':
                   None
           }],
+          'oci': [],
           'prevent_drift': False,
           'source_format': 'hierarchy'
       }],
