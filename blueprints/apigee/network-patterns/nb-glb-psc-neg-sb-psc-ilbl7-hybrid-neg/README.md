@@ -46,18 +46,19 @@ Do the following to verify that everything works as expected.
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [apigee_project_id](variables.tf#L17) | Project ID. | <code>string</code> | ✓ |  |
-| [billing_account_id](variables.tf#L47) | Parameters for the creation of the new project. | <code>string</code> | ✓ |  |
-| [hostname](variables.tf#L52) | Host name. | <code>string</code> | ✓ |  |
-| [onprem_project_id](variables.tf#L57) | Project ID. | <code>string</code> | ✓ |  |
-| [parent](variables.tf#L75) | Parent (organizations/organizationID or folders/folderID). | <code>string</code> | ✓ |  |
+| [billing_account_id](variables.tf#L53) | Parameters for the creation of the new project. | <code>string</code> | ✓ |  |
+| [hostname](variables.tf#L58) | Host name. | <code>string</code> | ✓ |  |
+| [onprem_project_id](variables.tf#L63) | Project ID. | <code>string</code> | ✓ |  |
+| [parent](variables.tf#L81) | Parent (organizations/organizationID or folders/folderID). | <code>string</code> | ✓ |  |
 | [apigee_proxy_only_subnet_ip_cidr_range](variables.tf#L23) | Subnet IP CIDR range. | <code>string</code> |  | <code>&#34;10.2.1.0&#47;24&#34;</code> |
-| [apigee_psa_ip_cidr_range](variables.tf#L29) | Apigee PSA IP CIDR range. | <code>string</code> |  | <code>&#34;10.0.4.0&#47;22&#34;</code> |
-| [apigee_psc_subnet_ip_cidr_range](variables.tf#L35) | Subnet IP CIDR range. | <code>string</code> |  | <code>&#34;10.2.2.0&#47;24&#34;</code> |
+| [apigee_psc_subnet_ip_cidr_range](variables.tf#L29) | Subnet IP CIDR range. | <code>string</code> |  | <code>&#34;10.2.2.0&#47;24&#34;</code> |
+| [apigee_runtime_ip_cidr_range](variables.tf#L35) | Apigee PSA IP CIDR range. | <code>string</code> |  | <code>&#34;10.0.4.0&#47;22&#34;</code> |
 | [apigee_subnet_ip_cidr_range](variables.tf#L41) | Subnet IP CIDR range. | <code>string</code> |  | <code>&#34;10.2.0.0&#47;24&#34;</code> |
-| [onprem_proxy_only_subnet_ip_cidr_range](variables.tf#L63) | Subnet IP CIDR range. | <code>string</code> |  | <code>&#34;10.1.1.0&#47;24&#34;</code> |
-| [onprem_subnet_ip_cidr_range](variables.tf#L69) | Subnet IP CIDR range. | <code>string</code> |  | <code>&#34;10.1.0.0&#47;24&#34;</code> |
-| [region](variables.tf#L80) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [zone](variables.tf#L86) | Zone. | <code>string</code> |  | <code>&#34;europe-west1-c&#34;</code> |
+| [apigee_troubleshooting_ip_cidr_range](variables.tf#L47) | Apigee PSA IP CIDR range. | <code>string</code> |  | <code>&#34;10.1.0.0&#47;28&#34;</code> |
+| [onprem_proxy_only_subnet_ip_cidr_range](variables.tf#L69) | Subnet IP CIDR range. | <code>string</code> |  | <code>&#34;10.1.1.0&#47;24&#34;</code> |
+| [onprem_subnet_ip_cidr_range](variables.tf#L75) | Subnet IP CIDR range. | <code>string</code> |  | <code>&#34;10.1.0.0&#47;24&#34;</code> |
+| [region](variables.tf#L86) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [zone](variables.tf#L92) | Zone. | <code>string</code> |  | <code>&#34;europe-west1-c&#34;</code> |
 
 ## Outputs
 
