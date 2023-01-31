@@ -56,12 +56,12 @@ locals {
 }
 
 module "sec-project" {
-  count           = var.enable_features.kms ? 1 : 0
+  count           = var.enable_features.encryption ? 1 : 0
   source          = "../../../modules/project"
   name            = var.projects_create != null ? "sec-core" : var.projects_id["sec-core"]
   parent          = module.folder.id
   billing_account = try(var.projects_create.billing_account_id, null)
-  project_create  = var.projects_create != null && var.enable_features.kms
+  project_create  = var.projects_create != null && var.enable_features.encryption
   prefix          = var.projects_create == null ? null : var.prefix
   group_iam = {
     (local.groups.data-engineers) = [
@@ -77,7 +77,7 @@ module "sec-project" {
 }
 
 module "sec-kms" {
-  for_each   = var.enable_features.kms ? toset(local.kms_locations) : toset([])
+  for_each   = var.enable_features.encryption ? toset(local.kms_locations) : toset([])
   source     = "../../../modules/kms"
   project_id = module.sec-project[0].project_id
   keyring = {
@@ -92,7 +92,7 @@ module "sec-kms" {
 }
 
 module "log-kms" {
-  for_each   = var.enable_features.kms ? toset(local.kms_log_locations) : toset([])
+  for_each   = var.enable_features.encryption ? toset(local.kms_log_locations) : toset([])
   source     = "../../../modules/kms"
   project_id = module.sec-project[0].project_id
   keyring = {

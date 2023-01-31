@@ -39,14 +39,14 @@ variable "data_dir" {
 variable "enable_features" {
   description = "Flag to enable features on the solution."
   type = object({
-    kms      = bool
-    log_sink = bool
-    vpc_sc   = bool
+    encryption = bool
+    log_sink   = bool
+    vpc_sc     = bool
   })
   default = {
-    kms      = false
-    log_sink = true
-    vpc_sc   = true
+    encryption = false
+    log_sink   = true
+    vpc_sc     = true
   }
 }
 variable "folder_create" {
@@ -154,7 +154,7 @@ variable "projects_create" {
 }
 
 variable "projects_id" {
-  description = "Project id, references existing projects if `project_create` is null. Projects will be moved into the shielded folder."
+  description = "Project id, references existing projects if `projects_create` is null. Projects will be moved into the shielded folder."
   type = object({
     sec-core   = string
     audit-logs = string

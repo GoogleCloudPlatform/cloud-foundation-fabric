@@ -1,6 +1,6 @@
 # Shielded folder
 
-This blueprint implements an opinionated Folder configuration to implement GCP best practices. Configurations implemented on the folder would be beneficial to host Workloads hineriting contrains from the folder they belong to.
+This blueprint implements an opinionated Folder configuration to implement GCP best practices. Configurations implemented on the folder would be beneficial to host Workloads inheriting constraints from the folder they belong to.
 
 In this blueprint, a folder will be created implementing the following features:
 - Organizational policies
@@ -8,7 +8,7 @@ In this blueprint, a folder will be created implementing the following features:
 - Cloud KMS
 - VPC-SC
 
-Within the folder the following projects will be created:
+Within the folder, the following projects will be created:
 - 'audit-logs' where Audit Logs sink will be created
 - 'sec-core' where Cloud KMS and Cloud Secret manager will be configured
 
@@ -31,32 +31,32 @@ The approach adapts to different high-level requirements:
 ## Project structure
 The Shielded Folder blueprint is designed to rely on several projects:
 - `audit-log`: to host Audit logging buckets and Audit log sync to GCS, BigQuery or PubSub
-- `sec-core`: to host security related resources such as Cloud KMS and Cloud Secrets Manager
+- `sec-core`: to host security-related resources such as Cloud KMS and Cloud Secrets Manager
 
 This separation into projects allows adhering to the least-privilege principle by using project-level roles.
 
 ## User groups
-User groups provide a stable frame of reference that allows decoupling the final set of permissions from the stage where entities and resources are created, and their IAM bindings defined.
+User groups provide a stable frame of reference that allows decoupling the final set of permissions from the stage where entities and resources are created, and their IAM bindings are defined.
 
 We use three groups to control access to resources:
-- `data-engineers`: They handle and run workloads on the `wokload` subfolder. They have owner access to all resources in the `workload` folder in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
+- `data-engineers`: They handle and run workloads on the `workload` subfolder. They have owner access to all resources in the `workload` folder in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
 - `data-security`: They handle security configurations for the shielded folder. They have owner access to the `audit-log` and `sec-core` projects.
 
 ## Encryption
-The blueprint support the configuration of an instance of Cloud KMS to handle encryption on the resources. The encryption is disabled by default, but you can enble it configuring the `enable_features.kms` variable.
+The blueprint supports the configuration of an instance of Cloud KMS to handle encryption on the resources. The encryption is disabled by default, but you can enable it by configuring the `enable_features.encryption` variable.
 
-The script will create keys to encrypt log sink bucket/dataset/topic in the specified regions. Configuring the `kms_keys` variable, you can create additional KMS keys needed by your workload.
+The script will create keys to encrypt log sink buckets/datasets/topics in the specified regions. Configuring the `kms_keys` variable, you can create additional KMS keys needed by your workload.
 
 ## Customizations
 
 ### VPC Service Control
-VPC Service Control is configured to have a Perimeter containing all projects within the folder. Additional projects you may add to the folder won't be automatically added to perimeter, a new Terraform apply is needed to add the project to the perimeter.
+VPC Service Control is configured to have a Perimeter containing all projects within the folder. Additional projects you may add to the folder won't be automatically added to the perimeter, and a new `terraform apply` is needed to add the project to the perimeter.
 
 The VPC SC configuration is set to dry-run mode, but switching to enforced mode is a simple operation involving modifying a few lines of code highlighted by ad-hoc comments.
 
-Access level rules are not defined, before moving the configuration to enforced mode, be sure to configure an access policy to be able to continue to access resources from outside of the perimeter. 
+Access level rules are not defined. Before moving the configuration to enforced mode, configure access policies to continue accessing resources from outside of the perimeter. 
 
-An access level based on the network range you are using to reach the console (eg. Proxy IP, Internet connection, ...) is suggested. Example:
+An access level based on the network range you are using to reach the console (e.g. Proxy IP, Internet connection, ...) is suggested. Example:
 
 ```
 vpc_sc_access_levels = {
@@ -68,7 +68,7 @@ vpc_sc_access_levels = {
 }
 ```
 
-Alternatevelly you can configure an access level based on the identity that need to reach resources from outside the perimeter.
+Alternatively, you can configure an access level based on the identity that needs to reach resources from outside the perimeter.
 
 ```
 vpc_sc_access_levels = {
@@ -81,7 +81,7 @@ vpc_sc_access_levels = {
 ```
 
 ## How to run this script
-To deploy this blueprint on your GCP organization, you will need
+To deploy this blueprint in your GCP organization, you will need
 - a folder or organization where resources will be created
 - a billing account that will be associated with the new projects
 
@@ -122,7 +122,7 @@ terraform apply
 | [access_policy](variables.tf#L17) | Access Policy name, set to null if creating one. | <code>string</code> |  | <code>null</code> |
 | [access_policy_create](variables.tf#L23) | Access Policy configuration, fill in to create. Parent is in 'organizations/123456' format. | <code title="object&#40;&#123;&#10;  parent &#61; string&#10;  title  &#61; string&#10;  scopes &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [data_dir](variables.tf#L33) | Relative path for the folder storing configuration data. | <code>string</code> |  | <code>&#34;data&#34;</code> |
-| [enable_features](variables.tf#L39) | Flag to enable features on the solution. | <code title="object&#40;&#123;&#10;  kms      &#61; bool&#10;  log_sink &#61; bool&#10;  vpc_sc   &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  kms      &#61; false&#10;  log_sink &#61; true&#10;  vpc_sc   &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [enable_features](variables.tf#L39) | Flag to enable features on the solution. | <code title="object&#40;&#123;&#10;  encryption &#61; bool&#10;  log_sink   &#61; bool&#10;  vpc_sc     &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  encryption &#61; false&#10;  log_sink   &#61; true&#10;  vpc_sc     &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [folder_create](variables.tf#L52) | Provide values if folder creation is needed, uses existing folder if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  display_name &#61; string&#10;  parent       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [folder_id](variables.tf#L61) | Folder ID in case you use folder_create=null. | <code>string</code> |  | <code>null</code> |
 | [groups](variables.tf#L67) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -130,9 +130,16 @@ terraform apply
 | [log_locations](variables.tf#L88) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; optional&#40;string, &#34;europe&#34;&#41;&#10;  storage &#61; optional&#40;string, &#34;europe&#34;&#41;&#10;  logging &#61; optional&#40;string, &#34;global&#34;&#41;&#10;  pubsub  &#61; optional&#40;string, &#34;global&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  bq      &#61; &#34;europe&#34;&#10;  storage &#61; &#34;europe&#34;&#10;  logging &#61; &#34;global&#34;&#10;  pubsub  &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [log_sinks](variables.tf#L105) | Org-level log sinks, in name => {type, filter} format. | <code title="map&#40;object&#40;&#123;&#10;  filter &#61; string&#10;  type   &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  audit-logs &#61; &#123;&#10;    filter &#61; &#34;logName:&#92;&#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Factivity&#92;&#34; OR logName:&#92;&#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Fsystem_event&#92;&#34;&#34;&#10;    type   &#61; &#34;bigquery&#34;&#10;  &#125;&#10;  vpc-sc &#61; &#123;&#10;    filter &#61; &#34;protoPayload.metadata.&#64;type&#61;&#92;&#34;type.googleapis.com&#47;google.cloud.audit.VpcServiceControlAuditMetadata&#92;&#34;&#34;&#10;    type   &#61; &#34;bigquery&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [projects_create](variables.tf#L148) | Provide values if projects creation is needed, uses existing project if null. Projects will be created in the shielded folder. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [projects_id](variables.tf#L156) | Project id, references existing projects if `project_create` is null. Projects will be moved into the shielded folder. | <code title="object&#40;&#123;&#10;  sec-core   &#61; string&#10;  audit-logs &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [projects_id](variables.tf#L156) | Project id, references existing projects if `projects_create` is null. Projects will be moved into the shielded folder. | <code title="object&#40;&#123;&#10;  sec-core   &#61; string&#10;  audit-logs &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [vpc_sc_access_levels](variables.tf#L165) | VPC SC access level definitions. | <code title="map&#40;object&#40;&#123;&#10;  combining_function &#61; optional&#40;string&#41;&#10;  conditions &#61; optional&#40;list&#40;object&#40;&#123;&#10;    device_policy &#61; optional&#40;object&#40;&#123;&#10;      allowed_device_management_levels &#61; optional&#40;list&#40;string&#41;&#41;&#10;      allowed_encryption_statuses      &#61; optional&#40;list&#40;string&#41;&#41;&#10;      require_admin_approval           &#61; bool&#10;      require_corp_owned               &#61; bool&#10;      require_screen_lock              &#61; optional&#40;bool&#41;&#10;      os_constraints &#61; optional&#40;list&#40;object&#40;&#123;&#10;        os_type                    &#61; string&#10;        minimum_version            &#61; optional&#40;string&#41;&#10;        require_verified_chrome_os &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    ip_subnetworks         &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    members                &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    negate                 &#61; optional&#40;bool&#41;&#10;    regions                &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    required_access_levels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  description &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_sc_egress_policies](variables.tf#L194) | VPC SC egress policy defnitions. | <code title="map&#40;object&#40;&#123;&#10;  from &#61; object&#40;&#123;&#10;    identity_type &#61; optional&#40;string, &#34;ANY_IDENTITY&#34;&#41;&#10;    identities    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#10;  to &#61; object&#40;&#123;&#10;    operations &#61; optional&#40;list&#40;object&#40;&#123;&#10;      method_selectors &#61; optional&#40;list&#40;string&#41;&#41;&#10;      service_name     &#61; string&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    resources              &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resource_type_external &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_sc_ingress_policies](variables.tf#L214) | VPC SC ingress policy defnitions. | <code title="map&#40;object&#40;&#123;&#10;  from &#61; object&#40;&#123;&#10;    access_levels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    identity_type &#61; optional&#40;string&#41;&#10;    identities    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resources     &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#10;  to &#61; object&#40;&#123;&#10;    operations &#61; optional&#40;list&#40;object&#40;&#123;&#10;      method_selectors &#61; optional&#40;list&#40;string&#41;&#41;&#10;      service_name     &#61; string&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    resources &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [folders](outputs.tf#L15) | Folders id. |  |
+| [folders_sink_writer_identities](outputs.tf#L23) | Folders id. |  |
 
 <!-- END TFDOC -->

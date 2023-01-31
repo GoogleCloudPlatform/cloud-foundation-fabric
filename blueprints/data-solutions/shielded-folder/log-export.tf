@@ -24,7 +24,7 @@ locals {
   )
   log_types = toset([for k, v in var.log_sinks : v.type])
 
-  _log_keys = var.enable_features.kms ? {
+  _log_keys = var.enable_features.encryption ? {
     bq      = var.enable_features.log_sink ? ["projects/${module.sec-project.0.project_id}/locations/${var.log_locations.bq}/keyRings/${var.log_locations.bq}/cryptoKeys/bq"] : null
     pubsub  = var.enable_features.log_sink ? ["projects/${module.sec-project.0.project_id}/locations/${var.log_locations.pubsub}/keyRings/${var.log_locations.pubsub}/cryptoKeys/pubsub"] : null
     storage = var.enable_features.log_sink ? ["projects/${module.sec-project.0.project_id}/locations/${var.log_locations.storage}/keyRings/${var.log_locations.storage}/cryptoKeys/storage"] : null
@@ -52,7 +52,7 @@ module "log-export-project" {
     "storage.googleapis.com",
     "stackdriver.googleapis.com"
   ]
-  service_encryption_key_ids = var.enable_features.kms ? local.log_keys : {}
+  service_encryption_key_ids = var.enable_features.encryption ? local.log_keys : {}
 
   depends_on = [
     module.log-kms
@@ -68,7 +68,7 @@ module "log-export-dataset" {
   id             = "${var.prefix}_audit_export"
   friendly_name  = "Audit logs export."
   location       = replace(var.log_locations.bq, "europe", "EU")
-  encryption_key = var.enable_features.kms ? module.log-kms[var.log_locations.bq].keys["bq"].id : false
+  encryption_key = var.enable_features.encryption ? module.log-kms[var.log_locations.bq].keys["bq"].id : false
 }
 
 module "log-export-gcs" {
@@ -79,7 +79,7 @@ module "log-export-gcs" {
   prefix         = var.prefix
   location       = replace(var.log_locations.storage, "europe", "EU")
   storage_class  = local.gcs_storage_class
-  encryption_key = var.enable_features.kms ? module.log-kms[var.log_locations.storage].keys["storage"].id : null
+  encryption_key = var.enable_features.encryption ? module.log-kms[var.log_locations.storage].keys["storage"].id : null
 }
 
 module "log-export-logbucket" {
@@ -98,5 +98,5 @@ module "log-export-pubsub" {
   project_id = module.log-export-project[0].project_id
   name       = "audit-logs-${each.key}"
   regions    = [var.log_locations.pubsub]
-  kms_key    = var.enable_features.kms ? module.log-kms[var.log_locations.pubsub].keys["pubsub"].id : null
+  kms_key    = var.enable_features.encryption ? module.log-kms[var.log_locations.pubsub].keys["pubsub"].id : null
 }
