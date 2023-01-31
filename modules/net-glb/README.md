@@ -220,11 +220,11 @@ This example shows how to use the module with a manage instance group as backend
 
 ```hcl
 module "win-template" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = "myprj"
-  zone       = "europe-west8-a"
-  name       = "win-template"
-  instance_type = "n2d-standard-2"
+  source          = "./fabric/modules/compute-vm"
+  project_id      = "myprj"
+  zone            = "europe-west8-a"
+  name            = "win-template"
+  instance_type   = "n2d-standard-2"
   create_template = true
   boot_disk = {
     image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
@@ -240,10 +240,10 @@ module "win-template" {
 }
 
 module "win-mig" {
-  source     = "./fabric/modules/compute-mig"
-  project_id = "myprj"
-  location   = "europe-west8-a"
-  name       = "win-mig"
+  source            = "./fabric/modules/compute-mig"
+  project_id        = "myprj"
+  location          = "europe-west8-a"
+  name              = "win-mig"
   instance_template = module.win-template.template.self_link
   autoscaler_config = {
     max_replicas    = 3
@@ -255,7 +255,7 @@ module "win-mig" {
       }
     }
   }
-  named_ports {
+  named_ports = {
     http = 80
   }
 }
