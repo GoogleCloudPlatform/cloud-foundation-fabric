@@ -15,8 +15,7 @@
 values:
   module.cluster-1-nodepool-1.google_container_node_pool.nodepool:
     autoscaling:
-    - location_policy: null
-      max_node_count: 10
+    - max_node_count: 10
       min_node_count: 1
       total_max_node_count: null
       total_min_node_count: null
