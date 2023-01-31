@@ -80,7 +80,7 @@ We use three groups to control access to resources:
 The table below shows a high level overview of roles for each group on each project, using `READ`, `WRITE` and `ADMIN` access patterns for simplicity. For detailed roles please refer to the code.
 
 |Group|Drop off|Load|Transformation|DHW Landing|DWH Curated|DWH Confidential|Orchestration|Common|
-|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 |Data Engineers|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|
 |Data Analysts|-|-|-|-|-|`READ`|-|-|
 |Data Security|-|-|-|-|-|-|-|-|`ADMIN`|
@@ -219,7 +219,7 @@ module "data-platform" {
   prefix              = "myprefix"
 }
 
-# tftest modules=39 resources=286
+# tftest modules=39 resources=287
 ```
 
 ## Customizations

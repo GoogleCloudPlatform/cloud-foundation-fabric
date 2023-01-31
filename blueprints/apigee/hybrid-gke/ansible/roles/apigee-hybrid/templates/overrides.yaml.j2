@@ -1,29 +1,26 @@
 gcp:
   region: {{ region }}
   projectID: {{ project_id }}
+  workloadIdentityEnabled: true
 
 k8sCluster:
   name: {{ cluster }}
-  region: CLUSTER_LOCATION # Must be the closest Google Cloud region to your cluster.
+  region: {{ region }} # Must be the closest Google Cloud region to your cluster.
 org: {{ project_id }}
 
-instanceID: "instance-1"
+instanceID: "{{ cluster }}-{{ region }}"
 
 cassandra:
   hostNetwork: false
-    # Set to false for single region installations and multi-region installations
-    # with connectivity between pods in different clusters, for example GKE installations.
-    # Set to true  for multi-region installations with no communication between
-    # pods in different clusters, for example GKE On-prem, GKE on AWS, Anthos on bare metal,
-    # AKS, EKS, and OpenShift installations.
-    # See Multi-region deployment: Prerequisites
 
 virtualhosts:
-  - name: {{ envgroup }}
+{% for k in envgroups %}
+  - name: {{ k }}
+    sslSecret: tls-hybrid-ingress
+    additionalGateways: ["apigee-wildcard"]
     selector:
       app: apigee-ingressgateway
-    sslCertPath: ./certs/{{ envgroup }}.cert
-    sslKeyPath: ./certs/{{ envgroup }}.key
+{% endfor %}
 
 ao:
   args:
@@ -37,27 +34,9 @@ ingressGateways:
   replicaCountMax: 10
 
 envs:
-  - name: {{ env }}
-    serviceAccountPaths:
-      synchronizer: ./service-accounts/{{ project_id }}-apigee-non-prod.json
-      udca: ./service-accounts/{{ project_id }}-apigee-non-prod.json
-      runtime: ./service-accounts/{{ project_id }}-apigee-non-prod.json
-
-mart:
-  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
-
-connectAgent:
-  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
-
-metrics:
-  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
-
-udca:
-  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
-
-watcher:
-  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
+{% for k in environments %}
+   - name: {{ k }}
+{% endfor %}
 
 logger:
-  enabled: true
-  serviceAccountPath: ./service-accounts/{{ project_id }}-apigee-non-prod.json
+  enabled: false

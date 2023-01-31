@@ -21,7 +21,7 @@ module "private-dns" {
     "A myhost"    = { ttl = 600, records = ["10.0.0.120"] }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=private-zone.yaml
 ```
 
 ### Forwarding Zone
@@ -36,7 +36,7 @@ module "private-dns" {
   client_networks = [var.vpc.self_link]
   forwarders      = { "10.0.1.1" = null, "1.2.3.4" = "private" }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=forwarding-zone.yaml
 ```
 
 ### Peering Zone
@@ -47,11 +47,12 @@ module "private-dns" {
   project_id      = "myproject"
   type            = "peering"
   name            = "test-example"
-  domain          = "test.example."
+  domain          = "."
+  description     = "Forwarding zone for ."
   client_networks = [var.vpc.self_link]
   peer_network    = var.vpc2.self_link
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=peering-zone.yaml
 ```
 
 ### Routing Policies
@@ -84,7 +85,7 @@ module "private-dns" {
     }
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=routing-policies.yaml
 ```
 
 ### Reverse Lookup Zone
@@ -98,7 +99,23 @@ module "private-dns" {
   domain          = "0.0.10.in-addr.arpa."
   client_networks = [var.vpc.self_link]
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=reverse-zone.yaml
+```
+
+### Public Zone
+
+```hcl
+module "public-dns" {
+  source     = "./fabric/modules/dns"
+  project_id = "myproject"
+  type       = "public"
+  name       = "example"
+  domain     = "example.com."
+  recordsets = {
+    "A myhost" = { ttl = 300, records = ["127.0.0.1"] }
+  }
+}
+# tftest modules=1 resources=3 inventory=public-zone.yaml
 ```
 <!-- BEGIN TFDOC -->
 

@@ -74,7 +74,7 @@ dashboard_json_path = "../dashboards/quotas-utilization.json"
 | [name](variables.tf#L75) | Name used to create Cloud Function related resources. | <code>string</code> |  | <code>&#34;net-dash&#34;</code> |
 | [project_create_config](variables.tf#L81) | Optional configuration if project creation is required. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent_id          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [region](variables.tf#L95) | Compute region where the Cloud Function will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [schedule_config](variables.tf#L101) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0&#47;30 &#42; &#42; &#42; &#42;&#34;</code> |
+| [schedule_config](variables.tf#L101) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;&#42;&#47;30 &#42; &#42; &#42; &#42;&#34;</code> |
 
 ## Outputs
 

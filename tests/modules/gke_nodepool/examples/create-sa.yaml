@@ -1,0 +1,52 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cluster-1-nodepool-1.google_container_node_pool.nodepool:
+    cluster: cluster-1
+    location: europe-west1-b
+    name: nodepool-1
+    node_config:
+    - boot_disk_kms_key: null
+      disk_type: pd-balanced
+      ephemeral_storage_config: []
+      gcfs_config: []
+      gvnic: []
+      kubelet_config: []
+      linux_node_config: []
+      logging_variant: DEFAULT
+      node_group: null
+      oauth_scopes:
+      - https://www.googleapis.com/auth/cloud-platform
+      preemptible: false
+      reservation_affinity: []
+      resource_labels: null
+      sandbox_config: []
+      spot: false
+      tags: null
+      taint: []
+    placement_policy: []
+    project: myproject
+    timeouts: null
+  module.cluster-1-nodepool-1.google_service_account.service_account[0]:
+    account_id: spam-eggs
+    description: null
+    disabled: false
+    display_name: Terraform GKE cluster-1 nodepool-1.
+    project: myproject
+    timeouts: null
+
+counts:
+  google_container_node_pool: 1
+  google_service_account: 1
