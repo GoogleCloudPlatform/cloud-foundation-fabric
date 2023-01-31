@@ -16,6 +16,54 @@
 
 
 locals {
+  group_iam = merge(
+    var.groups.gcp-ml-viewer == null ? {} : {
+      (var.groups.gcp-ml-viewer) = [
+        "roles/aiplatform.viewer",
+        "roles/artifactregistry.reader",
+        "roles/dataflow.viewer",
+        "roles/logging.viewer",
+        "roles/storage.objectViewer"
+      ]
+    },
+    var.groups.gcp-ml-ds == null ? {} : {
+      (var.groups.gcp-ml-ds) = [
+        "roles/aiplatform.admin",
+        "roles/artifactregistry.admin",
+        "roles/bigquery.dataEditor",
+        "roles/bigquery.jobUser",
+        "roles/bigquery.user",
+        "roles/cloudbuild.builds.editor",
+        "roles/cloudfunctions.developer",
+        "roles/dataflow.developer",
+        "roles/dataflow.worker",
+        "roles/iam.serviceAccountUser",
+        "roles/logging.logWriter",
+        "roles/logging.viewer",
+        "roles/notebooks.admin",
+        "roles/pubsub.editor",
+        "roles/serviceusage.serviceUsageConsumer",
+        "roles/storage.admin"
+      ]
+    },
+    var.groups.gcp-ml-eng == null ? {} : {
+      (var.groups.gcp-ml-eng) = [
+        "roles/aiplatform.admin",
+        "roles/artifactregistry.admin",
+        "roles/bigquery.dataEditor",
+        "roles/bigquery.jobUser",
+        "roles/bigquery.user",
+        "roles/dataflow.developer",
+        "roles/dataflow.worker",
+        "roles/iam.serviceAccountUser",
+        "roles/logging.logWriter",
+        "roles/logging.viewer",
+        "roles/serviceusage.serviceUsageConsumer",
+        "roles/storage.admin"
+      ]
+    }
+  )
+
   service_encryption_keys = var.service_encryption_keys
   shared_vpc_project      = try(var.network_config.host_project, null)
 
@@ -61,7 +109,7 @@ module "gcs-bucket" {
   location       = var.region
   storage_class  = "REGIONAL"
   versioning     = false
-  encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
+  encryption_key = try(local.service_encryption_keys.storage, null)
 }
 
 # Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘constraints/gcp.resourceLocations’"
@@ -74,7 +122,7 @@ module "gcs-bucket-cloudbuild" {
   location       = var.region
   storage_class  = "REGIONAL"
   versioning     = false
-  encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
+  encryption_key = try(local.service_encryption_keys.storage, null)
 }
 
 module "bq-dataset" {
@@ -83,7 +131,7 @@ module "bq-dataset" {
   project_id     = module.project.project_id
   id             = var.dataset_name
   location       = var.region
-  encryption_key = try(local.service_encryption_keys.bq, null) # Example assignment of an encryption key
+  encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
 module "vpc-local" {
@@ -147,7 +195,7 @@ module "project" {
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
   prefix          = var.prefix
-  group_iam       = var.group_iam
+  group_iam       = local.group_iam
   iam = {
     "roles/aiplatform.user"         = [module.service-account-mlops.iam_email]
     "roles/artifactregistry.reader" = [module.service-account-mlops.iam_email]
@@ -181,10 +229,10 @@ module "project" {
   labels = var.labels
 
   org_policies = {
+    # Example of applying a project wide policy
     # "constraints/compute.requireOsLogin" = {
     #   enforce = false
     # }
-    # Example of applying a project wide policy, mainly useful for Composer 1
   }
 
   service_encryption_key_ids = {
