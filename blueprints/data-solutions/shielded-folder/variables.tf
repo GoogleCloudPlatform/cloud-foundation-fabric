@@ -41,10 +41,12 @@ variable "enable_features" {
   type = object({
     kms      = bool
     log_sink = bool
+    vpc_sc   = bool
   })
   default = {
     kms      = false
     log_sink = true
+    vpc_sc   = true
   }
 }
 variable "folder_create" {
@@ -226,17 +228,6 @@ variable "vpc_sc_ingress_policies" {
       resources = optional(list(string))
     })
   }))
-  default  = {}
-  nullable = false
-}
-
-variable "vpc_sc_perimeters" {
-  description = "VPC SC regular perimeter definitions for shielded folder. All projects in the perimeter will be added."
-  type = object({
-    access_levels    = optional(list(string), [])
-    egress_policies  = optional(list(string), [])
-    ingress_policies = optional(list(string), [])
-  })
   default  = {}
   nullable = false
 }

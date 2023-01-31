@@ -20,3 +20,11 @@ output "folders" {
   }
 }
 
+output "folders_sink_writer_identities" {
+  description = "Folders id."
+  value = {
+    shielded-folder = module.folder.sink_writer_identities
+    workload-folder = module.folder-workload.sink_writer_identities
+  }
+}
+

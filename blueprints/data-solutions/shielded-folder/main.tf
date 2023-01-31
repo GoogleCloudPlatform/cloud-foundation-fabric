@@ -15,6 +15,19 @@
 # tfdoc:file:description Folder resources.
 
 locals {
+  # Create Log sink ingress policies
+  _sink_ingress_policies = var.enable_features.log_sink ? {
+    log_sink = {
+      from = {
+        access_levels = ["*"]
+        identities    = values(module.folder.sink_writer_identities)
+      }
+      to = {
+        resources  = ["projects/${module.log-export-project.0.number}"]
+        operations = [{ service_name = "*" }]
+    } }
+  } : null
+
   _vpc_sc_vpc_accessible_services = var.data_dir != null ? yamldecode(
     file("${var.data_dir}/vpc-sc/restricted-services.yaml")
   ) : null
@@ -92,12 +105,13 @@ data "google_projects" "folder-projects" {
 }
 
 module "vpc-sc" {
+  count                = var.enable_features.vpc_sc ? 1 : 0
   source               = "../../../modules/vpc-sc"
   access_policy        = var.access_policy
   access_policy_create = local.access_policy_create
   access_levels        = var.vpc_sc_access_levels
   egress_policies      = var.vpc_sc_egress_policies
-  ingress_policies     = var.vpc_sc_ingress_policies
+  ingress_policies     = merge(var.vpc_sc_ingress_policies, local._sink_ingress_policies)
   service_perimeters_regular = {
     shielded = {
       # Move `spec` definition to `status` and comment `use_explicit_dry_run_spec` variable to enforce VPC-SC configuration
@@ -109,7 +123,7 @@ module "vpc-sc" {
         resources           = local.vpc_sc_resources
         restricted_services = local._vpc_sc_restricted_services
         egress_policies     = keys(var.vpc_sc_egress_policies)
-        ingress_policies    = keys(var.vpc_sc_ingress_policies)
+        ingress_policies    = keys(merge(var.vpc_sc_ingress_policies, local._sink_ingress_policies))
         vpc_accessible_services = {
           allowed_services   = local._vpc_sc_vpc_accessible_services
           enable_restriction = true
