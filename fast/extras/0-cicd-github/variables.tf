@@ -25,6 +25,12 @@ variable "commmit_config" {
   nullable = false
 }
 
+variable "ignore_key" {
+  description = "Do not create and set a TLS key in the modules repository."
+  type        = bool
+  default     = false
+}
+
 variable "modules_ref" {
   description = "Optional git ref used in module sources."
   type        = string

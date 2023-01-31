@@ -96,12 +96,12 @@ resource "github_repository" "default" {
 }
 
 resource "tls_private_key" "default" {
-  count     = local.modules_repository != null ? 1 : 0
+  count     = local.modules_repository == null || var.ignore_key ? 0 : 1
   algorithm = "ED25519"
 }
 
 resource "github_repository_deploy_key" "default" {
-  count      = local.modules_repository == null ? 0 : 1
+  count      = local.modules_repository == null || var.ignore_key ? 0 : 1
   title      = "Modules repository access"
   repository = local.modules_repository
   key        = tls_private_key.default.0.public_key_openssh
@@ -109,7 +109,7 @@ resource "github_repository_deploy_key" "default" {
 }
 
 resource "github_actions_secret" "default" {
-  for_each = local.modules_repository == null ? {} : {
+  for_each = local.modules_repository == null || var.ignore_key ? {} : {
     for k, v in local.repositories :
     k => v if k != local.modules_repository
   }

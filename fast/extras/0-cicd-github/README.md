@@ -26,6 +26,8 @@ A [GitHub token](https://github.com/settings/tokens) is needed to authenticate a
   <img src="github_token.png" alt="GitHub token scopes.">
 </p>
 
+Once a token is available set it in the `GITHUB_TOKEN` environment variable.
+
 ## Variable configuration
 
 The `organization` required variable sets the GitHub organization where repositories will be created, and is used to configure the Terraform provider.
@@ -44,7 +46,7 @@ repositories = {
         issues = true
       }
     }
-    populate_from = "../../stages/00-bootstrap"
+    populate_from = "../../stages/0-bootstrap"
   }
   fast_01_resman = {
     create_options = {
