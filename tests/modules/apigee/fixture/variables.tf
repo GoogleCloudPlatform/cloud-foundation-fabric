@@ -32,8 +32,10 @@ variable "envgroups" {
 variable "environments" {
   description = "Environments."
   type = map(object({
-    display_name = optional(string)
-    description  = optional(string, "Terraform-managed")
+    display_name    = optional(string)
+    description     = optional(string, "Terraform-managed")
+    deployment_type = optional(string)
+    api_proxy_type  = optional(string)
     node_config = optional(object({
       min_node_count = optional(number)
       max_node_count = optional(number)
@@ -47,13 +49,14 @@ variable "environments" {
 variable "instances" {
   description = "Instances."
   type = map(object({
-    display_name         = optional(string)
-    description          = optional(string, "Terraform-managed")
-    region               = string
-    environments         = list(string)
-    psa_ip_cidr_range    = string
-    disk_encryption_key  = optional(string)
-    consumer_accept_list = optional(list(string))
+    display_name                  = optional(string)
+    description                   = optional(string, "Terraform-managed")
+    region                        = string
+    environments                  = list(string)
+    runtime_ip_cidr_range         = string
+    troubleshooting_ip_cidr_range = string
+    disk_encryption_key           = optional(string)
+    consumer_accept_list          = optional(list(string))
   }))
   default = null
 }

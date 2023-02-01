@@ -24,7 +24,7 @@ counts:
   google_project_iam_binding: 9
   google_project_iam_member: 1
   google_project_service: 29
-  google_project_service_identity: 2
+  google_project_service_identity: 3
   google_service_account: 3
   google_service_account_iam_binding: 3
   google_storage_bucket: 4

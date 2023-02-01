@@ -214,6 +214,66 @@ module "glb-0" {
 }
 # tftest modules=1 resources=6
 ```
+#### Managed Instance Groups
+
+This example shows how to use the module with a manage instance group as backend: 
+
+```hcl
+module "win-template" {
+  source          = "./fabric/modules/compute-vm"
+  project_id      = "myprj"
+  zone            = "europe-west8-a"
+  name            = "win-template"
+  instance_type   = "n2d-standard-2"
+  create_template = true
+  boot_disk = {
+    image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
+    type  = "pd-balanced"
+    size  = 70
+  }
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+  }]
+}
+
+module "win-mig" {
+  source            = "./fabric/modules/compute-mig"
+  project_id        = "myprj"
+  location          = "europe-west8-a"
+  name              = "win-mig"
+  instance_template = module.win-template.template.self_link
+  autoscaler_config = {
+    max_replicas    = 3
+    min_replicas    = 1
+    cooldown_period = 30
+    scaling_signals = {
+      cpu_utilization = {
+        target = 0.80
+      }
+    }
+  }
+  named_ports = {
+    http = 80
+  }
+}
+
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id = "myprj"
+  name       = "glb-test-0"
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = module.win-mig.group_manager.instance_group }
+      ]
+    }
+  }
+}
+# tftest modules=3 resources=8
+```
 
 #### Storage Buckets
 
@@ -438,6 +498,46 @@ module "glb-0" {
 # tftest modules=1 resources=5
 ```
 
+Serverless NEGs don't use the port name but it should be set to `http`. An HTTPS frontend requires the protocol to be set to `HTTPS`, and the port name field will infer this value if omitted so you need to set it explicitly:
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id = "myprj"
+  name       = "glb-test-0"
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = "neg-0" }
+      ]
+      health_checks = []
+      port_name     = "http"
+    }
+  }
+  # with a single serverless NEG the implied default health check is not needed
+  health_check_configs = {}
+  neg_configs = {
+    neg-0 = {
+      cloudrun = {
+        region = "europe-west8"
+        target_service = {
+          name = "hello"
+        }
+      }
+    }
+  }
+  protocol = "HTTPS"
+  ssl_certificates = {
+    managed_configs = {
+      default = {
+        domains = ["glb-test-0.example.org"]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=https-sneg.yaml
+```
+
 ### URL Map
 
 The module exposes the full URL map resource configuration, with some minor changes to the interface to decrease verbosity, and support for aliasing backend services via keys.
@@ -489,7 +589,6 @@ The module also allows managing managed and self-managed SSL certificates via th
 THe [HTTPS example above](#minimal-https-examples) shows how to configure manage certificated, the following example shows how to use an unmanaged (or self managed) certificate. The example uses Terraform resource for the key and certificate so that the we don't depend on external files when running tests,  in real use the key and certificate are generally provided via external files read by the Terraform `file()` function.
 
 ```hcl
-
 resource "tls_private_key" "default" {
   algorithm = "RSA"
   rsa_bits  = 4096
