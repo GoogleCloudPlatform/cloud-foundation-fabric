@@ -150,7 +150,8 @@ module "automation-tf-resman-sa" {
   display_name = "Terraform stage 1 resman service account."
   prefix       = local.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
-  iam = {
+  # we use additive IAM to allow tenant CI/CD SAs to impersonate it
+  iam_additive = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.automation-tf-cicd-sa["resman"].iam_email, null)
     ])

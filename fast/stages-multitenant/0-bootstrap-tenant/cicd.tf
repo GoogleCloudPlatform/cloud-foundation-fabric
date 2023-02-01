@@ -132,6 +132,22 @@ module "automation-tf-cicd-sa-bootstrap" {
   }
 }
 
+module "automation-tf-org-resman-sa" {
+  source = "../../../modules/iam-service-account"
+  for_each = {
+    for k, v in local.cicd_repositories : 0 => v
+    if k == "bootstrap" && try(v.type, null) != null
+  }
+  project_id             = var.automation.project_id
+  name                   = local.resman_sa
+  service_account_create = false
+  iam_additive = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.automation-tf-cicd-sa-bootstrap["0"].iam_email, null)
+    ])
+  }
+}
+
 # tenant resman runs in the tenant scope and uses its own automation project
 
 module "automation-tf-cicd-repo-resman" {
