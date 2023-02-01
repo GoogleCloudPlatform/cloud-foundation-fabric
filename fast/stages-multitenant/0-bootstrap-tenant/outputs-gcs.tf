@@ -30,8 +30,12 @@ resource "google_storage_bucket_object" "tfvars" {
 }
 
 resource "google_storage_bucket_object" "workflows" {
-  count   = local.workflow == null ? 0 : 1
-  bucket  = module.automation-tf-output-gcs.name
-  name    = "tenants/${var.tenant_config.short_name}/workflows/1-resman-tenant-${local.cicd_repository_type}.yaml"
-  content = local.workflow
+  for_each = local.cicd_workflows
+  bucket = (
+    each.key == "bootstrap"
+    ? var.automation.outputs_bucket
+    : module.automation-tf-output-gcs.name
+  )
+  name    = "tenants/${var.tenant_config.short_name}/workflows/${each.key}-${local.cicd_repositories[each.key].type}.yaml"
+  content = each.value
 }

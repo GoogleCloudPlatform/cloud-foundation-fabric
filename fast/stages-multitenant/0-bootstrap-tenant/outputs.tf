@@ -15,6 +15,45 @@
  */
 
 locals {
+  cicd_workflows = {
+    for k, v in local.cicd_repositories : k => templatefile(
+      "${path.module}/templates/workflow-${v.type}.yaml", (
+        k == "bootstrap"
+        ? {
+          identity_provider = try(
+            local.cicd_identity_providers[v["identity_provider"]].name, ""
+          )
+          outputs_bucket = var.automation.outputs_bucket
+          service_account = try(
+            module.automation-tf-cicd-sa-bootstrap["0"].email, ""
+          )
+          stage_name        = k
+          tf_providers_file = ""
+          tf_var_files = [
+            "0-bootstrap.auto.tfvars.json",
+            "1-resman.auto.tfvars.json",
+            "globals.auto.tfvars.json"
+          ]
+        }
+        : {
+          identity_provider = try(
+            local.cicd_identity_providers[v["identity_provider"]].name, ""
+          )
+          outputs_bucket = module.automation-tf-output-gcs.name
+          service_account = try(
+            module.automation-tf-cicd-sa-resman["0"].email, ""
+          )
+          stage_name = k
+          tf_providers_file = (
+            "${local._file_prefix}/providers/1-resman-tenant-providers.tf"
+          )
+          tf_var_files = [
+            "${local._file_prefix}/tfvars/0-bootstrap-tenant.auto.tfvars.json"
+          ]
+        }
+      )
+    )
+  }
   provider = templatefile(
     "${path.module}/templates/providers.tf.tpl", {
       bucket = module.automation-tf-resman-gcs.name
@@ -24,11 +63,14 @@ locals {
   )
   tfvars = {
     automation = {
-      outputs_bucket               = module.automation-tf-output-gcs.name
-      project_id                   = module.automation-project.project_id
-      project_number               = module.automation-project.number
-      federated_identity_pool      = var.automation.federated_identity_pool
-      federated_identity_providers = var.automation.federated_identity_providers
+      outputs_bucket = module.automation-tf-output-gcs.name
+      project_id     = module.automation-project.project_id
+      project_number = module.automation-project.number
+      federated_identity_pools = compact([
+        try(google_iam_workload_identity_pool.default.0.name, null),
+        var.automation.federated_identity_pool,
+      ])
+      federated_identity_providers = local.cicd_identity_providers
       service_accounts = merge(
         { resman = module.automation-tf-resman-sa.email },
         {
@@ -55,19 +97,22 @@ locals {
       })
     }
   }
-  workflow = local.cicd_repository_type == null ? null : templatefile(
-    "${path.module}/templates/workflow-${local.cicd_repository_type}.yaml", {
-      identity_provider = try(
-        local.identity_providers[var.tenant_config.cicd.identity_provider].name,
-        ""
-      )
-      outputs_bucket    = module.automation-tf-output-gcs.name
-      service_account   = try(module.automation-tf-cicd-sa.email, "")
-      stage_name        = "resman"
-      tf_providers_file = "01-resman-providers.tf"
-      tf_var_files      = "00-bootstrap.auto.tfvars.json"
-    }
-  )
+}
+
+output "cicd_workflows" {
+  description = "CI/CD workflows for tenant bootstrap and resource management stages."
+  sensitive   = true
+  value       = local.cicd_workflows
+}
+
+output "federated_identity" {
+  description = "Workload Identity Federation pool and providers."
+  value = {
+    pool = try(
+      google_iam_workload_identity_pool.default.0.name, null
+    )
+    providers = local.cicd_identity_providers
+  }
 }
 
 output "provider" {
@@ -92,10 +137,4 @@ output "tfvars" {
   description = "Terraform variable files for the following tenant stages."
   sensitive   = true
   value       = local.tfvars
-}
-
-output "workflow" {
-  description = "CI/CD workflow for tenant resource management stage."
-  sensitive   = true
-  value       = local.workflow
 }

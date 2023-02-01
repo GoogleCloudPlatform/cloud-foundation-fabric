@@ -48,6 +48,51 @@ variable "billing_account" {
   }
 }
 
+variable "cicd_repositories" {
+  description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
+  type = object({
+    bootstrap = optional(object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    }))
+    resman = optional(object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    }))
+  })
+  default = null
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || try(v.name, null) != null
+    ])
+    error_message = "Non-null repositories need a non-null name."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || (
+        try(v.identity_provider, null) != null
+        ||
+        try(v.type, null) == "sourcerepo"
+      )
+    ])
+    error_message = "Non-null repositories need a non-null provider unless type is 'sourcerepo'."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || (
+        contains(["github", "gitlab", "sourcerepo"], coalesce(try(v.type, null), "null"))
+      )
+    ])
+    error_message = "Invalid repository type, supported types: 'github' 'gitlab' or 'sourcerepo'."
+  }
+}
 
 variable "custom_roles" {
   # tfdoc:variable:source 0-0-bootstrap
@@ -76,6 +121,20 @@ variable "fast_features" {
     teams           = true
   }
   # nullable = false
+}
+
+variable "federated_identity_providers" {
+  description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
+  type = map(object({
+    attribute_condition = string
+    issuer              = string
+    custom_settings = object({
+      issuer_uri        = string
+      allowed_audiences = list(string)
+    })
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "group_iam" {
@@ -216,12 +275,6 @@ variable "tenant_config" {
       gcp-security-admins = optional(string)
     })
     short_name = string
-    cicd = optional(object({
-      branch            = string
-      identity_provider = string
-      name              = string
-      type              = string
-    }))
     locations = optional(object({
       bq      = optional(string)
       gcs     = optional(string)

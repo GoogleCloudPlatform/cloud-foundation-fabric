@@ -38,9 +38,9 @@ resource "local_file" "tfvars" {
   content         = jsonencode(local.tfvars)
 }
 
-resource "local_file" "workflow" {
-  count           = var.outputs_location == null || local.workflow == null ? 0 : 1
+resource "local_file" "workflows" {
+  for_each        = local.cicd_workflows
   file_permission = "0644"
-  filename        = "${local.outputs_root}/workflows/1-resman-tenant-${local.cicd_repository_type}.json"
-  content         = try(local.workflow, null)
+  filename        = "${local.outputs_root}/workflows/${each.key}-${local.cicd_repositories[each.key].type}.json"
+  content         = try(each.value, null)
 }

@@ -17,60 +17,90 @@
 # tfdoc:file:description Workload Identity Federation configurations for CI/CD.
 
 locals {
-  cicd_repository_type = try(var.tenant_config.cicd.type, null)
-  cicd_workflow_providers = {
-    resman = "01-resman-providers.tf"
+  _file_prefix = "tenants/${var.tenant_config.short_name}"
+  # derive identity pool names from identity providers for easy reference
+  cicd_identity_pools = {
+    for k, v in local.cicd_identity_providers :
+    k => split("/provider/", v.name)[0]
   }
-  cicd_workflow_var_files = {
-    resman = [
-      "00-bootstrap.auto.tfvars.json",
-      "globals.auto.tfvars.json"
-    ]
+  # merge org-level and tenant-level identity providers
+  cicd_identity_providers = merge(
+    var.automation.federated_identity_providers,
+    {
+      for k, v in google_iam_workload_identity_pool_provider.default :
+      k => {
+        issuer           = local.identity_providers[k].issuer
+        issuer_uri       = local.identity_providers[k].issuer_uri
+        name             = v.name
+        principal_tpl    = local.identity_providers[k].principal_tpl
+        principalset_tpl = local.identity_providers[k].principalset_tpl
+      }
+  })
+  # filter CI/CD repositories to only keep valid ones
+  cicd_repositories = {
+    for k, v in coalesce(var.cicd_repositories, {}) : k => v
+    if(
+      v != null
+      &&
+      (
+        try(v.type, null) == "sourcerepo"
+        ||
+        contains(
+          keys(local.cicd_identity_providers),
+          coalesce(try(v.identity_provider, null), ":")
+        )
+      )
+      &&
+      fileexists(
+        format("${path.module}/templates/workflow-%s.yaml", try(v.type, ""))
+      )
+    )
   }
-  identity_providers = coalesce(
-    try(var.automation.federated_identity_providers, null), {}
-  )
 }
 
-# source repository
+# tenant bootstrap runs in the org scope and uses top-level automation project
 
-module "automation-tf-cicd-repo" {
-  source     = "../../../modules/source-repository"
-  count      = local.cicd_repository_type == "sourcerepo" ? 1 : 0
-  project_id = module.automation-project.project_id
-  name       = "resman"
+module "automation-tf-cicd-repo-bootstrap" {
+  source = "../../../modules/source-repository"
+  for_each = {
+    for k, v in local.cicd_repositories : 0 => v
+    if k == "bootstrap" && try(v.type, null) == "sourcerepo"
+  }
+  project_id = var.automation.project_id
+  name       = each.value.name
   iam = {
     "roles/source.admin" = [
-      module.automation-tf-resman-sa.iam_email
+      local.resman_sa
     ]
     "roles/source.reader" = [
-      module.automation-tf-cicd-sa.0.iam_email
+      module.automation-tf-cicd-sa-bootstrap["0"].iam_email
     ]
   }
   triggers = {
-    fast-1-0-resman = {
+    "fast-${var.tenant_config.short_name}-0-bootstrap" = {
       filename        = ".cloudbuild/workflow.yaml"
       included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
-      service_account = module.automation-tf-cicd-sa.0.id
+      service_account = module.automation-tf-cicd-sa-bootstrap["0"].id
       substitutions   = {}
       template = {
         project_id  = null
-        branch_name = var.tenant_config.cicd.branch
-        repo_name   = var.tenant_config.cicd.name
+        branch_name = each.value.branch
+        repo_name   = each.value.name
         tag_name    = null
       }
     }
   }
 }
 
-# SAs used by CI/CD workflows to impersonate automation SAs
-
-module "automation-tf-cicd-sa" {
-  source       = "../../../modules/iam-service-account"
-  count        = local.cicd_repository_type != null ? 1 : 0
-  project_id   = module.automation-project.project_id
-  name         = "iac-core-resman-0c"
-  display_name = "Terraform CI/CD tenant bootstrap service account."
+module "automation-tf-cicd-sa-bootstrap" {
+  source = "../../../modules/iam-service-account"
+  for_each = {
+    for k, v in local.cicd_repositories : 0 => v
+    if k == "bootstrap" && try(v.type, null) != null
+  }
+  project_id   = var.automation.project_id
+  name         = "bootstrap-1"
+  display_name = "Terraform CI/CD ${var.tenant_config.short_name} bootstrap."
   prefix       = local.prefix
   iam = (
     each.value.type == "sourcerepo"
@@ -79,17 +109,91 @@ module "automation-tf-cicd-sa" {
     # impersonated via workload identity federation for external repos
     : {
       "roles/iam.workloadIdentityUser" = [
-        var.tenant_config.cicd.branch == null
+        each.value.branch == null
         ? format(
-          local.identity_providers[local.cicd_repository_type].principalset_tpl,
-          var.automation.federated_identity_pool,
-          var.tenant_config.cicd.name
+          local.cicd_identity_providers[each.value.identity_provider].principalset_tpl,
+          local.cicd_identity_pools[each.value.identity_provider],
+          each.value.name
         )
         : format(
-          local.identity_providers[local.cicd_repository_type].principal_tpl,
-          var.automation.federated_identity_pool,
-          var.tenant_config.cicd.name,
-          var.tenant_config.cicd.branch
+          local.cicd_identity_providers[each.value.identity_provider].principal_tpl,
+          local.cicd_identity_pools[each.value.identity_provider],
+          each.value.name,
+          each.value.branch
+        )
+      ]
+    }
+  )
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/logging.logWriter"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+  }
+}
+
+# tenant resman runs in the tenant scope and uses its own automation project
+
+module "automation-tf-cicd-repo-resman" {
+  source = "../../../modules/source-repository"
+  for_each = {
+    for k, v in local.cicd_repositories : 0 => v
+    if k == "resman" && try(v.type, null) == "sourcerepo"
+  }
+  project_id = module.automation-project.project_id
+  name       = each.value.name
+  iam = {
+    "roles/source.admin" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/source.reader" = [
+      module.automation-tf-cicd-sa-resman["0"].iam_email
+    ]
+  }
+  triggers = {
+    fast-1-resman = {
+      filename        = ".cloudbuild/workflow.yaml"
+      included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
+      service_account = module.automation-tf-cicd-sa-resman["0"].id
+      substitutions   = {}
+      template = {
+        project_id  = null
+        branch_name = each.value.branch
+        repo_name   = each.value.name
+        tag_name    = null
+      }
+    }
+  }
+}
+
+module "automation-tf-cicd-sa-resman" {
+  source = "../../../modules/iam-service-account"
+  for_each = {
+    for k, v in local.cicd_repositories : 0 => v
+    if k == "resman" && try(v.type, null) != null
+  }
+  project_id   = module.automation-project.project_id
+  name         = "resman-1"
+  display_name = "Terraform CI/CD resman."
+  prefix       = local.prefix
+  iam = (
+    each.value.type == "sourcerepo"
+    # used directly from the cloud build trigger for source repos
+    ? {}
+    # impersonated via workload identity federation for external repos
+    : {
+      "roles/iam.workloadIdentityUser" = [
+        each.value.branch == null
+        ? format(
+          local.cicd_identity_providers[each.value.identity_provider].principalset_tpl,
+          local.cicd_identity_pools[each.value.identity_provider],
+          each.value.name
+        )
+        : format(
+          local.cicd_identity_providers[each.value.identity_provider].principal_tpl,
+          local.cicd_identity_pools[each.value.identity_provider],
+          each.value.name,
+          each.value.branch
         )
       ]
     }

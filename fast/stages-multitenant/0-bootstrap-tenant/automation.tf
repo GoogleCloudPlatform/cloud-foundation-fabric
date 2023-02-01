@@ -122,7 +122,7 @@ module "automation-tf-resman-sa" {
   # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.automation-tf-cicd-sa.iam_email, null)
+      try(module.automation-tf-cicd-sa-resman["0"].iam_email, null)
     ])
   }
   iam_billing_roles = !var.billing_account.is_org_level ? {
