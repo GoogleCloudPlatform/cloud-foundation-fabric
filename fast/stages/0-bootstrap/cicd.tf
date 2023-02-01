@@ -17,6 +17,16 @@
 # tfdoc:file:description Workload Identity Federation configurations for CI/CD.
 
 locals {
+  cicd_providers = {
+    for k, v in google_iam_workload_identity_pool_provider.default :
+    k => {
+      issuer           = local.identity_providers[k].issuer
+      issuer_uri       = local.identity_providers[k].issuer_uri
+      name             = v.name
+      principal_tpl    = local.identity_providers[k].principal_tpl
+      principalset_tpl = local.identity_providers[k].principalset_tpl
+    }
+  }
   cicd_repositories = {
     for k, v in coalesce(var.cicd_repositories, {}) : k => v
     if(

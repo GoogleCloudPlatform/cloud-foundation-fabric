@@ -21,7 +21,7 @@ locals {
     for k, v in local.cicd_repositories : k => templatefile(
       "${path.module}/templates/workflow-${v.type}.yaml", {
         identity_provider = try(
-          local.wif_providers[v["identity_provider"]].name, ""
+          local.cicd_providers[v["identity_provider"]].name, ""
         )
         outputs_bucket = module.automation-tf-output-gcs.name
         service_account = try(
@@ -66,7 +66,7 @@ locals {
       federated_identity_pool = try(
         google_iam_workload_identity_pool.default.0.name, null
       )
-      federated_identity_providers = local.wif_providers
+      federated_identity_providers = local.cicd_providers
       outputs_bucket               = module.automation-tf-output-gcs.name
       project_id                   = module.automation-project.project_id
       project_number               = module.automation-project.number
@@ -80,16 +80,6 @@ locals {
     locations       = var.locations
     organization    = var.organization
     prefix          = var.prefix
-  }
-  wif_providers = {
-    for k, v in google_iam_workload_identity_pool_provider.default :
-    k => {
-      issuer           = local.identity_providers[k].issuer
-      issuer_uri       = local.identity_providers[k].issuer_uri
-      name             = v.name
-      principal_tpl    = local.identity_providers[k].principal_tpl
-      principalset_tpl = local.identity_providers[k].principalset_tpl
-    }
   }
 }
 
@@ -109,7 +99,7 @@ output "cicd_repositories" {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch
       name            = v.name
-      provider        = try(local.wif_providers[v.identity_provider].name, null)
+      provider        = try(local.cicd_providers[v.identity_provider].name, null)
       service_account = try(module.automation-tf-cicd-sa[k].email, null)
     }
   }
@@ -126,7 +116,7 @@ output "federated_identity" {
     pool = try(
       google_iam_workload_identity_pool.default.0.name, null
     )
-    providers = local.wif_providers
+    providers = local.cicd_providers
   }
 }
 
