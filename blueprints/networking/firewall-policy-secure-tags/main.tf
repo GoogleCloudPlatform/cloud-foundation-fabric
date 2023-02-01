@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 locals {
+  prefix      = var.prefix == null ? "" : "${var.prefix}-"
   region-zone = "${var.region}-${var.zone}"
 }
 
@@ -29,16 +30,16 @@ module "organization" {
         "roles/resourcemanager.tagAdmin" = ["user:${var.identities.admin}"]
       }
       values = {
-        dev = {
-          description = "Environment: development."
+        vpc1 = {
+          description = "Tag key associated to vpc1"
           iam = {
-            "roles/resourcemanager.tagUser" = ["user:${var.identities.dev}"]
+            "roles/resourcemanager.tagUser" = ["user:${var.identities.vpc1}"]
           }
         }
-        prod = {
-          description = "Environment: production."
+        vpc2 = {
+          description = "Tag key associated to vpc2"
           iam = {
-            "roles/resourcemanager.tagUser" = ["user:${var.identities.prod}"]
+            "roles/resourcemanager.tagUser" = ["user:${var.identities.vpc2}"]
           }
         }
       }
@@ -57,35 +58,48 @@ module "project" {
   ]
 }
 
-module "vpc" {
+module "vpc1" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = "${var.prefix}-vpc"
+  name       = "${var.prefix}-vpc1"
   subnets = [
     {
-      name          = "main"
-      ip_cidr_range = var.subnet_cidr
+      name          = "vpc1-main"
+      ip_cidr_range = var.network_config.vpc1.subnet_cidr
       region        = var.region
     }
   ]
 }
 
-module "dev_vm" {
+module "vpc" {
+  source     = "../../../modules/net-vpc"
+  project_id = module.project.project_id
+  name       = "${var.prefix}-vpc2"
+  subnets = [
+    {
+      name          = "vpc2-main"
+      ip_cidr_range = var.network_config.vpc2.subnet_cidr
+      region        = var.region
+    }
+  ]
+}
+
+module "dst" {
   source                 = "../../../modules/compute-vm"
   project_id             = module.project.project_id
   zone                   = local.region-zone
-  name                   = "${var.prefix}-dev-vm"
+  name                   = "${local.prefix}dst"
   instance_type          = var.instance_type
   service_account_create = true
   network_interfaces = [{
     network    = module.vpc.self_link
-    subnetwork = module.vpc.subnet_self_links["${var.region}/main"]
+    subnetwork = module.vpc.subnet_self_links["${var.region}/vpc1-main"]
   }]
   iam = {
-    "roles/resourcemanager.tagUser" = ["user:${var.identities.dev}"]
+    "roles/resourcemanager.tagUser" = ["user:${var.identities.dst}"]
   }
   tag_bindings = {
-    net-env = module.organization.network_tag_values["net-environment/dev"].namespaced_name
+    net-env = module.organization.network_tag_values["vpc1/dst"].namespaced_name
   }
 }
 
@@ -107,6 +121,8 @@ module "prod_vm" {
     net-env = module.organization.network_tag_values["net-environment/prod"].namespaced_name
   }
 }
+
+# Create network firewall policies and rules
 
 resource "google_compute_network_firewall_policy" "fw_policy" {
   name        = "${var.prefix}-fw-policy"
