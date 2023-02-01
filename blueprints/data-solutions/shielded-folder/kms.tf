@@ -64,9 +64,8 @@ module "sec-project" {
   project_create  = var.projects_create != null && var.enable_features.encryption
   prefix          = var.projects_create == null ? null : var.prefix
   group_iam = {
-    (local.groups.data-engineers) = [
-      "roles/cloudkms.admin",
-      "roles/viewer",
+    (local.groups.workload-security) = [
+      "roles/editor"
     ]
   }
   services = [

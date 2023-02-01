@@ -48,8 +48,9 @@ locals {
     for k, v in local.groups : k => "group:${v}"
   }
   group_iam = {
-    (local.groups.data-engineers) = [
+    (local.groups.workload-engineers) = [
       "roles/editor",
+      "roles/iam.serviceAccountTokenCreator"
     ]
   }
 

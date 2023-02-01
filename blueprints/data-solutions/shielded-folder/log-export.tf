@@ -43,6 +43,11 @@ module "log-export-project" {
   billing_account = try(var.projects_create.billing_account_id, null)
   project_create  = var.projects_create != null
   prefix          = var.projects_create == null ? null : var.prefix
+  group_iam = {
+    (local.groups.workload-security) = [
+      "roles/editor"
+    ]
+  }
   iam = {
     # "roles/owner" = [module.automation-tf-bootstrap-sa.iam_email]
   }

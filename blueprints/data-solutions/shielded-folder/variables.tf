@@ -68,9 +68,8 @@ variable "groups" {
   description = "User groups."
   type        = map(string)
   default = {
-    #TODO data-analysts  = "gcp-data-analysts"
-    data-engineers = "gcp-data-engineers"
-    data-security  = "gcp-data-security"
+    workload-engineers = "gcp-data-engineers"
+    workload-security  = "gcp-data-security"
   }
 }
 
