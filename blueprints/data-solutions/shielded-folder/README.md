@@ -4,7 +4,7 @@ This blueprint implements an opinionated Folder configuration to implement GCP b
 
 In this blueprint, a folder will be created implementing the following features:
 - Organizational policies
-- Hirarckical firewall rules
+- Hierarchical firewall rules
 - Cloud KMS
 - VPC-SC
 
