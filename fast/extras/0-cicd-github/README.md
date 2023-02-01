@@ -1,17 +1,10 @@
 # FAST GitHub repository management
 
-This small extra stage allows creation and management of GitHub repositories used to host FAST stage code, including initial population of files and rewriting of module sources.
+This small extra stage allows creating and populating GitHub repositories used to host FAST stage code, including rewriting of module sources and secrets used for private modules repository access.
 
-This stage is designed for quick repository creation in a GitHub organization, and is not suited for medium or long-term repository management especially if you enable initial population of files.
+It is designed for use in a GitHub organization, and is only meant as a one-shot solution with perishable state especially when used for initial population, as you don't want Terraform to keep overwriting your changes with initial versions of files.
 
-## Initial population caveats
-
-Initial file population of repositories is controlled via the `populate_from` attribute, and needs a bit of care:
-
-- never run this stage with the same variables used for population once the repository starts being used, as **Terraform will manage file state and revert any changes at each apply**, which is probably not what you want.
-- initial population of the modules repository is discouraged, as the number of resulting files Terraform needs to manage is very close to the GitHub hourly limit for their API, it's much easier to populate modules via regular git commands
-
-The scenario for which this stage has been designed is one-shot creation and/or population of stage repositories, running it multiple times with different variables and Terraform states if incremental creation is needed for subsequent FAST stages (e.g. GKE, data platform, etc.).
+Initial population is only meant to be used with actual stage, while populating the modules repository should be done by hand to avoid hitting the GitHub hourly limit for their API.
 
 Once initial population is done, you need to manually push to the repository
 
@@ -26,18 +19,58 @@ A [GitHub token](https://github.com/settings/tokens) is needed to authenticate a
   <img src="github_token.png" alt="GitHub token scopes.">
 </p>
 
-Once a token is available set it in the `GITHUB_TOKEN` environment variable.
+Once a token is available set it in the `GITHUB_TOKEN` environment variable before running Terraform.
 
 ## Variable configuration
 
 The `organization` required variable sets the GitHub organization where repositories will be created, and is used to configure the Terraform provider.
 
-The `repositories` variable is where you configure which repositories to create, whether initial population of files is desired, and which repository is used to host modules.
+### Modules repository and sources
 
-This is an example that creates repositories for stages 00 and 01, defines an existing repositories as the source for modules, and populates initial files for stages 00, 01, and 02:
+The `modules_config` variable controls creation and management of the key and secret used to access the private modules repository, and indirectly control population of initial files: if the `modules_config` variable is not specified no module repository is know to the code, so module source paths cannot be replaced, and initial population of files cannot happen. If the variable is specified, an optional `source_ref` attribute can be set to the reference used to pin modules versions.
+
+This is an example that configures the modules repository name and an optional reference, enabling initial population of repositories where the feature has been turned on:
+
+```hcl
+modules_config = {
+  repository_name = "GoogleCloudPlatform/cloud-foundation-fabric"
+  source_ref      = "v19.0.0"
+}
+```
+
+In the above example, no key options are set so it's assumed modules will be fetched from a public repository. If modules repository authentication is needed the `key_config` attribute also needs to be set.
+
+If no keypair path is specified an internally generated key will be stored as an access key in the modules repository, and as secrets in the stage repositories:
+
+```hcl
+modules_config = {
+  repository_name = "GoogleCloudPlatform/cloud-foundation-fabric"
+  key_config = {
+    create_key     = true
+    create_secrets = true
+  }
+}
+```
+
+To use an existing keypair pass the path to the private key, the public key name is assumed to have the same name ending with the `.pub` suffix. This is useful in cases where the access key has already been set in the modules repository, and new repositories need to be created and their corresponding secret set:
+
+```hcl
+modules_config = {
+  repository_name = "GoogleCloudPlatform/cloud-foundation-fabric"
+  key_config = {
+    create_secrets = true
+    keypair_path   = "~/modules-repository-key"
+  }
+}
+```
+
+### Repositories
+
+The `repositories` variable is where you configure which repositories to create and whether initial population of files is desired.
+
+This is an example that creates repositories for stages 00 and 01, and populates initial files for stages 00, 01, and 02:
 
 ```tfvars
-organization = "ludomagno"
 repositories = {
   fast_00_bootstrap = {
     create_options = {
@@ -55,26 +88,21 @@ repositories = {
         issues = true
       }
     }
-    populate_from = "../../stages/01-resman"
+    populate_from = "../../stages/1-resman"
   }
   fast_02_networking = {
-    populate_from = "../../stages/02-networking-peering"
-  }
-  fast_modules = {
-    has_modules = true
+    populate_from = "../../stages/2-networking-peering"
   }
 }
 ```
 
 The `create_options` repository attribute controls creation: if the attribute is not present, the repository is assumed to be already existing.
 
-Initial population depends on a modules repository being configured, identified by the `has_modules` attribute, and on `populate_from` attributes in each repository where population is required, pointing to the folder holding the files to be committed.
+Initial population depends on a modules repository being configured in the `modules_config` variable described in the preceding section and on the`populate_from` attributes in each repository where population is required, which point to the folder holding the files to be committed.
+
+### Commit configuration
 
 Finally, a `commit_config` variable is optional: it can be used to configure author, email and message used in commits for initial population of files, its defaults are probably fine for most use cases.
-
-## Modules secret
-
-When initial population is configured for a repository, this stage also adds a secret with the private key used to authenticate against the modules repository. This matches the configuration of the GitHub workflow files created for each FAST stage when CI/CD is enabled.
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
@@ -93,11 +121,10 @@ When initial population is configured for a repository, this stage also adds a s
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization](variables.tf#L40) | GitHub organization. | <code>string</code> | ✓ |  |
+| [organization](variables.tf#L50) | GitHub organization. | <code>string</code> | ✓ |  |
 | [commmit_config](variables.tf#L17) | Configure commit metadata. | <code title="object&#40;&#123;&#10;  author  &#61; optional&#40;string, &#34;FAST loader&#34;&#41;&#10;  email   &#61; optional&#40;string, &#34;fast-loader&#64;fast.gcp.tf&#34;&#41;&#10;  message &#61; optional&#40;string, &#34;FAST initial loading&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ignore_key](variables.tf#L28) | Do not create and set a TLS key in the modules repository. | <code>bool</code> |  | <code>false</code> |
-| [modules_ref](variables.tf#L34) | Optional git ref used in module sources. | <code>string</code> |  | <code>null</code> |
-| [repositories](variables.tf#L45) | Repositories to create. | <code title="map&#40;object&#40;&#123;&#10;  create_options &#61; optional&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      auto_merge   &#61; optional&#40;bool&#41;&#10;      merge_commit &#61; optional&#40;bool&#41;&#10;      rebase_merge &#61; optional&#40;bool&#41;&#10;      squash_merge &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    auto_init   &#61; optional&#40;bool&#41;&#10;    description &#61; optional&#40;string&#41;&#10;    features &#61; optional&#40;object&#40;&#123;&#10;      issues   &#61; optional&#40;bool&#41;&#10;      projects &#61; optional&#40;bool&#41;&#10;      wiki     &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    templates &#61; optional&#40;object&#40;&#123;&#10;      gitignore &#61; optional&#40;string, &#34;Terraform&#34;&#41;&#10;      license   &#61; optional&#40;string&#41;&#10;      repository &#61; optional&#40;object&#40;&#123;&#10;        name  &#61; string&#10;        owner &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    visibility &#61; optional&#40;string, &#34;private&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  has_modules   &#61; optional&#40;bool, false&#41;&#10;  populate_from &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [modules_config](variables.tf#L28) | Configure access to repository module via key, and replacement for modules sources in stage repositories. | <code title="object&#40;&#123;&#10;  repository_name &#61; string&#10;  source_ref      &#61; optional&#40;string&#41;&#10;  key_config &#61; optional&#40;object&#40;&#123;&#10;    create_key     &#61; optional&#40;bool, false&#41;&#10;    create_secrets &#61; optional&#40;bool, false&#41;&#10;    keypair_path   &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [repositories](variables.tf#L55) | Repositories to create. | <code title="map&#40;object&#40;&#123;&#10;  create_options &#61; optional&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      auto_merge   &#61; optional&#40;bool&#41;&#10;      merge_commit &#61; optional&#40;bool&#41;&#10;      rebase_merge &#61; optional&#40;bool&#41;&#10;      squash_merge &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    auto_init   &#61; optional&#40;bool&#41;&#10;    description &#61; optional&#40;string&#41;&#10;    features &#61; optional&#40;object&#40;&#123;&#10;      issues   &#61; optional&#40;bool&#41;&#10;      projects &#61; optional&#40;bool&#41;&#10;      wiki     &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    templates &#61; optional&#40;object&#40;&#123;&#10;      gitignore &#61; optional&#40;string, &#34;Terraform&#34;&#41;&#10;      license   &#61; optional&#40;string&#41;&#10;      repository &#61; optional&#40;object&#40;&#123;&#10;        name  &#61; string&#10;        owner &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    visibility &#61; optional&#40;string, &#34;private&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  populate_from &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

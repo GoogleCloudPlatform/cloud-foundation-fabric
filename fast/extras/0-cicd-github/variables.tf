@@ -25,16 +25,26 @@ variable "commmit_config" {
   nullable = false
 }
 
-variable "ignore_key" {
-  description = "Do not create and set a TLS key in the modules repository."
-  type        = bool
-  default     = false
-}
-
-variable "modules_ref" {
-  description = "Optional git ref used in module sources."
-  type        = string
-  default     = null
+variable "modules_config" {
+  description = "Configure access to repository module via key, and replacement for modules sources in stage repositories."
+  type = object({
+    repository_name = string
+    source_ref      = optional(string)
+    key_config = optional(object({
+      create_key     = optional(bool, false)
+      create_secrets = optional(bool, false)
+      keypair_path   = optional(string)
+    }), {})
+  })
+  default = null
+  validation {
+    condition = (
+      var.modules_config == null
+      ||
+      try(var.modules_config.repository_name, null) != null
+    )
+    error_message = "Modules configuration requires a modules repository name."
+  }
 }
 
 variable "organization" {
@@ -69,7 +79,6 @@ variable "repositories" {
       }), {})
       visibility = optional(string, "private")
     }))
-    has_modules   = optional(bool, false)
     populate_from = optional(string)
   }))
   default  = {}

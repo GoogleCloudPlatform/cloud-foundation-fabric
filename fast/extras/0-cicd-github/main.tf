@@ -15,9 +15,6 @@
  */
 
 locals {
-  _modules_repository = [
-    for k, v in var.repositories : local.repositories[k] if v.has_modules
-  ]
   _repository_files = flatten([
     for k, v in var.repositories : [
       for f in concat(
@@ -30,12 +27,8 @@ locals {
       }
     ] if v.populate_from != null
   ])
-  modules_ref = var.modules_ref == null ? "" : "?ref=${var.modules_ref}"
-  modules_repository = (
-    length(local._modules_repository) > 0
-    ? local._modules_repository.0
-    : null
-  )
+  modules_ref  = try(var.modules_config.source_ref, "")
+  modules_repo = try(var.modules_config.repository_name, null)
   repositories = {
     for k, v in var.repositories :
     k => v.create_options == null ? k : github_repository.default[k].name
@@ -96,41 +89,49 @@ resource "github_repository" "default" {
 }
 
 resource "tls_private_key" "default" {
-  count     = local.modules_repository == null || var.ignore_key ? 0 : 1
   algorithm = "ED25519"
 }
 
 resource "github_repository_deploy_key" "default" {
-  count      = local.modules_repository == null || var.ignore_key ? 0 : 1
+  count = (
+    try(var.modules_config.key_config.create_key, null) == true ? 1 : 0
+  )
   title      = "Modules repository access"
-  repository = local.modules_repository
-  key        = tls_private_key.default.0.public_key_openssh
-  read_only  = true
+  repository = local.modules_repo
+  key = (
+    try(var.modules_config.key_config.keypair_path, null) == null
+    ? tls_private_key.default.public_key_openssh
+    : file(pathexpand("${var.modules_config.key_config.keypair_path}.pub"))
+  )
+  read_only = true
 }
 
 resource "github_actions_secret" "default" {
-  for_each = local.modules_repository == null || var.ignore_key ? {} : {
-    for k, v in local.repositories :
-    k => v if k != local.modules_repository
-  }
-  repository      = each.key
-  secret_name     = "CICD_MODULES_KEY"
-  plaintext_value = tls_private_key.default.0.private_key_openssh
+  for_each = (
+    try(var.modules_config.key_config.create_secrets, null) == true
+    ? local.repositories
+    : {}
+  )
+  repository  = each.key
+  secret_name = "CICD_MODULES_KEY"
+  plaintext_value = (
+    try(var.modules_config.key_config.keypair_path, null) == null
+    ? tls_private_key.default.private_key_openssh
+    : file(pathexpand("${var.modules_config.key_config.keypair_path}"))
+  )
 }
 
 resource "github_repository_file" "default" {
-  for_each = (
-    local.modules_repository == null ? {} : local.repository_files
-  )
+  for_each   = local.modules_repo == null ? {} : local.repository_files
   repository = local.repositories[each.value.repository]
   branch     = "main"
   file       = each.value.name
   content = (
-    endswith(each.value.name, ".tf") && local.modules_repository != null
+    endswith(each.value.name, ".tf") && local.modules_repo != null
     ? replace(
       file(each.value.file),
       "/source\\s*=\\s*\"../../../modules/([^/\"]+)\"/",
-      "source = \"git@github.com:${var.organization}/${local.modules_repository}.git//$1${local.modules_ref}\"" # "
+      "source = \"git@github.com:${var.organization}/${local.modules_repo}.git//$1${local.modules_ref}\"" # "
     )
     : file(each.value.file)
   )
