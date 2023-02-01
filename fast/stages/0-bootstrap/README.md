@@ -472,7 +472,7 @@ The remaining configuration is manual, as it regards the repositories themselves
 | [organization](variables.tf#L194) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [prefix](variables.tf#L209) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  |  |
 | [bootstrap_user](variables.tf#L29) | Email of the nominal user running this stage for the first time. | <code>string</code> |  | <code>null</code> |  |
-| [cicd_repositories](variables.tf#L35) | CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed. | <code title="object&#40;&#123;&#10;  bootstrap &#61; object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#10;  resman &#61; object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [cicd_repositories](variables.tf#L35) | CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed. | <code title="object&#40;&#123;&#10;  bootstrap &#61; optional&#40;object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#41;&#10;  resman &#61; optional&#40;object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
 | [custom_role_names](variables.tf#L81) | Names of custom roles defined at the org level. | <code title="object&#40;&#123;&#10;  organization_iam_admin        &#61; string&#10;  service_project_network_admin &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  organization_iam_admin        &#61; &#34;organizationIamAdmin&#34;&#10;  service_project_network_admin &#61; &#34;serviceProjectNetworkAdmin&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [fast_features](variables.tf#L93) | Selective control for top-level FAST features. | <code title="object&#40;&#123;&#10;  data_platform   &#61; optional&#40;bool, false&#41;&#10;  gke             &#61; optional&#40;bool, false&#41;&#10;  project_factory &#61; optional&#40;bool, false&#41;&#10;  sandbox         &#61; optional&#40;bool, false&#41;&#10;  teams           &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [federated_identity_providers](variables.tf#L106) | Workload Identity Federation pools. The `cicd_repositories` variable references keys here. | <code title="map&#40;object&#40;&#123;&#10;  attribute_condition &#61; string&#10;  issuer              &#61; string&#10;  custom_settings &#61; object&#40;&#123;&#10;    issuer_uri        &#61; string&#10;    allowed_audiences &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
@@ -488,15 +488,15 @@ The remaining configuration is manual, as it regards the repositories themselves
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [automation](outputs.tf#L96) | Automation resources. |  |  |
-| [billing_dataset](outputs.tf#L101) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L106) | CI/CD repository configurations. |  |  |
-| [custom_roles](outputs.tf#L118) | Organization-level custom roles. |  |  |
-| [federated_identity](outputs.tf#L123) | Workload Identity Federation pool and providers. |  |  |
-| [outputs_bucket](outputs.tf#L133) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L138) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L148) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L155) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L164) | Terraform variable files for the following stages. | ✓ |  |
+| [automation](outputs.tf#L86) | Automation resources. |  |  |
+| [billing_dataset](outputs.tf#L91) | BigQuery dataset prepared for billing export. |  |  |
+| [cicd_repositories](outputs.tf#L96) | CI/CD repository configurations. |  |  |
+| [custom_roles](outputs.tf#L108) | Organization-level custom roles. |  |  |
+| [federated_identity](outputs.tf#L113) | Workload Identity Federation pool and providers. |  |  |
+| [outputs_bucket](outputs.tf#L123) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L128) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L138) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L145) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L154) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
