@@ -27,7 +27,11 @@ locals {
       }
     ] if v.populate_from != null
   ])
-  modules_ref  = try(var.modules_config.source_ref, "")
+  modules_ref = (
+    try(var.modules_config.source_ref, null) == null
+    ? ""
+    : "?ref=${var.modules_config.source_ref}"
+  )
   modules_repo = try(var.modules_config.repository_name, null)
   repositories = {
     for k, v in var.repositories :
@@ -131,7 +135,7 @@ resource "github_repository_file" "default" {
     ? replace(
       file(each.value.file),
       "/source\\s*=\\s*\"../../../modules/([^/\"]+)\"/",
-      "source = \"git@github.com:${var.organization}/${local.modules_repo}.git//$1${local.modules_ref}\"" # "
+      "source = \"git@github.com:${local.modules_repo}.git//$1${local.modules_ref}\"" # "
     )
     : file(each.value.file)
   )
