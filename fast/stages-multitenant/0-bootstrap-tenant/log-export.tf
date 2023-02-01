@@ -30,7 +30,10 @@ module "log-export-project" {
   )
   prefix = local.prefix
   iam = {
-    "roles/owner" = [module.automation-tf-resman-sa.iam_email]
+    "roles/owner" = [
+      module.automation-tf-resman-sa.iam_email,
+      "serviceAccount:${local.resman_sa}"
+    ]
   }
   services = [
     # "cloudresourcemanager.googleapis.com",
