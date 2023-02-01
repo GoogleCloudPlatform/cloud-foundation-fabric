@@ -55,3 +55,10 @@ running on a VPC with a private IP and a dedicated Service Account. A GCS bucket
 This [blueprint](./data-platform-foundations/) implements SQL Server Always On Availability Groups using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling. The actual setup process (apart from Active Directory operations) has been scripted, so that least amount of manual works needs to performed.
 
 <br clear="left">
+
+### Shielded Folder
+
+<a href="./shielded-folder/" title="Shielded Folder"><img src="./shielded-folder/images/overview_diagram.png" align="left" width="280px"></a>
+This [blueprint](./shielded-folder/) implements an opinionated Folder configuration to implement GCP best practices. Configurations implemented on the folder would be beneficial to host Workloads inheriting constraints from the folder they belong to.
+
+<br clear="left">
