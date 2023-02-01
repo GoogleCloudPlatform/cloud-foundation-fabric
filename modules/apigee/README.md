@@ -44,14 +44,16 @@ module "apigee" {
   }
   instances = {
     instance-test-ew1 = {
-      region            = "europe-west1"
-      environments      = ["apis-test"]
-      psa_ip_cidr_range = "10.0.4.0/22"
+      region                        = "europe-west1"
+      environments                  = ["apis-test"]
+      runtime_ip_cidr_range         = "10.0.4.0/22"
+      troubleshooting_ip_cidr_range = "10.1.1.0.0/28"
     }
     instance-prod-ew3 = {
-      region            = "europe-west3"
-      environments      = ["apis-prod"]
-      psa_ip_cidr_range = "10.0.5.0/22"
+      region                        = "europe-west3"
+      environments                  = ["apis-prod"]
+      runtime_ip_cidr_range         = "10.0.8.0/22"
+      troubleshooting_ip_cidr_range = "10.1.16.0/28"
     }
   }
   endpoint_attachments = {
@@ -141,9 +143,10 @@ module "apigee" {
   project_id = "my-project"
   instances = {
     instance-test-ew1 = {
-      region            = "europe-west1"
-      environments      = ["apis-test"]
-      psa_ip_cidr_range = "10.0.4.0/22"
+      region                        = "europe-west1"
+      environments                  = ["apis-test"]
+      runtime_ip_cidr_range         = "10.0.4.0/22"
+      troubleshooting_ip_cidr_range = "10.1.1.0/28"
     }
   }
 }
@@ -173,12 +176,12 @@ module "apigee" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L77) | Project ID. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L78) | Project ID. | <code>string</code> | ✓ |  |
 | [endpoint_attachments](variables.tf#L17) | Endpoint attachments. | <code title="map&#40;object&#40;&#123;&#10;  region             &#61; string&#10;  service_attachment &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 | [envgroups](variables.tf#L26) | Environment groups (NAME => [HOSTNAMES]). | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
 | [environments](variables.tf#L32) | Environments. | <code title="map&#40;object&#40;&#123;&#10;  display_name    &#61; optional&#40;string&#41;&#10;  description     &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  deployment_type &#61; optional&#40;string&#41;&#10;  api_proxy_type  &#61; optional&#40;string&#41;&#10;  node_config &#61; optional&#40;object&#40;&#123;&#10;    min_node_count &#61; optional&#40;number&#41;&#10;    max_node_count &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  iam       &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  envgroups &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [instances](variables.tf#L49) | Instances. | <code title="map&#40;object&#40;&#123;&#10;  display_name         &#61; optional&#40;string&#41;&#10;  description          &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  region               &#61; string&#10;  environments         &#61; list&#40;string&#41;&#10;  psa_ip_cidr_range    &#61; string&#10;  disk_encryption_key  &#61; optional&#40;string&#41;&#10;  consumer_accept_list &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [organization](variables.tf#L63) | Apigee organization. If set to null the organization must already exist. | <code title="object&#40;&#123;&#10;  display_name            &#61; optional&#40;string&#41;&#10;  description             &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  authorized_network      &#61; optional&#40;string&#41;&#10;  runtime_type            &#61; optional&#40;string, &#34;CLOUD&#34;&#41;&#10;  billing_type            &#61; optional&#40;string&#41;&#10;  database_encryption_key &#61; optional&#40;string&#41;&#10;  analytics_region        &#61; optional&#40;string, &#34;europe-west1&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [instances](variables.tf#L49) | Instances. | <code title="map&#40;object&#40;&#123;&#10;  display_name                  &#61; optional&#40;string&#41;&#10;  description                   &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  region                        &#61; string&#10;  environments                  &#61; list&#40;string&#41;&#10;  runtime_ip_cidr_range         &#61; string&#10;  troubleshooting_ip_cidr_range &#61; string&#10;  disk_encryption_key           &#61; optional&#40;string&#41;&#10;  consumer_accept_list          &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [organization](variables.tf#L64) | Apigee organization. If set to null the organization must already exist. | <code title="object&#40;&#123;&#10;  display_name            &#61; optional&#40;string&#41;&#10;  description             &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  authorized_network      &#61; optional&#40;string&#41;&#10;  runtime_type            &#61; optional&#40;string, &#34;CLOUD&#34;&#41;&#10;  billing_type            &#61; optional&#40;string&#41;&#10;  database_encryption_key &#61; optional&#40;string&#41;&#10;  analytics_region        &#61; optional&#40;string, &#34;europe-west1&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
