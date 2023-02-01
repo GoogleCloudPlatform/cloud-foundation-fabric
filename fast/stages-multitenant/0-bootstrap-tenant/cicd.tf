@@ -21,7 +21,7 @@ locals {
   # derive identity pool names from identity providers for easy reference
   cicd_identity_pools = {
     for k, v in local.cicd_identity_providers :
-    k => split("/provider/", v.name)[0]
+    k => split("/providers/", v.name)[0]
   }
   # merge org-level and tenant-level identity providers
   cicd_identity_providers = merge(
