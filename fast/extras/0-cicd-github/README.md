@@ -36,6 +36,7 @@ modules_config = {
   repository_name = "GoogleCloudPlatform/cloud-foundation-fabric"
   source_ref      = "v19.0.0"
 }
+# tftest skip
 ```
 
 In the above example, no key options are set so it's assumed modules will be fetched from a public repository. If modules repository authentication is needed the `key_config` attribute also needs to be set.
@@ -50,6 +51,7 @@ modules_config = {
     create_secrets = true
   }
 }
+# tftest skip
 ```
 
 To use an existing keypair pass the path to the private key, the public key name is assumed to have the same name ending with the `.pub` suffix. This is useful in cases where the access key has already been set in the modules repository, and new repositories need to be created and their corresponding secret set:
@@ -62,6 +64,7 @@ modules_config = {
     keypair_path   = "~/modules-repository-key"
   }
 }
+# tftest skip
 ```
 
 ### Repositories
@@ -94,6 +97,7 @@ repositories = {
     populate_from = "../../stages/2-networking-peering"
   }
 }
+# tftest skip
 ```
 
 The `create_options` repository attribute controls creation: if the attribute is not present, the repository is assumed to be already existing.
