@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1124](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1124)] Removed unused file package-lock.json ([apichick](https://github.com/apichick)) <!-- 2023-02-01 17:54:25+00:00 -->
+- [[#1119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1119)] **incompatible change:** Multi-Cluster Ingress gateway api config ([wiktorn](https://github.com/wiktorn)) <!-- 2023-01-31 13:16:52+00:00 -->
+- [[#1111](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1111)] **incompatible change:** In the apigee module now both the /22 and /28 peering IP ranges are p… ([apichick](https://github.com/apichick)) <!-- 2023-01-31 10:46:38+00:00 -->
 - [[#1106](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1106)] Network Dashboard: PSA support for Filestore and Memorystore ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2023-01-25 15:02:31+00:00 -->
 - [[#1110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1110)] Bump cookiejar from 2.1.3 to 2.1.4 in /blueprints/apigee/bigquery-analytics/functions/export ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-01-24 15:07:12+00:00 -->
 - [[#1097](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1097)] Use terraform resource to activate Anthos Service Mesh ([wiktorn](https://github.com/wiktorn)) <!-- 2023-01-23 08:25:31+00:00 -->
@@ -49,6 +52,10 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1125](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1125)] Added mesh_certificates setting in GKE cluster ([rosmo](https://github.com/rosmo)) <!-- 2023-02-02 10:19:01+00:00 -->
+- [[#1094](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1094)] Added GLB example with MIG as backend ([eliamaldini](https://github.com/eliamaldini)) <!-- 2023-01-31 13:49:13+00:00 -->
+- [[#1119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1119)] **incompatible change:** Multi-Cluster Ingress gateway api config ([wiktorn](https://github.com/wiktorn)) <!-- 2023-01-31 13:16:52+00:00 -->
+- [[#1111](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1111)] **incompatible change:** In the apigee module now both the /22 and /28 peering IP ranges are p… ([apichick](https://github.com/apichick)) <!-- 2023-01-31 10:46:38+00:00 -->
 - [[#1116](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1116)] Include cloudbuild API in project module ([aymanfarhat](https://github.com/aymanfarhat)) <!-- 2023-01-27 20:38:01+00:00 -->
 - [[#1115](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1115)] add new parameters support in apigee module ([blackillzone](https://github.com/blackillzone)) <!-- 2023-01-27 16:39:46+00:00 -->
 - [[#1112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1112)] Add HTTPS frontend with SNEG example ([juliodiez](https://github.com/juliodiez)) <!-- 2023-01-26 19:17:31+00:00 -->
