@@ -1,5 +1,5 @@
 automation = {
-  federated_identity_pool      = null
+  federated_identity_pools     = null
   federated_identity_providers = null
   project_id                   = "tn0-prod-automation-0"
   project_number               = 123456
