@@ -19,7 +19,6 @@ counts:
   google_organization_iam_member: 38
   google_project: 2
   google_project_iam_binding: 8
-  google_project_iam_member: 1
   google_project_service: 26
   google_project_service_identity: 3
   google_service_account: 11
