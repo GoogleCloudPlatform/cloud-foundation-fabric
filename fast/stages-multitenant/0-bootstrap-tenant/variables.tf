@@ -107,20 +107,14 @@ variable "fast_features" {
   # tfdoc:variable:source 0-bootstrap
   description = "Selective control for top-level FAST features."
   type = object({
-    data_platform   = bool
-    gke             = bool
-    project_factory = bool
-    sandbox         = bool
-    teams           = bool
+    data_platform   = optional(bool, true)
+    gke             = optional(bool, true)
+    project_factory = optional(bool, true)
+    sandbox         = optional(bool, true)
+    teams           = optional(bool, true)
   })
-  default = {
-    data_platform   = true
-    gke             = true
-    project_factory = true
-    sandbox         = true
-    teams           = true
-  }
-  # nullable = false
+  default  = {}
+  nullable = false
 }
 
 variable "federated_identity_providers" {
