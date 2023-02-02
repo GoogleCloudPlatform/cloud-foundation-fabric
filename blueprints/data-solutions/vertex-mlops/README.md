@@ -1,4 +1,4 @@
-# MLOps with Vertex AI - Infra setup
+# MLOps with Vertex AI
 
 ## Introduction
 This example implements the infrastructure required to deploy an end-to-end [MLOps process](https://services.google.com/fh/files/misc/practitioners_guide_to_mlops_whitepaper.pdf) using [Vertex AI](https://cloud.google.com/vertex-ai) platform. 
