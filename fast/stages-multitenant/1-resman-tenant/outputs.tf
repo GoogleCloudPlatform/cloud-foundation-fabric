@@ -63,7 +63,7 @@ locals {
       "${path.module}/templates/workflow-${v.type}.yaml",
       merge(local.cicd_workflow_attrs[k], {
         identity_provider = try(
-          local.identity_providers[v.identity_provider].name, null
+          local.cicd_identity_providers[v.identity_provider].name, null
         )
         outputs_bucket = var.automation.outputs_bucket
         stage_name     = k
@@ -193,7 +193,7 @@ output "cicd_repositories" {
       branch = v.branch
       name   = v.name
       provider = try(
-        local.identity_providers[v.identity_provider].name, null
+        local.cicd_identity_providers[v.identity_provider].name, null
       )
       service_account = local.cicd_workflow_attrs[k].service_account
     } if v != null

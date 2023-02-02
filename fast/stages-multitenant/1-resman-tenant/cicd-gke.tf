@@ -110,13 +110,13 @@ module "branch-gke-dev-sa-cicd" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
-          var.automation.federated_identity_pool,
+          local.cicd_identity_providers[each.value.identity_provider].principalset_tpl,
+          local.cicd_identity_pools[each.value.identity_provider],
           each.value.name
         )
         : format(
-          local.identity_providers[each.value.identity_provider].principal_tpl,
-          var.automation.federated_identity_pool,
+          local.cicd_identity_providers[each.value.identity_provider].principal_tpl,
+          local.cicd_identity_pools[each.value.identity_provider],
           each.value.name,
           each.value.branch
         )
@@ -153,13 +153,13 @@ module "branch-gke-prod-sa-cicd" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
-          var.automation.federated_identity_pool,
+          local.cicd_identity_providers[each.value.identity_provider].principalset_tpl,
+          local.cicd_identity_pools[each.value.identity_provider],
           each.value.name
         )
         : format(
-          local.identity_providers[each.value.identity_provider].principal_tpl,
-          var.automation.federated_identity_pool,
+          local.cicd_identity_providers[each.value.identity_provider].principal_tpl,
+          local.cicd_identity_pools[each.value.identity_provider],
           each.value.name,
           each.value.branch
         )

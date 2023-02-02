@@ -21,10 +21,10 @@ variable "automation" {
   # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
   type = object({
-    outputs_bucket          = string
-    project_id              = string
-    project_number          = string
-    federated_identity_pool = string
+    outputs_bucket           = string
+    project_id               = string
+    project_number           = string
+    federated_identity_pools = list(string)
     federated_identity_providers = map(object({
       issuer           = string
       issuer_uri       = string

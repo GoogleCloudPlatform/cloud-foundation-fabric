@@ -30,6 +30,14 @@ locals {
     pf-dev   = compact([local.automation_sas_iam.pf-dev])
     pf-prod  = compact([local.automation_sas_iam.pf-prod])
   }
+  # derive identity pool names from identity providers for easy reference
+  cicd_identity_pools = {
+    for k, v in local.cicd_identity_providers :
+    k => split("/providers/", v.name)[0]
+  }
+  cicd_identity_providers = coalesce(
+    try(var.automation.federated_identity_providers, null), {}
+  )
   cicd_repositories = {
     for k, v in coalesce(var.cicd_repositories, {}) : k => v
     if(
@@ -38,7 +46,7 @@ locals {
         try(v.type, null) == "sourcerepo"
         ||
         contains(
-          keys(local.identity_providers),
+          keys(local.cicd_identity_providers),
           coalesce(try(v.identity_provider, null), ":")
         )
       ) &&
@@ -47,14 +55,10 @@ locals {
   }
   cicd_workflow_var_files = {
     stage_2 = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "globals.auto.tfvars.json"
+      "0-bootstrap-tenant.auto.tfvars.json",
     ]
     stage_3 = [
-      "0-bootstrap.auto.tfvars.json",
-      "1-resman.auto.tfvars.json",
-      "globals.auto.tfvars.json",
+      "0-bootstrap-tenant.auto.tfvars.json",
       "2-networking.auto.tfvars.json",
       "2-security.auto.tfvars.json"
     ]
@@ -72,7 +76,4 @@ locals {
   groups_iam = {
     for k, v in local.groups : k => v != null ? "group:${v}" : null
   }
-  identity_providers = coalesce(
-    try(var.automation.federated_identity_providers, null), {}
-  )
 }
