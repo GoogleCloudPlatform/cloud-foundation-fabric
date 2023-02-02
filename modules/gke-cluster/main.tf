@@ -197,6 +197,13 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "gateway_api_config" {
+    for_each = var.enable_features.gateway_api ? [""] : []
+    content {
+      channel = "CHANNEL_STANDARD"
+    }
+  }
+
   maintenance_policy {
     dynamic "daily_maintenance_window" {
       for_each = (
@@ -252,6 +259,13 @@ resource "google_container_cluster" "cluster" {
           display_name = range.key
         }
       }
+    }
+  }
+
+  dynamic "mesh_certificates" {
+    for_each = var.enable_features.mesh_certificates != null ? [""] : []
+    content {
+      enable_certificates = var.enable_features.mesh_certificates
     }
   }
 

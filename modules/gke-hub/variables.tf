@@ -66,12 +66,12 @@ variable "configmanagement_templates" {
 variable "features" {
   description = "Enable and configue fleet features."
   type = object({
-    appdevexperience             = bool
-    configmanagement             = bool
-    identityservice              = bool
-    multiclusteringress          = string
-    multiclusterservicediscovery = bool
-    servicemesh                  = bool
+    appdevexperience             = optional(bool, false)
+    configmanagement             = optional(bool, false)
+    identityservice              = optional(bool, false)
+    multiclusteringress          = optional(string, null)
+    multiclusterservicediscovery = optional(bool, false)
+    servicemesh                  = optional(bool, false)
   })
   default = {
     appdevexperience             = false

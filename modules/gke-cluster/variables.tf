@@ -80,9 +80,11 @@ variable "enable_features" {
       key_name = string
     }))
     dataplane_v2         = optional(bool, false)
+    gateway_api          = optional(bool, false)
     groups_for_rbac      = optional(string)
     intranode_visibility = optional(bool, false)
     l4_ilb_subsetting    = optional(bool, false)
+    mesh_certificates    = optional(bool)
     pod_security_policy  = optional(bool, false)
     resource_usage_export = optional(object({
       dataset                              = string
@@ -95,7 +97,7 @@ variable "enable_features" {
       topic_id = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
-    workload_identity        = optional(bool, false)
+    workload_identity        = optional(bool, true)
   })
   default = {
     workload_identity = true
