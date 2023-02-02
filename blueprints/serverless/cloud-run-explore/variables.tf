@@ -40,7 +40,7 @@ variable "ingress_settings" {
 }
 
 variable "security_policy" {
-  description = "Security policy to enforce in the LB"
+  description = "Security policy (Cloud Armor) to enforce in the LB"
   type = object({
     enabled      = bool
     ip_blacklist = list(string)
@@ -50,5 +50,21 @@ variable "security_policy" {
     enabled      = false
     ip_blacklist = null
     path_blocked = null
+  }
+}
+
+variable "iap" {
+  description = "Identity-Aware Proxy for Cloud Run in the LB"
+  type = object({
+    enabled            = bool
+    support_email      = string
+    app_title          = string
+    oauth2_client_name = string
+  })
+  default = {
+    enabled            = false
+    support_email      = null
+    app_title          = null
+    oauth2_client_name = null
   }
 }

@@ -2,7 +2,7 @@
 ### Purpose of this configuration file.
 ###
 ### On top of custom-url configuration (wish list: 'include' directive),
-### add security using Cloud Armor in the LB.
+### add security using Cloud Armor and Identity-Aware Proxy in the LB.
 ###
 
 # Add an HTTPS Load Balancer in front of the Cloud Run service
@@ -18,11 +18,19 @@ custom_domain = "cloud-run-explore.example.org"
 # To allow access through the default URL set this value to "all"
 ingress_settings = "internal-and-cloud-load-balancing"
 
-# Security policy to enforce in the LB. The code and this configuration
-# allow to block a list of IPs and a specific URL path. For example, you
-# may want to block access to a login page to external users
+# Cloud Armor security policy to enforce in the LB. The code and this
+# configuration allow to block a list of IPs and a specific URL path. For
+# example, you may want to block access to a login page to external users
 security_policy = {
   enabled      = true
   ip_blacklist = ["79.149.0.0/16"]
   path_blocked = "/login.html"
+}
+
+# Identity-Aware Proxy config for Cloud Run in the LB
+iap = {
+  enabled            = true
+  support_email      = "user@example.org"
+  app_title          = "Cloud Run Explore Application"
+  oauth2_client_name = "Test Client"
 }

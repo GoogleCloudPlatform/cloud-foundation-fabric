@@ -36,9 +36,14 @@ module "glb" {
       backends = [
         { backend = "neg-0" }
       ]
-      health_checks   = []
-      port_name       = "http"
-      security_policy = try(google_compute_security_policy.policy[0].name, null)
+      health_checks = []
+      port_name     = "http"
+      security_policy = try(google_compute_security_policy.policy[0].name,
+      null)
+      iap_config = try({
+        oauth2_client_id     = google_iap_client.iap_client[0].client_id,
+        oauth2_client_secret = google_iap_client.iap_client[0].secret
+      }, null)
     }
   }
   health_check_configs = {}
@@ -62,6 +67,7 @@ module "glb" {
   }
 }
 
+# Cloud Armor configuration
 resource "google_compute_security_policy" "policy" {
   count   = var.glb_create ? (var.security_policy.enabled ? 1 : 0) : 0
   name    = "cloud-run-policy"
@@ -98,4 +104,41 @@ resource "google_compute_security_policy" "policy" {
     }
     description = "Default rule"
   }
+}
+
+# Identity-Aware Proxy (IAP) or OAuth brand (see OAuth consent screen)
+# Note:
+# Only "Organization Internal" brands can be created programmatically
+# via API. To convert it into an external brand please use the GCP
+# Console.
+# Brands can only be created once for a Google Cloud project and the
+# underlying Google API doesn't support DELETE or PATCH methods.
+# Destroying a Terraform-managed Brand will remove it from state but
+# will not delete it from Google Cloud.
+resource "google_iap_brand" "iap_brand" {
+  count             = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
+  project           = var.project_id
+  support_email     = var.iap.support_email
+  application_title = var.iap.app_title
+}
+
+# IAP owned OAuth2 client
+# Note:
+# Only internal org clients can be created via declarative tools.
+# External clients must be manually created via the GCP console.
+# Warning:
+# All arguments including secret will be stored in the raw state as plain-text.
+resource "google_iap_client" "iap_client" {
+  count        = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
+  display_name = var.iap.oauth2_client_name
+  brand        = google_iap_brand.iap_brand[0].name
+}
+
+# IAM policy for IAP
+# For simplicity we use the support_email as authorized member
+resource "google_iap_web_iam_member" "iap_iam" {
+  count   = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
+  project = var.project_id
+  role    = "roles/iap.httpsResourceAccessor"
+  member  = "user:${var.iap.support_email}"
 }
