@@ -262,6 +262,13 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "mesh_certificates" {
+    for_each = var.enable_features.mesh_certificates != null ? [""] : []
+    content {
+      enable_certificates = var.enable_features.mesh_certificates
+    }
+  }
+
   dynamic "monitoring_config" {
     for_each = var.monitoring_config != null && !var.enable_features.autopilot ? [""] : []
     content {
