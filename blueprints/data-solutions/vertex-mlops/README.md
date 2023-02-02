@@ -5,13 +5,14 @@ This example implements the infrastructure required to deploy an end-to-end [MLO
 
 ##  GCP resources
 The blueprint will deploy all the required resources to have a fully functional MLOPs environment containing:
-
-- GCP Project  to host all the resources
+- Vertex Workbench (for the experimentation environment)
+- GCP Project (optional) to host all the resources
 - Isolated VPC network and a subnet to be used by Vertex and Dataflow. Alternatively, an external Shared VPC can be configured using the `network_config`variable. 
 - Firewall rule to allow the internal subnet communication required by Dataflow
 - Cloud NAT required to reach the internet from the different computing resources (Vertex and Dataflow)
 - GCS buckets to host Vertex AI and Cloud Build Artifacts. By default the buckets will be regional and should match the Vertex AI region for the different resources (i.e. Vertex Managed Dataset) and processes (i.e. Vertex trainining)
 - BigQuery Dataset where the training data will be stored. This is optional, since the training data could be already hosted in an existing BigQuery dataset.
+- Artifact Registry Docker repository to host the custom images.
 - Service account (`mlops-[env]@`) with the minimum permissions required by Vertex AI and Dataflow (if this service is used inside of the Vertex AI Pipeline).
 - Service account (`github@`) to be used by Workload Identity Federation, to federate Github identity (Optional). 
 - Secret to store the Github SSH key to get access the CICD code repo.
