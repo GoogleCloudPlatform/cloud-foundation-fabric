@@ -55,15 +55,18 @@ resource "google_container_cluster" "cluster" {
 
   # the default nodepool is deleted here, use the gke-nodepool module instead
   # default nodepool configuration based on a shielded_nodes variable
-  node_config {
-    dynamic "shielded_instance_config" {
-      for_each = var.enable_features.shielded_nodes ? [""] : []
-      content {
-        enable_secure_boot          = true
-        enable_integrity_monitoring = true
+  dynamic "node_config" {
+    for_each = var.enable_features.autopilot ? [] : [""]
+    content {
+      dynamic "shielded_instance_config" {
+        for_each = var.enable_features.shielded_nodes ? [""] : []
+        content {
+          enable_secure_boot          = true
+          enable_integrity_monitoring = true
+        }
       }
+      tags = var.tags
     }
-    tags = var.tags
   }
 
 
@@ -259,6 +262,13 @@ resource "google_container_cluster" "cluster" {
           display_name = range.key
         }
       }
+    }
+  }
+
+  dynamic "mesh_certificates" {
+    for_each = var.enable_features.mesh_certificates != null ? [""] : []
+    content {
+      enable_certificates = var.enable_features.mesh_certificates
     }
   }
 
