@@ -53,6 +53,15 @@ locals {
         name       = "templates/providers.tf.tpl"
       }
       if v.populate_from != null
+    },
+    {
+      for k, v in var.repositories :
+      "${k}/templates/workflow-github.yaml" => {
+        repository = k
+        file       = "../../assets/templates/workflow-github.yaml"
+        name       = "templates/workflow-github.yaml"
+      }
+      if v.populate_from != null
     }
   )
 }

@@ -39,7 +39,7 @@ resource "local_file" "tfvars" {
 }
 
 resource "local_file" "workflows" {
-  for_each        = local.cicd_workflows
+  for_each        = var.outputs_location == null ? {} : local.cicd_workflows
   file_permission = "0644"
   filename        = "${local.outputs_root}/workflows/${each.key}-${local.cicd_repositories[each.key].type}.yaml"
   content         = try(each.value, null)
