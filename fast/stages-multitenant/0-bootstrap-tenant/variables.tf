@@ -18,8 +18,8 @@
 # the tfvars file generated in stage 00 and stored in its outputs
 
 variable "automation" {
-  # tfdoc:variable:source 0-0-bootstrap
-  description = "Automation resources created by the bootstrap stage."
+  # tfdoc:variable:source 0-bootstrap
+  description = "Automation resources created by the organization-level bootstrap stage."
   type = object({
     outputs_bucket          = string
     project_id              = string
@@ -36,7 +36,7 @@ variable "automation" {
 }
 
 variable "billing_account" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
   type = object({
     id           = string
@@ -95,8 +95,8 @@ variable "cicd_repositories" {
 }
 
 variable "custom_roles" {
-  # tfdoc:variable:source 0-0-bootstrap
-  description = "Custom roles defined at the org level, in key => id format."
+  # tfdoc:variable:source 0-bootstrap
+  description = "Custom roles defined at the organization level, in key => id format."
   type = object({
     service_project_network_admin = string
   })
@@ -104,7 +104,7 @@ variable "custom_roles" {
 }
 
 variable "fast_features" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Selective control for top-level FAST features."
   type = object({
     data_platform   = bool
@@ -156,8 +156,8 @@ variable "iam_additive" {
 }
 
 variable "locations" {
-  # tfdoc:variable:source 0-0-bootstrap
-  description = "Optional locations for GCS, BigQuery, and logging buckets created here."
+  # tfdoc:variable:source 0-bootstrap
+  description = "Optional locations for GCS, BigQuery, and logging buckets created here. These are the defaults set at the organization level, and can be overridden via the tenant config variable."
   type = object({
     bq      = string
     gcs     = string
@@ -197,7 +197,7 @@ variable "log_sinks" {
 }
 
 variable "organization" {
-  # tfdoc:variable:source 0-0-bootstrap
+  # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
   type = object({
     domain      = string
@@ -223,7 +223,7 @@ variable "prefix" {
 }
 
 variable "project_parent_ids" {
-  description = "Optional parents for projects created here in folders/nnnnnnn format. Null values will use the organization as parent."
+  description = "Optional parents for projects created here in folders/nnnnnnn format. Null values will use the tenant folder as parent."
   type = object({
     automation = string
     logging    = string
