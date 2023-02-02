@@ -24,7 +24,10 @@ locals {
       "domain:${var.organization.domain}"
     ]
     "roles/logging.admin" = concat(
-      [module.automation-tf-bootstrap-sa.iam_email],
+      [
+        module.automation-tf-bootstrap-sa.iam_email,
+        module.automation-tf-resman-sa.iam_email
+      ],
       local._iam_bootstrap_user
     )
     "roles/owner" = local._iam_bootstrap_user
@@ -118,16 +121,6 @@ locals {
   iam_roles_additive = distinct(concat(
     keys(local._iam_additive), keys(var.iam_additive)
   ))
-  log_sink_destinations = merge(
-    # use the same dataset for all sinks with `bigquery` as  destination
-    { for k, v in var.log_sinks : k => module.log-export-dataset.0 if v.type == "bigquery" },
-    # use the same gcs bucket for all sinks with `storage` as destination
-    { for k, v in var.log_sinks : k => module.log-export-gcs.0 if v.type == "storage" },
-    # use separate pubsub topics and logging buckets for sinks with
-    # destination `pubsub` and `logging`
-    module.log-export-pubsub,
-    module.log-export-logbucket
-  )
 }
 
 module "organization" {

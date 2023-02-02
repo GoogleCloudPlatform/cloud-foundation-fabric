@@ -44,6 +44,14 @@ module "tenant-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = var.tenant_config.descriptive_name
+  logging_sinks = {
+    for name, attrs in var.log_sinks : name => {
+      bq_partitioned_table = attrs.type == "bigquery"
+      destination          = local.log_sink_destinations[name].id
+      filter               = attrs.filter
+      type                 = attrs.type
+    }
+  }
   tag_bindings = {
     tenant = try(
       module.organization.tag_values["${var.tag_names.tenant}/${var.tenant_config.short_name}"].id,
