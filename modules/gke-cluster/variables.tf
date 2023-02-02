@@ -84,6 +84,7 @@ variable "enable_features" {
     groups_for_rbac      = optional(string)
     intranode_visibility = optional(bool, false)
     l4_ilb_subsetting    = optional(bool, false)
+    mesh_certificates    = optional(bool)
     pod_security_policy  = optional(bool, false)
     resource_usage_export = optional(object({
       dataset                              = string
