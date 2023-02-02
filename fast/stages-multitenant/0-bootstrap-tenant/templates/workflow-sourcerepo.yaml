@@ -43,8 +43,10 @@ steps:
     - pipefail
     - -c
     - |-
+      %{~ if tf_providers_file != "" ~}
       /google-cloud-sdk/bin/gsutil cp \
         gs://$${_FAST_OUTPUTS_BUCKET}/providers/$${_TF_PROVIDERS_FILE} ./
+      %{~ endif ~}
       /google-cloud-sdk/bin/gsutil cp -r \
         gs://$${_FAST_OUTPUTS_BUCKET}/tfvars ./
       for f in $${_TF_VAR_FILES}; do

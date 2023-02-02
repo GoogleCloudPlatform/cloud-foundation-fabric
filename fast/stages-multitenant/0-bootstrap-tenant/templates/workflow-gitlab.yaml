@@ -27,7 +27,9 @@ variables:
   FAST_SERVICE_ACCOUNT: ${service_account}
   FAST_WIF_PROVIDER: ${identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+  %{~ if tf_providers_file != "" ~}
   TF_PROVIDERS_FILE: ${tf_providers_file}
+  %{~ endif ~}
   TF_VAR_FILES: ${tf_var_files == [] ? "''" : join("\n    ", tf_var_files)}
 
 stages:
@@ -64,9 +66,11 @@ tf-files:
     # - gcloud components install -q alpha
     - gcloud config set auth/credential_file_override $${GOOGLE_CREDENTIALS}
     - mkdir -p .tf-setup
+    %{~ if tf_providers_file != "" ~}
     - |
       gcloud alpha storage cp -r \
         "gs://$${FAST_OUTPUTS_BUCKET}/providers/$${TF_PROVIDERS_FILE}" .tf-setup/
+    %{~ endif ~}
     - |
       gcloud alpha storage cp -r \
         "gs://$${FAST_OUTPUTS_BUCKET}/tfvars" .tf-setup/
