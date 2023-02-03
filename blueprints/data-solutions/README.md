@@ -52,7 +52,14 @@ running on a VPC with a private IP and a dedicated Service Account. A GCS bucket
 ### SQL Server Always On Availability Groups
 
 <a href="./sqlserver-alwayson/" title="SQL Server Always On Availability Groups"><img src="https://cloud.google.com/compute/images/sqlserver-ag-architecture.svg" align="left" width="280px"></a>
-This [blueprint](./data-platform-foundations/) implements SQL Server Always On Availability Groups using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling. The actual setup process (apart from Active Directory operations) has been scripted, so that least amount of manual works needs to performed.
+This [blueprint](./sqlserver-alwayson/) implements SQL Server Always On Availability Groups using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling. The actual setup process (apart from Active Directory operations) has been scripted, so that least amount of manual works needs to performed.
+
+<br clear="left">
+
+### MLOps with Vertex AI
+
+<a href="./vertex-mlops/" title="MLOps with Vertex AI"><img src="./vertex-mlops/images/mlops_projects.png" align="left" width="280px"></a>
+This [blueprint](./vertex-mlops/) implements the infrastructure required to have a fully functional MLOPs environment using Vertex AI: required GCP services activation, Vertex Workbench, GCS buckets to host Vertex AI and Cloud Build artifacts, Artifact Registry docker repository to host custom images, required service accounts, networking and Workload Identity Federation Provider for Github integration (optional).
 
 <br clear="left">
 
