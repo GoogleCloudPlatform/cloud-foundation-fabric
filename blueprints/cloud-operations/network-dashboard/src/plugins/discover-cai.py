@@ -39,7 +39,9 @@ TYPES = {
     'subnetworks': 'compute.googleapis.com/Subnetwork',
     'routers': 'compute.googleapis.com/Router',
     'routes': 'compute.googleapis.com/Route',
-    'sql_instances': 'sqladmin.googleapis.com/Instance'
+    'sql_instances': 'sqladmin.googleapis.com/Instance',
+    'filestore_instances': 'file.googleapis.com/Instance',
+    'memorystore_instances': 'redis.googleapis.com/Instance',
 }
 NAMES = {v: k for k, v in TYPES.items()}
 
@@ -82,10 +84,16 @@ def _handle_resource(resources, asset_type, data):
   # e.g. assetType = GlobalAddress but discoveryName = Address
   resource_name = NAMES[asset_type]
   resource = {
-      'id': attrs.get('id'),
-      'name': attrs['name'],
-      'self_link': _self_link(attrs['selfLink']),
-      'assetType': asset_type
+      'id':
+          attrs.get('id'),
+      'name':
+          attrs['name'],
+      # Some resources (ex: Filestore) don't have a self_link, using parent + name in that case
+      'self_link':
+          f'{data["parent"]}/{attrs["name"]}'
+          if not 'selfLink' in attrs else _self_link(attrs['selfLink']),
+      'assetType':
+          asset_type
   }
   # derive parent type and id and skip if parent is not within scope
   parent_data = _get_parent(data['parent'], resources)
@@ -212,6 +220,38 @@ def _handle_sql_instances(resource, data):
       ],
       'region': data['region'],
       'availabilityType': data['settings']['availabilityType'],
+      'network': data['settings']['ipConfiguration']['privateNetwork']
+  }
+
+
+def _handle_filestore_instances(resource, data):
+  'Handles filestore instance type resource data.'
+  return {
+      # Getting only the instance name, removing the rest
+      'name': data['name'].split('/')[-1],
+      # Is a list but for now, only one network is supported for Filestore
+      'network': data['networks'][0]['network'],
+      'reservedIpRange': data['networks'][0]['reservedIpRange'],
+      'ipAddresses': data['networks'][0]['ipAddresses']
+  }
+
+
+def _handle_memorystore_instances(resource, data):
+  'Handles Memorystore (Redis) instance type resource data.'
+  return {
+      # Getting only the instance name, removing the rest
+      'name':
+          data['name'].split('/')[-1],
+      'locationId':
+          data['locationId'],
+      'replicaCount':
+          0 if not 'replicaCount' in data else data['replicaCount'],
+      'network':
+          data['authorizedNetwork'],
+      'reservedIpRange':
+          '' if not 'reservedIpRange' in data else data['reservedIpRange'],
+      'host':
+          '' if not 'host' in data else data['host'],
   }
 
 

@@ -57,7 +57,8 @@ module "apigee_vpc" {
   }]
   psa_config = {
     ranges = {
-      "apigee" = var.apigee_psa_ip_cidr_range
+      "apigee-runtime"         = var.apigee_runtime_ip_cidr_range
+      "apigee-troubleshooting" = var.apigee_troubleshooting_ip_cidr_range
     }
   }
 }
@@ -79,9 +80,10 @@ module "apigee" {
   }
   instances = {
     instance-1 = {
-      region            = var.region
-      environments      = [local.environment]
-      psa_ip_cidr_range = var.apigee_psa_ip_cidr_range
+      region                        = var.region
+      environments                  = [local.environment]
+      runtime_ip_cidr_range         = var.apigee_runtime_ip_cidr_range
+      troubleshooting_ip_cidr_range = var.apigee_troubleshooting_ip_cidr_range
     }
   }
   endpoint_attachments = {

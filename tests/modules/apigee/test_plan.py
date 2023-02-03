@@ -54,6 +54,18 @@ def test_env_only(plan_runner):
         'google_apigee_envgroup_attachment.envgroup_attachments': 1,
     }
 
+def test_env_only_with_deployment_type(plan_runner):
+    "Test that creates an environment in an existing environment group, with deployment_type set."
+    _, resources = plan_runner(tf_var_file='test.env_only_with_deployment_type.tfvars')
+    assert [r['values'].get('deployment_type') for r in resources
+            ] == [None, 'ARCHIVE']
+
+def test_env_only_with_api_proxy_type(plan_runner):
+    "Test that creates an environment in an existing environment group, with api_proxy_type set."
+    _, resources = plan_runner(tf_var_file='test.env_only_with_api_proxy_type.tfvars')
+    assert [r['values'].get('api_proxy_type') for r in resources
+            ] == [None, 'PROGRAMMABLE']
+
 def test_instance_only(plan_runner):
     "Test that creates only an instance."
     _, resources = plan_runner(tf_var_file='test.instance_only.tfvars')
