@@ -127,8 +127,12 @@ resource "google_compute_security_policy" "policy" {
 # Destroying a Terraform-managed Brand will remove it from state but
 # will not delete it from Google Cloud.
 resource "google_iap_brand" "iap_brand" {
-  count             = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
-  project           = module.project.project_id
+  count   = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
+  project = module.project.project_id
+  # Support email displayed on the OAuth consent screen. The caller must be
+  # the user with the associated email address, or if a group email is
+  # specified, the caller can be either a user or a service account which
+  # is an owner of the specified group in Cloud Identity.
   support_email     = var.iap.support_email
   application_title = var.iap.app_title
 }
