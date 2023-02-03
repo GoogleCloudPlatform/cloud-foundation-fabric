@@ -30,7 +30,9 @@ security_policy = {
 # Identity-Aware Proxy config for Cloud Run in the LB
 iap = {
   enabled            = true
-  support_email      = "user@example.org"
   app_title          = "Cloud Run Explore Application"
   oauth2_client_name = "Test Client"
 }
+
+# IAP email used for OAuth screen and accessing Cloud Run
+iap_email = "user@example.org"

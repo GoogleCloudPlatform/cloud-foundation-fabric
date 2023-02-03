@@ -57,14 +57,19 @@ variable "iap" {
   description = "Identity-Aware Proxy for Cloud Run in the LB"
   type = object({
     enabled            = bool
-    support_email      = string
     app_title          = string
     oauth2_client_name = string
   })
   default = {
     enabled            = false
-    support_email      = null
     app_title          = null
     oauth2_client_name = null
   }
+}
+
+variable "iap_email" {
+  # Taken out of var 'iap' for convenience to override it on the CLI
+  description = "IAP email used for OAuth screen and accessing Cloud Run"
+  type        = string
+  default     = null
 }

@@ -133,7 +133,7 @@ resource "google_iap_brand" "iap_brand" {
   # the user with the associated email address, or if a group email is
   # specified, the caller can be either a user or a service account which
   # is an owner of the specified group in Cloud Identity.
-  support_email     = var.iap.support_email
+  support_email     = var.iap_email
   application_title = var.iap.app_title
 }
 
@@ -150,10 +150,10 @@ resource "google_iap_client" "iap_client" {
 }
 
 # IAM policy for IAP
-# For simplicity we use the support_email as authorized member
+# For simplicity we use the same email as support_email and authorized member
 resource "google_iap_web_iam_member" "iap_iam" {
   count   = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
   project = module.project.project_id
   role    = "roles/iap.httpsResourceAccessor"
-  member  = "user:${var.iap.support_email}"
+  member  = "user:${var.iap_email}"
 }
