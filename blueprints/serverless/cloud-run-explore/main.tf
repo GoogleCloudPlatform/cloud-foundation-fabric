@@ -1,7 +1,18 @@
+module "project" {
+  source         = "../../../modules/project"
+  project_create = false
+  name           = var.project_id
+  services = [
+    "run.googleapis.com",
+    "compute.googleapis.com",
+    "iap.googleapis.com"
+  ]
+}
+
 # Cloud Run service
 module "cloud_run" {
   source     = "../../../modules/cloud-run"
-  project_id = var.project_id
+  project_id = module.project.project_id
   name       = var.run_svc_name
   region     = var.region
   containers = [{
@@ -20,7 +31,7 @@ module "cloud_run" {
 # Reserved static IP for the Load Balancer
 resource "google_compute_global_address" "default" {
   count   = var.glb_create ? 1 : 0
-  project = var.project_id
+  project = module.project.project_id
   name    = "glb-ip"
 }
 
@@ -28,7 +39,7 @@ resource "google_compute_global_address" "default" {
 module "glb" {
   source     = "../../../modules/net-glb"
   count      = var.glb_create ? 1 : 0
-  project_id = var.project_id
+  project_id = module.project.project_id
   name       = "glb"
   address    = google_compute_global_address.default[0].address
   backend_service_configs = {
@@ -71,7 +82,7 @@ module "glb" {
 resource "google_compute_security_policy" "policy" {
   count   = var.glb_create ? (var.security_policy.enabled ? 1 : 0) : 0
   name    = "cloud-run-policy"
-  project = var.project_id
+  project = module.project.project_id
   rule {
     action   = "deny(403)"
     priority = 1000
@@ -117,7 +128,7 @@ resource "google_compute_security_policy" "policy" {
 # will not delete it from Google Cloud.
 resource "google_iap_brand" "iap_brand" {
   count             = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
-  project           = var.project_id
+  project           = module.project.project_id
   support_email     = var.iap.support_email
   application_title = var.iap.app_title
 }
@@ -138,7 +149,7 @@ resource "google_iap_client" "iap_client" {
 # For simplicity we use the support_email as authorized member
 resource "google_iap_web_iam_member" "iap_iam" {
   count   = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
-  project = var.project_id
+  project = module.project.project_id
   role    = "roles/iap.httpsResourceAccessor"
   member  = "user:${var.iap.support_email}"
 }
