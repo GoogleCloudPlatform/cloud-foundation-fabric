@@ -4,10 +4,30 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2022-12-13 10:03:24+00:00 -->
+<!-- None < 2023-02-04 13:47:22+00:00 -->
+
+### DOCUMENTATION
+
+- [[#1052](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1052)] **incompatible change:** FAST multitenant bootstrap and resource management, rename org-level FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2023-02-04 14:00:46+00:00 -->
+
+### FAST
+
+- [[#1052](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1052)] **incompatible change:** FAST multitenant bootstrap and resource management, rename org-level FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2023-02-04 14:00:46+00:00 -->
+
+### MODULES
+
+- [[#1052](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1052)] **incompatible change:** FAST multitenant bootstrap and resource management, rename org-level FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2023-02-04 14:00:46+00:00 -->
+
+### TOOLS
+
+- [[#1052](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1052)] **incompatible change:** FAST multitenant bootstrap and resource management, rename org-level FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2023-02-04 14:00:46+00:00 -->
+
+## [20.0.0] - 2023-02-04
+<!-- 2023-02-04 13:47:22+00:00 < 2022-12-13 10:03:24+00:00 -->
 
 ### BLUEPRINTS
 
+- [[#1038](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1038)] Vertex Pipelines MLOps framework blueprint ([javiergp](https://github.com/javiergp)) <!-- 2023-02-02 18:13:13+00:00 -->
 - [[#1124](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1124)] Removed unused file package-lock.json ([apichick](https://github.com/apichick)) <!-- 2023-02-01 17:54:25+00:00 -->
 - [[#1119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1119)] **incompatible change:** Multi-Cluster Ingress gateway api config ([wiktorn](https://github.com/wiktorn)) <!-- 2023-01-31 13:16:52+00:00 -->
 - [[#1111](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1111)] **incompatible change:** In the apigee module now both the /22 and /28 peering IP ranges are p… ([apichick](https://github.com/apichick)) <!-- 2023-01-31 10:46:38+00:00 -->
@@ -52,6 +72,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1127](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1127)] Skip node config for autopilot ([ludoo](https://github.com/ludoo)) <!-- 2023-02-02 15:13:57+00:00 -->
 - [[#1125](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1125)] Added mesh_certificates setting in GKE cluster ([rosmo](https://github.com/rosmo)) <!-- 2023-02-02 10:19:01+00:00 -->
 - [[#1094](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1094)] Added GLB example with MIG as backend ([eliamaldini](https://github.com/eliamaldini)) <!-- 2023-01-31 13:49:13+00:00 -->
 - [[#1119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1119)] **incompatible change:** Multi-Cluster Ingress gateway api config ([wiktorn](https://github.com/wiktorn)) <!-- 2023-01-31 13:16:52+00:00 -->
@@ -477,7 +498,7 @@ All notable changes to this project will be documented in this file.
 - fix `tag` output on `data-catalog-policy-tag` module
 - add shared-vpc support on `gcs-to-bq-with-least-privileges`
 - new `net-ilb-l7` module
-- new [02-networking-peering](fast/stages/02-networking-peering) networking stage
+- new `02-networking-peering` networking stage
 - **incompatible change** the variable for PSA ranges in networking stages have changed
 
 ## [14.0.0] - 2022-02-25
@@ -496,8 +517,8 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** removed `ingress_settings` configuration option in the `cloud-functions` module.
 - new [m4ce VM example](blueprints/cloud-operations/vm-migration/)
 - Support for resource management tags in the `organization`, `folder`, `project`, `compute-vm`, and `kms` modules
-- new [data platform](fast/stages/03-data-platform) stage 3
-- new [02-networking-nva](fast/stages/02-networking-nva) networking stage
+- new `data platform` stage 3
+- new `02-networking-nva` networking stage
 - allow customizing the names of custom roles
 - added `environment` and `context` resource management tags
 - use resource management tags to restrict scope of roles/orgpolicy.policyAdmin
@@ -932,7 +953,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v19.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v20.0.0...HEAD
+[20.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v19.0.0...v20.0.0
 [19.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v18.0.0...v19.0.0
 [18.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v16.0.0...v18.0.0
 [16.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v15.0.0...v16.0.0

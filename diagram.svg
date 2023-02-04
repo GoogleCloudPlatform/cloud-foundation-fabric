@@ -1,0 +1,293 @@
+<svg fill="none" viewBox="0 0 800 400" width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <foreignObject width="100%" height="100%">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <style>
+  .edgePaths path {
+    stroke: #bebebe !important;
+  }
+  .mermaidExternal > rect {
+    fill: #f6f6f6 !important;
+    stroke-dasharray: 5,5;
+    stroke: #bebebe !important;
+  }
+  .mermaidOrg > rect {
+    fill: #F6F6F6 !important;
+  }
+  .mermaidFolder > rect {
+    fill: #F1F8E9 !important;
+    stroke: #abd57b !important;
+  }
+</style>
+      <style>@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css");'</style>
+      <style>#graph-div{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#graph-div .error-icon{fill:hsl(25.3846153846, 86.6666666667%, 99.1176470588%);}#graph-div .error-text{fill:rgb(0.3, 2.5500000001, 4.2000000001);stroke:rgb(0.3, 2.5500000001, 4.2000000001);}#graph-div .edge-thickness-normal{stroke-width:2px;}#graph-div .edge-thickness-thick{stroke-width:3.5px;}#graph-div .edge-pattern-solid{stroke-dasharray:0;}#graph-div .edge-pattern-dashed{stroke-dasharray:3;}#graph-div .edge-pattern-dotted{stroke-dasharray:2;}#graph-div .marker{fill:#0b0b0b;stroke:#0b0b0b;}#graph-div .marker.cross{stroke:#0b0b0b;}#graph-div svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#graph-div g.classGroup text{fill:hsl(205.3846153846, 46.6666666667%, 84.1176470588%);fill:#333;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#graph-div g.classGroup text .title{font-weight:bolder;}#graph-div .nodeLabel,#graph-div .edgeLabel{color:#333;}#graph-div .edgeLabel .label rect{fill:#E3F2FD;}#graph-div .label text{fill:#333;}#graph-div .edgeLabel .label span{background:#E3F2FD;}#graph-div .classTitle{font-weight:bolder;}#graph-div .node rect,#graph-div .node circle,#graph-div .node ellipse,#graph-div .node polygon,#graph-div .node path{fill:#E3F2FD;stroke:hsl(205.3846153846, 46.6666666667%, 84.1176470588%);stroke-width:1px;}#graph-div .divider{stroke:hsl(205.3846153846, 46.6666666667%, 84.1176470588%);stroke:1;}#graph-div g.clickable{cursor:pointer;}#graph-div g.classGroup rect{fill:#E3F2FD;stroke:hsl(205.3846153846, 46.6666666667%, 84.1176470588%);}#graph-div g.classGroup line{stroke:hsl(205.3846153846, 46.6666666667%, 84.1176470588%);stroke-width:1;}#graph-div .classLabel .box{stroke:none;stroke-width:0;fill:#E3F2FD;opacity:0.5;}#graph-div .classLabel .label{fill:hsl(205.3846153846, 46.6666666667%, 84.1176470588%);font-size:10px;}#graph-div .relation{stroke:#0b0b0b;stroke-width:1;fill:none;}#graph-div .dashed-line{stroke-dasharray:3;}#graph-div .dotted-line{stroke-dasharray:1 2;}#graph-div #compositionStart,#graph-div .composition{fill:#0b0b0b!important;stroke:#0b0b0b!important;stroke-width:1;}#graph-div #compositionEnd,#graph-div .composition{fill:#0b0b0b!important;stroke:#0b0b0b!important;stroke-width:1;}#graph-div #dependencyStart,#graph-div .dependency{fill:#0b0b0b!important;stroke:#0b0b0b!important;stroke-width:1;}#graph-div #dependencyStart,#graph-div .dependency{fill:#0b0b0b!important;stroke:#0b0b0b!important;stroke-width:1;}#graph-div #extensionStart,#graph-div .extension{fill:#E3F2FD!important;stroke:#0b0b0b!important;stroke-width:1;}#graph-div #extensionEnd,#graph-div .extension{fill:#E3F2FD!important;stroke:#0b0b0b!important;stroke-width:1;}#graph-div #aggregationStart,#graph-div .aggregation{fill:#E3F2FD!important;stroke:#0b0b0b!important;stroke-width:1;}#graph-div #aggregationEnd,#graph-div .aggregation{fill:#E3F2FD!important;stroke:#0b0b0b!important;stroke-width:1;}#graph-div #lollipopStart,#graph-div .lollipop{fill:#E3F2FD!important;stroke:#0b0b0b!important;stroke-width:1;}#graph-div #lollipopEnd,#graph-div .lollipop{fill:#E3F2FD!important;stroke:#0b0b0b!important;stroke-width:1;}#graph-div .edgeTerminals{font-size:11px;}#graph-div .classTitleText{text-anchor:middle;font-size:18px;fill:#333;}#graph-div :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
+      <svg aria-roledescription="classDiagram" viewBox="0 0 500.0283203125 640.9853515625" style="max-width: 100%;" xmlns="http://www.w3.org/2000/svg" width="100%" id="graph-div" height="100%" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g>
+          <defs>
+            <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker aggregation classDiagram" id="classDiagram-aggregationStart">
+              <path d="M 18,7 L9,13 L1,7 L9,1 Z"></path>
+            </marker>
+          </defs>
+          <defs>
+            <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker aggregation classDiagram" id="classDiagram-aggregationEnd">
+              <path d="M 18,7 L9,13 L1,7 L9,1 Z"></path>
+            </marker>
+          </defs>
+          <defs>
+            <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker extension classDiagram" id="classDiagram-extensionStart">
+              <path d="M 1,7 L18,13 V 1 Z"></path>
+            </marker>
+          </defs>
+          <defs>
+            <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker extension classDiagram" id="classDiagram-extensionEnd">
+              <path d="M 1,1 V 13 L18,7 Z"></path>
+            </marker>
+          </defs>
+          <defs>
+            <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker composition classDiagram" id="classDiagram-compositionStart">
+              <path d="M 18,7 L9,13 L1,7 L9,1 Z"></path>
+            </marker>
+          </defs>
+          <defs>
+            <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker composition classDiagram" id="classDiagram-compositionEnd">
+              <path d="M 18,7 L9,13 L1,7 L9,1 Z"></path>
+            </marker>
+          </defs>
+          <defs>
+            <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker dependency classDiagram" id="classDiagram-dependencyStart">
+              <path d="M 5,7 L9,13 L1,7 L9,1 Z"></path>
+            </marker>
+          </defs>
+          <defs>
+            <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker dependency classDiagram" id="classDiagram-dependencyEnd">
+              <path d="M 18,7 L9,13 L14,7 L9,1 Z"></path>
+            </marker>
+          </defs>
+          <defs>
+            <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker lollipop classDiagram" id="classDiagram-lollipopStart">
+              <circle r="6" cy="7" cx="6" fill="white" stroke="black"></circle>
+            </marker>
+          </defs>
+          <g class="root">
+            <g class="clusters"></g>
+            <g class="edgePaths">
+              <path style="fill:none" class="edge-pattern-solid relation" id="id1" d="M162.64356231689453,145.95778602350617L154.95414861043295,151.63083476812363C147.26473490397134,157.3038835127411,131.8859074910482,168.64998100197602,124.1964937845866,178.48969641326016C116.507080078125,188.32941182454428,116.507080078125,196.6627451578776,116.507080078125,200.82941182454428L116.507080078125,204.99607849121094"></path>
+              <path style="fill:none" class="edge-pattern-solid relation" id="id2" d="M337.38475799560547,145.95778602350617L345.0741717020671,151.63083476812363C352.7635854085286,157.3038835127411,368.14241282145184,168.64998100197602,375.8318265279134,178.48969641326016C383.521240234375,188.32941182454428,383.521240234375,196.6627451578776,383.521240234375,200.82941182454428L383.521240234375,204.99607849121094"></path>
+              <path style="fill:none" class="edge-pattern-solid relation" id="id3" d="M116.507080078125,379.99119567871094L116.507080078125,384.1578623453776C116.507080078125,388.32452901204425,116.507080078125,396.6578623453776,116.507080078125,404.99119567871094C116.507080078125,413.32452901204425,116.507080078125,421.6578623453776,116.507080078125,425.82452901204425L116.507080078125,429.99119567871094"></path>
+              <path style="fill:none" class="edge-pattern-solid relation" id="id4" d="M383.521240234375,379.99119567871094L383.521240234375,384.1578623453776C383.521240234375,388.32452901204425,383.521240234375,396.6578623453776,383.521240234375,404.99119567871094C383.521240234375,413.32452901204425,383.521240234375,421.6578623453776,383.521240234375,425.82452901204425L383.521240234375,429.99119567871094"></path>
+            </g>
+            <g class="edgeLabels">
+              <g class="edgeLabel">
+                <g transform="translate(0, 0)" class="label">
+                  <foreignObject height="0" width="0">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="edgeLabel"></span>
+                    </div>
+                  </foreignObject>
+                </g>
+              </g>
+              <g class="edgeLabel">
+                <g transform="translate(0, 0)" class="label">
+                  <foreignObject height="0" width="0">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="edgeLabel"></span>
+                    </div>
+                  </foreignObject>
+                </g>
+              </g>
+              <g class="edgeLabel">
+                <g transform="translate(0, 0)" class="label">
+                  <foreignObject height="0" width="0">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="edgeLabel"></span>
+                    </div>
+                  </foreignObject>
+                </g>
+              </g>
+              <g class="edgeLabel">
+                <g transform="translate(0, 0)" class="label">
+                  <foreignObject height="0" width="0">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="edgeLabel"></span>
+                    </div>
+                  </foreignObject>
+                </g>
+              </g>
+            </g>
+            <g class="nodes">
+              <g transform="translate(250.01416015625, 81.49803924560547)" id="classid-Organization-10" class="node default  mermaidExternal">
+                <rect height="146.99608612060547" width="174.74119567871094" y="-73.49804306030273" x="-87.37059783935547" class="outer title-state"></rect>
+                <line y2="-37.49902153015137" y1="-37.49902153015137" x2="87.37059783935547" x1="-87.37059783935547" class="divider"></line>
+                <line y2="6.5" y1="6.5" x2="87.37059783935547" x1="-87.37059783935547" class="divider"></line>
+                <g class="label">
+                  <foreignObject height="0" width="0">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel"></span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -47.705074310302734, -65.99804306030273)" height="23.999021530151367" width="95.41014862060547" class="classTitle">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">Organization</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -79.87059783935547, -25.999021530151367)" height="23.999021530151367" width="129.84617614746094">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">tag value [tenant]</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -79.87059783935547, 14)" height="23.999021530151367" width="100.70800018310547">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">IAM bindings()</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -79.87059783935547, 41.99902153015137)" height="23.999021530151367" width="159.74119567871094">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">organization policies()</span>
+                    </div>
+                  </foreignObject>
+                </g>
+              </g>
+              <g transform="translate(116.507080078125, 292.49363708496094)" id="classid-Tenant0-11" class="node default  mermaidFolder">
+                <rect height="174.99510765075684" width="174.74119567871094" y="-87.49755382537842" x="-87.37059783935547" class="outer title-state"></rect>
+                <line y2="-23.499510765075684" y1="-23.499510765075684" x2="87.37059783935547" x1="-87.37059783935547" class="divider"></line>
+                <line y2="-7.499510765075684" y1="-7.499510765075684" x2="87.37059783935547" x1="-87.37059783935547" class="divider"></line>
+                <g class="label">
+                  <foreignObject transform="translate( -29.913328170776367, -79.99755382537842)" height="23.999021530151367" width="59.826656341552734">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">«folder»</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -30.157468795776367, -51.99853229522705)" height="23.999021530151367" width="60.314937591552734" class="classTitle">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">Tenant0</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -79.87059783935547, 0.0004892349243164062)" height="23.999021530151367" width="100.70800018310547">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">IAM bindings()</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -79.87059783935547, 27.999510765075684)" height="23.999021530151367" width="159.74119567871094">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">organization policies()</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -79.87059783935547, 55.99853229522705)" height="23.999021530151367" width="98.25438690185547">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">tag bindings()</span>
+                    </div>
+                  </foreignObject>
+                </g>
+              </g>
+              <g transform="translate(383.521240234375, 292.49363708496094)" id="classid-Tenant1-12" class="node default  mermaidFolder">
+                <rect height="174.99510765075684" width="174.74119567871094" y="-87.49755382537842" x="-87.37059783935547" class="outer title-state"></rect>
+                <line y2="-23.499510765075684" y1="-23.499510765075684" x2="87.37059783935547" x1="-87.37059783935547" class="divider"></line>
+                <line y2="-7.499510765075684" y1="-7.499510765075684" x2="87.37059783935547" x1="-87.37059783935547" class="divider"></line>
+                <g class="label">
+                  <foreignObject transform="translate( -29.913328170776367, -79.99755382537842)" height="23.999021530151367" width="59.826656341552734">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">«folder»</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -30.157468795776367, -51.99853229522705)" height="23.999021530151367" width="60.314937591552734" class="classTitle">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">Tenant1</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -79.87059783935547, 0.0004892349243164062)" height="23.999021530151367" width="100.70800018310547">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">IAM bindings()</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -79.87059783935547, 27.999510765075684)" height="23.999021530151367" width="159.74119567871094">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">organization policies()</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -79.87059783935547, 55.99853229522705)" height="23.999021530151367" width="98.25438690185547">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">tag bindings()</span>
+                    </div>
+                  </foreignObject>
+                </g>
+              </g>
+              <g transform="translate(116.507080078125, 531.4882507324219)" id="classid-Tenant0_IaC-13" class="node default">
+                <rect height="202.9941291809082" width="217.01414489746094" y="-101.4970645904541" x="-108.50707244873047" class="outer title-state"></rect>
+                <line y2="-37.49902153015137" y1="-37.49902153015137" x2="108.50707244873047" x1="-108.50707244873047" class="divider"></line>
+                <line y2="62.498043060302734" y1="62.498043060302734" x2="108.50707244873047" x1="-108.50707244873047" class="divider"></line>
+                <g class="label">
+                  <foreignObject transform="translate( -34.661861419677734, -93.9970645904541)" height="23.999021530151367" width="69.32372283935547">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">«project»</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -46.221920013427734, -65.99804306030273)" height="23.999021530151367" width="92.44384002685547" class="classTitle">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">Tenant0_IaC</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -101.00707244873047, -25.999021530151367)" height="23.999021530151367" width="202.01414489746094">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">service accounts [all stages]</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -101.00707244873047, 2)" height="23.999021530151367" width="197.25340270996094">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">storage buckets [stage 0+1]</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -101.00707244873047, 29.999021530151367)" height="23.999021530151367" width="189.92918395996094">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">optional CI/CD  [stage 0+1]</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -101.00707244873047, 69.99804306030273)" height="23.999021530151367" width="100.70800018310547">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">IAM bindings()</span>
+                    </div>
+                  </foreignObject>
+                </g>
+              </g>
+              <g transform="translate(383.521240234375, 531.4882507324219)" id="classid-Tenant1_IaC-14" class="node default">
+                <rect height="202.9941291809082" width="217.01414489746094" y="-101.4970645904541" x="-108.50707244873047" class="outer title-state"></rect>
+                <line y2="-37.49902153015137" y1="-37.49902153015137" x2="108.50707244873047" x1="-108.50707244873047" class="divider"></line>
+                <line y2="62.498043060302734" y1="62.498043060302734" x2="108.50707244873047" x1="-108.50707244873047" class="divider"></line>
+                <g class="label">
+                  <foreignObject transform="translate( -34.661861419677734, -93.9970645904541)" height="23.999021530151367" width="69.32372283935547">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">«project»</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -46.221920013427734, -65.99804306030273)" height="23.999021530151367" width="92.44384002685547" class="classTitle">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">Tenant1_IaC</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -101.00707244873047, -25.999021530151367)" height="23.999021530151367" width="202.01414489746094">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">service accounts [all stages]</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -101.00707244873047, 2)" height="23.999021530151367" width="197.25340270996094">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">storage buckets [stage 0+1]</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -101.00707244873047, 29.999021530151367)" height="23.999021530151367" width="189.92918395996094">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">optional CI/CD  [stage 0+1]</span>
+                    </div>
+                  </foreignObject>
+                  <foreignObject transform="translate( -101.00707244873047, 69.99804306030273)" height="23.999021530151367" width="100.70800018310547">
+                    <div style="display: inline-block; white-space: nowrap;" xmlns="http://www.w3.org/1999/xhtml">
+                      <span class="nodeLabel">IAM bindings()</span>
+                    </div>
+                  </foreignObject>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </foreignObject>
+</svg>
