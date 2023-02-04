@@ -95,12 +95,12 @@ As most of the features of this stage follow the same design and configurations 
 
 ## How to run this stage
 
-As mentioned above this stage stage is effectively decoupled from organization-level stages, and as such it uses a service account and state bucket from the tenant-specific automation project, and terraform variable values and provider files which are also tenant-specific.
+As mentioned above this stage is decoupled from organization-level stages: it uses a service account and state bucket from the tenant-specific automation project, and its tfvars and provider files are also tenant-specific.
 
 The `stage-links.sh` script can be used to get the commands needed for the provider and output files, just set the variable for the tenant shortname (the same one specified in the tenant bootstrap stage) and pass a single argument with your FAST output files folder path, or GCS bucket URI:
 
 ```bash
-TENANT=tn0 ~/fast-config
+TENANT=tn0 ../../stage-links.sh ~/fast-config
 ```
 
 The script output can be copy/pasted to a terminal:
