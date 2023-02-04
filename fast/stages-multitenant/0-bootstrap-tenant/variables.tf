@@ -270,11 +270,11 @@ variable "tenant_config" {
     })
     short_name = string
     fast_features = optional(object({
-      data_platform   = optional(bool, true)
-      gke             = optional(bool, true)
-      project_factory = optional(bool, true)
-      sandbox         = optional(bool, true)
-      teams           = optional(bool, true)
+      data_platform   = optional(bool)
+      gke             = optional(bool)
+      project_factory = optional(bool)
+      sandbox         = optional(bool)
+      teams           = optional(bool)
     }), {})
     locations = optional(object({
       bq      = optional(string)

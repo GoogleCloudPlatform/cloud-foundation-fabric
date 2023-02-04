@@ -25,7 +25,7 @@ locals {
     k => v == null ? null : "${v}@${var.organization.domain}"
   }
   fast_features = {
-    for k, v in var.tenant.fast_features :
+    for k, v in var.tenant_config.fast_features :
     k => v == null ? var.fast_features[k] : v
   }
   locations = {
@@ -79,7 +79,8 @@ module "tenant-folder-iam" {
   })
   iam = merge(var.iam, {
     "roles/compute.xpnAdmin" = [
-      module.automation-tf-resman-sa.iam_email
+      module.automation-tf-resman-sa.iam_email,
+      module.automation-tf-resman-sa-stage2-3["networking"].iam_email
     ]
     "roles/logging.admin" = [
       module.automation-tf-resman-sa.iam_email
