@@ -24,6 +24,10 @@ locals {
     for k, v in var.tenant_config.groups :
     k => v == null ? null : "${v}@${var.organization.domain}"
   }
+  fast_features = {
+    for k, v in var.tenant.fast_features :
+    k => v == null ? var.fast_features[k] : v
+  }
   locations = {
     for k, v in var.tenant_config.locations :
     k => v == null || v == [] ? var.locations[k] : v

@@ -82,7 +82,7 @@ locals {
     }
     billing_account = var.billing_account
     custom_roles    = var.custom_roles
-    fast_features   = var.fast_features
+    fast_features   = local.fast_features
     groups          = var.tenant_config.groups
     locations       = local.locations
     organization    = var.organization

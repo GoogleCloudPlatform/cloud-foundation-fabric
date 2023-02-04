@@ -87,7 +87,7 @@ module "automation-tf-resman-sa-stage2-3" {
   source = "../../../modules/iam-service-account"
   for_each = {
     for k, v in local.branch_sas :
-    k => v if lookup(var.fast_features, v.flag, true)
+    k => v if lookup(local.fast_features, v.flag, true)
   }
   project_id   = module.automation-project.project_id
   name         = "${each.key}-0"

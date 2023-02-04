@@ -269,6 +269,13 @@ variable "tenant_config" {
       gcp-security-admins = optional(string)
     })
     short_name = string
+    fast_features = optional(object({
+      data_platform   = optional(bool, true)
+      gke             = optional(bool, true)
+      project_factory = optional(bool, true)
+      sandbox         = optional(bool, true)
+      teams           = optional(bool, true)
+    }), {})
     locations = optional(object({
       bq      = optional(string)
       gcs     = optional(string)
