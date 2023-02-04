@@ -44,6 +44,8 @@ module "branch-security-folder" {
   }
 }
 
+# automation service account and bucket
+
 module "branch-security-sa" {
   source                 = "../../../modules/iam-service-account"
   project_id             = var.automation.project_id
