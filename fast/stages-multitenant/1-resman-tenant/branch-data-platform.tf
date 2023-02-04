@@ -68,6 +68,8 @@ module "branch-dp-prod-folder" {
   }
 }
 
+# automation service accounts and buckets
+
 module "branch-dp-dev-sa" {
   source                 = "../../../modules/iam-service-account"
   count                  = var.fast_features.data_platform ? 1 : 0
