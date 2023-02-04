@@ -16,6 +16,40 @@
 
 # tfdoc:file:description Project factory stage resources.
 
+module "branch-pf-dev-sa" {
+  source                 = "../../../modules/iam-service-account"
+  count                  = var.fast_features.project_factory ? 1 : 0
+  project_id             = var.automation.project_id
+  name                   = "pf-dev-0"
+  prefix                 = var.prefix
+  service_account_create = var.test_skip_data_sources
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-pf-dev-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
+}
+
+module "branch-pf-prod-sa" {
+  source                 = "../../../modules/iam-service-account"
+  count                  = var.fast_features.project_factory ? 1 : 0
+  project_id             = var.automation.project_id
+  name                   = "pf-prod-0"
+  prefix                 = var.prefix
+  service_account_create = var.test_skip_data_sources
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-pf-prod-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
+}
+
 module "branch-pf-dev-gcs" {
   source        = "../../../modules/gcs"
   count         = var.fast_features.project_factory ? 1 : 0
