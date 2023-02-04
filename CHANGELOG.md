@@ -480,7 +480,7 @@ All notable changes to this project will be documented in this file.
 - fix `tag` output on `data-catalog-policy-tag` module
 - add shared-vpc support on `gcs-to-bq-with-least-privileges`
 - new `net-ilb-l7` module
-- new [02-networking-peering](fast/stages/02-networking-peering) networking stage
+- new `02-networking-peering` networking stage
 - **incompatible change** the variable for PSA ranges in networking stages have changed
 
 ## [14.0.0] - 2022-02-25
@@ -499,8 +499,8 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** removed `ingress_settings` configuration option in the `cloud-functions` module.
 - new [m4ce VM example](blueprints/cloud-operations/vm-migration/)
 - Support for resource management tags in the `organization`, `folder`, `project`, `compute-vm`, and `kms` modules
-- new [data platform](fast/stages/03-data-platform) stage 3
-- new [02-networking-nva](fast/stages/02-networking-nva) networking stage
+- new `data platform` stage 3
+- new `02-networking-nva` networking stage
 - allow customizing the names of custom roles
 - added `environment` and `context` resource management tags
 - use resource management tags to restrict scope of roles/orgpolicy.policyAdmin

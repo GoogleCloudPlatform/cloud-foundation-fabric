@@ -1,0 +1,10 @@
+# skip boilerplate check
+
+module: fast/stages-multitenant/0-bootstrap-tenant
+
+tests:
+  simple:
+    tfvars:
+      - simple.tfvars
+    inventory:
+      - simple.yaml
