@@ -49,6 +49,13 @@ The script will create keys to encrypt log sink buckets/datasets/topics in the s
 
 ## Customizations
 
+### Organization policy
+You can configure the Organization policy enforced on the folder editing yaml files in the [org-policies](./data/org-policies/) folder. An opinionated list of policies that we suggest enforcing is listed.
+
+Some additional Organization policy constraints you may want to evaluate adding:
+* 'constraints/gcp.resourceLocations': to define the locations where location-based GCP resources can be created.
+* 'constraints/gcp.restrictCmekCryptoKeyProjects': to define which projects may be used to supply Customer-Managed Encryption Keys (CMEK) when creating resources.
+
 ### VPC Service Control
 VPC Service Control is configured to have a Perimeter containing all projects within the folder. Additional projects you may add to the folder won't be automatically added to the perimeter, and a new `terraform apply` is needed to add the project to the perimeter.
 
