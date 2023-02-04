@@ -17,12 +17,12 @@ counts:
   google_folder_iam_binding: 42
   google_folder_iam_member: 3
   google_org_policy_policy: 2
-  google_service_account: 7
-  google_service_account_iam_binding: 6
+  google_service_account: 9
+  google_service_account_iam_binding: 8
   google_storage_bucket: 10
   google_storage_bucket_iam_binding: 10
-  google_storage_bucket_iam_member: 7
+  google_storage_bucket_iam_member: 9
   google_storage_bucket_object: 11
   google_tags_tag_binding: 12
-  modules: 30
-  resources: 123
+  modules: 32
+  resources: 129
