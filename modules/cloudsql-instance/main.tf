@@ -105,9 +105,13 @@ resource "google_sql_database_instance" "primary" {
         value = flag.value
       }
     }
-    maintenance_window {
-      day  = var.maintenance_window_day
-      hour = var.maintenance_window_hour
+    dynamic "maintenance_window" {
+      for_each = var.maintenance_window_config == null ? [] : [true]
+      content {
+        day  = var.maintenance_window_config.maintenance_window_day
+        hour = var.maintenance_window_config.maintenance_window_hour
+      }
+
     }
   }
   deletion_protection = var.deletion_protection

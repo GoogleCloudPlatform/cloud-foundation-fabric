@@ -108,14 +108,16 @@ variable "labels" {
   default     = null
 }
 
-variable "maintenance_window_day" {
-  description = "Day at which maintenance will occur"
-  type        = number
+variable "maintenance_window_config" {
+  type = object({
+    maintenance_window_day  = optional(number)
+    maintenance_window_hour = optional(number)
+  })
+  default  = {}
+  nullable = false
+
 }
-variable "maintenance_window_hour" {
-  description = "Hour at which the maintenance will occur"
-  type        = number
-}
+
 variable "name" {
   description = "Name of primary instance."
   type        = string
