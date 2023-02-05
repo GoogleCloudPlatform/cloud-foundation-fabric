@@ -29,14 +29,16 @@ environments = {
 }
 instances = {
   instance-test-ew1 = {
-    region            = "europe-west1"
-    environments      = ["apis-test"]
-    psa_ip_cidr_range = "10.0.4.0/22"
+    region                        = "europe-west1"
+    environments                  = ["apis-test"]
+    runtime_ip_cidr_range         = "10.0.4.0/22"
+    troubleshooting_ip_cidr_range = "10.1.0.0/28"
   }
   instance-prod-ew3 = {
-    region            = "europe-west3"
-    environments      = ["apis-prod"]
-    psa_ip_cidr_range = "10.0.5.0/22"
+    region                        = "europe-west3"
+    environments                  = ["apis-prod"]
+    runtime_ip_cidr_range         = "10.0.6.0/22"
+    troubleshooting_ip_cidr_range = "10.1.0.16/28"
   }
 }
 endpoint_attachments = {

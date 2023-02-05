@@ -40,10 +40,12 @@ resource "google_apigee_envgroup" "envgroups" {
 }
 
 resource "google_apigee_environment" "environments" {
-  for_each     = local.environments
-  name         = each.key
-  display_name = each.value.display_name
-  description  = each.value.description
+  for_each        = local.environments
+  name            = each.key
+  display_name    = each.value.display_name
+  description     = each.value.description
+  deployment_type = each.value.deployment_type
+  api_proxy_type  = each.value.api_proxy_type
   dynamic "node_config" {
     for_each = try(each.value.node_config, null) != null ? [""] : []
     content {
@@ -91,7 +93,7 @@ resource "google_apigee_instance" "instances" {
   description              = each.value.description
   location                 = each.value.region
   org_id                   = local.org_id
-  ip_range                 = each.value.psa_ip_cidr_range
+  ip_range                 = "${each.value.runtime_ip_cidr_range},${each.value.troubleshooting_ip_cidr_range}"
   disk_encryption_key_name = each.value.disk_encryption_key
   consumer_accept_list     = each.value.consumer_accept_list
 }
