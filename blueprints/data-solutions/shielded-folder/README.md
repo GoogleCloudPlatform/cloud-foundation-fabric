@@ -1,17 +1,18 @@
 # Shielded folder
 
-This blueprint implements an opinionated Folder configuration to implement GCP best practices. Configurations implemented on the folder would be beneficial to host Workloads inheriting constraints from the folder they belong to.
+This blueprint implements an opinionated folder configuration to implement GCP best practices. Configurations implemented on the folder would be beneficial to host Workloads inheriting constraints from the folder they belong to.
 
 In this blueprint, a folder will be created implementing the following features:
+
 - Organizational policies
 - Hierarchical firewall rules
 - Cloud KMS
 - VPC-SC
 
 Within the folder, the following projects will be created:
+
 - 'audit-logs' where Audit Logs sink will be created
 - 'sec-core' where Cloud KMS and Cloud Secret manager will be configured
-
 
 The following diagram is a high-level reference of the resources created and managed here:
 
@@ -22,6 +23,7 @@ The following diagram is a high-level reference of the resources created and man
 Despite its simplicity, this blueprint implements the basics of a design that we've seen working well for various customers.
 
 The approach adapts to different high-level requirements:
+
 - IAM roles inheritance
 - Organizational policies
 - Audit log sink
@@ -29,20 +31,25 @@ The approach adapts to different high-level requirements:
 - Cloud KMS
 
 ## Project structure
+
 The Shielded Folder blueprint is designed to rely on several projects:
+
 - `audit-log`: to host Audit logging buckets and Audit log sync to GCS, BigQuery or PubSub
 - `sec-core`: to host security-related resources such as Cloud KMS and Cloud Secrets Manager
 
 This separation into projects allows adhering to the least-privilege principle by using project-level roles.
 
 ## User groups
+
 User groups provide a stable frame of reference that allows decoupling the final set of permissions from the stage where entities and resources are created, and their IAM bindings are defined.
 
 We use three groups to control access to resources:
+
 - `data-engineers`: They handle and run workloads on the `workload` subfolder. They have editor access to all resources in the `workload` folder in order to troubleshoot possible issues within the workload. This team can also impersonate any service account in the workload folder.
 - `data-security`: They handle security configurations for the shielded folder. They have owner access to the `audit-log` and `sec-core` projects.
 
 ## Encryption
+
 The blueprint supports the configuration of an instance of Cloud KMS to handle encryption on the resources. The encryption is disabled by default, but you can enable it by configuring the `enable_features.encryption` variable.
 
 The script will create keys to encrypt log sink buckets/datasets/topics in the specified regions. Configuring the `kms_keys` variable, you can create additional KMS keys needed by your workload.
@@ -50,22 +57,25 @@ The script will create keys to encrypt log sink buckets/datasets/topics in the s
 ## Customizations
 
 ### Organization policy
-You can configure the Organization policy enforced on the folder editing yaml files in the [org-policies](./data/org-policies/) folder. An opinionated list of policies that we suggest enforcing is listed.
+
+You can configure the Organization policies enforced on the folder editing yaml files in the [org-policies](./data/org-policies/) folder. An opinionated list of policies that we suggest enforcing is listed.
 
 Some additional Organization policy constraints you may want to evaluate adding:
-* 'constraints/gcp.resourceLocations': to define the locations where location-based GCP resources can be created.
-* 'constraints/gcp.restrictCmekCryptoKeyProjects': to define which projects may be used to supply Customer-Managed Encryption Keys (CMEK) when creating resources.
+
+- `constraints/gcp.resourceLocations`: to define the locations where location-based GCP resources can be created.
+- `constraints/gcp.restrictCmekCryptoKeyProjects`: to define which projects may be used to supply Customer-Managed Encryption Keys (CMEK) when creating resources.
 
 ### VPC Service Control
+
 VPC Service Control is configured to have a Perimeter containing all projects within the folder. Additional projects you may add to the folder won't be automatically added to the perimeter, and a new `terraform apply` is needed to add the project to the perimeter.
 
 The VPC SC configuration is set to dry-run mode, but switching to enforced mode is a simple operation involving modifying a few lines of code highlighted by ad-hoc comments.
 
-Access level rules are not defined. Before moving the configuration to enforced mode, configure access policies to continue accessing resources from outside of the perimeter. 
+Access level rules are not defined. Before moving the configuration to enforced mode, configure access policies to continue accessing resources from outside of the perimeter.
 
 An access level based on the network range you are using to reach the console (e.g. Proxy IP, Internet connection, ...) is suggested. Example:
 
-```
+```hcl
 vpc_sc_access_levels = {
   users = {
     conditions = [
@@ -77,7 +87,7 @@ vpc_sc_access_levels = {
 
 Alternatively, you can configure an access level based on the identity that needs to reach resources from outside the perimeter.
 
-```
+```hcl
 vpc_sc_access_levels = {
   users = {
   conditions = [
@@ -88,22 +98,27 @@ vpc_sc_access_levels = {
 ```
 
 ## How to run this script
+
 To deploy this blueprint in your GCP organization, you will need
+
 - a folder or organization where resources will be created
 - a billing account that will be associated with the new projects
 
 The Shielded Folder blueprint is meant to be executed by a Service Account (or a regular user) having this minimal set of permission:
+
 - Billing account
   - `roles/billing.user`
 - Folder level
   - `roles/resourcemanager.folderAdmin`
   - `roles/resourcemanager.projectCreator`
 
-The shielded Folfer blueprint assumes [groups described](#groups) are created in your GCP organization.
+The shielded Folfer blueprint assumes [groups described](#user-groups) are created in your GCP organization.
 
 ### Variable configuration
+
 There are three sets of variables you will need to fill in:
-```
+
+```hcl
 organization = {
   id     = "12345678"
   domain = "example.com"
@@ -112,6 +127,7 @@ prefix = "prefix"
 ```
 
 ### Deploying the blueprint
+
 Once the configuration is complete, run the project factory by running
 
 ```bash

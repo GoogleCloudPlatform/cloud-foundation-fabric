@@ -14,20 +14,16 @@
 
 # tfdoc:file:description Variables definition.
 
-variable "access_policy" {
-  description = "Access Policy name, set to null if creating one."
-  type        = string
-  default     = null
-}
-
-variable "access_policy_create" {
-  description = "Access Policy configuration, fill in to create. Parent is in 'organizations/123456' format."
+variable "access_policy_config" {
+  description = "Provide 'access_policy_create' values if a folder scoped Access Policy creation is needed, uses existing 'policy_name' otherwise. Parent is in 'organizations/123456' format. Policy will be created scoped to the folder."
   type = object({
-    parent = string
-    title  = string
-    scopes = optional(list(string))
+    policy_name = optional(string, null)
+    access_policy_create = optional(object({
+      parent = string
+      title  = string
+    }), null)
   })
-  default = null
+  nullable = false
 }
 
 variable "data_dir" {
@@ -39,9 +35,9 @@ variable "data_dir" {
 variable "enable_features" {
   description = "Flag to enable features on the solution."
   type = object({
-    encryption = bool
-    log_sink   = bool
-    vpc_sc     = bool
+    encryption = optional(bool, false)
+    log_sink   = optional(bool, true)
+    vpc_sc     = optional(bool, true)
   })
   default = {
     encryption = false
@@ -49,28 +45,27 @@ variable "enable_features" {
     vpc_sc     = true
   }
 }
-variable "folder_create" {
-  description = "Provide values if folder creation is needed, uses existing folder if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
-  type = object({
-    display_name = string
-    parent       = string
-  })
-  default = null
-}
 
-variable "folder_id" {
-  description = "Folder ID in case you use folder_create=null."
-  type        = string
-  default     = null
+variable "folder_config" {
+  description = "Provide 'folder_create' values if folder creation is needed, uses existing 'folder_id' otherwise. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  type = object({
+    folder_id = optional(string, null)
+    folder_create = optional(object({
+      display_name = string
+      parent       = string
+    }), null)
+  })
+  nullable = false
 }
 
 variable "groups" {
   description = "User groups."
-  type        = map(string)
-  default = {
-    workload-engineers = "gcp-data-engineers"
-    workload-security  = "gcp-data-security"
-  }
+  type = object({
+    workload-engineers = optional(string, "gcp-data-engineers")
+    workload-security  = optional(string, "gcp-data-security")
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "kms_keys" {
@@ -137,28 +132,26 @@ variable "organization" {
 variable "prefix" {
   description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
-
   validation {
     condition     = try(length(var.prefix), 0) < 10
     error_message = "Use a maximum of 9 characters for prefix."
   }
 }
 
-variable "projects_create" {
-  description = "Provide values if projects creation is needed, uses existing project if null. Projects will be created in the shielded folder."
+variable "project_config" {
+  description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'projects_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
   type = object({
-    billing_account_id = string
+    billing_account_id = optional(string, null)
+    project_ids = optional(object({
+      sec-core   = string
+      audit-logs = string
+      }), {
+      sec-core   = "sec-core"
+      audit-logs = "audit-logs"
+      }
+    )
   })
-  default = null
-}
-
-variable "projects_id" {
-  description = "Project id, references existing projects if `projects_create` is null. Projects will be moved into the shielded folder."
-  type = object({
-    sec-core   = string
-    audit-logs = string
-  })
-  default = null
+  nullable = false
 }
 
 variable "vpc_sc_access_levels" {

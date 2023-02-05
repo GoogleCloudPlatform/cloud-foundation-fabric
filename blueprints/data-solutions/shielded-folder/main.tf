@@ -35,7 +35,7 @@ locals {
     file("${var.data_dir}/vpc-sc/restricted-services.yaml")
   ) : null
 
-  access_policy_create = var.access_policy == null ? {
+  access_policy_create = var.access_policy_config.access_policy_create != null ? {
     parent = "organizations/${var.organization.id}"
     title  = "shielded-folder"
     scopes = [module.folder.id]
@@ -72,10 +72,10 @@ locals {
 
 module "folder" {
   source                 = "../../../modules/folder"
-  folder_create          = var.folder_create != null
-  parent                 = try(var.folder_create.parent, null)
-  name                   = try(var.folder_create.display_name, null)
-  id                     = var.folder_create != null ? null : var.folder_id
+  folder_create          = var.folder_config.folder_create != null
+  parent                 = try(var.folder_config.folder_create.parent, null)
+  name                   = try(var.folder_config.folder_create.display_name, null)
+  id                     = var.folder_config.folder_create != null ? null : var.folder_config.folder_id
   group_iam              = local.group_iam
   org_policies_data_path = var.data_dir != null ? "${var.data_dir}/org-policies" : null
   firewall_policy_factory = var.data_dir != null ? {
@@ -103,12 +103,17 @@ module "folder-workload" {
 #TODO VPCSC: Access levels 
 data "google_projects" "folder-projects" {
   filter = "parent.id:${split("/", module.folder.id)[1]}"
+
+  depends_on = [
+    module.sec-project,
+    module.log-export-project
+  ]
 }
 
 module "vpc-sc" {
   count                = var.enable_features.vpc_sc ? 1 : 0
   source               = "../../../modules/vpc-sc"
-  access_policy        = var.access_policy
+  access_policy        = try(var.access_policy_config.policy_name, null)
   access_policy_create = local.access_policy_create
   access_levels        = var.vpc_sc_access_levels
   egress_policies      = var.vpc_sc_egress_policies

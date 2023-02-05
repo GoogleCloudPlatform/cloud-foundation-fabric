@@ -58,11 +58,11 @@ locals {
 module "sec-project" {
   count           = var.enable_features.encryption ? 1 : 0
   source          = "../../../modules/project"
-  name            = var.projects_create != null ? "sec-core" : var.projects_id["sec-core"]
+  name            = var.project_config.project_ids["sec-core"]
   parent          = module.folder.id
-  billing_account = try(var.projects_create.billing_account_id, null)
-  project_create  = var.projects_create != null && var.enable_features.encryption
-  prefix          = var.projects_create == null ? null : var.prefix
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null && var.enable_features.encryption
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   group_iam = {
     (local.groups.workload-security) = [
       "roles/editor"

@@ -38,11 +38,11 @@ locals {
 module "log-export-project" {
   count           = var.enable_features.log_sink ? 1 : 0
   source          = "../../../modules/project"
-  name            = var.projects_create != null ? "audit-logs" : var.projects_id["audit-logs"]
+  name            = var.project_config.project_ids["audit-logs"]
   parent          = module.folder.id
-  billing_account = try(var.projects_create.billing_account_id, null)
-  project_create  = var.projects_create != null
-  prefix          = var.projects_create == null ? null : var.prefix
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   group_iam = {
     (local.groups.workload-security) = [
       "roles/editor"
