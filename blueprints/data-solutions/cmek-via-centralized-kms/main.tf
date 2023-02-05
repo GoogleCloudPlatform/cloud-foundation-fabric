@@ -15,8 +15,8 @@
 locals {
   # Needed when you create KMS keys and encrypted resources in the same terraform state but different projects.
   kms_keys = {
-    gce = "projects/${module.project-kms.project_id}/locations/${var.region}/keyRings/${var.region}/cryptoKeys/key-gcs"
-    gcs = "projects/${module.project-kms.project_id}/locations/${var.region}/keyRings/${var.region}/cryptoKeys/key-gcs"
+    gce = "projects/${module.project-kms.project_id}/locations/${var.region}/keyRings/${var.prefix}-${var.region}/cryptoKeys/key-gcs"
+    gcs = "projects/${module.project-kms.project_id}/locations/${var.region}/keyRings/${var.prefix}-${var.region}/cryptoKeys/key-gcs"
   }
 }
 
@@ -26,11 +26,11 @@ locals {
 
 module "project-service" {
   source          = "../../../modules/project"
-  name            = var.project_ids.service
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
+  name            = var.project_config.project_ids.service
+  parent          = var.project_config.parent
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   services = [
     "compute.googleapis.com",
     "servicenetworking.googleapis.com",
@@ -55,11 +55,11 @@ module "project-service" {
 
 module "project-kms" {
   source          = "../../../modules/project"
-  name            = var.project_ids.encryption
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
+  name            = var.project_config.project_ids.encryption
+  parent          = var.project_config.parent
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   services = [
     "cloudkms.googleapis.com",
     "servicenetworking.googleapis.com"
@@ -103,7 +103,7 @@ module "kms" {
   source     = "../../../modules/kms"
   project_id = module.project-kms.project_id
   keyring = {
-    name     = var.region,
+    name     = "${var.prefix}-${var.region}",
     location = var.region
   }
   keys = { key-gce = null, key-gcs = null }

@@ -24,21 +24,21 @@ variable "prefix" {
   nullable    = false
 }
 
-variable "project_create" {
-  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+variable "project_config" {
+  description = "Provide 'billing_account_id' and 'parent' values if project creation is needed, uses existing 'projects_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
   type = object({
-    billing_account_id = string
-    parent             = string
+    billing_account_id = optional(string, null)
+    parent             = optional(string, null)
+    project_ids = optional(object({
+      encryption = string
+      service    = string
+      }), {
+      encryption = "encryption",
+      service    = "service"
+      }
+    )
   })
-  default = null
-}
-
-variable "project_ids" {
-  description = "Project ids, references existing project if `project_create` is null."
-  type = object({
-    encryption = string
-    service    = string
-  })
+  nullable = false
 }
 
 variable "region" {
