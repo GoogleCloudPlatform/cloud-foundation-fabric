@@ -12,39 +12,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-variable "billing_account" {
-  description = "Billing account id used as default for new projects."
-  type        = string
-}
-
 variable "location" {
   description = "The location where resources will be deployed."
   type        = string
   default     = "europe"
 }
 
-variable "project_kms_name" {
-  description = "Name for the new KMS Project."
+variable "prefix" {
+  description = "Optional prefix used to generate resources names."
   type        = string
-  default     = "my-project-kms-001"
+  nullable    = false
 }
 
-variable "project_service_name" {
-  description = "Name for the new Service Project."
-  type        = string
-  default     = "my-project-service-001"
+variable "project_create" {
+  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
+variable "project_ids" {
+  description = "Project ids, references existing project if `project_create` is null."
+  type = object({
+    encryption = string
+    service    = string
+  })
 }
 
 variable "region" {
   description = "The region where resources will be deployed."
   type        = string
   default     = "europe-west1"
-}
-
-variable "root_node" {
-  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
-  type        = string
 }
 
 variable "vpc_ip_cidr_range" {
