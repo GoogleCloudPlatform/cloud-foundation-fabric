@@ -66,6 +66,6 @@ This [blueprint](./vertex-mlops/) implements the infrastructure required to have
 ### Shielded Folder
 
 <a href="./shielded-folder/" title="Shielded Folder"><img src="./shielded-folder/images/overview_diagram.png" align="left" width="280px"></a>
-This [blueprint](./shielded-folder/) implements an opinionated Folder configuration to implement GCP best practices. Configurations implemented on the folder would be beneficial to host Workloads inheriting constraints from the folder they belong to.
+This [blueprint](./shielded-folder/) implements an opinionated folder configuration according to GCP best practices. Configurations implemented on the folder would be beneficial to host workloads inheriting constraints from the folder they belong to.
 
 <br clear="left">

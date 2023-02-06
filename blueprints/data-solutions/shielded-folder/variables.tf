@@ -35,12 +35,12 @@ variable "data_dir" {
 variable "enable_features" {
   description = "Flag to enable features on the solution."
   type = object({
-    encryption = optional(bool, true)
+    encryption = optional(bool, false)
     log_sink   = optional(bool, true)
     vpc_sc     = optional(bool, true)
   })
   default = {
-    encryption = true
+    encryption = false
     log_sink   = true
     vpc_sc     = true
   }
@@ -130,16 +130,12 @@ variable "organization" {
 }
 
 variable "prefix" {
-  description = "Prefix used for resources that need unique names. Use 9 characters or less."
+  description = "Prefix used for resources that need unique names."
   type        = string
-  validation {
-    condition     = try(length(var.prefix), 0) < 10
-    error_message = "Use a maximum of 9 characters for prefix."
-  }
 }
 
 variable "project_config" {
-  description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'projects_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'project_ids' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
   type = object({
     billing_account_id = optional(string, null)
     project_ids = optional(object({
