@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,12 @@ variable "defaults" {
     vpc_host_project      = string
   })
   default = null
+}
+
+variable "descriptive_name" {
+  description = "Name of the project name. Used for project name instead of `name` variable."
+  type        = string
+  default     = null
 }
 
 variable "dns_zones" {
