@@ -157,7 +157,7 @@ variable "iam" {
 variable "instance_type" {
   description = "Instance type."
   type        = string
-  default     = "f1-micro"
+  default     = "n1-standard-1"
 }
 
 variable "labels" {
