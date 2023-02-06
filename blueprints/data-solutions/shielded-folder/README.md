@@ -1,6 +1,6 @@
 # Shielded folder
 
-This blueprint implements an opinionated folder configuration according to GCP best practices. Configurations at the folder level would be beneficial to host workloads inheriting constraints from the folder they belong to.
+This blueprint implements an opinionated folder configuration according to GCP best practices. Configurations set at the folder level would be beneficial to host workloads inheriting constraints from the folder they belong to.
 
 In this blueprint, a folder will be created setting following features:
 
