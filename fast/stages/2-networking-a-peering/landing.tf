@@ -79,13 +79,18 @@ module "landing-firewall" {
   }
 }
 
-module "landing-nat-ew1" {
+moved {
+  from = module.landing-nat-ew1
+  to   = module.landing-nat-primary
+}
+
+module "landing-nat-primary" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.landing-project.project_id
-  region         = "europe-west1"
-  name           = "ew1"
+  region         = var.regions.primary
+  name           = local.region_shortnames[var.regions.primary]
   router_create  = true
-  router_name    = "prod-nat-ew1"
+  router_name    = "prod-nat-${local.region_shortnames[var.regions.primary]}"
   router_network = module.landing-vpc.name
   router_asn     = 4200001024
 }

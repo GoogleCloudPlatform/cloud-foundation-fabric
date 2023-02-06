@@ -87,18 +87,24 @@ variable "folder_ids" {
 
 variable "l7ilb_subnets" {
   description = "Subnets used for L7 ILBs."
-  type = map(list(object({
-    ip_cidr_range = string
-    region        = string
-  })))
+  type = object({
+    dev = optional(list(object({
+      ip_cidr_range = string
+      region        = string
+    })), [])
+    prod = optional(list(object({
+      ip_cidr_range = string
+      region        = string
+    })), [])
+  })
   default = {
-    prod = [
-      { ip_cidr_range = "10.128.92.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.93.0/24", region = "europe-west4" }
-    ]
     dev = [
-      { ip_cidr_range = "10.128.60.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.61.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.60.0/24", region = "primary" },
+      { ip_cidr_range = "10.128.61.0/24", region = "secondary" }
+    ]
+    prod = [
+      { ip_cidr_range = "10.128.92.0/24", region = "primary" },
+      { ip_cidr_range = "10.128.93.0/24", region = "secondary" }
     ]
   }
 }
@@ -167,12 +173,15 @@ variable "psa_ranges" {
   # }
 }
 
-variable "region_trigram" {
-  description = "Short names for GCP regions."
-  type        = map(string)
+variable "regions" {
+  description = "Region definitions."
+  type = object({
+    primary   = string
+    secondary = string
+  })
   default = {
-    europe-west1 = "ew1"
-    europe-west3 = "ew3"
+    primary   = "europe-west1"
+    secondary = "europe-west4"
   }
 }
 
@@ -186,7 +195,7 @@ variable "router_onprem_configs" {
     asn = number
   }))
   default = {
-    landing-ew1 = {
+    landing-primary = {
       asn = "65533"
       adv = null
       # adv = { default = false, custom = [] }
@@ -228,7 +237,7 @@ variable "vpn_onprem_configs" {
     }))
   }))
   default = {
-    landing-ew1 = {
+    landing-primary = {
       adv = {
         default = false
         custom = [
