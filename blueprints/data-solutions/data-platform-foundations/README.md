@@ -21,7 +21,7 @@ The approach adapts to different high-level requirements:
 - least privilege principle
 - rely on service account impersonation
 
-The code in this blueprint doesn't address Organization-level configurations (Organization policy, VPC-SC, centralized logs). We expect those elements to be managed by automation stages external to this script like those in [FAST](../../../fast) and this blueprint deployed on top of them as one of the [stages](../../../fast/stages/03-data-platform/dev/README.md).
+The code in this blueprint doesn't address Organization-level configurations (Organization policy, VPC-SC, centralized logs). We expect those elements to be managed by automation stages external to this script like those in [FAST](../../../fast) and this blueprint deployed on top of them as one of the [stages](../../../fast/stages/3-data-platform/dev/README.md).
 
 ### Project structure
 

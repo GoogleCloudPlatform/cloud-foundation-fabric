@@ -1,0 +1,20 @@
+bucket_name          = "creditcards-dev"
+dataset_name         = "creditcards"
+identity_pool_claims = "attribute.repository/ORGANIZATION/REPO"
+labels = {
+  "env" : "dev",
+  "team" : "ml"
+}
+notebooks = {
+  "myworkbench" : {
+    "owner" : "user@example.com",
+    "region" : "europe-west4",
+    "subnet" : "default",
+  }
+}
+prefix              = "pref"
+project_id          = "creditcards-dev"
+project_create = {
+    billing_account_id = "000000-123456-123456"
+    parent             = "folders/111111111111"
+}
