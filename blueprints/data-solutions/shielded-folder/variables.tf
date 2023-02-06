@@ -35,12 +35,12 @@ variable "data_dir" {
 variable "enable_features" {
   description = "Flag to enable features on the solution."
   type = object({
-    encryption = optional(bool, false)
+    encryption = optional(bool, true)
     log_sink   = optional(bool, true)
     vpc_sc     = optional(bool, true)
   })
   default = {
-    encryption = false
+    encryption = true
     log_sink   = true
     vpc_sc     = true
   }

@@ -136,16 +136,16 @@ counts:
   google_bigquery_default_service_account: 1
   google_folder: 2
   google_folder_iam_binding: 2
+  google_kms_crypto_key: 3
+  google_kms_crypto_key_iam_member: 3
+  google_kms_key_ring: 2
   google_logging_folder_sink: 2
-  google_project: 1
-  google_project_iam_binding: 1
-  google_project_service: 4
-  google_project_service_identity: 1
+  google_project: 2
+  google_project_iam_binding: 2
+  google_project_service: 7
+  google_project_service_identity: 2
   google_projects: 1
   google_storage_project_service_account: 1
-  modules: 5
-  resources: 21
-
-outputs:
-  folders: __missing__
-  folders_sink_writer_identities: __missing__
+  modules: 8
+  resources: 52
+  
