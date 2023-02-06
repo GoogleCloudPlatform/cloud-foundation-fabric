@@ -23,10 +23,11 @@ Below you can find a description of each example:
 ## Running the demo
 To run demo examples, please follow the following steps:
 
-- 01: copy sample data to the `drop off` Cloud Storage bucket impersonating the `load` service account.
-- 02: copy sample data structure definition in the `orchestration` Cloud Storage bucket impersonating the `orchestration` service account.
-- 03: copy the Cloud Composer DAG to the Cloud Composer Storage bucket impersonating the `orchestration` service account.
-- 04: Open the Cloud Composer Airflow UI and run the imported DAG.
-- 05: Run the BigQuery query to see results.
+- 01: Copy sample data to the `drop off` Cloud Storage bucket impersonating the `load` service account.
+- 02: Copy sample data structure definition in the `orchestration` Cloud Storage bucket impersonating the `orchestration` service account.
+- 03: Copy the Cloud Composer DAG to the Cloud Composer Storage bucket impersonating the `orchestration` service account.
+- 04: Build the Dataflow Flex template and image via a Cloud Build pipeline
+- 05: Open the Cloud Composer Airflow UI and run the imported DAG.
+- 06: Run the BigQuery query to see results.
 
 You can find pre-computed commands in the `demo_commands` output variable of the deployed terraform [data pipeline](../).
