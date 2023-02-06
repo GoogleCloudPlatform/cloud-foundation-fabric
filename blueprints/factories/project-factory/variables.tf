@@ -162,6 +162,12 @@ variable "project_id" {
   type        = string
 }
 
+variable "descriptive_name" {
+  description = "Name of the project name. Used for project name instead of `name` variable."
+  type        = string
+  default     = null
+}
+
 variable "service_accounts" {
   description = "Service accounts to be created, and roles assigned them on the project."
   type        = map(list(string))
