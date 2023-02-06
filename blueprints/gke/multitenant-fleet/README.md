@@ -4,7 +4,7 @@ This blueprint presents an opinionated architecture to handle multiple homogeneo
 
 The pattern used in this design is useful, for blueprint, in cases where multiple clusters host/support the same workloads, such as in the case of a multi-regional deployment. Furthermore, combined with Anthos Config Sync and proper RBAC, this architecture can be used to host multiple tenants (e.g. teams, applications) sharing the clusters.
 
-This blueprint is used as part of the [FAST GKE stage](../../../fast/stages/03-gke-multitenant/) but it can also be used independently if desired.
+This blueprint is used as part of the [FAST GKE stage](../../../fast/stages/3-gke-multitenant/) but it can also be used independently if desired.
 
 <p align="center">
   <img src="diagram.png" alt="GKE multitenant">
@@ -115,7 +115,7 @@ module "gke-fleet" {
     vpc_self_link   = "projects/prj-host/global/networks/prod-0"
   }
 }
-# tftest modules=7 resources=26
+# tftest modules=7 resources=27
 ```
 
 ## GKE Fleet
@@ -224,7 +224,7 @@ module "gke" {
   }
 }
 
-# tftest modules=8 resources=37
+# tftest modules=8 resources=38
 ```
 
 <!-- TFDOC OPTS files:1 -->
