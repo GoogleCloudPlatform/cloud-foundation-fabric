@@ -339,9 +339,6 @@ The new VPC requires a set of dedicated CIDRs, one per region, added to variable
 >
 Variables managing L7 Internal Load Balancers (`l7ilb_subnets`) and Private Service Access (`psa_ranges`) should also be adapted, and subnets and firewall rules for the new spoke should be added, as described above.
 
-VPC network peering connectivity to the `trusted landing VPC` is managed by the `vpc-peering-*.tf` files.
-Copy `vpc-peering-prod.tf` to `vpc-peering-staging.tf` and replace "prod" with "staging", where relevant.
-
 Configure the NVAs deployed or update the sample [NVA config file](data/nva-startup-script.tftpl) making sure they support the new subnets.
 
 DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS resolution to Landing through DNS peering, and optionally define a private zone (e.g. `dev.gcp.example.com`) which the landing peers to. To configure DNS for a new environment, copy one of the other environments DNS files [e.g. (dns-dev.tf)](dns-dev.tf) into a new `dns-*.tf` file suffixed with the environment name (e.g. `dns-staging.tf`), and update its content accordingly. Don't forget to add a peering zone from the landing to the newly created environment private zone.
