@@ -17,14 +17,14 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
+  # combine all regions from variables and subnets
+  regions = distinct(concat(
+    [var.regions.primary, var.regions.secondary],
+    values(module.dev-spoke-vpc.subnet_regions),
+    values(module.landing-vpc.subnet_regions),
+    values(module.prod-spoke-vpc.subnet_regions),
+  ))
   custom_roles = coalesce(var.custom_roles, {})
-  l7ilb_subnets = {
-    for env, v in var.l7ilb_subnets : env => [
-      for s in v : merge(s, {
-        active = true
-        name   = "${env}-l7ilb-${s.region}"
-    })]
-  }
   stage3_sas_delegated_grants = [
     "roles/composer.sharedVpcAgent",
     "roles/compute.networkUser",
