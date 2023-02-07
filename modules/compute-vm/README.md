@@ -409,8 +409,6 @@ module "template-confidential-example" {
 # tftest modules=2 resources=2 inventory=confidential.yaml
 ```
 
-### Shielded VM configuration
-
 ### Disk encryption with Cloud KMS
 
 This example shows how to control disk encryption via the the `encryption` variable, in this case the self link to a KMS CryptoKey that will be used to encrypt boot and attached disk. Managing the key with the `../kms` module is of course possible, but is not shown here.
