@@ -73,8 +73,8 @@ case $STAGE_NAME in
   PROVIDER="tenants/${TENANT}/providers/1-resman-tenant-providers.tf"
   TFVARS="tenants/${TENANT}/tfvars/0-bootstrap-tenant.auto.tfvars.json"
   ;;
-"2-"*)
-  PROVIDER="providers/multitenant/${STAGE_NAME}-providers.tf"
+"2-networking"*)
+  PROVIDER="providers/2-networking-providers.tf"
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;

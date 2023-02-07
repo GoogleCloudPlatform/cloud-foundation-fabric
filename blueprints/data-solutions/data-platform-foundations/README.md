@@ -219,7 +219,7 @@ module "data-platform" {
   prefix              = "myprefix"
 }
 
-# tftest modules=39 resources=287
+# tftest modules=43 resources=297
 ```
 
 ## Customizations
@@ -263,13 +263,14 @@ You can find examples in the `[demo](./demo)` folder.
 
 | name | description | sensitive |
 |---|---|:---:|
-| [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
-| [demo_commands](outputs.tf#L27) | Demo commands. Relevant only if Composer is deployed. |  |
-| [gcs-buckets](outputs.tf#L40) | GCS buckets. |  |
-| [kms_keys](outputs.tf#L53) | Cloud MKS keys. |  |
-| [projects](outputs.tf#L58) | GCP Projects informations. |  |
-| [vpc_network](outputs.tf#L84) | VPC network. |  |
-| [vpc_subnet](outputs.tf#L93) | VPC subnetworks. |  |
+| [bigquery-datasets](outputs.tf#L16) | BigQuery datasets. |  |
+| [demo_commands](outputs.tf#L26) | Demo commands. Relevant only if Composer is deployed. |  |
+| [df_template](outputs.tf#L49) | Dataflow template image and template details. |  |
+| [gcs-buckets](outputs.tf#L58) | GCS buckets. |  |
+| [kms_keys](outputs.tf#L71) | Cloud MKS keys. |  |
+| [projects](outputs.tf#L76) | GCP Projects informations. |  |
+| [vpc_network](outputs.tf#L102) | VPC network. |  |
+| [vpc_subnet](outputs.tf#L111) | VPC subnetworks. |  |
 
 <!-- END TFDOC -->
 ## TODOs
