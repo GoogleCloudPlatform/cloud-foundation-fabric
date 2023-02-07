@@ -38,20 +38,22 @@ variable "availability_type" {
 variable "backup_configuration" {
   description = "Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas."
   type = object({
-    enabled            = bool
-    binary_log_enabled = bool
-    start_time         = string
-    location           = string
-    log_retention_days = number
-    retention_count    = number
+    enabled                        = bool
+    binary_log_enabled             = bool
+    start_time                     = string
+    location                       = string
+    log_retention_days             = number
+    point_in_time_recovery_enabled = bool
+    retention_count                = number
   })
   default = {
-    enabled            = false
-    binary_log_enabled = false
-    start_time         = "23:00"
-    location           = null
-    log_retention_days = 7
-    retention_count    = 7
+    enabled                        = false
+    binary_log_enabled             = false
+    start_time                     = "23:00"
+    location                       = null
+    log_retention_days             = 7
+    point_in_time_recovery_enabled = null
+    retention_count                = 7
   }
 }
 
