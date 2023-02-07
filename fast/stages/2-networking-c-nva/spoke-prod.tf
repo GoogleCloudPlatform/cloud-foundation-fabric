@@ -16,6 +16,19 @@
 
 # tfdoc:file:description Production spoke VPC and related resources.
 
+locals {
+  _l7ilb_subnets_prod = [
+    for v in var.l7ilb_subnets.prod : merge(v, {
+      active = true
+      region = lookup(var.regions, v.region, v.region)
+  })]
+  l7ilb_subnets_prod = [
+    for v in local._l7ilb_subnets_prod : merge(v, {
+      name = "prod-l7ilb-${local.region_shortnames[v.region]}"
+    })
+  ]
+}
+
 module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -50,7 +63,7 @@ module "prod-spoke-vpc" {
   data_folder                     = "${var.data_dir}/subnets/prod"
   delete_default_routes_on_create = true
   psa_config                      = try(var.psa_ranges.prod, null)
-  subnets_proxy_only              = local.l7ilb_subnets.prod
+  subnets_proxy_only              = local.l7ilb_subnets_prod
   # Set explicit routes for googleapis; send everything else to NVAs
   routes = {
     private-googleapis = {
@@ -65,33 +78,33 @@ module "prod-spoke-vpc" {
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
-    nva-ew1-to-ew1 = {
+    nva-primary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
-      tags          = ["ew1"]
+      tags          = ["primary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["primary"].forwarding_rule_address
     }
-    nva-ew4-to-ew4 = {
+    nva-secondary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
-      tags          = ["ew4"]
+      tags          = ["secondary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["secondary"].forwarding_rule_address
     }
-    nva-ew1-to-ew4 = {
+    nva-primary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
-      tags          = ["ew1"]
+      tags          = ["primary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["secondary"].forwarding_rule_address
     }
-    nva-ew4-to-ew1 = {
+    nva-secondary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
-      tags          = ["ew4"]
+      tags          = ["secondary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["primary"].forwarding_rule_address
     }
   }
 }

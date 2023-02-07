@@ -24,6 +24,14 @@ locals {
       name   = "${env}-l7ilb-${s.region}"
     })]
   }
+  # combine all regions from variables and subnets
+  regions = distinct(concat(
+    values(var.regions),
+    values(module.dev-spoke-vpc.subnet_regions),
+    values(module.landing-trusted-vpc.subnet_regions),
+    values(module.landing-untrusted-vpc.subnet_regions),
+    values(module.prod-spoke-vpc.subnet_regions),
+  ))
   service_accounts = {
     for k, v in coalesce(var.service_accounts, {}) :
     k => "serviceAccount:${v}" if v != null

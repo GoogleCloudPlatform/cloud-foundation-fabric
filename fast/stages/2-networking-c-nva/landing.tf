@@ -71,24 +71,34 @@ module "landing-untrusted-firewall" {
 
 # NAT
 
-module "landing-nat-ew1" {
+moved {
+  from = module.landing-nat-ew1
+  to   = module.landing-nat-primary
+}
+
+module "landing-nat-primary" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.landing-project.project_id
-  region         = "europe-west1"
-  name           = "ew1"
+  region         = var.regions.primary
+  name           = local.region_shortnames[var.regions.primary]
   router_create  = true
-  router_name    = "prod-nat-ew1"
+  router_name    = "prod-nat-${local.region_shortnames[var.regions.primary]}"
   router_network = module.landing-untrusted-vpc.name
   router_asn     = 4200001024
 }
 
-module "landing-nat-ew4" {
+moved {
+  from = module.landing-nat-ew4
+  to   = module.landing-nat-secondary
+}
+
+module "landing-nat-secondary" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.landing-project.project_id
-  region         = "europe-west4"
-  name           = "ew4"
+  region         = var.regions.secondary
+  name           = local.region_shortnames[var.regions.secondary]
   router_create  = true
-  router_name    = "prod-nat-ew4"
+  router_name    = "prod-nat-${local.region_shortnames[var.regions.secondary]}"
   router_network = module.landing-untrusted-vpc.name
   router_asn     = 4200001024
 }
