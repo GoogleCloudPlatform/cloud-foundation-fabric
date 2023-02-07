@@ -8,6 +8,23 @@ This module can operate in two distinct modes:
 In both modes, an optional service account can be created and assigned to either instances or template. If you need a managed instance group when using the module in template mode, refer to the [`compute-mig`](../compute-mig) module.
 
 ## Examples
+- [Instance using defaults](#instance-using-defaults)
+- [Service account management](#service-account-management)
+- [Disk management](#disk-management)
+  - [Disk sources](#disk-sources)
+- [Network interfaces](#network-interfaces)
+  - [Internal and external IPs](#internal-and-external-ips)
+  - [Using Alias IPs](#using-alias-ips)
+  - [Using gVNIC](#using-gvnic)
+- [Metadata](#metadata)
+- [IAM](#iam)
+- [Spot VM](#spot-vm)
+- [Confidential compute](#confidential-compute)
+- [Shielded VM configuration](#shielded-vm-configuration)
+- [Disk encryption with Cloud KMS](#disk-encryption-with-cloud-kms)
+- [Instance template](#instance-template)
+- [Instance group](#instance-group)
+
 
 ### Instance using defaults
 
