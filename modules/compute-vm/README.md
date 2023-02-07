@@ -100,9 +100,9 @@ module "vm-default-sa-example2" {
 
 Attached disks can be created and optionally initialized from a pre-existing source, or attached to VMs when pre-existing. The `source` and `source_type` attributes of the `attached_disks` variable allows several modes of operation:
 
-- `source_type = "image"` can be used with zonal disks in instances and templates, set `source` to the image name or link
-- `source_type = "snapshot"` can be used with instances only, set `source` to the snapshot name or link
-- `source_type = "attach"` can be used for both instances and templates to attach an existing disk, set source to the name (for zonal disks) or link (for regional disks) of the existing disk to attach; no disk will be created
+- `source_type = "image"` can be used with zonal disks in instances and templates, set `source` to the image name or self link
+- `source_type = "snapshot"` can be used with instances only, set `source` to the snapshot name or self link
+- `source_type = "attach"` can be used for both instances and templates to attach an existing disk, set source to the name (for zonal disks) or self link (for regional disks) of the existing disk to attach; no disk will be created
 - `source_type = null` can be used where an empty disk is needed, `source` becomes irrelevant and can be left null
 
 This is an example of attaching a pre-existing regional PD to a new instance:
@@ -156,6 +156,47 @@ module "vm-disks-example" {
   create_template        = true
 }
 # tftest modules=1 resources=2
+```
+
+#### Disk types and options
+
+The `attached_disks` variable exposes an `option` attribute that can be used to fine tune the configuration of each disk. The following example shows a VM with multiple disks
+
+```hcl
+module "vm-disk-options-example" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "europe-west1-b"
+  name       = "test"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  attached_disks = [
+    {
+      name        = "data1"
+      size        = "10"
+      source_type = "image"
+      source      = "image-1"
+      options = {
+        auto_delete  = false
+        replica_zone = "europe-west1-c"
+      }
+    },
+    {
+      name        = "data2"
+      size        = "20"
+      source_type = "snapshot"
+      source      = "snapshot-2"
+      options = {
+        type = "pd-ssd"
+        mode = "READ_ONLY"
+      }
+    }
+  ]
+  service_account_create = true
+}
+# tftest modules=1 resources=4 inventory=disk-options.yaml
 ```
 
 ### Network interfaces
