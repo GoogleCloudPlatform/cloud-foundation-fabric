@@ -15,66 +15,19 @@
  */
 
 locals {
-  ncc_cr_intf_configs = {
-    int-untrusted-ew11 = {
-      address     = cidrhost(module.landing-untrusted-vpc.subnet_ips["europe-west1/landing-untrusted-default-ew1"], 201)
-      area        = "untrusted"
-      nva_zone    = "europe-west1-b"
-      region      = "europe-west1"
-      subnetwork  = module.landing-untrusted-vpc.subnet_self_links["europe-west1/landing-untrusted-default-ew1"]
-    }
-    int-untrusted-ew12 = {
-      address     = cidrhost(module.landing-untrusted-vpc.subnet_ips["europe-west1/landing-untrusted-default-ew1"], 202)
-      area        = "untrusted"
-      nva_zone    = "europe-west1-c"
-      region      = "europe-west1"
-      subnetwork  = module.landing-untrusted-vpc.subnet_self_links["europe-west1/landing-untrusted-default-ew1"]
-    }
-    int-untrusted-ew41 = {
-      address     = cidrhost(module.landing-untrusted-vpc.subnet_ips["europe-west4/landing-untrusted-default-ew4"], 201)
-      area        = "untrusted"
-      nva_zone    = "europe-west4-b"
-      region      = "europe-west4"
-      subnetwork  = module.landing-untrusted-vpc.subnet_self_links["europe-west4/landing-untrusted-default-ew4"]
-    }
-    int-untrusted-ew42 = {
-      address     = cidrhost(module.landing-untrusted-vpc.subnet_ips["europe-west4/landing-untrusted-default-ew4"], 202)
-      area        = "untrusted"
-      nva_zone    = "europe-west4-c"
-      region      = "europe-west4"
-      subnetwork  = module.landing-untrusted-vpc.subnet_self_links["europe-west4/landing-untrusted-default-ew4"]
-    }
-    int-trusted-ew11 = {
-      address     = cidrhost(module.landing-trusted-vpc.subnet_ips["europe-west1/landing-trusted-default-ew1"], 201)
-      area        = "trusted"
-      nva_zone    = "europe-west1-b"
-      region      = "europe-west1"
-      subnetwork  = module.landing-trusted-vpc.subnet_self_links["europe-west1/landing-trusted-default-ew1"]
-    }
-    int-trusted-ew12 = {
-      address     = cidrhost(module.landing-trusted-vpc.subnet_ips["europe-west1/landing-trusted-default-ew1"], 202)
-      area        = "trusted"
-      nva_zone    = "europe-west1-c"
-      region      = "europe-west1"
-      subnetwork  = module.landing-trusted-vpc.subnet_self_links["europe-west1/landing-trusted-default-ew1"]
-    }
-    int-trusted-ew41 = {
-      address     = cidrhost(module.landing-trusted-vpc.subnet_ips["europe-west4/landing-trusted-default-ew4"], 201)
-      area        = "trusted"
-      nva_zone    = "europe-west4-b"
-      region      = "europe-west4"
-      subnetwork  = module.landing-trusted-vpc.subnet_self_links["europe-west4/landing-trusted-default-ew4"]
-    }
-    int-trusted-ew42 = {
-      address     = cidrhost(module.landing-trusted-vpc.subnet_ips["europe-west4/landing-trusted-default-ew4"], 202)
-      area        = "trusted"
-      nva_zone    = "europe-west4-c"
-      region      = "europe-west4"
-      subnetwork  = module.landing-trusted-vpc.subnet_self_links["europe-west4/landing-trusted-default-ew4"]
-    }
+  ncc_cr_intf_untrusted_configs = {
+    ew10 = { host_number = 201, region = "europe-west1", redundant = "ew11" }
+    ew11 = { host_number = 202, region = "europe-west1", redundant = "ew10" }
+    ew41 = { host_number = 201, region = "europe-west4", redundant = "ew41" }
+    ew42 = { host_number = 202, region = "europe-west4", redundant = "ew40" }
   }
-  ncc_routers = toset([for config in local.ncc_cr_intf_configs : "prod-${config.area}-${config.region}"])
-  nva_regions = toset([for config in local.nva_configs : config.region])
+
+  ncc_cr_intf_trusted_configs = {
+    ew10 = { host_number = 201, region = "europe-west1", redundant = "ew11" }
+    ew11 = { host_number = 202, region = "europe-west1", redundant = "ew10" }
+    ew41 = { host_number = 201, region = "europe-west4", redundant = "ew41" }
+    ew42 = { host_number = 202, region = "europe-west4", redundant = "ew40" }
+  }
 }
 
 resource "google_network_connectivity_hub" "hub" {
@@ -84,7 +37,7 @@ resource "google_network_connectivity_hub" "hub" {
 }
 
 resource "google_network_connectivity_spoke" "spoke_untrusted" {
-  for_each    = local.nva_regions
+  for_each    = var.region_trigram
   name        = "prod-spoke-untrusted-${each.key}"
   project     = module.landing-project.project_id
   location    = each.key
@@ -108,7 +61,7 @@ resource "google_network_connectivity_spoke" "spoke_untrusted" {
 }
 
 resource "google_network_connectivity_spoke" "spoke_trusted" {
-  for_each    = local.nva_regions
+  for_each    = var.region_trigram
   name        = "prod-spoke-trusted-${each.key}"
   project     = module.landing-project.project_id
   location    = each.key
@@ -131,43 +84,104 @@ resource "google_network_connectivity_spoke" "spoke_trusted" {
   }
 }
 
-resource "google_compute_address" "router_intf_addrs" {
-  for_each = {
-    for key, config in local.ncc_cr_intf_configs :
-    key => config.area
+resource "google_compute_router" "routers_untrusted" {
+  for_each = var.region_trigram
+  name     = "prod-untrusted-${each.value}"
+  region   = each.key
+  network  = module.landing-untrusted-vpc.self_link
+  bgp {
+    asn = var.router_configs.landing-untrusted-ncc.asn
   }
-  name         = each.key
+}
+
+resource "google_compute_router" "routers_trusted" {
+  for_each = var.region_trigram
+  name     = "prod-trusted-${each.value}"
+  region   = each.key
+  network  = module.landing-trusted-vpc.self_link
+  bgp {
+    asn = var.router_configs.landing-trusted-ncc.asn
+  }
+}
+
+resource "google_compute_address" "router_intf_addrs_untrusted" {
+  for_each     = local.ncc_cr_intf_untrusted_configs
+  name         = "prod-untrusted-${each.key}"
   region       = each.value.region
-  subnetwork   = each.value.subnetwork
-  address      = each.value.address
+  subnetwork   = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${var.region_trigram[each.value.region]}"]
+  address      = cidrhost(module.landing-untrusted-vpc.subnet_ips["${each.value.region}/landing-untrusted-default-${var.region_trigram[each.value.region]}"], each.value.host_number)
   address_type = "INTERNAL"
 }
 
-resource "google_compute_router" "router_untrusted" {
-  for_each = keys(var.region_trigram)
-  name    = "prod-untrusted-${each.value}"
-  region  = each.value
-  network = module.landing-untrusted-vpc.self_link
-  bgp {
-    asn = 64512
-  }
+resource "google_compute_address" "router_intf_addrs_trusted" {
+  for_each     = local.ncc_cr_intf_trusted_configs
+  name         = "prod-trusted-${each.key}"
+  region       = each.value.region
+  subnetwork   = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${var.region_trigram[each.value.region]}"]
+  address      = cidrhost(module.landing-trusted-vpc.subnet_ips["${each.value.region}/landing-trusted-default-${var.region_trigram[each.value.region]}"], each.value.host_number)
+  address_type = "INTERNAL"
 }
 
-resource "google_compute_router" "router_trusted" {
-  for_each = keys(var.region_trigram)
-  name    = "prod-trusted-${each.value}"
-  region  = each.value
-  network = module.landing-trusted-vpc.self
-  bgp {
-    asn = 64512
-  }
+resource "google_compute_router_interface" "router_intfs_untrusted" {
+  for_each            = local.ncc_cr_intf_untrusted_configs
+  name                = "prod-untrusted-${each.key}"
+  region              = each.value.region
+  router              = google_compute_router.routers_untrusted[each.value.region].name
+  subnetwork          = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${var.region_trigram[each.value.region]}"]
+  private_ip_address  = google_compute_address.router_intf_addrs_trusted[each.key].address
+  redundant_interface = each.value.redundant
 }
 
-resource "google_compute_router_interface" "interface_untrusted" {
-  for_each           = keys(var.region_trigram)
-  name               = "prod-untrusted-${each.value}-"
-  region             = google_compute_router.router.region
-  router             = google_compute_router.router.name
-  subnetwork         = google_compute_subnetwork.subnetwork.self_link
-  private_ip_address = google_compute_address.addr_intf_redundant.address
+resource "google_compute_router_interface" "router_intfs_trusted" {
+  for_each            = local.ncc_cr_intf_trusted_configs
+  name                = "prod-trusted-${each.key}"
+  region              = each.value.region
+  router              = google_compute_router.routers_trusted[each.value.region].name
+  subnetwork          = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${var.region_trigram[each.value.region]}"]
+  private_ip_address  = google_compute_address.router_intf_addrs_untrusted[each.key].address
+  redundant_interface = each.value.redundant
+}
+
+resource "google_compute_router_peer" "peers_untrusted_to_nvas_zone_b" {
+  for_each                  = local.ncc_cr_intf_untrusted_configs
+  interface                 = "prod-untrusted-${each.key}"
+  name                      = "prod-untrusted-${each.key}-b"
+  peer_asn                  = 65513
+  peer_ip_address           = local.nva_configs["${each.value.region}-b"].ip_untrusted
+  region                    = each.value.region
+  router                    = google_compute_router.routers_untrusted[each.value.region].name
+  router_appliance_instance = module.nva["${each.value.region}-b"].self_link
+}
+
+resource "google_compute_router_peer" "peers_untrusted_to_nvas_zone_c" {
+  for_each                  = local.ncc_cr_intf_untrusted_configs
+  interface                 = "prod-untrusted-${each.key}"
+  name                      = "prod-untrusted-${each.key}-c"
+  peer_asn                  = 65513
+  peer_ip_address           = local.nva_configs["${each.value.region}-c"].ip_untrusted
+  region                    = each.value.region
+  router                    = google_compute_router.routers_untrusted[each.value.region].name
+  router_appliance_instance = module.nva["${each.value.region}-c"].self_link
+}
+
+resource "google_compute_router_peer" "peers_trusted_to_nvas_zone_b" {
+  for_each                  = local.ncc_cr_intf_trusted_configs
+  interface                 = "prod-trusted-${each.key}"
+  name                      = "prod-trusted-${each.key}-b"
+  peer_asn                  = 65514
+  peer_ip_address           = local.nva_configs["${each.value.region}-b"].ip_trusted
+  region                    = each.value.region
+  router                    = google_compute_router.routers_trusted[each.value.region].name
+  router_appliance_instance = module.nva["${each.value.region}-b"].self_link
+}
+
+resource "google_compute_router_peer" "peers_trusted_to_nvas_zone_c" {
+  for_each                  = local.ncc_cr_intf_trusted_configs
+  interface                 = "prod-trusted-${each.key}"
+  name                      = "prod-trusted-${each.key}-c"
+  peer_asn                  = 65514
+  peer_ip_address           = local.nva_configs["${each.value.region}-c"].ip_trusted
+  region                    = each.value.region
+  router                    = google_compute_router.routers_trusted[each.value.region].name
+  router_appliance_instance = module.nva["${each.value.region}-c"].self_link
 }
