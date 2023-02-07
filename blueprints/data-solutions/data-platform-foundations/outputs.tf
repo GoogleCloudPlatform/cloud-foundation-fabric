@@ -13,7 +13,6 @@
 # limitations under the License.
 
 # tfdoc:file:description Output variables.
-
 output "bigquery-datasets" {
   description = "BigQuery datasets."
   value = {
@@ -30,10 +29,29 @@ output "demo_commands" {
     01 = "gsutil -i ${module.drop-sa-cs-0.email} cp demo/data/*.csv gs://${module.drop-cs-0.name}"
     02 = try("gsutil -i ${module.orch-sa-cmp-0.email} cp demo/data/*.j* gs://${module.orch-cs-0.name}", "Composer not deployed.")
     03 = try("gsutil -i ${module.orch-sa-cmp-0.email} cp demo/*.py ${google_composer_environment.orch-cmp-0[0].config[0].dag_gcs_prefix}/", "Composer not deployed")
-    04 = try("Open ${google_composer_environment.orch-cmp-0[0].config.0.airflow_uri} and run uploaded DAG.", "Composer not deployed")
-    05 = <<EOT
+    04 = <<EOT
+    gcloud builds submit \
+      --config=./demo/dataflow-csv2bq/cloudbuild.yaml \
+      --project=${module.orch-project.project_id} \
+      --region="${var.region}" \
+      --gcs-log-dir=gs://${module.orch-cs-build-staging.name}/log \
+      --gcs-source-staging-dir=gs://${module.orch-cs-build-staging.name}/staging \
+      --impersonate-service-account=${module.orch-sa-df-build.email} \
+      --substitutions=_TEMPLATE_IMAGE="${local.orch_docker_path}/csv2bq:latest",_TEMPLATE_PATH="gs://${module.orch-cs-df-template.name}/csv2bq.json",_DOCKER_DIR="./demo/dataflow-csv2bq"
+    EOT
+    05 = try("Open ${google_composer_environment.orch-cmp-0[0].config.0.airflow_uri} and run uploaded DAG.", "Composer not deployed")
+    06 = <<EOT
            bq query --project_id=${module.dwh-conf-project.project_id} --use_legacy_sql=false 'SELECT * EXCEPT (name, surname) FROM `${module.dwh-conf-project.project_id}.${module.dwh-conf-bq-0.dataset_id}.customer_purchase` LIMIT 1000'"
          EOT
+  }
+}
+
+output "df_template" {
+  description = "Dataflow template image and template details."
+  value = {
+    df_template_img  = "${local.orch_docker_path}/[image-name]:[version]"
+    df_template_cs   = "gs://${module.orch-cs-df-template.name}"
+    build_staging_cs = "gs://${module.orch-cs-build-staging.name}"
   }
 }
 
@@ -98,3 +116,4 @@ output "vpc_subnet" {
     transformation = local.transf_subnet
   }
 }
+

@@ -31,7 +31,7 @@ PlanSummary = collections.namedtuple('PlanSummary', 'values counts outputs')
 @contextlib.contextmanager
 def _prepare_root_module(path):
   """Context manager to prepare a terraform module to be tested.
-  
+
   If the TFTEST_COPY environment variable is set, `path` is copied to
   a temporary directory and a few terraform files (e.g.
   terraform.tfvars) are delete to ensure a clean test environment.
@@ -49,6 +49,7 @@ def _prepare_root_module(path):
       # deployment with links to configs)
       ignore_patterns = shutil.ignore_patterns('*.auto.tfvars',
                                                '*.auto.tfvars.json',
+                                               '[0-9]-*-providers.tf',
                                                'terraform.tfstate*',
                                                'terraform.tfvars', '.terraform')
 
@@ -180,19 +181,19 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
       expected_values = inventory['values']
       for address, expected_value in expected_values.items():
         assert address in summary.values, \
-          f'{address} is not a valid address in the plan'
+            f'{address} is not a valid address in the plan'
         for k, v in expected_value.items():
           assert k in summary.values[address], \
-            f'{k} not found at {address}'
+              f'{k} not found at {address}'
           plan_value = summary.values[address][k]
           assert plan_value == v, \
-            f'{k} at {address} failed. Got `{plan_value}`, expected `{v}`'
+              f'{k} at {address} failed. Got `{plan_value}`, expected `{v}`'
 
     if 'counts' in inventory:
       expected_counts = inventory['counts']
       for type_, expected_count in expected_counts.items():
         assert type_ in summary.counts, \
-          f'module does not create any resources of type `{type_}`'
+            f'module does not create any resources of type `{type_}`'
         plan_count = summary.counts[type_]
         assert plan_count == expected_count, \
             f'count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
@@ -201,7 +202,7 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
       expected_outputs = inventory['outputs']
       for output_name, expected_output in expected_outputs.items():
         assert output_name in summary.outputs, \
-          f'module does not output `{output_name}`'
+            f'module does not output `{output_name}`'
         output = summary.outputs[output_name]
         # assert 'value' in output, \
         #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
