@@ -21,12 +21,15 @@ locals {
   bgp_peer_options_onprem = local.enable_onprem_vpn == false ? null : {
     for k, v in var.vpn_onprem_configs :
     k => v.adv == null ? null : {
-      advertise_groups = []
-      advertise_ip_ranges = {
-        for adv in(v.adv == null ? [] : v.adv.custom) :
-        var.custom_adv[adv] => adv
+      custom_advertise = try(v.adv.default, false) ? null : {
+        all_subnets          = false
+        all_vpc_subnets      = false
+        all_peer_vpc_subnets = false
+        ip_ranges = {
+          for adv in(v.adv == null ? [] : v.adv.custom) :
+          var.custom_adv[adv] => adv
+        }
       }
-      advertise_mode = try(v.adv.default, false) ? "DEFAULT" : "CUSTOM"
       route_priority = null
     }
   }
@@ -54,11 +57,10 @@ module "landing-to-onprem-primary-vpn" {
   tunnels = {
     for t in var.vpn_onprem_configs.landing-trusted-primary.tunnels :
     "remote-${t.vpn_gateway_interface}-${t.peer_external_gateway_interface}" => {
-      bgp_peer = {
-        address = cidrhost(t.session_range, 1)
-        asn     = t.peer_asn
-      }
-      bgp_peer_options                = local.bgp_peer_options_onprem.landing-trusted-primary
+      bgp_peer = merge(
+        { address = cidrhost(t.session_range, 1), asn = t.peer_asn },
+        local.bgp_peer_options_onprem.landing-trusted-primary
+      )
       bgp_session_range               = "${cidrhost(t.session_range, 2)}/30"
       peer_external_gateway_interface = t.peer_external_gateway_interface
       shared_secret                   = t.secret
@@ -89,11 +91,10 @@ module "landing-to-onprem-secondary-vpn" {
   tunnels = {
     for t in var.vpn_onprem_configs.landing-trusted-secondary.tunnels :
     "remote-${t.vpn_gateway_interface}-${t.peer_external_gateway_interface}" => {
-      bgp_peer = {
-        address = cidrhost(t.session_range, 1)
-        asn     = t.peer_asn
-      }
-      bgp_peer_options                = local.bgp_peer_options_onprem.landing-trusted-secondary
+      bgp_peer = merge(
+        { address = cidrhost(t.session_range, 1), asn = t.peer_asn },
+        local.bgp_peer_options_onprem.landing-trusted-secondary
+      )
       bgp_session_range               = "${cidrhost(t.session_range, 2)}/30"
       peer_external_gateway_interface = t.peer_external_gateway_interface
       shared_secret                   = t.secret
