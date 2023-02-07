@@ -55,6 +55,10 @@ variable "folder_config" {
       parent       = string
     }), null)
   })
+  validation {
+    condition     = var.folder_config.folder_id != null || var.folder_config.folder_create != null
+    error_message = "At least one attribute should be set."
+  }
   nullable = false
 }
 
@@ -148,6 +152,10 @@ variable "project_config" {
     )
   })
   nullable = false
+  validation {
+    condition     = var.project_config.billing_account_id != null || var.project_config.project_ids != null
+    error_message = "At least one attribute should be set."
+  }
 }
 
 variable "vpc_sc_access_levels" {
