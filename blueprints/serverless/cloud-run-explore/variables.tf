@@ -42,34 +42,20 @@ variable "ingress_settings" {
 variable "security_policy" {
   description = "Security policy (Cloud Armor) to enforce in the LB"
   type = object({
-    enabled      = bool
-    ip_blacklist = list(string)
-    path_blocked = string
+    enabled      = optional(bool, false)
+    ip_blacklist = optional(list(string), ["*"])
+    path_blocked = optional(string, "/login.html")
   })
-  default = {
-    enabled      = false
-    ip_blacklist = null
-    path_blocked = null
-  }
+  default = {}
 }
 
 variable "iap" {
   description = "Identity-Aware Proxy for Cloud Run in the LB"
   type = object({
-    enabled            = bool
-    app_title          = string
-    oauth2_client_name = string
+    enabled            = optional(bool, false)
+    app_title          = optional(string, "Cloud Run Explore Application")
+    oauth2_client_name = optional(string, "Test Client")
+    email              = optional(string)
   })
-  default = {
-    enabled            = false
-    app_title          = null
-    oauth2_client_name = null
-  }
-}
-
-variable "iap_email" {
-  # Taken out of var 'iap' for convenience to override it on the CLI
-  description = "IAP email used for OAuth screen and accessing Cloud Run"
-  type        = string
-  default     = null
+  default = {}
 }
