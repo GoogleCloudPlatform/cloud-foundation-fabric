@@ -12,15 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/organization
+values:
+  module.template-confidential-example.google_compute_instance_template.default[0]:
+    confidential_instance_config:
+    - enable_confidential_compute: true
+    name_prefix: confidential-template-
+    project: project-id
+    region: europe-west1
+  module.vm-confidential-example.google_compute_instance.default[0]:
+    confidential_instance_config:
+    - enable_confidential_compute: true
+    name: confidential-vm
+    project: project-id
+    zone: europe-west1-b
 
-common_tfvars:
-  - common.tfvars
-
-tests:
-  audit_config:
-  org_policies_list:
-  org_policies_boolean:
-  org_policies_custom_constraints:
-  firewall_policies_factory_combined:
-  tags:
+counts:
+  google_compute_instance: 1
+  google_compute_instance_template: 1
