@@ -28,7 +28,7 @@ module "simple-vm-example" {
 # tftest modules=1 resources=2 inventory=simple.yaml
 ```
 
-### Service account managed
+### Service account management
 
 VM service accounts can be managed in three different ways:
 - You can let the module create a service account for you by settting `service_account_create = true`
