@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,3 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+values:
+  module.vm-with-alias-ips.google_compute_instance.default[0]:
+    name: test
+    network_interface:
+    - access_config: []
+      alias_ip_range:
+      - ip_cidr_range: 10.16.0.10/32
+        subnetwork_range_name: alias1
+      ipv6_access_config: []
+      network: projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      subnetwork: subnet_self_link
+    project: my-project
+    zone: europe-west1-b
+
+counts:
+  google_compute_instance: 1
+  modules: 1
+  resources: 1
+
+outputs: {}

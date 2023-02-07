@@ -88,11 +88,13 @@ jobs:
       # run Terraform init/validate/plan
       - id: tf-init
         name: Terraform init
+        continue-on-error: true
         run: |
           terraform init -no-color
 
       - id: tf-validate
         name: Terraform validate
+        continue-on-error: true
         run: terraform validate -no-color
 
       - id: tf-plan
@@ -174,6 +176,16 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
+
+      - id: check-init
+        name: Check init failure
+        if: steps.tf-init.outcome != 'success'
+        run: exit 1
+
+      - id: check-validate
+        name: Check validate failure
+        if: steps.tf-validate.outcome != 'success'
+        run: exit 1
 
       - id: check-plan
         name: Check plan failure

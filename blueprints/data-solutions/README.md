@@ -62,3 +62,10 @@ This [blueprint](./sqlserver-alwayson/) implements SQL Server Always On Availabi
 This [blueprint](./vertex-mlops/) implements the infrastructure required to have a fully functional MLOPs environment using Vertex AI: required GCP services activation, Vertex Workbench, GCS buckets to host Vertex AI and Cloud Build artifacts, Artifact Registry docker repository to host custom images, required service accounts, networking and Workload Identity Federation Provider for Github integration (optional).
 
 <br clear="left">
+
+### Shielded Folder
+
+<a href="./shielded-folder/" title="Shielded Folder"><img src="./shielded-folder/images/overview_diagram.png" align="left" width="280px"></a>
+This [blueprint](./shielded-folder/) implements an opinionated folder configuration according to GCP best practices. Configurations implemented on the folder would be beneficial to host workloads inheriting constraints from the folder they belong to.
+
+<br clear="left">

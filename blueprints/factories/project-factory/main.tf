@@ -180,6 +180,7 @@ module "project" {
   source                     = "../../../modules/project"
   billing_account            = local.billing_account_id
   name                       = var.project_id
+  descriptive_name           = var.descriptive_name
   prefix                     = var.prefix
   contacts                   = { for c in local.essential_contacts : c => ["ALL"] }
   iam                        = local.iam
