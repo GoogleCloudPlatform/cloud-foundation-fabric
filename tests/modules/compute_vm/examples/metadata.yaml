@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,3 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+values:
+  module.vm-metadata-example.google_compute_instance.default[0]:
+    metadata:
+      startup-script: |
+        #! /bin/bash
+        apt-get update
+        apt-get install -y nginx
+    name: nginx-server
+    project: project-id
+    zone: europe-west1-b
+    labels:
+      env: dev
+      system: crm
+  module.vm-metadata-example.google_service_account.service_account[0]: {}
+
+counts:
+  google_compute_instance: 1
+  google_service_account: 1
