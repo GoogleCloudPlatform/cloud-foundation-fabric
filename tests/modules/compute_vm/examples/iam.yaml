@@ -12,15 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/organization
+values:
+  module.vm-iam-example.google_compute_instance.default[0]:
+    name: webserver
+  module.vm-iam-example.google_compute_instance_iam_binding.default["roles/compute.instanceAdmin"]:
+    condition: []
+    instance_name: webserver
+    members:
+    - group:admin@example.com
+    - group:webserver@example.com
+    project: project-id
+    role: roles/compute.instanceAdmin
+    zone: europe-west1-b
 
-common_tfvars:
-  - common.tfvars
+counts:
+  google_compute_instance: 1
+  google_compute_instance_iam_binding: 1
+  modules: 1
+  resources: 2
 
-tests:
-  audit_config:
-  org_policies_list:
-  org_policies_boolean:
-  org_policies_custom_constraints:
-  firewall_policies_factory_combined:
-  tags:
+outputs: {}

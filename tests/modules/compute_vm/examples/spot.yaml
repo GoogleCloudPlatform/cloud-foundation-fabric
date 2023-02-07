@@ -12,15 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/organization
+values:
+  module.spot-vm-example.google_compute_instance.default[0]:
+    name: test
+    project: project-id
+    scheduling:
+    - automatic_restart: false
+      instance_termination_action: STOP
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: TERMINATE
+      preemptible: true
+      provisioning_model: SPOT
+    zone: europe-west1-b
 
-common_tfvars:
-  - common.tfvars
-
-tests:
-  audit_config:
-  org_policies_list:
-  org_policies_boolean:
-  org_policies_custom_constraints:
-  firewall_policies_factory_combined:
-  tags:
+counts:
+  google_compute_instance: 1

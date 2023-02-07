@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/organization
+values:
+  module.instance-group.google_compute_instance.default[0]: {}
+  module.instance-group.google_compute_instance_group.unmanaged[0]:
+    name: ilb-test
+    named_port: []
+    network: projects/xxx/global/networks/aaa
+    project: my-project
+    timeouts: null
+    zone: europe-west1-b
 
-common_tfvars:
-  - common.tfvars
-
-tests:
-  audit_config:
-  org_policies_list:
-  org_policies_boolean:
-  org_policies_custom_constraints:
-  firewall_policies_factory_combined:
-  tags:
+counts:
+  google_compute_instance: 1
+  google_compute_instance_group: 1

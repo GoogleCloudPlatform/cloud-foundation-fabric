@@ -12,15 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/organization
+values:
+  module.vm-metadata-example.google_compute_instance.default[0]:
+    metadata:
+      startup-script: |
+        #! /bin/bash
+        apt-get update
+        apt-get install -y nginx
+    name: nginx-server
+    project: project-id
+    zone: europe-west1-b
+    labels:
+      env: dev
+      system: crm
+  module.vm-metadata-example.google_service_account.service_account[0]: {}
 
-common_tfvars:
-  - common.tfvars
-
-tests:
-  audit_config:
-  org_policies_list:
-  org_policies_boolean:
-  org_policies_custom_constraints:
-  firewall_policies_factory_combined:
-  tags:
+counts:
+  google_compute_instance: 1
+  google_service_account: 1

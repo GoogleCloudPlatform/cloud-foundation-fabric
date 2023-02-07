@@ -12,15 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/organization
+values:
+  module.vm-with-alias-ips.google_compute_instance.default[0]:
+    name: test
+    network_interface:
+    - access_config: []
+      alias_ip_range:
+      - ip_cidr_range: 10.16.0.10/32
+        subnetwork_range_name: alias1
+      ipv6_access_config: []
+      network: projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      subnetwork: subnet_self_link
+    project: my-project
+    zone: europe-west1-b
 
-common_tfvars:
-  - common.tfvars
+counts:
+  google_compute_instance: 1
+  modules: 1
+  resources: 1
 
-tests:
-  audit_config:
-  org_policies_list:
-  org_policies_boolean:
-  org_policies_custom_constraints:
-  firewall_policies_factory_combined:
-  tags:
+outputs: {}

@@ -25,35 +25,61 @@ module "simple-vm-example" {
   }]
   service_account_create = true
 }
-# tftest modules=1 resources=2
-
+# tftest modules=1 resources=2 inventory=simple.yaml
 ```
 
-### Spot VM
+### Service account managed
 
-[Spot VMs](https://cloud.google.com/compute/docs/instances/spot) are ephemeral compute instances suitable for batch jobs and fault-tolerant workloads. Spot VMs provide new features that [preemptible instances](https://cloud.google.com/compute/docs/instances/preemptible) do not support, such as the absence of a maximum runtime.
+VM service accounts can be managed in three different ways:
+- You can let the module create a service account for you by settting `service_account_create = true`
+- You can use an existing service account by setting `service_account_create = false` (the default value) and passing the full email address of the service account to the `service_account` variable. This is useful, for example, if you want to reuse the service account from another previously created instance, or if you want to create the service account manually with the `iam-service-account` module. In this case, you probably also want to set `service_account_scopes` to `cloud-platform`.
+- Lastly, you can use the default compute service account by setting `service_account_crate = false`. Please note that using the default compute service account is not recommended.
 
 ```hcl
-module "spot-vm-example" {
+module "vm-managed-sa-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone       = "europe-west1-b"
-  name       = "test"
-  options = {
-    spot               = true
-    termination_action = "STOP"
-  }
+  name       = "test1"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
   service_account_create = true
 }
-# tftest modules=1 resources=2
 
+module "vm-managed-sa-example2" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "europe-west1-b"
+  name       = "test2"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  service_account        = module.vm-managed-sa-example.service_account_email
+  service_account_scopes = ["cloud-platform"]
+}
+
+# not recommended
+module "vm-default-sa-example2" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "europe-west1-b"
+  name       = "test3"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  service_account_create = false
+}
+
+# tftest modules=3 resources=4 inventory=sas.yaml
 ```
 
-### Disk sources
+### Disk management
+
+#### Disk sources
 
 Attached disks can be created and optionally initialized from a pre-existing source, or attached to VMs when pre-existing. The `source` and `source_type` attributes of the `attached_disks` variable allows several modes of operation:
 
@@ -65,7 +91,7 @@ Attached disks can be created and optionally initialized from a pre-existing sou
 This is an example of attaching a pre-existing regional PD to a new instance:
 
 ```hcl
-module "simple-vm-example" {
+module "vm-disks-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone       = "${var.region}-b"
@@ -91,7 +117,7 @@ module "simple-vm-example" {
 And the same example for an instance template (where not using the full self link of the disk triggers recreation of the template)
 
 ```hcl
-module "simple-vm-example" {
+module "vm-disks-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone       = "${var.region}-b"
@@ -115,39 +141,41 @@ module "simple-vm-example" {
 # tftest modules=1 resources=2
 ```
 
-### Disk encryption with Cloud KMS
+### Network interfaces
 
-This example shows how to control disk encryption via the the `encryption` variable, in this case the self link to a KMS CryptoKey that will be used to encrypt boot and attached disk. Managing the key with the `../kms` module is of course possible, but is not shown here.
+#### Internal and external IPs
+
+By default VNs are create with an automatically assigned IP addresses, but you can change it through the `addreses` and `nat` attributes of the `network_interfaces` variable:
 
 ```hcl
-module "kms-vm-example" {
+module "vm-internal-ip" {
   source     = "./fabric/modules/compute-vm"
-  project_id = var.project_id
+  project_id = "my-project"
   zone       = "europe-west1-b"
-  name       = "kms-test"
+  name       = "vm-internal-ip"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
+    addresses  = { external = null, internal = "10.0.0.2" }
   }]
-  attached_disks = [
-    {
-      name = "attached-disk"
-      size = 10
-    }
-  ]
-  service_account_create = true
-  boot_disk = {
-    image = "projects/debian-cloud/global/images/family/debian-10"
-  }
-  encryption = {
-    encrypt_boot      = true
-    kms_key_self_link = var.kms_key.self_link
-  }
 }
-# tftest modules=1 resources=3
+
+module "vm-external-ip" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "europe-west1-b"
+  name       = "vm-external-ip"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = true
+    addresses  = { external = "8.8.8.8", internal = null }
+  }]
+}
+# tftest modules=2 resources=2 inventory=ips.yaml
 ```
 
-### Using Alias IPs
+#### Using Alias IPs
 
 This example shows how to add additional [Alias IPs](https://cloud.google.com/vpc/docs/alias-ip) to your VM.
 
@@ -164,12 +192,11 @@ module "vm-with-alias-ips" {
       alias1 = "10.16.0.10/32"
     }
   }]
-  service_account_create = true
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=1 inventory=alias-ips.yaml
 ```
 
-### Using gVNIC
+#### Using gVNIC
 
 This example shows how to enable [gVNIC](https://cloud.google.com/compute/docs/networking/using-gvnic) on your VM by customizing a `cos` image. Given that gVNIC needs to be enabled as an instance configuration and as a guest os configuration, you'll need to supply a bootable disk with `guest_os_features=GVNIC`. `SEV_CAPABLE`, `UEFI_COMPATIBLE` and `VIRTIO_SCSI_MULTIQUEUE` are enabled implicitly in the `cos`, `rhel`, `centos` and other images.
 
@@ -210,8 +237,152 @@ module "vm-with-gvnic" {
   }]
   service_account_create = true
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=gvnic.yaml
 ```
+
+### Metadata
+
+You can define labels and custom metadata values. Metadata can be leveraged, for example, to define a custom startup script.
+
+```hcl
+module "vm-metadata-example" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "europe-west1-b"
+  name       = "nginx-server"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  labels = {
+    env    = "dev"
+    system = "crm"
+  }
+  metadata = {
+    startup-script = <<-EOF
+      #! /bin/bash
+      apt-get update
+      apt-get install -y nginx
+    EOF
+  }
+  service_account_create = true
+}
+# tftest modules=1 resources=2 inventory=metadata.yaml
+```
+
+### IAM
+
+Like most modules, you can assign IAM roles to the instance using the `iam` variable.
+
+```hcl
+module "vm-iam-example" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "europe-west1-b"
+  name       = "webserver"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  iam = {
+    "roles/compute.instanceAdmin" = [
+      "group:webserver@example.com",
+      "group:admin@example.com"
+    ]
+  }
+}
+# tftest modules=1 resources=2 inventory=iam.yaml
+
+```
+
+### Spot VM
+
+[Spot VMs](https://cloud.google.com/compute/docs/instances/spot) are ephemeral compute instances suitable for batch jobs and fault-tolerant workloads. Spot VMs provide new features that [preemptible instances](https://cloud.google.com/compute/docs/instances/preemptible) do not support, such as the absence of a maximum runtime.
+
+```hcl
+module "spot-vm-example" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "europe-west1-b"
+  name       = "test"
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+}
+# tftest modules=1 resources=1 inventory=spot.yaml
+```
+
+### Confidential compute
+
+You can enable confidential compute with the `confidential_compute` variable, which can be used for standalone instances or for instance templates.
+
+```hcl
+module "vm-confidential-example" {
+  source               = "./fabric/modules/compute-vm"
+  project_id           = var.project_id
+  zone                 = "europe-west1-b"
+  name                 = "confidential-vm"
+  confidential_compute = true
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+
+}
+
+module "template-confidential-example" {
+  source               = "./fabric/modules/compute-vm"
+  project_id           = var.project_id
+  zone                 = "europe-west1-b"
+  name                 = "confidential-template"
+  confidential_compute = true
+  create_template      = true
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+}
+
+# tftest modules=2 resources=2 inventory=confidential.yaml
+```
+
+### Shielded VM configuration
+
+### Disk encryption with Cloud KMS
+
+This example shows how to control disk encryption via the the `encryption` variable, in this case the self link to a KMS CryptoKey that will be used to encrypt boot and attached disk. Managing the key with the `../kms` module is of course possible, but is not shown here.
+
+```hcl
+module "kms-vm-example" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "europe-west1-b"
+  name       = "kms-test"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  attached_disks = [{
+    name = "attached-disk"
+    size = 10
+  }]
+  service_account_create = true
+  boot_disk = {
+    image = "projects/debian-cloud/global/images/family/debian-10"
+  }
+  encryption = {
+    encrypt_boot      = true
+    kms_key_self_link = var.kms_key.self_link
+  }
+}
+# tftest modules=1 resources=3 inventory=cmek.yaml
+```
+
 
 ### Instance template
 
@@ -239,7 +410,7 @@ module "cos-test" {
   service_account = "vm-default@my-project.iam.gserviceaccount.com"
   create_template = true
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=template.yaml
 ```
 
 ### Instance group
@@ -270,7 +441,7 @@ module "instance-group" {
   }
   group = { named_ports = {} }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=group.yaml
 ```
 <!-- BEGIN TFDOC -->
 
