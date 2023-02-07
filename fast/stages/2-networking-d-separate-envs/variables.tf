@@ -94,11 +94,9 @@ variable "l7ilb_subnets" {
   default = {
     prod = [
       { ip_cidr_range = "10.128.92.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.93.0/24", region = "europe-west4" }
     ]
     dev = [
       { ip_cidr_range = "10.128.60.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.61.0/24", region = "europe-west4" }
     ]
   }
 }
@@ -167,6 +165,16 @@ variable "psa_ranges" {
   # }
 }
 
+variable "regions" {
+  description = "Region definitions."
+  type = object({
+    primary = string
+  })
+  default = {
+    primary = "europe-west1"
+  }
+}
+
 variable "router_onprem_configs" {
   description = "Configurations for routers used for onprem connectivity."
   type = map(object({
@@ -177,12 +185,12 @@ variable "router_onprem_configs" {
     asn = number
   }))
   default = {
-    prod-ew1 = {
+    prod-primary = {
       asn = "65533"
       adv = null
       # adv = { default = false, custom = [] }
     }
-    dev-ew1 = {
+    dev-primary = {
       asn = "65534"
       adv = null
       # adv = { default = false, custom = [] }
@@ -222,7 +230,7 @@ variable "vpn_onprem_configs" {
     }))
   }))
   default = {
-    dev-ew1 = {
+    dev-primary = {
       adv = {
         default = false
         custom = [
@@ -251,7 +259,7 @@ variable "vpn_onprem_configs" {
         }
       ]
     }
-    prod-ew1 = {
+    prod-primary = {
       adv = {
         default = false
         custom = [

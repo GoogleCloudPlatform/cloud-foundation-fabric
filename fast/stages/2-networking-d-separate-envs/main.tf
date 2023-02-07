@@ -18,17 +18,25 @@
 
 locals {
   custom_roles = coalesce(var.custom_roles, {})
-  l7ilb_subnets = {
-    for env, v in var.l7ilb_subnets : env => [
+  _l7ilb_subnets = {
+    for k, v in var.l7ilb_subnets : k => [
       for s in v : merge(s, {
         active = true
-        name   = "${env}-l7ilb-${s.region}"
+        region = lookup(var.regions, s.region, s.region)
     })]
   }
-  region_trigram = {
-    europe-west1 = "ew1"
-    europe-west3 = "ew3"
+  l7ilb_subnets = {
+    for k, v in local._l7ilb_subnets : k => [
+      for s in v : merge(s, {
+        name = "${k}-l7ilb-${local.region_shortnames[s.region]}"
+    })]
   }
+  # combine all regions from variables and subnets
+  regions = distinct(concat(
+    values(var.regions),
+    values(module.dev-spoke-vpc.subnet_regions),
+    values(module.prod-spoke-vpc.subnet_regions),
+  ))
   stage3_sas_delegated_grants = [
     "roles/composer.sharedVpcAgent",
     "roles/compute.networkUser",

@@ -19,7 +19,7 @@
 locals {
   # combine all regions from variables and subnets
   regions = distinct(concat(
-    [var.regions.primary, var.regions.secondary],
+    values(var.regions),
     values(module.dev-spoke-vpc.subnet_regions),
     values(module.landing-vpc.subnet_regions),
     values(module.prod-spoke-vpc.subnet_regions),
