@@ -93,3 +93,27 @@ address for security reasons, Internet connectivity is done with [Cloud NAT](htt
 | [compute_zone](outputs.tf#L32) | Name of a compute engine zone for Packer's temporary VM. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```tpl
+# tftest-file id=pkrvars path=packer/build.pkrvars.tpl
+# Packer variables file template.
+# Used by Terraform to generate Packer variable file.
+project_id         = "${PROJECT_ID}"
+compute_zone       = "${COMPUTE_ZONE}"
+builder_sa         = "${BUILDER_SA}"
+compute_sa         = "${COMPUTE_SA}"
+compute_subnetwork = "${COMPUTE_SUBNETWORK}"
+use_iap            = ${USE_IAP}
+```
+
+```hcl
+module "test" {
+  source               = "./fabric/blueprints/cloud-operations/packer-image-builder"
+  project_id           = "test-project"
+  packer_account_users = ["user:john@example.com"]
+  create_packer_vars   = true
+}
+# tftest modules=7 resources=17 files=pkrvars
+```
