@@ -33,3 +33,22 @@ The codebase provisions the following list of resources:
 | [tfc_workspace_wariables](outputs.tf#L20) | Variables to be set on the TFC workspace. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source                             = "./fabric/blueprints/cloud-operations/terraform-enterprise-wif/gcp-workload-identity-provider"
+  billing_account                    = "1234-ABCD-1234"
+  project_create                     = true
+  project_id                         = "project-1"
+  parent                             = "folders/12345"
+  tfe_organization_id                = "org-123"
+  tfe_workspace_id                   = "ws-123"
+  workload_identity_pool_id          = "tfe-pool"
+  workload_identity_pool_provider_id = "tf-provider"
+  issuer_uri                         = "https://app.terraform.io/"
+}
+
+# tftest modules=3 resources=12
+```
