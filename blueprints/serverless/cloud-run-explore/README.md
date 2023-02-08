@@ -4,7 +4,7 @@
 
 This blueprint contains all the necessary Terraform modules to build and publicly expose a Cloud Run service in a variety of use cases.
 
-The content of this blueprint corresponds to the chapter `My serverless "Hello, World! - Exploring Cloud Run` of the __Serverless Networking Guide__ (to be released soon). This guide is an easy to follow introduction to Cloud Run, where a couple of friendly characters will guide you from the basics to more advanced topics with a very practical approach and in record time! The code here complements this learning and allows you to test the scenarios presented and your knowledge.
+The content of this blueprint corresponds to the chapter '_My serverless "Hello, World! - Exploring Cloud Run_' of the __Serverless Networking Guide__ (to be released soon). This guide is an easy to follow introduction to Cloud Run, where a couple of friendly characters will guide you from the basics to more advanced topics with a very practical approach and in record time! The code here complements this learning and allows you to test the scenarios presented and your knowledge.
 
 ## Architecture
 
@@ -42,6 +42,7 @@ git checkout serverless-program
 cd cloud-foundation-fabric/blueprints/serverless/cloud-run-explore
 ```
 You should see this README and some terraform files.
+
 3. To deploy a specific use case, you will need to create a file in this directory called `terraform.tfvars` and follow the corresponding instructions to set variables. Sometimes values that are meant to be substituted will be shown inside brackets but you need to omit these brackets. E.g.:
 ```
 project_id = [your-project_id]
@@ -65,7 +66,7 @@ The resource creation will take a few minutes but when it’s complete, you shou
 __Congratulations!__ You have successfully deployed the use case you chose based on the variables configuration.
 
 ### Use case 1: Cloud Run service with default URL
-This Is the simplest case, the "Hello World" for Cloud Run. A Cloud Run service is deployed with a default URL based in your project, service name and cloud region where it is deployed:
+This is the simplest case, the "Hello World" for Cloud Run. A Cloud Run service is deployed with a default URL based in your project, service name and cloud region where it is deployed:
 
 <p align="center"> <img src="use-case-1.png" width="700"> </p>
 
