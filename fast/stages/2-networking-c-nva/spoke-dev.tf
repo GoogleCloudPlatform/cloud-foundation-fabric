@@ -60,7 +60,7 @@ module "dev-spoke-vpc" {
   project_id                      = module.dev-spoke-project.project_id
   name                            = "dev-spoke-0"
   mtu                             = 1500
-  data_folder                     = "${var.data_dir}/subnets/dev"
+  data_folder                     = "${var.factories_config.data_dir}/subnets/dev"
   delete_default_routes_on_create = true
   psa_config                      = try(var.psa_ranges.dev, null)
   subnets_proxy_only              = local.l7ilb_subnets_dev
@@ -117,8 +117,8 @@ module "dev-spoke-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.data_dir}/firewall-rules/dev"
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dev"
   }
 }
 

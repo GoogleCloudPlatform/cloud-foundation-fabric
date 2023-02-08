@@ -63,7 +63,7 @@ module "landing-vpc" {
       next_hop      = "default-internet-gateway"
     }
   }
-  data_folder = "${var.data_dir}/subnets/landing"
+  data_folder = "${var.factories_config.data_dir}/subnets/landing"
 }
 
 module "landing-firewall" {
@@ -74,8 +74,8 @@ module "landing-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.data_dir}/firewall-rules/landing"
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing"
   }
 }
 

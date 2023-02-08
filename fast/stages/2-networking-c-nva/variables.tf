@@ -66,10 +66,24 @@ variable "custom_roles" {
   default = null
 }
 
-variable "data_dir" {
-  description = "Relative path for the folder storing configuration data for network resources."
-  type        = string
-  default     = "data"
+variable "factories_config" {
+  description = "Configuration for network resource factories."
+  type = object({
+    data_dir             = optional(string, "data")
+    firewall_policy_name = optional(string, "factory")
+  })
+  default = {
+    data_dir = "data"
+  }
+  nullable = false
+  validation {
+    condition     = var.factories_config.data_dir != null
+    error_message = "Data folder needs to be non-null."
+  }
+  validation {
+    condition     = var.factories_config.firewall_policy_name != null
+    error_message = "Firewall policy name needs to be non-null."
+  }
 }
 
 variable "dns" {

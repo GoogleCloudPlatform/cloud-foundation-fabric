@@ -53,7 +53,7 @@ module "landing-untrusted-vpc" {
     inbound = false
     logging = false
   }
-  data_folder = "${var.data_dir}/subnets/landing-untrusted"
+  data_folder = "${var.factories_config.data_dir}/subnets/landing-untrusted"
 }
 
 module "landing-untrusted-firewall" {
@@ -64,8 +64,8 @@ module "landing-untrusted-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.data_dir}/firewall-rules/landing-untrusted"
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing-untrusted"
   }
 }
 
@@ -111,7 +111,10 @@ module "landing-trusted-vpc" {
   name                            = "prod-trusted-landing-0"
   delete_default_routes_on_create = true
   mtu                             = 1500
-
+  data_folder                     = "${var.factories_config.data_dir}/subnets/landing-trusted"
+  dns_policy = {
+    inbound = true
+  }
   # Set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
@@ -125,12 +128,6 @@ module "landing-trusted-vpc" {
       next_hop      = "default-internet-gateway"
     }
   }
-
-  dns_policy = {
-    inbound = true
-  }
-
-  data_folder = "${var.data_dir}/subnets/landing-trusted"
 }
 
 module "landing-trusted-firewall" {
@@ -141,7 +138,7 @@ module "landing-trusted-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.data_dir}/firewall-rules/landing-trusted"
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing-trusted"
   }
 }

@@ -55,12 +55,12 @@ module "folder" {
   folder_create = var.folder_ids.networking == null
   id            = var.folder_ids.networking
   firewall_policy_factory = {
-    cidr_file   = "${var.data_dir}/cidrs.yaml"
-    policy_name = null
-    rules_file  = "${var.data_dir}/hierarchical-policy-rules.yaml"
+    cidr_file   = "${var.factories_config.data_dir}/cidrs.yaml"
+    policy_name = var.factories_config.firewall_policy_name
+    rules_file  = "${var.factories_config.data_dir}/hierarchical-policy-rules.yaml"
   }
   firewall_policy_association = {
-    factory-policy = "factory"
+    factory-policy = var.factories_config.firewall_policy_name
   }
 }
 
