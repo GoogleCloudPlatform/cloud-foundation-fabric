@@ -22,6 +22,23 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
         curl -v http://<IP_ADDRESS>/hello
 
 Once done testing, you can clean up resources by running `terraform destroy`.
+
+<!--
+module "test" {
+  source = "./fabric/blueprints/serverless/api-gateway"
+  project_create = {
+    billing_account_id = "123456789"
+    parent             = "organizations/123456789"
+  }
+  project_id = "project-1"
+  regions = [
+    "europe-west1",
+    "europe-west2"
+  ]
+}
+# tftest modules=8 resources=34
+-->
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

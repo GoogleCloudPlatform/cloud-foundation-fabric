@@ -68,6 +68,22 @@ def pytest_generate_tests(metafunc):
               name += f' {index}'
             ids.append(name)
             examples.append(Example(name, code, path, files[last_header]))
+        if isinstance(child, marko.block.HTMLBlock):
+          # parse tftest blocks from HTML blocks comment (user by
+          # blueprints to test without having to create wrapper
+          # modules)
+          code = child.children
+          if code.startswith('<!--') and '# tftest' in code:
+            index += 1
+            path = module.relative_to(FABRIC_ROOT)
+            name = f'{path}:comment block'
+            code = code.removeprefix('<!--').removesuffix('-->\n')
+            if index > 1:
+              name += f' {index}'
+            ids.append(name)
+            # TODO: examples in HTML comment blocks can't use
+            # tftest-file
+            examples.append(Example(name, code, path, {}))
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
           index = 0
