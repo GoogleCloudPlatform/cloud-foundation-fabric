@@ -222,7 +222,6 @@ You're now ready to run `terraform init` and `apply`.
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [2-0-networking-providers.tf](./2-0-networking-providers.tf) | None |  |  |
 | [dns-dev.tf](./dns-dev.tf) | Development spoke DNS zones and peerings setup. | <code>dns</code> |  |
 | [dns-prod.tf](./dns-prod.tf) | Production spoke DNS zones and peerings setup. | <code>dns</code> |  |
 | [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> |  |
