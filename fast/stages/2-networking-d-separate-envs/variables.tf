@@ -60,6 +60,15 @@ variable "custom_roles" {
   default = null
 }
 
+variable "dns" {
+  description = "Onprem DNS resolvers."
+  type        = map(list(string))
+  default = {
+    prod = ["10.0.1.1"]
+    dev  = ["10.0.2.1"]
+  }
+}
+
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
@@ -77,15 +86,6 @@ variable "factories_config" {
   validation {
     condition     = var.factories_config.firewall_policy_name != null
     error_message = "Firewall policy name needs to be non-null."
-  }
-}
-
-variable "dns" {
-  description = "Onprem DNS resolvers."
-  type        = map(list(string))
-  default = {
-    prod = ["10.0.1.1"]
-    dev  = ["10.0.2.1"]
   }
 }
 
