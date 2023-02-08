@@ -39,21 +39,21 @@ variable "custom_adv" {
   description = "Custom advertisement definitions in name => range format."
   type        = map(string)
   default = {
-    cloud_dns                 = "35.199.192.0/19"
-    gcp_all                   = "10.128.0.0/16"
-    gcp_dev_ew1               = "10.128.128.0/19"
-    gcp_dev_ew4               = "10.128.160.0/19"
-    gcp_landing_trusted_ew1   = "10.128.64.0/19"
-    gcp_landing_trusted_ew4   = "10.128.96.0/19"
-    gcp_landing_untrusted_ew1 = "10.128.0.0/19"
-    gcp_landing_untrusted_ew4 = "10.128.32.0/19"
-    gcp_prod_ew1              = "10.128.192.0/19"
-    gcp_prod_ew4              = "10.128.224.0/19"
-    googleapis_private        = "199.36.153.8/30"
-    googleapis_restricted     = "199.36.153.4/30"
-    rfc_1918_10               = "10.0.0.0/8"
-    rfc_1918_172              = "172.16.0.0/12"
-    rfc_1918_192              = "192.168.0.0/16"
+    cloud_dns                       = "35.199.192.0/19"
+    gcp_all                         = "10.128.0.0/16"
+    gcp_dev_primary                 = "10.128.128.0/19"
+    gcp_dev_secondary               = "10.128.160.0/19"
+    gcp_landing_trusted_primary     = "10.128.64.0/19"
+    gcp_landing_trusted_secondary   = "10.128.96.0/19"
+    gcp_landing_untrusted_primary   = "10.128.0.0/19"
+    gcp_landing_untrusted_secondary = "10.128.32.0/19"
+    gcp_prod_primary                = "10.128.192.0/19"
+    gcp_prod_secondary              = "10.128.224.0/19"
+    googleapis_private              = "199.36.153.8/30"
+    googleapis_restricted           = "199.36.153.4/30"
+    rfc_1918_10                     = "10.0.0.0/8"
+    rfc_1918_172                    = "172.16.0.0/12"
+    rfc_1918_192                    = "192.168.0.0/16"
   }
 }
 
@@ -66,17 +66,31 @@ variable "custom_roles" {
   default = null
 }
 
-variable "data_dir" {
-  description = "Relative path for the folder storing configuration data for network resources."
-  type        = string
-  default     = "data"
-}
-
 variable "dns" {
   description = "Onprem DNS resolvers."
   type        = map(list(string))
   default = {
     onprem = ["10.0.200.3"]
+  }
+}
+
+variable "factories_config" {
+  description = "Configuration for network resource factories."
+  type = object({
+    data_dir             = optional(string, "data")
+    firewall_policy_name = optional(string, "factory")
+  })
+  default = {
+    data_dir = "data"
+  }
+  nullable = false
+  validation {
+    condition     = var.factories_config.data_dir != null
+    error_message = "Data folder needs to be non-null."
+  }
+  validation {
+    condition     = var.factories_config.firewall_policy_name != null
+    error_message = "Firewall policy name needs to be non-null."
   }
 }
 
@@ -98,12 +112,12 @@ variable "l7ilb_subnets" {
   })))
   default = {
     dev = [
-      { ip_cidr_range = "10.128.159.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.191.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.159.0/24", region = "primary" },
+      { ip_cidr_range = "10.128.191.0/24", region = "secondary" }
     ]
     prod = [
-      { ip_cidr_range = "10.128.223.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.255.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.223.0/24", region = "primary" },
+      { ip_cidr_range = "10.128.255.0/24", region = "secondary" }
     ]
   }
 }
@@ -144,7 +158,7 @@ variable "prefix" {
 }
 
 variable "psa_ranges" {
-  description = "IP ranges used for Private Service Access (e.g. CloudSQL)."
+  description = "IP ranges used for Private Service Access (e.g. CloudSQL). Ranges is in name => range format."
   type = object({
     dev = object({
       ranges = map(string)
@@ -162,34 +176,17 @@ variable "psa_ranges" {
     })
   })
   default = null
-  # default = {
-  #   dev = {
-  #     ranges = {
-  #       cloudsql-mysql-ew1     = "10.128.157.0/24"
-  #       cloudsql-mysql-ew4     = "10.128.189.0/24"
-  #       cloudsql-sqlserver-ew1 = "10.128.158.0/24"
-  #       cloudsql-sqlserver-ew4 = "10.128.190.0/24"
-  #     }
-  #     routes = null
-  #   }
-  #   prod = {
-  #     ranges = {
-  #       cloudsql-mysql-ew1     = "10.128.221.0/24"
-  #       cloudsql-mysql-ew4     = "10.128.253.0/24"
-  #       cloudsql-sqlserver-ew1 = "10.128.222.0/24"
-  #       cloudsql-sqlserver-ew4 = "10.128.254.0/24"
-  #     }
-  #     routes = null
-  #   }
-  # }
 }
 
-variable "region_trigram" {
-  description = "Short names for GCP regions."
-  type        = map(string)
+variable "regions" {
+  description = "Region definitions."
+  type = object({
+    primary   = string
+    secondary = string
+  })
   default = {
-    europe-west1 = "ew1"
-    europe-west4 = "ew4"
+    primary   = "europe-west1"
+    secondary = "europe-west4"
   }
 }
 
@@ -203,12 +200,12 @@ variable "router_configs" {
     asn = number
   }))
   default = {
-    landing-trusted-ew1 = {
+    landing-trusted-primary = {
       asn = "64512"
       adv = null
       # adv = { default = false, custom = [] }
     }
-    landing-trusted-ew4 = {
+    landing-trusted-secondary = {
       asn = "64512"
       adv = null
       # adv = { default = false, custom = [] }
@@ -250,7 +247,7 @@ variable "vpn_onprem_configs" {
     }))
   }))
   default = {
-    landing-trusted-ew1 = {
+    landing-trusted-primary = {
       adv = {
         default = false
         custom = [
@@ -278,7 +275,7 @@ variable "vpn_onprem_configs" {
         }
       ]
     }
-    landing-trusted-ew4 = {
+    landing-trusted-secondary = {
       adv = {
         default = false
         custom = [

@@ -18,24 +18,29 @@
 
 # local.vpn_spoke_bgp_peer_options is defined in the dev VPN file
 
-module "landing-to-prod-ew1-vpn" {
+moved {
+  from = module.landing-to-prod-ew1-vpn
+  to   = module.landing-to-prod-primary-vpn
+}
+
+module "landing-to-prod-primary-vpn" {
   source     = "../../../modules/net-vpn-ha"
   project_id = module.landing-project.project_id
   network    = module.landing-vpc.self_link
-  region     = "europe-west1"
-  name       = "vpn-to-prod-ew1"
+  region     = var.regions.primary
+  name       = "vpn-to-prod-${local.region_shortnames[var.regions.primary]}"
   router_config = {
-    name = "landing-vpn-ew1"
-    asn  = var.router_spoke_configs.landing-ew1.asn
+    name = "landing-vpn-${local.region_shortnames[var.regions.primary]}"
+    asn  = var.router_spoke_configs.landing-primary.asn
   }
-  peer_gateway = { gcp = module.prod-to-landing-ew1-vpn.self_link }
+  peer_gateway = { gcp = module.prod-to-landing-primary-vpn.self_link }
   tunnels = {
     0 = {
       bgp_peer = {
         address = cidrhost("169.254.0.64/27", 1)
-        asn     = var.router_spoke_configs.spoke-prod-ew1.asn
+        asn     = var.router_spoke_configs.spoke-prod-primary.asn
       }
-      bgp_peer_options = local.vpn_spoke_bgp_peer_options.landing-ew1
+      bgp_peer_options = local.vpn_spoke_bgp_peer_options.landing-primary
       bgp_session_range = "${
         cidrhost("169.254.0.64/27", 2)
       }/30"
@@ -44,9 +49,9 @@ module "landing-to-prod-ew1-vpn" {
     1 = {
       bgp_peer = {
         address = cidrhost("169.254.0.64/27", 5)
-        asn     = var.router_spoke_configs.spoke-prod-ew1.asn
+        asn     = var.router_spoke_configs.spoke-prod-primary.asn
       }
-      bgp_peer_options = local.vpn_spoke_bgp_peer_options.landing-ew1
+      bgp_peer_options = local.vpn_spoke_bgp_peer_options.landing-primary
       bgp_session_range = "${
         cidrhost("169.254.0.64/27", 6)
       }/30"
@@ -55,40 +60,45 @@ module "landing-to-prod-ew1-vpn" {
   }
 }
 
-module "prod-to-landing-ew1-vpn" {
+moved {
+  from = module.prod-to-landing-ew1-vpn
+  to   = module.prod-to-landing-primary-vpn
+}
+
+module "prod-to-landing-primary-vpn" {
   source     = "../../../modules/net-vpn-ha"
   project_id = module.prod-spoke-project.project_id
   network    = module.prod-spoke-vpc.self_link
-  region     = "europe-west1"
-  name       = "vpn-to-landing-ew1"
+  region     = var.regions.primary
+  name       = "vpn-to-landing-${local.region_shortnames[var.regions.primary]}"
   router_config = {
-    name = "prod-spoke-vpn-ew1"
-    asn  = var.router_spoke_configs.spoke-prod-ew1.asn
+    name = "prod-spoke-vpn-${local.region_shortnames[var.regions.primary]}"
+    asn  = var.router_spoke_configs.spoke-prod-primary.asn
   }
-  peer_gateway = { gcp = module.landing-to-prod-ew1-vpn.self_link }
+  peer_gateway = { gcp = module.landing-to-prod-primary-vpn.self_link }
   tunnels = {
     0 = {
       bgp_peer = {
         address = cidrhost("169.254.0.64/27", 2)
-        asn     = var.router_spoke_configs.landing-ew1.asn
+        asn     = var.router_spoke_configs.landing-primary.asn
       }
-      bgp_peer_options = local.vpn_spoke_bgp_peer_options.prod-ew1
+      bgp_peer_options = local.vpn_spoke_bgp_peer_options.prod-primary
       bgp_session_range = "${
         cidrhost("169.254.0.64/27", 1)
       }/30"
-      shared_secret         = module.landing-to-prod-ew1-vpn.random_secret
+      shared_secret         = module.landing-to-prod-primary-vpn.random_secret
       vpn_gateway_interface = 0
     }
     1 = {
       bgp_peer = {
         address = cidrhost("169.254.0.64/27", 6)
-        asn     = var.router_spoke_configs.landing-ew1.asn
+        asn     = var.router_spoke_configs.landing-primary.asn
       }
-      bgp_peer_options = local.vpn_spoke_bgp_peer_options.prod-ew1
+      bgp_peer_options = local.vpn_spoke_bgp_peer_options.prod-primary
       bgp_session_range = "${
         cidrhost("169.254.0.64/27", 5)
       }/30"
-      shared_secret         = module.landing-to-prod-ew1-vpn.random_secret
+      shared_secret         = module.landing-to-prod-primary-vpn.random_secret
       vpn_gateway_interface = 1
     }
   }

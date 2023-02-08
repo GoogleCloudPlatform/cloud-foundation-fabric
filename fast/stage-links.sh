@@ -70,8 +70,8 @@ case $STAGE_NAME in
     exit 1
   fi
   unset GLOBALS
-  PROVIDER="tenants/${TENANT}/providers/1-resman-tenant-providers.tf"
-  TFVARS="tenants/${TENANT}/tfvars/0-bootstrap-tenant.auto.tfvars.json"
+  PROVIDER="providers/1-resman-tenant-providers.tf"
+  TFVARS="tfvars/0-bootstrap-tenant.auto.tfvars.json"
   ;;
 "2-networking"*)
   PROVIDER="providers/2-networking-providers.tf"

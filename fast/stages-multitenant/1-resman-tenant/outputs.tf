@@ -98,13 +98,13 @@ locals {
   )
   providers = merge(
     {
-      "2-0-networking" = templatefile(local._tpl_providers, {
+      "2-networking" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-network-gcs.name
         name          = "networking"
         sa            = module.branch-network-sa.email
       })
-      "2-0-security" = templatefile(local._tpl_providers, {
+      "2-security" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-security-gcs.name
         name          = "security"
@@ -112,13 +112,13 @@ locals {
       })
     },
     !var.fast_features.data_platform ? {} : {
-      "3-0-data-platform-dev" = templatefile(local._tpl_providers, {
+      "3-data-platform-dev" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-dp-dev-gcs.0.name
         name          = "dp-dev"
         sa            = module.branch-dp-dev-sa.0.email
       })
-      "3-0-data-platform-prod" = templatefile(local._tpl_providers, {
+      "3-data-platform-prod" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-dp-prod-gcs.0.name
         name          = "dp-prod"
@@ -126,13 +126,13 @@ locals {
       })
     },
     !var.fast_features.gke ? {} : {
-      "3-0-gke-dev" = templatefile(local._tpl_providers, {
+      "3-gke-dev" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-gke-dev-gcs.0.name
         name          = "gke-dev"
         sa            = module.branch-gke-dev-sa.0.email
       })
-      "3-0-gke-prod" = templatefile(local._tpl_providers, {
+      "3-gke-prod" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-gke-prod-gcs.0.name
         name          = "gke-prod"
@@ -140,13 +140,13 @@ locals {
       })
     },
     !var.fast_features.project_factory ? {} : {
-      "3-0-project-factory-dev" = templatefile(local._tpl_providers, {
+      "3-project-factory-dev" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-pf-dev-gcs.0.name
         name          = "team-dev"
         sa            = var.automation.service_accounts.pf-dev
       })
-      "3-0-project-factory-prod" = templatefile(local._tpl_providers, {
+      "3-project-factory-prod" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-pf-prod-gcs.0.name
         name          = "team-prod"
@@ -154,7 +154,7 @@ locals {
       })
     },
     !var.fast_features.sandbox ? {} : {
-      "9-0-sandbox" = templatefile(local._tpl_providers, {
+      "9-sandbox" = templatefile(local._tpl_providers, {
         backend_extra = null
         bucket        = module.branch-sandbox-gcs.0.name
         name          = "sandbox"
