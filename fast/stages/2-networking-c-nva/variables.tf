@@ -194,33 +194,29 @@ variable "region_trigram" {
 }
 
 variable "router_configs" {
-  description = "Configurations for CRs and onprem routers."
+  description = "Configurations for cloud routers."
   type = map(object({
-    adv = object({
+    adv = optional(object({
       custom  = list(string)
       default = bool
-    })
+    }))
     asn = number
   }))
   default = {
-    landing-trusted-ew1 = {
+    landing-trusted-vpn-to-onprem-ew1 = {
       asn = "64512"
-      adv = null
       # adv = { default = false, custom = [] }
     }
-    landing-trusted-ew4 = {
+    landing-trusted-vpn-to-onprem-ew4 = {
       asn = "64512"
-      adv = null
       # adv = { default = false, custom = [] }
     }
     landing-trusted-ncc = {
       asn = "64515"
-      adv = null
       # adv = { default = false, custom = [] }
     }
     landing-untrusted-ncc = {
       asn = "64515"
-      adv = null
       # adv = { default = false, custom = [] }
     }
   }
