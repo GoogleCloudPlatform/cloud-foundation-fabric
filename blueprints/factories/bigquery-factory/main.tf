@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,22 @@
 
 locals {
   views = {
-    for f in fileset("${var.views_dir}", "**/*.yaml") :
-    trimsuffix(f, ".yaml") => yamldecode(file("${var.views_dir}/${f}"))
+    for f in fileset(var.views_path, "**/*.yaml") :
+    trimsuffix(f, ".yaml") => yamldecode(file("${var.views_path}/${f}"))
   }
 
   tables = {
-    for f in fileset("${var.tables_dir}", "**/*.yaml") :
-    trimsuffix(f, ".yaml") => yamldecode(file("${var.tables_dir}/${f}"))
+    for f in fileset(var.tables_path, "**/*.yaml") :
+    trimsuffix(f, ".yaml") => yamldecode(file("${var.tables_path}/${f}"))
   }
 
-  output = {
-    for dataset in distinct([for v in values(merge(local.views, local.tables)) : v.dataset]) :
+  all_datasets = distinct(concat(
+    [for x in values(local.tables) : x.dataset],
+    [for x in values(local.views) : x.dataset]
+  ))
+
+  datasets = {
+    for dataset in local.all_datasets :
     dataset => {
       "views" = {
         for k, v in local.views :
@@ -57,9 +62,8 @@ locals {
 }
 
 module "bq" {
-  source = "../../../modules/bigquery-dataset"
-
-  for_each   = local.output
+  source     = "../../../modules/bigquery-dataset"
+  for_each   = local.datasets
   project_id = var.project_id
   id         = each.key
   views      = try(each.value.views, null)
