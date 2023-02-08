@@ -23,7 +23,9 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
-<!--
+# Test
+
+```hcl
 module "test" {
   source = "./fabric/blueprints/serverless/api-gateway"
   project_create = {
@@ -36,8 +38,9 @@ module "test" {
     "europe-west2"
   ]
 }
+
 # tftest modules=8 resources=34
--->
+```
 
 <!-- BEGIN TFDOC -->
 
