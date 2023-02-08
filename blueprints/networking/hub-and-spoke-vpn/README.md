@@ -101,3 +101,18 @@ ping test-r2.dev.example.com
 | [vms](outputs.tf#L39) | GCE VMs. |  |
 
 <!-- END TFDOC -->
+
+## Test
+```hcl
+module "test" {
+  source = "./fabric/blueprints/networking/hub-and-spoke-vpn"
+  prefix = "prefix"
+  project_create_config = {
+    billing_account_id = "123456-123456-123456"
+    parent_id          = "folders/123456789"
+  }
+  project_id = "project-1"
+}
+
+# tftest modules=20 resources=73
+```
