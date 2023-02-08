@@ -23,24 +23,6 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
-# Test
-
-```hcl
-module "test" {
-  source = "./fabric/blueprints/serverless/api-gateway"
-  project_create = {
-    billing_account_id = "123456789"
-    parent             = "organizations/123456789"
-  }
-  project_id = "project-1"
-  regions = [
-    "europe-west1",
-    "europe-west2"
-  ]
-}
-
-# tftest modules=8 resources=34
-```
 
 <!-- BEGIN TFDOC -->
 
@@ -59,3 +41,21 @@ module "test" {
 | [ip_address](outputs.tf#L17) | The reserved global IP address. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/serverless/api-gateway"
+  project_create = {
+    billing_account_id = "123456789"
+    parent             = "organizations/123456789"
+  }
+  project_id = "project-1"
+  regions = [
+    "europe-west1",
+    "europe-west2"
+  ]
+}
+# tftest modules=8 resources=34
+```
