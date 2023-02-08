@@ -41,3 +41,15 @@ in  the [`validator/`](validator/) subdirectory, which can be integrated as part
 | [vpc](outputs.tf#L41) | Shared VPCs. |  |
 
 <!-- END TFDOC -->
+
+## Test
+```hcl
+module "test" {
+  source             = "./fabric/blueprints/networking/decentralized-firewall"
+  billing_account_id = "ABCDE-12345-ABCDE"
+  prefix             = "prefix"
+  root_node          = "organizations/0123456789"
+}
+
+# tftest modules=9 resources=50
+```
