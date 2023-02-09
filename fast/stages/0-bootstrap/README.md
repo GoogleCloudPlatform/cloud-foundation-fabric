@@ -282,7 +282,7 @@ The following two snippets show how to leverage the `stage-links.sh` script in t
 
 # copy and paste the following commands for '0-bootstrap'
 
-ln -s /home/ludomagno/fast-config/providers/0-bootstrap-providers.tf ./
+ln -s ~/fast-config/providers/0-bootstrap-providers.tf ./
 ```
 
 ```bash
