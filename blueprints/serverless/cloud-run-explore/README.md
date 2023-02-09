@@ -91,7 +91,6 @@ If you want to use your own custom domain you need a GCLB in front of your Cloud
 The following values will need to be set in `terraform.tfvars`, replacing the custom_domain value with your own domain:
 ```
 project_id    = [your-project-id]
-glb_create    = true
 custom_domain = "cloud-run-explore.example.org"
 ```
 Since it is an HTTPS connection a Google managed certificate is created, but for it to be provisioned correctly you will need to point to the load balancer IP address with an A DNS record at your registrar: [Use Google-managed SSL certificates | Load Balancing](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#update-dns). The LB IP is shown as a terraform output.
@@ -106,7 +105,6 @@ To block access to the default URL, you can configure Ingress Settings so that I
 You only need to set one more value in the previous `terraform.tfvars` file:
 ```
 project_id       = [your-project-id]
-glb_create       = true
 custom_domain    = "cloud-run-explore.example.org"
 ingress_settings = "internal-and-cloud-load-balancing"
 ```
@@ -121,7 +119,6 @@ To use Cloud Armor to protect the Cloud Run service, you need to create a securi
 The code allows to block a list of IPs and a specific URL path. For example, you may want to block access to a login page to external users. To test its behavior, by default all IPs and the path `"/login.html"` are blocked, but you can override any of these settings with your own values:
 ```
 project_id       = [your-project-id]
-glb_create       = true
 custom_domain    = "cloud-run-explore.example.org"
 ingress_settings = "internal-and-cloud-load-balancing"
 security_policy = {
@@ -140,7 +137,6 @@ Use your own email as identity to access the Cloud Run service:
 
 ```
 project_id       = [your-project-id]
-glb_create       = true
 custom_domain    = "cloud-run-explore.example.org"
 ingress_settings = "internal-and-cloud-load-balancing"
 security_policy = {

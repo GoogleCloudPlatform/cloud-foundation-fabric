@@ -21,12 +21,6 @@ variable "image" {
   default     = "us-docker.pkg.dev/cloudrun/container/hello"
 }
 
-variable "glb_create" {
-  description = "Create a Global Load Balancer in front of the Cloud Run service"
-  type        = bool
-  default     = false
-}
-
 variable "custom_domain" {
   description = "Custom domain for the Load Balancer"
   type        = string

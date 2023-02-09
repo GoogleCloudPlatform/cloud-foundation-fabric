@@ -1,3 +1,7 @@
+locals {
+  gclb_create = var.custom_domain == null ? false : true
+}
+
 module "project" {
   source         = "../../../modules/project"
   project_create = false
@@ -30,7 +34,7 @@ module "cloud_run" {
 
 # Reserved static IP for the Load Balancer
 resource "google_compute_global_address" "default" {
-  count   = var.glb_create ? 1 : 0
+  count   = local.gclb_create ? 1 : 0
   project = module.project.project_id
   name    = "glb-ip"
 }
@@ -38,7 +42,7 @@ resource "google_compute_global_address" "default" {
 # Global L7 HTTPS Load Balancer in front of Cloud Run
 module "glb" {
   source     = "../../../modules/net-glb"
-  count      = var.glb_create ? 1 : 0
+  count      = local.gclb_create ? 1 : 0
   project_id = module.project.project_id
   name       = "glb"
   address    = google_compute_global_address.default[0].address
@@ -80,7 +84,7 @@ module "glb" {
 
 # Cloud Armor configuration
 resource "google_compute_security_policy" "policy" {
-  count   = var.glb_create ? (var.security_policy.enabled ? 1 : 0) : 0
+  count   = local.gclb_create ? (var.security_policy.enabled ? 1 : 0) : 0
   name    = "cloud-run-policy"
   project = module.project.project_id
   rule {
@@ -127,7 +131,7 @@ resource "google_compute_security_policy" "policy" {
 # Destroying a Terraform-managed Brand will remove it from state but
 # will not delete it from Google Cloud.
 resource "google_iap_brand" "iap_brand" {
-  count   = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
+  count   = local.gclb_create ? (var.iap.enabled ? 1 : 0) : 0
   project = module.project.project_id
   # Support email displayed on the OAuth consent screen. The caller must be
   # the user with the associated email address, or if a group email is
@@ -144,7 +148,7 @@ resource "google_iap_brand" "iap_brand" {
 # Warning:
 # All arguments including secret will be stored in the raw state as plain-text.
 resource "google_iap_client" "iap_client" {
-  count        = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
+  count        = local.gclb_create ? (var.iap.enabled ? 1 : 0) : 0
   display_name = var.iap.oauth2_client_name
   brand        = google_iap_brand.iap_brand[0].name
 }
@@ -152,7 +156,7 @@ resource "google_iap_client" "iap_client" {
 # IAM policy for IAP
 # For simplicity we use the same email as support_email and authorized member
 resource "google_iap_web_iam_member" "iap_iam" {
-  count   = var.glb_create ? (var.iap.enabled ? 1 : 0) : 0
+  count   = local.gclb_create ? (var.iap.enabled ? 1 : 0) : 0
   project = module.project.project_id
   role    = "roles/iap.httpsResourceAccessor"
   member  = "user:${var.iap.email}"
