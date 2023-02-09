@@ -141,6 +141,13 @@ module "project" {
   ]
 }
 
+resource "google_project_iam_member" "gkehub_fix" {
+  member  = "serviceAccount:${module.project.service_accounts.robots.fleet}"
+  project = module.project.project_id
+  role    = "roles/gkehub.serviceAgent"
+}
+
+
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
   project_id = module.project.project_id
@@ -151,7 +158,7 @@ module "vpc" {
       ip_cidr_range = "10.0.1.0/24"
       name          = "subnet-cluster-1"
       region        = "europe-west1"
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = "10.1.0.0/16"
         services = "10.2.0.0/24"
       }
@@ -160,16 +167,16 @@ module "vpc" {
       ip_cidr_range = "10.0.2.0/24"
       name          = "subnet-cluster-2"
       region        = "europe-west4"
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = "10.3.0.0/16"
         services = "10.4.0.0/24"
       }
     },
     {
-      ip_cidr_range      = "10.0.0.0/28"
-      name               = "subnet-mgmt"
-      region             = "europe-west1"
-      secondary_ip_range = null
+      ip_cidr_range       = "10.0.0.0/28"
+      name                = "subnet-mgmt"
+      region              = "europe-west1"
+      secondary_ip_ranges = null
     }
   ]
 }
@@ -222,9 +229,14 @@ module "cluster_1" {
     enable_private_endpoint = false
     master_global_access    = true
   }
+
   release_channel = "REGULAR"
   labels = {
     mesh_id = "proj-${module.project.number}"
+  }
+  enable_features = {
+    workload_identity = true
+    dataplane_v2      = true
   }
 }
 
@@ -232,8 +244,9 @@ module "cluster_1_nodepool" {
   source          = "./fabric/modules/gke-nodepool"
   project_id      = module.project.project_id
   cluster_name    = module.cluster_1.name
+  cluster_id      = module.cluster_1.id
   location        = "europe-west1"
-  name            = "nodepool"
+  name            = "cluster-1-nodepool"
   node_count      = { initial = 1 }
   service_account = { create = true }
   tags            = ["cluster-1-node"]
@@ -261,14 +274,19 @@ module "cluster_2" {
   labels = {
     mesh_id = "proj-${module.project.number}"
   }
+  enable_features = {
+    workload_identity = true
+    dataplane_v2      = true
+  }
 }
 
 module "cluster_2_nodepool" {
   source          = "./fabric/modules/gke-nodepool"
   project_id      = module.project.project_id
   cluster_name    = module.cluster_2.name
+  cluster_id      = module.cluster_2.id
   location        = "europe-west4"
-  name            = "nodepool"
+  name            = "cluster-2-nodepool"
   node_count      = { initial = 1 }
   service_account = { create = true }
   tags            = ["cluster-2-node"]
@@ -277,6 +295,7 @@ module "cluster_2_nodepool" {
 module "hub" {
   source     = "./fabric/modules/gke-hub"
   project_id = module.project.project_id
+  depends_on = [google_project_iam_member.gkehub_fix]
   clusters = {
     cluster-1 = module.cluster_1.id
     cluster-2 = module.cluster_2.id
@@ -295,7 +314,7 @@ module "hub" {
   ]
 }
 
-# tftest modules=8 resources=30
+# tftest modules=8 resources=31
 ```
 <!-- BEGIN TFDOC -->
 
