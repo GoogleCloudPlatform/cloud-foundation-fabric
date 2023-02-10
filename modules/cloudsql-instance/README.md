@@ -146,29 +146,29 @@ module "db" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [database_version](variables.tf#L58) | Database type and version to create. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L111) | Name of primary instance. | <code>string</code> | ✓ |  |
-| [network](variables.tf#L116) | VPC self link where the instances will be deployed. Private Service Networking must be enabled and configured in this VPC. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L137) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L142) | Region of the primary instance. | <code>string</code> | ✓ |  |
-| [tier](variables.tf#L162) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
+| [database_version](variables.tf#L61) | Database type and version to create. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L114) | Name of primary instance. | <code>string</code> | ✓ |  |
+| [network](variables.tf#L119) | VPC self link where the instances will be deployed. Private Service Networking must be enabled and configured in this VPC. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L140) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L145) | Region of the primary instance. | <code>string</code> | ✓ |  |
+| [tier](variables.tf#L165) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
 | [allocated_ip_ranges](variables.tf#L17) | (Optional)The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with RFC 1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z?. | <code title="object&#40;&#123;&#10;  primary &#61; optional&#40;string&#41;&#10;  replica &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [authorized_networks](variables.tf#L26) | Map of NAME=>CIDR_RANGE to allow to connect to the database(s). | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [availability_type](variables.tf#L32) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;ZONAL&#34;</code> |
-| [backup_configuration](variables.tf#L38) | Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas. | <code title="object&#40;&#123;&#10;  enabled            &#61; bool&#10;  binary_log_enabled &#61; bool&#10;  start_time         &#61; string&#10;  location           &#61; string&#10;  log_retention_days &#61; number&#10;  retention_count    &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enabled            &#61; false&#10;  binary_log_enabled &#61; false&#10;  start_time         &#61; &#34;23:00&#34;&#10;  location           &#61; null&#10;  log_retention_days &#61; 7&#10;  retention_count    &#61; 7&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [databases](variables.tf#L63) | Databases to create once the primary instance is created. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [deletion_protection](variables.tf#L69) | Allow terraform to delete instances. | <code>bool</code> |  | <code>false</code> |
-| [disk_size](variables.tf#L75) | Disk size in GB. Set to null to enable autoresize. | <code>number</code> |  | <code>null</code> |
-| [disk_type](variables.tf#L81) | The type of data disk: `PD_SSD` or `PD_HDD`. | <code>string</code> |  | <code>&#34;PD_SSD&#34;</code> |
-| [encryption_key_name](variables.tf#L87) | The full path to the encryption key used for the CMEK disk encryption of the primary instance. | <code>string</code> |  | <code>null</code> |
-| [flags](variables.tf#L93) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [ipv4_enabled](variables.tf#L99) | Add a public IP address to database instance. | <code>bool</code> |  | <code>false</code> |
-| [labels](variables.tf#L105) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [postgres_client_certificates](variables.tf#L121) | Map of cert keys connect to the application(s) using public IP. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [prefix](variables.tf#L127) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [replicas](variables.tf#L147) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [root_password](variables.tf#L156) | Root password of the Cloud SQL instance. Required for MS SQL Server. | <code>string</code> |  | <code>null</code> |
-| [users](variables.tf#L167) | Map of users to create in the primary instance (and replicated to other replicas) in the format USER=>PASSWORD. For MySQL, anything afterr the first `@` (if persent) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [backup_configuration](variables.tf#L38) | Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas. | <code title="object&#40;&#123;&#10;  enabled                        &#61; optional&#40;bool, false&#41;&#10;  binary_log_enabled             &#61; optional&#40;bool, false&#41;&#10;  start_time                     &#61; optional&#40;string, &#34;23:00&#34;&#41;&#10;  location                       &#61; optional&#40;string&#41;&#10;  log_retention_days             &#61; optional&#40;number, 7&#41;&#10;  point_in_time_recovery_enabled &#61; optional&#40;bool&#41;&#10;  retention_count                &#61; optional&#40;number, 7&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enabled                        &#61; false&#10;  binary_log_enabled             &#61; false&#10;  start_time                     &#61; &#34;23:00&#34;&#10;  location                       &#61; null&#10;  log_retention_days             &#61; 7&#10;  point_in_time_recovery_enabled &#61; null&#10;  retention_count                &#61; 7&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [databases](variables.tf#L66) | Databases to create once the primary instance is created. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [deletion_protection](variables.tf#L72) | Allow terraform to delete instances. | <code>bool</code> |  | <code>false</code> |
+| [disk_size](variables.tf#L78) | Disk size in GB. Set to null to enable autoresize. | <code>number</code> |  | <code>null</code> |
+| [disk_type](variables.tf#L84) | The type of data disk: `PD_SSD` or `PD_HDD`. | <code>string</code> |  | <code>&#34;PD_SSD&#34;</code> |
+| [encryption_key_name](variables.tf#L90) | The full path to the encryption key used for the CMEK disk encryption of the primary instance. | <code>string</code> |  | <code>null</code> |
+| [flags](variables.tf#L96) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [ipv4_enabled](variables.tf#L102) | Add a public IP address to database instance. | <code>bool</code> |  | <code>false</code> |
+| [labels](variables.tf#L108) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [postgres_client_certificates](variables.tf#L124) | Map of cert keys connect to the application(s) using public IP. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L130) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
+| [replicas](variables.tf#L150) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [root_password](variables.tf#L159) | Root password of the Cloud SQL instance. Required for MS SQL Server. | <code>string</code> |  | <code>null</code> |
+| [users](variables.tf#L170) | Map of users to create in the primary instance (and replicated to other replicas) in the format USER=>PASSWORD. For MySQL, anything afterr the first `@` (if persent) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

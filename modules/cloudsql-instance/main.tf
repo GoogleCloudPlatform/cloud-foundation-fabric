@@ -88,6 +88,7 @@ resource "google_sql_database_instance" "primary" {
         )
         start_time                     = var.backup_configuration.start_time
         location                       = var.backup_configuration.location
+        point_in_time_recovery_enabled = var.backup_configuration.point_in_time_recovery_enabled
         transaction_log_retention_days = var.backup_configuration.log_retention_days
         backup_retention_settings {
           retained_backups = var.backup_configuration.retention_count
