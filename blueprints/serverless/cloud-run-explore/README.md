@@ -155,7 +155,27 @@ The easiest way to remove all the deployed resources is to run the following com
 terraform destroy
 ```
 The above command will delete the associated resources so there will be no billable charges made afterwards. IAP Brands, though, can only be created once per project and not deleted. Destroying a Terraform-managed IAP Brand will remove it from state but will not delete it from Google Cloud.
-
 <!-- BEGIN TFDOC -->
+
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [project_id](variables.tf#L46) | Project ID | <code>string</code> | ✓ |  |
+| [custom_domain](variables.tf#L17) | Custom domain for the Load Balancer | <code>string</code> |  | <code>null</code> |
+| [iap](variables.tf#L23) | Identity-Aware Proxy for Cloud Run in the LB | <code title="object&#40;&#123;&#10;  enabled            &#61; optional&#40;bool, false&#41;&#10;  app_title          &#61; optional&#40;string, &#34;Cloud Run Explore Application&#34;&#41;&#10;  oauth2_client_name &#61; optional&#40;string, &#34;Test Client&#34;&#41;&#10;  email              &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [image](variables.tf#L34) | Container image to deploy | <code>string</code> |  | <code>&#34;us-docker.pkg.dev&#47;cloudrun&#47;container&#47;hello&#34;</code> |
+| [ingress_settings](variables.tf#L40) | Ingress traffic sources allowed to call the service | <code>string</code> |  | <code>&#34;all&#34;</code> |
+| [region](variables.tf#L51) | Cloud region where resource will be deployed | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [run_svc_name](variables.tf#L57) | Cloud Run service name | <code>string</code> |  | <code>&#34;hello&#34;</code> |
+| [security_policy](variables.tf#L63) | Security policy (Cloud Armor) to enforce in the LB | <code title="object&#40;&#123;&#10;  enabled      &#61; optional&#40;bool, false&#41;&#10;  ip_blacklist &#61; optional&#40;list&#40;string&#41;, &#91;&#34;&#42;&#34;&#93;&#41;&#10;  path_blocked &#61; optional&#40;string, &#34;&#47;login.html&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [custom_domain](outputs.tf#L19) | Custom domain for the Load Balancer |  |
+| [default_URL](outputs.tf#L24) | Cloud Run service default URL |  |
+| [load_balancer_ip](outputs.tf#L29) | LB IP that forwards to Cloud Run service |  |
 
 <!-- END TFDOC -->
