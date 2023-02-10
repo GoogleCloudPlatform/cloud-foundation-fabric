@@ -74,6 +74,35 @@ This blueprint can be used as a building block for setting up an end2end ML Ops 
 | [project_id](outputs.tf#L49) | Project ID. |  |
 
 <!-- END TFDOC -->
-# TODO
+## TODO
 - Add support for User Managed Notebooks, SA permission option and non default SA for Single User mode.
 - Improve default naming for local VPC and Cloud NAT
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/data-solutions/vertex-mlops/"
+  labels = {
+    "env" : "dev",
+    "team" : "ml"
+  }
+  bucket_name          = "test-dev"
+  dataset_name         = "test"
+  identity_pool_claims = "attribute.repository/ORGANIZATION/REPO"
+  notebooks = {
+    "myworkbench" : {
+      "owner" : "user@example.com",
+      "region" : "europe-west4",
+      "subnet" : "default",
+    }
+  }
+  prefix     = "pref"
+  project_id = "test-dev"
+  project_create = {
+    billing_account_id = "000000-123456-123456"
+    parent             = "folders/111111111111"
+  }
+}
+# tftest modules=12 resources=56
+```

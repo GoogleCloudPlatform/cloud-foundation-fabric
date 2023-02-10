@@ -54,3 +54,17 @@ This sample creates several distinct groups of resources:
 | [vm_keys](outputs.tf#L41) | GCE VM Cloud KMS crypto keys. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/data-solutions/cmek-via-centralized-kms/"
+  project_config = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  prefix = "prefix"
+}
+# tftest modules=8 resources=27
+```
