@@ -155,3 +155,7 @@ The easiest way to remove all the deployed resources is to run the following com
 terraform destroy
 ```
 The above command will delete the associated resources so there will be no billable charges made afterwards. IAP Brands, though, can only be created once per project and not deleted. Destroying a Terraform-managed IAP Brand will remove it from state but will not delete it from Google Cloud.
+
+<!-- BEGIN TFDOC -->
+
+<!-- END TFDOC -->
