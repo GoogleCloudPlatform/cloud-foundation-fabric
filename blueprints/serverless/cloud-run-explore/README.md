@@ -32,29 +32,29 @@ You will need an existing [project](https://cloud.google.com/resource-manager/do
 ### General steps
 
 1. Clone the repo to your local machine or Cloud Shell:
-```
+```bash
 git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric
 ```
 
 2. Change to the directory of the blueprint:
-```
+```bash
 cd cloud-foundation-fabric/blueprints/serverless/cloud-run-explore
 ```
 You should see this README and some terraform files.
 
 3. To deploy a specific use case, you will need to create a file in this directory called `terraform.tfvars` and follow the corresponding instructions to set variables. Sometimes values that are meant to be substituted will be shown inside brackets but you need to omit these brackets. E.g.:
-```
+```tfvars
 project_id = [your-project_id]
 ```
 may become
-```
+```tfvars
 project_id = spiritual-hour-331417
 ```
 
 Although each use case is somehow built around the previous one they are self-contained so you can deploy any of them at will.
 
 4. The usual terraform commands will do the work:
-```
+```bash
 terraform init
 terraform plan
 terraform apply
@@ -70,11 +70,11 @@ This is the simplest case, the "Hello World" for Cloud Run. A Cloud Run service 
 <p align="center"> <img src="use-case-1.png" width="700"> </p>
 
 In this case the only variable that you need to set in `terraform.tfvars` is the project ID:
-```
+```tfvars
 project_id = [your-project-id]
 ```
 Alternatively you can pass this value on the command line:
-```
+```bash
 terraform apply -var project_id=[your-project-id]
 ```
 
@@ -88,7 +88,7 @@ If you want to use your own custom domain you need a GCLB in front of your Cloud
 <p align="center"> <img src="use-case-2.png" width="700"> </p>
 
 The following values will need to be set in `terraform.tfvars`, replacing the custom_domain value with your own domain:
-```
+```tfvars
 project_id    = [your-project-id]
 custom_domain = "cloud-run-explore.example.org"
 ```
@@ -102,7 +102,7 @@ To block access to the default URL, you can configure Ingress Settings so that I
 <p align="center"> <img src="use-case-3.png" width="700"> </p>
 
 You only need to set one more value in the previous `terraform.tfvars` file:
-```
+```tfvars
 project_id       = [your-project-id]
 custom_domain    = "cloud-run-explore.example.org"
 ingress_settings = "internal-and-cloud-load-balancing"
@@ -116,7 +116,7 @@ To use Cloud Armor to protect the Cloud Run service, you need to create a securi
 <p align="center"> <img src="use-case-4.png" width="700"> </p>
 
 The code allows to block a list of IPs and a specific URL path. For example, you may want to block access to a login page to external users. To test its behavior, by default all IPs and the path `"/login.html"` are blocked, but you can override any of these settings with your own values:
-```
+```tfvars
 project_id       = [your-project-id]
 custom_domain    = "cloud-run-explore.example.org"
 ingress_settings = "internal-and-cloud-load-balancing"
@@ -134,7 +134,7 @@ You can enable IAP at the load balancer to control access using identity and con
 <p align="center"> <img src="use-case-5.png" width="700"> </p>
 Use your own email as identity to access the Cloud Run service:
 
-```
+```tfvars
 project_id       = [your-project-id]
 custom_domain    = "cloud-run-explore.example.org"
 ingress_settings = "internal-and-cloud-load-balancing"
@@ -151,7 +151,7 @@ When visiting it you may be redirected to login with Google. You can use an inco
 
 ## Cleaning up your environment
 The easiest way to remove all the deployed resources is to run the following command:
-```
+```bash
 terraform destroy
 ```
 The above command will delete the associated resources so there will be no billable charges made afterwards. IAP Brands, though, can only be created once per project and not deleted. Destroying a Terraform-managed IAP Brand will remove it from state but will not delete it from Google Cloud.
