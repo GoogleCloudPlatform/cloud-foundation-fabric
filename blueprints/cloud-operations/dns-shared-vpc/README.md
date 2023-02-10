@@ -39,3 +39,17 @@ Note that Terraform 0.13 at least is required due to the use of `for_each` with 
 | [teams](outputs.tf#L17) | Team resources. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source             = "./fabric/blueprints/cloud-operations/dns-shared-vpc"
+  billing_account_id = "111111-222222-333333"
+  folder_id          = "folders/1234567890"
+  prefix             = "test"
+  shared_vpc_link    = "https://www.googleapis.com/compute/v1/projects/test-dns/global/networks/default"
+  teams              = ["team1", "team2"]
+}
+# tftest modules=9 resources=12
+```

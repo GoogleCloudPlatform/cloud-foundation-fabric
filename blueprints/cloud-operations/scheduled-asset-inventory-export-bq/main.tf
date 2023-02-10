@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ module "cf" {
     location = var.region
   }
   bundle_config = {
-    source_dir  = "cf"
+    source_dir  = "${path.module}/cf"
     output_path = var.bundle_path
   }
   service_account = module.service-account.email
@@ -118,7 +118,7 @@ module "cffile" {
     lifecycle_delete_age_days = null
   }
   bundle_config = {
-    source_dir  = "cffile"
+    source_dir  = "${path.module}/cffile"
     output_path = var.bundle_path_cffile
     excludes    = null
   }

@@ -39,3 +39,18 @@ This sample creates several distinct groups of resources:
 | [m4ce_gmanaged_service_account](outputs.tf#L15) | Google managed service account created automatically during the migrate connector registration. It is used by M4CE to perform activities on target projects. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/cloud-operations/vm-migration/single-project"
+  project_create = {
+    billing_account_id = "1234-ABCD-1234"
+    parent             = "folders/1234563"
+  }
+  migration_admin_users  = ["user:admin@example.com"]
+  migration_viewer_users = ["user:viewer@example.com"]
+}
+# tftest modules=5 resources=20
+```
