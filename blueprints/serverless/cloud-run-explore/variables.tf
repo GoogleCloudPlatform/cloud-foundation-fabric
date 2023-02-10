@@ -43,6 +43,15 @@ variable "ingress_settings" {
   default     = "all"
 }
 
+variable "project_create" {
+  description = "Parameters for the creation of a new project."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
 variable "project_id" {
   description = "Project ID."
   type        = string

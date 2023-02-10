@@ -19,14 +19,22 @@ locals {
 }
 
 module "project" {
-  source         = "../../../modules/project"
-  project_create = false
-  name           = var.project_id
+  source = "../../../modules/project"
+  billing_account = (var.project_create != null
+    ? var.project_create.billing_account_id
+    : null
+  )
+  parent = (var.project_create != null
+    ? var.project_create.parent
+    : null
+  )
+  name = var.project_id
   services = [
     "run.googleapis.com",
     "compute.googleapis.com",
     "iap.googleapis.com"
   ]
+  project_create = var.project_create != null
 }
 
 # Cloud Run service
