@@ -86,7 +86,7 @@ def main(dirs, external):
       state = '✓' if all(l.valid for l in doc.links) else '✗'
       print(f'[{state}] {doc.relpath} ({len(doc.links)})')
       if state == '✗':
-        error = [f'{dir_name}{doc.relpath}']
+        error = [f'{dir_name}/{doc.relpath}']
         for l in doc.links:
           if not l.valid:
             error.append(f'  - {l.dest}')

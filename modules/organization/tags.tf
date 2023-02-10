@@ -23,17 +23,21 @@ locals {
           "Managed by the Terraform organization module."
         )
         key  = "${tag}/${value}"
+        id   = try(value_attrs.id, null)
         name = value
         roles = keys(coalesce(
           value_attrs == null ? null : value_attrs.iam, {}
         ))
-        tag = tag
+        tag         = tag
+        tag_id      = attrs.id
+        tag_network = try(attrs.network, null) != null
       }
     ]
   ])
   _tag_values_iam = flatten([
     for key, value_attrs in local.tag_values : [
       for role in value_attrs.roles : {
+        id   = value_attrs.id
         key  = value_attrs.key
         name = value_attrs.name
         role = role
@@ -44,8 +48,9 @@ locals {
   _tags_iam = flatten([
     for tag, attrs in local.tags : [
       for role in keys(coalesce(attrs.iam, {})) : {
-        role = role
-        tag  = tag
+        role   = role
+        tag    = tag
+        tag_id = attrs.id
       }
     ]
   ])
@@ -64,7 +69,7 @@ locals {
 # keys
 
 resource "google_tags_tag_key" "default" {
-  for_each = local.tags
+  for_each = { for k, v in local.tags : k => v if v.id == null }
   parent   = var.organization_id
   purpose = (
     lookup(each.value, "network", null) == null ? null : "GCE_FIREWALL"
@@ -83,8 +88,12 @@ resource "google_tags_tag_key" "default" {
 
 resource "google_tags_tag_key_iam_binding" "default" {
   for_each = local.tags_iam
-  tag_key  = google_tags_tag_key.default[each.value.tag].id
-  role     = each.value.role
+  tag_key = (
+    each.value.tag_id == null
+    ? google_tags_tag_key.default[each.value.tag].id
+    : each.value.tag_id
+  )
+  role = each.value.role
   members = coalesce(
     local.tags[each.value.tag]["iam"][each.value.role], []
   )
@@ -93,16 +102,24 @@ resource "google_tags_tag_key_iam_binding" "default" {
 # values
 
 resource "google_tags_tag_value" "default" {
-  for_each    = local.tag_values
-  parent      = google_tags_tag_key.default[each.value.tag].id
+  for_each = { for k, v in local.tag_values : k => v if v.id == null }
+  parent = (
+    each.value.tag_id == null
+    ? google_tags_tag_key.default[each.value.tag].id
+    : each.value.tag_id
+  )
   short_name  = each.value.name
   description = each.value.description
 }
 
 resource "google_tags_tag_value_iam_binding" "default" {
-  for_each  = local.tag_values_iam
-  tag_value = google_tags_tag_value.default[each.value.key].id
-  role      = each.value.role
+  for_each = local.tag_values_iam
+  tag_value = (
+    each.value.id == null
+    ? google_tags_tag_value.default[each.value.key].id
+    : each.value.id
+  )
+  role = each.value.role
   members = coalesce(
     local.tags[each.value.tag]["values"][each.value.name]["iam"][each.value.role],
     []

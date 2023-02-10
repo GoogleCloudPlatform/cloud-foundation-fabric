@@ -1,8 +1,8 @@
 # GCE and GCS CMEK via centralized Cloud KMS
 
-This example creates a sample centralized [Cloud KMS](https://cloud.google.com/kms?hl=it) configuration, and uses it to implement CMEK for [Cloud Storage](https://cloud.google.com/storage/docs/encryption/using-customer-managed-keys) and [Compute Engine](https://cloud.google.com/compute/docs/disks/customer-managed-encryption) in a separate project.
+This example creates a sample centralized [Cloud KMS](https://cloud.google.com/kms?hl=it) configuration, and uses it to implement CMEK for [Cloud Storage](https://cloud.google.com/storage/docs/encryption/using-customer-managed-keys) and [Compute Engine](https://cloud.google.com/compute/docs/disks/customer-managed-encryption) in a service project.
 
-The example is designed to match real-world use cases with a minimum amount of resources, and be used as a starting point for scenarios where application projects implement CMEK using keys managed by a central team. It also includes the IAM wiring needed to make such scenarios work.
+The example is designed to match real-world use cases with a minimum amount of resources, and be used as a starting point for scenarios where application projects implement CMEK using keys managed by a central team. It also includes the IAM wiring needed to make such scenarios work. Regional resources are used in this example, but the same logic will apply for 'dual regional', 'multi regional' or 'global' resources.
 
 This is the high level diagram:
 
@@ -35,12 +35,10 @@ This sample creates several distinct groups of resources:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [billing_account](variables.tf#L16) | Billing account id used as default for new projects. | <code>string</code> | ✓ |  |
-| [root_node](variables.tf#L45) | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code>string</code> | ✓ |  |
-| [location](variables.tf#L21) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;europe&#34;</code> |
-| [project_kms_name](variables.tf#L27) | Name for the new KMS Project. | <code>string</code> |  | <code>&#34;my-project-kms-001&#34;</code> |
-| [project_service_name](variables.tf#L33) | Name for the new Service Project. | <code>string</code> |  | <code>&#34;my-project-service-001&#34;</code> |
-| [region](variables.tf#L39) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [prefix](variables.tf#L21) | Optional prefix used to generate resources names. | <code>string</code> | ✓ |  |
+| [project_config](variables.tf#L27) | Provide 'billing_account_id' and 'parent' values if project creation is needed, uses existing 'projects_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string, null&#41;&#10;  parent             &#61; optional&#40;string, null&#41;&#10;  project_ids &#61; optional&#40;object&#40;&#123;&#10;    encryption &#61; string&#10;    service    &#61; string&#10;    &#125;&#41;, &#123;&#10;    encryption &#61; &#34;encryption&#34;,&#10;    service    &#61; &#34;service&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [location](variables.tf#L15) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;europe&#34;</code> |
+| [region](variables.tf#L44) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | [vpc_ip_cidr_range](variables.tf#L50) | Ip range used in the subnet deployef in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
 | [vpc_name](variables.tf#L56) | Name of the VPC created in the Service Project. | <code>string</code> |  | <code>&#34;local&#34;</code> |
 | [vpc_subnet_name](variables.tf#L62) | Name of the subnet created in the Service Project. | <code>string</code> |  | <code>&#34;subnet&#34;</code> |
