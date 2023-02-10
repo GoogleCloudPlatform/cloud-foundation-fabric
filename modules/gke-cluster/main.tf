@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,11 +170,11 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "dns_config" {
-    for_each = var.enable_features.cloud_dns != null ? [""] : []
+    for_each = var.enable_features.dns != null ? [""] : []
     content {
-      cluster_dns        = enable_features.cloud_dns.cluster_dns
-      cluster_dns_scope  = enable_features.cloud_dns.cluster_dns_scope
-      cluster_dns_domain = enable_features.cloud_dns.cluster_dns_domain
+      cluster_dns        = var.enable_features.dns.provider
+      cluster_dns_scope  = var.enable_features.dns.scope
+      cluster_dns_domain = var.enable_features.dns.domain
     }
   }
 
