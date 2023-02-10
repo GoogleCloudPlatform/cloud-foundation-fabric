@@ -33,8 +33,7 @@ You will need an existing [project](https://cloud.google.com/resource-manager/do
 
 1. Clone the repo to your local machine or Cloud Shell:
 ```
-git clone https://github.com/juliodiez/cloud-foundation-fabric
-git checkout serverless-program
+git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric
 ```
 
 2. Change to the directory of the blueprint:
