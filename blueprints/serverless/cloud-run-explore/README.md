@@ -10,7 +10,7 @@ The content of this blueprint corresponds to the chapter '_My serverless "Hello,
 
 The following diagram depicts the main components that this blueprint will set up:
 
-<p align="center"> <img src="architecture.png" width="700"> </p>
+<p align="center"> <img src="images/architecture.png" width="700"> </p>
 
 The following products or features are used to fulfill the different use cases covered in this blueprint (to learn more about them click on the hyperlinks):
 
@@ -69,7 +69,7 @@ __Congratulations!__ You have successfully deployed the use case you chose based
 
 This is the simplest case, the "Hello World" for Cloud Run. A Cloud Run service is deployed with a default URL based in your project, service name and cloud region where it is deployed:
 
-<p align="center"> <img src="use-case-1.png" width="700"> </p>
+<p align="center"> <img src="images/use-case-1.png" width="700"> </p>
 
 In this case the only variable that you need to set in `terraform.tfvars` is the project ID:
 ```tfvars
@@ -82,13 +82,13 @@ terraform apply -var project_id="[your-project-id]"
 
 The default URL is automatically created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Now use your browser to visit it, you should see the following:
 
-<p align="center"> <img src="service-running.png" width="700"> </p>
+<p align="center"> <img src="images/service-running.png" width="700"> </p>
 
 ### Use case 2: Cloud Run service with custom domain
 
 If you want to use your own custom domain you need a GCLB in front of your Cloud Run app:
 
-<p align="center"> <img src="use-case-2.png" width="700"> </p>
+<p align="center"> <img src="images/use-case-2.png" width="700"> </p>
 
 The following values will need to be set in `terraform.tfvars`, replacing the custom_domain value with your own domain:
 ```tfvars
@@ -103,7 +103,7 @@ Be aware that in this case the Cloud Run service can also be reached through the
 
 To block access to the default URL, you can configure Ingress Settings so that Internet requests will be accepted only if they come through the Load Balancer:
 
-<p align="center"> <img src="use-case-3.png" width="700"> </p>
+<p align="center"> <img src="images/use-case-3.png" width="700"> </p>
 
 You only need to set one more value in the previous `terraform.tfvars` file:
 ```tfvars
@@ -113,12 +113,12 @@ ingress_settings = "internal-and-cloud-load-balancing"
 ```
 
 The default URL is still created but if you try to visit it, you should see a forbidden error:
-<p align="center"> <img src="forbidden.png" width="700"> </p>
+<p align="center"> <img src="images/forbidden.png" width="700"> </p>
 
 ### Use case 4: Cloud Run service protected by Cloud Armor
 
 To use Cloud Armor to protect the Cloud Run service, you need to create a security policy to enforce in the load balancer:
-<p align="center"> <img src="use-case-4.png" width="700"> </p>
+<p align="center"> <img src="images/use-case-4.png" width="700"> </p>
 
 The code allows to block a list of IPs and a specific URL path. For example, you may want to block access to a login page to external users. To test its behavior, by default all IPs and the path `"/login.html"` are blocked, but you can override any of these settings with your own values:
 ```tfvars
@@ -137,7 +137,7 @@ Note that to avoid users to bypass the Cloud Armor policy you need to block acce
 ### Use case 5: Cloud Run service protected by Cloud Armor and Identity-Aware Proxy
 
 You can enable IAP at the load balancer to control access using identity and context:
-<p align="center"> <img src="use-case-5.png" width="700"> </p>
+<p align="center"> <img src="images/use-case-5.png" width="700"> </p>
 Use your own email as identity to access the Cloud Run service:
 
 ```tfvars
