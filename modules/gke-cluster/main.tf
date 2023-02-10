@@ -140,7 +140,17 @@ resource "google_container_cluster" "cluster" {
   dynamic "cluster_autoscaling" {
     for_each = var.cluster_autoscaling == null ? [] : [""]
     content {
-      enabled = true
+      enabled = var.enable_features.autopilot ? null : true
+
+      dynamic "auto_provisioning_defaults" {
+        for_each = var.cluster_autoscaling.auto_provisioning_defaults != null ? [""] : []
+        content {
+          boot_disk_kms_key = var.cluster_autoscaling.auto_provisioning_defaults.boot_disk_kms_key
+          image_type        = var.cluster_autoscaling.auto_provisioning_defaults.image_type
+          oauth_scopes      = var.cluster_autoscaling.auto_provisioning_defaults.oauth_scopes
+          service_account   = var.cluster_autoscaling.auto_provisioning_defaults.service_account
+        }
+      }
       dynamic "resource_limits" {
         for_each = var.cluster_autoscaling.cpu_limits != null ? [""] : []
         content {
