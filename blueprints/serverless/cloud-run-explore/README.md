@@ -29,6 +29,7 @@ The following products or features are used to fulfill the different use cases c
 You will need an existing [project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project) and a user with the “Project owner” [IAM](https://cloud.google.com/iam) role on that project. __Note__: to grant a user a role, take a look at the [Granting and Revoking Access](https://cloud.google.com/iam/docs/granting-changing-revoking-access#grant-single-role) documentation.
 
 ## Spinning up the architecture
+
 ### General steps
 
 1. Clone the repo to your local machine or Cloud Shell:
@@ -65,6 +66,7 @@ The resource creation will take a few minutes but when it’s complete, you shou
 __Congratulations!__ You have successfully deployed the use case you chose based on the variables configuration.
 
 ### Use case 1: Cloud Run service with default URL
+
 This is the simplest case, the "Hello World" for Cloud Run. A Cloud Run service is deployed with a default URL based in your project, service name and cloud region where it is deployed:
 
 <p align="center"> <img src="use-case-1.png" width="700"> </p>
@@ -83,6 +85,7 @@ The default URL is automatically created and shown as a terraform output variabl
 <p align="center"> <img src="service-running.png" width="700"> </p>
 
 ### Use case 2: Cloud Run service with custom domain
+
 If you want to use your own custom domain you need a GCLB in front of your Cloud Run app:
 
 <p align="center"> <img src="use-case-2.png" width="700"> </p>
@@ -97,6 +100,7 @@ Since it is an HTTPS connection a Google managed certificate is created, but for
 Be aware that in this case the Cloud Run service can also be reached through the default URL. To limit access only through the custom domain see the next use case.
 
 ### Use case 3: Cloud Run service exposed only via custom domain
+
 To block access to the default URL, you can configure Ingress Settings so that Internet requests will be accepted only if they come through the Load Balancer:
 
 <p align="center"> <img src="use-case-3.png" width="700"> </p>
@@ -112,6 +116,7 @@ The default URL is still created but if you try to visit it, you should see a fo
 <p align="center"> <img src="forbidden.png" width="700"> </p>
 
 ### Use case 4: Cloud Run service protected by Cloud Armor
+
 To use Cloud Armor to protect the Cloud Run service, you need to create a security policy to enforce in the load balancer:
 <p align="center"> <img src="use-case-4.png" width="700"> </p>
 
@@ -130,6 +135,7 @@ security_policy = {
 Note that to avoid users to bypass the Cloud Armor policy you need to block access through the default URL. Ingress settings is configured to do that.
 
 ### Use case 5: Cloud Run service protected by Cloud Armor and Identity-Aware Proxy
+
 You can enable IAP at the load balancer to control access using identity and context:
 <p align="center"> <img src="use-case-5.png" width="700"> </p>
 Use your own email as identity to access the Cloud Run service:
@@ -150,6 +156,7 @@ iap = {
 When visiting it you may be redirected to login with Google. You can use an incognito window to test this behavior.
 
 ## Cleaning up your environment
+
 The easiest way to remove all the deployed resources is to run the following command:
 ```bash
 terraform destroy
@@ -182,6 +189,7 @@ The above command will delete the associated resources so there will be no billa
 <!-- END TFDOC -->
 
 ## Tests
+
 ```hcl
 module "test" {
   source = "./fabric/blueprints/serverless/cloud-run-explore"
