@@ -15,7 +15,10 @@
  */
 
 module "test" {
-  source          = "../../../../../blueprints/data-solutions/cmek-via-centralized-kms/"
-  billing_account = var.billing_account
-  root_node       = var.root_node
+  source = "../../../../../blueprints/data-solutions/cmek-via-centralized-kms/"
+  project_config = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  prefix = "prefix"
 }

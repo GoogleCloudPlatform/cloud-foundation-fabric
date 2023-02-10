@@ -15,16 +15,19 @@
 # limitations under the License.
 
 import click
+import os
 import sys
 import tempfile
 import yaml
 
 from pathlib import Path
 
-BASEDIR = Path(__file__).parents[1]
-sys.path.append(str(BASEDIR / 'tests'))
-
-import fixtures
+try:
+  import fixtures
+except ImportError:
+  BASEDIR = Path(__file__).parents[1]
+  sys.path.append(str(BASEDIR / 'tests'))
+  import fixtures
 
 
 @click.command()

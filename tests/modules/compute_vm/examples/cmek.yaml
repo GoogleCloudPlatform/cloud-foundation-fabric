@@ -1,0 +1,57 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.kms-vm-example.google_compute_disk.disks["attached-disk"]:
+    disk_encryption_key:
+    - kms_key_self_link: kms_key_self_link
+      kms_key_service_account: null
+      raw_key: null
+    labels:
+      disk_name: attached-disk
+      disk_type: pd-balanced
+    name: kms-test-attached-disk
+    project: project-id
+    size: 10
+    type: pd-balanced
+    zone: europe-west1-b
+  module.kms-vm-example.google_compute_instance.default[0]:
+    attached_disk:
+    - device_name: attached-disk
+      disk_encryption_key_raw: null
+      mode: READ_WRITE
+      source: kms-test-attached-disk
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      initialize_params:
+      - image: projects/debian-cloud/global/images/family/debian-10
+        size: 10
+        type: pd-balanced
+      kms_key_self_link: kms_key_self_link
+      mode: READ_WRITE
+    name: kms-test
+    zone: europe-west1-b
+  module.kms-vm-example.google_service_account.service_account[0]:
+    account_id: tf-vm-kms-test
+    description: null
+    disabled: false
+    display_name: Terraform VM kms-test.
+    project: project-id
+    timeouts: null
+
+counts:
+  google_compute_disk: 1
+  google_compute_instance: 1
+  google_service_account: 1
