@@ -180,3 +180,27 @@ The above command will delete the associated resources so there will be no billa
 | [load_balancer_ip](outputs.tf#L29) | LB IP that forwards to Cloud Run service. |  |
 
 <!-- END TFDOC -->
+
+## Tests
+```hcl
+module "test" {
+  source = "./fabric/blueprints/serverless/cloud-run-explore"
+  project_create = {
+    billing_account_id = "ABCDE-12345-ABCDE"
+    parent             = "organizations/0123456789"
+  }
+  project_id       = "myproject"
+  custom_domain    = "cloud-run-explore.example.org"
+  ingress_settings = "internal-and-cloud-load-balancing"
+  security_policy = {
+    enabled      = true
+    ip_blacklist = ["79.149.0.0/16"]
+  }
+  iap = {
+    enabled = true
+    email   = "user@example.org"
+  }
+}
+
+# tftest modules=4 resources=17
+```
