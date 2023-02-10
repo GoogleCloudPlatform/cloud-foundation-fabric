@@ -15,13 +15,13 @@
  */
 
 variable "custom_domain" {
-  description = "Custom domain for the Load Balancer"
+  description = "Custom domain for the Load Balancer."
   type        = string
   default     = null
 }
 
 variable "iap" {
-  description = "Identity-Aware Proxy for Cloud Run in the LB"
+  description = "Identity-Aware Proxy for Cloud Run in the LB."
   type = object({
     enabled            = optional(bool, false)
     app_title          = optional(string, "Cloud Run Explore Application")
@@ -32,36 +32,36 @@ variable "iap" {
 }
 
 variable "image" {
-  description = "Container image to deploy"
+  description = "Container image to deploy."
   type        = string
   default     = "us-docker.pkg.dev/cloudrun/container/hello"
 }
 
 variable "ingress_settings" {
-  description = "Ingress traffic sources allowed to call the service"
+  description = "Ingress traffic sources allowed to call the service."
   type        = string
   default     = "all"
 }
 
 variable "project_id" {
-  description = "Project ID"
+  description = "Project ID."
   type        = string
 }
 
 variable "region" {
-  description = "Cloud region where resource will be deployed"
+  description = "Cloud region where resource will be deployed."
   type        = string
   default     = "europe-west1"
 }
 
 variable "run_svc_name" {
-  description = "Cloud Run service name"
+  description = "Cloud Run service name."
   type        = string
   default     = "hello"
 }
 
 variable "security_policy" {
-  description = "Security policy (Cloud Armor) to enforce in the LB"
+  description = "Security policy (Cloud Armor) to enforce in the LB."
   type = object({
     enabled      = optional(bool, false)
     ip_blacklist = optional(list(string), ["*"])
