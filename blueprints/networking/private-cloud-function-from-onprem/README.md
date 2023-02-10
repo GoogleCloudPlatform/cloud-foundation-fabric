@@ -33,3 +33,17 @@ curl https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/YOUR_FUNCTION_NAME
 | [function_url](outputs.tf#L17) | URL of the Cloud Function. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/networking/private-cloud-function-from-onprem/"
+  project_create = {
+    billing_account_id = "123456-ABCDEF-123456"
+    parent             = "folders/1234567890"
+  }
+  project_id = "test-project"
+}
+# tftest modules=11 resources=40
+```
