@@ -139,9 +139,10 @@ module "project" {
 ```
 
 ### Service identities requiring manual IAM grants
-The module will create service identities at the time of the creation of the project instead creation of them at the time of first use. 
-This allows granting these service identities roles in other projects which is usually necessary in Shared VPC context.  
-You can grant those roles using following construct:
+
+The module will create service identities at project creation instead of creating of them at the time of first use. This allows granting these service identities roles in other projects, something which is usually necessary in a Shared VPC context.  
+
+You can grant roles to service identities using the following construct:
 
 ```hcl
 module "project" {
