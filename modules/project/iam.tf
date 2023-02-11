@@ -47,7 +47,18 @@ locals {
   }
   iam_additive = {
     for pair in concat(local._iam_additive_pairs, local._iam_additive_member_pairs) :
-    "${pair.role}-${pair.member}" => pair
+    "${pair.role}-${pair.member}" => {
+      role = pair.role
+      member = (
+        pair.member == "cloudservices"
+        ? "serviceAccount:${local.service_account_cloud_services}"
+        : pair.member == "default-compute"
+        ? "serviceAccount:${local.service_accounts_default.compute}"
+        : pair.member == "default-gae"
+        ? "serviceAccount:${local.service_accounts_default.gae}"
+        : try("serviceAccount:${local.service_accounts_robots[pair.member]}", pair.member)
+      )
+    }
   }
 }
 

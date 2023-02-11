@@ -16,22 +16,18 @@ values:
   module.project.google_project.project[0]: {}
   module.project.google_project_iam_member.additive["roles/owner-group:three@example.org"]:
     condition: []
-    member: group:three@example.org
     project: project-example
     role: roles/owner
   module.project.google_project_iam_member.additive["roles/storage.objectAdmin-group:two@example.org"]:
     condition: []
-    member: group:two@example.org
     project: project-example
     role: roles/storage.objectAdmin
   module.project.google_project_iam_member.additive["roles/viewer-group:one@example.org"]:
     condition: []
-    member: group:one@example.org
     project: project-example
     role: roles/viewer
   module.project.google_project_iam_member.additive["roles/viewer-group:two@xample.org"]:
     condition: []
-    member: group:two@xample.org
     project: project-example
     role: roles/viewer
 
