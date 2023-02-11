@@ -138,6 +138,29 @@ module "project" {
 # tftest modules=1 resources=2
 ```
 
+### Using shortcodes for Service Identities in additive IAM
+Most Service Identities contains project number in their e-mail address and this prevents additive IAM to work, as these values are not known at moment of execution of `terraform plan` (its not an issue for authoritative IAM). To refer current project Service Identities you may use shortcodes for Service Identities similarly as for `service_identity_iam` when configuring Shared VPC.
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project-example"
+
+  services = [
+    "run.googleapis.com",
+    "container.googleapis.com",
+  ]
+
+  iam_additive = {
+    "roles/editor"                         = ["cloudservices"]
+    "roles/vpcaccess.user"                 = ["cloudrun"]
+    "roles/container.hostServiceAgentUser" = ["container-engine"]
+  }
+}
+# tftest modules=1 resources=6
+```
+
+
 ### Service identities requiring manual IAM grants
 
 The module will create service identities at project creation instead of creating of them at the time of first use. This allows granting these service identities roles in other projects, something which is usually necessary in a Shared VPC context.  
