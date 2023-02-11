@@ -15,12 +15,12 @@
  */
 
 module "project_spoke_01" {
-  source = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/project"
+  source = "../../../modules/project"
   billing_account = (var.projects_create != null
     ? var.projects_create.billing_account_id
     : null
   )
-  name = "spoke-01"
+  name = var.project_names.spoke_01
   parent = (var.projects_create != null
     ? var.projects_create.parent
     : null
@@ -37,7 +37,7 @@ module "project_spoke_01" {
 }
 
 module "vpc_spoke_01" {
-  source     = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc"
+  source     = "../../../modules/net-vpc"
   project_id = module.project_spoke_01.project_id
   name       = "spoke-01"
   subnets = [
@@ -59,7 +59,7 @@ module "vpc_spoke_01" {
 }
 
 module "firewall_spoke_01" {
-  source     = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc-firewall"
+  source     = "../../../modules/net-vpc-firewall"
   project_id = module.project_spoke_01.project_id
   network    = module.vpc_spoke_01.name
 
@@ -80,7 +80,7 @@ module "firewall_spoke_01" {
 
 module "nats_spoke_01" {
   for_each       = var.region_configs
-  source         = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-cloudnat"
+  source         = "../../../modules/net-cloudnat"
   name           = "spoke-01-${each.value.region_name}"
   project_id     = module.project_spoke_01.project_id
   region         = each.value.region_name
@@ -89,7 +89,7 @@ module "nats_spoke_01" {
 
 module "test_vms" {
   for_each               = var.region_configs
-  source                 = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/compute-vm"
+  source                 = "../../../modules/compute-vm"
   name                   = "spoke-01-${each.value.region_name}"
   project_id             = module.project_spoke_01.project_id
   create_template        = var.test_vms_behind_ilb
@@ -114,7 +114,7 @@ module "test_vms" {
 
 module "test_vm_migs" {
   for_each          = var.test_vms_behind_ilb ? var.region_configs : {}
-  source            = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/compute-mig"
+  source            = "../../../modules/compute-mig"
   project_id        = module.project_spoke_01.project_id
   location          = each.value.zone
   name              = "test-vm-${each.value.region_name}"
@@ -124,7 +124,7 @@ module "test_vm_migs" {
 
 module "test_vm_ilbs" {
   for_each      = var.test_vms_behind_ilb ? var.region_configs : {}
-  source        = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-ilb"
+  source        = "../../../modules/net-ilb"
   project_id    = module.project_spoke_01.project_id
   region        = each.value.region_name
   name          = "test-vm-ilb-${each.value.region_name}"

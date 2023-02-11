@@ -17,9 +17,18 @@
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty."
+  default     = "test"
+}
+
+variable "projects_create" {
+  description = "Parameters for the creation of the new project."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = {
+    billing_account_id = "123456789"
+    parent             = "organizations/123456789"
   }
 }
 
@@ -33,15 +42,6 @@ variable "project_names" {
     landing  = "landing"
     spoke_01 = "spoke-01"
   }
-}
-
-variable "projects_create" {
-  description = "Parameters for the creation of the new project."
-  type = object({
-    billing_account_id = string
-    parent             = string
-  })
-  default = null
 }
 
 variable "region_configs" {
@@ -74,20 +74,8 @@ variable "test_vms_behind_ilb" {
   default     = false
 }
 
-variable "vpc_landing_trusted_config" {
-  description = "The configuration of the landing trusted VPC."
-  type = object({
-    r1_cidr = string
-    r2_cidr = string
-  })
-  default = {
-    r1_cidr = "192.168.11.0/24",
-    r2_cidr = "192.168.22.0/24"
-  }
-}
-
 variable "vpc_landing_untrusted_config" {
-  description = "The configuration of the landing untrusted VPC."
+  description = "The configuration of the landing untrusted VPC"
   type = object({
     r1_cidr = string
     r2_cidr = string
@@ -98,8 +86,20 @@ variable "vpc_landing_untrusted_config" {
   }
 }
 
+variable "vpc_landing_trusted_config" {
+  description = "The configuration of the landing trusted VPC"
+  type = object({
+    r1_cidr = string
+    r2_cidr = string
+  })
+  default = {
+    r1_cidr = "192.168.11.0/24",
+    r2_cidr = "192.168.22.0/24"
+  }
+}
+
 variable "vpc_spoke_config" {
-  description = "The configuration of the spoke-01 VPC."
+  description = "The configuration of the spoke-01 VPC"
   type = object({
     r1_cidr = string
     r2_cidr = string

@@ -13,3 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "glb_ip_address" {
+  description = "Load balancer IP address."
+  value       = module.hybrid-glb.address
+}

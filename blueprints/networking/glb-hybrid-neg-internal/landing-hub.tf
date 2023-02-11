@@ -19,12 +19,12 @@
 ################################################################################
 
 module "project_landing" {
-  source = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/project"
+  source = "../../../modules/project"
   billing_account = (var.projects_create != null
     ? var.projects_create.billing_account_id
     : null
   )
-  name = "landing"
+  name = var.project_names.landing
   parent = (var.projects_create != null
     ? var.projects_create.parent
     : null
@@ -46,7 +46,7 @@ module "project_landing" {
 ################################################################################
 
 module "vpc_landing_untrusted" {
-  source     = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc"
+  source     = "../../../modules/net-vpc"
   project_id = module.project_landing.project_id
   name       = "landing-untrusted"
 
@@ -78,7 +78,7 @@ module "vpc_landing_untrusted" {
 }
 
 module "vpc_landing_trusted" {
-  source     = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc"
+  source     = "../../../modules/net-vpc"
   project_id = module.project_landing.project_id
   name       = "landing-trusted"
   subnets = [
@@ -96,7 +96,7 @@ module "vpc_landing_trusted" {
 }
 
 module "firewall_landing_untrusted" {
-  source     = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc-firewall"
+  source     = "../../../modules/net-vpc-firewall"
   project_id = module.project_landing.project_id
   network    = module.vpc_landing_untrusted.name
 
@@ -115,7 +115,7 @@ module "firewall_landing_untrusted" {
 
 module "nats_landing" {
   for_each       = var.region_configs
-  source         = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-cloudnat"
+  source         = "../../../modules/net-cloudnat"
   project_id     = module.project_landing.project_id
   region         = each.value.region_name
   name           = "nat-${each.value.region_name}"
@@ -124,7 +124,7 @@ module "nats_landing" {
 
 module "nva_instance_templates" {
   for_each               = var.region_configs
-  source                 = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/compute-vm"
+  source                 = "../../../modules/compute-vm"
   project_id             = module.project_landing.project_id
   can_ip_forward         = true
   create_template        = true
@@ -163,7 +163,7 @@ module "nva_instance_templates" {
 
 module "nva_migs" {
   for_each          = var.region_configs
-  source            = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/compute-mig"
+  source            = "../../../modules/compute-mig"
   project_id        = module.project_landing.project_id
   location          = each.value.zone
   name              = "nva-${each.value.region_name}"
@@ -173,7 +173,7 @@ module "nva_migs" {
 
 module "nva_untrusted_ilbs" {
   for_each      = var.region_configs
-  source        = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-ilb"
+  source        = "../../../modules/net-ilb"
   project_id    = module.project_landing.project_id
   region        = each.value.region_name
   name          = "nva-ilb-${each.value.region_name}"
@@ -193,7 +193,7 @@ module "nva_untrusted_ilbs" {
 }
 
 module "hybrid-glb" {
-  source     = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-glb"
+  source     = "../../../modules/net-glb"
   project_id = module.project_landing.project_id
   name       = "hybrid-glb"
   backend_service_configs = {
