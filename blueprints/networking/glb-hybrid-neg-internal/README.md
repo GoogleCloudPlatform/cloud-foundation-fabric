@@ -1,4 +1,4 @@
-# XGLB and multi-reginoal daisy-chaining through hybrid NEGs
+# XGLB and multi-regional daisy-chaining through hybrid NEGs
 
 The blueprint shows the experimental use of hybrid NEGs behind eXternal Global Load Balancers (XGLBs) to connect to GCP instances living in spoke VPCs and behind Network Virtual Appliances (NVAs).
 
