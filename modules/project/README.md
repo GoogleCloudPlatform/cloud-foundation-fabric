@@ -138,6 +138,39 @@ module "project" {
 # tftest modules=1 resources=2
 ```
 
+### Service identities requiring manual IAM grants
+
+The module will create service identities at project creation instead of creating of them at the time of first use. This allows granting these service identities roles in other projects, something which is usually necessary in a Shared VPC context.  
+
+You can grant roles to service identities using the following construct:
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project-example"
+  iam = {
+    "roles/apigee.serviceAgent" = [
+      "serviceAccount:${module.project.service_accounts.robots.apigee}"
+    ]
+  }
+}
+# tftest modules=1 resources=2
+```
+
+This table lists all affected services and roles that you need to grant to service identities
+
+| service | service identity | role |
+|---|---|---|
+| apigee.googleapis.com | apigee | roles/apigee.serviceAgent |
+| artifactregistry.googleapis.com | artifactregistry | roles/artifactregistry.serviceAgent |
+| cloudasset.googleapis.com | cloudasset | roles/cloudasset.serviceAgent |
+| cloudbuild.googleapis.com | cloudbuild | roles/cloudbuild.builds.builder |
+| gkehub.googleapis.com | fleet | roles/gkehub.serviceAgent |
+| multiclusteringress.googleapis.com | multicluster-ingress | roles/multiclusteringress.serviceAgent |
+| pubsub.googleapis.com | pubsub | roles/pubsub.serviceAgent |
+| sqladmin.googleapis.com | sqladmin | roles/cloudsql.serviceAgent |
+
+
 ## Shared VPC
 
 The module allows managing Shared VPC status for both hosts and service projects, and includes a simple way of assigning Shared VPC roles to service identities.

@@ -70,16 +70,19 @@ locals {
       gke-mcs-importer = "${local.project.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]"
     }
   )
+  # JIT-ed service accounts are created without default roles granted, these needs to be assigned manually to them
+  # Roles can be found here: https://cloud.google.com/iam/docs/service-agents
+  # Remember to update "Service identities requiring manual IAM grants" in README.md when updating this list
   service_accounts_jit_services = [
-    "apigee.googleapis.com",
-    "artifactregistry.googleapis.com",
-    "cloudasset.googleapis.com",
-    "gkehub.googleapis.com",
-    "multiclusteringress.googleapis.com",
-    "pubsub.googleapis.com",
-    "secretmanager.googleapis.com",
-    "sqladmin.googleapis.com",
-    "cloudbuild.googleapis.com",
+    "apigee.googleapis.com",              # grant roles/apigee.serviceAgent to apigee
+    "artifactregistry.googleapis.com",    # grant roles/artifactregistry.serviceAgent to artifactregistry
+    "cloudasset.googleapis.com",          # grant roles/cloudasset.serviceAgent to cloudasset
+    "cloudbuild.googleapis.com",          # grant roles/cloudbuild.builds.builder to cloudbuild
+    "gkehub.googleapis.com",              # grant roles/gkehub.serviceAgent to fleet
+    "multiclusteringress.googleapis.com", # grant roles/multiclusteringress.serviceAgent to multicluster-ingress
+    "pubsub.googleapis.com",              # grant roles/pubsub.serviceAgent to pubsub
+    "secretmanager.googleapis.com",       # no grants needed
+    "sqladmin.googleapis.com",            # grant roles/cloudsql.serviceAgent to sqladmin (TODO: verify)
   ]
   service_accounts_cmek_service_keys = distinct(flatten([
     for s in keys(var.service_encryption_key_ids) : [
