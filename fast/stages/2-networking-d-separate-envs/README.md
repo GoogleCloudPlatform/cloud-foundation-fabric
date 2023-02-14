@@ -19,7 +19,6 @@ The following diagram illustrates the high-level design, and should be used as a
 - [Design overview and choices](#design-overview-and-choices)
   - [VPC design](#vpc-design)
   - [External connectivity](#external-connectivity)
-  - [Internal connectivity](#internal-connectivity)
   - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
   - [Internet egress](#internet-egress)
   - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
