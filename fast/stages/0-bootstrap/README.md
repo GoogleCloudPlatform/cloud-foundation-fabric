@@ -14,6 +14,28 @@ Use the following diagram as a simple high level reference for the following sec
   <img src="diagram.svg" alt="Organization-level diagram">
 </p>
 
+## Table of contents
+
+- [Design overview and choices](#design-overview-and-choices)
+  - [User groups](#user-groups)
+  - [Organization-level IAM](#organization-level-iam)
+  - [Automation project and resources](#automation-project-and-resources)
+  - [Billing account](#billing-account)
+  - [Organization-level logging](#organization-level-logging)
+  - [Naming](#naming)
+  - [Workload Identity Federation and CI/CD](#workload-identity-federation-and-cicd)
+- [How to run this stage](#how-to-run-this-stage)
+  - [Prerequisites](#prerequisites)
+  - [Output files and cross-stage variables](#output-files-and-cross-stage-variables)
+  - [Running the stage](#running-the-stage)
+- [Customizations](#customizations)
+  - [Group names](#group-names)
+  - [IAM](#iam)
+  - [Log sinks and log destinations](#log-sinks-and-log-destinations)
+  - [Names and naming convention](#names-and-naming-convention)
+  - [Workload Identity Federation](#workload-identity-federation)
+  - [CI/CD repositories](#cicd-repositories)
+
 ## Design overview and choices
 
 As mentioned above, this stage only does the bare minimum required to bootstrap automation, and ensure that base audit and billing exports are in place from the start to provide some measure of accountability, even before the security configurations are applied in a later stage.
@@ -80,7 +102,7 @@ The convention is used in its full form only for specific resources with globall
 
 The [Customizations](#names-and-naming-convention) section on names below explains how to configure tokens, or implement a different naming convention.
 
-## Workload Identity Federation and CI/CD
+### Workload Identity Federation and CI/CD
 
 This stage also implements initial support for two interrelated features
 
@@ -124,7 +146,7 @@ To quickly self-grant the above roles, run the following code snippet as the ini
 export FAST_BU=$(gcloud config list --format 'value(core.account)')
 
 # find and set your org id
-gcloud organizations list --filter display_name:$partofyourdomain
+gcloud organizations list
 export FAST_ORG_ID=123456
 
 # set needed roles
@@ -138,25 +160,6 @@ done
 ```
 
 Then make sure the same user is also part of the `gcp-organization-admins` group so that impersonating the automation service account later on will be possible.
-
-#### Billing account in a different organization
-
-If you are using a billing account belonging to a different organization (e.g. in multiple organization setups), some initial configurations are needed to ensure the identities running this stage can assign billing-related roles.
-
-If the billing organization is managed by another version of this stage, we leverage the `organizationIamAdmin` role created there, to allow restricted granting of billing roles at the organization level.
-
-If that's not the case, an equivalent role needs to exist, or the predefined `resourcemanager.organizationAdmin` role can be used if not managed authoritatively. The role name then needs to be manually changed in the `billing.tf` file, in the `google_organization_iam_binding` resource.
-
-The identity applying this stage for the first time also needs two roles in billing organization, they can be removed after the first `apply` completes successfully:
-
-```bash
-export FAST_BILLING_ORG_ID=789012
-export FAST_ROLES=(roles/billing.admin roles/resourcemanager.organizationAdmin)
-for role in $FAST_ROLES; do
-  gcloud organizations add-iam-policy-binding $FAST_BILLING_ORG_ID \
-    --member user:$FAST_BU --role $role
-done
-```
 
 #### Standalone billing account
 
@@ -187,7 +190,7 @@ Please note that FAST also supports an additional group for users with permissio
 Then make sure you have configured the correct values for the following variables by providing a `terraform.tfvars` file:
 
 - `billing_account`
-  an object containing `id` as the id of your billing account, derived from the Cloud Console UI or by running `gcloud beta billing accounts list`, and `organization_id` as the id of the organization owning it, or `null` to use the billing account in isolation
+  an object containing `id` as the id of your billing account, derived from the Cloud Console UI or by running `gcloud beta billing accounts list`, and the `is_org_level` flag that controls whether organization or account-level bindings are used, and a billing export project and dataset are created
 - `groups`
   the name mappings for your groups, if you're following the default convention you can leave this to the provided default
 - `organization.id`, `organization.domain`, `organization.customer_id`
@@ -202,7 +205,6 @@ You can also adapt the example that follows to your needs:
 # if you have too many accounts, check the Cloud Console :)
 billing_account = {
  id              = "012345-67890A-BCDEF0"
- organization_id = 1234567890
 }
 
 # use `gcloud organizations list`
@@ -237,18 +239,18 @@ Below is the outline of the output files generated by all stages, which is ident
 ```bash
 [path specified in outputs_location]
 ├── providers
-│   ├── 00-bootstrap-providers.tf
-│   ├── 01-resman-providers.tf
-│   ├── 02-networking-providers.tf
-│   ├── 02-security-providers.tf
-│   ├── 03-project-factory-dev-providers.tf
-│   ├── 03-project-factory-prod-providers.tf
-│   └── 99-sandbox-providers.tf
+│   ├── 0-bootstrap-providers.tf
+│   ├── 1-resman-providers.tf
+│   ├── 2-networking-providers.tf
+│   ├── 2-security-providers.tf
+│   ├── 3-project-factory-dev-providers.tf
+│   ├── 3-project-factory-prod-providers.tf
+│   └── 9-sandbox-providers.tf
 └── tfvars
-│   ├── 00-bootstrap.auto.tfvars.json
-│   ├── 01-resman.auto.tfvars.json
-│   ├── 02-networking.auto.tfvars.json
-│   └── 02-security.auto.tfvars.json
+│   ├── 0-bootstrap.auto.tfvars.json
+│   ├── 1-resman.auto.tfvars.json
+│   ├── 2-networking.auto.tfvars.json
+│   └── 2-security.auto.tfvars.json
 └── workflows
     └── [optional depending on the configured CI/CD repositories]
 ```
@@ -267,17 +269,34 @@ terraform apply \
 
 > If you see an error related to project name already exists, please make sure the project name is unique or the project was not deleted recently
 
-Once the initial `apply` completes successfully, configure a remote backend using the new GCS bucket, and impersonation on the automation service account for this stage. To do this you can use the generated `providers.tf` file if you have configured output files as described above, or extract its contents from Terraform's output, then migrate state with `terraform init`:
+Once the initial `apply` completes successfully, configure a remote backend using the new GCS bucket, and impersonation on the automation service account for this stage. To do this you can use the generated `providers.tf` file from either
+
+- the local filesystem if you have configured output files as described above
+- the GCS bucket where output files are always stored
+- Terraform outputs (not recommended as it's more complex)
+
+The following two snippets show how to leverage the `stage-links.sh` script in the root FAST folder to fetch the commands required for output files linking or copying, using either the local output folder configured via Terraform variables, or the GCS bucket which can be derived from the `automation` output.
 
 ```bash
-# if using output files via the outputs_location and set to `~/fast-config`
-ln -s ~/fast-config/providers/00-bootstrap* ./
-# or from outputs if not using output files
-terraform output -json providers | jq -r '.["00-bootstrap"]' \
-  > providers.tf
-# migrate state to GCS bucket configured in providers file
+../../stage-links.sh ~/fast-config
+
+# copy and paste the following commands for '0-bootstrap'
+
+ln -s ~/fast-config/providers/0-bootstrap-providers.tf ./
+```
+
+```bash
+../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+
+# copy and paste the following commands for '0-bootstrap'
+
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/0-bootstrap-providers.tf ./
+```
+
+Copy/paste the command returned by the script to link or copy the provider file, then migrate state with `terraform init` and run `terraform apply`:
+
+```bash
 terraform init -migrate-state
-# run terraform apply to remove the bootstrap_user iam binding 
 terraform apply
 ```
 
@@ -334,7 +353,7 @@ You can customize organization-level logs through the `log_sinks` variable in tw
 - creating additional log sinks to capture more logs
 - changing the destination of captured logs
 
-By default, all logs are exported to Bigquery, but FAST can create sinks to Cloud Logging Buckets, GCS, or PubSub.
+By default, all logs are exported to a log bucket, but FAST can create sinks to BigQuery, GCS, or PubSub.
 
 If you need to capture additional logs, please refer to GCP's documentation on [scenarios for exporting logging data](https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics), where you can find ready-made filter expressions for different use cases.
 
@@ -398,12 +417,6 @@ cicd_repositories = {
     branch            = null
     identity_provider = "github-sample"
     name              = "my-gh-org/fast-bootstrap"
-    type              = "github"
-  }
-  cicd = {
-    branch            = null
-    identity_provider = "github-sample"
-    name              = "my-gh-org/fast-cicd"
     type              = "github"
   }
   resman = {
