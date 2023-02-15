@@ -39,6 +39,7 @@ module "project_host" {
     "compute.googleapis.com",
     "dns.googleapis.com"
   ]
+  skip_delete = true
 }
 
 # Simulated onprem environment
@@ -53,6 +54,7 @@ module "project_onprem" {
     "compute.googleapis.com",
     "dns.googleapis.com"
   ]
+  skip_delete = true
 }
 
 ###############################################################################
