@@ -115,9 +115,9 @@ resource "google_container_node_pool" "nodepool" {
   dynamic "network_config" {
     for_each = var.pod_range != null ? [""] : []
     content {
-      create_pod_range    = var.pod_range.create
-      pod_ipv4_cidr_block = var.pod_range.cidr
-      pod_range           = var.pod_range.name
+      create_pod_range    = var.pod_range.secondary_pod_range.create
+      pod_ipv4_cidr_block = var.pod_range.secondary_pod_range.cidr
+      pod_range           = var.pod_range.secondary_pod_range.name
     }
   }
 
