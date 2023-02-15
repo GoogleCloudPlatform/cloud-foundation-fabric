@@ -192,7 +192,7 @@ resource "google_compute_router_peer" "peers_untrusted_to_nvas_zone_b" {
   for_each                  = local.ncc_cr_intf_untrusted_configs
   interface                 = "prod-untrusted-${each.key}"
   name                      = "prod-untrusted-${each.key}-b"
-  peer_asn                  = 65513
+  peer_asn                  = each.value.region == "europe-west1" ? 65514 : 65513
   peer_ip_address           = local.nva_configs["${each.value.region}-b"].ip_untrusted
   project                   = module.landing-project.project_id
   region                    = each.value.region
@@ -204,7 +204,7 @@ resource "google_compute_router_peer" "peers_untrusted_to_nvas_zone_c" {
   for_each                  = local.ncc_cr_intf_untrusted_configs
   interface                 = "prod-untrusted-${each.key}"
   name                      = "prod-untrusted-${each.key}-c"
-  peer_asn                  = 65513
+  peer_asn                  = each.value.region == "europe-west1" ? 65514 : 65513
   peer_ip_address           = local.nva_configs["${each.value.region}-c"].ip_untrusted
   project                   = module.landing-project.project_id
   region                    = each.value.region
@@ -216,7 +216,7 @@ resource "google_compute_router_peer" "peers_trusted_to_nvas_zone_b" {
   for_each                  = local.ncc_cr_intf_trusted_configs
   interface                 = "prod-trusted-${each.key}"
   name                      = "prod-trusted-${each.key}-b"
-  peer_asn                  = 65514
+  peer_asn                  = each.value.region == "europe-west1" ? 65514 : 65513
   peer_ip_address           = local.nva_configs["${each.value.region}-b"].ip_trusted
   project                   = module.landing-project.project_id
   region                    = each.value.region
@@ -228,7 +228,7 @@ resource "google_compute_router_peer" "peers_trusted_to_nvas_zone_c" {
   for_each                  = local.ncc_cr_intf_trusted_configs
   interface                 = "prod-trusted-${each.key}"
   name                      = "prod-trusted-${each.key}-c"
-  peer_asn                  = 65514
+  peer_asn                  = each.value.region == "europe-west1" ? 65514 : 65513
   peer_ip_address           = local.nva_configs["${each.value.region}-c"].ip_trusted
   project                   = module.landing-project.project_id
   region                    = each.value.region

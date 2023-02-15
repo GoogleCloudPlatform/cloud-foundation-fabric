@@ -1,0 +1,67 @@
+log syslog informational
+no ipv6 forwarding
+service integrated-vtysh-config
+interface lo
+ ip address 10.128.0.101/32
+route-map ALLOW-ALL permit 100
+route-map PRIMARY permit 10
+  set metric 100
+route-map SECONDARY permit 20
+  set metric 10100
+route-map NVA-TO-NVA permit 30
+  set metric 50
+router bgp 65514 view trusted
+ no bgp ebgp-requires-policy
+ no bgp network import-check
+ neighbor 10.128.64.201 remote-as 64515
+ neighbor 10.128.64.202 remote-as 64515
+ address-family ipv4 unicast
+  neighbor 10.128.64.201 activate
+  neighbor 10.128.64.201 soft-reconfiguration inbound
+  neighbor 10.128.64.202 activate
+  neighbor 10.128.64.202 soft-reconfiguration inbound
+  network 10.128.0.0/24 route-map PRIMARY
+  network 0.0.0.0/0 route-map PRIMARY
+  network 10.128.32.0/24 route-map SECONDARY
+ exit-address-family
+router bgp 65514
+ bgp router-id 10.128.0.101
+ no bgp ebgp-requires-policy
+ no bgp network import-check
+ neighbor 10.128.32.101 remote-as 65513
+ neighbor 10.128.32.101 update-source lo
+ neighbor 10.128.32.101 ebgp-multihop 2
+ neighbor 10.128.32.101 next-hop-self
+ neighbor 10.128.32.102 remote-as 65513
+ neighbor 10.128.32.102 update-source lo
+ neighbor 10.128.32.102 ebgp-multihop 2
+ neighbor 10.128.32.102 next-hop-self
+ address-family ipv4 unicast
+  neighbor 10.128.32.101 activate
+  neighbor 10.128.32.101 soft-reconfiguration inbound
+  neighbor 10.128.32.102 activate
+  neighbor 10.128.32.102 soft-reconfiguration inbound
+  network 10.128.192.0/24 route-map NVA-TO-NVA
+  network 10.128.128.0/24 route-map NVA-TO-NVA
+  network 10.128.48.0/24 route-map NVA-TO-NVA
+ exit-address-family
+router bgp 65514 view untrusted
+ no bgp ebgp-requires-policy
+ no bgp network import-check
+ neighbor 10.128.0.201 remote-as 64515
+ neighbor 10.128.0.202 remote-as 64515
+ address-family ipv4 unicast
+  neighbor 10.128.0.201 activate
+  neighbor 10.128.0.201 soft-reconfiguration inbound
+  neighbor 10.128.0.202 activate
+  neighbor 10.128.0.202 soft-reconfiguration inbound
+  network 10.128.64.0/24 route-map PRIMARY
+  network 10.0.0.0/8 route-map PRIMARY
+  network 172.16.0.0/12 route-map PRIMARY
+  network 192.168.0.0/16 route-map PRIMARY
+  network 10.128.96.0/24 route-map SECONDARY
+  network 10.128.128.0/24 route-map PRIMARY
+  network 10.128.48.0/24 route-map PRIMARY
+  network 10.128.192.0/24 route-map PRIMARY
+ exit-address-family
+line vty

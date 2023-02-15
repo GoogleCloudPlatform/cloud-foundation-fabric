@@ -35,12 +35,11 @@ locals {
     {
       name = "trusted"
       routes = [
-        var.custom_adv.gcp_dev_ew1,
-        var.custom_adv.gcp_dev_ew4,
+        var.custom_adv.rfc_1918_192,
+        var.custom_adv.rfc_1918_172,
         var.custom_adv.gcp_landing_trusted_ew1,
         var.custom_adv.gcp_landing_trusted_ew4,
-        var.custom_adv.gcp_prod_ew1,
-        var.custom_adv.gcp_prod_ew4,
+        var.custom_adv.rfc_1918_10
       ]
     },
   ]
@@ -74,10 +73,12 @@ locals {
 }
 
 # NVA configs
-module "nva-cloud-config" {
-  source               = "../../../modules/cloud-config-container/simple-nva"
+module "nva-bgp-cloud-config" {
+  for_each             = local.nva_locality
+  source               = "../../../modules/cloud-config-container/simple-nva-bgp"
   enable_health_checks = true
   network_interfaces   = local.routing_config
+  frr_config           = "./bgp-files/${each.value.trigram}${each.value.zone}"
 }
 
 resource "google_compute_address" "nva_static_ip_untrusted" {
@@ -141,67 +142,20 @@ module "nva" {
     termination_action        = "STOP"
   }
   metadata = {
-    user-data = module.nva-cloud-config.cloud_config
+    user-data = module.nva-bgp-cloud-config[each.key].cloud_config
   }
 }
 
-module "nva-template" {
-  for_each        = local.nva_locality
-  source          = "../../../modules/compute-vm"
-  project_id      = module.landing-project.project_id
-  name            = "nva-template-${each.value.trigram}-${each.value.zone}"
-  zone            = "${each.value.region}-${each.value.zone}"
-  instance_type   = "e2-standard-2"
-  tags            = ["nva"]
-  create_template = true
-  can_ip_forward  = true
-  network_interfaces = [
-    {
-      network    = module.landing-untrusted-vpc.self_link
-      subnetwork = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${each.value.trigram}"]
-      nat        = false
-      addresses  = null
-    },
-    {
-      network    = module.landing-trusted-vpc.self_link
-      subnetwork = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${each.value.trigram}"]
-      nat        = false
-      addresses  = null
-    }
+resource "google_compute_instance_group" "nva-instance-group" {
+  for_each = local.nva_configs
+  project  = module.landing-project.project_id
+  name     = "nva-cos-${var.region_trigram[each.value.region]}-${each.value.zone}"
+
+  instances = [
+    module.nva[each.key].instance.id
   ]
-  boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    size  = 10
-    type  = "pd-balanced"
-  }
-  options = {
-    allow_stopping_for_update = true
-    deletion_protection       = false
-    spot                      = true
-    termination_action        = "STOP"
-  }
-  metadata = {
-    user-data = module.nva-cloud-config.cloud_config
-  }
-}
 
-module "nva-mig" {
-  for_each          = local.nva_locality
-  source            = "../../../modules/compute-mig"
-  project_id        = module.landing-project.project_id
-  location          = each.value.region
-  name              = "nva-cos-${var.region_trigram[each.value.region]}-${each.value.zone}"
-  instance_template = module.nva-template[each.key].template.self_link
-  target_size       = 1
-  auto_healing_policies = {
-    initial_delay_sec = 30
-  }
-  health_check_config = {
-    enable_logging = true
-    tcp = {
-      port = 22
-    }
-  }
+  zone = "${each.value.region}-${each.value.zone}"
 }
 
 module "ilb-nva-untrusted" {
@@ -218,7 +172,7 @@ module "ilb-nva-untrusted" {
   }
   backends = [
     for key, _ in local.nva_locality : {
-      group = module.nva-mig[key].group_manager.instance_group
+      group = google_compute_instance_group.nva-instance-group[key].self_link
     } if local.nva_locality[key].region == each.key
   ]
   health_check_config = {
@@ -244,7 +198,7 @@ module "ilb-nva-trusted" {
   }
   backends = [
     for key, _ in local.nva_locality : {
-      group = module.nva-mig[key].group_manager.instance_group
+      group = google_compute_instance_group.nva-instance-group[key].self_link
     } if local.nva_locality[key].region == each.key
   ]
   health_check_config = {

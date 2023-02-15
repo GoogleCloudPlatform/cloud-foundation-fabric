@@ -86,6 +86,8 @@ module "peering-dev" {
   prefix        = "dev-peering-0"
   local_network = module.dev-spoke-vpc.self_link
   peer_network  = module.landing-trusted-vpc.self_link
+  export_local_custom_routes = true
+  export_peer_custom_routes  = true
 }
 
 # Create delegated grants for stage3 service accounts

@@ -74,7 +74,7 @@ module "landing-to-onprem-ew4-vpn" {
     asn  = var.router_configs.landing-trusted-vpn-to-onprem-ew4.asn
   }
   peer_gateway = {
-    external = var.vpn_onprem_configs.landing-trusted-vpn-to-onprem-ew.peer_external_gateway
+    external = var.vpn_onprem_configs.landing-trusted-ew4.peer_external_gateway
   }
   tunnels = {
     for t in var.vpn_onprem_configs.landing-trusted-ew4.tunnels :
