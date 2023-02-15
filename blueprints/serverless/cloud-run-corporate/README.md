@@ -86,7 +86,19 @@ The main project is also referenced as host project because some use cases use i
 
 Note that public access is restricted. If you try to `curl` from e.g. your laptop you will get a `403 Forbidden` error.
 
-### Use case 2:
+### Use case 2: Access to Cloud Run from on-prem environment
+
+This use case deploys a Cloud Run service in a GCP project and simulates an on-prem environment with another GCP project and a HA VPN connection between them. PSC is still used but now the DNS configuration should happen in on-premises. Since this environment is implemented in GCP, the blueprint takes care of this configuration. The PSC endpoint is announced through the VPN via BGP so that on-prem knows how to reach it. A VM is deployed in the on-prem environment to test this setup.
+
+<p align="center"> <img src="images/use-case-2.png" width="600"> </p>
+
+You will need to set both the main and the on-prem project IDs in `terraform.tfvars`:
+```tfvars
+prj_host_id   = "[your-project-id]"
+prj_onprem_id = "[your-onprem-project-id]"
+```
+
+SSH into the test VM and run `curl`, you should see the same output as in the previous use case.
 
 ### Use case 3:
 
