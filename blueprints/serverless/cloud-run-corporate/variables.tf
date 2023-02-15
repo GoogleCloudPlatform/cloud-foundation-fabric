@@ -23,7 +23,7 @@ variable "image" {
 variable "ingress_settings" {
   description = "Ingress traffic sources allowed to call the service."
   type        = string
-  default     = "all"
+  default     = "internal"
 }
 
 variable "ip_ranges" {
