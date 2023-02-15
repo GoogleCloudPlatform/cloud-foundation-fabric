@@ -26,15 +26,17 @@ variable "ingress_settings" {
   default     = "all"
 }
 
-variable "ip_ranges_host" {
+variable "ip_ranges" {
   description = "IPs or IP ranges used by VPCs"
-  type = object({
-    subnet   = string
-    psc_addr = string
-  })
+  type        = map(map(string))
   default = {
-    subnet   = "10.0.1.0/24"
-    psc_addr = "10.0.0.100"
+    host = {
+      subnet   = "10.0.1.0/24"
+      psc_addr = "10.0.0.100"
+    }
+    onprem = {
+      subnet = "172.16.1.0/24"
+    }
   }
 }
 
@@ -50,6 +52,21 @@ variable "prj_host_create" {
 variable "prj_host_id" {
   description = "Host Project ID."
   type        = string
+}
+
+variable "prj_onprem_create" {
+  description = "Parameters for the creation of an 'onprem' project."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
+variable "prj_onprem_id" {
+  description = "Host Project ID."
+  type        = string
+  default     = null
 }
 
 variable "region" {

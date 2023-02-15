@@ -41,6 +41,20 @@ module "project_host" {
   ]
 }
 
+# Simulated onprem environment
+module "project_onprem" {
+  source          = "../../../modules/project"
+  count           = var.prj_onprem_id != null ? 1 : 0
+  name            = var.prj_onprem_id
+  project_create  = var.prj_onprem_create != null
+  billing_account = try(var.prj_onprem_create.billing_account_id, null)
+  parent          = try(var.prj_onprem_create.parent, null)
+  services = [
+    "compute.googleapis.com",
+    "dns.googleapis.com"
+  ]
+}
+
 ###############################################################################
 #                                  Cloud Run                                  #
 ###############################################################################
@@ -75,7 +89,7 @@ module "vpc_host" {
   name       = "vpc-host"
   subnets = [
     {
-      ip_cidr_range         = var.ip_ranges_host.subnet
+      ip_cidr_range         = var.ip_ranges["host"].subnet
       name                  = "subnet-host"
       region                = var.region
       enable_private_access = true # PGA enabled
@@ -83,7 +97,7 @@ module "vpc_host" {
   ]
 }
 
-# VPC Firewall with default config, IAP for SSH enabled
+# Host VPC Firewall with default config, IAP for SSH enabled
 module "firewall_host" {
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.project_host.project_id
@@ -94,16 +108,44 @@ module "firewall_host" {
   }
 }
 
+# VPC in simulated onprem environment
+module "vpc_onprem" {
+  source     = "../../../modules/net-vpc"
+  count      = length(module.project_onprem)
+  project_id = module.project_onprem[0].project_id
+  name       = "vpc-onprem"
+  subnets = [
+    {
+      ip_cidr_range = var.ip_ranges["onprem"].subnet
+      name          = "subnet-onprem"
+      region        = var.region
+    }
+  ]
+}
+
+# Onprem VPC Firewall with default config, IAP for SSH enabled
+module "firewall_onprem" {
+  source     = "../../../modules/net-vpc-firewall"
+  count      = length(module.project_onprem)
+  project_id = module.project_onprem[0].project_id
+  network    = module.vpc_onprem[0].name
+  default_rules_config = {
+    http_ranges  = []
+    https_ranges = []
+  }
+}
+
 ###############################################################################
 #                                    PSC                                      #
 ###############################################################################
 
+# PSC configured in the host
 module "psc_addr_host" {
   source     = "../../../modules/net-address"
   project_id = module.project_host.project_id
   psc_addresses = {
     psc-addr-host = {
-      address = var.ip_ranges_host.psc_addr
+      address = var.ip_ranges["host"].psc_addr
       network = module.vpc_host.self_link
     }
   }
@@ -125,6 +167,7 @@ resource "google_compute_global_forwarding_rule" "psc_endpoint_host" {
 
 module "vm_test_host" {
   source        = "../../../modules/compute-vm"
+  count         = 1 - length(module.project_onprem)
   project_id    = module.project_host.project_id
   zone          = "${var.region}-b"
   name          = "vm-test-host"
@@ -136,12 +179,27 @@ module "vm_test_host" {
   tags = ["ssh"]
 }
 
+module "vm_test_onprem" {
+  source        = "../../../modules/compute-vm"
+  count         = length(module.project_onprem)
+  project_id    = module.project_onprem[0].project_id
+  zone          = "${var.region}-b"
+  name          = "vm-test-onprem"
+  instance_type = "e2-micro"
+  network_interfaces = [{
+    network    = module.vpc_onprem[0].self_link
+    subnetwork = module.vpc_onprem[0].subnet_self_links["${var.region}/subnet-onprem"]
+  }]
+  tags = ["ssh"]
+}
+
 ###############################################################################
 #                                    DNS                                      #
 ###############################################################################
 
 module "private_dns_host" {
   source          = "../../../modules/dns"
+  count           = 1 - length(module.project_onprem)
   project_id      = module.project_host.project_id
   type            = "private"
   name            = "dns-host"
@@ -149,5 +207,91 @@ module "private_dns_host" {
   domain          = local.domain_cr_host
   recordsets = {
     "A " = { records = [module.psc_addr_host.psc_addresses["psc-addr-host"].address] }
+  }
+}
+
+module "private_dns_onprem" {
+  source          = "../../../modules/dns"
+  count           = length(module.project_onprem)
+  project_id      = module.project_onprem[0].project_id
+  type            = "private"
+  name            = "dns-onprem"
+  client_networks = [module.vpc_onprem[0].self_link]
+  domain          = local.domain_cr_host
+  recordsets = {
+    "A " = { records = [module.psc_addr_host.psc_addresses["psc-addr-host"].address] }
+  }
+}
+
+###############################################################################
+#                                    VPN                                      #
+###############################################################################
+
+# VPN between main project and "onprem" environment
+module "vpn_host" {
+  source       = "../../../modules/net-vpn-ha"
+  count        = length(module.project_onprem)
+  project_id   = module.project_host.project_id
+  region       = var.region
+  network      = module.vpc_host.self_link
+  name         = "vpn-host-to-onprem"
+  peer_gateway = { gcp = module.vpn_onprem[0].self_link }
+  router_config = {
+    asn = 65001
+    custom_advertise = {
+      all_subnets = true
+      ip_ranges = {
+        (var.ip_ranges["host"].psc_addr) = "to-psc-endpoint"
+      }
+    }
+  }
+  tunnels = {
+    tunnel-0 = {
+      bgp_peer = {
+        address = "169.254.0.2"
+        asn     = 65002
+      }
+      bgp_session_range     = "169.254.0.1/30"
+      vpn_gateway_interface = 0
+    }
+    tunnel-1 = {
+      bgp_peer = {
+        address = "169.254.1.2"
+        asn     = 65002
+      }
+      bgp_session_range     = "169.254.1.1/30"
+      vpn_gateway_interface = 1
+    }
+  }
+}
+
+module "vpn_onprem" {
+  source        = "../../../modules/net-vpn-ha"
+  count         = length(module.project_onprem)
+  project_id    = module.project_onprem[0].project_id
+  region        = var.region
+  network       = module.vpc_onprem[0].self_link
+  name          = "vpn-onprem-to-host"
+  peer_gateway  = { gcp = module.vpn_host[0].self_link }
+  router_config = { asn = 65002 }
+  tunnels = {
+    tunnel-0 = {
+      bgp_peer = {
+        address = "169.254.0.1"
+        asn     = 65001
+      }
+      bgp_session_range     = "169.254.0.2/30"
+      vpn_gateway_interface = 0
+      shared_secret         = module.vpn_host[0].random_secret
+    }
+    tunnel-1 = {
+      bgp_peer = {
+        address = "169.254.1.1"
+        asn     = 65001
+      }
+      bgp_session_range     = "169.254.1.2/30"
+      vpn_gateway_interface = 1
+      shared_secret         = module.vpn_host[0].random_secret
+    }
   }
 }
