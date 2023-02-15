@@ -84,6 +84,8 @@ The main project is also referenced as host project because some use cases use i
 
 <p align="center"> <img src="images/service-running.png" width="700"> </p>
 
+Note that public access is restricted. If you try to `curl` from e.g. your laptop you will get a `403 Forbidden` error.
+
 ### Use case 2:
 
 ### Use case 3:
