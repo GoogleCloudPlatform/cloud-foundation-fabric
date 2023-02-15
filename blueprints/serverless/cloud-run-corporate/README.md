@@ -6,9 +6,27 @@ This blueprint contains all the necessary Terraform modules to build and private
 
 The content of this blueprint corresponds to the chapter '_Developing an enterprise application - The corporate environment_' of the __Serverless Networking Guide__ (to be released soon). This guide is an easy to follow introduction to Cloud Run, where a couple of friendly characters will guide you from the basics to more advanced topics with a very practical approach and in record time! The code here complements this learning and allows you to test the scenarios presented and your knowledge.
 
+If you are interested in following this guide, take a look to the chapters' blueprints:
+* [My serverless "Hello, World! - Exploring Cloud Run](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-explore)
+* [Developing an enterprise application - The corporate environment](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-corporate)
+
 ## Architecture
 
+This blueprint creates multiple architectures depending on the use case. Some may have one or two projecs while others may have four or more. Some use [Private Service Connect (PSC)](https://cloud.google.com/vpc/docs/private-service-connect) to access Google APIs, and others a [Layer 7 Internal Load Balancer](https://cloud.google.com/load-balancing/docs/l7-internal). Even security plays a role and [VPC Service Controls](https://cloud.google.com/vpc-service-controls) is introduced.
+
 ## Prerequisites
+
+Depending on the use case, you will need one or more projects with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project) and a user with the “Project owner” [IAM](https://cloud.google.com/iam) role on those projects. You can use existing projects or let the blueprint creates them for you but in that case you will need to add extra information for each project. E.g.:
+
+```tfvars
+# Create the main or host project
+prj_host_create = {
+  billing_account_id = "ABCDE-12345-ABCDE"
+  parent             = "organizations/0123456789"
+}
+```
+
+Below it is explained how to set this information.
 
 ## Spinning up the architecture
 
@@ -34,7 +52,7 @@ may become
 project_id = "spiritual-hour-331417"
 ```
 
-Although each use case is somehow built around the previous one they are self-contained so you can deploy any of them at will.
+Use cases are self-contained so you can deploy any of them at will.
 
 4. The usual terraform commands will do the work:
 ```bash
@@ -48,6 +66,23 @@ The resource creation will take a few minutes but when it’s complete, you shou
 __Congratulations!__ You have successfully deployed the use case you chose based on the variables configuration.
 
 ### Use case 1: Access to Cloud Run from a VM in the project
+
+This use case deploys a Cloud Run service and a VM in the same project. To privately access Cloud Run from the VM, PSC is used. A PSC endpoint is created so that the VM can reach the service through an RFC1918 IP. Also, a DNS entry is created to point the service's default URL to that IP.
+
+<p align="center"> <img src="images/use-case-1.png" width="600"> </p>
+
+In this case the only variable that you need to set in `terraform.tfvars` is the main or host project ID:
+```tfvars
+prj_host_id = "[your-project-id]"
+```
+Alternatively you can pass this value on the command line:
+```bash
+terraform apply -var prj_host_id="[your-project-id]"
+```
+
+The main project is also referenced as host project because some use cases use it with a Shared VPC. The default URL is automatically created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Now SSH into the VM and run `curl`, you should see the following:
+
+<p align="center"> <img src="images/service-running.png" width="700"> </p>
 
 ### Use case 2:
 
