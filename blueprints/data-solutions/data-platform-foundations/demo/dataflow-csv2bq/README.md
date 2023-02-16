@@ -9,7 +9,7 @@ This demo serves as a simple example of building and launching a Flex Template D
 For local development, the pipeline can be launched from the local machine for testing purposes using different runners depending on the scope of the test.
 
 ### Using the Beam DirectRunner
-The below example uses the Beam DirectRunner. The use case for this runner is mainly for quick local run tests on low volume of data.
+The below example uses the Beam DirectRunner. The use case for this runner is mainly for quick local tests on the development environment with low volume of data.
 
 ```
 CSV_FILE=gs://[TEST-BUCKET]/customers.csv
@@ -29,7 +29,7 @@ python src/csv2bq.py \
 
 ### Using the DataflowRunner with a local CLI launch
 
-The below example uses the DataflowRunner locally. The use case for this is for running local tests on larger volumes of test data and verifying that the pipeline runs well on Dataflow, before compiling it into a template.
+The below example triggers the pipeline on Dataflow from your local development environment. The use case for this is for running local tests on larger volumes of test data and verifying that the pipeline runs well on Dataflow, before compiling it into a template.
 
 ```
 PROJECT_ID=[TEST-PROJECT]
