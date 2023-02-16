@@ -99,6 +99,7 @@ variable "custom_roles" {
   description = "Custom roles defined at the organization level, in key => id format."
   type = object({
     service_project_network_admin = string
+    tenant_network_admin          = string
   })
   default = null
 }

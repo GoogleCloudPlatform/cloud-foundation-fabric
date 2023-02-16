@@ -19,11 +19,11 @@
 # module "test-vm-landing-0" {
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.landing-project.project_id
-#   zone       = "europe-west1-b"
+#   zone       = "${var.regions.primary}-b"
 #   name       = "test-vm-0"
 #   network_interfaces = [{
 #     network    = module.landing-vpc.self_link
-#     subnetwork = module.landing-vpc.subnet_self_links["europe-west1/landing-default-ew1"]
+#     subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default-${local.region_shortnames[var.regions.primary]}"]
 #   }]
 #   tags                   = ["ssh"]
 #   service_account_create = true
@@ -31,8 +31,8 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #   }
 #   options = {
-#     spot                      = true
-#     termination_action        = "STOP"
+#     spot               = true
+#     termination_action = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -45,12 +45,12 @@
 # module "test-vm-dev-0" {
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.dev-spoke-project.project_id
-#   zone       = "europe-west1-b"
+#   zone       = "${var.regions.primary}-b"
 #   name       = "test-vm-0"
 #   network_interfaces = [{
 #     network = module.dev-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
-#     subnetwork = module.dev-spoke-vpc.subnet_self_links["europe-west1/dev-default-ew1"]
+#     subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default-${local.region_shortnames[var.regions.primary]}"]
 #   }]
 #   tags                   = ["ssh"]
 #   service_account_create = true
@@ -58,8 +58,8 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #   }
 #   options = {
-#     spot                      = true
-#     termination_action        = "STOP"
+#     spot               = true
+#     termination_action = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -72,12 +72,12 @@
 # module "test-vm-prod-0" {
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.prod-spoke-project.project_id
-#   zone       = "europe-west1-b"
+#   zone       = "${var.regions.primary}-b"
 #   name       = "test-vm-0"
 #   network_interfaces = [{
 #     network = module.prod-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
-#     subnetwork = module.prod-spoke-vpc.subnet_self_links["europe-west1/prod-default-ew1"]
+#     subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.primary}/prod-default-${local.region_shortnames[var.regions.primary]}"]
 #   }]
 #   tags                   = ["ssh"]
 #   service_account_create = true
@@ -85,8 +85,8 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #   }
 #   options = {
-#     spot                      = true
-#     termination_action        = "STOP"
+#     spot               = true
+#     termination_action = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF

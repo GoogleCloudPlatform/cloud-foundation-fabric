@@ -60,18 +60,32 @@ variable "custom_roles" {
   default = null
 }
 
-variable "data_dir" {
-  description = "Relative path for the folder storing configuration data for network resources."
-  type        = string
-  default     = "data"
-}
-
 variable "dns" {
   description = "Onprem DNS resolvers."
   type        = map(list(string))
   default = {
     prod = ["10.0.1.1"]
     dev  = ["10.0.2.1"]
+  }
+}
+
+variable "factories_config" {
+  description = "Configuration for network resource factories."
+  type = object({
+    data_dir             = optional(string, "data")
+    firewall_policy_name = optional(string, "factory")
+  })
+  default = {
+    data_dir = "data"
+  }
+  nullable = false
+  validation {
+    condition     = var.factories_config.data_dir != null
+    error_message = "Data folder needs to be non-null."
+  }
+  validation {
+    condition     = var.factories_config.firewall_policy_name != null
+    error_message = "Firewall policy name needs to be non-null."
   }
 }
 
@@ -94,11 +108,9 @@ variable "l7ilb_subnets" {
   default = {
     prod = [
       { ip_cidr_range = "10.128.92.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.93.0/24", region = "europe-west4" }
     ]
     dev = [
       { ip_cidr_range = "10.128.60.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.61.0/24", region = "europe-west4" }
     ]
   }
 }
@@ -167,6 +179,16 @@ variable "psa_ranges" {
   # }
 }
 
+variable "regions" {
+  description = "Region definitions."
+  type = object({
+    primary = string
+  })
+  default = {
+    primary = "europe-west1"
+  }
+}
+
 variable "router_onprem_configs" {
   description = "Configurations for routers used for onprem connectivity."
   type = map(object({
@@ -177,12 +199,12 @@ variable "router_onprem_configs" {
     asn = number
   }))
   default = {
-    prod-ew1 = {
+    prod-primary = {
       asn = "65533"
       adv = null
       # adv = { default = false, custom = [] }
     }
-    dev-ew1 = {
+    dev-primary = {
       asn = "65534"
       adv = null
       # adv = { default = false, custom = [] }
@@ -222,7 +244,7 @@ variable "vpn_onprem_configs" {
     }))
   }))
   default = {
-    dev-ew1 = {
+    dev-primary = {
       adv = {
         default = false
         custom = [
@@ -251,7 +273,7 @@ variable "vpn_onprem_configs" {
         }
       ]
     }
-    prod-ew1 = {
+    prod-primary = {
       adv = {
         default = false
         custom = [

@@ -125,3 +125,11 @@ resource "google_organization_iam_member" "org_policy_admin_stage2_3" {
     ])
   }
 }
+
+# assign custom tenant network admin role to networking SA
+
+resource "google_organization_iam_member" "tenant_network_admin" {
+  org_id = var.organization.id
+  role   = var.custom_roles.tenant_network_admin
+  member = module.automation-tf-resman-sa-stage2-3["networking"].iam_email
+}

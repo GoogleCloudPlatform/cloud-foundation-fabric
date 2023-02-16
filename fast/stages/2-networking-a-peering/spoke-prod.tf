@@ -16,6 +16,19 @@
 
 # tfdoc:file:description Production spoke VPC and related resources.
 
+locals {
+  _l7ilb_subnets_prod = [
+    for v in var.l7ilb_subnets.prod : merge(v, {
+      active = true
+      region = lookup(var.regions, v.region, v.region)
+  })]
+  l7ilb_subnets_prod = [
+    for v in local._l7ilb_subnets_prod : merge(v, {
+      name = "prod-l7ilb-${local.region_shortnames[v.region]}"
+    })
+  ]
+}
+
 module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -48,9 +61,9 @@ module "prod-spoke-vpc" {
   project_id         = module.prod-spoke-project.project_id
   name               = "prod-spoke-0"
   mtu                = 1500
-  data_folder        = "${var.data_dir}/subnets/prod"
+  data_folder        = "${var.factories_config.data_dir}/subnets/prod"
   psa_config         = try(var.psa_ranges.prod, null)
-  subnets_proxy_only = local.l7ilb_subnets.prod
+  subnets_proxy_only = local.l7ilb_subnets_prod
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
@@ -74,8 +87,8 @@ module "prod-spoke-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.data_dir}/firewall-rules/prod"
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/prod"
   }
 }
 
@@ -84,7 +97,7 @@ module "prod-spoke-cloudnat" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.prod-spoke-project.project_id
   region         = each.value
-  name           = "prod-nat-${var.region_trigram[each.value]}"
+  name           = "prod-nat-${local.region_shortnames[each.value]}"
   router_create  = true
   router_network = module.prod-spoke-vpc.name
   router_asn     = 4200001024

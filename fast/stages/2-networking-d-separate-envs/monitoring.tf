@@ -17,7 +17,7 @@
 # tfdoc:file:description Network monitoring dashboards.
 
 locals {
-  dashboard_path  = "${var.data_dir}/dashboards"
+  dashboard_path  = "${var.factories_config.data_dir}/dashboards"
   dashboard_files = fileset(local.dashboard_path, "*.json")
   dashboards = {
     for filename in local.dashboard_files :

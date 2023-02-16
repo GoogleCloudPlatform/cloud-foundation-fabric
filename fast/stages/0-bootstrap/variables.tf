@@ -83,10 +83,12 @@ variable "custom_role_names" {
   type = object({
     organization_iam_admin        = string
     service_project_network_admin = string
+    tenant_network_admin          = string
   })
   default = {
     organization_iam_admin        = "organizationIamAdmin"
     service_project_network_admin = "serviceProjectNetworkAdmin"
+    tenant_network_admin          = "tenantNetworkAdmin"
   }
 }
 

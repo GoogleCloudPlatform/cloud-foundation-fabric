@@ -28,18 +28,18 @@ locals {
     {
       name = "untrusted"
       routes = [
-        var.custom_adv.gcp_landing_untrusted_ew1,
-        var.custom_adv.gcp_landing_untrusted_ew4,
+        var.custom_adv.gcp_landing_untrusted_primary,
+        var.custom_adv.gcp_landing_untrusted_secondary,
       ]
     },
     {
       name = "trusted"
       routes = [
-        var.custom_adv.rfc_1918_192,
+        var.custom_adv.rfc_1918_10,
         var.custom_adv.rfc_1918_172,
+        var.custom_adv.rfc_1918_192,
         var.custom_adv.gcp_landing_trusted_ew1,
-        var.custom_adv.gcp_landing_trusted_ew4,
-        var.custom_adv.rfc_1918_10
+        var.custom_adv.gcp_landing_trusted_ew4
       ]
     },
   ]
@@ -159,16 +159,22 @@ resource "google_compute_instance_group" "nva-instance-group" {
 }
 
 module "ilb-nva-untrusted" {
-  for_each      = { for l in local.nva_locality : l.region => l.trigram... }
+  for_each = {
+    for k, v in var.regions : k => {
+      region    = v
+      shortname = local.region_shortnames[v]
+      subnet    = "${v}/landing-untrusted-default-${local.region_shortnames[v]}"
+    }
+  }
   source        = "../../../modules/net-ilb"
   project_id    = module.landing-project.project_id
-  region        = each.key
-  name          = "nva-untrusted-${each.value.0}"
+  region        = each.value.region
+  name          = "nva-untrusted-${each.key}"
   service_label = var.prefix
   global_access = true
   vpc_config = {
     network    = module.landing-untrusted-vpc.self_link
-    subnetwork = module.landing-untrusted-vpc.subnet_self_links["${each.key}/landing-untrusted-default-${each.value.0}"]
+    subnetwork = module.landing-untrusted-vpc.subnet_self_links[each.value.subnet]
   }
   backends = [
     for key, _ in local.nva_locality : {
@@ -183,18 +189,23 @@ module "ilb-nva-untrusted" {
   }
 }
 
-
 module "ilb-nva-trusted" {
-  for_each      = { for l in local.nva_locality : l.region => l.trigram... }
+  for_each = {
+    for k, v in var.regions : k => {
+      region    = v
+      shortname = local.region_shortnames[v]
+      subnet    = "${v}/landing-trusted-default-${local.region_shortnames[v]}"
+    }
+  }
   source        = "../../../modules/net-ilb"
   project_id    = module.landing-project.project_id
-  region        = each.key
-  name          = "nva-trusted-${each.value.0}"
+  region        = each.value.region
+  name          = "nva-trusted-${each.key}"
   service_label = var.prefix
   global_access = true
   vpc_config = {
     network    = module.landing-trusted-vpc.self_link
-    subnetwork = module.landing-trusted-vpc.subnet_self_links["${each.key}/landing-trusted-default-${each.value.0}"]
+    subnetwork = module.landing-trusted-vpc.subnet_self_links[each.value.subnet]
   }
   backends = [
     for key, _ in local.nva_locality : {

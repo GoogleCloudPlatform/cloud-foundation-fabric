@@ -24,6 +24,14 @@ locals {
       name   = "${env}-l7ilb-${s.region}"
     })]
   }
+  # combine all regions from variables and subnets
+  regions = distinct(concat(
+    values(var.regions),
+    values(module.dev-spoke-vpc.subnet_regions),
+    values(module.landing-trusted-vpc.subnet_regions),
+    values(module.landing-untrusted-vpc.subnet_regions),
+    values(module.prod-spoke-vpc.subnet_regions),
+  ))
   service_accounts = {
     for k, v in coalesce(var.service_accounts, {}) :
     k => "serviceAccount:${v}" if v != null
@@ -45,11 +53,11 @@ module "folder" {
   folder_create = var.folder_ids.networking == null
   id            = var.folder_ids.networking
   firewall_policy_factory = {
-    cidr_file   = "${var.data_dir}/cidrs.yaml"
-    policy_name = null
-    rules_file  = "${var.data_dir}/hierarchical-policy-rules.yaml"
+    cidr_file   = "${var.factories_config.data_dir}/cidrs.yaml"
+    policy_name = var.factories_config.firewall_policy_name
+    rules_file  = "${var.factories_config.data_dir}/hierarchical-policy-rules.yaml"
   }
   firewall_policy_association = {
-    factory-policy = "factory"
+    factory-policy = var.factories_config.firewall_policy_name
   }
 }
