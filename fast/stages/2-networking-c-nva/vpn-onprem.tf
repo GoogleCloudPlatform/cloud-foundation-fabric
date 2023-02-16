@@ -49,7 +49,7 @@ module "landing-to-onprem-primary-vpn" {
   name       = "vpn-to-onprem-${local.region_shortnames[var.regions.primary]}"
   router_config = {
     name = "landing-onprem-vpn-ew1"
-    asn  = var.router_configs.landing-trusted-vpn-to-onprem-ew1.asn
+    asn  = var.router_configs.landing-trusted-primary.asn
   }
   peer_gateway = {
     external = var.vpn_onprem_configs.landing-trusted-primary.peer_external_gateway
@@ -83,7 +83,7 @@ module "landing-to-onprem-secondary-vpn" {
   name       = "vpn-to-onprem-${local.region_shortnames[var.regions.secondary]}"
   router_config = {
     name = "landing-onprem-vpn-ew4"
-    asn  = var.router_configs.landing-trusted-vpn-to-onprem-ew4.asn
+    asn  = var.router_configs.landing-trusted-secondary.asn
   }
   peer_gateway = {
     external = var.vpn_onprem_configs.landing-trusted-secondary.peer_external_gateway

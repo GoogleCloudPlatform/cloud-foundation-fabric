@@ -24,7 +24,7 @@ locals {
   })]
   l7ilb_subnets_dev = [
     for v in local._l7ilb_subnets_dev : merge(v, {
-      name = "dev-l7ilb-${local.region_shortnames[v.region]}"
+      name = "dev-l7ilb-${v.region}"
     })
   ]
 }

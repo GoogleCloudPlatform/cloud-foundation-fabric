@@ -24,7 +24,7 @@ locals {
   })]
   l7ilb_subnets_prod = [
     for v in local._l7ilb_subnets_prod : merge(v, {
-      name = "prod-l7ilb-${local.region_shortnames[v.region]}"
+      name = "prod-l7ilb-${v.region}"
     })
   ]
 }

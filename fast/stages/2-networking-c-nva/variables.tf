@@ -122,6 +122,15 @@ variable "l7ilb_subnets" {
   }
 }
 
+variable "nva_asn" {
+  description = "ASN for NVAs based on regions."
+  type = map(string)
+  default = {
+    "primary"   = "65514"
+    "secondary" = "65513"
+  }
+}
+
 variable "onprem_cidr" {
   description = "Onprem addresses in name => range format."
   type        = map(string)

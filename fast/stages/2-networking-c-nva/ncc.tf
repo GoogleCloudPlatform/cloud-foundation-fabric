@@ -57,11 +57,11 @@ resource "google_network_connectivity_hub" "hub" {
 }
 
 resource "google_network_connectivity_spoke" "spoke_untrusted" {
-  for_each    = var.region_trigram
-  name        = "prod-spoke-untrusted-${each.key}"
+  for_each    = var.regions
+  name        = "prod-spoke-untrusted-${each.value}"
   project     = module.landing-project.project_id
-  location    = each.key
-  description = "Connectivity to untrusted network - region ${each.key}"
+  location    = each.value
+  description = "Connectivity to untrusted network - region ${each.value}"
   hub         = google_network_connectivity_hub.hub.id
 
   linked_router_appliance_instances {
@@ -69,7 +69,7 @@ resource "google_network_connectivity_spoke" "spoke_untrusted" {
     dynamic "instances" {
       for_each = {
         for key, config in local.nva_configs :
-        key => config.ip_untrusted if config.region == each.key
+        key => config.ip_untrusted if config.region == each.value
       }
       iterator = nva
       content {
@@ -81,11 +81,11 @@ resource "google_network_connectivity_spoke" "spoke_untrusted" {
 }
 
 resource "google_network_connectivity_spoke" "spoke_trusted" {
-  for_each    = var.region_trigram
-  name        = "prod-spoke-trusted-${each.key}"
+  for_each    = var.regions
+  name        = "prod-spoke-trusted-${local.region_shortnames[each.value]}"
   project     = module.landing-project.project_id
-  location    = each.key
-  description = "Connectivity to trusted network - region ${each.key}"
+  location    = each.value
+  description = "Connectivity to trusted network - region ${local.region_shortnames[each.value]}"
   hub         = google_network_connectivity_hub.hub.id
 
   linked_router_appliance_instances {
@@ -93,7 +93,7 @@ resource "google_network_connectivity_spoke" "spoke_trusted" {
     dynamic "instances" {
       for_each = {
         for key, config in local.nva_configs :
-        key => config.ip_trusted if config.region == each.key
+        key => config.ip_trusted if config.region == each.value
       }
       iterator = nva
       content {
@@ -105,10 +105,10 @@ resource "google_network_connectivity_spoke" "spoke_trusted" {
 }
 
 resource "google_compute_router" "routers_untrusted" {
-  for_each = var.region_trigram
-  name     = "prod-untrusted-${each.value}"
+  for_each = var.regions
+  name     = "prod-untrusted-${local.region_shortnames[each.value]}"
   project  = module.landing-project.project_id
-  region   = each.key
+  region   = each.value
   network  = module.landing-untrusted-vpc.self_link
   bgp {
     asn = var.router_configs.landing-untrusted-ncc.asn
@@ -116,10 +116,10 @@ resource "google_compute_router" "routers_untrusted" {
 }
 
 resource "google_compute_router" "routers_trusted" {
-  for_each = var.region_trigram
-  name     = "prod-trusted-${each.value}"
+  for_each = var.regions
+  name     = "prod-trusted-${local.region_shortnames[each.value]}"
   project  = module.landing-project.project_id
-  region   = each.key
+  region   = each.value
   network  = module.landing-trusted-vpc.self_link
   bgp {
     asn = var.router_configs.landing-trusted-ncc.asn
@@ -131,8 +131,8 @@ resource "google_compute_address" "router_intf_addrs_untrusted" {
   name         = "prod-untrusted-${each.key}"
   project      = module.landing-project.project_id
   region       = each.value.region
-  subnetwork   = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${var.region_trigram[each.value.region]}"]
-  address      = cidrhost(module.landing-untrusted-vpc.subnet_ips["${each.value.region}/landing-untrusted-default-${var.region_trigram[each.value.region]}"], each.value.host_number)
+  subnetwork   = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${local.region_shortnames[each.value.region]}"]
+  address      = cidrhost(module.landing-untrusted-vpc.subnet_ips["${each.value.region}/landing-untrusted-default-${local.region_shortnames[each.value.region]}"], each.value.host_number)
   address_type = "INTERNAL"
 }
 
@@ -141,8 +141,8 @@ resource "google_compute_address" "router_intf_addrs_trusted" {
   name         = "prod-trusted-${each.key}"
   project      = module.landing-project.project_id
   region       = each.value.region
-  subnetwork   = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${var.region_trigram[each.value.region]}"]
-  address      = cidrhost(module.landing-trusted-vpc.subnet_ips["${each.value.region}/landing-trusted-default-${var.region_trigram[each.value.region]}"], each.value.host_number)
+  subnetwork   = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${local.region_shortnames[each.value.region]}"]
+  address      = cidrhost(module.landing-trusted-vpc.subnet_ips["${each.value.region}/landing-trusted-default-${local.region_shortnames[each.value.region]}"], each.value.host_number)
   address_type = "INTERNAL"
 }
 
@@ -151,8 +151,8 @@ resource "google_compute_router_interface" "router_intfs_untrusted" {
   name               = "prod-untrusted-${each.key}"
   project            = module.landing-project.project_id
   region             = each.value.region
-  router             = google_compute_router.routers_untrusted[each.value.region].name
-  subnetwork         = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${var.region_trigram[each.value.region]}"]
+  router             = google_compute_router.routers_untrusted[[for k,v in var.regions : k if v == each.value.region][0]].name
+  subnetwork         = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${local.region_shortnames[each.value.region]}"]
   private_ip_address = google_compute_address.router_intf_addrs_untrusted[each.key].address
 }
 
@@ -161,8 +161,8 @@ resource "google_compute_router_interface" "router_red_intfs_untrusted" {
   name                = "prod-untrusted-${each.key}"
   project             = module.landing-project.project_id
   region              = each.value.region
-  router              = google_compute_router.routers_untrusted[each.value.region].name
-  subnetwork          = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${var.region_trigram[each.value.region]}"]
+  router              = google_compute_router.routers_untrusted[[for k,v in var.regions : k if v == each.value.region][0]].name
+  subnetwork          = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${local.region_shortnames[each.value.region]}"]
   private_ip_address  = google_compute_address.router_intf_addrs_untrusted[each.key].address
   redundant_interface = google_compute_router_interface.router_intfs_untrusted[each.value.redundant].name
 }
@@ -172,8 +172,8 @@ resource "google_compute_router_interface" "router_intfs_trusted" {
   name               = "prod-trusted-${each.key}"
   project            = module.landing-project.project_id
   region             = each.value.region
-  router             = google_compute_router.routers_trusted[each.value.region].name
-  subnetwork         = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${var.region_trigram[each.value.region]}"]
+  router             = google_compute_router.routers_trusted[[for k,v in var.regions : k if v == each.value.region][0]].name
+  subnetwork         = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${local.region_shortnames[each.value.region]}"]
   private_ip_address = google_compute_address.router_intf_addrs_trusted[each.key].address
 }
 
@@ -182,8 +182,8 @@ resource "google_compute_router_interface" "router_red_intfs_trusted" {
   name                = "prod-trusted-${each.key}"
   project             = module.landing-project.project_id
   region              = each.value.region
-  router              = google_compute_router.routers_trusted[each.value.region].name
-  subnetwork          = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${var.region_trigram[each.value.region]}"]
+  router              = google_compute_router.routers_trusted[[for k,v in var.regions : k if v == each.value.region][0]].name
+  subnetwork          = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${local.region_shortnames[each.value.region]}"]
   private_ip_address  = google_compute_address.router_intf_addrs_trusted[each.key].address
   redundant_interface = google_compute_router_interface.router_intfs_trusted[each.value.redundant].name
 }
@@ -192,11 +192,11 @@ resource "google_compute_router_peer" "peers_untrusted_to_nvas_zone_b" {
   for_each                  = local.ncc_cr_intf_untrusted_configs
   interface                 = "prod-untrusted-${each.key}"
   name                      = "prod-untrusted-${each.key}-b"
-  peer_asn                  = each.value.region == "europe-west1" ? 65514 : 65513
+  peer_asn                  = var.nva_asn[[for k,v in var.regions : k if v == each.value.region][0]]
   peer_ip_address           = local.nva_configs["${each.value.region}-b"].ip_untrusted
   project                   = module.landing-project.project_id
   region                    = each.value.region
-  router                    = google_compute_router.routers_untrusted[each.value.region].name
+  router                    = google_compute_router.routers_untrusted[[for k,v in var.regions : k if v == each.value.region][0]].name
   router_appliance_instance = module.nva["${each.value.region}-b"].self_link
 }
 
@@ -204,11 +204,11 @@ resource "google_compute_router_peer" "peers_untrusted_to_nvas_zone_c" {
   for_each                  = local.ncc_cr_intf_untrusted_configs
   interface                 = "prod-untrusted-${each.key}"
   name                      = "prod-untrusted-${each.key}-c"
-  peer_asn                  = each.value.region == "europe-west1" ? 65514 : 65513
+  peer_asn                  = var.nva_asn[[for k,v in var.regions : k if v == each.value.region][0]]
   peer_ip_address           = local.nva_configs["${each.value.region}-c"].ip_untrusted
   project                   = module.landing-project.project_id
   region                    = each.value.region
-  router                    = google_compute_router.routers_untrusted[each.value.region].name
+  router                    = google_compute_router.routers_untrusted[[for k,v in var.regions : k if v == each.value.region][0]].name
   router_appliance_instance = module.nva["${each.value.region}-c"].self_link
 }
 
@@ -216,11 +216,11 @@ resource "google_compute_router_peer" "peers_trusted_to_nvas_zone_b" {
   for_each                  = local.ncc_cr_intf_trusted_configs
   interface                 = "prod-trusted-${each.key}"
   name                      = "prod-trusted-${each.key}-b"
-  peer_asn                  = each.value.region == "europe-west1" ? 65514 : 65513
+  peer_asn                  = var.nva_asn[[for k,v in var.regions : k if v == each.value.region][0]]
   peer_ip_address           = local.nva_configs["${each.value.region}-b"].ip_trusted
   project                   = module.landing-project.project_id
   region                    = each.value.region
-  router                    = google_compute_router.routers_trusted[each.value.region].name
+  router                    = google_compute_router.routers_trusted[[for k,v in var.regions : k if v == each.value.region][0]].name
   router_appliance_instance = module.nva["${each.value.region}-b"].self_link
 }
 
@@ -228,10 +228,10 @@ resource "google_compute_router_peer" "peers_trusted_to_nvas_zone_c" {
   for_each                  = local.ncc_cr_intf_trusted_configs
   interface                 = "prod-trusted-${each.key}"
   name                      = "prod-trusted-${each.key}-c"
-  peer_asn                  = each.value.region == "europe-west1" ? 65514 : 65513
+  peer_asn                  = var.nva_asn[[for k,v in var.regions : k if v == each.value.region][0]]
   peer_ip_address           = local.nva_configs["${each.value.region}-c"].ip_trusted
   project                   = module.landing-project.project_id
   region                    = each.value.region
-  router                    = google_compute_router.routers_trusted[each.value.region].name
+  router                    = google_compute_router.routers_trusted[[for k,v in var.regions : k if v == each.value.region][0]].name
   router_appliance_instance = module.nva["${each.value.region}-c"].self_link
 }

@@ -38,8 +38,8 @@ locals {
         var.custom_adv.rfc_1918_10,
         var.custom_adv.rfc_1918_172,
         var.custom_adv.rfc_1918_192,
-        var.custom_adv.gcp_landing_trusted_ew1,
-        var.custom_adv.gcp_landing_trusted_ew4
+        var.custom_adv.gcp_landing_trusted_primary,
+        var.custom_adv.gcp_landing_trusted_secondary
       ]
     },
   ]
@@ -83,9 +83,9 @@ module "nva-bgp-cloud-config" {
 
 resource "google_compute_address" "nva_static_ip_untrusted" {
   for_each     = local.nva_configs
-  name         = "nva-ip-untrusted-${var.region_trigram[each.value.region]}-${each.value.zone}"
+  name         = "nva-ip-untrusted-${local.region_shortnames[each.value.region]}-${each.value.zone}"
   project      = module.landing-project.project_id
-  subnetwork   = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${var.region_trigram[each.value.region]}"]
+  subnetwork   = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${local.region_shortnames[each.value.region]}"]
   address_type = "INTERNAL"
   address      = each.value.ip_untrusted
   region       = each.value.region
@@ -93,9 +93,9 @@ resource "google_compute_address" "nva_static_ip_untrusted" {
 
 resource "google_compute_address" "nva_static_ip_trusted" {
   for_each     = local.nva_configs
-  name         = "nva-ip-trusted-${var.region_trigram[each.value.region]}-${each.value.zone}"
+  name         = "nva-ip-trusted-${local.region_shortnames[each.value.region]}-${each.value.zone}"
   project      = module.landing-project.project_id
-  subnetwork   = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${var.region_trigram[each.value.region]}"]
+  subnetwork   = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${local.region_shortnames[each.value.region]}"]
   address_type = "INTERNAL"
   address      = each.value.ip_trusted
   region       = each.value.region
@@ -105,7 +105,7 @@ module "nva" {
   for_each       = local.nva_configs
   source         = "../../../modules/compute-vm"
   project_id     = module.landing-project.project_id
-  name           = "nva-${var.region_trigram[each.value.region]}-${each.value.zone}"
+  name           = "nva-${local.region_shortnames[each.value.region]}-${each.value.zone}"
   zone           = "${each.value.region}-${each.value.zone}"
   instance_type  = "e2-standard-2"
   tags           = ["nva"]
@@ -113,7 +113,7 @@ module "nva" {
   network_interfaces = [
     {
       network    = module.landing-untrusted-vpc.self_link
-      subnetwork = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${var.region_trigram[each.value.region]}"]
+      subnetwork = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${local.region_shortnames[each.value.region]}"]
       nat        = false
       addresses = {
         external = null
@@ -122,7 +122,7 @@ module "nva" {
     },
     {
       network    = module.landing-trusted-vpc.self_link
-      subnetwork = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${var.region_trigram[each.value.region]}"]
+      subnetwork = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${local.region_shortnames[each.value.region]}"]
       nat        = false
       addresses = {
         external = null
@@ -149,7 +149,7 @@ module "nva" {
 resource "google_compute_instance_group" "nva-instance-group" {
   for_each = local.nva_configs
   project  = module.landing-project.project_id
-  name     = "nva-cos-${var.region_trigram[each.value.region]}-${each.value.zone}"
+  name     = "nva-cos-${local.region_shortnames[each.value.region]}-${each.value.zone}"
 
   instances = [
     module.nva[each.key].instance.id
