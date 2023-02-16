@@ -56,7 +56,7 @@ python src/csv2bq.py \
 --no_use_public_ips
 ```
 
-In terms of resource access priveleges, you can choose to impersonate another service account, which could be defined for development resource access. The authenticated user launching this pipeline will need to have the role `roles/iam.serviceAccountTokenCreator`. If you choose to launch the pipeline without service account impersonation, it will use the default compute service account assigned of the target project.
+In terms of resource access privilege, you can choose to impersonate another service account, which could be defined for development resource access. The authenticated user launching this pipeline will need to have the role `roles/iam.serviceAccountTokenCreator`. If you choose to launch the pipeline without service account impersonation, it will use the default compute service account assigned of the target project.
 
 ## Dataflow Flex Template run
 
