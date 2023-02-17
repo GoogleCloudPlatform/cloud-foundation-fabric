@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-
 locals {
   domain_cr_main = format("%s.",
   trimprefix(module.cloud_run_main.service.status[0].url, "https://"))
+  vpc_sc_create = (length(module.project_prj1) > 0 &&
+  (var.access_policy != null || var.access_policy_create != null)) ? 1 : 0
 }
 
 ###############################################################################
@@ -38,7 +39,9 @@ module "project_main" {
   services = [
     "run.googleapis.com",
     "compute.googleapis.com",
-    "dns.googleapis.com"
+    "dns.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "accesscontextmanager.googleapis.com"
   ]
   skip_delete = true
 }
@@ -313,6 +316,28 @@ module "private_dns_prj1" {
   domain          = local.domain_cr_main
   recordsets = {
     "A " = { records = [module.psc_addr_prj1[0].psc_addresses["psc-addr"].address] }
+  }
+}
+
+###############################################################################
+#                                   VPC SC                                    #
+###############################################################################
+
+module "vpc_sc" {
+  source               = "../../../modules/vpc-sc"
+  count                = local.vpc_sc_create
+  access_policy        = var.access_policy_create == null ? var.access_policy : null
+  access_policy_create = var.access_policy_create
+  service_perimeters_regular = {
+    cloudrun = {
+      status = {
+        resources = [
+          "projects/${module.project_main.number}",
+          "projects/${module.project_prj1[0].number}"
+        ]
+        restricted_services = ["run.googleapis.com"]
+      }
+    }
   }
 }
 

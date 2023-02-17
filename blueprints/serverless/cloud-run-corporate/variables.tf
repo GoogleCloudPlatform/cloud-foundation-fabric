@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+variable "access_policy" {
+  description = "VPC SC access policy, if it exists."
+  type        = string
+  default     = null
+}
+
+variable "access_policy_create" {
+  description = "Parameters for the creation of a VPC SC access policy."
+  type = object({
+    parent = string
+    title  = string
+  })
+  default = null
+}
+
 variable "image" {
   description = "Container image to deploy."
   type        = string
@@ -23,7 +38,7 @@ variable "image" {
 variable "ingress_settings" {
   description = "Ingress traffic sources allowed to call the service."
   type        = string
-  default     = "all"
+  default     = "internal"
 }
 
 variable "ip_ranges" {
