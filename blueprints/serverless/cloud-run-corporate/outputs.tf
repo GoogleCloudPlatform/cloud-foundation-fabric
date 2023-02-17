@@ -16,5 +16,5 @@
 
 output "default_URL" {
   description = "Cloud Run service default URL."
-  value       = module.cloud_run_host.service.status[0].url
+  value       = module.cloud_run_main.service.status[0].url
 }

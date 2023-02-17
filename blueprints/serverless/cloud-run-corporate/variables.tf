@@ -30,7 +30,7 @@ variable "ip_ranges" {
   description = "IPs or IP ranges used by VPCs"
   type        = map(map(string))
   default = {
-    host = {
+    main = {
       subnet   = "10.0.1.0/24"
       psc_addr = "10.0.0.100"
     }
@@ -40,8 +40,8 @@ variable "ip_ranges" {
   }
 }
 
-variable "prj_host_create" {
-  description = "Parameters for the creation of a host project."
+variable "prj_main_create" {
+  description = "Parameters for the creation of the main project."
   type = object({
     billing_account_id = string
     parent             = string
@@ -49,8 +49,8 @@ variable "prj_host_create" {
   default = null
 }
 
-variable "prj_host_id" {
-  description = "Host Project ID."
+variable "prj_main_id" {
+  description = "Main Project ID."
   type        = string
 }
 
@@ -64,7 +64,7 @@ variable "prj_onprem_create" {
 }
 
 variable "prj_onprem_id" {
-  description = "Host Project ID."
+  description = "Onprem Project ID."
   type        = string
   default     = null
 }

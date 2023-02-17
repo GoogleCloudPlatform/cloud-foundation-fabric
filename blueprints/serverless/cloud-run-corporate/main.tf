@@ -16,21 +16,22 @@
 
 
 locals {
-  domain_cr_host = format("%s.",
-  trimprefix(module.cloud_run_host.service.status[0].url, "https://"))
+  domain_cr_main = format("%s.",
+  trimprefix(module.cloud_run_main.service.status[0].url, "https://"))
 }
 
 ###############################################################################
 #                                  Projects                                   #
 ###############################################################################
 
-# Main or host project, depending on if there are service projects
-module "project_host" {
+# Main project
+module "project_main" {
   source          = "../../../modules/project"
-  name            = var.prj_host_id
-  project_create  = var.prj_host_create != null
-  billing_account = try(var.prj_host_create.billing_account_id, null)
-  parent          = try(var.prj_host_create.parent, null)
+  name            = var.prj_main_id
+  project_create  = var.prj_main_create != null
+  billing_account = try(var.prj_main_create.billing_account_id, null)
+  parent          = try(var.prj_main_create.parent, null)
+  # Enable Shared VPC by default, some use cases will use this project as host
   shared_vpc_host_config = {
     enabled = true
   }
@@ -62,9 +63,9 @@ module "project_onprem" {
 ###############################################################################
 
 # Cloud Run service in main project
-module "cloud_run_host" {
+module "cloud_run_main" {
   source     = "../../../modules/cloud-run"
-  project_id = module.project_host.project_id
+  project_id = module.project_main.project_id
   name       = var.run_svc_name
   region     = var.region
   containers = [{
@@ -84,26 +85,26 @@ module "cloud_run_host" {
 #                                    VPCs                                     #
 ###############################################################################
 
-# VPC in main or host project
-module "vpc_host" {
+# VPC in main project
+module "vpc_main" {
   source     = "../../../modules/net-vpc"
-  project_id = module.project_host.project_id
-  name       = "vpc-host"
+  project_id = module.project_main.project_id
+  name       = "vpc-main"
   subnets = [
     {
-      ip_cidr_range         = var.ip_ranges["host"].subnet
-      name                  = "subnet-host"
+      ip_cidr_range         = var.ip_ranges["main"].subnet
+      name                  = "subnet-main"
       region                = var.region
       enable_private_access = true # PGA enabled
     }
   ]
 }
 
-# Host VPC Firewall with default config, IAP for SSH enabled
-module "firewall_host" {
+# Main VPC Firewall with default config, IAP for SSH enabled
+module "firewall_main" {
   source     = "../../../modules/net-vpc-firewall"
-  project_id = module.project_host.project_id
-  network    = module.vpc_host.name
+  project_id = module.project_main.project_id
+  network    = module.vpc_main.name
   default_rules_config = {
     http_ranges  = []
     https_ranges = []
@@ -141,24 +142,24 @@ module "firewall_onprem" {
 #                                    PSC                                      #
 ###############################################################################
 
-# PSC configured in the host
-module "psc_addr_host" {
+# PSC configured in the main project
+module "psc_addr_main" {
   source     = "../../../modules/net-address"
-  project_id = module.project_host.project_id
+  project_id = module.project_main.project_id
   psc_addresses = {
-    psc-addr-host = {
-      address = var.ip_ranges["host"].psc_addr
-      network = module.vpc_host.self_link
+    psc-addr-main = {
+      address = var.ip_ranges["main"].psc_addr
+      network = module.vpc_main.self_link
     }
   }
 }
 
-resource "google_compute_global_forwarding_rule" "psc_endpoint_host" {
+resource "google_compute_global_forwarding_rule" "psc_endpoint_main" {
   provider              = google-beta
-  project               = module.project_host.project_id
-  name                  = "pscaddrhost"
-  network               = module.vpc_host.self_link
-  ip_address            = module.psc_addr_host.psc_addresses["psc-addr-host"].self_link
+  project               = module.project_main.project_id
+  name                  = "pscaddrmain"
+  network               = module.vpc_main.self_link
+  ip_address            = module.psc_addr_main.psc_addresses["psc-addr-main"].self_link
   target                = "vpc-sc"
   load_balancing_scheme = ""
 }
@@ -167,16 +168,16 @@ resource "google_compute_global_forwarding_rule" "psc_endpoint_host" {
 #                                    VMs                                      #
 ###############################################################################
 
-module "vm_test_host" {
+module "vm_test_main" {
   source        = "../../../modules/compute-vm"
   count         = 1 - length(module.project_onprem)
-  project_id    = module.project_host.project_id
+  project_id    = module.project_main.project_id
   zone          = "${var.region}-b"
-  name          = "vm-test-host"
+  name          = "vm-test-main"
   instance_type = "e2-micro"
   network_interfaces = [{
-    network    = module.vpc_host.self_link
-    subnetwork = module.vpc_host.subnet_self_links["${var.region}/subnet-host"]
+    network    = module.vpc_main.self_link
+    subnetwork = module.vpc_main.subnet_self_links["${var.region}/subnet-main"]
   }]
   tags = ["ssh"]
 }
@@ -199,16 +200,16 @@ module "vm_test_onprem" {
 #                                    DNS                                      #
 ###############################################################################
 
-module "private_dns_host" {
+module "private_dns_main" {
   source          = "../../../modules/dns"
   count           = 1 - length(module.project_onprem)
-  project_id      = module.project_host.project_id
+  project_id      = module.project_main.project_id
   type            = "private"
-  name            = "dns-host"
-  client_networks = [module.vpc_host.self_link]
-  domain          = local.domain_cr_host
+  name            = "dns-main"
+  client_networks = [module.vpc_main.self_link]
+  domain          = local.domain_cr_main
   recordsets = {
-    "A " = { records = [module.psc_addr_host.psc_addresses["psc-addr-host"].address] }
+    "A " = { records = [module.psc_addr_main.psc_addresses["psc-addr-main"].address] }
   }
 }
 
@@ -219,9 +220,9 @@ module "private_dns_onprem" {
   type            = "private"
   name            = "dns-onprem"
   client_networks = [module.vpc_onprem[0].self_link]
-  domain          = local.domain_cr_host
+  domain          = local.domain_cr_main
   recordsets = {
-    "A " = { records = [module.psc_addr_host.psc_addresses["psc-addr-host"].address] }
+    "A " = { records = [module.psc_addr_main.psc_addresses["psc-addr-main"].address] }
   }
 }
 
@@ -230,20 +231,20 @@ module "private_dns_onprem" {
 ###############################################################################
 
 # VPN between main project and "onprem" environment
-module "vpn_host" {
+module "vpn_main" {
   source       = "../../../modules/net-vpn-ha"
   count        = length(module.project_onprem)
-  project_id   = module.project_host.project_id
+  project_id   = module.project_main.project_id
   region       = var.region
-  network      = module.vpc_host.self_link
-  name         = "vpn-host-to-onprem"
+  network      = module.vpc_main.self_link
+  name         = "vpn-main-to-onprem"
   peer_gateway = { gcp = module.vpn_onprem[0].self_link }
   router_config = {
     asn = 65001
     custom_advertise = {
       all_subnets = true
       ip_ranges = {
-        (var.ip_ranges["host"].psc_addr) = "to-psc-endpoint"
+        (var.ip_ranges["main"].psc_addr) = "to-psc-endpoint"
       }
     }
   }
@@ -273,8 +274,8 @@ module "vpn_onprem" {
   project_id    = module.project_onprem[0].project_id
   region        = var.region
   network       = module.vpc_onprem[0].self_link
-  name          = "vpn-onprem-to-host"
-  peer_gateway  = { gcp = module.vpn_host[0].self_link }
+  name          = "vpn-onprem-to-main"
+  peer_gateway  = { gcp = module.vpn_main[0].self_link }
   router_config = { asn = 65002 }
   tunnels = {
     tunnel-0 = {
@@ -284,7 +285,7 @@ module "vpn_onprem" {
       }
       bgp_session_range     = "169.254.0.2/30"
       vpn_gateway_interface = 0
-      shared_secret         = module.vpn_host[0].random_secret
+      shared_secret         = module.vpn_main[0].random_secret
     }
     tunnel-1 = {
       bgp_peer = {
@@ -293,7 +294,7 @@ module "vpn_onprem" {
       }
       bgp_session_range     = "169.254.1.2/30"
       vpn_gateway_interface = 1
-      shared_secret         = module.vpn_host[0].random_secret
+      shared_secret         = module.vpn_main[0].random_secret
     }
   }
 }
