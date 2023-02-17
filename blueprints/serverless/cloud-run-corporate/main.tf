@@ -170,7 +170,6 @@ resource "google_compute_global_forwarding_rule" "psc_endpoint_main" {
 
 module "vm_test_main" {
   source        = "../../../modules/compute-vm"
-  count         = 1 - length(module.project_onprem)
   project_id    = module.project_main.project_id
   zone          = "${var.region}-b"
   name          = "vm-test-main"
@@ -202,7 +201,6 @@ module "vm_test_onprem" {
 
 module "private_dns_main" {
   source          = "../../../modules/dns"
-  count           = 1 - length(module.project_onprem)
   project_id      = module.project_main.project_id
   type            = "private"
   name            = "dns-main"
