@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This blueprint contains all the necessary Terraform modules to build and privately expose a Cloud Run service in a variety of use cases.
+This blueprint contains all the necessary Terraform modules to build and __privately__ expose a Cloud Run service in a variety of use cases.
 
 The content of this blueprint corresponds to the chapter '_Developing an enterprise application - The corporate environment_' of the __Serverless Networking Guide__ (to be released soon). This guide is an easy to follow introduction to Cloud Run, where a couple of friendly characters will guide you from the basics to more advanced topics with a very practical approach and in record time! The code here complements this learning and allows you to test the scenarios presented and your knowledge.
 
@@ -84,7 +84,7 @@ The default URL is automatically created and shown as a terraform output variabl
 
 <p align="center"> <img src="images/service-running.png" width="700"> </p>
 
-Note that public access is restricted. If you try to `curl` from e.g. your laptop you will get a `403 Forbidden` error.
+Note that the VM is resolving the Cloud Run service to an internal IP, 10.0.0.100. Public access is restricted, if you try to `curl` from e.g. your laptop you will get a `403 Forbidden` error.
 
 ### Use case 2: Access to Cloud Run from on-prem environment
 
