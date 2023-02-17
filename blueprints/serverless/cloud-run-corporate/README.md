@@ -100,7 +100,9 @@ prj_onprem_id = "[your-onprem-project-id]"
 
 SSH into the test VM and run `curl`, you should see the same output as in the previous use case.
 
-### Use case 3:
+### Use case 3: Access to Cloud Run from another project, with VPC SC
+
+[Done, update README]
 
 ### Use case 4:
 
