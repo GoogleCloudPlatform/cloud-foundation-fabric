@@ -71,16 +71,16 @@ This use case deploys a Cloud Run service and a VM in the same project. To priva
 
 <p align="center"> <img src="images/use-case-1.png" width="600"> </p>
 
-In this case the only variable that you need to set in `terraform.tfvars` is the main or host project ID:
+In this case the only variable that you need to set in `terraform.tfvars` is the main project ID:
 ```tfvars
-prj_host_id = "[your-project-id]"
+prj_main_id = "[your-main-project-id]"
 ```
 Alternatively you can pass this value on the command line:
 ```bash
-terraform apply -var prj_host_id="[your-project-id]"
+terraform apply -var prj_main_id="[your-main-project-id]"
 ```
 
-The main project is also referenced as host project because some use cases use it with a Shared VPC. The default URL is automatically created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Now SSH into the VM and run `curl`, you should see the following:
+The default URL is automatically created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Now SSH into the VM and run `curl`, you should see the following:
 
 <p align="center"> <img src="images/service-running.png" width="700"> </p>
 
@@ -94,7 +94,7 @@ This use case deploys a Cloud Run service in a GCP project and simulates an on-p
 
 You will need to set both the main and the on-prem project IDs in `terraform.tfvars`:
 ```tfvars
-prj_host_id   = "[your-project-id]"
+prj_main_id   = "[your-main-project-id]"
 prj_onprem_id = "[your-onprem-project-id]"
 ```
 
