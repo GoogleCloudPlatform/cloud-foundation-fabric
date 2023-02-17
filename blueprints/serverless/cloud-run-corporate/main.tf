@@ -107,10 +107,9 @@ module "vpc_main" {
   name       = "vpc-main"
   subnets = [
     {
-      ip_cidr_range         = var.ip_ranges["main"].subnet
-      name                  = "subnet-main"
-      region                = var.region
-      enable_private_access = true # PGA enabled
+      ip_cidr_range = var.ip_ranges["main"].subnet
+      name          = "subnet-main"
+      region        = var.region
     }
   ]
 }
