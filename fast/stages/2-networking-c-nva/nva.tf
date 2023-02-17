@@ -143,5 +143,6 @@ module "nva" {
   }
   metadata = {
     user-data = module.nva-bgp-cloud-config[each.key].cloud_config
+    startup-script = file("./data/nva-startup-script.sh")
   }
 }
