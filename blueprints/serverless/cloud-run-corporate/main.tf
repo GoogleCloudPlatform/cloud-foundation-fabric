@@ -58,6 +58,21 @@ module "project_onprem" {
   skip_delete = true
 }
 
+# Project 1
+module "project_prj1" {
+  source          = "../../../modules/project"
+  count           = var.prj_prj1_id != null ? 1 : 0
+  name            = var.prj_prj1_id
+  project_create  = var.prj_prj1_create != null
+  billing_account = try(var.prj_prj1_create.billing_account_id, null)
+  parent          = try(var.prj_prj1_create.parent, null)
+  services = [
+    "compute.googleapis.com",
+    "dns.googleapis.com"
+  ]
+  skip_delete = true
+}
+
 ###############################################################################
 #                                  Cloud Run                                  #
 ###############################################################################
@@ -138,6 +153,33 @@ module "firewall_onprem" {
   }
 }
 
+# VPC in project 1
+module "vpc_prj1" {
+  source     = "../../../modules/net-vpc"
+  count      = length(module.project_prj1)
+  project_id = module.project_prj1[0].project_id
+  name       = "vpc-prj1"
+  subnets = [
+    {
+      ip_cidr_range = var.ip_ranges["prj1"].subnet
+      name          = "subnet-prj1"
+      region        = var.region
+    }
+  ]
+}
+
+# Project 1 VPC Firewall with default config, IAP for SSH enabled
+module "firewall_prj1" {
+  source     = "../../../modules/net-vpc-firewall"
+  count      = length(module.project_prj1)
+  project_id = module.project_prj1[0].project_id
+  network    = module.vpc_prj1[0].name
+  default_rules_config = {
+    http_ranges  = []
+    https_ranges = []
+  }
+}
+
 ###############################################################################
 #                                    PSC                                      #
 ###############################################################################
@@ -160,6 +202,30 @@ resource "google_compute_global_forwarding_rule" "psc_endpoint_main" {
   name                  = "pscaddrmain"
   network               = module.vpc_main.self_link
   ip_address            = module.psc_addr_main.psc_addresses["psc-addr-main"].self_link
+  target                = "vpc-sc"
+  load_balancing_scheme = ""
+}
+
+# PSC configured in project 1
+module "psc_addr_prj1" {
+  source     = "../../../modules/net-address"
+  count      = length(module.project_prj1)
+  project_id = module.project_prj1[0].project_id
+  psc_addresses = {
+    psc-addr = {
+      address = var.ip_ranges["prj1"].psc_addr
+      network = module.vpc_prj1[0].self_link
+    }
+  }
+}
+
+resource "google_compute_global_forwarding_rule" "psc_endpoint_prj1" {
+  provider              = google-beta
+  count                 = length(module.project_prj1)
+  project               = module.project_prj1[0].project_id
+  name                  = "pscaddr"
+  network               = module.vpc_prj1[0].self_link
+  ip_address            = module.psc_addr_prj1[0].psc_addresses["psc-addr"].self_link
   target                = "vpc-sc"
   load_balancing_scheme = ""
 }
@@ -195,6 +261,20 @@ module "vm_test_onprem" {
   tags = ["ssh"]
 }
 
+module "vm_test_prj1" {
+  source        = "../../../modules/compute-vm"
+  count         = length(module.project_prj1)
+  project_id    = module.project_prj1[0].project_id
+  zone          = "${var.region}-b"
+  name          = "vm-test-prj1"
+  instance_type = "e2-micro"
+  network_interfaces = [{
+    network    = module.vpc_prj1[0].self_link
+    subnetwork = module.vpc_prj1[0].subnet_self_links["${var.region}/subnet-prj1"]
+  }]
+  tags = ["ssh"]
+}
+
 ###############################################################################
 #                                    DNS                                      #
 ###############################################################################
@@ -221,6 +301,19 @@ module "private_dns_onprem" {
   domain          = local.domain_cr_main
   recordsets = {
     "A " = { records = [module.psc_addr_main.psc_addresses["psc-addr-main"].address] }
+  }
+}
+
+module "private_dns_prj1" {
+  source          = "../../../modules/dns"
+  count           = length(module.project_prj1)
+  project_id      = module.project_prj1[0].project_id
+  type            = "private"
+  name            = "dns-prj1"
+  client_networks = [module.vpc_prj1[0].self_link]
+  domain          = local.domain_cr_main
+  recordsets = {
+    "A " = { records = [module.psc_addr_prj1[0].psc_addresses["psc-addr"].address] }
   }
 }
 

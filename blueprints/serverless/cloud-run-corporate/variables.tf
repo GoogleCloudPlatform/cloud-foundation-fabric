@@ -23,7 +23,7 @@ variable "image" {
 variable "ingress_settings" {
   description = "Ingress traffic sources allowed to call the service."
   type        = string
-  default     = "internal"
+  default     = "all"
 }
 
 variable "ip_ranges" {
@@ -36,6 +36,10 @@ variable "ip_ranges" {
     }
     onprem = {
       subnet = "172.16.1.0/24"
+    }
+    prj1 = {
+      subnet   = "10.0.2.0/24"
+      psc_addr = "10.0.0.200"
     }
   }
 }
@@ -65,6 +69,21 @@ variable "prj_onprem_create" {
 
 variable "prj_onprem_id" {
   description = "Onprem Project ID."
+  type        = string
+  default     = null
+}
+
+variable "prj_prj1_create" {
+  description = "Parameters for the creation of project 1."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
+variable "prj_prj1_id" {
+  description = "Project 1 ID."
   type        = string
   default     = null
 }
