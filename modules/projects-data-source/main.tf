@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,129 +15,27 @@
  */
 
 locals {
-  folders_l1_map = { for item in data.google_folders.folders_l1.folders : item.name => item }
-
-  folders_l2_map = merge([
-    for _, v in data.google_folders.folders_l2 :
-    { for item in v.folders : item.name => item }
-  ]...)
-
-  folders_l3_map = merge([
-    for _, v in data.google_folders.folders_l3 :
-    { for item in v.folders : item.name => item }
-  ]...)
-
-  folders_l4_map = merge([
-    for _, v in data.google_folders.folders_l4 :
-    { for item in v.folders : item.name => item }
-  ]...)
-
-  folders_l5_map = merge([
-    for _, v in data.google_folders.folders_l5 :
-    { for item in v.folders : item.name => item }
-  ]...)
-
-  folders_l6_map = merge([
-    for _, v in data.google_folders.folders_l6 :
-    { for item in v.folders : item.name => item }
-  ]...)
-
-  folders_l7_map = merge([
-    for _, v in data.google_folders.folders_l7 :
-    { for item in v.folders : item.name => item }
-  ]...)
-
-  folders_l8_map = merge([
-    for _, v in data.google_folders.folders_l8 :
-    { for item in v.folders : item.name => item }
-  ]...)
-
-  folders_l9_map = merge([
-    for _, v in data.google_folders.folders_l9 :
-    { for item in v.folders : item.name => item }
-  ]...)
-
-  folders_l10_map = merge([
-    for _, v in data.google_folders.folders_l10 :
-    { for item in v.folders : item.name => item }
-  ]...)
-
-  all_folders = merge(
-    local.folders_l1_map,
-    local.folders_l2_map,
-    local.folders_l3_map,
-    local.folders_l4_map,
-    local.folders_l5_map,
-    local.folders_l6_map,
-    local.folders_l7_map,
-    local.folders_l8_map,
-    local.folders_l9_map,
-    local.folders_l10_map
+  _ignore_folder_numbers = [for folder_id in var.ignore_folders: trimprefix(folder_id, "folders/")]
+  _ignore_folders_query = join(" AND NOT folders:", concat([""], local._ignore_folder_numbers))
+  query = var.query != "" ? (
+    format("%s%s", var.query, local._ignore_folders_query)
+  ) : (
+    format("%s%s", var.query, trimprefix(local._ignore_folders_query, " AND "))
   )
 
-  parent_ids = toset(concat(
-    [split("/", var.parent)[1]],
-    [for k, _ in local.all_folders : split("/", k)[1]]
-  ))
-
-  projects = merge([
-    for _, v in data.google_projects.projects :
-    { for item in v.projects : item.project_id => item }
-  ]...)
+  ignore_patterns = [for item in var.ignore_projects: "^${replace(item, "*", ".*")}$"]
+  ignore_regexp   = length(local.ignore_patterns) > 0 ? join("|", local.ignore_patterns) : "^NO_PROJECTS_TO_IGNORE$"
+  projects_after_ignore = [ for item in data.google_cloud_asset_resources_search_all.projects.results : item if (
+      length(concat(try(regexall(local.ignore_regexp, trimprefix(item.project, "projects/")), []), try(regexall(local.ignore_regexp, trimprefix(item.name, "//cloudresourcemanager.googleapis.com/projects/")), []))) == 0
+    ) || contains(var.include_projects, trimprefix(item.name, "//cloudresourcemanager.googleapis.com/projects/")) || contains(var.include_projects, trimprefix(item.project, "projects/"))
+  ]
 }
 
-# 10 datasources are used to cover 10 possible nested layers in GCP organization hirerarcy. 
-data "google_folders" "folders_l1" {
-  parent_id = var.parent
-}
-
-data "google_folders" "folders_l2" {
-  for_each  = local.folders_l1_map
-  parent_id = each.value.name
-}
-
-data "google_folders" "folders_l3" {
-  for_each  = local.folders_l2_map
-  parent_id = each.value.name
-}
-
-data "google_folders" "folders_l4" {
-  for_each  = local.folders_l3_map
-  parent_id = each.value.name
-}
-
-data "google_folders" "folders_l5" {
-  for_each  = local.folders_l4_map
-  parent_id = each.value.name
-}
-
-data "google_folders" "folders_l6" {
-  for_each  = local.folders_l5_map
-  parent_id = each.value.name
-}
-
-data "google_folders" "folders_l7" {
-  for_each  = local.folders_l6_map
-  parent_id = each.value.name
-}
-
-data "google_folders" "folders_l8" {
-  for_each  = local.folders_l7_map
-  parent_id = each.value.name
-}
-
-data "google_folders" "folders_l9" {
-  for_each  = local.folders_l8_map
-  parent_id = each.value.name
-}
-
-data "google_folders" "folders_l10" {
-  for_each  = local.folders_l9_map
-  parent_id = each.value.name
-}
-
-# Getting all projects parented by any of the folders in the tree including root prg/folder provided by `parent` variable.
-data "google_projects" "projects" {
-  for_each = local.parent_ids
-  filter   = "parent.id:${each.value} ${var.filter}"
+data google_cloud_asset_resources_search_all projects {
+  provider = google-beta
+  scope = var.parent
+  asset_types = [
+    "cloudresourcemanager.googleapis.com/Project"
+  ]
+  query = local.query
 }
