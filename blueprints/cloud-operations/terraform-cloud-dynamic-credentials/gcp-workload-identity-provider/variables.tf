@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ variable "billing_account" {
 }
 
 variable "issuer_uri" {
-  description = "Terraform Enterprise uri. Replace the uri if a self hosted instance is used."
+  description = "Terraform Cloud/Enterprise uri. Replace the uri if a self hosted instance is used."
   type        = string
   default     = "https://app.terraform.io/"
 }
@@ -45,24 +45,24 @@ variable "project_id" {
   type        = string
 }
 
-variable "tfe_organization_id" {
-  description = "TFE organization id."
+variable "tfc_organization_id" {
+  description = "TFC organization id."
   type        = string
 }
 
-variable "tfe_workspace_id" {
-  description = "TFE workspace id."
+variable "tfc_workspace_id" {
+  description = "TFC workspace id."
   type        = string
 }
 
 variable "workload_identity_pool_id" {
   description = "Workload identity pool id."
   type        = string
-  default     = "tfe-pool"
+  default     = "tfc-pool"
 }
 
 variable "workload_identity_pool_provider_id" {
   description = "Workload identity pool provider id."
   type        = string
-  default     = "tfe-provider"
+  default     = "tfc-provider"
 }
