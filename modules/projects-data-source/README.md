@@ -73,18 +73,17 @@ output "filtered-projects" {
 # tftest skip (uses data sources)
 
 ```
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [parent](variables.tf#L17) | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> | ✓ |  |
-| [ignore_folders](variables.tf#L58) | A list of folder IDs or numbers to be excluded from the output, all the subfolders and projects are exluded from the output regardless of the include_projects variable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [ignore_projects](variables.tf#L32) | A list of project IDs, numbers or prefixes to exclude matching projects from the module output. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [include_projects](variables.tf#L44) | A list of project IDs/numbers to include to the output if some of them are excluded by `ignore_projects` wilcard entries. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [query](variables.tf#L26) | A string query as defined in the [Query Syntax](https://cloud.google.com/asset-inventory/docs/query-syntax). | <code>string</code> |  | <code>&#34;state:ACTIVE&#34;</code> |
+| [parent](variables.tf#L55) | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> | ✓ |  |
+| [ignore_folders](variables.tf#L17) | A list of folder IDs or numbers to be excluded from the output, all the subfolders and projects are exluded from the output regardless of the include_projects variable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [ignore_projects](variables.tf#L28) | A list of project IDs, numbers or prefixes to exclude matching projects from the module output. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [include_projects](variables.tf#L41) | A list of project IDs/numbers to include to the output if some of them are excluded by `ignore_projects` wilcard entries. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [query](variables.tf#L64) | A string query as defined in the [Query Syntax](https://cloud.google.com/asset-inventory/docs/query-syntax). | <code>string</code> |  | <code>&#34;state:ACTIVE&#34;</code> |
 
 ## Outputs
 
