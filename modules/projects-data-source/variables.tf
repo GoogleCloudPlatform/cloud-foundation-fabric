@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-variable "parent" {
-  description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
-  type        = string
-  validation {
-    condition     = can(regex("(organizations|folders)/[0-9]+", var.parent))
-    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
-  }
-}
-
-variable "query" {
-  description = "A string query as defined in the [Query Syntax](https://cloud.google.com/asset-inventory/docs/query-syntax)."
-  type        = string
-  default     = "state:ACTIVE"
+variable "ignore_folders" {
+  description = "A list of folder IDs or numbers to be excluded from the output, all the subfolders and projects are exluded from the output regardless of the include_projects variable."
+  type        = list(string)
+  default     = []
+  # example exlusing a folder
+  # ignore_folders = [
+  #   "folders/0123456789",
+  #   "2345678901"
+  # ]
 }
 
 variable "ignore_projects" {
@@ -41,6 +37,7 @@ variable "ignore_projects" {
   #  "prd-proj-*"
   #]
 }
+
 variable "include_projects" {
   description = "A list of project IDs/numbers to include to the output if some of them are excluded by `ignore_projects` wilcard entries."
   type        = list(string)
@@ -55,14 +52,17 @@ variable "include_projects" {
   #]
 }
 
-variable "ignore_folders" {
-  description = "A list of folder IDs or numbers to be excluded from the output, all the subfolders and projects are exluded from the output regardless of the include_projects variable."
-  type        = list(string)
-  default     = []
-  # example exlusing a folder
-  # ignore_folders = [
-  #   "folders/0123456789",
-  #   "2345678901"
-  # ]
+variable "parent" {
+  description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
+  type        = string
+  validation {
+    condition     = can(regex("(organizations|folders)/[0-9]+", var.parent))
+    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
+  }
 }
 
+variable "query" {
+  description = "A string query as defined in the [Query Syntax](https://cloud.google.com/asset-inventory/docs/query-syntax)."
+  type        = string
+  default     = "state:ACTIVE"
+}
