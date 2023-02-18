@@ -19,7 +19,7 @@ variable "bucket" {
 }
 
 variable "billing_account_id" {
-  default = "billing_account_id"
+  default = "123456-123456-123456"
 }
 
 variable "kms_key" {

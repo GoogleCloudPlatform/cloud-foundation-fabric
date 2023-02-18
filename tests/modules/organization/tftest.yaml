@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,17 +19,8 @@ common_tfvars:
 
 tests:
   audit_config:
-  iam:
-  iam_additive:
-  logging:
-  logging_exclusions:
   org_policies_list:
   org_policies_boolean:
   org_policies_custom_constraints:
-  tags:
-  firewall_policies:
-  firewall_policies_factory:
   firewall_policies_factory_combined:
-    tfvars:
-      - firewall_policies.tfvars
-      - firewall_policies_factory.tfvars
+  tags:

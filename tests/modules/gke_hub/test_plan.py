@@ -23,11 +23,14 @@ def resources(plan_runner):
 
 def test_resource_count(resources):
   "Test number of resources created."
-  assert len(resources) == 5
+  assert len(resources) == 8
   assert sorted(r['address'] for r in resources) == [
       'module.hub.google_gke_hub_feature.default["configmanagement"]',
+      'module.hub.google_gke_hub_feature.default["servicemesh"]',
       'module.hub.google_gke_hub_feature_membership.default["cluster-1"]',
       'module.hub.google_gke_hub_feature_membership.default["cluster-2"]',
+      'module.hub.google_gke_hub_feature_membership.servicemesh["cluster-1"]',
+      'module.hub.google_gke_hub_feature_membership.servicemesh["cluster-2"]',
       'module.hub.google_gke_hub_membership.default["cluster-1"]',
       'module.hub.google_gke_hub_membership.default["cluster-2"]'
   ]
@@ -58,6 +61,7 @@ def test_configmanagement_setup(resources):
               'sync_wait_secs':
                   None
           }],
+          'oci': [],
           'prevent_drift': False,
           'source_format': 'hierarchy'
       }],

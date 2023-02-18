@@ -117,7 +117,7 @@ The module uses a classic Global Load Balancer by default. To use the non-classi
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source              = "./fabric/modules/net-glb"
   project_id          = "myprj"
   name                = "glb-test-0"
   use_classic_version = false
@@ -214,6 +214,66 @@ module "glb-0" {
 }
 # tftest modules=1 resources=6
 ```
+#### Managed Instance Groups
+
+This example shows how to use the module with a manage instance group as backend: 
+
+```hcl
+module "win-template" {
+  source          = "./fabric/modules/compute-vm"
+  project_id      = "myprj"
+  zone            = "europe-west8-a"
+  name            = "win-template"
+  instance_type   = "n2d-standard-2"
+  create_template = true
+  boot_disk = {
+    image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
+    type  = "pd-balanced"
+    size  = 70
+  }
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+  }]
+}
+
+module "win-mig" {
+  source            = "./fabric/modules/compute-mig"
+  project_id        = "myprj"
+  location          = "europe-west8-a"
+  name              = "win-mig"
+  instance_template = module.win-template.template.self_link
+  autoscaler_config = {
+    max_replicas    = 3
+    min_replicas    = 1
+    cooldown_period = 30
+    scaling_signals = {
+      cpu_utilization = {
+        target = 0.80
+      }
+    }
+  }
+  named_ports = {
+    http = 80
+  }
+}
+
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id = "myprj"
+  name       = "glb-test-0"
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = module.win-mig.group_manager.instance_group }
+      ]
+    }
+  }
+}
+# tftest modules=3 resources=8
+```
 
 #### Storage Buckets
 
@@ -285,11 +345,13 @@ module "glb-0" {
         network    = "projects/myprj-host/global/networks/svpc"
         subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
         zone       = "europe-west8-b"
-        endpoints = [{
-          instance   = "myinstance-b-0"
-          ip_address = "10.24.32.25"
-          port       = 80
-        }]
+        endpoints = {
+          e-0 = {
+            instance   = "myinstance-b-0"
+            ip_address = "10.24.32.25"
+            port       = 80
+          }
+        }
       }
     }
   }
@@ -320,12 +382,14 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       hybrid = {
-        network    = "projects/myprj-host/global/networks/svpc"
-        zone       = "europe-west8-b"
-        endpoints = [{
-          ip_address = "10.0.0.10"
-          port       = 80
-        }]
+        network = "projects/myprj-host/global/networks/svpc"
+        zone    = "europe-west8-b"
+        endpoints = {
+          e-0 = {
+            ip_address = "10.0.0.10"
+            port       = 80
+          }
+        }
       }
     }
   }
@@ -355,11 +419,13 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       internet = {
-        use_fqdn  = true
-        endpoints = [{
-          destination = "www.example.org"
-          port = 80
-        }]
+        use_fqdn = true
+        endpoints = {
+          e-0 = {
+            destination = "www.example.org"
+            port        = 80
+          }
+        }
       }
     }
   }
@@ -373,7 +439,7 @@ The module supports managing PSC NEGs if the non-classic version of the load bal
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source              = "./fabric/modules/net-glb"
   project_id          = "myprj"
   name                = "glb-test-0"
   use_classic_version = false
@@ -390,7 +456,7 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       psc = {
-        region = "europe-west8"
+        region         = "europe-west8"
         target_service = "europe-west8-cloudkms.googleapis.com"
       }
     }
@@ -432,6 +498,46 @@ module "glb-0" {
 # tftest modules=1 resources=5
 ```
 
+Serverless NEGs don't use the port name but it should be set to `http`. An HTTPS frontend requires the protocol to be set to `HTTPS`, and the port name field will infer this value if omitted so you need to set it explicitly:
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-glb"
+  project_id = "myprj"
+  name       = "glb-test-0"
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = "neg-0" }
+      ]
+      health_checks = []
+      port_name     = "http"
+    }
+  }
+  # with a single serverless NEG the implied default health check is not needed
+  health_check_configs = {}
+  neg_configs = {
+    neg-0 = {
+      cloudrun = {
+        region = "europe-west8"
+        target_service = {
+          name = "hello"
+        }
+      }
+    }
+  }
+  protocol = "HTTPS"
+  ssl_certificates = {
+    managed_configs = {
+      default = {
+        domains = ["glb-test-0.example.org"]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=https-sneg.yaml
+```
+
 ### URL Map
 
 The module exposes the full URL map resource configuration, with some minor changes to the interface to decrease verbosity, and support for aliasing backend services via keys.
@@ -465,7 +571,7 @@ module "glb-0" {
       pathmap = {
         default_service = "default"
         path_rules = [{
-          paths = ["/other", "/other/*"]
+          paths   = ["/other", "/other/*"]
           service = "other"
         }]
       }
@@ -483,7 +589,6 @@ The module also allows managing managed and self-managed SSL certificates via th
 THe [HTTPS example above](#minimal-https-examples) shows how to configure manage certificated, the following example shows how to use an unmanaged (or self managed) certificate. The example uses Terraform resource for the key and certificate so that the we don't depend on external files when running tests,  in real use the key and certificate are generally provided via external files read by the Terraform `file()` function.
 
 ```hcl
-
 resource "tls_private_key" "default" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -554,16 +659,16 @@ module "glb-0" {
     neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend          = "neg-ew8-c"
+        backend        = "neg-ew8-c"
         max_rate       = { per_endpoint = 10 }
       }]
     }
     neg-hybrid-0 = {
       backends = [{
-        backend          = "neg-hello"
+        backend = "neg-hello"
       }]
-      health_checks      = ["neg"]
-      protocol           = "HTTPS"
+      health_checks = ["neg"]
+      protocol      = "HTTPS"
     }
   }
   group_configs = {
@@ -600,22 +705,26 @@ module "glb-0" {
       gce = {
         network    = "projects/myprj-host/global/networks/svpc"
         subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
-        zone = "europe-west8-c"
-        endpoints = [{
-          instance   = "nginx-ew8-c"
-          ip_address = "10.24.32.26"
-          port       = 80
-        }]
+        zone       = "europe-west8-c"
+        endpoints = {
+          e-0 = {
+            instance   = "nginx-ew8-c"
+            ip_address = "10.24.32.26"
+            port       = 80
+          }
+        }
       }
     }
     neg-hello = {
       hybrid = {
-        network    = "projects/myprj-host/global/networks/svpc"
-        zone      = "europe-west8-b"
-        endpoints = [{
-          ip_address = "192.168.0.3"
-          port       = 443
-        }]
+        network = "projects/myprj-host/global/networks/svpc"
+        zone    = "europe-west8-b"
+        endpoints = {
+          e-0 = {
+            ip_address = "192.168.0.3"
+            port       = 443
+          }
+        }
       }
     }
   }
@@ -691,7 +800,7 @@ module "glb-0" {
 | [health_check_configs](variables-health-check.tf#L19) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="map&#40;object&#40;&#123;&#10;  check_interval_sec  &#61; optional&#40;number&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  enable_logging      &#61; optional&#40;bool, false&#41;&#10;  healthy_threshold   &#61; optional&#40;number&#41;&#10;  project_id          &#61; optional&#40;string&#41;&#10;  timeout_sec         &#61; optional&#40;number&#41;&#10;  unhealthy_threshold &#61; optional&#40;number&#41;&#10;  grpc &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    service_name       &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http2 &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  https &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  tcp &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ssl &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  default &#61; &#123;&#10;    http &#61; &#123;&#10;      port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [https_proxy_config](variables.tf#L74) | HTTPS proxy connfiguration. | <code title="object&#40;&#123;&#10;  certificate_map &#61; optional&#40;string&#41;&#10;  quic_override   &#61; optional&#40;string&#41;&#10;  ssl_policy      &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L85) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L96) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  cloudfunction &#61; optional&#40;object&#40;&#123;&#10;    region          &#61; string&#10;    target_function &#61; optional&#40;string&#41;&#10;    target_urlmask  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cloudrun &#61; optional&#40;object&#40;&#123;&#10;    region &#61; string&#10;    target_service &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      tag  &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    target_urlmask &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gce &#61; optional&#40;object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;    zone       &#61; string&#10;    endpoints &#61; optional&#40;list&#40;object&#40;&#123;&#10;      instance   &#61; string&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  hybrid &#61; optional&#40;object&#40;&#123;&#10;    network &#61; string&#10;    zone    &#61; string&#10;    endpoints &#61; optional&#40;list&#40;object&#40;&#123;&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  internet &#61; optional&#40;object&#40;&#123;&#10;    use_fqdn &#61; optional&#40;bool, true&#41;&#10;    endpoints &#61; optional&#40;list&#40;object&#40;&#123;&#10;      destination &#61; string&#10;      port        &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  psc &#61; optional&#40;object&#40;&#123;&#10;    region         &#61; string&#10;    target_service &#61; string&#10;    network        &#61; optional&#40;string&#41;&#10;    subnetwork     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L96) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  cloudfunction &#61; optional&#40;object&#40;&#123;&#10;    region          &#61; string&#10;    target_function &#61; optional&#40;string&#41;&#10;    target_urlmask  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cloudrun &#61; optional&#40;object&#40;&#123;&#10;    region &#61; string&#10;    target_service &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      tag  &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    target_urlmask &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gce &#61; optional&#40;object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;    zone       &#61; string&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      instance   &#61; string&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  hybrid &#61; optional&#40;object&#40;&#123;&#10;    network &#61; string&#10;    zone    &#61; string&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  internet &#61; optional&#40;object&#40;&#123;&#10;    use_fqdn &#61; optional&#40;bool, true&#41;&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      destination &#61; string&#10;      port        &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  psc &#61; optional&#40;object&#40;&#123;&#10;    region         &#61; string&#10;    target_service &#61; string&#10;    network        &#61; optional&#40;string&#41;&#10;    subnetwork     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ports](variables.tf#L187) | Optional ports for HTTP load balancer, valid ports are 80 and 8080. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [protocol](variables.tf#L198) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
 | [ssl_certificates](variables.tf#L211) | SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates. | <code title="object&#40;&#123;&#10;  certificate_ids &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  create_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    certificate &#61; string&#10;    private_key &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  managed_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    domains     &#61; list&#40;string&#41;&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |

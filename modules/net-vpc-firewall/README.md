@@ -33,7 +33,7 @@ Some implicit defaults are used in the rules variable types and can be controlle
 
 - action is controlled via the `deny` attribute which defaults to `true` for egress and `false` for ingress
 - priority defaults to `1000`
-- destination ranges (for egress) and source ranges (for ingress) default to `["0.0.0.0/0"]` if not explicitly set
+- destination ranges (for egress) and source ranges (for ingress) default to `["0.0.0.0/0"]` if not explicitly set or set to `null`, to disable the behaviour set ranges to the empty list (`[]`)
 - rules default to all protocols if not set
 
 ```hcl
@@ -44,32 +44,40 @@ module "firewall" {
   default_rules_config = {
     admin_ranges = ["10.0.0.0/8"]
   }
-  egress_rules  = {
-    # implicit `deny` action
+  egress_rules = {
+    # implicit deny action
     allow-egress-rfc1918 = {
+      deny        = false
       description = "Allow egress to RFC 1918 ranges."
-      destination_ranges      = [
+      destination_ranges = [
         "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"
       ]
-      # implicit { protocol = "all" } rule
+    }
+    allow-egress-tag = {
+      deny        = false
+      description = "Allow egress from a specific tag to 0/0."
+      targets     = ["target-tag"]
     }
     deny-egress-all = {
       description = "Block egress."
-      # implicit ["0.0.0.0/0"] destination ranges
-      # implicit { protocol = "all" } rule
     }
   }
   ingress_rules = {
-    # implicit `allow` action
+    # implicit allow action
     allow-ingress-ntp = {
-      description   = "Allow NTP service based on tag."
-      source_ranges = ["0.0.0.0/0"]
-      targets       = ["ntp-svc"]
-      rules         = [{ protocol = "udp", ports = [123] }]
+      description = "Allow NTP service based on tag."
+      targets     = ["ntp-svc"]
+      rules       = [{ protocol = "udp", ports = [123] }]
+    }
+    allow-ingress-tag = {
+      description   = "Allow ingress from a specific tag."
+      source_ranges = []
+      sources       = ["client-tag"]
+      targets       = ["target-tag"]
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=9
 ```
 
 ### Controlling or turning off default rules
@@ -108,7 +116,7 @@ module "firewall" {
   project_id = "my-project"
   network    = "my-network"
   default_rules_config = {
-    ssh_ranges   = []
+    ssh_ranges = []
   }
 }
 # tftest modules=1 resources=2
@@ -134,34 +142,54 @@ The module includes a rules factory (see [Resource Factories](../../blueprints/f
 
 ```hcl
 module "firewall" {
-  source           = "./fabric/modules/net-vpc-firewall"
-  project_id       = "my-project"
-  network          = "my-network"
+  source     = "./fabric/modules/net-vpc-firewall"
+  project_id = "my-project"
+  network    = "my-network"
   factories_config = {
-    rules_folder  = "configs/firewal/rules"
-    cidr_tpl_file = "configs/firewal/cidr_template.yaml"
+    rules_folder  = "configs/firewall/rules"
+    cidr_tpl_file = "configs/firewall/cidrs.yaml"
   }
-
+  default_rules_config = { disabled = true }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 files=lbs,cidrs
 ```
 
 ```yaml
-# tftest file configs/firewall/rules/load_balancers.yaml
-allow-healthchecks:
-  description: Allow ingress from healthchecks.
-  ranges:
-    - healthchecks
-  targets: ["lb-backends"]
-  rules:
-    - protocol: tcp
-      ports:
-        - 80
-        - 443
+# tftest-file id=lbs path=configs/firewall/rules/load_balancers.yaml
+ingress:
+  allow-healthchecks:
+    description: Allow ingress from healthchecks.
+    source_ranges:
+      - healthchecks
+    targets: ["lb-backends"]
+    rules:
+      - protocol: tcp
+        ports:
+          - 80
+          - 443
+  allow-service-1-to-service-2:
+    description: Allow ingress from service-1 SA
+    targets: ["service-2"]
+    use_service_accounts: true
+    sources:
+      - service-1@my-project.iam.gserviceaccount.com
+    rules:
+      - protocol: tcp
+        ports:
+          - 80
+          - 443
+egress:
+  block-telnet:
+    description: block outbound telnet
+    deny: true
+    rules:
+      - protocol: tcp
+        ports:
+          - 23
 ```
 
 ```yaml
-# tftest file configs/firewall/cidr_template.yaml
+# tftest-file id=cidrs path=configs/firewall/cidrs.yaml
 healthchecks:
   - 35.191.0.0/16
   - 130.211.0.0/22
@@ -174,13 +202,13 @@ healthchecks:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [network](variables.tf#L109) | Name of the network this set of firewall rules applies to. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L114) | Project id of the project that holds the network. | <code>string</code> | ✓ |  |
+| [network](variables.tf#L108) | Name of the network this set of firewall rules applies to. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L113) | Project id of the project that holds the network. | <code>string</code> | ✓ |  |
 | [default_rules_config](variables.tf#L17) | Optionally created convenience rules. Set the 'disabled' attribute to true, or individual rule attributes to empty lists to disable. | <code title="object&#40;&#123;&#10;  admin_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;  disabled     &#61; optional&#40;bool, false&#41;&#10;  http_ranges &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;&#10;  &#41;&#10;  http_tags &#61; optional&#40;list&#40;string&#41;, &#91;&#34;http-server&#34;&#93;&#41;&#10;  https_ranges &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;&#10;  &#41;&#10;  https_tags &#61; optional&#40;list&#40;string&#41;, &#91;&#34;https-server&#34;&#93;&#41;&#10;  ssh_ranges &#61; optional&#40;list&#40;string&#41;, &#91;&#34;35.235.240.0&#47;20&#34;&#93;&#41;&#10;  ssh_tags   &#61; optional&#40;list&#40;string&#41;, &#91;&#34;ssh&#34;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [egress_rules](variables.tf#L37) | List of egress rule definitions, default to deny action. | <code title="map&#40;object&#40;&#123;&#10;  deny               &#61; optional&#40;bool, true&#41;&#10;  description        &#61; optional&#40;string&#41;&#10;  destination_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;  disabled           &#61; optional&#40;bool, false&#41;&#10;  enable_logging &#61; optional&#40;object&#40;&#123;&#10;    include_metadata &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  priority             &#61; optional&#40;number, 1000&#41;&#10;  sources              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  targets              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  use_service_accounts &#61; optional&#40;bool, false&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    protocol &#61; string&#10;    ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#91;&#123; protocol &#61; &#34;all&#34; &#125;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L60) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  cidr_tpl_file &#61; optional&#40;string&#41;&#10;  rules_folder  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [ingress_rules](variables.tf#L69) | List of ingress rule definitions, default to allow action. | <code title="map&#40;object&#40;&#123;&#10;  deny        &#61; optional&#40;bool, false&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  disabled    &#61; optional&#40;bool, false&#41;&#10;  enable_logging &#61; optional&#40;object&#40;&#123;&#10;    include_metadata &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  priority             &#61; optional&#40;number, 1000&#41;&#10;  source_ranges        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  sources              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  targets              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  use_service_accounts &#61; optional&#40;bool, false&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    protocol &#61; string&#10;    ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#91;&#123; protocol &#61; &#34;all&#34; &#125;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [named_ranges](variables.tf#L92) | Define mapping of names to ranges that can be used in custom rules. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  any            &#61; &#91;&#34;0.0.0.0&#47;0&#34;&#93;&#10;  dns-forwarders &#61; &#91;&#34;35.199.192.0&#47;19&#34;&#93;&#10;  health-checkers &#61; &#91;&#10;    &#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#10;  &#93;&#10;  iap-forwarders        &#61; &#91;&#34;35.235.240.0&#47;20&#34;&#93;&#10;  private-googleapis    &#61; &#91;&#34;199.36.153.8&#47;30&#34;&#93;&#10;  restricted-googleapis &#61; &#91;&#34;199.36.153.4&#47;30&#34;&#93;&#10;  rfc1918               &#61; &#91;&#34;10.0.0.0&#47;8&#34;, &#34;172.16.0.0&#47;12&#34;, &#34;192.168.0.0&#47;16&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [egress_rules](variables.tf#L37) | List of egress rule definitions, default to deny action. Null destination ranges will be replaced with 0/0. | <code title="map&#40;object&#40;&#123;&#10;  deny               &#61; optional&#40;bool, true&#41;&#10;  description        &#61; optional&#40;string&#41;&#10;  destination_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;  disabled           &#61; optional&#40;bool, false&#41;&#10;  enable_logging &#61; optional&#40;object&#40;&#123;&#10;    include_metadata &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  priority             &#61; optional&#40;number, 1000&#41;&#10;  targets              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  use_service_accounts &#61; optional&#40;bool, false&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    protocol &#61; string&#10;    ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#91;&#123; protocol &#61; &#34;all&#34; &#125;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L59) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  cidr_tpl_file &#61; optional&#40;string&#41;&#10;  rules_folder  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [ingress_rules](variables.tf#L68) | List of ingress rule definitions, default to allow action. Null source ranges will be replaced with 0/0. | <code title="map&#40;object&#40;&#123;&#10;  deny        &#61; optional&#40;bool, false&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  disabled    &#61; optional&#40;bool, false&#41;&#10;  enable_logging &#61; optional&#40;object&#40;&#123;&#10;    include_metadata &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  priority             &#61; optional&#40;number, 1000&#41;&#10;  source_ranges        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  sources              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  targets              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  use_service_accounts &#61; optional&#40;bool, false&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    protocol &#61; string&#10;    ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#91;&#123; protocol &#61; &#34;all&#34; &#125;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [named_ranges](variables.tf#L91) | Define mapping of names to ranges that can be used in custom rules. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  any            &#61; &#91;&#34;0.0.0.0&#47;0&#34;&#93;&#10;  dns-forwarders &#61; &#91;&#34;35.199.192.0&#47;19&#34;&#93;&#10;  health-checkers &#61; &#91;&#10;    &#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#10;  &#93;&#10;  iap-forwarders        &#61; &#91;&#34;35.235.240.0&#47;20&#34;&#93;&#10;  private-googleapis    &#61; &#91;&#34;199.36.153.8&#47;30&#34;&#93;&#10;  restricted-googleapis &#61; &#91;&#34;199.36.153.4&#47;30&#34;&#93;&#10;  rfc1918               &#61; &#91;&#34;10.0.0.0&#47;8&#34;, &#34;172.16.0.0&#47;12&#34;, &#34;192.168.0.0&#47;16&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 

@@ -11,9 +11,9 @@ Yaml abstraction for Groups can simplify groups creation and members management.
 ```hcl
 module "prod-firewall" {
   source = "./fabric/blueprints/factories/cloud-identity-group-factory"
-  
-  customer_id         = "customers/C0xxxxxxx"
-  data_dir            = "data"
+
+  customer_id = "customers/C0xxxxxxx"
+  data_dir    = "data"
 }
 # tftest skip
 ```

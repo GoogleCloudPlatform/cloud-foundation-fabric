@@ -85,6 +85,7 @@ module "firewall" {
   ingress_rules = {
     "${var.prefix}-allow-all-between-wsfc-nodes" = {
       description          = "Allow all between WSFC nodes"
+      source_ranges        = []
       sources              = [module.compute-service-account.email]
       targets              = [module.compute-service-account.email]
       use_service_accounts = true
@@ -96,6 +97,7 @@ module "firewall" {
     }
     "${var.prefix}-allow-all-between-wsfc-witness" = {
       description          = "Allow all between WSFC witness nodes"
+      source_ranges        = []
       sources              = [module.compute-service-account.email]
       targets              = [module.witness-service-account.email]
       use_service_accounts = true
@@ -108,7 +110,7 @@ module "firewall" {
     "${var.prefix}-allow-sql-to-wsfc-nodes" = {
       description          = "Allow SQL connections to WSFC nodes"
       targets              = [module.compute-service-account.email]
-      ranges               = var.sql_client_cidrs
+      source_ranges        = var.sql_client_cidrs
       use_service_accounts = true
       rules = [
         { protocol = "tcp", ports = [1433] },
@@ -117,7 +119,7 @@ module "firewall" {
     "${var.prefix}-allow-health-check-to-wsfc-nodes" = {
       description          = "Allow health checks to WSFC nodes"
       targets              = [module.compute-service-account.email]
-      ranges               = var.health_check_ranges
+      source_ranges        = var.health_check_ranges
       use_service_accounts = true
       rules = [
         { protocol = "tcp" }

@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+variable "allocated_ip_ranges" {
+  description = "(Optional)The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with RFC 1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z?."
+  type = object({
+    primary = optional(string)
+    replica = optional(string)
+  })
+  default  = {}
+  nullable = false
+}
 variable "authorized_networks" {
   description = "Map of NAME=>CIDR_RANGE to allow to connect to the database(s)."
   type        = map(string)
@@ -28,21 +37,24 @@ variable "availability_type" {
 
 variable "backup_configuration" {
   description = "Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas."
+  nullable    = false
   type = object({
-    enabled            = bool
-    binary_log_enabled = bool
-    start_time         = string
-    location           = string
-    log_retention_days = number
-    retention_count    = number
+    enabled                        = optional(bool, false)
+    binary_log_enabled             = optional(bool, false)
+    start_time                     = optional(string, "23:00")
+    location                       = optional(string)
+    log_retention_days             = optional(number, 7)
+    point_in_time_recovery_enabled = optional(bool)
+    retention_count                = optional(number, 7)
   })
   default = {
-    enabled            = false
-    binary_log_enabled = false
-    start_time         = "23:00"
-    location           = null
-    log_retention_days = 7
-    retention_count    = 7
+    enabled                        = false
+    binary_log_enabled             = false
+    start_time                     = "23:00"
+    location                       = null
+    log_retention_days             = 7
+    point_in_time_recovery_enabled = null
+    retention_count                = 7
   }
 }
 
@@ -107,6 +119,12 @@ variable "name" {
 variable "network" {
   description = "VPC self link where the instances will be deployed. Private Service Networking must be enabled and configured in this VPC."
   type        = string
+}
+
+variable "postgres_client_certificates" {
+  description = "Map of cert keys connect to the application(s) using public IP."
+  type        = list(string)
+  default     = null
 }
 
 variable "prefix" {

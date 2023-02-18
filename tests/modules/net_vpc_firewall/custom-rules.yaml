@@ -1,0 +1,83 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_firewall.custom-rules["allow-egress-rfc1918"]:
+    allow:
+      - ports: []
+        protocol: all
+    deny: []
+    description: Allow egress to RFC 1918 ranges.
+    destination_ranges:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+    direction: EGRESS
+  google_compute_firewall.custom-rules["allow-egress-tag"]:
+    allow:
+      - ports: []
+        protocol: all
+    deny: []
+    description: Allow egress from a specific tag to 0/0.
+    destination_ranges:
+      - 0.0.0.0/0
+    direction: EGRESS
+    target_tags:
+      - target-tag
+  google_compute_firewall.custom-rules["allow-ingress-ntp"]:
+    allow:
+      - ports:
+          - "123"
+        protocol: udp
+    deny: []
+    description: Allow NTP service based on tag.
+    direction: INGRESS
+    source_ranges:
+      - 0.0.0.0/0
+    source_service_accounts: null
+    source_tags: null
+    target_tags:
+      - ntp-svc
+  google_compute_firewall.custom-rules["allow-ingress-tag"]:
+    allow:
+      - ports: []
+        protocol: all
+    deny: []
+    description: Allow ingress from a specific tag.
+    direction: INGRESS
+    source_ranges: null
+    source_tags:
+      - client-tag
+    target_tags:
+      - target-tag
+  google_compute_firewall.custom-rules["deny-egress-all"]:
+    allow: []
+    deny:
+      - ports: []
+        protocol: all
+    description: Block egress.
+    direction: EGRESS
+
+counts:
+  google_compute_firewall: 5
+  modules: 0
+  resources: 5
+
+outputs:
+  default_rules:
+    admin: []
+    http: []
+    https: []
+    ssh: []
+  rules: __missing__

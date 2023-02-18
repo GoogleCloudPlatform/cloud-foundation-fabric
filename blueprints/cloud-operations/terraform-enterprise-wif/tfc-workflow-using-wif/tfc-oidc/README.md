@@ -7,7 +7,7 @@ This is a helper module to prepare GCP Credentials from Terraform Enterprise wor
 module "tfe_oidc" {
   source = "./tfc-oidc"
 
-  impersonate_service_account_email  = "tfe-test@tfe-test-wif.iam.gserviceaccount.com"
+  impersonate_service_account_email = "tfe-test@tfe-test-wif.iam.gserviceaccount.com"
 }
 
 provider "google" {

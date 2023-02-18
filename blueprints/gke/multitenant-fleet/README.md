@@ -4,7 +4,7 @@ This blueprint presents an opinionated architecture to handle multiple homogeneo
 
 The pattern used in this design is useful, for blueprint, in cases where multiple clusters host/support the same workloads, such as in the case of a multi-regional deployment. Furthermore, combined with Anthos Config Sync and proper RBAC, this architecture can be used to host multiple tenants (e.g. teams, applications) sharing the clusters.
 
-This blueprint is used as part of the [FAST GKE stage](../../../fast/stages/03-gke-multitenant/) but it can also be used independently if desired.
+This blueprint is used as part of the [FAST GKE stage](../../../fast/stages/3-gke-multitenant/) but it can also be used independently if desired.
 
 <p align="center">
   <img src="diagram.png" alt="GKE multitenant">
@@ -78,7 +78,7 @@ module "gke-fleet" {
       location               = "europe-west1"
       private_cluster_config = local.cluster_defaults.private_cluster_config
       vpc_config = {
-        subnetwork = local.subnet_self_links.ew1
+        subnetwork             = local.subnet_self_links.ew1
         master_ipv4_cidr_block = "172.16.10.0/28"
       }
     }
@@ -86,7 +86,7 @@ module "gke-fleet" {
       location               = "europe-west3"
       private_cluster_config = local.cluster_defaults.private_cluster_config
       vpc_config = {
-        subnetwork = local.subnet_self_links.ew3
+        subnetwork             = local.subnet_self_links.ew3
         master_ipv4_cidr_block = "172.16.20.0/28"
       }
     }
@@ -95,16 +95,16 @@ module "gke-fleet" {
     cluster-0 = {
       nodepool-0 = {
         node_config = {
-          disk_type = "pd-balanced"
+          disk_type    = "pd-balanced"
           machine_type = "n2-standard-4"
-          spot = true
+          spot         = true
         }
       }
     }
     cluster-1 = {
       nodepool-0 = {
         node_config = {
-          disk_type = "pd-balanced"
+          disk_type    = "pd-balanced"
           machine_type = "n2-standard-4"
         }
       }
@@ -115,7 +115,7 @@ module "gke-fleet" {
     vpc_self_link   = "projects/prj-host/global/networks/prod-0"
   }
 }
-# tftest modules=7 resources=26
+# tftest modules=7 resources=27
 ```
 
 ## GKE Fleet
@@ -143,13 +143,13 @@ module "gke" {
   prefix             = "myprefix"
   clusters = {
     cluster-0 = {
-      location               = "europe-west1"
+      location = "europe-west1"
       vpc_config = {
         subnetwork = local.subnet_self_links.ew1
       }
     }
     cluster-1 = {
-      location               = "europe-west3"
+      location = "europe-west3"
       vpc_config = {
         subnetwork = local.subnet_self_links.ew3
       }
@@ -159,16 +159,16 @@ module "gke" {
     cluster-0 = {
       nodepool-0 = {
         node_config = {
-          disk_type = "pd-balanced"
+          disk_type    = "pd-balanced"
           machine_type = "n2-standard-4"
-          spot = true
+          spot         = true
         }
       }
     }
     cluster-1 = {
       nodepool-0 = {
         node_config = {
-          disk_type = "pd-balanced"
+          disk_type    = "pd-balanced"
           machine_type = "n2-standard-4"
         }
       }
@@ -205,14 +205,14 @@ module "gke" {
         enable_hierarchical_resource_quota = true
         enable_pod_tree_labels             = true
       }
-      policy_controller    = {
+      policy_controller = {
         audit_interval_seconds     = 30
         exemptable_namespaces      = ["kube-system"]
         log_denies_enabled         = true
         referential_rules_enabled  = true
         template_library_installed = true
       }
-      version              = "1.10.2"
+      version = "1.10.2"
     }
   }
   fleet_configmanagement_clusters = {
@@ -224,7 +224,7 @@ module "gke" {
   }
 }
 
-# tftest modules=8 resources=35
+# tftest modules=8 resources=38
 ```
 
 <!-- TFDOC OPTS files:1 -->

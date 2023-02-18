@@ -1,0 +1,42 @@
+gcp:
+  region: {{ region }}
+  projectID: {{ project_id }}
+  workloadIdentityEnabled: true
+
+k8sCluster:
+  name: {{ cluster }}
+  region: {{ region }} # Must be the closest Google Cloud region to your cluster.
+org: {{ project_id }}
+
+instanceID: "{{ cluster }}-{{ region }}"
+
+cassandra:
+  hostNetwork: false
+
+virtualhosts:
+{% for k in envgroups %}
+  - name: {{ k }}
+    sslSecret: tls-hybrid-ingress
+    additionalGateways: ["apigee-wildcard"]
+    selector:
+      app: apigee-ingressgateway
+{% endfor %}
+
+ao:
+  args:
+  # This configuration is introduced in hybrid v1.8
+    disableIstioConfigInAPIServer: true
+
+# This configuration is introduced in hybrid v1.8
+ingressGateways:
+- name: ingress # maximum 17 characters. See Known issue 243167389.
+  replicaCountMin: 2
+  replicaCountMax: 10
+
+envs:
+{% for k in environments %}
+   - name: {{ k }}
+{% endfor %}
+
+logger:
+  enabled: false

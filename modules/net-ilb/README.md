@@ -12,6 +12,62 @@ One other issue is a `Provider produced inconsistent final plan` error which is 
 
 ## Examples
 
+### Reference existing MIGs
+
+This example shows how to reference existing Managed Infrastructure Groups (MIGs).
+
+```hcl
+module "instance_template" {
+  source                 = "./fabric/modules/compute-vm"
+  project_id             = var.project_id
+  create_template        = true
+  name                   = "vm-test"
+  service_account_create = true
+  zone                   = "europe-west1-b"
+
+  network_interfaces = [
+    {
+      network    = var.vpc.self_link
+      subnetwork = var.subnet.self_link
+    }
+  ]
+
+  tags = [
+    "http-server"
+  ]
+}
+
+module "mig" {
+  source            = "./fabric/modules/compute-mig"
+  project_id        = var.project_id
+  location          = "europe-west1"
+  name              = "mig-test"
+  target_size       = 1
+  instance_template = module.instance_template.template.self_link
+}
+
+module "ilb" {
+  source        = "./fabric/modules/net-ilb"
+  project_id    = var.project_id
+  region        = "europe-west1"
+  name          = "ilb-test"
+  service_label = "ilb-test"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+  backends = [{
+    group = module.mig.group_manager.instance_group
+  }]
+  health_check_config = {
+    http = {
+      port = 80
+    }
+  }
+}
+# tftest modules=3 resources=6
+```
+
 ### Externally managed instances
 
 This examples shows how to create an ILB by combining externally managed instances (in a custom module or even outside of the current root module) in an unmanaged group. When using internally managed groups, remember to run `terraform apply` each time group instances change.
@@ -37,7 +93,7 @@ module "ilb" {
     }
   }
   backends = [{
-    group          = module.ilb.groups.my-group.self_link
+    group = module.ilb.groups.my-group.self_link
   }]
   health_check_config = {
     http = {
@@ -96,7 +152,7 @@ module "ilb" {
   vpc_config = {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
-    }
+  }
   ports = [80]
   backends = [
     for z, mod in module.instance-group : {

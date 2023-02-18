@@ -1,0 +1,333 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Get cluster credentials
+  shell: >
+    gcloud container clusters get-credentials {{ cluster }} \
+    --region {{ region }} \
+    --project {{ project_id }} \
+    --internal-ip
+
+- name: Download cert-manager
+  uri:
+    url: https://github.com/jetstack/cert-manager/releases/download/v1.7.2/cert-manager.yaml
+    dest: ~/cert-manager.yaml
+
+- name: Apply metrics-server manifest to the cluster.
+  kubernetes.core.k8s:
+    state: present
+    src: ~/cert-manager.yaml
+
+- name:
+  kubernetes.core.k8s_info:
+    kind: Pod
+    wait: yes
+    label_selectors:
+      - "app.kubernetes.io/instance=cert-manager"
+    namespace: cert-manager
+    wait_timeout: 90
+    wait_condition:
+      type: Ready
+      status: True
+
+- name: Fetch apigeectl version
+  uri:
+    url: https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/current-version.txt?ignoreCache=1
+    return_content: yes
+  register: version
+
+- name: Download apigeectl bundle
+  uri:
+    url: https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/{{ version.content }}/apigeectl_linux_64.tar.gz
+    dest: "~/apigeectl.tar.gz"
+    status_code: [200, 304]
+
+- name: Extract apigeectl bundle
+  unarchive:
+    src: "~/apigeectl.tar.gz"
+    dest: "~"
+    remote_src: yes
+
+- name: Move apigeectl folder
+  shell: >
+    mv ~/apigeectl_* ~/apigeectl
+
+- name: Create hybrid-files
+  file:
+    path: "~/hybrid-files/{{ item }}"
+    state: directory
+  with_items:
+    - overrides
+    - certs
+
+- name: Create a symbolic links
+  file:
+    src: ~/apigeectl/{{ item }}
+    dest: "~/hybrid-files/{{ item }}"
+    state: link
+  with_items:
+    - tools
+    - config
+    - templates
+    - plugins
+
+- name: Create apigee namespace
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: apigee
+
+- name: Create k8s service accounts
+  include_tasks: k8s_service_accounts.yaml
+  vars:
+    google_service_account: "{{ item.key }}"
+    k8s_service_accounts: "{{ item.value }}"
+  with_dict: "{{ service_accounts }}"
+
+- name: Set hostnames
+  set_fact:
+    hostnames: "{{ hostnames | default([]) + item.value }}"
+  with_dict: "{{ envgroups }}"
+
+- name: Create certificate and private key
+  shell: >
+    openssl req  \ 
+    -nodes \
+    -new \
+    -x509 \
+    -keyout ~/hybrid-files/certs/server.key \
+    -out ~/hybrid-files/certs/server.crt \
+    -subj "/CN=apigee.com' \ 
+    -addext "subjectAltName={{ hostnames | map('regex_replace', '^', 'DNS:') | join(',') }}""
+    -days 3650
+
+- name: Read certificate 
+  slurp: 
+    src: ~/hybrid-files/certs/server.crt
+  register: certificate_output
+
+- name: Read private ket 
+  slurp: 
+    src: ~/hybrid-files/certs/server.key
+  register: privatekey_output
+
+- name: Create secret
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: tls-hybrid-ingress
+        namespace: apigee
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ certificate_output.content }}"
+        tls.key: "{{ privatekey_output.content }}"
+
+- name: Create overrides.yaml
+  template:
+    src: templates/overrides.yaml.j2
+    dest: ~/hybrid-files/overrides/overrides.yaml
+
+- name: Enable syncronizer access
+  shell: >
+    curl -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    -H "Content-Type:application/json" \
+    "https://apigee.googleapis.com/v1/organizations/{{ project_id }}:setSyncAuthorization" \
+    -d '{"identities":["'"serviceAccount:apigee-synchronizer@{{ project_id }}.iam.gserviceaccount.com"'"]}'
+
+- name: Dry-run (init)
+  shell: >
+    ~/apigeectl/apigeectl init -f overrides/overrides.yaml --dry-run=client
+  args:
+    chdir: ~/hybrid-files
+
+- name: Install the Apigee deployment services Apigee Deployment Controller and Apigee Admission Webhook.
+  shell: >
+    ~/apigeectl/apigeectl init -f overrides/overrides.yaml
+  args:
+    chdir: ~/hybrid-files
+
+- name: Wait for apigee-controller pod to be ready
+  kubernetes.core.k8s_info:
+    kind: Pod
+    wait: yes
+    label_selectors:
+      - "app=apigee-controller"
+    namespace: apigee-system
+    wait_timeout: 600
+    wait_condition:
+      type: Ready
+      status: True
+
+- name: Wait for apigee-selfsigned-issuer issuer to be ready
+  kubernetes.core.k8s_info:
+    kind: Issuer
+    wait: yes
+    name: apigee-selfsigned-issuer
+    namespace: apigee-system
+    wait_timeout: 600
+    wait_condition:
+      type: Ready
+      status: True
+
+- name: Wait for apigee-serving-cert certificate to be ready
+  kubernetes.core.k8s_info:
+    kind: Certificate
+    wait: yes
+    name: apigee-serving-cert
+    namespace: apigee-system
+    wait_timeout: 600
+    wait_condition:
+      type: Ready
+      status: True
+
+- name: Wait for apigee-resources-install job to be complete
+  kubernetes.core.k8s_info:
+    kind: Job
+    wait: yes
+    name: apigee-resources-install
+    namespace: apigee-system
+    wait_timeout: 360
+    wait_condition:
+      type: Complete
+      status: True
+
+- name: Dry-run (apply)
+  shell: >
+    ~/apigeectl/apigeectl apply -f overrides/overrides.yaml --dry-run=client
+  args:
+    chdir: ~/hybrid-files
+
+- name: Install the Apigee runtime components
+  shell: >
+    ~/apigeectl/apigeectl apply -f overrides/overrides.yaml
+  args:
+    chdir: ~/hybrid-files
+
+- name: Wait for apigee-runtime pod to be ready
+  kubernetes.core.k8s_info:
+    kind: Pod
+    wait: yes
+    label_selectors:
+      - "app=apigee-runtime"
+    namespace: apigee
+    wait_timeout: 360
+    wait_condition:
+      type: Ready
+      status: True
+
+- name: 
+  kubernetes.core.k8s:
+    state: present   
+    definition: 
+      apiVersion: apigee.cloud.google.com/v1alpha1
+      kind: ApigeeRoute
+      metadata:
+        name: apigee-wildcard
+        namespace: apigee
+      spec:
+        hostnames:
+        - '*'
+        ports:
+        - number: 443
+          protocol: HTTPS
+          tls:
+            credentialName: tls-hybrid-ingress
+            mode: SIMPLE
+        selector:
+          app: apigee-ingressgateway
+        enableNonSniClient: true 
+
+- name: Create google-managed certificate
+  kubernetes.core.k8s:
+    state: present   
+    definition: 
+      apiVersion: networking.gke.io/v1
+      kind: ManagedCertificate
+      metadata:
+        name: "apigee-cert-hybrid"
+        namespace: apigee
+      spec:
+        domains: "{{ hostnames }}"
+      
+- name: Create backend config
+  kubernetes.core.k8s:
+    state: present  
+    definition:  
+      apiVersion: cloud.google.com/v1
+      kind: BackendConfig
+      metadata:
+        name: apigee-ingress-backendconfig
+        namespace: apigee
+      spec:
+        healthCheck:
+          requestPath: /healthz/ready
+          port: 15021
+          type: HTTP
+        logging:
+          enable: true
+          sampleRate: 0.5
+
+- name: Create service
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: apigee-ingressgateway-hybrid
+        namespace: apigee
+        annotations:
+          cloud.google.com/backend-config: '{"default": "apigee-ingress-backendconfig"}'
+          cloud.google.com/neg: '{"ingress": true}'
+          cloud.google.com/app-protocols: '{"https":"HTTPS", "status-port": "HTTP"}'
+        labels:
+          app: apigee-ingressgateway-hybrid
+      spec:
+        ports:
+        - name: status-port
+          port: 15021
+          targetPort: 15021
+        - name: https
+          port: 443
+          targetPort: 8443
+        selector:
+          app: apigee-ingressgateway
+          ingress_name: ingress
+        type: ClusterIP
+
+- name: Create ingress
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        annotations:
+          networking.gke.io/managed-certificates: "apigee-cert-hybrid"
+          kubernetes.io/ingress.global-static-ip-name: "{{ ingress_ip_name }}"
+          kubernetes.io/ingress.allow-http: "false"
+        name: xlb-apigee
+        namespace: apigee
+      spec:
+        defaultBackend:
+          service:
+            name: apigee-ingressgateway-hybrid
+            port:
+              number: 443    

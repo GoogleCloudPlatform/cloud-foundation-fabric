@@ -79,6 +79,12 @@ output "names" {
   }
 }
 
+output "postgres_client_certificates" {
+  description = "The CA Certificate used to connect to the SQL Instance via SSL."
+  value       = google_sql_ssl_cert.postgres_client_certificates
+  sensitive   = true
+}
+
 output "self_link" {
   description = "Self link of the primary instance."
   value       = google_sql_database_instance.primary.self_link

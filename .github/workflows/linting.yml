@@ -16,8 +16,6 @@ name: "Linting"
 on:
   pull_request:
     branches:
-      - fast-dev
-      - fast-dev-gke
       - master
     tags:
       - ci
@@ -71,4 +69,7 @@ jobs:
       - name: Check python formatting
         id: yapf
         run: |
-          yapf --style="{based_on_style: google, indent_width: 2, SPLIT_BEFORE_NAMED_ASSIGNS: false}" -p -d tools/*.py
+          yapf --style="{based_on_style: google, indent_width: 2, SPLIT_BEFORE_NAMED_ASSIGNS: false}" -p -d \
+            tools/*.py \
+            blueprints/cloud-operations/network-dashboard/src/*py \
+            blueprints/cloud-operations/network-dashboard/src/plugins/*py

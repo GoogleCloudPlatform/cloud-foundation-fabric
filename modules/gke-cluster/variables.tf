@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ variable "enable_features" {
   type = object({
     autopilot            = optional(bool, false)
     binary_authorization = optional(bool, false)
-    cloud_dns = optional(object({
+    dns = optional(object({
       provider = optional(string)
       scope    = optional(string)
       domain   = optional(string)
@@ -80,9 +80,11 @@ variable "enable_features" {
       key_name = string
     }))
     dataplane_v2         = optional(bool, false)
+    gateway_api          = optional(bool, false)
     groups_for_rbac      = optional(string)
     intranode_visibility = optional(bool, false)
     l4_ilb_subsetting    = optional(bool, false)
+    mesh_certificates    = optional(bool)
     pod_security_policy  = optional(bool, false)
     resource_usage_export = optional(object({
       dataset                              = string
@@ -95,7 +97,7 @@ variable "enable_features" {
       topic_id = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
-    workload_identity        = optional(bool, false)
+    workload_identity        = optional(bool, true)
   })
   default = {
     workload_identity = true
@@ -205,6 +207,12 @@ variable "project_id" {
 variable "release_channel" {
   description = "Release channel for GKE upgrades."
   type        = string
+  default     = null
+}
+
+variable "tags" {
+  description = "Network tags applied to nodes."
+  type        = list(string)
   default     = null
 }
 

@@ -38,11 +38,11 @@ values:
     purpose_data:
       network: foobar
     short_name: net_environment
-  google_tags_tag_key_iam_binding.default["foobar:roles/resourcemanager.tagAdmin"]:
-    condition: []
+  ? google_tags_tag_key_iam_binding.default["foobar:roles/resourcemanager.tagAdmin"]
+  : condition: []
     members:
-    - user:user1@example.com
-    - user:user2@example.com
+      - user:user1@example.com
+      - user:user2@example.com
     role: roles/resourcemanager.tagAdmin
   google_tags_tag_value.default["foobar/one"]:
     description: Managed by the Terraform organization module.
@@ -53,24 +53,24 @@ values:
   google_tags_tag_value.default["foobar/two"]:
     description: Foobar 2.
     short_name: two
-  google_tags_tag_value_iam_binding.default["foobar/three:roles/resourcemanager.tagAdmin"]:
-    condition: []
+  ? google_tags_tag_value_iam_binding.default["foobar/three:roles/resourcemanager.tagAdmin"]
+  : condition: []
     members:
-    - user:user4@example.com
+      - user:user4@example.com
     role: roles/resourcemanager.tagAdmin
-  google_tags_tag_value_iam_binding.default["foobar/three:roles/resourcemanager.tagViewer"]:
-    condition: []
+  ? google_tags_tag_value_iam_binding.default["foobar/three:roles/resourcemanager.tagViewer"]
+  : condition: []
     members:
-    - user:user3@example.com
+      - user:user3@example.com
     role: roles/resourcemanager.tagViewer
-  google_tags_tag_value_iam_binding.default["foobar/two:roles/resourcemanager.tagViewer"]:
-    condition: []
+  ? google_tags_tag_value_iam_binding.default["foobar/two:roles/resourcemanager.tagViewer"]
+  : condition: []
     members:
-    - user:user3@example.com
+      - user:user3@example.com
     role: roles/resourcemanager.tagViewer
 
 counts:
   google_tags_tag_key: 4
   google_tags_tag_key_iam_binding: 1
-  google_tags_tag_value: 3
-  google_tags_tag_value_iam_binding: 3
+  google_tags_tag_value: 5
+  google_tags_tag_value_iam_binding: 4

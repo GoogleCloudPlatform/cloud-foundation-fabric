@@ -35,7 +35,7 @@ variable "default_rules_config" {
 }
 
 variable "egress_rules" {
-  description = "List of egress rule definitions, default to deny action."
+  description = "List of egress rule definitions, default to deny action. Null destination ranges will be replaced with 0/0."
   type = map(object({
     deny               = optional(bool, true)
     description        = optional(string)
@@ -45,7 +45,6 @@ variable "egress_rules" {
       include_metadata = optional(bool)
     }))
     priority             = optional(number, 1000)
-    sources              = optional(list(string))
     targets              = optional(list(string))
     use_service_accounts = optional(bool, false)
     rules = optional(list(object({
@@ -67,7 +66,7 @@ variable "factories_config" {
 }
 
 variable "ingress_rules" {
-  description = "List of ingress rule definitions, default to allow action."
+  description = "List of ingress rule definitions, default to allow action. Null source ranges will be replaced with 0/0."
   type = map(object({
     deny        = optional(bool, false)
     description = optional(string)

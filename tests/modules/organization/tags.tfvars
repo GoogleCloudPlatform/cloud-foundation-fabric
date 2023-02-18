@@ -10,6 +10,13 @@ tags = {
     iam         = null
     values      = null
   }
+  baz = {
+    id = "tagKeys/1234567890"
+    values = {
+      one = null
+      two = null
+    }
+  }
   foobar = {
     description = "Foobar tag."
     iam = {
@@ -34,6 +41,15 @@ tags = {
             "user:user3@example.com"
           ]
           "roles/resourcemanager.tagAdmin" = [
+            "user:user4@example.com"
+          ]
+        }
+      }
+      four = {
+        description = "Foobar 4."
+        id          = "tagValues/1234567890"
+        iam = {
+          "roles/resourcemanager.tagViewer" = [
             "user:user4@example.com"
           ]
         }

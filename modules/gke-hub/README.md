@@ -56,7 +56,7 @@ module "cluster_1" {
     master_authorized_ranges = {
       fc1918_10_8 = "10.0.0.0/8"
     }
-    master_ipv4_cidr_block  = "192.168.0.0/28"
+    master_ipv4_cidr_block = "192.168.0.0/28"
   }
   enable_features = {
     dataplane_v2      = true
@@ -115,11 +115,11 @@ module "hub" {
     }
   }
   configmanagement_clusters = {
-    "default" = [ "cluster-1" ]
+    "default" = ["cluster-1"]
   }
 }
 
-# tftest modules=4 resources=15
+# tftest modules=4 resources=16
 ```
 
 ## Multi-cluster mesh on GKE
@@ -141,6 +141,13 @@ module "project" {
   ]
 }
 
+resource "google_project_iam_member" "gkehub_fix" {
+  member  = "serviceAccount:${module.project.service_accounts.robots.fleet}"
+  project = module.project.project_id
+  role    = "roles/gkehub.serviceAgent"
+}
+
+
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
   project_id = module.project.project_id
@@ -151,7 +158,7 @@ module "vpc" {
       ip_cidr_range = "10.0.1.0/24"
       name          = "subnet-cluster-1"
       region        = "europe-west1"
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = "10.1.0.0/16"
         services = "10.2.0.0/24"
       }
@@ -160,16 +167,16 @@ module "vpc" {
       ip_cidr_range = "10.0.2.0/24"
       name          = "subnet-cluster-2"
       region        = "europe-west4"
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = "10.3.0.0/16"
         services = "10.4.0.0/24"
       }
     },
     {
-      ip_cidr_range      = "10.0.0.0/28"
-      name               = "subnet-mgmt"
-      region             = "europe-west1"
-      secondary_ip_range = null
+      ip_cidr_range       = "10.0.0.0/28"
+      name                = "subnet-mgmt"
+      region              = "europe-west1"
+      secondary_ip_ranges = null
     }
   ]
 }
@@ -216,15 +223,20 @@ module "cluster_1" {
       mgmt           = "10.0.0.0/28"
       pods-cluster-1 = "10.3.0.0/16"
     }
-    master_ipv4_cidr_block  = "192.168.1.0/28"
+    master_ipv4_cidr_block = "192.168.1.0/28"
   }
   private_cluster_config = {
     enable_private_endpoint = false
     master_global_access    = true
   }
+
   release_channel = "REGULAR"
   labels = {
     mesh_id = "proj-${module.project.number}"
+  }
+  enable_features = {
+    workload_identity = true
+    dataplane_v2      = true
   }
 }
 
@@ -232,18 +244,19 @@ module "cluster_1_nodepool" {
   source          = "./fabric/modules/gke-nodepool"
   project_id      = module.project.project_id
   cluster_name    = module.cluster_1.name
+  cluster_id      = module.cluster_1.id
   location        = "europe-west1"
-  name            = "nodepool"
+  name            = "cluster-1-nodepool"
   node_count      = { initial = 1 }
   service_account = { create = true }
   tags            = ["cluster-1-node"]
 }
 
 module "cluster_2" {
-  source                   = "./fabric/modules/gke-cluster"
-  project_id               = module.project.project_id
-  name                     = "cluster-2"
-  location                 = "europe-west4"
+  source     = "./fabric/modules/gke-cluster"
+  project_id = module.project.project_id
+  name       = "cluster-2"
+  location   = "europe-west4"
   vpc_config = {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["europe-west4/subnet-cluster-2"]
@@ -251,7 +264,7 @@ module "cluster_2" {
       mgmt           = "10.0.0.0/28"
       pods-cluster-1 = "10.3.0.0/16"
     }
-    master_ipv4_cidr_block  = "192.168.2.0/28"
+    master_ipv4_cidr_block = "192.168.2.0/28"
   }
   private_cluster_config = {
     enable_private_endpoint = false
@@ -261,14 +274,19 @@ module "cluster_2" {
   labels = {
     mesh_id = "proj-${module.project.number}"
   }
+  enable_features = {
+    workload_identity = true
+    dataplane_v2      = true
+  }
 }
 
 module "cluster_2_nodepool" {
-  source                      = "./fabric/modules/gke-nodepool"
-  project_id                  = module.project.project_id
-  cluster_name                = module.cluster_2.name
-  location                    = "europe-west4"
-  name                        = "nodepool"
+  source          = "./fabric/modules/gke-nodepool"
+  project_id      = module.project.project_id
+  cluster_name    = module.cluster_2.name
+  cluster_id      = module.cluster_2.id
+  location        = "europe-west4"
+  name            = "cluster-2-nodepool"
   node_count      = { initial = 1 }
   service_account = { create = true }
   tags            = ["cluster-2-node"]
@@ -277,7 +295,8 @@ module "cluster_2_nodepool" {
 module "hub" {
   source     = "./fabric/modules/gke-hub"
   project_id = module.project.project_id
-  clusters = { 
+  depends_on = [google_project_iam_member.gkehub_fix]
+  clusters = {
     cluster-1 = module.cluster_1.id
     cluster-2 = module.cluster_2.id
   }
@@ -295,7 +314,7 @@ module "hub" {
   ]
 }
 
-# tftest modules=8 resources=28
+# tftest modules=8 resources=31
 ```
 <!-- BEGIN TFDOC -->
 
@@ -307,7 +326,7 @@ module "hub" {
 | [clusters](variables.tf#L17) | Clusters members of this GKE Hub in name => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [configmanagement_clusters](variables.tf#L24) | Config management features enabled on specific sets of member clusters, in config name => [cluster name] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [configmanagement_templates](variables.tf#L31) | Sets of config management configurations that can be applied to member clusters, in config name => {options} format. | <code title="map&#40;object&#40;&#123;&#10;  binauthz &#61; bool&#10;  config_sync &#61; object&#40;&#123;&#10;    git &#61; object&#40;&#123;&#10;      gcp_service_account_email &#61; string&#10;      https_proxy               &#61; string&#10;      policy_dir                &#61; string&#10;      secret_type               &#61; string&#10;      sync_branch               &#61; string&#10;      sync_repo                 &#61; string&#10;      sync_rev                  &#61; string&#10;      sync_wait_secs            &#61; number&#10;    &#125;&#41;&#10;    prevent_drift &#61; string&#10;    source_format &#61; string&#10;  &#125;&#41;&#10;  hierarchy_controller &#61; object&#40;&#123;&#10;    enable_hierarchical_resource_quota &#61; bool&#10;    enable_pod_tree_labels             &#61; bool&#10;  &#125;&#41;&#10;  policy_controller &#61; object&#40;&#123;&#10;    audit_interval_seconds     &#61; number&#10;    exemptable_namespaces      &#61; list&#40;string&#41;&#10;    log_denies_enabled         &#61; bool&#10;    referential_rules_enabled  &#61; bool&#10;    template_library_installed &#61; bool&#10;  &#125;&#41;&#10;  version &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [features](variables.tf#L66) | Enable and configue fleet features. | <code title="object&#40;&#123;&#10;  appdevexperience             &#61; bool&#10;  configmanagement             &#61; bool&#10;  identityservice              &#61; bool&#10;  multiclusteringress          &#61; string&#10;  multiclusterservicediscovery &#61; bool&#10;  servicemesh                  &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  appdevexperience             &#61; false&#10;  configmanagement             &#61; false&#10;  identityservice              &#61; false&#10;  multiclusteringress          &#61; null&#10;  servicemesh                  &#61; false&#10;  multiclusterservicediscovery &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [features](variables.tf#L66) | Enable and configue fleet features. | <code title="object&#40;&#123;&#10;  appdevexperience             &#61; optional&#40;bool, false&#41;&#10;  configmanagement             &#61; optional&#40;bool, false&#41;&#10;  identityservice              &#61; optional&#40;bool, false&#41;&#10;  multiclusteringress          &#61; optional&#40;string, null&#41;&#10;  multiclusterservicediscovery &#61; optional&#40;bool, false&#41;&#10;  servicemesh                  &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  appdevexperience             &#61; false&#10;  configmanagement             &#61; false&#10;  identityservice              &#61; false&#10;  multiclusteringress          &#61; null&#10;  servicemesh                  &#61; false&#10;  multiclusterservicediscovery &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [workload_identity_clusters](variables.tf#L92) | Clusters that will use Fleet Workload Identity. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs

@@ -46,7 +46,7 @@ module "group" {
   ]
   managers = [
     "user3@example.com"
-  ]  
+  ]
 }
 # tftest modules=1 resources=5
 ```

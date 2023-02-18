@@ -21,7 +21,7 @@ The access variables are split into `access` and `access_identities` variables, 
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id          = "my-dataset"
+  id         = "my-dataset"
   access = {
     reader-group   = { role = "READER", type = "group" }
     owner          = { role = "OWNER", type = "user" }
@@ -46,7 +46,7 @@ Access configuration can also be specified via IAM instead of basic roles via th
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
-  id          = "my-dataset"
+  id         = "my-dataset"
   iam = {
     "roles/bigquery.dataOwner" = ["user:user1@example.org"]
   }
@@ -67,6 +67,7 @@ module "bigquery-dataset" {
     default_table_expiration_ms     = 3600000
     default_partition_expiration_ms = null
     delete_contents_on_destroy      = false
+    max_time_travel_hours           = 168
   }
 }
 # tftest modules=1 resources=1
@@ -178,7 +179,7 @@ module "bigquery-dataset" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [id](variables.tf#L69) | Dataset id. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L100) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L97) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
 | [access](variables.tf#L17) | Map of access rules with role and identity type. Keys are arbitrary and must match those in the `access_identities` variable, types are `domain`, `group`, `special_group`, `user`, `view`. | <code title="map&#40;object&#40;&#123;&#10;  role &#61; string&#10;  type &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [access_identities](variables.tf#L33) | Map of access identities used for basic access roles. View identities have the format 'project_id\|dataset_id\|table_id'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [dataset_access](variables.tf#L39) | Set access in the dataset resource instead of using separate resources. | <code>bool</code> |  | <code>false</code> |
@@ -188,9 +189,9 @@ module "bigquery-dataset" {
 | [iam](variables.tf#L63) | IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L74) | Dataset labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location](variables.tf#L80) | Dataset location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
-| [options](variables.tf#L86) | Dataset options. | <code title="object&#40;&#123;&#10;  default_table_expiration_ms     &#61; number&#10;  default_partition_expiration_ms &#61; number&#10;  delete_contents_on_destroy      &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  default_table_expiration_ms     &#61; null&#10;  default_partition_expiration_ms &#61; null&#10;  delete_contents_on_destroy      &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [tables](variables.tf#L105) | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name &#61; string&#10;  labels        &#61; map&#40;string&#41;&#10;  options &#61; object&#40;&#123;&#10;    clustering      &#61; list&#40;string&#41;&#10;    encryption_key  &#61; string&#10;    expiration_time &#61; number&#10;  &#125;&#41;&#10;  partitioning &#61; object&#40;&#123;&#10;    field &#61; string&#10;    range &#61; object&#40;&#123;&#10;      end      &#61; number&#10;      interval &#61; number&#10;      start    &#61; number&#10;    &#125;&#41;&#10;    time &#61; object&#40;&#123;&#10;      expiration_ms &#61; number&#10;      type          &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  schema              &#61; string&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [views](variables.tf#L133) | View definitions. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name       &#61; string&#10;  labels              &#61; map&#40;string&#41;&#10;  query               &#61; string&#10;  use_legacy_sql      &#61; bool&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [options](variables.tf#L86) | Dataset options. | <code title="object&#40;&#123;&#10;  default_table_expiration_ms     &#61; optional&#40;number, null&#41;&#10;  default_partition_expiration_ms &#61; optional&#40;number, null&#41;&#10;  delete_contents_on_destroy      &#61; optional&#40;bool, false&#41;&#10;  max_time_travel_hours           &#61; optional&#40;number, 168&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tables](variables.tf#L102) | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name &#61; string&#10;  labels        &#61; map&#40;string&#41;&#10;  options &#61; object&#40;&#123;&#10;    clustering      &#61; list&#40;string&#41;&#10;    encryption_key  &#61; string&#10;    expiration_time &#61; number&#10;  &#125;&#41;&#10;  partitioning &#61; object&#40;&#123;&#10;    field &#61; string&#10;    range &#61; object&#40;&#123;&#10;      end      &#61; number&#10;      interval &#61; number&#10;      start    &#61; number&#10;    &#125;&#41;&#10;    time &#61; object&#40;&#123;&#10;      expiration_ms &#61; number&#10;      type          &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  schema              &#61; string&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [views](variables.tf#L130) | View definitions. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name       &#61; string&#10;  labels              &#61; map&#40;string&#41;&#10;  query               &#61; string&#10;  use_legacy_sql      &#61; bool&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

@@ -25,6 +25,11 @@ locals {
     ? var.network_config.network_self_link
     : module.orch-vpc.0.self_link
   )
+
+  # Note: This formatting is needed for output purposes since the fabric artifact registry
+  # module doesn't yet expose the docker usage path of a registry folder in the needed format.
+  orch_docker_path = format("%s-docker.pkg.dev/%s/%s",
+  var.region, module.orch-project.project_id, module.orch-artifact-reg.name)
 }
 
 module "orch-project" {
@@ -44,6 +49,8 @@ module "orch-project" {
       "roles/iam.serviceAccountUser",
       "roles/storage.objectAdmin",
       "roles/storage.admin",
+      "roles/artifactregistry.admin",
+      "roles/serviceusage.serviceUsageConsumer",
     ]
   }
   iam = {
@@ -54,6 +61,9 @@ module "orch-project" {
     "roles/bigquery.jobUser" = [
       module.orch-sa-cmp-0.iam_email,
     ]
+    "roles/composer.ServiceAgentV2Ext" = [
+      "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
+    ]
     "roles/composer.worker" = [
       module.orch-sa-cmp-0.iam_email
     ]
@@ -62,16 +72,19 @@ module "orch-project" {
     ]
     "roles/storage.objectAdmin" = [
       module.orch-sa-cmp-0.iam_email,
+      module.orch-sa-df-build.iam_email,
       "serviceAccount:${module.orch-project.service_accounts.robots.composer}",
+      "serviceAccount:${module.orch-project.service_accounts.robots.cloudbuild}",
+    ]
+    "roles/artifactregistry.reader" = [
+      module.load-sa-df-0.iam_email,
+    ]
+    "roles/cloudbuild.serviceAgent" = [
+      module.orch-sa-df-build.iam_email,
     ]
     "roles/storage.objectViewer" = [module.load-sa-df-0.iam_email]
   }
   oslogin = false
-  org_policies = {
-    "constraints/compute.requireOsLogin" = {
-      enforce = false
-    }
-  }
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",
@@ -83,6 +96,7 @@ module "orch-project" {
     "compute.googleapis.com",
     "container.googleapis.com",
     "containerregistry.googleapis.com",
+    "artifactregistry.googleapis.com",
     "dataflow.googleapis.com",
     "orgpolicy.googleapis.com",
     "pubsub.googleapis.com",
@@ -149,4 +163,47 @@ module "orch-nat" {
   name           = "${var.prefix}-default"
   region         = var.region
   router_network = module.orch-vpc.0.name
+}
+
+module "orch-artifact-reg" {
+  source      = "../../../modules/artifact-registry"
+  project_id  = module.orch-project.project_id
+  id          = "${var.prefix}-app-images"
+  location    = var.region
+  format      = "DOCKER"
+  description = "Docker repository storing application images e.g. Dataflow, Cloud Run etc..."
+}
+
+module "orch-cs-df-template" {
+  source         = "../../../modules/gcs"
+  project_id     = module.orch-project.project_id
+  prefix         = var.prefix
+  name           = "orc-cs-df-template"
+  location       = var.region
+  storage_class  = "REGIONAL"
+  encryption_key = try(local.service_encryption_keys.storage, null)
+}
+
+module "orch-cs-build-staging" {
+  source         = "../../../modules/gcs"
+  project_id     = module.orch-project.project_id
+  prefix         = var.prefix
+  name           = "orc-cs-build-staging"
+  location       = var.region
+  storage_class  = "REGIONAL"
+  encryption_key = try(local.service_encryption_keys.storage, null)
+}
+
+module "orch-sa-df-build" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.orch-project.project_id
+  prefix       = var.prefix
+  name         = "orc-sa-df-build"
+  display_name = "Data platform Dataflow build service account"
+  # Note values below should pertain to the system / group / users who are able to 
+  # invoke the build via this service account
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
+    "roles/iam.serviceAccountUser"         = [local.groups_iam.data-engineers]
+  }
 }

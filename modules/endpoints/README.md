@@ -22,7 +22,7 @@ module "endpoint" {
 ```
 
 ```yaml
-# tftest file openapi configs/endpoints/openapi.yaml
+# tftest-file id=openapi path=configs/endpoints/openapi.yaml
 swagger: "2.0"
 info:
   description: "A simple Google Cloud Endpoints API example."

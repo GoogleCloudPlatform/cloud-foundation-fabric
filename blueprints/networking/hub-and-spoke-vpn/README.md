@@ -7,7 +7,7 @@ A few additional features are also shown:
 - [custom BGP advertisements](https://cloud.google.com/router/docs/how-to/advertising-overview) to implement transitivity between spokes
 - [VPC Global Routing](https://cloud.google.com/network-connectivity/docs/router/how-to/configuring-routing-mode) to leverage a regional set of VPN gateways in different regions as next hops (used here for illustrative/study purpose, not usually done in real life)
 
-The blueprint has been purposefully kept simple to show how to use and wire the VPC and VPN-HA modules together, and so that it can be used as a basis for experimentation. For a more complex scenario that better reflects real-life usage, including [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) and [DNS cross-project binding](https://cloud.google.com/dns/docs/zones/cross-project-binding) please refer to the [FAST network stage](../../../fast/stages/02-networking-vpn/).
+The blueprint has been purposefully kept simple to show how to use and wire the VPC and VPN-HA modules together, and so that it can be used as a basis for experimentation. For a more complex scenario that better reflects real-life usage, including [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) and [DNS cross-project binding](https://cloud.google.com/dns/docs/zones/cross-project-binding) please refer to the [FAST network stage](../../../fast/stages/2-networking-b-vpn/).
 
 This is the high level diagram of this blueprint:
 
@@ -35,12 +35,12 @@ You can easily create such a project by commenting turning on project creation i
 
 ```hcl
 module "project" {
-  source           = "../../../modules/project"
-  name             = var.project_id
+  source = "../../../modules/project"
+  name   = var.project_id
   # comment or remove this line to enable project creation
   # project_create = false
   # add the following line with your billing account id value
-  billing_account  = "12345-ABCD-12345"
+  billing_account = "12345-ABCD-12345"
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com"
