@@ -19,8 +19,8 @@ module "my-org" {
   parent     = "organizations/123456789"
 }
 
-output "projects" {
-  value = module.my-org.projects_numbers
+output "project_numbers" {
+  value = module.my-org.project_numbers
 }
 
 # tftest skip (uses data sources)
