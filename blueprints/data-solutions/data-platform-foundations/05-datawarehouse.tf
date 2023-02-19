@@ -83,9 +83,10 @@ locals {
 module "dwh-lnd-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "dwh-lnd${local.project_suffix}"
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-lnd : "${var.project_config.project_ids.dwh-lnd}${local.project_suffix}"
   group_iam       = local.dwh_group_iam
   iam             = local.dwh_lnd_iam
   services        = local.dwh_services
@@ -98,9 +99,10 @@ module "dwh-lnd-project" {
 module "dwh-cur-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "dwh-cur${local.project_suffix}"
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-cur : "${var.project_config.project_ids.dwh-cur}${local.project_suffix}"
   group_iam       = local.dwh_group_iam
   iam             = local.dwh_iam
   services        = local.dwh_services
@@ -113,9 +115,10 @@ module "dwh-cur-project" {
 module "dwh-conf-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "dwh-conf${local.project_suffix}"
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-conf : "${var.project_config.project_ids.dwh-conf}${local.project_suffix}"
   group_iam       = local.dwh_group_iam
   iam             = local.dwh_iam
   services        = local.dwh_services

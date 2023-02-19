@@ -35,9 +35,10 @@ locals {
 module "orch-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "orc${local.project_suffix}"
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.orc : "${var.project_config.project_ids.orc}${local.project_suffix}"
   group_iam = {
     (local.groups.data-engineers) = [
       "roles/bigquery.dataEditor",

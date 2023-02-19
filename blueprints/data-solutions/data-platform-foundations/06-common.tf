@@ -17,9 +17,10 @@
 module "common-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "cmn${local.project_suffix}"
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.common : "${var.project_config.project_ids.common}${local.project_suffix}"
   group_iam = {
     (local.groups.data-analysts) = [
       "roles/datacatalog.viewer",

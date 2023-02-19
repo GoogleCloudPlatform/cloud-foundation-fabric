@@ -36,9 +36,10 @@ locals {
 module "load-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "lod${local.project_suffix}"
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.load : "${var.project_config.project_ids.load}${local.project_suffix}"
   group_iam = {
     (local.groups.data-engineers) = [
       "roles/compute.viewer",

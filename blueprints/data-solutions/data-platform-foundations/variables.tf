@@ -177,6 +177,40 @@ variable "prefix" {
   }
 }
 
+variable "project_config" {
+  description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'project_ids' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  type = object({
+    billing_account_id = optional(string, null)
+    project_ids = optional(object({
+      drop     = string
+      load     = string
+      orc      = string
+      trf      = string
+      dwh-lnd  = string
+      dwh-cur  = string
+      dwh-conf = string
+      common   = string
+      exp      = string
+      }), {
+      drop     = "drp"
+      load     = "lod"
+      orc      = "orc"
+      trf      = "trf"
+      dwh-lnd  = "dwh-lnd"
+      dwh-cur  = "dwh-cur"
+      dwh-conf = "dwh-conf"
+      common   = "cmn"
+      exp      = "exp"
+      }
+    )
+  })
+  default = {}
+  validation {
+    condition     = var.project_config.billing_account_id != null || var.project_config.project_ids != null
+    error_message = "At least one attribute should be set."
+  }
+}
+
 variable "project_services" {
   description = "List of core services enabled on all projects."
   type        = list(string)
