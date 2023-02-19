@@ -18,6 +18,7 @@ locals {
   _repository_files = flatten([
     for k, v in var.repositories : [
       for f in concat(
+        [for f in fileset(path.module, "${v.populate_from}/*.svg") : f],
         [for f in fileset(path.module, "${v.populate_from}/*.md") : f],
         [for f in fileset(path.module, "${v.populate_from}/*.tf") : f]
         ) : {
@@ -143,8 +144,8 @@ resource "github_repository_file" "default" {
     endswith(each.value.name, ".tf") && local.modules_repo != null
     ? replace(
       file(each.value.file),
-      "/source\\s*=\\s*\"../../../modules/([^/\"]+)\"/",
-      "source = \"git@github.com:${local.modules_repo}.git//$1${local.modules_ref}\"" # "
+      "/source(\\s*)=\\s*\"../../../modules/([^/\"]+)\"/",
+      "source$1= \"git@github.com:${local.modules_repo}.git//${local.module_prefix}$2${local.modules_ref}\"" # "
     )
     : file(each.value.file)
   )
