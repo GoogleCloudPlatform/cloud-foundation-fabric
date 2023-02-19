@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 
 module "test" {
-  source                             = "../../../../../../blueprints/cloud-operations/terraform-enterprise-wif/gcp-workload-identity-provider"
+  source                             = "../../../../../../blueprints/cloud-operations/terraform-cloud-dynamic-credentials/gcp-workload-identity-provider"
   billing_account                    = var.billing_account
   project_create                     = var.project_create
   project_id                         = var.project_id
   parent                             = var.parent
-  tfe_organization_id                = var.tfe_organization_id
-  tfe_workspace_id                   = var.tfe_workspace_id
+  tfc_organization_id                = var.tfe_organization_id
+  tfc_workspace_id                   = var.tfe_workspace_id
   workload_identity_pool_id          = var.workload_identity_pool_id
   workload_identity_pool_provider_id = var.workload_identity_pool_provider_id
   issuer_uri                         = var.issuer_uri

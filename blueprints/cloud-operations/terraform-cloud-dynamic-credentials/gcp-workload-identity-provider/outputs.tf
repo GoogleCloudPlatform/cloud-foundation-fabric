@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,23 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-output "impersonate_service_account_email" {
-  description = "Service account to be impersonated by workload identity."
-  value       = module.sa-tfe.email
-}
-
 output "project_id" {
   description = "GCP Project ID."
   value       = module.project.project_id
 }
 
-output "workload_identity_audience" {
-  description = "TFC Workload Identity Audience."
-  value       = "//iam.googleapis.com/${google_iam_workload_identity_pool_provider.tfe-pool-provider.name}"
-}
-
-output "workload_identity_pool_provider_id" {
-  description = "GCP workload identity pool provider ID."
-  value       = google_iam_workload_identity_pool_provider.tfe-pool-provider.name
+output "tfc_workspace_wariables" {
+  description = "Variables to be set on the TFC workspace."
+  value = {
+    TFC_GCP_PROVIDER_AUTH             = "true",
+    TFC_GCP_PROJECT_NUMBER            = module.project.number,
+    TFC_GCP_WORKLOAD_POOL_ID          = google_iam_workload_identity_pool.tfc-pool.workload_identity_pool_id,
+    TFC_GCP_WORKLOAD_PROVIDER_ID      = google_iam_workload_identity_pool_provider.tfc-pool-provider.workload_identity_pool_provider_id,
+    TFC_GCP_RUN_SERVICE_ACCOUNT_EMAIL = module.sa-tfc.email
+  }
 }
