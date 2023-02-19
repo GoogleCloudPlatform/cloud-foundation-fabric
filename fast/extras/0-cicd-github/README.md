@@ -39,6 +39,16 @@ modules_config = {
 # tftest skip
 ```
 
+If the modules are located in a non modules only repository, use the module_prefix attribute to set the location of your modules within the repository:
+
+```hcl
+modules_config = {
+  repository_name = "GoogleCloudPlatform/cloud-foundation-fabric"
+  module_prefix   = "modules/"
+}
+# tftest skip
+```
+
 In the above example, no key options are set so it's assumed modules will be fetched from a public repository. If modules repository authentication is needed the `key_config` attribute also needs to be set.
 
 If no keypair path is specified an internally generated key will be stored as an access key in the modules repository, and as secrets in the stage repositories:

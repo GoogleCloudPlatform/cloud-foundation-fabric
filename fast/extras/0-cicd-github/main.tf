@@ -145,7 +145,7 @@ resource "github_repository_file" "default" {
     ? replace(
       file(each.value.file),
       "/source(\\s*)=\\s*\"../../../modules/([^/\"]+)\"/",
-      "source$1= \"git@github.com:${local.modules_repo}.git//$2${local.modules_ref}\"" # "
+      "source$1= \"git@github.com:${local.modules_repo}.git//${local.module_prefix}$2${local.modules_ref}\"" # "
     )
     : file(each.value.file)
   )
