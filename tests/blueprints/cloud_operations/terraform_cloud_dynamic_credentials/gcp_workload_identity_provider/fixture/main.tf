@@ -20,8 +20,8 @@ module "test" {
   project_create                     = var.project_create
   project_id                         = var.project_id
   parent                             = var.parent
-  tfc_organization_id                = var.tfe_organization_id
-  tfc_workspace_id                   = var.tfe_workspace_id
+  tfc_organization_id                = var.tfc_organization_id
+  tfc_workspace_id                   = var.tfc_workspace_id
   workload_identity_pool_id          = var.workload_identity_pool_id
   workload_identity_pool_provider_id = var.workload_identity_pool_provider_id
   issuer_uri                         = var.issuer_uri
