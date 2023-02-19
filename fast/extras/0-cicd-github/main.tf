@@ -144,7 +144,7 @@ resource "github_repository_file" "default" {
     endswith(each.value.name, ".tf") && local.modules_repo != null
     ? replace(
       file(each.value.file),
-      "/source(\\s*)=\\s*\"../../../(modules/[^/\"]+)\"/",
+      "/source(\\s*)=\\s*\"../../../modules/([^/\"]+)\"/",
       "source$1= \"git@github.com:${local.modules_repo}.git//$2${local.modules_ref}\"" # "
     )
     : file(each.value.file)
