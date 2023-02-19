@@ -33,7 +33,8 @@ locals {
     ? ""
     : "?ref=${var.modules_config.source_ref}"
   )
-  modules_repo = try(var.modules_config.repository_name, null)
+  modules_repo  = try(var.modules_config.repository_name, null)
+  module_prefix = try(var.modules_config.module_prefix, null)
   repositories = {
     for k, v in var.repositories :
     k => v.create_options == null ? k : github_repository.default[k].name
