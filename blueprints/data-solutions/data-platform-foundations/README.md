@@ -213,9 +213,11 @@ While this blueprint can be used as a standalone deployment, it can also be call
 ```hcl
 module "data-platform" {
   source              = "./fabric/blueprints/data-solutions/data-platform-foundations"
-  billing_account_id  = var.billing_account_id
-  folder_id           = var.folder_id
   organization_domain = "example.com"
+  project_config = {
+    billing_account_id  = var.billing_account_id
+    parent              = "folders/12345678"
+  }  
   prefix              = "myprefix"
 }
 

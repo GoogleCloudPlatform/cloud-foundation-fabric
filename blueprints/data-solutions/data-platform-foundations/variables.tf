@@ -14,11 +14,6 @@
 
 # tfdoc:file:description Terraform Variables.
 
-variable "billing_account_id" {
-  description = "Billing account id."
-  type        = string
-}
-
 variable "composer_config" {
   description = "Cloud Composer config."
   type = object({
@@ -117,11 +112,6 @@ variable "data_force_destroy" {
   description = "Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage."
   type        = bool
   default     = false
-}
-
-variable "folder_id" {
-  description = "Folder to be used for the networking resources in folders/nnnn format."
-  type        = string
 }
 
 variable "groups" {
