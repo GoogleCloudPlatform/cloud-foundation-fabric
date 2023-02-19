@@ -14,14 +14,8 @@
 
 # tfdoc:file:description common project.
 
-module "common-project" {
-  source          = "../../../modules/project"
-  parent          = var.folder_id
-  billing_account = var.project_config.billing_account_id
-  project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.common : "${var.project_config.project_ids.common}${local.project_suffix}"
-  group_iam = {
+locals {
+  group_iam_common = {
     (local.groups.data-analysts) = [
       "roles/datacatalog.viewer",
     ]
@@ -35,7 +29,7 @@ module "common-project" {
       "roles/datacatalog.admin"
     ]
   }
-  iam = {
+  iam_common = {
     "roles/dlp.user" = [
       module.load-sa-df-0.iam_email,
       module.transf-sa-df-0.iam_email
@@ -52,6 +46,17 @@ module "common-project" {
       # local.groups_iam.data-analysts
     ]
   }
+}
+module "common-project" {
+  source          = "../../../modules/project"
+  parent          = var.project_config.parent
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.common : "${var.project_config.project_ids.common}${local.project_suffix}"
+  # group_iam       = local.group_iam_common
+  iam          = var.project_config.billing_account_id != null ? local.iam_common : null
+  iam_additive = var.project_config.billing_account_id == null ? local.iam_common : null
   services = concat(var.project_services, [
     "datacatalog.googleapis.com",
     "dlp.googleapis.com",

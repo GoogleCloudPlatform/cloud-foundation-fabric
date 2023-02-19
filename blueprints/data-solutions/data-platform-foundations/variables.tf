@@ -181,6 +181,7 @@ variable "project_config" {
   description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'project_ids' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
   type = object({
     billing_account_id = optional(string, null)
+    parent             = string
     project_ids = optional(object({
       drop     = string
       load     = string
@@ -204,7 +205,6 @@ variable "project_config" {
       }
     )
   })
-  default = {}
   validation {
     condition     = var.project_config.billing_account_id != null || var.project_config.project_ids != null
     error_message = "At least one attribute should be set."

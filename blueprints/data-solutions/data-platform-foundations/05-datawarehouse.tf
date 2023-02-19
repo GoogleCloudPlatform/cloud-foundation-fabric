@@ -82,14 +82,15 @@ locals {
 
 module "dwh-lnd-project" {
   source          = "../../../modules/project"
-  parent          = var.folder_id
+  parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-lnd : "${var.project_config.project_ids.dwh-lnd}${local.project_suffix}"
-  group_iam       = local.dwh_group_iam
-  iam             = local.dwh_lnd_iam
-  services        = local.dwh_services
+  # group_iam       = local.dwh_group_iam
+  iam          = var.project_config.billing_account_id != null ? local.dwh_lnd_iam : {}
+  iam_additive = var.project_config.billing_account_id == null ? local.dwh_lnd_iam : {}
+  services     = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -98,14 +99,15 @@ module "dwh-lnd-project" {
 
 module "dwh-cur-project" {
   source          = "../../../modules/project"
-  parent          = var.folder_id
+  parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-cur : "${var.project_config.project_ids.dwh-cur}${local.project_suffix}"
-  group_iam       = local.dwh_group_iam
-  iam             = local.dwh_iam
-  services        = local.dwh_services
+  # group_iam       = local.dwh_group_iam
+  iam          = var.project_config.billing_account_id != null ? local.dwh_iam : {}
+  iam_additive = var.project_config.billing_account_id == null ? local.dwh_iam : {}
+  services     = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -114,14 +116,15 @@ module "dwh-cur-project" {
 
 module "dwh-conf-project" {
   source          = "../../../modules/project"
-  parent          = var.folder_id
+  parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-conf : "${var.project_config.project_ids.dwh-conf}${local.project_suffix}"
-  group_iam       = local.dwh_group_iam
-  iam             = local.dwh_iam
-  services        = local.dwh_services
+  # group_iam       = local.dwh_group_iam
+  iam          = var.project_config.billing_account_id != null ? local.dwh_iam : null
+  iam_additive = var.project_config.billing_account_id == null ? local.dwh_iam : null
+  services     = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -141,7 +144,7 @@ module "dwh-lnd-bq-0" {
 module "dwh-cur-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.dwh-cur-project.project_id
-  id             = "${replace(var.prefix, "-", "_")}_dwh_lnd_bq_0"
+  id             = "${replace(var.prefix, "-", "_")}_dwh_cur_bq_0"
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }

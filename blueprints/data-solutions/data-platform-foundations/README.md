@@ -233,6 +233,10 @@ To create Cloud Key Management keys in the Data Platform you can uncomment the C
 To handle multiple groups of `data-analysts` accessing the same Data Warehouse layer projects but only to the dataset belonging to a specific group, you may want to assign roles at BigQuery dataset level instead of at project-level.
 To do this, you need to remove IAM binging at project-level for the `data-analysts` group and give roles at BigQuery dataset level using the `iam` variable on `bigquery-dataset` modules.
 
+### Project Configuration
+
+The solution can be deployed creating projects on a given parent (organization or folder) or on existing projects. Configure variable `project_config` accordingly.
+
 ## Demo pipeline
 
 The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `drop off` area to the `Data Warehouse Confidential` dataset suing different features.

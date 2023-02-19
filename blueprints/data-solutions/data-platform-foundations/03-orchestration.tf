@@ -15,31 +15,7 @@
 # tfdoc:file:description Orchestration project and VPC.
 
 locals {
-  orch_subnet = (
-    local.use_shared_vpc
-    ? var.network_config.subnet_self_links.orchestration
-    : values(module.orch-vpc.0.subnet_self_links)[0]
-  )
-  orch_vpc = (
-    local.use_shared_vpc
-    ? var.network_config.network_self_link
-    : module.orch-vpc.0.self_link
-  )
-
-  # Note: This formatting is needed for output purposes since the fabric artifact registry
-  # module doesn't yet expose the docker usage path of a registry folder in the needed format.
-  orch_docker_path = format("%s-docker.pkg.dev/%s/%s",
-  var.region, module.orch-project.project_id, module.orch-artifact-reg.name)
-}
-
-module "orch-project" {
-  source          = "../../../modules/project"
-  parent          = var.folder_id
-  billing_account = var.project_config.billing_account_id
-  project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.orc : "${var.project_config.project_ids.orc}${local.project_suffix}"
-  group_iam = {
+  group_iam_orch = {
     (local.groups.data-engineers) = [
       "roles/bigquery.dataEditor",
       "roles/bigquery.jobUser",
@@ -54,7 +30,7 @@ module "orch-project" {
       "roles/serviceusage.serviceUsageConsumer",
     ]
   }
-  iam = {
+  iam_orch = {
     "roles/bigquery.dataEditor" = [
       module.load-sa-df-0.iam_email,
       module.transf-sa-df-0.iam_email,
@@ -85,7 +61,34 @@ module "orch-project" {
     ]
     "roles/storage.objectViewer" = [module.load-sa-df-0.iam_email]
   }
-  oslogin = false
+  orch_subnet = (
+    local.use_shared_vpc
+    ? var.network_config.subnet_self_links.orchestration
+    : values(module.orch-vpc.0.subnet_self_links)[0]
+  )
+  orch_vpc = (
+    local.use_shared_vpc
+    ? var.network_config.network_self_link
+    : module.orch-vpc.0.self_link
+  )
+
+  # Note: This formatting is needed for output purposes since the fabric artifact registry
+  # module doesn't yet expose the docker usage path of a registry folder in the needed format.
+  orch_docker_path = format("%s-docker.pkg.dev/%s/%s",
+  var.region, module.orch-project.project_id, module.orch-artifact-reg.name)
+}
+
+module "orch-project" {
+  source          = "../../../modules/project"
+  parent          = var.project_config.parent
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.orc : "${var.project_config.project_ids.orc}${local.project_suffix}"
+  # group_iam = local.group_iam_orch
+  iam          = var.project_config.billing_account_id != null ? local.iam_orch : null
+  iam_additive = var.project_config.billing_account_id == null ? local.iam_orch : null
+  oslogin      = false
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",
@@ -133,11 +136,11 @@ module "orch-vpc" {
   source     = "../../../modules/net-vpc"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.orch-project.project_id
-  name       = "${var.prefix}-default"
+  name       = "${var.prefix}-orch"
   subnets = [
     {
       ip_cidr_range = "10.10.0.0/24"
-      name          = "default"
+      name          = "${var.prefix}-orch"
       region        = var.region
       secondary_ip_ranges = {
         pods     = "10.10.8.0/22"
@@ -161,7 +164,7 @@ module "orch-nat" {
   count          = local.use_shared_vpc ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.orch-project.project_id
-  name           = "${var.prefix}-default"
+  name           = "${var.prefix}-orch"
   region         = var.region
   router_network = module.orch-vpc.0.name
 }
