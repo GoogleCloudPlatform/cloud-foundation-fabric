@@ -12,15 +12,15 @@ If you are interested in following this guide, take a look to the chapters' blue
 
 ## Architecture
 
-This blueprint creates multiple architectures depending on the use case. Some may have one or two projecs while others may have four or more. Some use [Private Service Connect (PSC)](https://cloud.google.com/vpc/docs/private-service-connect) to access Google APIs, and others a [Layer 7 Internal Load Balancer](https://cloud.google.com/load-balancing/docs/l7-internal). Even security plays a role and [VPC Service Controls (VPC SC)](https://cloud.google.com/vpc-service-controls) is introduced.
+This blueprint creates multiple architectures depending on the use case. Some may have one or two projecs while others may have three or more. Some use [Private Service Connect (PSC)](https://cloud.google.com/vpc/docs/private-service-connect) to access Google APIs, and others a [Layer 7 Internal Load Balancer](https://cloud.google.com/load-balancing/docs/l7-internal). Even security plays a role and [VPC Service Controls (VPC SC)](https://cloud.google.com/vpc-service-controls) is introduced.
 
 ## Prerequisites
 
 Depending on the use case, you will need one or more projects with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project) and a user with the “Project owner” [IAM](https://cloud.google.com/iam) role on those projects. You can use existing projects or let the blueprint creates them for you but in that case you will need to add extra information for each project. E.g.:
 
 ```tfvars
-# Create the main or host project
-prj_host_create = {
+# Create the main project
+prj_main_create = {
   billing_account_id = "ABCDE-12345-ABCDE"
   parent             = "organizations/0123456789"
 }
@@ -104,13 +104,13 @@ SSH into the test VM and run `curl`, you should see the same output as in the pr
 
 Corporate apps are used by multiple teams and projects. This blueprint explores accessing from a different project to where Cloud Run is deployed. For simplicity only one more project is used but the concepts would apply to any number of projects. Three different cases are implemented:
 
-#### 3.1
+#### Use case 3.1
 
 The first case allows access to Cloud Run from any project as well as the Internet.
 
 <p style="left"> <img src="images/use-case-3.1.png" width="500"> </p>
 
-This is achieved with `ingress_settings` value set to `"all"`. This is the deafult if not specified but this blueprint sets it to `"internal"` by default. Add a new project and this setting in `terraform.tfvars`:
+This is achieved with `ingress_settings` value set to `"all"`. This is the default if not specified but this blueprint sets it to `"internal"` instead. Add a new project and this setting in `terraform.tfvars`:
 
 ```tfvars
 prj_main_id      = "[your-main-project-id]"
@@ -120,7 +120,7 @@ ingress_settings = "all"
 
 Note the different PSC endpoints created in each project and the different IPs. Each project can choose its own RFC1918 IP to reach the same Cloud Run service.
 
-#### 3.2
+#### Use case 3.2
 
 It is possible to block access from the Internet restoring `ingress_settigns` to `"internal"` but this will also block access from any other project.
 
@@ -133,7 +133,7 @@ prj_main_id = "[your-main-project-id]"
 prj_prj1_id = "[your-project1-id]"
 ```
 
-#### 3.3
+#### Use case 3.3
 
 To allow access from other projects while keeping access from the Internet restricted, you need to add those projects to a VPC SC perimeter together with Cloud Run.
 
