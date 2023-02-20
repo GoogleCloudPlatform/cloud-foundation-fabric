@@ -108,7 +108,7 @@ Corporate apps are used by multiple teams and projects. This blueprint explores 
 
 The first case allows access to Cloud Run from any project as well as the Internet.
 
-<p style="left"> <img src="images/use-case-3.1.png" width="600"> </p>
+<p style="left"> <img src="images/use-case-3.1.png" width="800"> </p>
 
 This is achieved with `ingress_settings` value set to `"all"`. This is the default if not specified but this blueprint sets it to `"internal"` instead. Add a new project and this setting in `terraform.tfvars`:
 
@@ -124,7 +124,7 @@ Note the different PSC endpoints created in each project and the different IPs. 
 
 It is possible to block access from the Internet restoring `ingress_settigns` to `"internal"` but this will also block access from any other project.
 
-<p style="left"> <img src="images/use-case-3.2.png" width="600"> </p>
+<p style="left"> <img src="images/use-case-3.2.png" width="800"> </p>
 
 Simply omit `ingress_settigns` in `terraform.tfvars`:
 
@@ -137,7 +137,7 @@ prj_prj1_id = "[your-project1-id]"
 
 To allow access from other projects while keeping access from the Internet restricted, you need to add those projects to a VPC SC perimeter together with Cloud Run.
 
-<p style="left"> <img src="images/use-case-3.3.png" width="600"> </p>
+<p style="left"> <img src="images/use-case-3.3.png" width="800"> </p>
 
 VPC SC requires an [Access Policy](https://cloud.google.com/access-context-manager/docs/overview#access-policies). You can use an existing policy or create a new one, but an organization can only have one organization-level access policy. The policy name is a unique numeric identifier assigned by Google Cloud.
 
