@@ -17,17 +17,14 @@ values:
     project_id: project-example
   module.project.google_project_iam_member.additive["roles/editor-user:two@example.org"]:
     condition: []
-    member: user:two@example.org
     project: project-example
     role: roles/editor
   module.project.google_project_iam_member.additive["roles/owner-user:one@example.org"]:
     condition: []
-    member: user:one@example.org
     project: project-example
     role: roles/owner
   module.project.google_project_iam_member.additive["roles/owner-user:two@example.org"]:
     condition: []
-    member: user:two@example.org
     project: project-example
     role: roles/owner
 
