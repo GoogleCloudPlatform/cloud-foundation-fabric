@@ -17,6 +17,9 @@
 locals {
   domain_cr_main = format("%s.",
   trimprefix(module.cloud_run_main.service.status[0].url, "https://"))
+  tf_id = (var.tf_identity == null ? null :
+    length(regexall("iam.gserviceaccount.com", var.tf_identity)) > 0 ?
+  "serviceAccount:${var.tf_identity}" : "user:${var.tf_identity}")
   vpc_sc_create = (length(module.project_prj1) > 0 &&
   (var.access_policy != null || var.access_policy_create != null)) ? 1 : 0
 }
@@ -328,6 +331,18 @@ module "vpc_sc" {
   count                = local.vpc_sc_create
   access_policy        = var.access_policy_create == null ? var.access_policy : null
   access_policy_create = var.access_policy_create
+  ingress_policies = {
+    ingress-ids = {
+      from = {
+        identities    = [local.tf_id]
+        access_levels = ["*"]
+      }
+      to = {
+        operations = [{ service_name = "*" }]
+        resources  = ["*"]
+      }
+    }
+  }
   service_perimeters_regular = {
     cloudrun = {
       status = {
@@ -336,6 +351,7 @@ module "vpc_sc" {
           "projects/${module.project_prj1[0].number}"
         ]
         restricted_services = ["run.googleapis.com"]
+        ingress_policies    = ["ingress-ids"]
       }
     }
   }

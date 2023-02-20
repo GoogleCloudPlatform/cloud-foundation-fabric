@@ -114,3 +114,9 @@ variable "run_svc_name" {
   type        = string
   default     = "hello"
 }
+
+variable "tf_identity" {
+  description = "Terraform identity to include in VPC SC perimeter."
+  type        = string
+  default     = null
+}
