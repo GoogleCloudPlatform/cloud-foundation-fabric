@@ -169,6 +169,14 @@ variable "prefix" {
   type        = string
 }
 
+variable "project_config" {
+  description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'project_ids' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+}
+
 variable "project_services" {
   description = "List of core services enabled on all projects."
   type        = list(string)
