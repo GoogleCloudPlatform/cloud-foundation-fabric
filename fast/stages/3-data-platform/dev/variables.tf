@@ -22,19 +22,6 @@ variable "automation" {
   })
 }
 
-variable "billing_account" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
-  type = object({
-    id           = string
-    is_org_level = optional(bool, true)
-  })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
-}
-
 variable "composer_config" {
   description = "Cloud Composer configuration options."
   type = object({
@@ -97,14 +84,6 @@ variable "data_force_destroy" {
   description = "Flag to set 'force_destroy' on data services like BigQery or Cloud Storage."
   type        = bool
   default     = false
-}
-
-variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
-  description = "Folder to be used for the networking resources in folders/nnnn format."
-  type = object({
-    data-platform-dev = string
-  })
 }
 
 variable "groups" {
