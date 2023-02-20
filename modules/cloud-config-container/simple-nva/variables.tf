@@ -20,6 +20,24 @@ variable "cloud_config" {
   default     = null
 }
 
+variable "config_variables" {
+  description = "Additional variables used to render the cloud-config and FRR templates."
+  type        = map(any)
+  default     = {}
+}
+
+variable "daemons" {
+  description = "FRR daemons configuration path, if null default will be used."
+  type        = string
+  default     = null
+}
+
+variable "enable_bgp" {
+  description = "Configures FR Routing Countainer to run BGP server on the NVA"
+  type        = bool
+  default     = false
+}
+
 variable "enable_health_checks" {
   description = "Configures routing to enable responses to health check probes."
   type        = bool
@@ -34,6 +52,12 @@ variable "files" {
     permissions = string
   }))
   default = {}
+}
+
+variable "frr_config" {
+  description = "FRR configuration path, if null default will be used."
+  type        = string
+  default     = null
 }
 
 variable "network_interfaces" {

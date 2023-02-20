@@ -320,3 +320,9 @@ variable "vpn_onprem_configs" {
     }
   }
 }
+
+variable "zones" {
+  description = "Zones definitions."
+  type = list(string)
+  default = ["b","c"]
+}

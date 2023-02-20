@@ -14,6 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+%{ if enable_bgp ~}
+users:
+- name: frr
+  uid: 2000
+%{ endif ~}
+
 write_files:
 %{ for path, data in files }
   - path: ${path}
@@ -47,12 +53,47 @@ write_files:
       ip route add ${route} via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/${interface.number}/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}
 %{ endfor ~}
 %{ endfor ~}
+  - path: /var/lib/docker/daemon.json
+    permissions: 0644
+    owner: root
+    content: |
+      {
+        "live-restore": true,
+        "storage-driver": "overlay2",
+        "log-opts": {
+          "max-size": "1024m"
+        }
+      }
+%{ if enable_bgp ~}
+  # frr container service
+  - path: /etc/systemd/system/frr.service
+    permissions: 0644
+    owner: root
+    content: |
+      [Unit]
+      Description=Start FRR container
+      After=gcr-online.target docker.socket
+      Wants=gcr-online.target docker.socket docker-events-collector.service
+
+      [Service]
+      Environment="HOME=/home/frr"
+      ExecStart=/usr/bin/docker run --rm --name=frr \
+        --privileged \
+        --network host \
+        -v /etc/frr:/etc/frr \
+        frrouting/frr
+      ExecStop=/usr/bin/docker stop frr
+      ExecStopPost=/usr/bin/docker rm frr
+%{ endif ~}
 
 bootcmd:
   - systemctl start node-problem-detector
 
 runcmd:
+  - iptables -I INPUT 1 -p tcp -m tcp --dport 179 -m state --state NEW,ESTABLISHED -j ACCEPT
   - systemctl daemon-reload
   - systemctl enable routing
   - systemctl start routing
-  
+%{ if enable_bgp ~}
+  - systemctl start frr
+%{ endif ~}
