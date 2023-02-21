@@ -122,7 +122,7 @@ Note the different PSC endpoints created in each project and the different IPs. 
 
 #### Use case 3.2
 
-It is possible to block access from the Internet restoring `ingress_settigns` to `"internal"` but this will also block access from any other project.
+It is possible to block access from the Internet restoring `ingress_settigns` to `"internal"` but this will also block access from any other project. This feature is interesting, as will be shown in the next use case.
 
 <p style="left"> <img src="images/use-case-3.2.png" width="800"> </p>
 
@@ -135,7 +135,7 @@ prj_prj1_id = "[your-project1-id]"
 
 #### Use case 3.3
 
-To allow access from other projects while keeping access from the Internet restricted, you need to add those projects to a VPC SC perimeter together with Cloud Run.
+To allow access from other projects while keeping access from the Internet restricted, you need to add those projects to a VPC SC perimeter together with Cloud Run. Projects outisde the perimeter will be blocked. This way you can control which projects can gain access.
 
 <p style="left"> <img src="images/use-case-3.3.png" width="800"> </p>
 
