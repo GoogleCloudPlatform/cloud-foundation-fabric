@@ -103,6 +103,21 @@ variable "prj_prj1_id" {
   default     = null
 }
 
+variable "prj_svc1_create" {
+  description = "Parameters for the creation of service project 1."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
+variable "prj_svc1_id" {
+  description = "Service Project 1 ID."
+  type        = string
+  default     = null
+}
+
 variable "region" {
   description = "Cloud region where resource will be deployed."
   type        = string

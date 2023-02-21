@@ -79,6 +79,24 @@ module "project_prj1" {
   skip_delete = true
 }
 
+# Service Project 1
+module "project_svc1" {
+  source          = "../../../modules/project"
+  count           = var.prj_svc1_id != null ? 1 : 0
+  name            = var.prj_svc1_id
+  project_create  = var.prj_svc1_create != null
+  billing_account = try(var.prj_svc1_create.billing_account_id, null)
+  parent          = try(var.prj_svc1_create.parent, null)
+  shared_vpc_service_config = {
+    host_project = module.project_main.project_id
+  }
+  services = [
+    "compute.googleapis.com",
+    "dns.googleapis.com"
+  ]
+  skip_delete = true
+}
+
 ###############################################################################
 #                                  Cloud Run                                  #
 ###############################################################################
@@ -276,6 +294,20 @@ module "vm_test_prj1" {
   network_interfaces = [{
     network    = module.vpc_prj1[0].self_link
     subnetwork = module.vpc_prj1[0].subnet_self_links["${var.region}/subnet-prj1"]
+  }]
+  tags = ["ssh"]
+}
+
+module "vm_test_svc1" {
+  source        = "../../../modules/compute-vm"
+  count         = length(module.project_svc1)
+  project_id    = module.project_svc1[0].project_id
+  zone          = "${var.region}-b"
+  name          = "vm-test-svc1"
+  instance_type = "e2-micro"
+  network_interfaces = [{
+    network    = module.vpc_main.self_link
+    subnetwork = module.vpc_main.subnet_self_links["${var.region}/subnet-main"]
   }]
   tags = ["ssh"]
 }
