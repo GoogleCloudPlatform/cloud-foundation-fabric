@@ -28,8 +28,8 @@ module "branch-sandbox-folder" {
     "roles/resourcemanager.projectCreator" = [local.automation_sas_iam.sandbox]
   }
   org_policies = {
-    "constraints/sql.restrictPublicIp"       = { enforce = false }
-    "constraints/compute.vmExternalIpAccess" = { allow = { all = true } }
+    "sql.restrictPublicIp"       = { rules = [{ enforce = false }] }
+    "compute.vmExternalIpAccess" = { rules = [{ allow = { all = true } }] }
   }
   tag_bindings = {
     context = var.tags.values["${var.tags.names.context}/sandbox"]

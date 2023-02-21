@@ -25,8 +25,8 @@ values:
         deny_all: null
         enforce: 'TRUE'
         values: []
-  module.org.google_org_policy_policy.default["constraints/compute.skipDefaultNetworkCreation"]:
-    name: organizations/1234567890/policies/constraints/compute.skipDefaultNetworkCreation
+  module.org.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
+    name: organizations/1234567890/policies/compute.skipDefaultNetworkCreation
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -37,8 +37,8 @@ values:
         deny_all: null
         enforce: 'TRUE'
         values: []
-  module.org.google_org_policy_policy.default["constraints/compute.trustedImageProjects"]:
-    name: organizations/1234567890/policies/constraints/compute.trustedImageProjects
+  module.org.google_org_policy_policy.default["compute.trustedImageProjects"]:
+    name: organizations/1234567890/policies/compute.trustedImageProjects
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -52,8 +52,8 @@ values:
         - allowed_values:
           - projects/my-project
           denied_values: null
-  module.org.google_org_policy_policy.default["constraints/compute.vmExternalIpAccess"]:
-    name: organizations/1234567890/policies/constraints/compute.vmExternalIpAccess
+  module.org.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    name: organizations/1234567890/policies/compute.vmExternalIpAccess
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -64,15 +64,30 @@ values:
         deny_all: 'TRUE'
         enforce: null
         values: []
-  module.org.google_org_policy_policy.default["constraints/iam.allowedPolicyMemberDomains"]:
-    name: organizations/1234567890/policies/constraints/iam.allowedPolicyMemberDomains
+  module.org.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
+    name: organizations/1234567890/policies/iam.allowedPolicyMemberDomains
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
       reset: null
       rules:
+      - allow_all: 'TRUE'
+        condition:
+        - description: Allow external identities when resource has the `allowexternal`
+            tag set to true.
+          expression: resource.matchTag('1234567890/allowexternal', 'true')
+          location: null
+          title: Allow external identities
+        deny_all: null
+        enforce: null
+        values: []
       - allow_all: null
-        condition: []
+        condition:
+        - description: For any resource without allowexternal=true, only allow identities
+            from restricted domains.
+          expression: '!resource.matchTag(''1234567890/allowexternal'', ''true'')'
+          location: null
+          title: ''
         deny_all: null
         enforce: null
         values:
@@ -102,7 +117,7 @@ values:
       - allow_all: null
         condition:
         - description: test condition
-          expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
+          expression: resource.matchTagId('tagKeys/1234', 'tagValues/1234')
           location: somewhere
           title: condition
         deny_all: null
@@ -141,6 +156,20 @@ values:
     member: user:compute@example.org
     org_id: '1234567890'
     role: roles/container.viewer
+  module.org.google_tags_tag_key.default["allowexternal"]:
+    description: Allow external identities.
+    parent: organizations/1234567890
+    purpose: null
+    purpose_data: null
+    short_name: allowexternal
+  module.org.google_tags_tag_value.default["allowexternal/false"]:
+    short_name: 'false'
+  module.org.google_tags_tag_value.default["allowexternal/true"]:
+    short_name: 'true'
+
 counts:
   google_org_policy_policy: 8
   google_organization_iam_binding: 3
+  google_organization_iam_member: 2
+  google_tags_tag_key: 1
+  google_tags_tag_value: 2
