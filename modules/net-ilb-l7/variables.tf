@@ -26,6 +26,12 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+variable "global" {
+  description = "Create a global ILB (for Traffic Director INTERNAL_SELF_MANAGED load balancers)."
+  type        = bool
+  default     = false
+}
+
 # during the preview phase you cannot change this attribute on an existing rule
 variable "global_access" {
   description = "Allow client access from all regions."
@@ -49,6 +55,12 @@ variable "labels" {
   description = "Labels set on resources."
   type        = map(string)
   default     = {}
+}
+
+variable "load_balancing_scheme" {
+  description = "Load balacing scheme to use."
+  type        = string
+  default     = "INTERNAL_MANAGED"
 }
 
 variable "name" {
@@ -150,6 +162,7 @@ variable "protocol" {
 variable "region" {
   description = "The region where to allocate the ILB resources."
   type        = string
+  default     = null
 }
 
 variable "service_directory_registration" {

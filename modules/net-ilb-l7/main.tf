@@ -26,11 +26,16 @@ locals {
   fwd_rule_ports = (
     var.protocol == "HTTPS" ? [443] : coalesce(var.ports, [80])
   )
-  fwd_rule_target = (
+  fwd_rule_target = !var.global ? (
     var.protocol == "HTTPS"
     ? google_compute_region_target_https_proxy.default.0.id
     : google_compute_region_target_http_proxy.default.0.id
-  )
+  ) : null
+  global_fwd_rule_target = var.global ? (
+    var.protocol == "HTTPS"
+    ? google_compute_target_https_proxy.default.0.id
+    : google_compute_target_http_proxy.default.0.id
+  ) : null
   neg_endpoints = {
     for v in local._neg_endpoints : (v.key) => v
   }
@@ -56,6 +61,7 @@ locals {
 }
 
 resource "google_compute_forwarding_rule" "default" {
+  count                 = var.region == null || var.global == true ? 0 : 1
   provider              = google-beta
   project               = var.project_id
   region                = var.region
@@ -63,7 +69,7 @@ resource "google_compute_forwarding_rule" "default" {
   description           = var.description
   ip_address            = var.address
   ip_protocol           = "TCP"
-  load_balancing_scheme = "INTERNAL_MANAGED"
+  load_balancing_scheme = var.load_balancing_scheme
   network               = var.vpc_config.network
   network_tier          = var.network_tier_premium ? "PREMIUM" : "STANDARD"
   port_range            = join(",", local.fwd_rule_ports)
@@ -81,6 +87,21 @@ resource "google_compute_forwarding_rule" "default" {
   }
 }
 
+resource "google_compute_global_forwarding_rule" "default" {
+  count                 = var.global == false ? 0 : 1
+  provider              = google-beta
+  project               = var.project_id
+  name                  = var.name
+  description           = var.description
+  ip_address            = var.address
+  ip_protocol           = "TCP"
+  load_balancing_scheme = var.load_balancing_scheme
+  network               = var.vpc_config.network
+  port_range            = join(",", local.fwd_rule_ports)
+  labels                = var.labels
+  target                = local.global_fwd_rule_target
+}
+
 resource "google_compute_region_ssl_certificate" "default" {
   for_each    = var.ssl_certificates.create_configs
   project     = var.project_id
@@ -91,22 +112,39 @@ resource "google_compute_region_ssl_certificate" "default" {
 }
 
 resource "google_compute_region_target_http_proxy" "default" {
-  count       = var.protocol == "HTTPS" ? 0 : 1
+  count       = var.global || var.protocol == "HTTPS" ? 0 : 1
   project     = var.project_id
   region      = var.region
   name        = var.name
   description = var.description
-  url_map     = google_compute_region_url_map.default.id
+  url_map     = google_compute_region_url_map.default.0.id
 }
 
 resource "google_compute_region_target_https_proxy" "default" {
-  count            = var.protocol == "HTTPS" ? 1 : 0
+  count            = !var.global && var.protocol == "HTTPS" ? 1 : 0
   project          = var.project_id
   region           = var.region
   name             = var.name
   description      = var.description
   ssl_certificates = local.proxy_ssl_certificates
-  url_map          = google_compute_region_url_map.default.id
+  url_map          = google_compute_region_url_map.default.0.id
+}
+
+resource "google_compute_target_http_proxy" "default" {
+  count       = !var.global || var.protocol == "HTTPS" ? 0 : 1
+  project     = var.project_id
+  name        = var.name
+  description = var.description
+  url_map     = google_compute_url_map.default.0.id
+}
+
+resource "google_compute_target_https_proxy" "default" {
+  count            = var.global && var.protocol == "HTTPS" ? 1 : 0
+  project          = var.project_id
+  name             = var.name
+  description      = var.description
+  ssl_certificates = local.proxy_ssl_certificates
+  url_map          = google_compute_url_map.default.0.id
 }
 
 resource "google_compute_instance_group" "default" {

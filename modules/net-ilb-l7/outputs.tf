@@ -16,19 +16,21 @@
 
 output "address" {
   description = "Forwarding rule address."
-  value       = google_compute_forwarding_rule.default.ip_address
+  value       = !var.global ? google_compute_forwarding_rule.default.0.ip_address : google_compute_global_forwarding_rule.default.0.ip_address
 }
 
 output "backend_service_ids" {
   description = "Backend service resources."
-  value = {
+  value = !var.global ? {
     for k, v in google_compute_region_backend_service.default : k => v.id
+    } : {
+    for k, v in google_compute_backend_service.default : k => v.id
   }
 }
 
 output "forwarding_rule" {
   description = "Forwarding rule resource."
-  value       = google_compute_forwarding_rule.default
+  value       = !var.global ? google_compute_forwarding_rule.default.0 : google_compute_global_forwarding_rule.default.0
 }
 
 output "group_ids" {

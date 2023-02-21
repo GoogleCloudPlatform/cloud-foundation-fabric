@@ -14,34 +14,17 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Backend service resources.
+# tfdoc:file:description Backend service resources for global self-manged ILB.
 
-locals {
-  group_ids = merge(
-    {
-      for k, v in google_compute_instance_group.default : k => v.id
-    },
-    {
-      for k, v in google_compute_network_endpoint_group.default : k => v.id
-    },
-    {
-      for k, v in google_compute_region_network_endpoint_group.default : k => v.id
-    }
-  )
-  hc_ids = {
-    for k, v in google_compute_health_check.default : k => v.id
-  }
-}
-
-resource "google_compute_region_backend_service" "default" {
+resource "google_compute_backend_service" "default" {
   provider = google-beta
-  for_each = !var.global ? var.backend_service_configs : {}
+  for_each = var.global ? var.backend_service_configs : {}
   project = (
     each.value.project_id == null
     ? var.project_id
     : each.value.project_id
   )
-  region                          = var.region
+
   name                            = "${var.name}-${each.key}"
   description                     = var.description
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec
@@ -50,7 +33,7 @@ resource "google_compute_region_backend_service" "default" {
     for k in each.value.health_checks : lookup(local.hc_ids, k, k)
   ] # not for internet / serverless NEGs
   locality_lb_policy    = each.value.locality_lb_policy
-  load_balancing_scheme = "INTERNAL_MANAGED"
+  load_balancing_scheme = var.load_balancing_scheme
   port_name             = each.value.port_name # defaults to http, not for NEGs
   protocol = (
     each.value.protocol == null ? var.protocol : each.value.protocol
@@ -65,7 +48,6 @@ resource "google_compute_region_backend_service" "default" {
       balancing_mode  = backend.value.balancing_mode
       capacity_scaler = backend.value.capacity_scaler
       description     = backend.value.description
-      failover        = backend.value.failover
       max_connections = try(
         backend.value.max_connections.per_group, null
       )
@@ -111,28 +93,6 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
-  dynamic "connection_tracking_policy" {
-    for_each = (
-      each.value.connection_tracking == null
-      ? []
-      : [each.value.connection_tracking]
-    )
-    iterator = cb
-    content {
-      connection_persistence_on_unhealthy_backends = (
-        cb.value.persist_conn_on_unhealthy != null
-        ? cb.value.persist_conn_on_unhealthy
-        : null
-      )
-      idle_timeout_sec = cb.value.idle_timeout_sec
-      tracking_mode = (
-        cb.value.track_per_session != null
-        ? cb.value.track_per_session
-        : null
-      )
-    }
-  }
-
   dynamic "consistent_hash" {
     for_each = (
       each.value.consistent_hash == null ? [] : [each.value.consistent_hash]
@@ -157,18 +117,6 @@ resource "google_compute_region_backend_service" "default" {
           }
         }
       }
-    }
-  }
-
-  dynamic "failover_policy" {
-    for_each = (
-      each.value.failover_config == null ? [] : [each.value.failover_config]
-    )
-    iterator = fc
-    content {
-      disable_connection_drain_on_failover = fc.value.disable_conn_drain
-      drop_traffic_if_unhealthy            = fc.value.drop_traffic_if_unhealthy
-      failover_ratio                       = fc.value.ratio
     }
   }
 
@@ -222,13 +170,6 @@ resource "google_compute_region_backend_service" "default" {
           nanos   = interval.value.nanos
         }
       }
-    }
-  }
-
-  dynamic "subsetting" {
-    for_each = each.value.enable_subsetting == true ? [""] : []
-    content {
-      policy = "CONSISTENT_HASH_SUBSETTING"
     }
   }
 }

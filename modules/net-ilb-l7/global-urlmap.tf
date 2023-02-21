@@ -17,21 +17,20 @@
 # tfdoc:file:description URL map resources.
 
 locals {
-  backend_ids = !var.global ? {
-    for k, v in google_compute_region_backend_service.default : k => v.id
+  global_backend_ids = var.global ? {
+    for k, v in google_compute_backend_service.default : k => v.id
   } : {}
 }
 
-resource "google_compute_region_url_map" "default" {
-  count       = var.global ? 0 : 1
+resource "google_compute_url_map" "default" {
+  count       = !var.global ? 0 : 1
   provider    = google-beta
   project     = var.project_id
-  region      = var.region
   name        = var.name
   description = var.description
   default_service = (
     var.urlmap_config.default_service == null ? null : lookup(
-      local.backend_ids,
+      local.global_backend_ids,
       var.urlmap_config.default_service,
       var.urlmap_config.default_service
     )
@@ -69,7 +68,7 @@ resource "google_compute_region_url_map" "default" {
     iterator = m
     content {
       default_service = m.value.default_service == null ? null : lookup(
-        local.backend_ids, m.value.default_service, m.value.default_service
+        local.global_backend_ids, m.value.default_service, m.value.default_service
       )
       description = m.value.description
       name        = m.key
@@ -93,7 +92,7 @@ resource "google_compute_region_url_map" "default" {
         content {
           paths = path_rule.value.paths
           service = path_rule.value.service == null ? null : lookup(
-            local.backend_ids,
+            local.global_backend_ids,
             path_rule.value.service,
             path_rule.value.service
           )
@@ -163,7 +162,7 @@ resource "google_compute_region_url_map" "default" {
                 )
                 content {
                   backend_service = lookup(
-                    local.backend_ids,
+                    local.global_backend_ids,
                     route_action.value.request_mirror_backend,
                     route_action.value.request_mirror_backend
                   )
@@ -220,7 +219,7 @@ resource "google_compute_region_url_map" "default" {
                 iterator = service
                 content {
                   backend_service = lookup(
-                    local.backend_ids, service.key, service.key
+                    local.global_backend_ids, service.key, service.key
                   )
                   weight = service.value.weight
                   dynamic "header_action" {
@@ -277,7 +276,7 @@ resource "google_compute_region_url_map" "default" {
         content {
           priority = route_rules.value.priority
           service = route_rules.value.service == null ? null : lookup(
-            local.backend_ids,
+            local.global_backend_ids,
             route_rules.value.service,
             route_rules.value.service
           )
@@ -452,7 +451,7 @@ resource "google_compute_region_url_map" "default" {
                 )
                 content {
                   backend_service = lookup(
-                    local.backend_ids,
+                    local.global_backend_ids,
                     route_action.value.request_mirror_backend,
                     route_action.value.request_mirror_backend
                   )
@@ -509,7 +508,7 @@ resource "google_compute_region_url_map" "default" {
                 iterator = service
                 content {
                   backend_service = lookup(
-                    local.backend_ids, service.key, service.key
+                    local.global_backend_ids, service.key, service.key
                   )
                   weight = service.value.weight
                   dynamic "header_action" {
