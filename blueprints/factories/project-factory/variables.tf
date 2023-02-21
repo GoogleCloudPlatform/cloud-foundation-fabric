@@ -119,18 +119,6 @@ variable "org_policies" {
   type = map(object({
     inherit_from_parent = optional(bool) # for list policies only.
     reset               = optional(bool)
-
-    # default (unconditional) values
-    allow = optional(object({
-      all    = optional(bool)
-      values = optional(list(string))
-    }))
-    deny = optional(object({
-      all    = optional(bool)
-      values = optional(list(string))
-    }))
-    enforce = optional(bool, true) # for boolean policies only.
-
     # conditional values
     rules = optional(list(object({
       allow = optional(object({
@@ -141,7 +129,7 @@ variable "org_policies" {
         all    = optional(bool)
         values = optional(list(string))
       }))
-      enforce = optional(bool, true) # for boolean policies only.
+      enforce = optional(bool) # for boolean policies only.
       condition = object({
         description = optional(string)
         expression  = optional(string)

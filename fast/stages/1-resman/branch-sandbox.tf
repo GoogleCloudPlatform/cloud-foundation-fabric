@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ module "branch-sandbox-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-sandbox-sa.0.iam_email]
   }
   org_policies = {
-    "constraints/sql.restrictPublicIp"       = { enforce = false }
-    "constraints/compute.vmExternalIpAccess" = { allow = { all = true } }
+    "sql.restrictPublicIp"       = { rules = [{ enforce = false }] }
+    "compute.vmExternalIpAccess" = { rules = [{ allow = { all = true } }] }
   }
   tag_bindings = {
     context = try(

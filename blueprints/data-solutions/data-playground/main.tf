@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -83,8 +83,8 @@ module "project" {
   }
 
   org_policies = {
-    # "constraints/compute.requireOsLogin" = {
-    #   enforce = false
+    # "compute.requireOsLogin" = {
+    #   rules = [{ enforce = false }]
     # }
     # Example of applying a project wide policy, mainly useful for Composer 1
   }

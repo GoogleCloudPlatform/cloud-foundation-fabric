@@ -245,7 +245,7 @@ module "project" {
     "compute.disableGuestAttributesAccess" = {
       rules = [{ enforce = true }]
     }
-    "constraints/compute.skipDefaultNetworkCreation" = {
+    "compute.skipDefaultNetworkCreation" = {
       rules = [{ enforce = true }]
     }
     "iam.disableServiceAccountKeyCreation" = {
@@ -267,21 +267,21 @@ module "project" {
         }
       ]
     }
-    "constraints/iam.allowedPolicyMemberDomains" = {
+    "iam.allowedPolicyMemberDomains" = {
       rules = [{
         allow = {
           values = ["C0xxxxxxx", "C0yyyyyyy"]
         }
       }]
     }
-    "constraints/compute.trustedImageProjects" = {
+    "compute.trustedImageProjects" = {
       rules = [{
         allow = {
           values = ["projects/my-project"]
         }
       }]
     }
-    "constraints/compute.vmExternalIpAccess" = {
+    "compute.vmExternalIpAccess" = {
       rules = [{ deny = { all = true } }]
     }
   }
@@ -314,7 +314,7 @@ module "project" {
 compute.disableGuestAttributesAccess:
   rules:
   - enforce: true
-constraints/compute.skipDefaultNetworkCreation:
+compute.skipDefaultNetworkCreation:
   rules:
   - enforce: true
 iam.disableServiceAccountKeyCreation:
@@ -333,16 +333,16 @@ iam.disableServiceAccountKeyUpload:
 
 ```yaml
 # tftest-file id=list path=configs/org-policies/list.yaml
-constraints/compute.trustedImageProjects:
+compute.trustedImageProjects:
   rules:
   - allow:
       values:
       - projects/my-project
-constraints/compute.vmExternalIpAccess:
+compute.vmExternalIpAccess:
   rules:
   - deny:
       all: true
-constraints/iam.allowedPolicyMemberDomains:
+iam.allowedPolicyMemberDomains:
   rules:
   - allow:
       values:

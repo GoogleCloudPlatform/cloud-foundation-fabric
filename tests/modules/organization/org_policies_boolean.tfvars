@@ -3,7 +3,6 @@ org_policies = {
     rules = [{ enforce = true }]
   }
   "iam.disableServiceAccountKeyUpload" = {
-
     rules = [
       {
         condition = {

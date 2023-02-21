@@ -40,7 +40,7 @@ module "org" {
     "compute.disableGuestAttributesAccess" = {
       rules = [{ enforce = true }]
     }
-    "constraints/compute.skipDefaultNetworkCreation" = {
+    "compute.skipDefaultNetworkCreation" = {
       rules = [{ enforce = true }]
     }
     "iam.disableServiceAccountKeyCreation" = {
@@ -62,7 +62,7 @@ module "org" {
         }
       ]
     }
-    "constraints/iam.allowedPolicyMemberDomains" = {
+    "iam.allowedPolicyMemberDomains" = {
       rules = [
         {
           allow = { all = true }
@@ -83,14 +83,14 @@ module "org" {
       ]
     }
 
-    "constraints/compute.trustedImageProjects" = {
+    "compute.trustedImageProjects" = {
       rules = [{
         allow = {
           values = ["projects/my-project"]
         }
       }]
     }
-    "constraints/compute.vmExternalIpAccess" = {
+    "compute.vmExternalIpAccess" = {
       rules = [{ deny = { all = true } }]
     }
   }

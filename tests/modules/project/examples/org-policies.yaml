@@ -25,8 +25,8 @@ values:
         deny_all: null
         enforce: 'TRUE'
         values: []
-  module.project.google_org_policy_policy.default["constraints/compute.skipDefaultNetworkCreation"]:
-    name: projects/foo-project-example/policies/constraints/compute.skipDefaultNetworkCreation
+  module.project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
+    name: projects/foo-project-example/policies/compute.skipDefaultNetworkCreation
     parent: projects/foo-project-example
     spec:
     - inherit_from_parent: null
@@ -37,8 +37,8 @@ values:
         deny_all: null
         enforce: 'TRUE'
         values: []
-  module.project.google_org_policy_policy.default["constraints/compute.trustedImageProjects"]:
-    name: projects/foo-project-example/policies/constraints/compute.trustedImageProjects
+  module.project.google_org_policy_policy.default["compute.trustedImageProjects"]:
+    name: projects/foo-project-example/policies/compute.trustedImageProjects
     parent: projects/foo-project-example
     spec:
     - inherit_from_parent: null
@@ -52,8 +52,8 @@ values:
         - allowed_values:
           - projects/my-project
           denied_values: null
-  module.project.google_org_policy_policy.default["constraints/compute.vmExternalIpAccess"]:
-    name: projects/foo-project-example/policies/constraints/compute.vmExternalIpAccess
+  module.project.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    name: projects/foo-project-example/policies/compute.vmExternalIpAccess
     parent: projects/foo-project-example
     spec:
     - inherit_from_parent: null
@@ -64,8 +64,8 @@ values:
         deny_all: 'TRUE'
         enforce: null
         values: []
-  module.project.google_org_policy_policy.default["constraints/iam.allowedPolicyMemberDomains"]:
-    name: projects/foo-project-example/policies/constraints/iam.allowedPolicyMemberDomains
+  module.project.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
+    name: projects/foo-project-example/policies/iam.allowedPolicyMemberDomains
     parent: projects/foo-project-example
     spec:
     - inherit_from_parent: null

@@ -44,7 +44,7 @@ module "folder" {
     "compute.disableGuestAttributesAccess" = {
       rules = [{ enforce = true }]
     }
-    "constraints/compute.skipDefaultNetworkCreation" = {
+    "compute.skipDefaultNetworkCreation" = {
       rules = [{ enforce = true }]
     }
     "iam.disableServiceAccountKeyCreation" = {
@@ -66,21 +66,21 @@ module "folder" {
         }
       ]
     }
-    "constraints/iam.allowedPolicyMemberDomains" = {
+    "iam.allowedPolicyMemberDomains" = {
       rules = [{
         allow = {
           values = ["C0xxxxxxx", "C0yyyyyyy"]
         }
       }]
     }
-    "constraints/compute.trustedImageProjects" = {
+    "compute.trustedImageProjects" = {
       rules = [{
         allow = {
           values = ["projects/my-project"]
         }
       }]
     }
-    "constraints/compute.vmExternalIpAccess" = {
+    "compute.vmExternalIpAccess" = {
       rules = [{ deny = { all = true } }]
     }
   }
