@@ -314,7 +314,7 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=3 files=subnet-simple,subnet-detailed inventory=factory.yaml
+# tftest modules=1 resources=4 files=subnet-simple,subnet-detailed inventory=factory.yaml
 ```
 
 ```yaml

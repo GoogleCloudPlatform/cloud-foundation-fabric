@@ -138,6 +138,62 @@ module "project" {
 # tftest modules=1 resources=2
 ```
 
+### Using shortcodes for Service Identities in additive IAM
+Most Service Identities contains project number in their e-mail address and this prevents additive IAM to work, as these values are not known at moment of execution of `terraform plan` (its not an issue for authoritative IAM). To refer current project Service Identities you may use shortcodes for Service Identities similarly as for `service_identity_iam` when configuring Shared VPC.
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project-example"
+
+  services = [
+    "run.googleapis.com",
+    "container.googleapis.com",
+  ]
+
+  iam_additive = {
+    "roles/editor"                         = ["cloudservices"]
+    "roles/vpcaccess.user"                 = ["cloudrun"]
+    "roles/container.hostServiceAgentUser" = ["container-engine"]
+  }
+}
+# tftest modules=1 resources=6
+```
+
+
+### Service identities requiring manual IAM grants
+
+The module will create service identities at project creation instead of creating of them at the time of first use. This allows granting these service identities roles in other projects, something which is usually necessary in a Shared VPC context.  
+
+You can grant roles to service identities using the following construct:
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project-example"
+  iam = {
+    "roles/apigee.serviceAgent" = [
+      "serviceAccount:${module.project.service_accounts.robots.apigee}"
+    ]
+  }
+}
+# tftest modules=1 resources=2
+```
+
+This table lists all affected services and roles that you need to grant to service identities
+
+| service | service identity | role |
+|---|---|---|
+| apigee.googleapis.com | apigee | roles/apigee.serviceAgent |
+| artifactregistry.googleapis.com | artifactregistry | roles/artifactregistry.serviceAgent |
+| cloudasset.googleapis.com | cloudasset | roles/cloudasset.serviceAgent |
+| cloudbuild.googleapis.com | cloudbuild | roles/cloudbuild.builds.builder |
+| gkehub.googleapis.com | fleet | roles/gkehub.serviceAgent |
+| multiclusteringress.googleapis.com | multicluster-ingress | roles/multiclusteringress.serviceAgent |
+| pubsub.googleapis.com | pubsub | roles/pubsub.serviceAgent |
+| sqladmin.googleapis.com | sqladmin | roles/cloudsql.serviceAgent |
+
+
 ## Shared VPC
 
 The module allows managing Shared VPC status for both hosts and service projects, and includes a simple way of assigning Shared VPC roles to service identities.

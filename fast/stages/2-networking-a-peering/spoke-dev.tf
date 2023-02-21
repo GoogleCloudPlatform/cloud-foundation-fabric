@@ -16,6 +16,19 @@
 
 # tfdoc:file:description Dev spoke VPC and related resources.
 
+locals {
+  _l7ilb_subnets_dev = [
+    for v in var.l7ilb_subnets.dev : merge(v, {
+      active = true
+      region = lookup(var.regions, v.region, v.region)
+  })]
+  l7ilb_subnets_dev = [
+    for v in local._l7ilb_subnets_dev : merge(v, {
+      name = "dev-l7ilb-${local.region_shortnames[v.region]}"
+    })
+  ]
+}
+
 module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -48,9 +61,9 @@ module "dev-spoke-vpc" {
   project_id         = module.dev-spoke-project.project_id
   name               = "dev-spoke-0"
   mtu                = 1500
-  data_folder        = "${var.data_dir}/subnets/dev"
+  data_folder        = "${var.factories_config.data_dir}/subnets/dev"
   psa_config         = try(var.psa_ranges.dev, null)
-  subnets_proxy_only = local.l7ilb_subnets.dev
+  subnets_proxy_only = local.l7ilb_subnets_dev
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
@@ -74,8 +87,8 @@ module "dev-spoke-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.data_dir}/firewall-rules/dev"
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dev"
   }
 }
 
@@ -84,7 +97,7 @@ module "dev-spoke-cloudnat" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.dev-spoke-project.project_id
   region         = each.value
-  name           = "dev-nat-${var.region_trigram[each.value]}"
+  name           = "dev-nat-${local.region_shortnames[each.value]}"
   router_create  = true
   router_network = module.dev-spoke-vpc.name
   router_asn     = 4200001024

@@ -217,6 +217,11 @@ resource "google_notebooks_instance" "playground" {
 
   service_account = module.service-account-notebook.email
 
+  # Remove once terraform-provider-google/issues/9164 is fixed
+  lifecycle {
+    ignore_changes = [disk_encryption, kms_key]
+  }
+
   #TODO Uncomment once terraform-provider-google/issues/9273 is fixed
   # tags = ["ssh"]
   depends_on = [

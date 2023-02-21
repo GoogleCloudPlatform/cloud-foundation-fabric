@@ -39,7 +39,68 @@ This stage creates a project containing and as many clusters and node pools as r
 
 ## How to run this stage
 
-This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../0-bootstrap), [`01-resman`](../../1-resman), 02-networking (either [VPN](../../2-networking-b-vpn) or [NVA](../../2-networking-c-nva)) and [`02-security`](../../2-security)) have been run.
+This stage is meant to be executed after the FAST "foundational" stages: bootstrap, resource management, security and networking stages.
+
+It's of course possible to run this stage in isolation, refer to the *[Running in isolation](#running-in-isolation)* section below for details.
+
+Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
+
+### Provider and Terraform variables
+
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+
+The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+
+```bash
+../../../stage-links.sh ~/fast-config
+
+# copy and paste the following commands for '3-gke-multitenant'
+
+ln -s /home/ludomagno/fast-config/providers/3-gke-multitenant-providers.tf ./
+ln -s /home/ludomagno/fast-config/tfvars/globals.auto.tfvars.json ./
+ln -s /home/ludomagno/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s /home/ludomagno/fast-config/tfvars/1-resman.auto.tfvars.json ./
+ln -s /home/ludomagno/fast-config/tfvars/2-networking.auto.tfvars.json ./
+ln -s /home/ludomagno/fast-config/tfvars/2-security.auto.tfvars.json ./
+```
+
+```bash
+../../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+
+# copy and paste the following commands for '3-gke-multitenant'
+
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-gke-multitenant-providers.tf ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/globals.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-security.auto.tfvars.json ./
+```
+
+### Impersonating the automation service account
+
+The preconfigured provider file uses impersonation to run with this stage's automation service account's credentials. The `gcp-devops` and `organization-admins` groups have the necessary IAM bindings in place to do that, so make sure the current user is a member of one of those groups.
+
+### Variable configuration
+
+Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
+
+- variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `globals.auto.tfvars.json` file linked or copied above
+- variables which refer to resources managed by previous stage, which are prepopulated here via the `*.auto.tfvars.json` files linked or copied above
+- and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
+
+The latter set is explained in the [Customization](#customizations) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
+
+### Running the stage
+
+Once provider and variable values are in place and the correct user is configured, the stage can be run:
+
+```bash
+terraform init
+terraform apply
+```
+
+### Running in isolation
 
 It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
 
@@ -62,39 +123,9 @@ It's of course possible to run this stage in isolation, by making sure the archi
 
 The VPC host project, VPC and subnets should already exist.
 
-### Providers configuration
+## Customizations
 
-If you're running this on top of FAST, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
-
-```bash
-# Variable `outputs_location` is set to `~/fast-config` in stage 01-resman
-$ cd fabric-fast/stages/03-gke-multitenant/dev
-ln -s ~/fast-config/providers/03-gke-dev-providers.tf .
-```
-
-### Variable configuration
-
-There are two broad sets of variables you will need to fill in:
-
-- variables shared by other stages (organization id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
-- variables specific to resources managed by this stage
-
-#### Variables passed in from other stages
-
-To avoid the tedious job of filling in the first group of variables with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
-
-If you configured a valid path for `outputs_location` in the bootstrap and networking stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
-
-```bash
-# Variable `outputs_location` is set to `~/fast-config`
-ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
-ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
-```
-
-If you're not using FAST, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
-
-#### Cluster and node pools
+### Cluster and node pools
 
 This stage is designed with multi-tenancy in mind, and the expectation is that  GKE clusters will mostly share a common set of defaults. Variables are designed to support this approach for both clusters and node pools:
 
@@ -105,7 +136,7 @@ This stage is designed with multi-tenancy in mind, and the expectation is that  
 
 There are two additional variables that influence cluster configuration: `authenticator_security_group` to configure [Google Groups for RBAC](https://cloud.google.com/kubernetes-engine/docs/how-to/google-groups-rbac), `dns_domain` to configure [Cloud DNS for GKE](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns).
 
-#### Fleet management
+### Fleet management
 
 Fleet management is entirely optional, and uses three separate variables:
 
@@ -115,15 +146,6 @@ Fleet management is entirely optional, and uses three separate variables:
 - `fleet_workload_identity`: to enables optional centralized [Workload Identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
 
 Leave all these variables unset (or set to `null`) to disable fleet management.
-
-## Running Terraform
-
-Once the [provider](#providers-configuration) and [variable](#variable-configuration) configuration is complete, you can apply this stage:
-
-```bash
-terraform init
-terraform apply
-```
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->

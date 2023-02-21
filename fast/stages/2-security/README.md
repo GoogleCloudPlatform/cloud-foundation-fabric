@@ -12,6 +12,24 @@ The following diagram illustrates the high-level design of created resources and
   <img src="diagram.svg" alt="Security diagram">
 </p>
 
+## Table of contents
+
+- [Design overview and choices](#design-overview-and-choices)
+  - [Cloud KMS](#cloud-kms)
+  - [VPC Service Controls](#vpc-service-controls)
+- [How to run this stage](#how-to-run-this-stage)
+  - [Provider and Terraform variables](#provider-and-terraform-variables)
+  - [Impersonating the automation service account](#impersonating-the-automation-service-account)
+  - [Variable configuration](#variable-configuration)
+  - [Running the stage](#running-the-stage)
+- [Customizations](#customizations)
+  - [KMS keys](#kms-keys)
+  - [VPC Service Controls configuration](#vpc-service-controls-configuration)
+    - [Dry-run vs. enforced](#dry-run-vs-enforced)
+    - [Access levels](#access-levels)
+    - [Ingress and Egress policies](#ingress-and-egress-policies)
+    - [Perimeters](#perimeters)
+
 ## Design overview and choices
 
 Project-level security resources are grouped into two separate projects, one per environment. This setup matches requirements we frequently observe in real life and provides enough separation without needlessly complicating operations.
@@ -42,57 +60,57 @@ Some care needs to be taken with project membership in perimeters, which can onl
 
 ## How to run this stage
 
-This stage is meant to be executed after the [resource management](../1-resman) stage has run, as it leverages the folder and automation resources created there. The relevant user groups must also exist, but that's one of the requirements for the previous stages too, so if you ran those successfully, you're good to go.
+This stage is meant to be executed after the [resource management](../1-resman) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured in the [bootstrap](../0-bootstrap) stage.
 
-It's possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the bootstrap stage for the required roles.
+It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the previous stages for the environmental requirements.
 
-Before running this stage, you need to ensure you have the correct credentials and permissions, and customize variables by assigning values that match your configuration.
+Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
 
-### Providers configuration
+### Provider and Terraform variables
 
-The default way of making sure you have the correct permissions is to use the identity of the service account pre-created for this stage during bootstrap, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
-To simplify setup, the previous stage pre-configures a valid providers file in its output, and optionally writes it to a local file if the `outputs_location` variable is set to a valid path.
-
-If you have set a valid value for `outputs_location` in the resource management stage, simply link the relevant `providers.tf` file from this stage's folder in the path you specified:
+The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
 ```bash
-# `outputs_location` is set to `~/fast-config`
-ln -s ~/fast-config/providers/02-security-providers.tf .
-```
+../../stage-links.sh ~/fast-config
 
-If you have not configured `outputs_location` in resource management, you can derive the providers file from that stage's outputs:
+# copy and paste the following commands for '2-security'
+
+ln -s ~/fast-config/providers/2-security-providers.tf ./
+ln -s ~/fast-config/tfvars/globals.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+```
 
 ```bash
-cd ../1-resman
-terraform output -json providers | jq -r '.["02-security"]' \
-  > ../02-security/providers.tf
+../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+
+# copy and paste the following commands for '2-security'
+
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-security-providers.tf ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/globals.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
 ```
+
+### Impersonating the automation service account
+
+The preconfigured provider file uses impersonation to run with this stage's automation service account's credentials. The `gcp-devops` and `organization-admins` groups have the necessary IAM bindings in place to do that, so make sure the current user is a member of one of those groups.
 
 ### Variable configuration
 
-There are two broad sets of variables you will need to fill in:
+Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
 
-- variables shared by other stages (organization id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
-- variables specific to resources managed by this stage
+- variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `globals.auto.tfvars.json` file linked or copied above
+- variables which refer to resources managed by previous stage, which are prepopulated here via the `0-bootstrap.auto.tfvars.json` and `1-resman.auto.tfvars.json` files linked or copied above
+- and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
 
-To avoid the tedious job of filling in the first group of variables with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
+The latter set is explained in the [Customization](#customizations) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
 
-If you configured a valid path for `outputs_location` in the previous stages, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's output folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, two `.tfvars` files are available:
+### Running the stage
 
-```bash
-# `outputs_location` is set to `~/fast-config`
-ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
-# also copy the tfvars file used for the bootstrap stage
-cp ../0-bootstrap/terraform.tfvars .
-```
-
-A second set of optional variables is specific to this stage. If you need to customize them add them to the file copied from bootstrap.
-
-Refer to the [Variables](#variables) table at the bottom of this document, for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning. The sections below also describe some of the possible customizations.
-
-Once done, you can run this stage:
+Once provider and variable values are in place and the correct user is configured, the stage can be run:
 
 ```bash
 terraform init

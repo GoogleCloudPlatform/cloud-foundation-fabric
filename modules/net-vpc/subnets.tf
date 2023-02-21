@@ -31,6 +31,9 @@ locals {
       flow_logs_config      = try(v.flow_logs, null)
       ipv6                  = try(v.ipv6, null)
       secondary_ip_ranges   = try(v.secondary_ip_ranges, null)
+      iam_groups            = try(v.iam_groups, [])
+      iam_users             = try(v.iam_users, [])
+      iam_service_accounts  = try(v.iam_service_accounts, [])
     }
   }
   _factory_subnets_iam = [
