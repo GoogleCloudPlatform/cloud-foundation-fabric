@@ -213,7 +213,6 @@ module "service-project" {
   source = "./fabric/modules/project"
   name   = "my-service-project"
   shared_vpc_service_config = {
-    attach       = true
     host_project = module.host-project.project_id
     service_identity_iam = {
       "roles/compute.networkUser" = [
