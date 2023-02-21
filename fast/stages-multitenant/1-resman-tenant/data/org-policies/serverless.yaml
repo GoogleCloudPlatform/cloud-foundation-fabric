@@ -3,24 +3,29 @@
 # sample subset of useful organization policies, edit to suit requirements
 
 run.allowedIngress:
-  allow:
-    values:
-    - is:internal
+  rules:
+  - allow:
+      values:
+      - is:internal
 
 # run.allowedVPCEgress:
-#   allow:
-#     values:
+#   rules:
+#   - allow:
+#       values:
 #       - is:private-ranges-only
 
 # cloudfunctions.allowedIngressSettings:
-#   allow:
-#     values:
-#     - is:ALLOW_INTERNAL_ONLY
+#   rules:
+#   - allow:
+#       values:
+#       - is:ALLOW_INTERNAL_ONLY
 
 # cloudfunctions.allowedVpcConnectorEgressSettings:
-#   allow:
-#     values:
-#     - is:PRIVATE_RANGES_ONLY
+#   rules:
+#   - allow:
+#       values:
+#       - is:PRIVATE_RANGES_ONLY
 
 # cloudfunctions.requireVPCConnector:
-#   enforce: true
+#   rules:
+#   - enforce: true

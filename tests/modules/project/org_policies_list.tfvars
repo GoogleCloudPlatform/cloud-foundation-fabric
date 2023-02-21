@@ -11,7 +11,6 @@ org_policies = {
     }]
   }
   "compute.restrictLoadBalancerCreationForTypes" = {
-
     rules = [
       {
         condition = {
