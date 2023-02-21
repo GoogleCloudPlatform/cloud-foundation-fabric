@@ -150,6 +150,19 @@ access_policy = "[policy-name]"
 tf_identity   = "[user or SA account]"
 ```
 
+#### Use case 3.4
+
+Another possibility is for a project to be a Service Project with the Cloud Run service running in the Host Project, since this is also considered `"internal"` traffic. In this case a VPC SC perimeter is not needed.
+
+<p style="left"> <img src="images/use-case-3.4.png" width="800"> </p>
+
+Note that the service project can't have a different DNS entry for the same endpoint, it uses the DNS and PSC configuration of the host project. Set the following in `terraform.tfvars`:
+
+```tfvars
+prj_main_id = "[your-main-project-id]"     # Used as host project
+prj_svc1_id = "[your-service-project1-id]"
+```
+
 ### Use case 4:
 
 [TODO]
