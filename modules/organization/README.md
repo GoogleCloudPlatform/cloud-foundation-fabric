@@ -25,50 +25,77 @@ module "org" {
   iam_additive_members = {
     "user:compute@example.org" = ["roles/compute.admin", "roles/container.viewer"]
   }
-
+  tags = {
+    allowexternal = {
+      description = "Allow external identities."
+      values = {
+        true = {}, false = {}
+      }
+    }
+  }
   org_policies = {
     "custom.gkeEnableAutoUpgrade" = {
-      enforce = true
+      rules = [{ enforce = true }]
     }
     "compute.disableGuestAttributesAccess" = {
-      enforce = true
+      rules = [{ enforce = true }]
     }
     "constraints/compute.skipDefaultNetworkCreation" = {
-      enforce = true
+      rules = [{ enforce = true }]
     }
     "iam.disableServiceAccountKeyCreation" = {
-      enforce = true
+      rules = [{ enforce = true }]
     }
     "iam.disableServiceAccountKeyUpload" = {
-      enforce = false
       rules = [
         {
           condition = {
-            expression  = "resource.matchTagId(\"tagKeys/1234\", \"tagValues/1234\")"
+            expression  = "resource.matchTagId('tagKeys/1234', 'tagValues/1234')"
             title       = "condition"
             description = "test condition"
             location    = "somewhere"
           }
           enforce = true
+        },
+        {
+          enforce = false
         }
       ]
     }
     "constraints/iam.allowedPolicyMemberDomains" = {
-      allow = {
-        values = ["C0xxxxxxx", "C0yyyyyyy"]
-      }
+      rules = [
+        {
+          allow = { all = true }
+          condition = {
+            expression  = "resource.matchTag('1234567890/allowexternal', 'true')"
+            title       = "Allow external identities"
+            description = "Allow external identities when resource has the `allowexternal` tag set to true."
+          }
+        },
+        {
+          allow = { values = ["C0xxxxxxx", "C0yyyyyyy"] }
+          condition = {
+            expression  = "!resource.matchTag('1234567890/allowexternal', 'true')"
+            title       = ""
+            description = "For any resource without allowexternal=true, only allow identities from restricted domains."
+          }
+        }
+      ]
     }
+
     "constraints/compute.trustedImageProjects" = {
-      allow = {
-        values = ["projects/my-project"]
-      }
+      rules = [{
+        allow = {
+          values = ["projects/my-project"]
+        }
+      }]
     }
     "constraints/compute.vmExternalIpAccess" = {
-      deny = { all = true }
+      rules = [{ deny = { all = true } }]
     }
   }
 }
-# tftest modules=1 resources=13 inventory=basic.yaml
+# tftest modules=1 resources=16 inventory=basic.yaml
 ```
 
 ## IAM
@@ -111,7 +138,7 @@ module "org" {
   # not necessarily to enforce on the org level, policy may be applied on folder/project levels
   org_policies = {
     "custom.gkeEnableAutoUpgrade" = {
-      enforce = true
+      rules = [{ enforce = true }]
     }
   }
 }
@@ -131,7 +158,7 @@ module "org" {
   org_policy_custom_constraints_data_path = "configs/custom-constraints"
   org_policies = {
     "custom.gkeEnableAutoUpgrade" = {
-      enforce = true
+      rules = [{ enforce = true }]
     }
   }
 }

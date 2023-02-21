@@ -42,40 +42,46 @@ module "folder" {
   name   = "Folder name"
   org_policies = {
     "compute.disableGuestAttributesAccess" = {
-      enforce = true
+      rules = [{ enforce = true }]
     }
     "constraints/compute.skipDefaultNetworkCreation" = {
-      enforce = true
+      rules = [{ enforce = true }]
     }
     "iam.disableServiceAccountKeyCreation" = {
-      enforce = true
+      rules = [{ enforce = true }]
     }
     "iam.disableServiceAccountKeyUpload" = {
-      enforce = false
       rules = [
         {
           condition = {
-            expression  = "resource.matchTagId(\"tagKeys/1234\", \"tagValues/1234\")"
+            expression  = "resource.matchTagId('tagKeys/1234', 'tagValues/1234')"
             title       = "condition"
             description = "test condition"
             location    = "somewhere"
           }
           enforce = true
+        },
+        {
+          enforce = false
         }
       ]
     }
     "constraints/iam.allowedPolicyMemberDomains" = {
-      allow = {
-        values = ["C0xxxxxxx", "C0yyyyyyy"]
-      }
+      rules = [{
+        allow = {
+          values = ["C0xxxxxxx", "C0yyyyyyy"]
+        }
+      }]
     }
     "constraints/compute.trustedImageProjects" = {
-      allow = {
-        values = ["projects/my-project"]
-      }
+      rules = [{
+        allow = {
+          values = ["projects/my-project"]
+        }
+      }]
     }
     "constraints/compute.vmExternalIpAccess" = {
-      deny = { all = true }
+      rules = [{ deny = { all = true } }]
     }
   }
 }

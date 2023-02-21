@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ values:
       - allow_all: null
         condition:
         - description: test condition
-          expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
+          expression: resource.matchTagId('tagKeys/1234', 'tagValues/1234')
           location: somewhere
           title: condition
         deny_all: null
