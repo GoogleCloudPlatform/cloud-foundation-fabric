@@ -1,13 +1,11 @@
 automation = {
   outputs_bucket = "test"
 }
-project_config = {
-  billing_account = {
-    id = "012345-67890A-BCDEF0",
-  },
-  parent = {
-    data-platform-dev = "folders/12345678"
-  }
+billing_account = {
+  id = "012345-67890A-BCDEF0",
+}
+folder_ids = {
+  data-platform-dev = "folders/12345678"
 }
 host_project_ids = {
   dev-spoke-0 = "fast-dev-net-spoke-0"
