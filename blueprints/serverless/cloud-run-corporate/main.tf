@@ -16,7 +16,7 @@
 
 locals {
   domain_cr_main = format("%s.",
-  trimprefix(module.cloud_run_main.service.status[0].url, "https://"))
+  trimprefix(module.cloud_run.service.status[0].url, "https://"))
   tf_id = (var.tf_identity == null ? null :
     length(regexall("iam.gserviceaccount.com", var.tf_identity)) > 0 ?
   "serviceAccount:${var.tf_identity}" : "user:${var.tf_identity}")
@@ -104,7 +104,7 @@ module "project_svc1" {
 
 # Cloud Run service. Usually in the main project, but created in a service project
 # if the use case is using an L7ILB and custom domain
-module "cloud_run_main" {
+module "cloud_run" {
   source = "../../../modules/cloud-run"
   project_id = (var.custom_domain == null ?
   module.project_main.project_id : module.project_svc1[0].project_id)
