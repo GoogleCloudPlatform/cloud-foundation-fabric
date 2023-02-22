@@ -452,7 +452,10 @@ The remaining configuration is manual, as it regards the repositories themselves
   - edit the modules source to match your modules repository
     - a simple way is using the "Replace in files" function of your editor
       - search for `source\s*= "../../../modules/([^"]+)"`
-      - replace with `source = "git@github.com:my-org/fast-modules.git//$1?ref=v1.0"`
+      - replace with:
+        - modules stored on GitHub: `source = "git@github.com:my-org/fast-modules.git//$1?ref=v1.0"`
+        - modules stored on Gitlab: `source = "git::ssh://git@gitlab.com/my-org/fast-modules.git//$1?ref=v1.0"`
+        - modules stored on Source Repositories: `source = git::https://source.developers.google.com/p/my-project/r/my-repository//$1?ref=v1.0"`. You may need to run `git config --global credential.'https://source.developers.google.com'.helper gcloud.sh` first as documented [here](https://cloud.google.com/source-repositories/docs/adding-repositories-as-remotes#add_the_repository_as_a_remote)
   - copy the generated workflow file for the stage from the GCS output files bucket or from the local clone if enabled
     - for GitHub, place it in a `.github/workflows` folder in the repository root
     - for Gitlab, rename it to `.gitlab-ci.yml` and place it in the repository root
