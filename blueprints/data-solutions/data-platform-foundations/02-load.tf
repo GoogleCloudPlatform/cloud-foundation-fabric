@@ -15,18 +15,15 @@
 # tfdoc:file:description Load project and VPC.
 
 locals {
-  group_iam_load = {
-    (local.groups.data-engineers) = [
-      "roles/compute.viewer",
-      "roles/dataflow.admin",
-      "roles/dataflow.developer",
-      "roles/viewer",
-    ]
-  }
   iam_load = {
     "roles/bigquery.jobUser" = [module.load-sa-df-0.iam_email]
     "roles/dataflow.admin" = [
-      module.orch-sa-cmp-0.iam_email, module.load-sa-df-0.iam_email
+      module.orch-sa-cmp-0.iam_email,
+      module.load-sa-df-0.iam_email,
+      local.groups_iam.data-engineers
+    ]
+    "roles/dataflow.developer" = [
+      local.groups_iam.data-engineers
     ]
     "roles/dataflow.worker"     = [module.load-sa-df-0.iam_email]
     "roles/storage.objectAdmin" = local.load_service_accounts
@@ -56,9 +53,8 @@ module "load-project" {
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.load : "${var.project_config.project_ids.load}${local.project_suffix}"
-  # group_iam       = local.group_iam_load
-  iam          = var.project_config.billing_account_id != null ? local.iam_load : null
-  iam_additive = var.project_config.billing_account_id == null ? local.iam_load : null
+  iam             = var.project_config.billing_account_id != null ? local.iam_load : null
+  iam_additive    = var.project_config.billing_account_id == null ? local.iam_load : null
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -90,8 +86,13 @@ module "load-sa-df-0" {
   name         = "load-df-0"
   display_name = "Data platform Dataflow load service account"
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
-    "roles/iam.serviceAccountUser"         = [module.orch-sa-cmp-0.iam_email]
+    "roles/iam.serviceAccountTokenCreator" = [
+      local.groups_iam.data-engineers,
+      module.orch-sa-cmp-0.iam_email
+    ],
+    "roles/iam.serviceAccountUser" = [
+      module.orch-sa-cmp-0.iam_email
+    ]
   }
 }
 

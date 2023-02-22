@@ -215,13 +215,13 @@ module "data-platform" {
   source              = "./fabric/blueprints/data-solutions/data-platform-foundations"
   organization_domain = "example.com"
   project_config = {
-    billing_account_id  = "123456-123456-123456"
-    parent              = "folders/12345678"
-  }  
-  prefix              = "myprefix"
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  prefix = "myprefix"
 }
 
-# tftest modules=43 resources=265
+# tftest modules=43 resources=278
 ```
 
 ## Customizations

@@ -15,22 +15,14 @@
 # tfdoc:file:description Trasformation project and VPC.
 
 locals {
-  group_iam_trf = {
-    (local.groups.data-engineers) = [
-      "roles/bigquery.jobUser",
-      "roles/dataflow.admin",
-    ]
-  }
   iam_trf = {
     "roles/bigquery.jobUser" = [
-      module.transf-sa-bq-0.iam_email,
+      module.transf-sa-bq-0.iam_email, local.groups_iam.data-engineers
     ]
     "roles/dataflow.admin" = [
-      module.orch-sa-cmp-0.iam_email,
+      module.orch-sa-cmp-0.iam_email, local.groups_iam.data-engineers
     ]
-    "roles/dataflow.worker" = [
-      module.transf-sa-df-0.iam_email
-    ]
+    "roles/dataflow.worker" = [module.transf-sa-df-0.iam_email]
     "roles/storage.objectAdmin" = [
       module.transf-sa-df-0.iam_email,
       "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
@@ -55,9 +47,8 @@ module "transf-project" {
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.trf : "${var.project_config.project_ids.trf}${local.project_suffix}"
-  # group_iam = local.group_iam_trf
-  iam          = var.project_config.billing_account_id != null ? local.iam_orch : null
-  iam_additive = var.project_config.billing_account_id == null ? local.iam_orch : null
+  iam             = var.project_config.billing_account_id != null ? local.iam_trf : null
+  iam_additive    = var.project_config.billing_account_id == null ? local.iam_trf : null
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",

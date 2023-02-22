@@ -15,54 +15,48 @@
 # tfdoc:file:description Data Warehouse projects.
 
 locals {
-  dwh_group_iam = {
-    (local.groups.data-engineers) = [
-      "roles/bigquery.dataEditor",
-      "roles/storage.admin",
-    ],
-    (local.groups.data-analysts) = [
-      "roles/bigquery.dataViewer",
-      "roles/bigquery.jobUser",
-      "roles/bigquery.metadataViewer",
-      "roles/bigquery.user",
-      "roles/datacatalog.viewer",
-      "roles/datacatalog.tagTemplateViewer",
-      "roles/storage.objectViewer",
-    ]
-  }
   dwh_lnd_iam = {
     "roles/bigquery.dataOwner" = [
       module.load-sa-df-0.iam_email,
+    ]
+    "roles/bigquery.dataViewer" = [
       module.transf-sa-df-0.iam_email,
       module.transf-sa-bq-0.iam_email,
+      local.groups_iam.data-engineers
     ]
     "roles/bigquery.jobUser" = [
-      module.load-sa-df-0.iam_email,
+      module.load-sa-df-0.iam_email, local.groups_iam.data-engineers
     ]
-    "roles/datacatalog.categoryAdmin" = [
-      module.transf-sa-bq-0.iam_email
-    ]
-    "roles/storage.objectCreator" = [
-      module.load-sa-df-0.iam_email,
-    ]
+    "roles/datacatalog.categoryAdmin"     = [module.transf-sa-bq-0.iam_email]
+    "roles/datacatalog.tagTemplateViewer" = [local.groups_iam.data-engineers]
+    "roles/datacatalog.viewer"            = [local.groups_iam.data-engineers]
+    "roles/storage.objectCreator"         = [module.load-sa-df-0.iam_email]
+    "roles/storage.objectViewer"          = [local.groups_iam.data-engineers]
   }
   dwh_iam = {
     "roles/bigquery.dataOwner" = [
       module.transf-sa-df-0.iam_email,
       module.transf-sa-bq-0.iam_email,
     ]
+    "roles/bigquery.dataViewer" = [
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
+    ]
     "roles/bigquery.jobUser" = [
       module.transf-sa-bq-0.iam_email,
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
     ]
-    "roles/datacatalog.categoryAdmin" = [
-      module.load-sa-df-0.iam_email
+    "roles/datacatalog.tagTemplateViewer" = [
+      local.groups_iam.data-analysts, local.groups_iam.data-engineers
     ]
-    "roles/storage.objectCreator" = [
-      module.transf-sa-df-0.iam_email,
+    "roles/datacatalog.viewer" = [
+      local.groups_iam.data-analysts, local.groups_iam.data-engineers
     ]
     "roles/storage.objectViewer" = [
-      module.transf-sa-df-0.iam_email,
+      local.groups_iam.data-analysts, local.groups_iam.data-engineers
     ]
+    "roles/storage.objectAdmin" = [module.transf-sa-df-0.iam_email]
   }
   dwh_services = concat(var.project_services, [
     "bigquery.googleapis.com",
@@ -87,10 +81,9 @@ module "dwh-lnd-project" {
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-lnd : "${var.project_config.project_ids.dwh-lnd}${local.project_suffix}"
-  # group_iam       = local.dwh_group_iam
-  iam          = var.project_config.billing_account_id != null ? local.dwh_lnd_iam : {}
-  iam_additive = var.project_config.billing_account_id == null ? local.dwh_lnd_iam : {}
-  services     = local.dwh_services
+  iam             = var.project_config.billing_account_id != null ? local.dwh_lnd_iam : {}
+  iam_additive    = var.project_config.billing_account_id == null ? local.dwh_lnd_iam : {}
+  services        = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -104,10 +97,9 @@ module "dwh-cur-project" {
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-cur : "${var.project_config.project_ids.dwh-cur}${local.project_suffix}"
-  # group_iam       = local.dwh_group_iam
-  iam          = var.project_config.billing_account_id != null ? local.dwh_iam : {}
-  iam_additive = var.project_config.billing_account_id == null ? local.dwh_iam : {}
-  services     = local.dwh_services
+  iam             = var.project_config.billing_account_id != null ? local.dwh_iam : {}
+  iam_additive    = var.project_config.billing_account_id == null ? local.dwh_iam : {}
+  services        = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -121,10 +113,9 @@ module "dwh-conf-project" {
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-conf : "${var.project_config.project_ids.dwh-conf}${local.project_suffix}"
-  # group_iam       = local.dwh_group_iam
-  iam          = var.project_config.billing_account_id != null ? local.dwh_iam : null
-  iam_additive = var.project_config.billing_account_id == null ? local.dwh_iam : null
-  services     = local.dwh_services
+  iam             = var.project_config.billing_account_id != null ? local.dwh_iam : null
+  iam_additive    = var.project_config.billing_account_id == null ? local.dwh_iam : null
+  services        = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]

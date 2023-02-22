@@ -15,29 +15,21 @@
 # tfdoc:file:description common project.
 
 locals {
-  group_iam_common = {
-    (local.groups.data-analysts) = [
-      "roles/datacatalog.viewer",
-    ]
-    (local.groups.data-engineers) = [
-      "roles/dlp.reader",
-      "roles/dlp.user",
-      "roles/dlp.estimatesAdmin",
-    ]
-    (local.groups.data-security) = [
-      "roles/dlp.admin",
-      "roles/datacatalog.admin"
-    ]
-  }
   iam_common = {
+    "roles/dlp.admin"          = [local.groups_iam.data-security]
+    "roles/dlp.estimatesAdmin" = [local.groups_iam.data-engineers]
+    "roles/dlp.reader"         = [local.groups_iam.data-engineers]
     "roles/dlp.user" = [
       module.load-sa-df-0.iam_email,
-      module.transf-sa-df-0.iam_email
+      module.transf-sa-df-0.iam_email,
+      local.groups_iam.data-engineers
     ]
+    "roles/datacatalog.admin" = [local.groups_iam.data-security]
     "roles/datacatalog.viewer" = [
       module.load-sa-df-0.iam_email,
       module.transf-sa-df-0.iam_email,
-      module.transf-sa-bq-0.iam_email
+      module.transf-sa-bq-0.iam_email,
+      local.groups_iam.data-analysts
     ]
     "roles/datacatalog.categoryFineGrainedReader" = [
       module.transf-sa-df-0.iam_email,
@@ -54,9 +46,8 @@ module "common-project" {
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.common : "${var.project_config.project_ids.common}${local.project_suffix}"
-  # group_iam       = local.group_iam_common
-  iam          = var.project_config.billing_account_id != null ? local.iam_common : null
-  iam_additive = var.project_config.billing_account_id == null ? local.iam_common : null
+  iam             = var.project_config.billing_account_id != null ? local.iam_common : null
+  iam_additive    = var.project_config.billing_account_id == null ? local.iam_common : null
   services = concat(var.project_services, [
     "datacatalog.googleapis.com",
     "dlp.googleapis.com",
