@@ -92,7 +92,8 @@ module "project_svc1" {
   }
   services = [
     "compute.googleapis.com",
-    "dns.googleapis.com"
+    "dns.googleapis.com",
+    "run.googleapis.com"
   ]
   skip_delete = true
 }
@@ -101,12 +102,14 @@ module "project_svc1" {
 #                                  Cloud Run                                  #
 ###############################################################################
 
-# Cloud Run service in main project
+# Cloud Run service. Usually in the main project, but created in a service project
+# if the use case is using an L7ILB and custom domain
 module "cloud_run_main" {
-  source     = "../../../modules/cloud-run"
-  project_id = module.project_main.project_id
-  name       = var.run_svc_name
-  region     = var.region
+  source = "../../../modules/cloud-run"
+  project_id = (var.custom_domain == null ?
+  module.project_main.project_id : module.project_svc1[0].project_id)
+  name   = var.run_svc_name
+  region = var.region
   containers = [{
     image         = var.image
     options       = null

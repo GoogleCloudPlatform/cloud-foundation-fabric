@@ -29,6 +29,12 @@ variable "access_policy_create" {
   default = null
 }
 
+variable "custom_domain" {
+  description = "Custom domain for the Load Balancer."
+  type        = string
+  default     = null
+}
+
 variable "image" {
   description = "Container image to deploy."
   type        = string
