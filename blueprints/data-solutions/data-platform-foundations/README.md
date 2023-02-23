@@ -237,7 +237,11 @@ To do this, you need to remove IAM binging at project-level for the `data-analys
 
 ### Project Configuration
 
-The solution can be deployed creating projects on a given parent (organization or folder) or on existing projects. Configure variable `project_config` accordingly.
+The solution can be deployed by creating projects on a given parent (organization or folder) or on existing projects. Configure variable `project_config` accordingly.
+
+When you rely on existing projects, the blueprint is designed to rely on different projects configuring IAM binding with an additive approach. For discovery or experimentation purposes, you may also configure `project_config.project_ids` to point different projects to one project with the granularity you need. For example, deploy resources from the 'load' project with resources in the 'transformation' project.
+
+Once you have identified the required project granularity for your use case, we suggest adapting the terraform script accordingly and relying on authoritative IAM binding.
 
 ## Demo pipeline
 
