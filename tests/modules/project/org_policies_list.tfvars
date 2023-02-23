@@ -1,15 +1,16 @@
 org_policies = {
   "compute.vmExternalIpAccess" = {
-    deny = { all = true }
+    rules = [{ deny = { all = true } }]
   }
   "iam.allowedPolicyMemberDomains" = {
     inherit_from_parent = true
-    allow = {
-      values = ["C0xxxxxxx", "C0yyyyyyy"]
-    }
+    rules = [{
+      allow = {
+        values = ["C0xxxxxxx", "C0yyyyyyy"]
+      }
+    }]
   }
   "compute.restrictLoadBalancerCreationForTypes" = {
-    deny = { values = ["in:EXTERNAL"] }
     rules = [
       {
         condition = {
@@ -32,6 +33,9 @@ org_policies = {
         allow = {
           all = true
         }
+      },
+      {
+        deny = { values = ["in:EXTERNAL"] }
       }
     ]
   }

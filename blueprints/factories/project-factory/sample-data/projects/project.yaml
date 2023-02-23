@@ -48,15 +48,18 @@ labels:
 
 # [opt] Org policy overrides defined at project level
 org_policies:
-  constraints/compute.disableGuestAttributesAccess:
-    enforce: true
-  constraints/compute.trustedImageProjects:
-    allow:
-      values:
+  compute.disableGuestAttributesAccess:
+    rules:
+    - enforce: true
+  compute.trustedImageProjects:
+    rules:
+    - allow:
+        values:
         - projects/fast-dev-iac-core-0
-  constraints/compute.vmExternalIpAccess:
-    deny:
-      all: true
+  compute.vmExternalIpAccess:
+    rules:
+    - deny:
+        all: true
 
 # [opt] Prefix - overrides default if set
 prefix: test1

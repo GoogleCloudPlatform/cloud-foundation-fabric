@@ -1,9 +1,8 @@
 org_policies = {
   "iam.disableServiceAccountKeyCreation" = {
-    enforce = true
+    rules = [{ enforce = true }]
   }
   "iam.disableServiceAccountKeyUpload" = {
-    enforce = false
     rules = [
       {
         condition = {
@@ -13,6 +12,9 @@ org_policies = {
           location    = "xxx"
         }
         enforce = true
+      },
+      {
+        enforce = false
       }
     ]
   }
