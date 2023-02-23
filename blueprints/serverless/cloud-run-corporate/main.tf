@@ -310,7 +310,7 @@ resource "google_compute_global_forwarding_rule" "psc_endpoint_prj1" {
 
 module "ilb-l7" {
   source     = "../../../modules/net-ilb-l7"
-  count      = var.custom_domain != null ? 1 : 0
+  count      = var.custom_domain == null ? 0 : 1
   project_id = module.project_main.project_id
   name       = "ilb-l7-cr"
   region     = var.region
@@ -458,6 +458,19 @@ module "private_dns_main" {
   domain          = local.domain_cr_main
   recordsets = {
     "A " = { records = [module.psc_addr_main.psc_addresses["psc-addr"].address] }
+  }
+}
+
+module "private_dns_main_custom" {
+  source          = "../../../modules/dns"
+  count           = var.custom_domain == null ? 0 : 1
+  project_id      = module.project_main.project_id
+  type            = "private"
+  name            = "dns-main-custom"
+  client_networks = [module.vpc_main.self_link]
+  domain          = format("%s.", var.custom_domain)
+  recordsets = {
+    "A " = { records = [module.ilb-l7[0].address] }
   }
 }
 
