@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-output "default_URL" {
-  description = "Cloud Run service default URL."
-  value       = module.cloud_run.service.status[0].url
+output "default_URL_hello" {
+  description = "Cloud Run service 'hello' default URL."
+  value       = module.cloud_run_hello.service.status[0].url
 }
 
 output "load_balancer_ip" {

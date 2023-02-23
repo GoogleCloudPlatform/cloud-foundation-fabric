@@ -104,10 +104,10 @@ module "project_svc1" {
 ###############################################################################
 
 # Cloud Run service in main project
-module "cloud_run" {
+module "cloud_run_hello" {
   source     = "../../../modules/cloud-run"
   project_id = module.project_main.project_id
-  name       = var.run_svc_name
+  name       = "hello"
   region     = var.region
   containers = [{
     image         = var.image
@@ -123,11 +123,11 @@ module "cloud_run" {
 }
 
 # Cloud Run service 1 in service project
-module "cloud_run_cr1" {
+module "cloud_run_cart" {
   source     = "../../../modules/cloud-run"
   count      = var.custom_domain == null ? 0 : 1
   project_id = module.project_svc1[0].project_id
-  name       = local.service_name_cr1
+  name       = local.service_name_cr1 # "cart"
   region     = var.region
   containers = [{
     image         = var.image
@@ -143,11 +143,11 @@ module "cloud_run_cr1" {
 }
 
 # Cloud Run service 2 in service project
-module "cloud_run_cr2" {
+module "cloud_run_checkout" {
   source     = "../../../modules/cloud-run"
   count      = var.custom_domain == null ? 0 : 1
   project_id = module.project_svc1[0].project_id
-  name       = local.service_name_cr2
+  name       = local.service_name_cr2 # "checkout"
   region     = var.region
   containers = [{
     image         = var.image
