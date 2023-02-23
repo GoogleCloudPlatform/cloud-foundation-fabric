@@ -15,8 +15,7 @@
  */
 
 locals {
-  domain_cr_main = format("%s.",
-  trimprefix(module.cloud_run.service.status[0].url, "https://"))
+  cloud_run_domain = "run.app."
   service_name_cr1 = "cart"
   service_name_cr2 = "checkout"
   tf_id = (var.tf_identity == null ? null :
@@ -455,9 +454,9 @@ module "private_dns_main" {
   type            = "private"
   name            = "dns-main"
   client_networks = [module.vpc_main.self_link]
-  domain          = local.domain_cr_main
+  domain          = local.cloud_run_domain
   recordsets = {
-    "A " = { records = [module.psc_addr_main.psc_addresses["psc-addr"].address] }
+    "A *" = { records = [module.psc_addr_main.psc_addresses["psc-addr"].address] }
   }
 }
 
@@ -481,9 +480,9 @@ module "private_dns_onprem" {
   type            = "private"
   name            = "dns-onprem"
   client_networks = [module.vpc_onprem[0].self_link]
-  domain          = local.domain_cr_main
+  domain          = local.cloud_run_domain
   recordsets = {
-    "A " = { records = [module.psc_addr_main.psc_addresses["psc-addr"].address] }
+    "A *" = { records = [module.psc_addr_main.psc_addresses["psc-addr"].address] }
   }
 }
 
@@ -494,9 +493,9 @@ module "private_dns_prj1" {
   type            = "private"
   name            = "dns-prj1"
   client_networks = [module.vpc_prj1[0].self_link]
-  domain          = local.domain_cr_main
+  domain          = local.cloud_run_domain
   recordsets = {
-    "A " = { records = [module.psc_addr_prj1[0].psc_addresses["psc-addr"].address] }
+    "A *" = { records = [module.psc_addr_prj1[0].psc_addresses["psc-addr"].address] }
   }
 }
 
