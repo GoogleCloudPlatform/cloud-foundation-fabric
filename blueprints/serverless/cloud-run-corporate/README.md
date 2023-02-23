@@ -163,9 +163,21 @@ prj_main_id = "[your-main-project-id]"     # Used as host project
 prj_svc1_id = "[your-service-project1-id]"
 ```
 
-### Use case 4:
+### Use case 4: Access to Cloud Run with custom domain
 
-[TODO]
+You need to use a L7 ILB with Serverless NEGs (in Preview) to set a custom domain for Cloud Run. As a practical example, this blueprint deploys this configuration in a Shared VPC environment with two Cloud Run services running in service projects and the ILB exposing them via a custom domain, pointing to them through a URL map: `/cart` and `/checkout`.
+
+<p align="center"> <img src="images/use-case-4.png" width="600"> </p>
+
+For simplicity, both services are deployed in the same service project. Also, the blueprint uses an HTTP connection to the ILB to avoid management of SSL certificates. To test access, VMs are created in the host and service projects. Set the following in `terraform.tfvars`:
+
+```tfvars
+prj_main_id   = "[your-main-project-id]"     # Used as host project
+prj_svc1_id   = "[your-service-project1-id]"
+custom_domain = "cloud-run-corporate.example.org"
+```
+
+The default URLs for both services are also output, and the PSC endpoint for the `*.run.app` domain from previous examples is still created. However, note that access to these URLs from both VMs in the host or service project is blocked since the requests come from a VPC network in a different project to the service.
 
 ## Cleaning up your environment
 
