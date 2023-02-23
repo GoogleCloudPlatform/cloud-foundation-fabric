@@ -322,6 +322,20 @@ module "ilb-l7" {
       }]
       health_checks = []
     }
+    cart = {
+      project_id = module.project_svc1[0].project_id
+      backends = [{
+        group = "cr1"
+      }]
+      health_checks = []
+    }
+    checkout = {
+      project_id = module.project_svc1[0].project_id
+      backends = [{
+        group = "cr2"
+      }]
+      health_checks = []
+    }
   }
   health_check_configs = {}
   neg_configs = {
@@ -332,6 +346,37 @@ module "ilb-l7" {
         target_service = {
           name = local.service_name_cr1
         }
+      }
+    }
+    cr2 = {
+      project_id = module.project_svc1[0].project_id
+      cloudrun = {
+        region = var.region
+        target_service = {
+          name = local.service_name_cr2
+        }
+      }
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [{
+      hosts        = ["*"]
+      path_matcher = "pathmap"
+    }]
+    path_matchers = {
+      pathmap = {
+        default_service = "default"
+        path_rules = [
+          {
+            paths   = ["/cart", "/cart/*"]
+            service = local.service_name_cr1
+          },
+          {
+            paths   = ["/checkout", "/checkout/*"]
+            service = local.service_name_cr2
+          }
+        ]
       }
     }
   }
