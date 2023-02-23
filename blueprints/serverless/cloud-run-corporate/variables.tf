@@ -38,7 +38,7 @@ variable "custom_domain" {
 variable "image" {
   description = "Container image to deploy."
   type        = string
-  default     = "us-docker.pkg.dev/google-samples/containers/gke/whereami:v1.2.19"
+  default     = "us-docker.pkg.dev/cloudrun/container/hello"
 }
 
 variable "ingress_settings" {
