@@ -143,7 +143,7 @@ module "cloud_run_cr1" {
 }
 
 # Cloud Run service 2 in service project
-module "cloud_run_checkout" {
+module "cloud_run_cr2" {
   source     = "../../../modules/cloud-run"
   count      = var.custom_domain == null ? 0 : 1
   project_id = module.project_svc1[0].project_id
