@@ -156,7 +156,7 @@ Another possibility is for a project to be a Service Project with the Cloud Run 
 
 <p style="left"> <img src="images/use-case-3.4.png" width="800"> </p>
 
-Note that the service project can't have a different DNS entry for the same endpoint, it uses the DNS and PSC configuration of the host project. Set the following in `terraform.tfvars`:
+Note that the service project can't have a different DNS entry for the same domain, so it uses the DNS and PSC configuration of the host project. Set the following in `terraform.tfvars`:
 
 ```tfvars
 prj_main_id = "[your-main-project-id]"     # Used as host project
