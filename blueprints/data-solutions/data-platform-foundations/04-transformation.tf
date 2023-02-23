@@ -15,6 +15,19 @@
 # tfdoc:file:description Trasformation project and VPC.
 
 locals {
+  iam_trf = {
+    "roles/bigquery.jobUser" = [
+      module.transf-sa-bq-0.iam_email, local.groups_iam.data-engineers
+    ]
+    "roles/dataflow.admin" = [
+      module.orch-sa-cmp-0.iam_email, local.groups_iam.data-engineers
+    ]
+    "roles/dataflow.worker" = [module.transf-sa-df-0.iam_email]
+    "roles/storage.objectAdmin" = [
+      module.transf-sa-df-0.iam_email,
+      "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
+    ]
+  }
   transf_subnet = (
     local.use_shared_vpc
     ? var.network_config.subnet_self_links.orchestration
@@ -29,31 +42,13 @@ locals {
 
 module "transf-project" {
   source          = "../../../modules/project"
-  parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "trf${local.project_suffix}"
-  group_iam = {
-    (local.groups.data-engineers) = [
-      "roles/bigquery.jobUser",
-      "roles/dataflow.admin",
-    ]
-  }
-  iam = {
-    "roles/bigquery.jobUser" = [
-      module.transf-sa-bq-0.iam_email,
-    ]
-    "roles/dataflow.admin" = [
-      module.orch-sa-cmp-0.iam_email,
-    ]
-    "roles/dataflow.worker" = [
-      module.transf-sa-df-0.iam_email
-    ]
-    "roles/storage.objectAdmin" = [
-      module.transf-sa-df-0.iam_email,
-      "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
-    ]
-  }
+  parent          = var.project_config.parent
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.trf : "${var.project_config.project_ids.trf}${local.project_suffix}"
+  iam             = var.project_config.billing_account_id != null ? local.iam_trf : null
+  iam_additive    = var.project_config.billing_account_id == null ? local.iam_trf : null
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -131,11 +126,11 @@ module "transf-vpc" {
   source     = "../../../modules/net-vpc"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.transf-project.project_id
-  name       = "${var.prefix}-default"
+  name       = "${var.prefix}-trf"
   subnets = [
     {
       ip_cidr_range = "10.10.0.0/24"
-      name          = "default"
+      name          = "${var.prefix}-trf"
       region        = var.region
     }
   ]
@@ -155,7 +150,7 @@ module "transf-nat" {
   source         = "../../../modules/net-cloudnat"
   count          = local.use_shared_vpc ? 0 : 1
   project_id     = module.transf-project.project_id
-  name           = "${var.prefix}-default"
+  name           = "${var.prefix}-trf"
   region         = var.region
   router_network = module.transf-vpc.0.name
 }
