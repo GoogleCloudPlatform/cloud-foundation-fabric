@@ -17,6 +17,8 @@
 locals {
   domain_cr_main = format("%s.",
   trimprefix(module.cloud_run.service.status[0].url, "https://"))
+  service_name_cr1 = "cart"
+  service_name_cr2 = "checkout"
   tf_id = (var.tf_identity == null ? null :
     length(regexall("iam.gserviceaccount.com", var.tf_identity)) > 0 ?
   "serviceAccount:${var.tf_identity}" : "user:${var.tf_identity}")
@@ -102,14 +104,52 @@ module "project_svc1" {
 #                                  Cloud Run                                  #
 ###############################################################################
 
-# Cloud Run service. Usually in the main project, but created in a service project
-# if the use case is using an L7ILB and custom domain
+# Cloud Run service in main project
 module "cloud_run" {
-  source = "../../../modules/cloud-run"
-  project_id = (var.custom_domain == null ?
-  module.project_main.project_id : module.project_svc1[0].project_id)
-  name   = var.run_svc_name
-  region = var.region
+  source     = "../../../modules/cloud-run"
+  project_id = module.project_main.project_id
+  name       = var.run_svc_name
+  region     = var.region
+  containers = [{
+    image         = var.image
+    options       = null
+    ports         = null
+    resources     = null
+    volume_mounts = null
+  }]
+  iam = {
+    "roles/run.invoker" = ["allUsers"]
+  }
+  ingress_settings = var.ingress_settings
+}
+
+# Cloud Run service 1 in service project
+module "cloud_run_cr1" {
+  source     = "../../../modules/cloud-run"
+  count      = var.custom_domain == null ? 0 : 1
+  project_id = module.project_svc1[0].project_id
+  name       = local.service_name_cr1
+  region     = var.region
+  containers = [{
+    image         = var.image
+    options       = null
+    ports         = null
+    resources     = null
+    volume_mounts = null
+  }]
+  iam = {
+    "roles/run.invoker" = ["allUsers"]
+  }
+  ingress_settings = var.ingress_settings
+}
+
+# Cloud Run service 2 in service project
+module "cloud_run_checkout" {
+  source     = "../../../modules/cloud-run"
+  count      = var.custom_domain == null ? 0 : 1
+  project_id = module.project_svc1[0].project_id
+  name       = local.service_name_cr2
+  region     = var.region
   containers = [{
     image         = var.image
     options       = null
@@ -290,7 +330,7 @@ module "ilb-l7" {
       cloudrun = {
         region = var.region
         target_service = {
-          name = module.cloud_run.service_name
+          name = local.service_name_cr1
         }
       }
     }
