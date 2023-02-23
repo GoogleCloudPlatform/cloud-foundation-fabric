@@ -18,3 +18,8 @@ output "default_URL" {
   description = "Cloud Run service default URL."
   value       = module.cloud_run.service.status[0].url
 }
+
+output "load_balancer_ip" {
+  description = "Load Balancer IP address"
+  value       = var.custom_domain != null ? module.ilb-l7[0].address : "none"
+}

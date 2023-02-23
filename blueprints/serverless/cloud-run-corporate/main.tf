@@ -139,6 +139,14 @@ module "vpc_main" {
       region        = var.region
     }
   ]
+  subnets_proxy_only = [
+    {
+      ip_cidr_range = var.ip_ranges["main"].subnet_proxy
+      name          = "subnet-proxy"
+      region        = var.region
+      active        = true
+    }
+  ]
 }
 
 # Main VPC Firewall with default config, IAP for SSH enabled
@@ -254,6 +262,43 @@ resource "google_compute_global_forwarding_rule" "psc_endpoint_prj1" {
   ip_address            = module.psc_addr_prj1[0].psc_addresses["psc-addr"].self_link
   target                = "vpc-sc"
   load_balancing_scheme = ""
+}
+
+###############################################################################
+#                                   L7 ILB                                    #
+###############################################################################
+
+module "ilb-l7" {
+  source     = "../../../modules/net-ilb-l7"
+  count      = var.custom_domain != null ? 1 : 0
+  project_id = module.project_main.project_id
+  name       = "ilb-l7-cr"
+  region     = var.region
+  backend_service_configs = {
+    default = {
+      project_id = module.project_svc1[0].project_id
+      backends = [{
+        group = "cr1"
+      }]
+      health_checks = []
+    }
+  }
+  health_check_configs = {}
+  neg_configs = {
+    cr1 = {
+      project_id = module.project_svc1[0].project_id
+      cloudrun = {
+        region = var.region
+        target_service = {
+          name = module.cloud_run.service_name
+        }
+      }
+    }
+  }
+  vpc_config = {
+    network    = module.vpc_main.self_link
+    subnetwork = module.vpc_main.subnet_self_links["${var.region}/subnet-main"]
+  }
 }
 
 ###############################################################################
