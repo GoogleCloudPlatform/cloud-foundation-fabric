@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
   title                     = each.key
   perimeter_type            = "PERIMETER_TYPE_BRIDGE"
   use_explicit_dry_run_spec = each.value.use_explicit_dry_run_spec
-  dynamic spec {
+  dynamic "spec" {
     for_each = each.value.spec_resources == null ? [] : [1]
     content {
       resources = each.value.spec_resources
     }
   }
-  dynamic status {
+  dynamic "status" {
     for_each = each.value.status_resources == null ? [] : [1]
     content {
       resources = each.value.status_resources
