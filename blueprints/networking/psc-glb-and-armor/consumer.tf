@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-locals {
-  consumer_apis = ["iam.googleapis.com", "compute.googleapis.com"]
-}
-
-data "google_project" "consumer" {
-  project_id = var.consumer_project_id
-}
-
-resource "google_project_service" "consumer" {
-  for_each = toset(local.consumer_apis)
-  project  = data.google_project.consumer.project_id
-  service  = each.key
-
-  disable_on_destroy = false
+module "consumer_project" {
+  source         = "../../../modules/project"
+  name           = var.consumer_project_id
+  project_create = var.project_create
+  services = [
+    "iam.googleapis.com",
+    "compute.googleapis.com",
+  ]
 }
 
 resource "google_compute_region_network_endpoint_group" "psc_neg" {
   name                  = "psc-neg"
   region                = var.region
-  project               = var.consumer_project_id
+  project               = module.consumer_project.project_id
   network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
   psc_target_service    = google_compute_service_attachment.psc_ilb_service_attachment.self_link
 
@@ -42,7 +36,7 @@ resource "google_compute_region_network_endpoint_group" "psc_neg" {
 }
 
 resource "google_compute_global_forwarding_rule" "default" {
-  project               = var.consumer_project_id
+  project               = module.consumer_project.project_id
   name                  = "global-rule"
   load_balancing_scheme = "EXTERNAL_MANAGED"
   target                = google_compute_target_http_proxy.default.id
@@ -54,14 +48,14 @@ output "lb_ip" {
 }
 
 resource "google_compute_target_http_proxy" "default" {
-  project     = var.consumer_project_id
+  project     = module.consumer_project.project_id
   name        = "target-proxy"
   description = "a description"
   url_map     = google_compute_url_map.default.id
 }
 
 resource "google_compute_url_map" "default" {
-  project         = var.consumer_project_id
+  project         = module.consumer_project.project_id
   name            = "url-map-target-proxy"
   description     = "A simple URL Map, routing all traffic to the PSC NEG"
   default_service = google_compute_backend_service.default.id
@@ -84,21 +78,18 @@ resource "google_compute_url_map" "default" {
 
 resource "google_compute_security_policy" "policy" {
   provider = google-beta
-  project  = var.consumer_project_id
+  project  = module.consumer_project.project_id
   name     = "ddos-protection"
   adaptive_protection_config {
     layer_7_ddos_defense_config {
       enable = true
     }
   }
-  depends_on = [
-    google_project_service.consumer
-  ]
 }
 
 resource "google_compute_backend_service" "default" {
   provider              = google-beta
-  project               = var.consumer_project_id
+  project               = module.consumer_project.project_id
   name                  = "backend"
   load_balancing_scheme = "EXTERNAL_MANAGED"
   protocol              = "HTTPS"

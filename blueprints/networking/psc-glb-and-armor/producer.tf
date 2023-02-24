@@ -14,36 +14,27 @@
  * limitations under the License.
  */
 
-locals {
-  producer_apis = ["iam.googleapis.com", "run.googleapis.com", "compute.googleapis.com"]
-}
-
-data "google_project" "producer" {
-  project_id = var.producer_project_id
-}
-
-resource "google_project_service" "producer" {
-  for_each = toset(local.producer_apis)
-  project  = data.google_project.producer.project_id
-  service  = each.key
-
-  disable_on_destroy = false
+module "producer_project" {
+  source         = "../../../modules/project"
+  name           = var.producer_project_id
+  project_create = var.project_create
+  services = [
+    "iam.googleapis.com",
+    "run.googleapis.com",
+    "compute.googleapis.com",
+  ]
 }
 
 resource "google_service_account" "app" {
-  project      = var.producer_project_id
+  project      = module.producer_project.project_id
   account_id   = "example-app"
   display_name = "Example App Service Account"
-
-  depends_on = [
-    google_project_service.producer
-  ]
 }
 
 resource "google_cloud_run_service" "app" {
   name     = "example-app"
   location = var.region
-  project  = var.producer_project_id
+  project  = module.producer_project.project_id
 
   template {
     spec {
@@ -67,17 +58,13 @@ resource "google_cloud_run_service" "app" {
       "run.googleapis.com/ingress" = "internal-and-cloud-load-balancing"
     }
   }
-
-  depends_on = [
-    google_project_service.producer
-  ]
 }
 
 resource "google_compute_region_network_endpoint_group" "neg" {
   name                  = "example-app-neg"
   network_endpoint_type = "SERVERLESS"
   region                = var.region
-  project               = var.producer_project_id
+  project               = module.producer_project.project_id
   cloud_run {
     service = google_cloud_run_service.app.name
   }
@@ -86,7 +73,7 @@ resource "google_compute_region_network_endpoint_group" "neg" {
 resource "google_compute_forwarding_rule" "psc_ilb_target_service" {
   name    = "producer-forwarding-rule"
   region  = var.region
-  project = var.producer_project_id
+  project = module.producer_project.project_id
 
   load_balancing_scheme = "INTERNAL_MANAGED"
   port_range            = "443"
@@ -101,14 +88,14 @@ resource "google_compute_region_target_https_proxy" "default" {
   name             = "l7-ilb-target-http-proxy"
   provider         = google-beta
   region           = var.region
-  project          = var.producer_project_id
+  project          = module.producer_project.project_id
   url_map          = google_compute_region_url_map.default.id
   ssl_certificates = [google_compute_region_ssl_certificate.default.id]
 }
 
 resource "google_compute_region_ssl_certificate" "default" {
   region      = var.region
-  project     = var.producer_project_id
+  project     = module.producer_project.project_id
   name        = "my-certificate"
   private_key = tls_private_key.example.private_key_pem
   certificate = tls_self_signed_cert.example.cert_pem
@@ -118,7 +105,7 @@ resource "google_compute_region_url_map" "default" {
   name            = "l7-ilb-regional-url-map"
   provider        = google-beta
   region          = var.region
-  project         = var.producer_project_id
+  project         = module.producer_project.project_id
   default_service = google_compute_region_backend_service.producer_service_backend.id
 }
 
@@ -146,7 +133,7 @@ resource "tls_self_signed_cert" "example" {
 resource "google_compute_region_backend_service" "producer_service_backend" {
   name                  = "producer-service"
   region                = var.region
-  project               = var.producer_project_id
+  project               = module.producer_project.project_id
   load_balancing_scheme = "INTERNAL_MANAGED"
   protocol              = "HTTPS"
 
@@ -160,16 +147,13 @@ resource "google_compute_region_backend_service" "producer_service_backend" {
 resource "google_compute_network" "psc_ilb_network" {
   name                    = "psc-ilb-network"
   auto_create_subnetworks = false
-  project                 = var.producer_project_id
-  depends_on = [
-    google_project_service.consumer
-  ]
+  project                 = module.producer_project.project_id
 }
 
 resource "google_compute_subnetwork" "ilb_subnetwork" {
   name    = "ilb-subnetwork"
   region  = var.region
-  project = var.producer_project_id
+  project = module.producer_project.project_id
 
   network       = google_compute_network.psc_ilb_network.id
   ip_cidr_range = "10.0.0.0/16"
@@ -180,7 +164,7 @@ resource "google_compute_subnetwork" "ilb_subnetwork" {
 resource "google_compute_subnetwork" "psc_private_subnetwork" {
   name    = "psc-private-subnetwork"
   region  = var.region
-  project = var.producer_project_id
+  project = module.producer_project.project_id
 
   network       = google_compute_network.psc_ilb_network.id
   ip_cidr_range = "10.3.0.0/16"
@@ -191,7 +175,7 @@ resource "google_compute_subnetwork" "psc_private_subnetwork" {
 resource "google_compute_subnetwork" "psc_ilb_nat" {
   name    = "psc-ilb-nat"
   region  = var.region
-  project = var.producer_project_id
+  project = module.producer_project.project_id
 
   network       = google_compute_network.psc_ilb_network.id
   purpose       = "PRIVATE_SERVICE_CONNECT"
@@ -201,44 +185,35 @@ resource "google_compute_subnetwork" "psc_ilb_nat" {
 resource "google_compute_subnetwork" "vms" {
   name    = "vms"
   region  = var.region
-  project = var.producer_project_id
+  project = module.producer_project.project_id
 
   network       = google_compute_network.psc_ilb_network.id
   ip_cidr_range = "10.4.0.0/16"
 }
 
-data "google_compute_zones" "available" {
-  region  = var.region
-  project = var.producer_project_id
-}
-
 resource "google_compute_service_attachment" "psc_ilb_service_attachment" {
   name        = "my-psc-ilb"
   region      = var.region
-  project     = var.producer_project_id
+  project     = module.producer_project.project_id
   description = "A service attachment configured with Terraform"
 
   enable_proxy_protocol = false
   connection_preference = "ACCEPT_AUTOMATIC"
   nat_subnets           = [google_compute_subnetwork.psc_ilb_nat.id]
   target_service        = google_compute_forwarding_rule.psc_ilb_target_service.id
-
-  depends_on = [
-    google_project_service.consumer
-  ]
 }
 
 resource "google_service_account" "noop" {
-  project      = var.producer_project_id
+  project      = module.producer_project.project_id
   account_id   = "noop-sa"
   display_name = "Service Account for NOOP VM"
 }
 
 resource "google_compute_instance" "noop-vm" {
-  project      = var.producer_project_id
+  project      = module.producer_project.project_id
   name         = "noop-ilb-vm"
   machine_type = "e2-medium"
-  zone         = data.google_compute_zones.available.names[0]
+  zone         = var.zone
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"

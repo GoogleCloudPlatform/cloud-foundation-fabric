@@ -99,8 +99,11 @@ The above command will delete the associated resources so there will be no billa
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [consumer_project_id](variables.tf#L17) | The consumer project, in which the GCLB and Cloud Armor should be created. | <code></code> | ✓ |  |
-| [producer_project_id](variables.tf#L20) | The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created | <code></code> | ✓ |  |
-| [region](variables.tf#L24) | The GCP region in which the resources should be deployed. | <code></code> |  | <code>europe-west1</code> |
+| [consumer_project_id](variables.tf#L32) | The consumer project, in which the GCLB and Cloud Armor should be created. | <code></code> | ✓ |  |
+| [prefix](variables.tf#L17) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [producer_project_id](variables.tf#L36) | The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created | <code></code> | ✓ |  |
+| [project_create](variables.tf#L26) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
+| [region](variables.tf#L40) | The GCP region in which the resources should be deployed. | <code></code> |  | <code>europe-west1</code> |
+| [zone](variables.tf#L45) | The GCP zone for the VM. | <code></code> |  | <code>europe-west1-b</code> |
 
 <!-- END TFDOC -->

@@ -14,9 +14,25 @@
  * limitations under the License.
  */
 
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
+}
+
+variable "project_create" {
+  description = "Create project instead of using an existing one."
+  type        = bool
+  default     = false
+}
+
 variable "consumer_project_id" {
   description = "The consumer project, in which the GCLB and Cloud Armor should be created."
 }
+
 variable "producer_project_id" {
   description = "The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created"
 }
@@ -24,4 +40,9 @@ variable "producer_project_id" {
 variable "region" {
   default = "europe-west1"
   description = "The GCP region in which the resources should be deployed."
+}
+
+variable "zone" {
+  default = "europe-west1-b"
+  description = "The GCP zone for the VM."
 }
