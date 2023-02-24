@@ -97,8 +97,8 @@ values:
     notification_category_subscriptions:
     - ALL
     parent: projects/test1-project
-  module.projects["project"].module.project.google_org_policy_policy.default["constraints/compute.disableGuestAttributesAccess"]:
-    name: projects/test1-project/policies/constraints/compute.disableGuestAttributesAccess
+  module.projects["project"].module.project.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
+    name: projects/test1-project/policies/compute.disableGuestAttributesAccess
     parent: projects/test1-project
     spec:
     - inherit_from_parent: null
@@ -109,8 +109,8 @@ values:
         deny_all: null
         enforce: 'TRUE'
         values: []
-  module.projects["project"].module.project.google_org_policy_policy.default["constraints/compute.trustedImageProjects"]:
-    name: projects/test1-project/policies/constraints/compute.trustedImageProjects
+  module.projects["project"].module.project.google_org_policy_policy.default["compute.trustedImageProjects"]:
+    name: projects/test1-project/policies/compute.trustedImageProjects
     parent: projects/test1-project
     spec:
     - inherit_from_parent: null
@@ -124,8 +124,8 @@ values:
         - allowed_values:
           - projects/fast-dev-iac-core-0
           denied_values: null
-  module.projects["project"].module.project.google_org_policy_policy.default["constraints/compute.vmExternalIpAccess"]:
-    name: projects/test1-project/policies/constraints/compute.vmExternalIpAccess
+  module.projects["project"].module.project.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    name: projects/test1-project/policies/compute.vmExternalIpAccess
     parent: projects/test1-project
     spec:
     - inherit_from_parent: null
