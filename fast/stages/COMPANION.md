@@ -8,7 +8,7 @@ The detailed explanation of each stage, their configuration, possible modificati
 
 ## Prerequisites
 
-1. FAST uses the recommended groups from the [GCP Enterprise Setup checklist](). Go to [Workspace / Cloud Identity](https://admin.google.com) and ensure all the following groups exist:
+1. FAST uses the recommended groups from the [GCP Enterprise Setup checklist](https://cloud.google.com/docs/enterprise/setup-checklist). Go to [Workspace / Cloud Identity](https://admin.google.com) and ensure all the following groups exist:
 
 - `gcp-billing-admins@`
 - `gcp-devops@`
@@ -80,8 +80,8 @@ If you are using a billing account in a different organization, please follow [t
 This initial stage will create common projects for IaC, Logging & Billing, and bootstrap IAM policies.
 
 ```bash
-# move to the 00-bootstrap directory
-cd $FAST_PWD/00-bootstrap
+# move to the 0-bootstrap directory
+cd $FAST_PWD/0-bootstrap
 
 # copy the template terraform tfvars file and save as `terraform.tfvars`
 # then edit to match your environment!
@@ -114,11 +114,12 @@ outputs_location = "~/fast-config"
 terraform init
 terraform apply -var bootstrap_user=$FAST_BU
 
-# link the generated provider file
-ln -s ~/fast-config/providers/0-0-bootstrap* .
+# link providers file
+ln -s ~/fast-config/providers/0-bootstrap-providers.tf ./
 
 # re-run init and apply to remove user-level IAM
 terraform init -migrate-state
+
 # answer 'yes' to terraform's question
 terraform apply
 ```
@@ -132,14 +133,14 @@ This stage performs two important tasks:
 
 ```bash
 # move to the 01-resman directory
-cd $FAST_PWD/01-resman
+cd $FAST_PWD/1-resman
 
-# Link providers and variables from previous stages
-ln -s ~/fast-config/providers/1-0-resman-providers.tf .
-ln -s ~/fast-config/tfvars/0-0-bootstrap.auto.tfvars.json .
+# link providers and variables from previous stages
+ln -s ~/fast-config/providers/1-resman-providers.tf .
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 
-# Edit your terraform.tfvars to append Teams configuration (optional)
+# edit your terraform.tfvars to append Teams configuration (optional)
 edit terraform.tfvars
 ```
 
@@ -178,15 +179,15 @@ In this stage, we will deploy one of the 3 available Hub&Spoke networking topolo
 
 ```bash
 # move to the 02-networking-XXX directory (where XXX should be one of vpn|peering|nva)
-cd $FAST_PWD/02-networking-XXX
+cd $FAST_PWD/2-networking-XXX
 
 # setup providers and variables from previous stages
-ln -s ~/fast-config/providers/2-0-networking-providers.tf .
-ln -s ~/fast-config/tfvars/0-0-bootstrap.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/1-0-resman.auto.tfvars.json .
+ln -s ~/fast-config/providers/2-networking-providers.tf .
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 
-# Create terraform.tfvars. output_location variable is required to generate networking stage output file
+# create terraform.tfvars. output_location variable is required to generate networking stage output file
 edit terraform.tfvars
 ```
 
@@ -212,12 +213,12 @@ This stage sets up security resources (KMS and VPC-SC) and configurations which 
 cd $FAST_PWD/02-security
 
 # link providers and variables from previous stages
-ln -s ~/fast-config/providers/2-0-security-providers.tf .
-ln -s ~/fast-config/tfvars/0-0-bootstrap.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/1-0-resman.auto.tfvars.json .
+ln -s ~/fast-config/providers/2-security-providers.tf .
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 
-# Edit terraform.tfvars to include KMS and/or VPC-SC configuration
+# edit terraform.tfvars to include KMS and/or VPC-SC configuration
 edit terraform.tfvars
 ```
 
@@ -234,19 +235,20 @@ terraform apply
 The Project Factory stage builds on top of your foundations to create and set up projects (and related resources) to be used for your workloads. It is organized in folders representing environments (e.g. "dev", "prod"), each implemented by a stand-alone terraform resource factory.
 
 ```bash
-# Variable `outputs_location` is set to `~/fast-config`
-cd $FAST_PWD/3-0-project-factory/ENVIRONMENT
-ln -s ~/fast-config/providers/3-0-project-factory-ENVIRONMENT-providers.tf .
+# variable `outputs_location` is set to `~/fast-config`
+cd $FAST_PWD/3-project-factory/ENVIRONMENT
+ln -s ~/fast-config/providers/3-project-factory-ENVIRONMENT-providers.tf .
 
-ln -s ~/fast-config/tfvars/0-0-bootstrap.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/1-0-resman.auto.tfvars.json . 
-ln -s ~/fast-config/tfvars/2-0-networking.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json . 
+ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 
-# Define your environment default values (eg for billing alerts and labels)
+# define your environment default values (eg for billing alerts and labels)
 edit data/defaults.yaml
 
-# Create one yaml file per project to be created. Yaml file will include project configuration. Projects will be named after the filename
+# create one YAML file per project to be created with project configuration
+# filenames will be used for project ids
 cp data/projects/project.yaml.sample data/projects/YOUR_PROJECT_NAME.yaml
 edit data/projects/YOUR_PROJECT_NAME.yaml
 

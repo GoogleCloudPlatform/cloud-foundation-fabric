@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ module "gcs-bucket" {
   encryption_key = try(local.service_encryption_keys.storage, null)
 }
 
-# Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘constraints/gcp.resourceLocations’"
+# Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘gcp.resourceLocations’"
 # https://stackoverflow.com/questions/53206667/cloud-build-fails-with-resource-location-constraint
 module "gcs-bucket-cloudbuild" {
   source         = "../../../modules/gcs"
@@ -230,8 +230,8 @@ module "project" {
 
   org_policies = {
     # Example of applying a project wide policy
-    # "constraints/compute.requireOsLogin" = {
-    #   enforce = false
+    # "compute.requireOsLogin" = {
+    #   rules = [{ enforce = false }]
     # }
   }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,10 +64,10 @@ module "gke-project-0" {
   }
   # specify project-level org policies here if you need them
   # policy_boolean = {
-  #   "constraints/compute.disableGuestAttributesAccess" = true
+  #   "compute.disableGuestAttributesAccess" = true
   # }
   # policy_list = {
-  #   "constraints/compute.trustedImageProjects" = {
+  #   "compute.trustedImageProjects" = {
   #     inherit_from_parent = null
   #     suggested_value     = null
   #     status              = true

@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,61 +26,35 @@ def test_policy_implementation():
     path = modules_path / module / 'organization-policies.tf'
     lines[module] = path.open().readlines()
 
-  diff1 = difflib.unified_diff(lines['project'], lines['folder'])
+  diff1 = difflib.unified_diff(lines['project'], lines['folder'], 'project',
+                               'folder', n=0)
   assert list(diff1) == [
-      '--- \n',
-      '+++ \n',
-      '@@ -14,7 +14,7 @@\n',
-      '  * limitations under the License.\n',
-      '  */\n',
-      ' \n',
+      '--- project\n',
+      '+++ folder\n',
+      '@@ -17 +17 @@\n',
       '-# tfdoc:file:description Project-level organization policies.\n',
       '+# tfdoc:file:description Folder-level organization policies.\n',
-      ' \n',
-      ' locals {\n',
-      '   _factory_data_raw = merge([\n',
-      '@@ -65,8 +65,8 @@\n',
-      '   org_policies = {\n',
-      '     for k, v in local._org_policies :\n',
-      '     k => merge(v, {\n',
+      '@@ -58,2 +58,2 @@\n',
       '-      name   = "projects/${local.project.project_id}/policies/${k}"\n',
       '-      parent = "projects/${local.project.project_id}"\n',
       '+      name   = "${local.folder.name}/policies/${k}"\n',
       '+      parent = local.folder.name\n',
-      ' \n',
-      '       is_boolean_policy = v.allow == null && v.deny == null\n',
-      '       has_values = (\n',
   ]
 
-  diff2 = difflib.unified_diff(lines['folder'], lines['organization'])
+  diff2 = difflib.unified_diff(lines['folder'], lines['organization'], 'folder',
+                               'organization', n=0)
   assert list(diff2) == [
-      '--- \n',
-      '+++ \n',
-      '@@ -14,7 +14,7 @@\n',
-      '  * limitations under the License.\n',
-      '  */\n',
-      ' \n',
+      '--- folder\n',
+      '+++ organization\n',
+      '@@ -17 +17 @@\n',
       '-# tfdoc:file:description Folder-level organization policies.\n',
       '+# tfdoc:file:description Organization-level organization policies.\n',
-      ' \n',
-      ' locals {\n',
-      '   _factory_data_raw = merge([\n',
-      '@@ -65,8 +65,8 @@\n',
-      '   org_policies = {\n',
-      '     for k, v in local._org_policies :\n',
-      '     k => merge(v, {\n',
+      '@@ -58,2 +58,2 @@\n',
       '-      name   = "${local.folder.name}/policies/${k}"\n',
       '-      parent = local.folder.name\n',
       '+      name   = "${var.organization_id}/policies/${k}"\n',
       '+      parent = var.organization_id\n',
-      ' \n',
-      '       is_boolean_policy = v.allow == null && v.deny == null\n',
-      '       has_values = (\n',
-      '@@ -139,4 +139,13 @@\n',
-      '       }\n',
-      '     }\n',
-      '   }\n',
-      '+\n',
+      '@@ -116,0 +117,8 @@\n',
       '+  depends_on = [\n',
       '+    google_organization_iam_audit_config.config,\n',
       '+    google_organization_iam_binding.authoritative,\n',
@@ -89,5 +63,4 @@ def test_policy_implementation():
       '+    google_organization_iam_policy.authoritative,\n',
       '+    google_org_policy_custom_constraint.constraint,\n',
       '+  ]\n',
-      ' }\n',
   ]

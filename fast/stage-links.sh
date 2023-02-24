@@ -78,6 +78,11 @@ case $STAGE_NAME in
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
+"2-security"*)
+  PROVIDER="providers/2-security-providers.tf"
+  TFVARS="tfvars/0-bootstrap.auto.tfvars.json
+  tfvars/1-resman.auto.tfvars.json"
+  ;;
 *)
   # check for a "dev" stage 3
   echo "no stage found, trying for parent stage 3..."

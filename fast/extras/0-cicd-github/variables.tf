@@ -30,6 +30,7 @@ variable "modules_config" {
   type = object({
     repository_name = string
     source_ref      = optional(string)
+    module_prefix   = optional(string, "")
     key_config = optional(object({
       create_key     = optional(bool, false)
       create_secrets = optional(bool, false)

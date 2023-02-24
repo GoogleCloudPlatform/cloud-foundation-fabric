@@ -15,6 +15,42 @@
 # tfdoc:file:description Orchestration project and VPC.
 
 locals {
+  iam_orch = {
+    "roles/artifactregistry.admin"  = [local.groups_iam.data-engineers]
+    "roles/artifactregistry.reader" = [module.load-sa-df-0.iam_email]
+    "roles/bigquery.dataEditor" = [
+      module.load-sa-df-0.iam_email,
+      module.transf-sa-df-0.iam_email,
+      local.groups_iam.data-engineers
+    ]
+    "roles/bigquery.jobUser" = [
+      module.orch-sa-cmp-0.iam_email,
+      local.groups_iam.data-engineers
+    ]
+    "roles/cloudbuild.builds.editor"                  = [local.groups_iam.data-engineers]
+    "roles/cloudbuild.serviceAgent"                   = [module.orch-sa-df-build.iam_email]
+    "roles/composer.admin"                            = [local.groups_iam.data-engineers]
+    "roles/composer.environmentAndStorageObjectAdmin" = [local.groups_iam.data-engineers]
+    "roles/composer.ServiceAgentV2Ext" = [
+      "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
+    ]
+    "roles/composer.worker" = [
+      module.orch-sa-cmp-0.iam_email
+    ]
+    "roles/iam.serviceAccountUser" = [
+      module.orch-sa-cmp-0.iam_email, local.groups_iam.data-engineers
+    ]
+    "roles/iap.httpsResourceAccessor"         = [local.groups_iam.data-engineers]
+    "roles/serviceusage.serviceUsageConsumer" = [local.groups_iam.data-engineers]
+    "roles/storage.objectAdmin" = [
+      module.orch-sa-cmp-0.iam_email,
+      module.orch-sa-df-build.iam_email,
+      "serviceAccount:${module.orch-project.service_accounts.robots.composer}",
+      "serviceAccount:${module.orch-project.service_accounts.robots.cloudbuild}",
+      local.groups_iam.data-engineers
+    ]
+    "roles/storage.objectViewer" = [module.load-sa-df-0.iam_email]
+  }
   orch_subnet = (
     local.use_shared_vpc
     ? var.network_config.subnet_self_links.orchestration
@@ -34,57 +70,14 @@ locals {
 
 module "orch-project" {
   source          = "../../../modules/project"
-  parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "orc${local.project_suffix}"
-  group_iam = {
-    (local.groups.data-engineers) = [
-      "roles/bigquery.dataEditor",
-      "roles/bigquery.jobUser",
-      "roles/cloudbuild.builds.editor",
-      "roles/composer.admin",
-      "roles/composer.environmentAndStorageObjectAdmin",
-      "roles/iap.httpsResourceAccessor",
-      "roles/iam.serviceAccountUser",
-      "roles/storage.objectAdmin",
-      "roles/storage.admin",
-      "roles/artifactregistry.admin",
-      "roles/serviceusage.serviceUsageConsumer",
-    ]
-  }
-  iam = {
-    "roles/bigquery.dataEditor" = [
-      module.load-sa-df-0.iam_email,
-      module.transf-sa-df-0.iam_email,
-    ]
-    "roles/bigquery.jobUser" = [
-      module.orch-sa-cmp-0.iam_email,
-    ]
-    "roles/composer.ServiceAgentV2Ext" = [
-      "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
-    ]
-    "roles/composer.worker" = [
-      module.orch-sa-cmp-0.iam_email
-    ]
-    "roles/iam.serviceAccountUser" = [
-      module.orch-sa-cmp-0.iam_email
-    ]
-    "roles/storage.objectAdmin" = [
-      module.orch-sa-cmp-0.iam_email,
-      module.orch-sa-df-build.iam_email,
-      "serviceAccount:${module.orch-project.service_accounts.robots.composer}",
-      "serviceAccount:${module.orch-project.service_accounts.robots.cloudbuild}",
-    ]
-    "roles/artifactregistry.reader" = [
-      module.load-sa-df-0.iam_email,
-    ]
-    "roles/cloudbuild.serviceAgent" = [
-      module.orch-sa-df-build.iam_email,
-    ]
-    "roles/storage.objectViewer" = [module.load-sa-df-0.iam_email]
-  }
-  oslogin = false
+  parent          = var.project_config.parent
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.orc : "${var.project_config.project_ids.orc}${local.project_suffix}"
+  iam             = var.project_config.billing_account_id != null ? local.iam_orch : null
+  iam_additive    = var.project_config.billing_account_id == null ? local.iam_orch : null
+  oslogin         = false
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",
@@ -132,11 +125,11 @@ module "orch-vpc" {
   source     = "../../../modules/net-vpc"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.orch-project.project_id
-  name       = "${var.prefix}-default"
+  name       = "${var.prefix}-orch"
   subnets = [
     {
       ip_cidr_range = "10.10.0.0/24"
-      name          = "default"
+      name          = "${var.prefix}-orch"
       region        = var.region
       secondary_ip_ranges = {
         pods     = "10.10.8.0/22"
@@ -160,7 +153,7 @@ module "orch-nat" {
   count          = local.use_shared_vpc ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.orch-project.project_id
-  name           = "${var.prefix}-default"
+  name           = "${var.prefix}-orch"
   region         = var.region
   router_network = module.orch-vpc.0.name
 }

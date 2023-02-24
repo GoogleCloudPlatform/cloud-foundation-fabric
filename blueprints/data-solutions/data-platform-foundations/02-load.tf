@@ -15,6 +15,19 @@
 # tfdoc:file:description Load project and VPC.
 
 locals {
+  iam_load = {
+    "roles/bigquery.jobUser" = [module.load-sa-df-0.iam_email]
+    "roles/dataflow.admin" = [
+      module.orch-sa-cmp-0.iam_email,
+      module.load-sa-df-0.iam_email,
+      local.groups_iam.data-engineers
+    ]
+    "roles/dataflow.developer" = [
+      local.groups_iam.data-engineers
+    ]
+    "roles/dataflow.worker"     = [module.load-sa-df-0.iam_email]
+    "roles/storage.objectAdmin" = local.load_service_accounts
+  }
   load_service_accounts = [
     "serviceAccount:${module.load-project.service_accounts.robots.dataflow}",
     module.load-sa-df-0.iam_email
@@ -35,26 +48,13 @@ locals {
 
 module "load-project" {
   source          = "../../../modules/project"
-  parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "lod${local.project_suffix}"
-  group_iam = {
-    (local.groups.data-engineers) = [
-      "roles/compute.viewer",
-      "roles/dataflow.admin",
-      "roles/dataflow.developer",
-      "roles/viewer",
-    ]
-  }
-  iam = {
-    "roles/bigquery.jobUser" = [module.load-sa-df-0.iam_email]
-    "roles/dataflow.admin" = [
-      module.orch-sa-cmp-0.iam_email, module.load-sa-df-0.iam_email
-    ]
-    "roles/dataflow.worker"     = [module.load-sa-df-0.iam_email]
-    "roles/storage.objectAdmin" = local.load_service_accounts
-  }
+  parent          = var.project_config.parent
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.load : "${var.project_config.project_ids.load}${local.project_suffix}"
+  iam             = var.project_config.billing_account_id != null ? local.iam_load : null
+  iam_additive    = var.project_config.billing_account_id == null ? local.iam_load : null
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -86,8 +86,13 @@ module "load-sa-df-0" {
   name         = "load-df-0"
   display_name = "Data platform Dataflow load service account"
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
-    "roles/iam.serviceAccountUser"         = [module.orch-sa-cmp-0.iam_email]
+    "roles/iam.serviceAccountTokenCreator" = [
+      local.groups_iam.data-engineers,
+      module.orch-sa-cmp-0.iam_email
+    ],
+    "roles/iam.serviceAccountUser" = [
+      module.orch-sa-cmp-0.iam_email
+    ]
   }
 }
 
@@ -107,11 +112,11 @@ module "load-vpc" {
   source     = "../../../modules/net-vpc"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.load-project.project_id
-  name       = "${var.prefix}-default"
+  name       = "${var.prefix}-lod"
   subnets = [
     {
       ip_cidr_range = "10.10.0.0/24"
-      name          = "default"
+      name          = "${var.prefix}-lod"
       region        = var.region
     }
   ]
@@ -131,7 +136,7 @@ module "load-nat" {
   source         = "../../../modules/net-cloudnat"
   count          = local.use_shared_vpc ? 0 : 1
   project_id     = module.load-project.project_id
-  name           = "${var.prefix}-default"
+  name           = "${var.prefix}-lod"
   region         = var.region
   router_network = module.load-vpc.0.name
 }
