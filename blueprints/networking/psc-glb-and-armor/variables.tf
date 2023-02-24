@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+variable "consumer_project_id" {
+  description = "The consumer project, in which the GCLB and Cloud Armor should be created."
+  type        = string
+}
+
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
@@ -23,20 +28,15 @@ variable "prefix" {
   }
 }
 
+variable "producer_project_id" {
+  description = "The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created"
+  type        = string
+}
+
 variable "project_create" {
   description = "Create project instead of using an existing one."
   type        = bool
   default     = false
-}
-
-variable "consumer_project_id" {
-  description = "The consumer project, in which the GCLB and Cloud Armor should be created."
-  type        = string
-}
-
-variable "producer_project_id" {
-  description = "The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created"
-  type        = string
 }
 
 variable "region" {

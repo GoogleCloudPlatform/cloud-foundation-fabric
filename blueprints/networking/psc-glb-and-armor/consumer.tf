@@ -43,10 +43,6 @@ resource "google_compute_global_forwarding_rule" "default" {
   port_range            = "80"
 }
 
-output "lb_ip" {
-  value = google_compute_global_forwarding_rule.default.ip_address
-}
-
 resource "google_compute_target_http_proxy" "default" {
   project     = module.consumer_project.project_id
   name        = "target-proxy"
