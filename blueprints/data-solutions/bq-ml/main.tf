@@ -160,6 +160,7 @@ module "dataset" {
   project_id     = module.project.project_id
   id             = "${replace(var.prefix, "-", "_")}_data"
   encryption_key = try(local.service_encryption_keys.bq, null) # Example assignment of an encryption key
+  location         = "US"
 }
 
 ###############################################################################
@@ -168,7 +169,7 @@ module "dataset" {
 resource "google_vertex_ai_metadata_store" "store" {
   provider    = google-beta
   project     = module.project.project_id
-  name        = "${var.prefix}-metadata-store"
+  name        = "default" #"${var.prefix}-metadata-store"
   description = "Vertex Ai Metadata Store"
   region      = var.region
   #TODO Check/Implement P4SA logic for IAM role
@@ -189,6 +190,8 @@ module "service-account-notebook" {
       "roles/bigquery.user",
       "roles/dialogflow.client",
       "roles/storage.admin",
+      "roles/aiplatform.user",
+      "roles/iam.serviceAccountUser"
     ]
   }
 }
@@ -205,6 +208,7 @@ module "service-account-vertex" {
       "roles/bigquery.user",
       "roles/dialogflow.client",
       "roles/storage.admin",
+      "roles/aiplatform.user"
     ]
   }
 }
@@ -233,6 +237,12 @@ resource "google_notebooks_instance" "playground" {
   subnet  = local.subnet
 
   service_account = module.service-account-notebook.email
+
+  # Enable Secure Boot 
+
+  shielded_instance_config {
+    enable_secure_boot = true
+  }
 
   # Remove once terraform-provider-google/issues/9164 is fixed
   lifecycle {
