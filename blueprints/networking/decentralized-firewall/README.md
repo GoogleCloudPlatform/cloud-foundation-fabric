@@ -2,22 +2,22 @@
 
 This example shows how a decentralized firewall management can be organized using the [firewall factory](../../factories/net-vpc-firewall-yaml/README.md).
 
-This approach is a good fit when Shared VPCs are used across multiple application/infrastructure teams. A central repository keeps environment/team 
-specific folders with firewall definitions in `yaml` format. 
+This approach is a good fit when Shared VPCs are used across multiple application/infrastructure teams. A central repository keeps environment/team
+specific folders with firewall definitions in `yaml` format.
 
-In the current blueprint multiple teams can define their [VPC Firewall Rules](https://cloud.google.com/vpc/docs/firewalls) 
-for [dev](./firewall/dev) and [prod](./firewall/prod) environments using team specific subfolders. Rules defined in the 
+In the current blueprint multiple teams can define their [VPC Firewall Rules](https://cloud.google.com/vpc/docs/firewalls)
+for [dev](./firewall/dev) and [prod](./firewall/prod) environments using team specific subfolders. Rules defined in the
 [common](./firewall/common) folder are applied to both dev and prod environments.
 
-> **_NOTE:_**  Common rules are meant to be used for situations where [hierarchical rules](https://cloud.google.com/vpc/docs/firewall-policies) 
-do not map precisely to requirements (e.g. SA, etc.) 
+> **_NOTE:_**  Common rules are meant to be used for situations where [hierarchical rules](https://cloud.google.com/vpc/docs/firewall-policies)
+do not map precisely to requirements (e.g. SA, etc.)
 
 This is the high level diagram:
 
 ![High-level diagram](diagram.png "High-level diagram")
 
-The rules can be validated either using an automated process or a manual process (or a combination of 
-the two). There is an blueprint of a YAML-based validator using [Yamale](https://github.com/23andMe/Yamale) 
+The rules can be validated either using an automated process or a manual process (or a combination of
+the two). There is an blueprint of a YAML-based validator using [Yamale](https://github.com/23andMe/Yamale)
 in  the [`validator/`](validator/) subdirectory, which can be integrated as part of a CI/CD pipeline.
 <!-- BEGIN TFDOC -->
 
@@ -51,5 +51,5 @@ module "test" {
   root_node          = "organizations/0123456789"
 }
 
-# tftest modules=9 resources=50
+# tftest modules=7 resources=50
 ```
