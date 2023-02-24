@@ -48,7 +48,7 @@ variable "ingress_settings" {
 }
 
 variable "ip_ranges" {
-  description = "IPs or IP ranges used by VPCs"
+  description = "IPs or IP ranges used by VPCs."
   type        = map(map(string))
   default = {
     main = {

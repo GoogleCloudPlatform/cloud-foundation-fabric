@@ -32,6 +32,6 @@ output "default_URL_hello" {
 }
 
 output "load_balancer_ip" {
-  description = "Load Balancer IP address"
+  description = "Load Balancer IP address."
   value       = var.custom_domain != null ? module.ilb-l7[0].address : "none"
 }
