@@ -186,11 +186,39 @@ The easiest way to remove all the deployed resources is to run the following com
 terraform destroy
 ```
 The above command will delete the associated resources so there will be no billable charges made afterwards. Projects are removed from Terraform state but not deleted from Google Cloud.
-
 <!-- BEGIN TFDOC -->
 
-<!-- END TFDOC -->
+## Variables
 
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [prj_main_id](variables.tf#L78) | Main Project ID. | <code>string</code> | ✓ |  |
+| [access_policy](variables.tf#L17) | VPC SC access policy, if it exists. | <code>string</code> |  | <code>null</code> |
+| [access_policy_create](variables.tf#L23) | Parameters for the creation of a VPC SC access policy. | <code title="object&#40;&#123;&#10;  parent &#61; string&#10;  title  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [custom_domain](variables.tf#L32) | Custom domain for the Load Balancer. | <code>string</code> |  | <code>null</code> |
+| [image](variables.tf#L38) | Container image to deploy. | <code>string</code> |  | <code>&#34;us-docker.pkg.dev&#47;cloudrun&#47;container&#47;hello&#34;</code> |
+| [ingress_settings](variables.tf#L44) | Ingress traffic sources allowed to call the service. | <code>string</code> |  | <code>&#34;internal&#34;</code> |
+| [ip_ranges](variables.tf#L50) | IPs or IP ranges used by VPCs. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  main &#61; &#123;&#10;    subnet       &#61; &#34;10.0.1.0&#47;24&#34;&#10;    subnet_proxy &#61; &#34;10.10.0.0&#47;24&#34;&#10;    psc_addr     &#61; &#34;10.0.0.100&#34;&#10;  &#125;&#10;  onprem &#61; &#123;&#10;    subnet &#61; &#34;172.16.1.0&#47;24&#34;&#10;  &#125;&#10;  prj1 &#61; &#123;&#10;    subnet   &#61; &#34;10.0.2.0&#47;24&#34;&#10;    psc_addr &#61; &#34;10.0.0.200&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [prj_main_create](variables.tf#L69) | Parameters for the creation of the main project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prj_onprem_create](variables.tf#L83) | Parameters for the creation of an 'onprem' project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prj_onprem_id](variables.tf#L92) | Onprem Project ID. | <code>string</code> |  | <code>null</code> |
+| [prj_prj1_create](variables.tf#L98) | Parameters for the creation of project 1. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prj_prj1_id](variables.tf#L107) | Project 1 ID. | <code>string</code> |  | <code>null</code> |
+| [prj_svc1_create](variables.tf#L113) | Parameters for the creation of service project 1. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prj_svc1_id](variables.tf#L122) | Service Project 1 ID. | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L128) | Cloud region where resource will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [tf_identity](variables.tf#L134) | Terraform identity to include in VPC SC perimeter. | <code>string</code> |  | <code>null</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [default_URL_cart](outputs.tf#L17) | Cloud Run service 'cart' default URL. |  |
+| [default_URL_checkout](outputs.tf#L23) | Cloud Run service 'checkout' default URL. |  |
+| [default_URL_hello](outputs.tf#L29) | Cloud Run service 'hello' default URL. |  |
+| [load_balancer_ip](outputs.tf#L34) | Load Balancer IP address. |  |
+
+<!-- END TFDOC -->
 ## Tests
 
 ```hcl
