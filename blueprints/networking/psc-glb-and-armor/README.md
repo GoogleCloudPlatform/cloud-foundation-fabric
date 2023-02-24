@@ -99,16 +99,8 @@ The above command will delete the associated resources so there will be no billa
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L23) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L41) | Identifier of the project. | <code>string</code> | ✓ |  |
-| [enforce_security_policy](variables.tf#L17) | Enforce security policy. | <code>bool</code> |  | <code>true</code> |
-| [project_create](variables.tf#L32) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-
-## Outputs
-
-| name | description | sensitive |
-|---|---|:---:|
-| [glb_ip_address](outputs.tf#L18) | Load balancer IP address. |  |
-| [vm_siege_external_ip](outputs.tf#L23) | Siege VM external IP address. |  |
+| [consumer_project_id](variables.tf#L17) | The consumer project, in which the GCLB and Cloud Armor should be created. | <code></code> | ✓ |  |
+| [producer_project_id](variables.tf#L20) | The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created | <code></code> | ✓ |  |
+| [region](variables.tf#L24) | The GCP region in which the resources should be deployed. | <code></code> |  | <code>europe-west1</code> |
 
 <!-- END TFDOC -->

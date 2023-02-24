@@ -15,10 +15,13 @@
  */
 
 variable "consumer_project_id" {
+  description = "The consumer project, in which the GCLB and Cloud Armor should be created."
 }
 variable "producer_project_id" {
+  description = "The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created"
 }
 
 variable "region" {
   default = "europe-west1"
+  description = "The GCP region in which the resources should be deployed."
 }
