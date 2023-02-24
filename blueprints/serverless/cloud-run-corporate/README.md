@@ -228,6 +228,30 @@ module "test" {
     billing_account_id = "ABCDE-12345-ABCDE"
     parent             = "organizations/0123456789"
   }
+  prj_main_id = "main-project-id"
+  prj_prj1_create = {
+    billing_account_id = "ABCDE-12345-ABCDE"
+    parent             = "organizations/0123456789"
+  }
+  prj_prj1_id   = "project1-id"
+  access_policy = null
+  access_policy_create = {
+    parent = "organizations/0123456789"
+    title  = "vpcsc-cloudrun"
+  }
+  tf_identity = "user@example.org"
+}
+
+# tftest modules=15 resources=31
+```
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/serverless/cloud-run-corporate"
+  prj_main_create = {
+    billing_account_id = "ABCDE-12345-ABCDE"
+    parent             = "organizations/0123456789"
+  }
   prj_main_id = "main-project-id" # Used as host project
   prj_svc1_create = {
     billing_account_id = "ABCDE-12345-ABCDE"
