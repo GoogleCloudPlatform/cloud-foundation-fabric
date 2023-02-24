@@ -82,7 +82,7 @@ terraform apply -var prj_main_id="[your-main-project-id]"
 
 The default URL is automatically created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Now SSH into the VM and run `curl`, you should see the following:
 
-<p align="center"> <img src="images/service-running.png" width="700"> </p>
+<p align="center"> <img src="images/service-running-1.png" width="700"> </p>
 
 Note that the VM is resolving the Cloud Run service to an internal IP, 10.0.0.100. Public access is restricted, if you try to `curl` from e.g. your laptop you will get a `403 Forbidden` error.
 
@@ -177,7 +177,9 @@ prj_svc1_id   = "[your-service-project1-id]"
 custom_domain = "cloud-run-corporate.example.org"
 ```
 
-SSH into a test VM and run `curl` especifying as URL the host, your custom domain, and a path, `/cart` or `/checkout`. You will see each service responding to the request.
+SSH into a test VM and run `curl` specifying as URL the host, your custom domain, and a path, `/cart` or `/checkout`. You will see each service responding to the request:
+
+<p align="center"> <img src="images/service-running-4.png" width="700"> </p>
 
 Note that the default URLs for both services are also output, and the PSC endpoint for the `*.run.app` domain from previous examples is still created. However, access to these URLs from both VMs in the host or service project is blocked since the requests come from a VPC network in a different project to the service.
 
