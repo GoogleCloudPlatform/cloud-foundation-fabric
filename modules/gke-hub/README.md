@@ -314,7 +314,7 @@ module "hub" {
   ]
 }
 
-# tftest modules=8 resources=31
+# tftest modules=8 resources=32
 ```
 <!-- BEGIN TFDOC -->
 
