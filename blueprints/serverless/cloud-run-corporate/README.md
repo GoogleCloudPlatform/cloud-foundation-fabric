@@ -228,6 +228,24 @@ module "test" {
     billing_account_id = "ABCDE-12345-ABCDE"
     parent             = "organizations/0123456789"
   }
+  prj_main_id = "main-project-id" # Used as host project
+  prj_onprem_create = {
+    billing_account_id = "ABCDE-12345-ABCDE"
+    parent             = "organizations/0123456789"
+  }
+  prj_onprem_id = "onprem-project-id"
+}
+
+# tftest modules=15 resources=45
+```
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/serverless/cloud-run-corporate"
+  prj_main_create = {
+    billing_account_id = "ABCDE-12345-ABCDE"
+    parent             = "organizations/0123456789"
+  }
   prj_main_id = "main-project-id"
   prj_prj1_create = {
     billing_account_id = "ABCDE-12345-ABCDE"
