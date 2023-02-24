@@ -61,3 +61,11 @@ output "self_link" {
   sensitive   = true
   value       = google_container_cluster.cluster.self_link
 }
+
+output "workload_identity_pool" {
+  description = "Workload identity pool."
+  value       = "${var.project_id}.svc.id.goog"
+  depends_on = [
+    google_container_cluster.cluster
+  ]
+}
