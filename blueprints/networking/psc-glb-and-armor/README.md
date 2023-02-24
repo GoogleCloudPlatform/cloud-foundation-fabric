@@ -107,3 +107,17 @@ The above command will delete the associated resources so there will be no billa
 | [zone](variables.tf#L45) | The GCP zone for the VM. | <code></code> |  | <code>europe-west1-b</code> |
 
 <!-- END TFDOC -->
+
+
+## Test
+
+```hcl
+module "psc-glb-and-armor-test" {
+  source              = "./fabric/blueprints/networking/psc-glb-and-armor"
+  prefix              = "test"
+  project_create      = true
+  consumer_project_id = "project-1"
+  producer_project_id = "project-2"
+}
+# tftest modules=3 resources=31
+```
