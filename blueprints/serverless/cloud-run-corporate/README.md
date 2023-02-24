@@ -159,7 +159,7 @@ Another possibility is for a project to be a Service Project with the Cloud Run 
 Note that the service project can't have a different DNS entry for the same domain, so it uses the DNS and PSC configuration of the host project. Set the following in `terraform.tfvars`:
 
 ```tfvars
-prj_main_id = "[your-main-project-id]"     # Used as host project
+prj_main_id = "[your-main-project-id]" # Used as host project
 prj_svc1_id = "[your-service-project1-id]"
 ```
 
@@ -172,7 +172,7 @@ You need to use a L7 ILB with Serverless NEGs (in Preview) to set a custom domai
 For simplicity, both services are deployed in the same service project. Also, the blueprint uses an HTTP connection to the ILB to avoid management of SSL certificates. To test access, VMs are created in the host and service projects. Set the following in `terraform.tfvars`:
 
 ```tfvars
-prj_main_id   = "[your-main-project-id]"     # Used as host project
+prj_main_id   = "[your-main-project-id]" # Used as host project
 prj_svc1_id   = "[your-service-project1-id]"
 custom_domain = "cloud-run-corporate.example.org"
 ```
@@ -192,3 +192,22 @@ The above command will delete the associated resources so there will be no billa
 <!-- END TFDOC -->
 
 ## Tests
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/serverless/cloud-run-corporate"
+  prj_main_create = {
+    billing_account_id = "ABCDE-12345-ABCDE"
+    parent             = "organizations/0123456789"
+  }
+  prj_main_id = "main-project-id" # Used as host project
+  prj_svc1_create = {
+    billing_account_id = "ABCDE-12345-ABCDE"
+    parent             = "organizations/0123456789"
+  }
+  prj_svc1_id   = "service-project1-id"
+  custom_domain = "cloud-run-corporate.example.org"
+}
+
+# tftest modules=14 resources=38
+```
