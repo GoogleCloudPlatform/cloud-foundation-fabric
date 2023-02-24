@@ -91,8 +91,7 @@ module "cluster-autopilot" {
     master_ipv4_cidr_block = "192.168.0.0/28"
   }
   enable_features = {
-    autopilot         = true
-    workload_identity = false
+    autopilot = true
   }
 }
 # tftest modules=1 resources=1 inventory=autopilot.yaml
@@ -162,5 +161,6 @@ module "cluster-1" {
 | [name](outputs.tf#L49) | Cluster name. |  |
 | [notifications](outputs.tf#L54) | GKE PubSub notifications topic. |  |
 | [self_link](outputs.tf#L59) | Cluster self link. | ✓ |
+| [workload_identity_pool](outputs.tf#L65) | Workload identity pool. |  |
 
 <!-- END TFDOC -->

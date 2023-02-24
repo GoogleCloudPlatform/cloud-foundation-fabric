@@ -379,7 +379,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "workload_identity_config" {
-    for_each = var.enable_features.workload_identity ? [""] : []
+    for_each = (var.enable_features.workload_identity && !var.enable_features.autopilot) ? [""] : []
     content {
       workload_pool = "${var.project_id}.svc.id.goog"
     }
