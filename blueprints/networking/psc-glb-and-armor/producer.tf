@@ -65,7 +65,7 @@ resource "google_cloud_run_service" "app" {
       "run.googleapis.com/ingress" = "internal-and-cloud-load-balancing"
     }
   }
-  
+
   depends_on = [
     google_project_service.producer
   ]
@@ -227,16 +227,16 @@ resource "google_compute_service_attachment" "psc_ilb_service_attachment" {
 }
 
 resource "google_service_account" "noop" {
-  project = var.producer_project_id
+  project      = var.producer_project_id
   account_id   = "noop-sa"
   display_name = "Service Account for NOOP VM"
 }
 
 resource "google_compute_instance" "noop-vm" {
-  project = var.producer_project_id
+  project      = var.producer_project_id
   name         = "noop-ilb-vm"
   machine_type = "e2-medium"
-  zone = data.google_compute_zones.available.names[0]
+  zone         = data.google_compute_zones.available.names[0]
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"
@@ -244,7 +244,7 @@ resource "google_compute_instance" "noop-vm" {
   }
 
   network_interface {
-    network = google_compute_network.psc_ilb_network.id
+    network    = google_compute_network.psc_ilb_network.id
     subnetwork = google_compute_subnetwork.vms.id
   }
   service_account {
