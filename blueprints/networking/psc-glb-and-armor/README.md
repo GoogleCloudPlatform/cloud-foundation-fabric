@@ -101,7 +101,7 @@ The above command will delete the associated resources so there will be no billa
 |---|---|:---:|:---:|:---:|
 | [consumer_project_id](variables.tf#L17) | The consumer project, in which the GCLB and Cloud Armor should be created. | <code>string</code> | ✓ |  |
 | [prefix](variables.tf#L22) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [producer_project_id](variables.tf#L31) | The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created | <code>string</code> | ✓ |  |
+| [producer_project_id](variables.tf#L31) | The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created. | <code>string</code> | ✓ |  |
 | [project_create](variables.tf#L36) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
 | [region](variables.tf#L42) | The GCP region in which the resources should be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | [zone](variables.tf#L48) | The GCP zone for the VM. | <code>string</code> |  | <code>&#34;europe-west1-b&#34;</code> |
