@@ -16,8 +16,9 @@
 
 module "exp-project" {
   source          = "../../../modules/project"
-  parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "exp${local.project_suffix}"
+  parent          = var.project_config.parent
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.exp : "${var.project_config.project_ids.exp}${local.project_suffix}"
 }

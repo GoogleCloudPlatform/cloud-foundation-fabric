@@ -86,15 +86,12 @@ variable "location" {
 variable "options" {
   description = "Dataset options."
   type = object({
-    default_table_expiration_ms     = number
-    default_partition_expiration_ms = number
-    delete_contents_on_destroy      = bool
+    default_table_expiration_ms     = optional(number, null)
+    default_partition_expiration_ms = optional(number, null)
+    delete_contents_on_destroy      = optional(bool, false)
+    max_time_travel_hours           = optional(number, 168)
   })
-  default = {
-    default_table_expiration_ms     = null
-    default_partition_expiration_ms = null
-    delete_contents_on_destroy      = false
-  }
+  default = {}
 }
 
 variable "project_id" {

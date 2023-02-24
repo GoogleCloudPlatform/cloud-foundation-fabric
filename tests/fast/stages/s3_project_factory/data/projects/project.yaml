@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,15 +60,14 @@ labels:
 
 # [opt] Org policy overrides defined at project level
 org_policies:
-  policy_boolean:
-    constraints/compute.disableGuestAttributesAccess: true
-  policy_list:
-    constraints/compute.trustedImageProjects:
-      inherit_from_parent: null
-      status: true
-      suggested_value: null
-      values:
-        - projects/fast-prod-iac-core-0
+  compute.disableGuestAttributesAccess:
+    rules:
+      - enforce: true
+  compute.trustedImageProjects:
+    rules:
+      - allow:
+          values:
+          - projects/fast-prod-iac-core-0
 
 # [opt] Service account to create for the project and their roles on the project
 # in name => [roles] format

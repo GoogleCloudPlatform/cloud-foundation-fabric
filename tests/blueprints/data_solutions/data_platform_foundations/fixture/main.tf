@@ -17,7 +17,9 @@
 module "test" {
   source              = "../../../../../blueprints/data-solutions/data-platform-foundations/"
   organization_domain = "example.com"
-  billing_account_id  = "123456-123456-123456"
-  folder_id           = "folders/12345678"
-  prefix              = "prefix"
+  project_config = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  prefix = "prefix"
 }

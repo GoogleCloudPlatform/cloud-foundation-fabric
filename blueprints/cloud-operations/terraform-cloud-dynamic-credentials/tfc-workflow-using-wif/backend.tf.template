@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+# The block below configures Terraform to use the 'remote' backend with Terraform Cloud.
+# For more information, see https://www.terraform.io/docs/backends/types/remote.html
+
 terraform {
-  required_version = ">= 1.3.1"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.50.0" # tftest
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 4.50.0" # tftest
+  backend "remote" {
+    organization = "<TFC-ORG-NAME>"
+
+    workspaces {
+      name = "<TFC-WORKSPACE-NAME>"
     }
   }
+
+  required_version = ">= 0.14.0"
 }
-
-

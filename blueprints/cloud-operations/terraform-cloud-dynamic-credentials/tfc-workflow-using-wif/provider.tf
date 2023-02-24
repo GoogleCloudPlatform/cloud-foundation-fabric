@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-parent              = "folders/437102807785"
-project_id          = "my-project-id"
-tfe_organization_id = "org-W3bz9neazHrZz99U"
-tfe_workspace_id    = "ws-DFxEE3NmeMdaAvoK"
-billing_account     = "015617-1B8CBC-AF10D9"
+provider "google" {}

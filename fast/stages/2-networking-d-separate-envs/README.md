@@ -1,4 +1,4 @@
-# Networking
+# Networking with separated single environment
 
 This stage sets up the shared network infrastructure for the whole organization. It implements a single shared VPC per environment, where each environment is independently connected to the on-premise environment, to maintain a fully separated routing domain on GCP.
 
@@ -13,6 +13,31 @@ The following diagram illustrates the high-level design, and should be used as a
 <p align="center">
   <img src="diagram.svg" alt="Networking diagram">
 </p>
+
+## Table of contents
+
+- [Design overview and choices](#design-overview-and-choices)
+  - [VPC design](#vpc-design)
+  - [External connectivity](#external-connectivity)
+  - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
+  - [Internet egress](#internet-egress)
+  - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
+  - [DNS](#dns)
+- [Stage structure and files layout](#stage-structure-and-files-layout)
+  - [VPCs](#vpcs)
+  - [VPNs](#vpns)
+  - [Routing and BGP](#routing-and-bgp)
+  - [Firewall](#firewall)
+  - [DNS architecture](#dns-architecture)
+  - [Private Google Access](#private-google-access)
+- [How to run this stage](#how-to-run-this-stage)
+  - [Provider and Terraform variables](#provider-and-terraform-variables)
+  - [Impersonating the automation service account](#impersonating-the-automation-service-account)
+  - [Variable configuration](#variable-configuration)
+  - [Running the stage](#running-the-stage)
+  - [Post-deployment activities](#post-deployment-activities)
+- [Customizations](#customizations)
+  - [Changing default regions](#changing-default-regions)
 
 ## Design overview and choices
 
@@ -87,57 +112,7 @@ From cloud, the `example.com` domain (used as a placeholder) is forwarded to on-
 
 This configuration is battle-tested, and flexible enough to lend itself to simple modifications without subverting its design, for example by forwarding and peering root zones to bypass Cloud DNS external resolution.
 
-## How to run this stage
-
-This stage is meant to be executed after the [resman](../1-resman) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured in the [bootstrap](../0-bootstrap) stage.
-
-It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the previous stages for the environmental requirements.
-
-Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
-
-### Providers configuration
-
-The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage during the [resource management](../1-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
-
-To simplify setup, the previous stage pre-configures a valid providers file in its output, and optionally writes it to a local file if the `outputs_location` variable is set to a valid path.
-
-If you have set a valid value for `outputs_location` in the bootstrap stage, simply link the relevant `providers.tf` file from this stage's folder in the path you specified:
-
-```bash
-# `outputs_location` is set to `~/fast-config`
-ln -s ~/fast-config/providers/02-networking-providers.tf .
-```
-
-If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
-
-```bash
-cd ../1-resman
-terraform output -json providers | jq -r '.["02-networking"]' \
-  > ../02-networking/providers.tf
-```
-
-### Variable configuration
-
-There are two broad sets of variables you will need to fill in:
-
-- variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
-- variables specific to resources managed by this stage
-
-To avoid the tedious job of filling in the first group of variables with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
-
-If you have set a valid value for `outputs_location` in the bootstrap and in the resman stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's folder in the path you specified, where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
-
-```bash
-# `outputs_location` is set to `~/fast-config`
-ln -s ../../configs/example/02-networking/terraform-bootstrap.auto.tfvars.json
-ln -s ../../configs/example/02-networking/terraform-resman.auto.tfvars.json
-# also copy the tfvars file used for the bootstrap stage
-cp ../0-bootstrap/terraform.tfvars .
-```
-
-A second set of variables is specific to this stage, they are all optional so if you need to customize them, add them to the file copied from bootstrap.
-
-Please refer to the [Variables](#variables) table below for a map of the variable origins, and to the sections below on how to adapt this stage to your networking configuration.
+## Stage structure and files layout
 
 ### VPCs
 
@@ -187,7 +162,72 @@ When implementing this architecture, make sure you'll be able to route packets c
 
 The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined on eachVPC automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP.
 
-### Private Google Access
+## How to run this stage
+
+This stage is meant to be executed after the [resource management](../1-resman) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured in the [bootstrap](../0-bootstrap) stage.
+
+It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the previous stages for the environmental requirements.
+
+Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
+
+### Provider and Terraform variables
+
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+
+The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+
+```bash
+../../stage-links.sh ~/fast-config
+
+# copy and paste the following commands for '2-networking-a-peering'
+
+ln -s ~/fast-config/providers/2-networking-providers.tf ./
+ln -s ~/fast-config/tfvars/globals.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+```
+
+```bash
+../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+
+# copy and paste the following commands for '2-networking-a-peering'
+
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-networking-providers.tf ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/globals.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+```
+
+### Impersonating the automation service account
+
+The preconfigured provider file uses impersonation to run with this stage's automation service account's credentials. The `gcp-devops` and `organization-admins` groups have the necessary IAM bindings in place to do that, so make sure the current user is a member of one of those groups.
+
+### Variable configuration
+
+Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
+
+- variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `globals.auto.tfvars.json` file linked or copied above
+- variables which refer to resources managed by previous stage, which are prepopulated here via the `0-bootstrap.auto.tfvars.json` and `1-resman.auto.tfvars.json` files linked or copied above
+- and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
+
+The latter set is explained in the [Customization](#customizations) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
+
+### Running the stage
+
+Once provider and variable values are in place and the correct user is configured, the stage can be run:
+
+```bash
+terraform init
+terraform apply
+```
+
+### Post-deployment activities
+
+- On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recomment aggregating routes as much as possible.
+- On-prem routers should accept BGP sessions from their cloud peers.
+- On-prem DNS servers should have forward zones for GCP-managed ones.
+
+#### Private Google Access
 
 [Private Google Access](https://cloud.google.com/vpc/docs/private-google-access) (or PGA) enables VMs and on-prem systems to consume Google APIs from within the Google network, and is already fully configured on this environment.
 
@@ -199,21 +239,16 @@ Subnets created by the `net-vpc` module are PGA-enabled by default.
 - 199.36.153.4/30 (`restricted.googleapis.com`) and 199.36.153.8/30 (`private.googleapis.com`) should be routed from on-prem to VPC, and from there to the `default-internet-gateway`. \
 Per variable `vpn_onprem_configs` such ranges are advertised to onprem - furthermore every VPC has explicit routes set in case the `0.0.0.0/0` route is changed.
 
-- A private DNS zone for `googleapis.com` should be created and configured per [this article](https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid#config-domain), as implemented in module `googleapis-private-zone` in `dns-xxx.tf`
+- A private DNS zone for `googleapis.com` should be created and configured per [this article](https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid#config-domain)
 
-### Preliminar activities
+## Customizations
 
-Before running `terraform apply` on this stage, make sure to adapt all of `variables.tf` to your needs, to update all reference to regions (e.g. `europe-west1` or `ew1`) in the whole directory to match your preferences.
+### Changing default regions
 
-If you're not using FAST, you'll also need to create a `providers.tf` file to configure the GCS backend and the service account to use to run the deployment.
+Regions are defined via the `regions` variable which sets up a mapping between the `regions.primary` and `regions.secondary` logical names and actual GCP region names. If you need to change regions from the defaults:
 
-You're now ready to run `terraform init` and `apply`.
-
-### Post-deployment activities
-
-- On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recomment aggregating routes as much as possible.
-- On-prem routers should accept BGP sessions from their cloud peers.
-- On-prem DNS servers should have forward zones for GCP-managed ones.
+- change the values of the mappings in the `regions` variable to the regions you are going to use
+- change the regions in the factory subnet files in the `data` folder
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->

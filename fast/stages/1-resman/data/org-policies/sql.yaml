@@ -3,7 +3,9 @@
 # sample subset of useful organization policies, edit to suit requirements
 
 sql.restrictAuthorizedNetworks:
-  enforce: true
+  rules:
+  - enforce: true
 
 sql.restrictPublicIp:
-  enforce: true
+  rules:
+  - enforce: true

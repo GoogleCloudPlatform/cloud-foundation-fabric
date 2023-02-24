@@ -44,7 +44,18 @@ values:
     region: europe-west4
     role: null
     secondary_ip_range: []
+  module.vpc.google_compute_subnetwork_iam_binding.binding["europe-west1/subnet-detailed.roles/compute.networkUser"]:
+    condition: []
+    members:
+    - group:lorem@example.com
+    - serviceAccount:fbz@prj.iam.gserviceaccount.com
+    - user:foobar@example.com
+    project: my-project
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: subnet-detailed
 
 counts:
   google_compute_network: 1
   google_compute_subnetwork: 2
+  google_compute_subnetwork_iam_binding: 1

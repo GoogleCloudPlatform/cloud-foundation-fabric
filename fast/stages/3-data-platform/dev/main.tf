@@ -18,13 +18,15 @@
 
 module "data-platform" {
   source             = "../../../../blueprints/data-solutions/data-platform-foundations"
-  billing_account_id = var.billing_account.id
   composer_config    = var.composer_config
   data_force_destroy = var.data_force_destroy
   data_catalog_tags  = var.data_catalog_tags
-  folder_id          = var.folder_ids.data-platform-dev
-  groups             = var.groups
-  location           = var.location
+  project_config = {
+    billing_account_id = var.billing_account.id
+    parent             = var.folder_ids.data-platform-dev
+  }
+  groups   = var.groups
+  location = var.location
   network_config = {
     host_project      = var.host_project_ids.dev-spoke-0
     network_self_link = var.vpc_self_links.dev-spoke-0

@@ -147,8 +147,8 @@ module "test" {
       from = {
         identities = [
           "serviceAccount:test-tf@myproject.iam.gserviceaccount.com",
-        ],
-        source_access_levels = ["*"]
+        ]
+        access_levels = ["*"]
       }
       to = {
         operations = [{ service_name = "*" }]

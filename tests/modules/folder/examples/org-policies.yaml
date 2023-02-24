@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ values:
         deny_all: null
         enforce: 'TRUE'
         values: []
-  module.folder.google_org_policy_policy.default["constraints/compute.skipDefaultNetworkCreation"]:
+  module.folder.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -36,7 +36,7 @@ values:
         deny_all: null
         enforce: 'TRUE'
         values: []
-  module.folder.google_org_policy_policy.default["constraints/compute.trustedImageProjects"]:
+  module.folder.google_org_policy_policy.default["compute.trustedImageProjects"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -49,7 +49,7 @@ values:
         - allowed_values:
           - projects/my-project
           denied_values: null
-  module.folder.google_org_policy_policy.default["constraints/compute.vmExternalIpAccess"]:
+  module.folder.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -59,7 +59,7 @@ values:
         deny_all: 'TRUE'
         enforce: null
         values: []
-  module.folder.google_org_policy_policy.default["constraints/iam.allowedPolicyMemberDomains"]:
+  module.folder.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
     spec:
     - inherit_from_parent: null
       reset: null
@@ -91,7 +91,7 @@ values:
       - allow_all: null
         condition:
         - description: test condition
-          expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
+          expression: resource.matchTagId('tagKeys/1234', 'tagValues/1234')
           location: somewhere
           title: condition
         deny_all: null
