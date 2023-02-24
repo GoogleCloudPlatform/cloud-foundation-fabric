@@ -74,6 +74,7 @@ This blueprint can be used as a building block for setting up an end2end ML Ops 
 | [project_id](outputs.tf#L49) | Project ID. |  |
 
 <!-- END TFDOC -->
+
 ## TODO
 - Add support for User Managed Notebooks, SA permission option and non default SA for Single User mode.
 - Improve default naming for local VPC and Cloud NAT
