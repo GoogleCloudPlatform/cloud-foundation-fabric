@@ -42,11 +42,11 @@ variable "producer_project_id" {
 variable "region" {
   description = "The GCP region in which the resources should be deployed."
   type        = string
-  default = "europe-west1"
+  default     = "europe-west1"
 }
 
 variable "zone" {
   description = "The GCP zone for the VM."
   type        = string
-  default = "europe-west1-b"
+  default     = "europe-west1-b"
 }
