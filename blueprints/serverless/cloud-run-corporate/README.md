@@ -177,7 +177,9 @@ prj_svc1_id   = "[your-service-project1-id]"
 custom_domain = "cloud-run-corporate.example.org"
 ```
 
-The default URLs for both services are also output, and the PSC endpoint for the `*.run.app` domain from previous examples is still created. However, note that access to these URLs from both VMs in the host or service project is blocked since the requests come from a VPC network in a different project to the service.
+SSH into a test VM and run `curl` especifying as URL the host, your custom domain, and a path, `/cart` or `/checkout`. You will see each service responding to the request.
+
+Note that the default URLs for both services are also output, and the PSC endpoint for the `*.run.app` domain from previous examples is still created. However, access to these URLs from both VMs in the host or service project is blocked since the requests come from a VPC network in a different project to the service.
 
 ## Cleaning up your environment
 
