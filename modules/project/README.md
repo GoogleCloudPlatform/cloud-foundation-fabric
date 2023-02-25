@@ -189,6 +189,7 @@ This table lists all affected services and roles that you need to grant to servi
 | cloudasset.googleapis.com | cloudasset | roles/cloudasset.serviceAgent |
 | cloudbuild.googleapis.com | cloudbuild | roles/cloudbuild.builds.builder |
 | gkehub.googleapis.com | fleet | roles/gkehub.serviceAgent |
+| meshconfig.googleapis.com | servicemesh | roles/anthosservicemesh.serviceAgent |
 | multiclusteringress.googleapis.com | multicluster-ingress | roles/multiclusteringress.serviceAgent |
 | pubsub.googleapis.com | pubsub | roles/pubsub.serviceAgent |
 | sqladmin.googleapis.com | sqladmin | roles/cloudsql.serviceAgent |

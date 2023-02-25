@@ -46,7 +46,7 @@ resource "google_compute_region_backend_service" "default" {
   description                     = var.description
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec
   connection_draining_timeout_sec = each.value.connection_draining_timeout_sec
-  health_checks = [
+  health_checks = length(each.value.health_checks) == 0 ? null : [
     for k in each.value.health_checks : lookup(local.hc_ids, k, k)
   ] # not for internet / serverless NEGs
   locality_lb_policy    = each.value.locality_lb_policy

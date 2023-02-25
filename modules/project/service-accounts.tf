@@ -50,6 +50,7 @@ locals {
     notebooks                = "service-%s@gcp-sa-notebooks"
     pubsub                   = "service-%s@gcp-sa-pubsub"
     secretmanager            = "service-%s@gcp-sa-secretmanager"
+    servicemesh              = "service-%s@gcp-sa-servicemesh"
     sql                      = "service-%s@gcp-sa-cloud-sql"
     sqladmin                 = "service-%s@gcp-sa-cloud-sql"
     storage                  = "service-%s@gs-project-accounts"
@@ -81,6 +82,7 @@ locals {
     "gkehub.googleapis.com",              # grant roles/gkehub.serviceAgent to fleet
     "multiclusteringress.googleapis.com", # grant roles/multiclusteringress.serviceAgent to multicluster-ingress
     "pubsub.googleapis.com",              # grant roles/pubsub.serviceAgent to pubsub
+    "meshconfig.googleapis.com",          # grant roles/anthosservicemesh.serviceAgent to meshconfig
     "secretmanager.googleapis.com",       # no grants needed
     "sqladmin.googleapis.com",            # grant roles/cloudsql.serviceAgent to sqladmin (TODO: verify)
   ]

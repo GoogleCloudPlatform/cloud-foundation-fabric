@@ -14,11 +14,6 @@
 
 # tfdoc:file:description Terraform Variables.
 
-variable "billing_account_id" {
-  description = "Billing account id."
-  type        = string
-}
-
 variable "composer_config" {
   description = "Cloud Composer config."
   type = object({
@@ -119,11 +114,6 @@ variable "data_force_destroy" {
   default     = false
 }
 
-variable "folder_id" {
-  description = "Folder to be used for the networking resources in folders/nnnn format."
-  type        = string
-}
-
 variable "groups" {
   description = "User groups."
   type        = map(string)
@@ -174,6 +164,40 @@ variable "prefix" {
   validation {
     condition     = var.prefix != ""
     error_message = "Prefix cannot be empty."
+  }
+}
+
+variable "project_config" {
+  description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'project_ids' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  type = object({
+    billing_account_id = optional(string, null)
+    parent             = string
+    project_ids = optional(object({
+      drop     = string
+      load     = string
+      orc      = string
+      trf      = string
+      dwh-lnd  = string
+      dwh-cur  = string
+      dwh-conf = string
+      common   = string
+      exp      = string
+      }), {
+      drop     = "drp"
+      load     = "lod"
+      orc      = "orc"
+      trf      = "trf"
+      dwh-lnd  = "dwh-lnd"
+      dwh-cur  = "dwh-cur"
+      dwh-conf = "dwh-conf"
+      common   = "cmn"
+      exp      = "exp"
+      }
+    )
+  })
+  validation {
+    condition     = var.project_config.billing_account_id != null || var.project_config.project_ids != null
+    error_message = "At least one attribute should be set."
   }
 }
 

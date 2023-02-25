@@ -123,7 +123,7 @@ with models.DAG(
       task_id="upsert_table_customers",
       project_id=DWH_LAND_PRJ,
       dataset_id=DWH_LAND_BQ_DATASET,
-      impersonation_chain=[TRF_SA_DF],
+      impersonation_chain=[LOD_SA_DF],
       table_resource={
         "tableReference": {"tableId": "customers"},
       },
@@ -133,7 +133,7 @@ with models.DAG(
       task_id="upsert_table_purchases",
       project_id=DWH_LAND_PRJ,
       dataset_id=DWH_LAND_BQ_DATASET,
-      impersonation_chain=[TRF_SA_BQ],      
+      impersonation_chain=[LOD_SA_DF],      
       table_resource={
         "tableReference": {"tableId": "purchases"}
       },
@@ -167,7 +167,7 @@ with models.DAG(
       project_id=DWH_LAND_PRJ,
       dataset_id=DWH_LAND_BQ_DATASET,
       table_id="customers",
-      impersonation_chain=[TRF_SA_BQ],
+      impersonation_chain=[LOD_SA_DF],
       include_policy_tags=True,
       schema_fields_updates=[
         { "mode": "REQUIRED", "name": "id", "type": "INTEGER", "description": "ID" },
@@ -182,7 +182,7 @@ with models.DAG(
       project_id=DWH_LAND_PRJ,
       dataset_id=DWH_LAND_BQ_DATASET,
       table_id="purchases",
-      impersonation_chain=[TRF_SA_BQ],
+      impersonation_chain=[LOD_SA_DF],
       include_policy_tags=True,
       schema_fields_updates=[ 
         {  "mode": "REQUIRED",  "name": "id",  "type": "INTEGER",  "description": "ID" }, 

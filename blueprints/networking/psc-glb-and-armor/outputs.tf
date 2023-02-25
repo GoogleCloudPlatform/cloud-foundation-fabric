@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-module "test" {
-  source              = "../../../../../blueprints/data-solutions/data-platform-foundations/"
-  organization_domain = "example.com"
-  project_config = {
-    billing_account_id = "123456-123456-123456"
-    parent             = "folders/12345678"
-  }
-  prefix = "prefix"
+output "lb_ip" {
+  description = "Load balancer IP address."
+  value       = google_compute_global_forwarding_rule.default.ip_address
 }
