@@ -82,3 +82,11 @@ The emulated on-premises environment can be used to test access to different ser
 It is meant to be used as a starting point for most Shared VPC configurations, and to be integrated to the above blueprints where Shared VPC is needed in more complex network topologies.
 
 <br clear="left">
+
+### Exposing applications to the internet via GCLB and Private Service Connect
+
+<a href="./psc-glb-and-armor/" title="Shared VPC with GKE"><img src="./psc-glb-and-armor/diagram.png" align="left" width="280px"></a> This [blueprint](./psc-glb-and-armor/) shows how to configure an external Google Cloud Load Balancer, with a simple Cloud Armor rule to protect against DDOS attacks, to provide an external endpoint to an application provided by another team via Private Service Connect (PSC).
+
+It is meant to be used as a starting point for users that want to explore PSC to reduce some of the complexity in their network setup.
+
+<br clear="left">
