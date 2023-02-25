@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,13 +28,13 @@ env:
   PYTEST_ADDOPTS: "--color=yes"
   PYTHON_VERSION: "3.10"
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
-  TF_VERSION: 1.3.2
+  TF_VERSION: 1.3.9
 
 jobs:
   examples:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Config auth
         run: |
@@ -42,9 +42,11 @@ jobs:
             | tee -a $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'tests/requirements.txt'
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
@@ -69,7 +71,7 @@ jobs:
   blueprints:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Config auth
         run: |
@@ -77,9 +79,11 @@ jobs:
             | tee -a $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'tests/requirements.txt'
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
@@ -104,7 +108,7 @@ jobs:
   modules:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Config auth
         run: |
@@ -112,9 +116,11 @@ jobs:
             | tee -a $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'tests/requirements.txt'
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
@@ -139,7 +145,7 @@ jobs:
   fast:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Config auth
         run: |
@@ -147,9 +153,11 @@ jobs:
             | tee -a $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'tests/requirements.txt'
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
