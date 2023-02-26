@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,29 @@ variable "billing_account" {
     condition     = var.billing_account.is_org_level != null
     error_message = "Invalid `null` value for `billing_account.is_org_level`."
   }
+}
+
+variable "custom_roles" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Custom roles defined at the org level, in key => id format."
+  type = object({
+    service_project_network_admin = string
+  })
+  default = null
+}
+
+variable "fast_features" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Selective control for top-level FAST features."
+  type = object({
+    data_platform   = optional(bool, true)
+    gke             = optional(bool, true)
+    project_factory = optional(bool, true)
+    sandbox         = optional(bool, true)
+    teams           = optional(bool, true)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "folder_ids" {
@@ -81,6 +104,24 @@ variable "kms_keys" {
   default = {}
 }
 
+variable "locations" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Optional locations for GCS, BigQuery, and logging buckets created here."
+  type = object({
+    bq      = string
+    gcs     = string
+    logging = string
+    pubsub  = list(string)
+  })
+  default = {
+    bq      = "EU"
+    gcs     = "EU"
+    logging = "global"
+    pubsub  = []
+  }
+  nullable = false
+}
+
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
@@ -117,6 +158,35 @@ variable "service_accounts" {
     project-factory-dev  = string
     project-factory-prod = string
   })
+}
+
+variable "tag_keys" {
+  # tfdoc:variable:source 1-resman
+  description = "Organization tag keys."
+  type = object({
+    context     = string
+    environment = string
+    tenant      = string
+  })
+  nullable = false
+}
+
+variable "tag_names" {
+  # tfdoc:variable:source 1-resman
+  description = "Customized names for resource management tags."
+  type = object({
+    context     = string
+    environment = string
+    tenant      = string
+  })
+  nullable = false
+}
+
+variable "tag_values" {
+  # tfdoc:variable:source 1-resman
+  description = "Organization resource management tag values."
+  type        = map(string)
+  nullable    = false
 }
 
 variable "vpc_sc_access_levels" {
