@@ -1,3 +1,5 @@
+CREATE view if not exists `{project_id}.{dataset}.ecommerce_abt` as
+
 with abt as (
   SELECT user_id, session_id, city, postal_code, browser,traffic_source, min(created_at) as session_starting_ts,  sum(case when event_type = 'purchase' then 1 else 0 end) has_purchased
   FROM `bigquery-public-data.thelook_ecommerce.events` 
