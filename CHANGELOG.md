@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
 - [[#1175](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1175)] Serverless networking program ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-25 10:15:12+00:00 -->
 - [[#1179](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1179)] Added a PSC GCLB example ([cgrotz](https://github.com/cgrotz)) <!-- 2023-02-24 20:09:31+00:00 -->
 - [[#1165](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1165)] DataPlatform: Support project creation ([lcaggio](https://github.com/lcaggio)) <!-- 2023-02-23 11:10:44+00:00 -->
-- [[#1167](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1167)] Simplify org policies ([juliocc](https://github.com/juliocc)) <!-- 2023-02-21 15:08:43+00:00 -->
+- [[#1167](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1167)] **incompatible change:** Simplify org policies in resource management modules ([juliocc](https://github.com/juliocc)) <!-- 2023-02-21 15:08:43+00:00 -->
 - [[#1161](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1161)] Additional documentation for the Data Platform Dataflow pipeline example ([aymanfarhat](https://github.com/aymanfarhat)) <!-- 2023-02-16 19:09:52+00:00 -->
 - [[#1154](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1154)] Workaround to mitigate provider issue 9164 ([lcaggio](https://github.com/lcaggio)) <!-- 2023-02-14 05:37:19+00:00 -->
 - [[#1146](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1146)] Serverless networking program ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-10 19:08:14+00:00 -->
@@ -30,7 +30,7 @@ All notable changes to this project will be documented in this file.
 - [[#1179](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1179)] Added a PSC GCLB example ([cgrotz](https://github.com/cgrotz)) <!-- 2023-02-24 20:09:31+00:00 -->
 - [[#1165](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1165)] DataPlatform: Support project creation ([lcaggio](https://github.com/lcaggio)) <!-- 2023-02-23 11:10:44+00:00 -->
 - [[#1145](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1145)] FAST stage docs cleanup ([ludoo](https://github.com/ludoo)) <!-- 2023-02-15 05:42:14+00:00 -->
-- [[#1137](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1137)] Allow configuring regions from tfvars in FAST networking stages ([ludoo](https://github.com/ludoo)) <!-- 2023-02-08 08:59:43+00:00 -->
+- [[#1137](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1137)] **incompatible change:** Allow configuring regions from tfvars in FAST networking stages ([ludoo](https://github.com/ludoo)) <!-- 2023-02-08 08:59:43+00:00 -->
 - [[#1105](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1105)] [Feature] Update data platform blue print with Dataflow Flex template ([aymanfarhat](https://github.com/aymanfarhat)) <!-- 2023-02-06 06:35:41+00:00 -->
 - [[#1052](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1052)] **incompatible change:** FAST multitenant bootstrap and resource management, rename org-level FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2023-02-04 14:00:46+00:00 -->
 
@@ -39,11 +39,11 @@ All notable changes to this project will be documented in this file.
 - [[#1184](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1184)] **incompatible change:** Allow multiple peer gateways in VPN HA module ([ludoo](https://github.com/ludoo)) <!-- 2023-02-27 10:19:00+00:00 -->
 - [[#1165](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1165)] DataPlatform: Support project creation ([lcaggio](https://github.com/lcaggio)) <!-- 2023-02-23 11:10:44+00:00 -->
 - [[#1170](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1170)] Add documentation about referring modules stored on CSR ([wiktorn](https://github.com/wiktorn)) <!-- 2023-02-22 09:02:54+00:00 -->
-- [[#1167](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1167)] Simplify org policies ([juliocc](https://github.com/juliocc)) <!-- 2023-02-21 15:08:43+00:00 -->
+- [[#1167](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1167)] **incompatible change:** Simplify org policies in resource management modules ([juliocc](https://github.com/juliocc)) <!-- 2023-02-21 15:08:43+00:00 -->
 - [[#1164](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1164)] fix module_prefix in fast extras 0-cicd-github ([antonkovach](https://github.com/antonkovach)) <!-- 2023-02-19 18:22:42+00:00 -->
 - [[#1162](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1162)] Fix Terraform formatting and add module_prefix attribute to modules_config ([antonkovach](https://github.com/antonkovach)) <!-- 2023-02-19 17:01:38+00:00 -->
 - [[#1145](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1145)] FAST stage docs cleanup ([ludoo](https://github.com/ludoo)) <!-- 2023-02-15 05:42:14+00:00 -->
-- [[#1137](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1137)] Allow configuring regions from tfvars in FAST networking stages ([ludoo](https://github.com/ludoo)) <!-- 2023-02-08 08:59:43+00:00 -->
+- [[#1137](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1137)] **incompatible change:** Allow configuring regions from tfvars in FAST networking stages ([ludoo](https://github.com/ludoo)) <!-- 2023-02-08 08:59:43+00:00 -->
 - [[#1133](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1133)] Align VPN peer interface to module in FAST net VPN stage ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-02-07 22:58:28+00:00 -->
 - [[#1135](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1135)] Post PR message in GitHub workflow on init or validate failure ([ludoo](https://github.com/ludoo)) <!-- 2023-02-07 09:04:04+00:00 -->
 - [[#1134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1134)] Fix stage 1 output file names and stage links script ([ludoo](https://github.com/ludoo)) <!-- 2023-02-06 19:51:26+00:00 -->
@@ -58,9 +58,9 @@ All notable changes to this project will be documented in this file.
 - [[#1174](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1174)] Don't define nor use health checks with SNEGs ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-24 10:39:50+00:00 -->
 - [[#1172](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1172)] Allow to not use any health check ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-24 09:45:59+00:00 -->
 - [[#1171](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1171)] Modifications related to autopilot and workload identity. Added workl… ([apichick](https://github.com/apichick)) <!-- 2023-02-24 09:14:18+00:00 -->
-- [[#1167](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1167)] Simplify org policies ([juliocc](https://github.com/juliocc)) <!-- 2023-02-21 15:08:43+00:00 -->
+- [[#1167](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1167)] **incompatible change:** Simplify org policies in resource management modules ([juliocc](https://github.com/juliocc)) <!-- 2023-02-21 15:08:43+00:00 -->
 - [[#1168](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1168)] Remove unused attribute from project module README example ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-21 14:14:05+00:00 -->
-- [[#1166](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1166)] Fix variable name ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-20 14:33:54+00:00 -->
+- [[#1166](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1166)] Fix variable name in VPC-SC module examples ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-20 14:33:54+00:00 -->
 - [[#1153](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1153)] net-vpc - add missing iam properties to factory_subnets ([jamesdalf](https://github.com/jamesdalf)) <!-- 2023-02-20 11:34:47+00:00 -->
 - [[#1163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1163)] Projects-data-source module new version ([averbuks](https://github.com/averbuks)) <!-- 2023-02-19 14:44:29+00:00 -->
 - [[#1160](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1160)] Allow additive IAM grants by robots name ([wiktorn](https://github.com/wiktorn)) <!-- 2023-02-16 13:39:21+00:00 -->
