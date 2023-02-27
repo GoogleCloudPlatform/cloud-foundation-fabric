@@ -33,7 +33,9 @@ module "landing-to-prod-primary-vpn" {
     name = "landing-vpn-${local.region_shortnames[var.regions.primary]}"
     asn  = var.router_spoke_configs.landing-primary.asn
   }
-  peer_gateway = { gcp = module.prod-to-landing-primary-vpn.self_link }
+  peer_gateways = {
+    default = { gcp = module.prod-to-landing-primary-vpn.self_link }
+  }
   tunnels = {
     0 = {
       bgp_peer = {
@@ -75,7 +77,9 @@ module "prod-to-landing-primary-vpn" {
     name = "prod-spoke-vpn-${local.region_shortnames[var.regions.primary]}"
     asn  = var.router_spoke_configs.spoke-prod-primary.asn
   }
-  peer_gateway = { gcp = module.landing-to-prod-primary-vpn.self_link }
+  peer_gateways = {
+    default = { gcp = module.landing-to-prod-primary-vpn.self_link }
+  }
   tunnels = {
     0 = {
       bgp_peer = {
