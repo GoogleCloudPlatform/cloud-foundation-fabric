@@ -86,3 +86,15 @@ A sample testing session using `tmux`:
 | [ssh_vm_right](outputs.tf#L64) | Command-line login to right VMs. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source         = "./fabric/blueprints/networking/ilb-next-hop"
+  prefix         = "test"
+  project_create = true
+  project_id     = "project-1"
+}
+# tftest modules=18 resources=42
+```

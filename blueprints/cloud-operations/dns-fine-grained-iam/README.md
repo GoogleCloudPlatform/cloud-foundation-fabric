@@ -118,3 +118,15 @@ dig app1.svc.example.org +short
 | [vms](outputs.tf#L25) | VM names. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test1" {
+  source         = "./fabric/blueprints/cloud-operations/dns-fine-grained-iam"
+  name           = "dns-sd-test"
+  project_create = true
+  project_id     = "test"
+}
+# tftest modules=9 resources=25
+```

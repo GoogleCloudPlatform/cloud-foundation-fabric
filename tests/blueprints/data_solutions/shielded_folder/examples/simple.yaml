@@ -1,0 +1,51 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.test.module.folder.google_compute_firewall_policy.policy["prefix-fw-policy"]:
+    short_name: prefix-fw-policy
+  module.test.module.folder.google_folder.folder[0]:
+    display_name: ShieldedMVP
+    parent: organizations/1234567890123
+  module.test.module.log-export-project[0].google_project.project[0]:
+    billing_account: 123456-123456-123456
+    project_id: prefix-audit-logs
+  module.test.module.vpc-sc[0].google_access_context_manager_access_policy.default[0]:
+    parent: organizations/1122334455
+    title: shielded-folder
+  module.test.module.vpc-sc[0].google_access_context_manager_service_perimeter.regular["shielded"]:
+    description: null
+    perimeter_type: PERIMETER_TYPE_REGULAR
+    title: shielded
+
+counts:
+  google_access_context_manager_access_policy: 1
+  google_access_context_manager_service_perimeter: 1
+  google_bigquery_dataset: 1
+  google_bigquery_dataset_iam_member: 2
+  google_bigquery_default_service_account: 1
+  google_compute_firewall_policy: 1
+  google_compute_firewall_policy_rule: 4
+  google_folder: 2
+  google_folder_iam_binding: 2
+  google_logging_folder_sink: 2
+  google_org_policy_policy: 12
+  google_project: 1
+  google_project_iam_binding: 1
+  google_project_service: 4
+  google_project_service_identity: 1
+  google_projects: 1
+  google_storage_project_service_account: 1
+  modules: 6
+  resources: 38

@@ -36,3 +36,27 @@ You can optionally deploy the Squid server as [Managed Instance Group](https://c
 | [squid-address](outputs.tf#L17) | IP address of the Squid proxy. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test1" {
+  source          = "./fabric/blueprints/networking/filtering-proxy"
+  billing_account = "123456-123456-123456"
+  mig             = true
+  prefix          = "fabric"
+  root_node       = "folders/123456789"
+}
+# tftest modules=14 resources=36
+```
+
+```hcl
+module "test2" {
+  source          = "./fabric/blueprints/networking/filtering-proxy"
+  billing_account = "123456-123456-123456"
+  mig             = false
+  prefix          = "fabric"
+  root_node       = "folders/123456789"
+}
+# tftest modules=12 resources=30
+```

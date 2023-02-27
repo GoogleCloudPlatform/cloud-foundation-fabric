@@ -125,3 +125,18 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 | [image_repo_url](outputs.tf#L22) | Image source repository url. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/gke/binauthz"
+  prefix = "test"
+  project_create = {
+    billing_account_id = "12345-12345-12345"
+    parent             = "folders/123456789"
+  }
+  project_id = "my-project"
+}
+# tftest modules=14 resources=47
+```

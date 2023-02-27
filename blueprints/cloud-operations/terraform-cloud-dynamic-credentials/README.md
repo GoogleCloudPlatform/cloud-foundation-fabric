@@ -120,3 +120,4 @@ terraform apply
 As a result we have a successfully deployed GCS bucket from Terraform Cloud workflow using Workload Identity Federation.
 
 Once done testing, you can clean up resources by running `terraform destroy` first in the `tfc-workflow-using-wif` and then `gcp-workload-identity-provider` folders. 
+
