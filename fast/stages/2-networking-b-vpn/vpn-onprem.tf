@@ -48,8 +48,10 @@ module "landing-to-onprem-primary-vpn" {
     name = "landing-onprem-vpn-${local.region_shortnames[var.regions.primary]}"
     asn  = var.router_onprem_configs.landing-primary.asn
   }
-  peer_gateway = {
-    external = var.vpn_onprem_configs.landing-primary.peer_external_gateway
+  peer_gateways = {
+    default = {
+      external = var.vpn_onprem_configs.landing-primary.peer_external_gateway
+    }
   }
   tunnels = {
     for t in var.vpn_onprem_configs.landing-primary.tunnels :
