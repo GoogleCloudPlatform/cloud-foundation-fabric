@@ -74,7 +74,7 @@ def test_configmanagement_setup(resources):
     membership_key = f'module.hub.google_gke_hub_membership.default["{cluster}"]'
     membership = resources[membership_key]
     link = membership['endpoint'][0]['gke_cluster'][0]['resource_link']
-    assert link == f'projects/myproject/locations/europe-west1-b/clusters/{cluster}'
+    assert link == f'//container.googleapis.com/projects/myproject/locations/europe-west1-b/clusters/{cluster}'
 
     fm_key = f'module.hub.google_gke_hub_feature_membership.default["{cluster}"]'
     fm = resources[fm_key]
