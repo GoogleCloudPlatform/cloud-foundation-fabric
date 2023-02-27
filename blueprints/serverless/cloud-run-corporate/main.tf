@@ -540,13 +540,15 @@ module "vpc_sc" {
 
 # VPN between main project and "onprem" environment
 module "vpn_main" {
-  source       = "../../../modules/net-vpn-ha"
-  count        = length(module.project_onprem)
-  project_id   = module.project_main.project_id
-  region       = var.region
-  network      = module.vpc_main.self_link
-  name         = "vpn-main-to-onprem"
-  peer_gateway = { gcp = module.vpn_onprem[0].self_link }
+  source     = "../../../modules/net-vpn-ha"
+  count      = length(module.project_onprem)
+  project_id = module.project_main.project_id
+  region     = var.region
+  network    = module.vpc_main.self_link
+  name       = "vpn-main-to-onprem"
+  peer_gateways = {
+    default = { gcp = module.vpn_onprem[0].self_link }
+  }
   router_config = {
     asn = 65001
     custom_advertise = {
@@ -577,13 +579,15 @@ module "vpn_main" {
 }
 
 module "vpn_onprem" {
-  source        = "../../../modules/net-vpn-ha"
-  count         = length(module.project_onprem)
-  project_id    = module.project_onprem[0].project_id
-  region        = var.region
-  network       = module.vpc_onprem[0].self_link
-  name          = "vpn-onprem-to-main"
-  peer_gateway  = { gcp = module.vpn_main[0].self_link }
+  source     = "../../../modules/net-vpn-ha"
+  count      = length(module.project_onprem)
+  project_id = module.project_onprem[0].project_id
+  region     = var.region
+  network    = module.vpc_onprem[0].self_link
+  name       = "vpn-onprem-to-main"
+  peer_gateways = {
+    default = { gcp = module.vpn_main[0].self_link }
+  }
   router_config = { asn = 65002 }
   tunnels = {
     tunnel-0 = {
