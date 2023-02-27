@@ -87,3 +87,17 @@ At the moment, every time a user changes the configuration of a NEG, the NEG is 
 | [glb_ip_address](outputs.tf#L17) | Load balancer IP address. |  |
 
 <!-- END TFDOC -->
+
+## Test
+```hcl
+module "test" {
+  source = "./fabric/blueprints/networking/glb-hybrid-neg-internal"
+  prefix = "prefix"
+  projects_create = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/123456789"
+  }
+}
+
+# tftest modules=21 resources=64
+```
