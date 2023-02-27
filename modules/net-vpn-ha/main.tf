@@ -16,6 +16,12 @@
  */
 
 locals {
+  peer_gateways_external = {
+    for k, v in var.peer_gateways : k => v.external if v.external != null
+  }
+  peer_gateways_gcp = {
+    for k, v in var.peer_gateways : k => v.gcp if v.gcp != null
+  }
   router = (
     var.router_config.create
     ? try(google_compute_router.router[0].name, null)
@@ -38,13 +44,13 @@ resource "google_compute_ha_vpn_gateway" "ha_gateway" {
 }
 
 resource "google_compute_external_vpn_gateway" "external_gateway" {
-  count           = var.peer_gateway.external != null ? 1 : 0
-  name            = "external-${var.name}"
+  for_each        = local.peer_gateways_external
+  name            = "${var.name}-${each.key}"
   project         = var.project_id
-  redundancy_type = var.peer_gateway.external.redundancy_type
+  redundancy_type = each.value.redundancy_type
   description     = "Terraform managed external VPN gateway"
   dynamic "interface" {
-    for_each = var.peer_gateway.external.interfaces
+    for_each = each.value.interfaces
     content {
       id         = interface.key
       ip_address = interface.value
@@ -124,18 +130,23 @@ resource "google_compute_router_interface" "router_interface" {
 }
 
 resource "google_compute_vpn_tunnel" "tunnels" {
-  for_each                        = var.tunnels
-  project                         = var.project_id
-  region                          = var.region
-  name                            = "${var.name}-${each.key}"
-  router                          = local.router
-  peer_external_gateway           = one(google_compute_external_vpn_gateway.external_gateway[*].self_link)
+  for_each = var.tunnels
+  project  = var.project_id
+  region   = var.region
+  name     = "${var.name}-${each.key}"
+  router   = local.router
+  peer_external_gateway = try(
+    google_compute_external_vpn_gateway.external_gateway[each.value.peer_gateway],
+    null
+  )
   peer_external_gateway_interface = each.value.peer_external_gateway_interface
-  peer_gcp_gateway                = var.peer_gateway.gcp
-  vpn_gateway_interface           = each.value.vpn_gateway_interface
-  ike_version                     = each.value.ike_version
-  shared_secret                   = coalesce(each.value.shared_secret, local.secret)
-  vpn_gateway                     = local.vpn_gateway
+  peer_gcp_gateway = lookup(
+    local.peer_gateways_gcp, each.value.peer_gateway, null
+  )
+  vpn_gateway_interface = each.value.vpn_gateway_interface
+  ike_version           = each.value.ike_version
+  shared_secret         = coalesce(each.value.shared_secret, local.secret)
+  vpn_gateway           = local.vpn_gateway
 }
 
 resource "random_id" "secret" {

@@ -24,18 +24,21 @@ variable "network" {
   type        = string
 }
 
-variable "peer_gateway" {
+variable "peer_gateways" {
   description = "Configuration of the (external or GCP) peer gateway."
-  type = object({
+  type = map(object({
     external = optional(object({
       redundancy_type = string
       interfaces      = list(string)
     }))
     gcp = optional(string)
-  })
+  }))
   nullable = false
+  default  = {}
   validation {
-    condition     = (var.peer_gateway.external != null) != (var.peer_gateway.gcp != null)
+    condition = alltrue([
+      for k, v in var.peer_gateways : (v.external != null) != (v.gcp != null)
+    ])
     error_message = "Peer gateway configuration must define exactly one between `external` and `gcp`."
   }
 }
@@ -84,6 +87,7 @@ variable "tunnels" {
     bgp_session_range               = string
     ike_version                     = optional(number, 2)
     peer_external_gateway_interface = optional(number)
+    peer_gateway                    = optional(string, "default")
     router                          = optional(string)
     shared_secret                   = optional(string)
     vpn_gateway_interface           = number
