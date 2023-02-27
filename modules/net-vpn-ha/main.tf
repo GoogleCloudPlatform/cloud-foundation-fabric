@@ -136,7 +136,7 @@ resource "google_compute_vpn_tunnel" "tunnels" {
   name     = "${var.name}-${each.key}"
   router   = local.router
   peer_external_gateway = try(
-    google_compute_external_vpn_gateway.external_gateway[each.value.peer_gateway],
+    google_compute_external_vpn_gateway.external_gateway[each.value.peer_gateway].id,
     null
   )
   peer_external_gateway_interface = each.value.peer_external_gateway_interface
