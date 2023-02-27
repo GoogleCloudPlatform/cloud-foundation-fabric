@@ -14,64 +14,6 @@
  * limitations under the License.
  */
 
-variable "service_account" {
-  description = "Service account to set on the Dataproc cluster."
-  type        = string
-  default     = null
-}
-
-variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_additive" {
-  description = "IAM additive bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "labels" {
-  description = "The resource labels for instance to use to annotate any related underlying resources, such as Compute Engine VMs."
-  type        = map(string)
-  default     = {}
-}
-
-variable "name" {
-  description = "Cluster name."
-  type        = string
-}
-
-variable "prefix" {
-  description = "Optional prefix used to generate project id and name."
-  type        = string
-  default     = null
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty, please use null instead."
-  }
-}
-
-variable "project_id" {
-  description = "Project ID."
-  type        = string
-}
-
-variable "region" {
-  description = "Dataproc region."
-  type        = string
-}
-
 variable "dataproc_config" {
   description = "Dataproc cluster config."
   type = object({
@@ -237,4 +179,62 @@ variable "dataproc_config" {
     }), null)
   })
   default = {}
+}
+
+variable "group_iam" {
+  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iam_additive" {
+  description = "IAM additive bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "labels" {
+  description = "The resource labels for instance to use to annotate any related underlying resources, such as Compute Engine VMs."
+  type        = map(string)
+  default     = {}
+}
+
+variable "name" {
+  description = "Cluster name."
+  type        = string
+}
+
+variable "prefix" {
+  description = "Optional prefix used to generate project id and name."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
+  }
+}
+
+variable "project_id" {
+  description = "Project ID."
+  type        = string
+}
+
+variable "region" {
+  description = "Dataproc region."
+  type        = string
+}
+
+variable "service_account" {
+  description = "Service account to set on the Dataproc cluster."
+  type        = string
+  default     = null
 }
