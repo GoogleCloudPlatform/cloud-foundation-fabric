@@ -2,9 +2,13 @@
 
 ## Introduction
 
-This blueprint contains all the necessary Terraform modules to build and publicly expose a Cloud Run service in a variety of use cases.
+This blueprint contains all the necessary Terraform modules to build and __publicly__ expose Cloud Run services in a variety of use cases.
 
 The content of this blueprint corresponds to the chapter '_My serverless "Hello, World! - Exploring Cloud Run_' of the __Serverless Networking Guide__ (to be released soon). This guide is an easy to follow introduction to Cloud Run, where a couple of friendly characters will guide you from the basics to more advanced topics with a very practical approach and in record time! The code here complements this learning and allows you to test the scenarios presented and your knowledge.
+
+If you are interested in following this guide, take a look to the chapters' blueprints:
+* [My serverless "Hello, World! - Exploring Cloud Run](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-explore)
+* [Developing an enterprise application - The corporate environment](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-corporate)
 
 ## Architecture
 
