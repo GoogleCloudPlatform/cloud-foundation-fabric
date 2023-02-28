@@ -1,10 +1,10 @@
 # Google Cloud Dataproc
 
-This module Manages a Google ['Cloud Dataproc'](https://cloud.google.com/dataproc) cluster resource, including IAM.
+This module Manages a Google Cloud [Dataproc](https://cloud.google.com/dataproc) cluster resource, including IAM.
 
 ## TODO
 
-- [ ] Add support for Cloud Dataproc ['autoscaling policy'](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dataproc_autoscaling_policy_iam).
+- [ ] Add support for Cloud Dataproc [autoscaling policy](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dataproc_autoscaling_policy_iam).
 
 ## Examples
 
@@ -53,7 +53,7 @@ IAM is managed via several variables that implement different levels of control:
 - `group_iam` and `iam` configure authoritative bindings that manage individual roles exclusively, mapping to the `google_dataproc_cluster_iam_binding` resource
 - `iam_additive` configure additive bindings that only manage individual role/member pairs, mapping to the `google_dataproc_cluster_iam_member` resource
 
-### Authorative IAM
+### Authoritative IAM
 
 The iam variable is based on role keys and is typically used for service accounts, or where member values can be dynamic and would create potential problems in the underlying for_each cycle.
 
