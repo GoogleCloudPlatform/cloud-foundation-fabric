@@ -110,7 +110,6 @@ module "processing-dp-cluster" {
 }
 # tftest modules=1 resources=2
 ```
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -127,5 +126,14 @@ module "processing-dp-cluster" {
 | [labels](variables.tf#L205) | The resource labels for instance to use to annotate any related underlying resources, such as Compute Engine VMs. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L216) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
 | [service_account](variables.tf#L236) | Service account to set on the Dataproc cluster. | <code>string</code> |  | <code>null</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [bucket_names](outputs.tf#L19) | List of bucket names which have been assigned to the cluster. |  |
+| [http_ports](outputs.tf#L29) | The map of port descriptions to URLs. |  |
+| [instance_names](outputs.tf#L34) | List of instance names which have been assigned to the cluster. |  |
+| [name](outputs.tf#L24) | The name of the cluster. |  |
 
 <!-- END TFDOC -->
