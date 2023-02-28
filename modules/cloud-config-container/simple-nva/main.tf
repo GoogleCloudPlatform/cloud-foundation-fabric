@@ -58,13 +58,21 @@ locals {
         owner       = "root"
         permissions = "0744"
       }
-      "/etc/frr/vtysh.conf" = {
-        content     = file("${path.module}/files/frr/vtysh.conf")
-        owner       = "root"
-        permissions = "0744"
-      }
       "/etc/systemd/system/frr.service" = {
         content     = file("${path.module}/files/frr/frr.service")
+        owner       = "root"
+        permissions = "0644"
+      }
+      "/var/lib/docker/daemon.json" = {
+        content     = <<EOF
+        {
+          "live-restore": true,
+          "storage-driver": "overlay2",
+          "log-opts": {
+            "max-size": "1024m"
+          }
+        }
+        EOF
         owner       = "root"
         permissions = "0644"
       }
@@ -76,8 +84,8 @@ locals {
       name                = "eth${index}"
       number              = index
       routes              = interface.routes
-      enable_masquerading = interface.enable_masquerading
-      non_masq_cidrs      = interface.non_masq_cidrs
+      enable_masquerading = interface.enable_masquerading != null ? interface.enable_masquerading : false
+      non_masq_cidrs      = interface.non_masq_cidrs != null ? interface.non_masq_cidrs : []
     }
   ]
 
