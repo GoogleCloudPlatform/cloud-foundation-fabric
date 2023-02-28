@@ -15,7 +15,7 @@
  */
 
 variable "bgp_config" {
-  description = "BGP configuration for FR Routing container running on the NVA"
+  description = "BGP configuration for FR Routing container running on the NVA."
   type = object({
     daemons    = optional(string)
     enable     = optional(bool)
@@ -58,7 +58,7 @@ variable "network_interfaces" {
 }
 
 variable "optional_run_cmds" {
-  description = "Optional Cloud Init run commands to execute"
+  description = "Optional Cloud Init run commands to execute."
   type        = list(string)
   default     = []
 }
