@@ -18,6 +18,7 @@ values:
     - kms_key_self_link: kms_key_self_link
       kms_key_service_account: null
       raw_key: null
+      rsa_encrypted_key: null
     labels:
       disk_name: attached-disk
       disk_type: pd-balanced
