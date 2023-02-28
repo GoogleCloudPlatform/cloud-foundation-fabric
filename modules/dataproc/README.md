@@ -132,8 +132,8 @@ module "processing-dp-cluster" {
 | name | description | sensitive |
 |---|---|:---:|
 | [bucket_names](outputs.tf#L19) | List of bucket names which have been assigned to the cluster. |  |
-| [http_ports](outputs.tf#L29) | The map of port descriptions to URLs. |  |
-| [instance_names](outputs.tf#L34) | List of instance names which have been assigned to the cluster. |  |
-| [name](outputs.tf#L24) | The name of the cluster. |  |
+| [http_ports](outputs.tf#L24) | The map of port descriptions to URLs. |  |
+| [instance_names](outputs.tf#L29) | List of instance names which have been assigned to the cluster. |  |
+| [name](outputs.tf#L38) | The name of the cluster. |  |
 
 <!-- END TFDOC -->

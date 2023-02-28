@@ -21,11 +21,6 @@ output "bucket_names" {
   value       = google_dataproc_cluster.cluster.cluster_config.0.bucket
 }
 
-output "name" {
-  description = "The name of the cluster."
-  value       = google_dataproc_cluster.cluster.cluster_config.0.bucket
-}
-
 output "http_ports" {
   description = "The map of port descriptions to URLs."
   value       = google_dataproc_cluster.cluster.cluster_config.0.endpoint_config.0.http_ports
@@ -38,5 +33,10 @@ output "instance_names" {
     worker             = google_dataproc_cluster.cluster.cluster_config.0.worker_config.0.instance_names
     preemptible_worker = google_dataproc_cluster.cluster.cluster_config.0.preemptible_worker_config.0.instance_names
   }
+}
+
+output "name" {
+  description = "The name of the cluster."
+  value       = google_dataproc_cluster.cluster.cluster_config.0.bucket
 }
 
