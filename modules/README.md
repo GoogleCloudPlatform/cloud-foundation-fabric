@@ -72,6 +72,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
 - [Datafusion](./datafusion)
+- [Dataproc](./dataproc)
 - [GCS](./gcs)
 - [Pub/Sub](./pubsub)
 
