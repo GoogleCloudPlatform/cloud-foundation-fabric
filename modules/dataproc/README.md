@@ -2,6 +2,10 @@
 
 This module Manages a Google ['Cloud Dataproc'](https://cloud.google.com/dataproc) cluster resource, including IAM.
 
+## TODO
+
+- [ ] Add support for Cloud Dataproc ['autoscaling policy'](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dataproc_autoscaling_policy_iam).
+
 ## Examples
 
 ### Simple
@@ -17,6 +21,8 @@ module "processing-dp-cluster-2" {
 ```
 
 ### Cluster configuration
+
+To set cluster configuration use the 'dataproc_config.cluster_config' variable.
 
 ```hcl
 module "processing-dp-cluster" {
@@ -49,6 +55,8 @@ IAM is managed via several variables that implement different levels of control:
 
 ### Authorative IAM
 
+The iam variable is based on role keys and is typically used for service accounts, or where member values can be dynamic and would create potential problems in the underlying for_each cycle.
+
 ```hcl
 module "processing-dp-cluster" {
   source     = "./fabric/modules/dataproc"
@@ -56,7 +64,7 @@ module "processing-dp-cluster" {
   name       = "my-cluster"
   region     = "europe-west1"
   prefix     = "prefix"
-  iam_additive = {
+  iam = {
     "roles/dataproc.viewer" = [
       "serviceAccount:service-account@PROJECT_ID.iam.gserviceaccount.com"
     ]
@@ -65,7 +73,7 @@ module "processing-dp-cluster" {
 # tftest modules=1 resources=2
 ```
 
-### Additive IAM
+The group_iam variable uses group email addresses as keys and is a convenient way to assign roles to humans following Google's best practices. The end result is readable code that also serves as documentation.
 
 ```hcl
 module "processing-dp-cluster" {
@@ -82,6 +90,27 @@ module "processing-dp-cluster" {
 }
 # tftest modules=1 resources=2
 ```
+
+### Additive IAM
+
+Additive IAM is typically used where bindings for specific roles are controlled by different modules or in different Terraform stages. One example is when the cluster is created by one team but a different team manages access.
+
+```hcl
+module "processing-dp-cluster" {
+  source     = "./fabric/modules/dataproc"
+  project_id = "my-project"
+  name       = "my-cluster"
+  region     = "europe-west1"
+  prefix     = "prefix"
+  iam_additive = {
+    "roles/dataproc.viewer" = [
+      "serviceAccount:service-account@PROJECT_ID.iam.gserviceaccount.com"
+    ]
+  }
+}
+# tftest modules=1 resources=2
+```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
