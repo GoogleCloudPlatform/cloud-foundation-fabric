@@ -68,10 +68,12 @@ module "vm" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [network_interfaces](variables.tf#L39) | Network interfaces configuration. | <code title="list&#40;object&#40;&#123;&#10;  routes &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [cloud_config](variables.tf#L17) | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
-| [enable_health_checks](variables.tf#L23) | Configures routing to enable responses to health check probes. | <code>bool</code> |  | <code>false</code> |
-| [files](variables.tf#L29) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [network_interfaces](variables.tf#L51) | Network interfaces configuration. | <code title="list&#40;object&#40;&#123;&#10;  routes              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  enable_masquerading &#61; optional&#40;bool&#41;&#10;  non_masq_cidrs      &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [bgp_config](variables.tf#L17) | BGP configuration for FR Routing container running on the NVA | <code title="object&#40;&#123;&#10;  daemons    &#61; optional&#40;string&#41;&#10;  enable     &#61; optional&#40;bool&#41;&#10;  frr_config &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enable &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [cloud_config](variables.tf#L29) | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
+| [enable_health_checks](variables.tf#L35) | Configures routing to enable responses to health check probes. | <code>bool</code> |  | <code>false</code> |
+| [files](variables.tf#L41) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [optional_run_cmds](variables.tf#L60) | Optional Cloud Init run commands to execute | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 

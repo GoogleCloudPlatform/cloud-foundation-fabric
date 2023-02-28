@@ -23,10 +23,10 @@ locals {
   }))
 
   frr_config = (
-    try(var.bgp_config.frr_config != null,false) ? var.bgp_config.frr_config : "${path.module}/files/frr/frr.conf"
+    try(var.bgp_config.frr_config != null, false) ? var.bgp_config.frr_config : "${path.module}/files/frr/frr.conf"
   )
   daemons = (
-    try(var.bgp_config.daemons != null,false) ? var.bgp_config.daemons : "${path.module}/files/frr/daemons"
+    try(var.bgp_config.daemons != null, false) ? var.bgp_config.daemons : "${path.module}/files/frr/daemons"
   )
   files = merge(
     {
@@ -90,7 +90,7 @@ locals {
   ]
 
   optional_run_cmds = try(var.bgp_config.enable, false) ? concat(
-    ["systemctl start frr"],var.optional_run_cmds
+    ["systemctl start frr"], var.optional_run_cmds
   ) : var.optional_run_cmds
 
   template = (
