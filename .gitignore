@@ -49,3 +49,8 @@ blueprints/apigee/hybrid-gke/apiproxy.zip
 blueprints/apigee/hybrid-gke/deploy-apiproxy.sh
 blueprints/apigee/hybrid-gke/ansible/gssh.sh
 blueprints/apigee/hybrid-gke/ansible/vars/vars.yaml
+blueprints/gke/autopilot/ansible/gssh.sh
+blueprints/gke/autopilot/ansible/vars/vars.yaml
+blueprints/gke/autopilot/bundle/monitoring/kustomization.yaml
+blueprints/gke/autopilot/bundle/locust/kustomization.yaml
+blueprints/gke/autopilot/bundle.tar.gz

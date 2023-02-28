@@ -1,0 +1,128 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: locust-master
+  namespace: locust  
+  labels:
+    name: locust-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust-master
+  template:
+    metadata:
+      labels:
+        app: locust-master
+    spec:
+      tolerations:
+        - key: group
+          operator: Equal
+          value: "locust"
+          effect: NoSchedule
+      nodeSelector:
+        group: "locust"
+      containers:
+        - name: locust-master
+          image: load-test-image
+          env:
+            - name: LOCUST_MODE
+              value: master
+          ports:
+            - name: loc-master-web
+              containerPort: 8089
+              protocol: TCP
+            - name: loc-master-p1
+              containerPort: 5557
+              protocol: TCP
+            - name: loc-master-p2
+              containerPort: 5558
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 50m
+              memory: 50Mi
+            limits:
+              memory: 50Mi           
+        - name: locust-prometheus-exporter
+          image: containersol/locust_exporter
+          ports:
+            - name: metrics
+              containerPort: 9646
+          resources:
+            requests:
+              cpu: 5m
+              memory: 5Mi
+            limits:
+              memory: 5Mi   
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: locust-master
+  namespace: locust
+  labels:
+    app: locust-master
+spec:
+  ports:
+    - port: 5557
+      targetPort: loc-master-p1
+      protocol: TCP
+      name: loc-master-p1
+    - port: 5558
+      targetPort: loc-master-p2
+      protocol: TCP
+      name: loc-master-p2
+    - port: 9646
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    app: locust-master
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: locust-master-web
+  namespace: locust
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+    cloud.google.com/app-protocols: '{"loc-master-web":"HTTP"}'
+    cloud.google.com/backend-config: '{"default": "backendconfig"}'
+  labels:
+    app: locust-master
+spec:
+  ports:
+    - port: 8089
+      targetPort: loc-master-web
+      protocol: TCP
+      name: loc-master-web
+  selector:
+    app: locust-master
+---
+apiVersion: monitoring.googleapis.com/v1
+kind: ClusterPodMonitoring
+metadata:
+  name: locust-master
+  namespace: locust
+spec:
+  selector:
+    matchLabels:
+      app: locust-master
+  endpoints:
+  - port: metrics
+    interval: 30s
