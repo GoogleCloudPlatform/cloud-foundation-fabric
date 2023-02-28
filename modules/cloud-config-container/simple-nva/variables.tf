@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+ variable "bgp_config" {
+  description = "BGP configuration for FR Routing container running on the NVA"
+  type        = object({
+    daemons    = string
+    enable     = bool
+    frr_config = string
+  })
+  default     = {
+    enable = false
+  }
+}
+
 variable "cloud_config" {
   description = "Cloud config template path. If null default will be used."
   type        = string
@@ -40,5 +52,12 @@ variable "network_interfaces" {
   description = "Network interfaces configuration."
   type = list(object({
     routes = optional(list(string))
+    enable_masquerading = optional(bool)
+    non_masq_cidrs      = optional(list(string))
   }))
+}
+
+variable "optional_run_cmds" {
+  description = "Optional Cloud Init run commands to execute"
+  type = list(string)
 }

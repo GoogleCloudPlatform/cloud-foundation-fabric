@@ -19,34 +19,71 @@ locals {
     files                = local.files
     enable_health_checks = var.enable_health_checks
     network_interfaces   = local.network_interfaces
+    optional_run_cmds    = local.optional_run_cmds
   }))
 
-  files = merge({
-    "/var/run/nva/ipprefix_by_netmask.sh" = {
-      content     = file("${path.module}/files/ipprefix_by_netmask.sh")
-      owner       = "root"
-      permissions = "0744"
-    }
-    "/var/run/nva/policy_based_routing.sh" = {
-      content     = file("${path.module}/files/policy_based_routing.sh")
-      owner       = "root"
-      permissions = "0744"
-    }
-    }, {
-    for path, attrs in var.files : path => {
-      content     = attrs.content,
-      owner       = attrs.owner,
-      permissions = attrs.permissions
-    }
-  })
+  frr_config = (
+    try(var.bgp_config.frr_config != null,false) ? var.bgp_config.frr_config : "${path.module}/files/frr/frr.conf"
+  )
+  daemons = (
+    try(var.bgp_config.daemons != null,false) ? var.bgp_config.daemons : "${path.module}/files/frr/daemons"
+  )
+  files = merge(
+    {
+      "/var/run/nva/ipprefix_by_netmask.sh" = {
+        content     = file("${path.module}/files/ipprefix_by_netmask.sh")
+        owner       = "root"
+        permissions = "0744"
+      }
+      "/var/run/nva/policy_based_routing.sh" = {
+        content     = file("${path.module}/files/policy_based_routing.sh")
+        owner       = "root"
+        permissions = "0744"
+      }
+      }, {
+      for path, attrs in var.files : path => {
+        content     = attrs.content,
+        owner       = attrs.owner,
+        permissions = attrs.permissions
+      }
+    },
+    try(var.bgp_config.enable, false) ? {
+      "/etc/frr/daemons" = {
+        content     = file(local.daemons)
+        owner       = "root"
+        permissions = "0744"
+      }
+      "/etc/frr/frr.conf" = {
+        content     = file(local.frr_config)
+        owner       = "root"
+        permissions = "0744"
+      }
+      "/etc/frr/vtysh.conf" = {
+        content     = file("${path.module}/files/frr/vtysh.conf")
+        owner       = "root"
+        permissions = "0744"
+      }
+      "/etc/systemd/system/frr.service" = {
+        content     = file("${path.module}/files/frr/frr.service")
+        owner       = "root"
+        permissions = "0644"
+      }
+    } : {}
+  )
 
   network_interfaces = [
     for index, interface in var.network_interfaces : {
-      name   = "eth${index}"
-      number = index
-      routes = interface.routes
+      name                = "eth${index}"
+      number              = index
+      routes              = interface.routes
+      enable_masquerading = interface.enable_masquerading
+      non_masq_cidrs      = interface.non_masq_cidrs
     }
   ]
+
+  optional_run_cmds = try(var.bgp_config.enable, false) ? concat(
+    ["systemctl start frr"],var.optional_run_cmds
+  ) : var.optional_run_cmds
 
   template = (
     var.cloud_config == null
