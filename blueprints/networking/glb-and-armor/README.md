@@ -137,3 +137,19 @@ The above command will delete the associated resources so there will be no billa
 | [vm_siege_external_ip](outputs.tf#L23) | Siege VM external IP address. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/networking/glb-and-armor"
+  prefix = "test"
+  project_create = {
+    billing_account_id = "123456789"
+    parent             = "organizations/123456789"
+  }
+  project_id              = "project-1"
+  enforce_security_policy = true
+}
+# tftest modules=12 resources=26
+```

@@ -68,3 +68,18 @@ You can now connect to the Vertex AI notbook to perform your data analysy.
 | [vpc](outputs.tf#L38) | VPC Network. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source     = "./fabric/blueprints/data-solutions/data-playground"
+  project_id = "sampleproject"
+  prefix     = "tst"
+  project_create = {
+    billing_account_id = "123456-123456-123456",
+    parent             = "folders/467898377"
+  }
+}
+# tftest modules=8 resources=39
+```

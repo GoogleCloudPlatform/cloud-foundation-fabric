@@ -215,3 +215,18 @@ The above command will delete the associated resources so there will be no billa
 | [service_accounts](outputs.tf#L69) | Service account. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/data-solutions/gcs-to-bq-with-least-privileges/"
+  project_create = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  project_id = "project-1"
+  prefix     = "prefix"
+}
+# tftest modules=12 resources=47
+```

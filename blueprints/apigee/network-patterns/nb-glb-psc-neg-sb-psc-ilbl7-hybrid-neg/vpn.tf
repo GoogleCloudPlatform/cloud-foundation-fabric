@@ -32,8 +32,8 @@ module "apigee_vpn" {
       mode = "CUSTOM"
     }
   }
-  peer_gateway = {
-    gcp = module.onprem_vpn.self_link
+  peer_gateways = {
+    default = { gcp = module.onprem_vpn.self_link }
   }
   tunnels = {
     0 = {
@@ -82,8 +82,8 @@ module "onprem_vpn" {
       mode = "CUSTOM"
     }
   }
-  peer_gateway = {
-    gcp = module.apigee_vpn.self_link
+  peer_gateways = {
+    default = { gcp = module.apigee_vpn.self_link }
   }
   tunnels = {
     0 = {

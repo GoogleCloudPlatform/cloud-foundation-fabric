@@ -41,12 +41,12 @@ resource "google_gke_hub_membership" "default" {
   membership_id = each.key
   endpoint {
     gke_cluster {
-      resource_link = each.value
+      resource_link = "//container.googleapis.com/${each.value}"
     }
   }
   dynamic "authority" {
     for_each = (
-      contains(var.workload_identity_clusters, each.key) ? {} : { 1 = 1 }
+      contains(var.workload_identity_clusters, each.key) ? { 1 = 1 } : {}
     )
     content {
       issuer = "https://container.googleapis.com/v1/${var.clusters[each.key]}"

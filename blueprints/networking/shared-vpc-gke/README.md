@@ -70,3 +70,15 @@ There's a minor glitch that can surface running `terraform destroy`, where the s
 | [vpc](outputs.tf#L40) | Shared VPC. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source             = "./fabric/blueprints/gke/shared-vpc-gke"
+  billing_account_id = "ABCDE-12345-ABCDE"
+  prefix             = "test"
+  root_node          = "organizations/0123456789"
+}
+# tftest modules=11 resources=43
+```

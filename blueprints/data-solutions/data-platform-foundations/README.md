@@ -213,13 +213,15 @@ While this blueprint can be used as a standalone deployment, it can also be call
 ```hcl
 module "data-platform" {
   source              = "./fabric/blueprints/data-solutions/data-platform-foundations"
-  billing_account_id  = var.billing_account_id
-  folder_id           = var.folder_id
   organization_domain = "example.com"
-  prefix              = "myprefix"
+  project_config = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  prefix = "myprefix"
 }
 
-# tftest modules=43 resources=297
+# tftest modules=43 resources=278
 ```
 
 ## Customizations
@@ -233,6 +235,14 @@ To create Cloud Key Management keys in the Data Platform you can uncomment the C
 To handle multiple groups of `data-analysts` accessing the same Data Warehouse layer projects but only to the dataset belonging to a specific group, you may want to assign roles at BigQuery dataset level instead of at project-level.
 To do this, you need to remove IAM binging at project-level for the `data-analysts` group and give roles at BigQuery dataset level using the `iam` variable on `bigquery-dataset` modules.
 
+### Project Configuration
+
+The solution can be deployed by creating projects on a given parent (organization or folder) or on existing projects. Configure variable `project_config` accordingly.
+
+When you rely on existing projects, the blueprint is designed to rely on different projects configuring IAM binding with an additive approach. For discovery or experimentation purposes, you may also configure `project_config.project_ids` to point different projects to one project with the granularity you need. For example, deploy resources from the 'load' project with resources in the 'transformation' project.
+
+Once you have identified the required project granularity for your use case, we suggest adapting the terraform script accordingly and relying on authoritative IAM binding.
+
 ## Demo pipeline
 
 The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `drop off` area to the `Data Warehouse Confidential` dataset suing different features.
@@ -244,20 +254,19 @@ You can find examples in the `[demo](./demo)` folder.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [billing_account_id](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  |
-| [folder_id](variables.tf#L122) | Folder to be used for the networking resources in folders/nnnn format. | <code>string</code> | ✓ |  |
-| [organization_domain](variables.tf#L166) | Organization domain. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L171) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [composer_config](variables.tf#L22) | Cloud Composer config. | <code title="object&#40;&#123;&#10;  disable_deployment &#61; optional&#40;bool&#41;&#10;  environment_size   &#61; optional&#40;string, &#34;ENVIRONMENT_SIZE_SMALL&#34;&#41;&#10;  software_config &#61; optional&#40;object&#40;&#123;&#10;    airflow_config_overrides &#61; optional&#40;any&#41;&#10;    pypi_packages            &#61; optional&#40;any&#41;&#10;    env_variables            &#61; optional&#40;map&#40;string&#41;&#41;&#10;    image_version            &#61; string&#10;    &#125;&#41;, &#123;&#10;    image_version &#61; &#34;composer-2-airflow-2&#34;&#10;  &#125;&#41;&#10;  workloads_config &#61; optional&#40;object&#40;&#123;&#10;    scheduler &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;        count      &#61; number&#10;      &#125;&#10;      &#41;, &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      count      &#61; 1&#10;    &#125;&#41;&#10;    web_server &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;      &#125;&#10;      &#41;, &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;    &#125;&#41;&#10;    worker &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;        min_count  &#61; number&#10;        max_count  &#61; number&#10;      &#125;&#10;      &#41;, &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      min_count  &#61; 1&#10;      max_count  &#61; 3&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  environment_size &#61; &#34;ENVIRONMENT_SIZE_SMALL&#34;&#10;  software_config &#61; &#123;&#10;    image_version &#61; &#34;composer-2-airflow-2&#34;&#10;  &#125;&#10;  workloads_config &#61; &#123;&#10;    scheduler &#61; &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      count      &#61; 1&#10;    &#125;&#10;    web_server &#61; &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;    &#125;&#10;    worker &#61; &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      min_count  &#61; 1&#10;      max_count  &#61; 3&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [data_catalog_tags](variables.tf#L105) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code title="&#123;&#10;  &#34;3_Confidential&#34; &#61; null&#10;  &#34;2_Private&#34;      &#61; null&#10;  &#34;1_Sensitive&#34;    &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [data_force_destroy](variables.tf#L116) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |
-| [groups](variables.tf#L127) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [location](variables.tf#L137) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
-| [network_config](variables.tf#L143) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_services](variables.tf#L180) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [project_suffix](variables.tf#L191) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
-| [region](variables.tf#L197) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [service_encryption_keys](variables.tf#L203) | Cloud KMS to use to encrypt different services. Key location should match service region. | <code title="object&#40;&#123;&#10;  bq       &#61; string&#10;  composer &#61; string&#10;  dataflow &#61; string&#10;  storage  &#61; string&#10;  pubsub   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [organization_domain](variables.tf#L156) | Organization domain. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L161) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_config](variables.tf#L170) | Provide 'billing_account_id' value if project creation is needed, uses existing 'project_ids' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string, null&#41;&#10;  parent             &#61; string&#10;  project_ids &#61; optional&#40;object&#40;&#123;&#10;    drop     &#61; string&#10;    load     &#61; string&#10;    orc      &#61; string&#10;    trf      &#61; string&#10;    dwh-lnd  &#61; string&#10;    dwh-cur  &#61; string&#10;    dwh-conf &#61; string&#10;    common   &#61; string&#10;    exp      &#61; string&#10;    &#125;&#41;, &#123;&#10;    drop     &#61; &#34;drp&#34;&#10;    load     &#61; &#34;lod&#34;&#10;    orc      &#61; &#34;orc&#34;&#10;    trf      &#61; &#34;trf&#34;&#10;    dwh-lnd  &#61; &#34;dwh-lnd&#34;&#10;    dwh-cur  &#61; &#34;dwh-cur&#34;&#10;    dwh-conf &#61; &#34;dwh-conf&#34;&#10;    common   &#61; &#34;cmn&#34;&#10;    exp      &#61; &#34;exp&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [composer_config](variables.tf#L17) | Cloud Composer config. | <code title="object&#40;&#123;&#10;  disable_deployment &#61; optional&#40;bool&#41;&#10;  environment_size   &#61; optional&#40;string, &#34;ENVIRONMENT_SIZE_SMALL&#34;&#41;&#10;  software_config &#61; optional&#40;object&#40;&#123;&#10;    airflow_config_overrides &#61; optional&#40;any&#41;&#10;    pypi_packages            &#61; optional&#40;any&#41;&#10;    env_variables            &#61; optional&#40;map&#40;string&#41;&#41;&#10;    image_version            &#61; string&#10;    &#125;&#41;, &#123;&#10;    image_version &#61; &#34;composer-2-airflow-2&#34;&#10;  &#125;&#41;&#10;  workloads_config &#61; optional&#40;object&#40;&#123;&#10;    scheduler &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;        count      &#61; number&#10;      &#125;&#10;      &#41;, &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      count      &#61; 1&#10;    &#125;&#41;&#10;    web_server &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;      &#125;&#10;      &#41;, &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;    &#125;&#41;&#10;    worker &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;        min_count  &#61; number&#10;        max_count  &#61; number&#10;      &#125;&#10;      &#41;, &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      min_count  &#61; 1&#10;      max_count  &#61; 3&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  environment_size &#61; &#34;ENVIRONMENT_SIZE_SMALL&#34;&#10;  software_config &#61; &#123;&#10;    image_version &#61; &#34;composer-2-airflow-2&#34;&#10;  &#125;&#10;  workloads_config &#61; &#123;&#10;    scheduler &#61; &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      count      &#61; 1&#10;    &#125;&#10;    web_server &#61; &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;    &#125;&#10;    worker &#61; &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      min_count  &#61; 1&#10;      max_count  &#61; 3&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [data_catalog_tags](variables.tf#L100) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code title="&#123;&#10;  &#34;3_Confidential&#34; &#61; null&#10;  &#34;2_Private&#34;      &#61; null&#10;  &#34;1_Sensitive&#34;    &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [data_force_destroy](variables.tf#L111) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |
+| [groups](variables.tf#L117) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [location](variables.tf#L127) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
+| [network_config](variables.tf#L133) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_services](variables.tf#L204) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [project_suffix](variables.tf#L215) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L221) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [service_encryption_keys](variables.tf#L227) | Cloud KMS to use to encrypt different services. Key location should match service region. | <code title="object&#40;&#123;&#10;  bq       &#61; string&#10;  composer &#61; string&#10;  dataflow &#61; string&#10;  storage  &#61; string&#10;  pubsub   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -280,3 +289,18 @@ Features to add in future releases:
 - Add example on how to use Cloud Data Loss Prevention
 - Add solution to handle Tables, Views, and Authorized Views lifecycle
 - Add solution to handle Metadata lifecycle
+
+## Test
+
+```hcl
+module "test" {
+  source              = "./fabric/blueprints/data-solutions/data-platform-foundations/"
+  organization_domain = "example.com"
+  project_config = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  prefix = "prefix"
+}
+# tftest modules=43 resources=278
+```

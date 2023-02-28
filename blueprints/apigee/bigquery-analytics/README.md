@@ -76,3 +76,35 @@ Do the following to verify that everything works as expected.
 | [ip_address](outputs.tf#L17) | IP address. |  |
 
 <!-- END TFDOC -->
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/apigee/bigquery-analytics"
+  project_create = {
+    billing_account_id = "12345-12345-12345"
+    parent             = "folders/123456789"
+  }
+  project_id = "my-project"
+  envgroups = {
+    test = ["test.cool-demos.space"]
+  }
+  environments = {
+    apis-test = {
+      envgroups = ["test"]
+    }
+  }
+  instances = {
+    instance-ew1 = {
+      region                        = "europe-west1"
+      environments                  = ["apis-test"]
+      runtime_ip_cidr_range         = "10.0.4.0/22"
+      troubleshooting_ip_cidr_range = "10.1.0.0/28"
+    }
+  }
+  psc_config = {
+    europe-west1 = "10.0.0.0/28"
+  }
+}
+# tftest modules=10 resources=62
+```

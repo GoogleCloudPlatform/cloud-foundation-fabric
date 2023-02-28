@@ -76,13 +76,13 @@ resource "google_compute_health_check" "default" {
   dynamic "https_health_check" {
     for_each = local.hc_https ? [""] : []
     content {
-      host               = local.hc.http.host
-      port               = local.hc.http.port
-      port_name          = local.hc.http.port_name
-      port_specification = local.hc.http.port_specification
-      proxy_header       = local.hc.http.proxy_header
-      request_path       = local.hc.http.request_path
-      response           = local.hc.http.response
+      host               = local.hc.https.host
+      port               = local.hc.https.port
+      port_name          = local.hc.https.port_name
+      port_specification = local.hc.https.port_specification
+      proxy_header       = local.hc.https.proxy_header
+      request_path       = local.hc.https.request_path
+      response           = local.hc.https.response
     }
   }
 

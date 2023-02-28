@@ -77,3 +77,29 @@ This is an optional part, created if `cai_gcs_export` is set to `true`. The high
 | [cloud-function](outputs.tf#L22) | Cloud Function instance details. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source          = "./fabric/blueprints/cloud-operations/scheduled-asset-inventory-export-bq"
+  billing_account = "1234-ABCD-1234"
+  cai_config = {
+    bq_dataset         = "my-dataset"
+    bq_table           = "my_table"
+    bq_table_overwrite = "true"
+    target_node        = "organization/1234567890"
+  }
+  cai_gcs_export = true
+  file_config = {
+    bucket     = "my-bucket"
+    filename   = "my-folder/myfile.json"
+    format     = "NEWLINE_DELIMITED_JSON"
+    bq_dataset = "my-dataset"
+    bq_table   = "my_table"
+  }
+  project_create = true
+  project_id     = "project-1"
+}
+# tftest modules=8 resources=34
+```

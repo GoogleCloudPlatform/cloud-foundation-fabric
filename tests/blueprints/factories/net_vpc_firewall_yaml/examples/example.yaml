@@ -1,0 +1,188 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.dev-firewall.google_compute_firewall.rules["deny-all"]:
+    allow: []
+    deny:
+    - ports: []
+      protocol: all
+    destination_ranges:
+    - 0.0.0.0/0
+    direction: EGRESS
+    disabled: null
+    log_config: []
+    name: fwr-my-dev-network-all-e-deny-all
+    network: my-dev-network
+    priority: 65535
+    project: my-dev-project
+    source_ranges: null
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.dev-firewall.google_compute_firewall.rules["lb-health-checks"]:
+    allow:
+    - ports: []
+      protocol: tcp
+    deny: []
+    direction: INGRESS
+    disabled: null
+    log_config: []
+    name: fwr-my-dev-network-all-i-lb-health-checks
+    network: my-dev-network
+    priority: 1001
+    project: my-dev-project
+    source_ranges:
+    - 130.211.0.0/22
+    - 35.191.0.0/16
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.dev-firewall.google_compute_firewall.rules["web-app-dev-egress"]:
+    allow:
+    - ports:
+      - '443'
+      protocol: tcp
+    deny: []
+    destination_ranges:
+    - 192.168.0.0/24
+    direction: EGRESS
+    disabled: null
+    log_config: []
+    name: fwr-my-dev-network-sac-e-web-app-dev-egress
+    network: my-dev-network
+    priority: 1000
+    project: my-dev-project
+    source_ranges: null
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts:
+    - myapp@myproject-dev.iam.gserviceaccount.com
+    target_tags: null
+    timeouts: null
+  module.dev-firewall.google_compute_firewall.rules["web-app-dev-ingress"]:
+    allow:
+    - ports:
+      - '1234'
+      protocol: tcp
+    deny: []
+    direction: INGRESS
+    disabled: null
+    log_config: []
+    name: fwr-my-dev-network-sac-i-web-app-dev-ingress
+    network: my-dev-network
+    priority: 1000
+    project: my-dev-project
+    source_ranges: null
+    source_service_accounts:
+    - frontend-sa@myproject-dev.iam.gserviceaccount.com
+    source_tags: null
+    target_service_accounts:
+    - web-app-a@myproject-dev.iam.gserviceaccount.com
+    target_tags: null
+    timeouts: null
+  module.prod-firewall.google_compute_firewall.rules["deny-all"]:
+    allow: []
+    deny:
+    - ports: []
+      protocol: all
+    destination_ranges:
+    - 0.0.0.0/0
+    direction: EGRESS
+    disabled: null
+    log_config:
+    - metadata: INCLUDE_ALL_METADATA
+    name: fwr-my-prod-network-all-e-deny-all
+    network: my-prod-network
+    priority: 65535
+    project: my-prod-project
+    source_ranges: null
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.prod-firewall.google_compute_firewall.rules["lb-health-checks"]:
+    allow:
+    - ports: []
+      protocol: tcp
+    deny: []
+    direction: INGRESS
+    disabled: null
+    log_config:
+    - metadata: INCLUDE_ALL_METADATA
+    name: fwr-my-prod-network-all-i-lb-health-checks
+    network: my-prod-network
+    priority: 1001
+    project: my-prod-project
+    source_ranges:
+    - 130.211.0.0/22
+    - 35.191.0.0/16
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.prod-firewall.google_compute_firewall.rules["web-app-prod-egress"]:
+    allow:
+    - ports:
+      - '443'
+      protocol: tcp
+    deny: []
+    destination_ranges:
+    - 192.168.10.0/24
+    direction: EGRESS
+    disabled: null
+    log_config:
+    - metadata: INCLUDE_ALL_METADATA
+    name: fwr-my-prod-network-sac-e-web-app-prod-egress
+    network: my-prod-network
+    priority: 1000
+    project: my-prod-project
+    source_ranges: null
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts:
+    - myapp@myproject-prod.iam.gserviceaccount.com
+    target_tags: null
+    timeouts: null
+  module.prod-firewall.google_compute_firewall.rules["web-app-prod-ingress"]:
+    allow:
+    - ports:
+      - '1234'
+      protocol: tcp
+    deny: []
+    direction: INGRESS
+    disabled: null
+    log_config:
+    - metadata: INCLUDE_ALL_METADATA
+    name: fwr-my-prod-network-sac-i-web-app-prod-ingress
+    network: my-prod-network
+    priority: 1000
+    project: my-prod-project
+    source_ranges: null
+    source_service_accounts:
+    - frontend-sa@myproject-prod.iam.gserviceaccount.com
+    source_tags: null
+    target_service_accounts:
+    - web-app-a@myproject-prod.iam.gserviceaccount.com
+    target_tags: null
+    timeouts: null
+
+counts:
+  google_compute_firewall: 8
