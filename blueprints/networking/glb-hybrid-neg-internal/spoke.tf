@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description VPC Spoke(s) and test VMs.
+
 module "project_spoke_01" {
   source = "../../../modules/project"
   billing_account = (var.projects_create != null
@@ -42,14 +44,14 @@ module "vpc_spoke_01" {
   name       = "spoke-01"
   subnets = [
     {
-      ip_cidr_range = var.vpc_spoke_config.r1_cidr
-      name          = "spoke-01-${var.region_configs.r1.region_name}"
-      region        = var.region_configs.r1.region_name
+      ip_cidr_range = var.ip_config.spoke_primary
+      name          = "spoke-01-${var.regions.primary}"
+      region        = var.regions.primary
     },
     {
-      ip_cidr_range = var.vpc_spoke_config.r2_cidr
-      name          = "spoke-01-${var.region_configs.r2.region_name}"
-      region        = var.region_configs.r2.region_name
+      ip_cidr_range = var.ip_config.spoke_secondary
+      name          = "spoke-01-${var.regions.secondary}"
+      region        = var.regions.secondary
     }
   ]
   peering_config = {
@@ -68,8 +70,8 @@ module "firewall_spoke_01" {
       description = "Allow health checks coming on port 80 and 443 from NVAs."
       targets     = ["http-server", "https-server"]
       source_ranges = [
-        module.vpc_landing_trusted.subnet_ips["${var.region_configs.r1.region_name}/trusted-${var.region_configs.r1.region_name}"],
-        module.vpc_landing_trusted.subnet_ips["${var.region_configs.r2.region_name}/trusted-${var.region_configs.r2.region_name}"]
+        var.ip_config.trusted_primary,
+        var.ip_config.trusted_secondary
       ]
       rules = [{ protocol = "tcp", ports = [80, 443] }]
     }
@@ -79,22 +81,22 @@ module "firewall_spoke_01" {
 # NAT is used to install nginx for test purposed, even if NVAs are still not ready
 
 module "nats_spoke_01" {
-  for_each       = var.region_configs
+  for_each       = var.regions
   source         = "../../../modules/net-cloudnat"
-  name           = "spoke-01-${each.value.region_name}"
+  name           = "spoke-01-${each.value}"
   project_id     = module.project_spoke_01.project_id
-  region         = each.value.region_name
+  region         = each.value
   router_network = module.vpc_spoke_01.name
 }
 
 module "test_vms" {
-  for_each               = var.region_configs
+  for_each               = var.regions
   source                 = "../../../modules/compute-vm"
-  name                   = "spoke-01-${each.value.region_name}"
+  name                   = "spoke-01-${each.value}"
   project_id             = module.project_spoke_01.project_id
-  create_template        = var.test_vms_behind_ilb
+  create_template        = var.ilb_create
   service_account_create = true
-  zone                   = each.value.zone
+  zone                   = local.zones[each.key]
 
   metadata = {
     startup-script = "apt update && apt install -y nginx"
@@ -102,7 +104,7 @@ module "test_vms" {
 
   network_interfaces = [{
     network    = module.vpc_spoke_01.self_link
-    subnetwork = module.vpc_spoke_01.subnet_self_links["${each.value.region_name}/spoke-01-${each.value.region_name}"]
+    subnetwork = module.vpc_spoke_01.subnet_self_links["${each.value}/spoke-01-${each.value}"]
   }]
 
   tags = [
@@ -113,25 +115,25 @@ module "test_vms" {
 }
 
 module "test_vm_migs" {
-  for_each          = var.test_vms_behind_ilb ? var.region_configs : {}
+  for_each          = var.ilb_create ? var.regions : {}
   source            = "../../../modules/compute-mig"
   project_id        = module.project_spoke_01.project_id
-  location          = each.value.zone
-  name              = "test-vm-${each.value.region_name}"
+  location          = local.zones[each.key]
+  name              = "test-vm-${each.value}"
   target_size       = 1
   instance_template = module.test_vms[each.key].template.self_link
 }
 
 module "test_vm_ilbs" {
-  for_each      = var.test_vms_behind_ilb ? var.region_configs : {}
+  for_each      = var.ilb_create ? var.regions : {}
   source        = "../../../modules/net-ilb"
   project_id    = module.project_spoke_01.project_id
-  region        = each.value.region_name
-  name          = "test-vm-ilb-${each.value.region_name}"
-  service_label = "test-vm-ilb-${each.value.region_name}"
+  region        = each.value
+  name          = "test-vm-ilb-${each.value}"
+  service_label = "test-vm-ilb-${each.value}"
   vpc_config = {
     network    = module.vpc_spoke_01.self_link
-    subnetwork = module.vpc_spoke_01.subnet_self_links["${each.value.region_name}/spoke-01-${each.value.region_name}"]
+    subnetwork = module.vpc_spoke_01.subnet_self_links["${each.value}/spoke-01-${each.value}"]
   }
   backends = [{
     group = module.test_vm_migs[each.key].group_manager.instance_group

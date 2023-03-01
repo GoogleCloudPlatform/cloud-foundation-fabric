@@ -14,6 +14,25 @@
  * limitations under the License.
  */
 
+variable "ilb_create" {
+  description = "Whether we should create an ILB L4 in front of the test VMs in the spoke."
+  type        = string
+  default     = false
+}
+
+variable "ip_config" {
+  description = "The subnet IP configurations."
+  type = object({
+    spoke_primary       = optional(string, "192.168.101.0/24")
+    spoke_secondary     = optional(string, "192.168.102.0/24")
+    trusted_primary     = optional(string, "192.168.11.0/24")
+    trusted_secondary   = optional(string, "192.168.22.0/24")
+    untrusted_primary   = optional(string, "192.168.1.0/24")
+    untrusted_secondary = optional(string, "192.168.2.0/24")
+  })
+  default = {}
+}
+
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
@@ -44,68 +63,14 @@ variable "projects_create" {
   default = null
 }
 
-variable "region_configs" {
-  description = "The primary and secondary region parameters."
+variable "regions" {
+  description = "Region definitions."
   type = object({
-    r1 = object({
-      region_name = string
-      zone        = string
-    })
-    r2 = object({
-      region_name = string
-      zone        = string
-    })
+    primary   = string
+    secondary = string
   })
   default = {
-    r1 = {
-      region_name = "europe-west1"
-      zone        = "europe-west1-b"
-    }
-    r2 = {
-      region_name = "europe-west2"
-      zone        = "europe-west2-b"
-    }
-  }
-}
-
-variable "test_vms_behind_ilb" {
-  description = "Whether there should be an ILB L4 in front of the test VMs in the spoke."
-  type        = string
-  default     = false
-}
-
-variable "vpc_landing_trusted_config" {
-  description = "The configuration of the landing trusted VPC."
-  type = object({
-    r1_cidr = string
-    r2_cidr = string
-  })
-  default = {
-    r1_cidr = "192.168.11.0/24",
-    r2_cidr = "192.168.22.0/24"
-  }
-}
-
-variable "vpc_landing_untrusted_config" {
-  description = "The configuration of the landing untrusted VPC."
-  type = object({
-    r1_cidr = string
-    r2_cidr = string
-  })
-  default = {
-    r1_cidr = "192.168.1.0/24",
-    r2_cidr = "192.168.2.0/24"
-  }
-}
-
-variable "vpc_spoke_config" {
-  description = "The configuration of the spoke-01 VPC."
-  type = object({
-    r1_cidr = string
-    r2_cidr = string
-  })
-  default = {
-    r1_cidr = "192.168.101.0/24",
-    r2_cidr = "192.168.102.0/24"
+    primary   = "europe-west1"
+    secondary = "europe-west4"
   }
 }

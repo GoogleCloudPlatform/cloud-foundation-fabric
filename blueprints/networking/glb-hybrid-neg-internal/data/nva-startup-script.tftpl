@@ -20,15 +20,15 @@ sysctl -p /etc/sysctl.conf &&
 /etc/init.d/procps restart
 
 echo 'Setting routes'
-ip route add ${spoke-r1-subnet} via ${gateway-trusted} dev ens5
-ip route add ${spoke-r2-subnet} via ${gateway-trusted} dev ens5
+ip route add ${spoke-primary} via ${gateway-trusted} dev ens5
+ip route add ${spoke-secondary} via ${gateway-trusted} dev ens5
 
 echo 'Setting NAT masquerade, so that HCs can reach the spoke through the NVA using the trusted intf source IP'
 iptables \
   -t nat \
   -A POSTROUTING \
   -s 130.211.0.0/22,35.191.0.0/16 \
-  -d ${spoke-r1-subnet} \
+  -d ${spoke-primary} \
   -p tcp \
   --dport 80 \
   -j MASQUERADE
@@ -36,7 +36,7 @@ iptables \
   -t nat \
   -A POSTROUTING \
   -s 130.211.0.0/22,35.191.0.0/16 \
-  -d ${spoke-r2-subnet} \
+  -d ${spoke-secondary} \
   -p tcp \
   --dport 80 \
   -j MASQUERADE
