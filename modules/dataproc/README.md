@@ -46,7 +46,7 @@ module "processing-dp-cluster" {
 # tftest modules=1 resources=1
 ```
 
-### Cluster with CMEK encryption PIPPO
+### Cluster with CMEK encryption
 
 To set cluster configuration use the Customer Managed Encryption key, set `dataproc_config.encryption_config.` variable. The Compute Engine service agent and the Cloud Storage service agent need to have `CryptoKey Encrypter/Decrypter` role on they configured KMS key ([Documentation](https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/customer-managed-encryption)).
 
