@@ -84,9 +84,9 @@ variable "dataproc_config" {
         }), null)
       }), null)
       software_config = optional(object({
-        image_version       = string
-        override_properties = list(map(string))
-        optional_components = list(string)
+        image_version       = optional(string, null)
+        override_properties = map(string)
+        optional_components = optional(list(string), null)
       }), null)
       security_config = optional(object({
         kerberos_config = object({
