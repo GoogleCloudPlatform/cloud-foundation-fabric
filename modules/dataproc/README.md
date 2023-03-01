@@ -46,6 +46,35 @@ module "processing-dp-cluster" {
 # tftest modules=1 resources=1
 ```
 
+### Cluster with CMEK encrypotion
+
+To set cluster configuration use the Customer Managed Encryption key, set '' variable. The Compute Engine service agent and the Cloud Storage service agent needs to have 'CryptoKey Encrypter/Decrypter' role on they configured KMS key ([Documentation](https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/customer-managed-encryption)).
+
+```hcl
+module "processing-dp-cluster" {
+  source     = "./fabric/modules/dataproc"
+  project_id = "my-project"
+  name       = "my-cluster"
+  region     = "europe-west1"
+  prefix     = "prefix"
+  dataproc_config = {
+    cluster_config = {
+      gce_cluster_config = {
+        subnetwork             = "https://www.googleapis.com/compute/v1/projects/PROJECT/regions/europe-west1/subnetworks/SUBNET"
+        zone                   = "europe-west1-b"
+        service_account        = ""
+        service_account_scopes = ["cloud-platform"]
+        internal_ip_only       = true
+      }
+    }
+  }
+  encryption_config = try({
+    kms_key_name = "projects/project-id/locations/region/keyRings/key-ring-name/cryptoKeys/key-name"
+  }, null)
+}
+# tftest modules=1 resources=1
+```
+
 ## IAM Examples
 
 IAM is managed via several variables that implement different levels of control:
