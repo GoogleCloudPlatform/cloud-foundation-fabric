@@ -16,3 +16,13 @@ billing_account = "015647-1A8CBC-A002D9"
 parent = "folders/0123456789"
 tfc_organization_id = "org-W3bx9naazHrUz99U"
 tfc_workspace_id = "ws-2GnGJtqTfvxKptHn"
+
+billing_account                    = "xxx"
+project_create                     = false
+project_id                         = "xxx"
+parent                             = "organizations/xxx"
+tfc_organization_id                = "org-xxxxxxxxxxxxx"
+tfc_workspace_id                   = "ws-xxxxxxxxxxxxx"
+workload_identity_pool_id          = "tfc-pool"
+workload_identity_pool_provider_id = "tfc-provider"
+issuer_uri                         = "https://app.terraform.io/"
