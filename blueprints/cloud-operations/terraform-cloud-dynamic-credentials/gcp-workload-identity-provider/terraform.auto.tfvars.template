@@ -12,11 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-billing_account = "015647-1A8CBC-A002D9"
-parent = "folders/0123456789"
-tfc_organization_id = "org-W3bx9naazHrUz99U"
-tfc_workspace_id = "ws-2GnGJtqTfvxKptHn"
-
 billing_account                    = "xxx"
 project_create                     = false
 project_id                         = "xxx"
