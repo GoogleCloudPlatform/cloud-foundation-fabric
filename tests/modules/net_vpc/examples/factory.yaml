@@ -31,7 +31,7 @@ values:
     project: my-project
     region: europe-west1
     role: null
-    secondary_ip_ranges:
+    secondary_ip_range:
     - ip_cidr_range: 192.168.0.0/24
       range_name: secondary-range-a
   module.vpc.google_compute_subnetwork.subnetwork["europe-west4/subnet-simple"]:
@@ -43,7 +43,7 @@ values:
     project: my-project
     region: europe-west4
     role: null
-    secondary_ip_ranges: []
+    secondary_ip_range: []
   module.vpc.google_compute_subnetwork_iam_binding.binding["europe-west1/subnet-detailed.roles/compute.networkUser"]:
     condition: []
     members:

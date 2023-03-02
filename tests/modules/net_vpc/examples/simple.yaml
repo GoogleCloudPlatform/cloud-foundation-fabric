@@ -29,7 +29,7 @@ values:
     project: my-project
     region: europe-west1
     role: null
-    secondary_ip_ranges:
+    secondary_ip_range:
     - ip_cidr_range: 172.16.0.0/20
       range_name: pods
     - ip_cidr_range: 192.168.0.0/24
@@ -43,7 +43,7 @@ values:
     project: my-project
     region: europe-west2
     role: null
-    secondary_ip_ranges: []
+    secondary_ip_range: []
 
 counts:
   google_compute_network: 1
