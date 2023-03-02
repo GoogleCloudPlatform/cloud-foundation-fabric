@@ -19,8 +19,8 @@ IP_LB=$(ip r show table local | grep "$IF_NAME proto 66" | cut -f 2 -d " ")
 
 # Sleep while there's no load balancer IP route for this IF
 while [ -z $IP_LB ] ; do
-   sleep 2
-   IP_LB=$(ip r show table local | grep "$IF_NAME proto 66" | cut -f 2 -d " ")
+  sleep 2
+  IP_LB=$(ip r show table local | grep "$IF_NAME proto 66" | cut -f 2 -d " ")
 done
 
 IF_NUMBER=$(echo $IF_NAME | sed -e s/eth//)

@@ -62,6 +62,71 @@ module "vm" {
 }
 # tftest modules=1 resources=1
 ```
+
+### Example with BGP service
+
+```hcl
+locals {
+  network_interfaces = [
+    {
+      addresses  = null
+      name       = "dev"
+      nat        = false
+      network    = "dev_vpc_self_link"
+      routes     = ["10.128.0.0/9"]
+      subnetwork = "dev_vpc_nva_subnet_self_link"
+      enable_masquerading = true
+      non_masq_cidrs = ["10.0.0.0/8"]
+    },
+    {
+      addresses  = null
+      name       = "prod"
+      nat        = false
+      network    = "prod_vpc_self_link"
+      routes     = ["10.0.0.0/9"]
+      subnetwork = "prod_vpc_nva_subnet_self_link"
+    }
+  ]
+}
+
+module "cos-nva" {
+  source               = "../../simple-nva"
+  enable_health_checks = true
+  network_interfaces   = local.network_interfaces
+  bgp_config           = {
+    enable   = true
+    # frr_config = "./frr.conf"
+  }
+  optional_run_cmds = ["ls -l"]
+  # files = {
+  #   "/var/lib/cloud/scripts/per-boot/firewall-rules.sh" = {
+  #     content     = file("./your_path/to/firewall-rules.sh")
+  #     owner       = "root"
+  #     permissions = 0700
+  #   }
+  # }
+}
+
+module "vm" {
+  source             = "./fabric/modules/compute-vm"
+  project_id         = "my-project"
+  zone               = "europe-west8-b"
+  name               = "cos-nva"
+  network_interfaces = local.network_interfaces
+  metadata = {
+    user-data              = module.cos-nva.cloud_config
+    google-logging-enabled = true
+  }
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
+  tags = ["nva", "ssh"]
+}
+# tftest modules=1 resources=1
+```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
