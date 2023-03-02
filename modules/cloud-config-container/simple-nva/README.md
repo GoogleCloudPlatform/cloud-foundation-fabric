@@ -90,7 +90,7 @@ locals {
 }
 
 module "cos-nva" {
-  source               = "../../simple-nva"
+  source               = "./fabric/modules/cloud-config-container/simple-nva"
   enable_health_checks = true
   network_interfaces   = local.network_interfaces
   bgp_config           = {
