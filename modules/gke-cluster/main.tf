@@ -406,9 +406,11 @@ resource "google_compute_network_peering_routes_config" "gke_master" {
 
 resource "google_pubsub_topic" "notifications" {
   count = (
-    try(var.enable_features.upgrade_notifications.topic_id, null) == null ? 0 : 1
+    try(var.enable_features.upgrade_notifications, null) != null &&
+    try(var.enable_features.upgrade_notifications.topic_id, null) == null ? 1 : 0
   )
-  name = "gke-pubsub-notifications"
+  project = var.project_id
+  name    = "gke-pubsub-notifications"
   labels = {
     content = "gke-notifications"
   }
