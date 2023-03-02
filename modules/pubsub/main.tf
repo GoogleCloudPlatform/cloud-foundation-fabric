@@ -33,6 +33,7 @@ locals {
       options = try(v.options, v, null) == null ? var.defaults : v.options
     }
   }
+  topic_id_static = "projects/${var.project_id}/topics/${var.name}"
 }
 
 resource "google_pubsub_schema" "default" {
