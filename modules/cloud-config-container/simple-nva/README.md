@@ -69,14 +69,14 @@ module "vm" {
 locals {
   network_interfaces = [
     {
-      addresses  = null
-      name       = "dev"
-      nat        = false
-      network    = "dev_vpc_self_link"
-      routes     = ["10.128.0.0/9"]
-      subnetwork = "dev_vpc_nva_subnet_self_link"
+      addresses           = null
+      name                = "dev"
+      nat                 = false
+      network             = "dev_vpc_self_link"
+      routes              = ["10.128.0.0/9"]
+      subnetwork          = "dev_vpc_nva_subnet_self_link"
       enable_masquerading = true
-      non_masq_cidrs = ["10.0.0.0/8"]
+      non_masq_cidrs      = ["10.0.0.0/8"]
     },
     {
       addresses  = null
@@ -93,8 +93,8 @@ module "cos-nva" {
   source               = "./fabric/modules/cloud-config-container/simple-nva"
   enable_health_checks = true
   network_interfaces   = local.network_interfaces
-  bgp_config           = {
-    enable   = true
+  bgp_config = {
+    enable = true
     # frr_config = "./frr.conf"
   }
   optional_run_cmds = ["ls -l"]
