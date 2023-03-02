@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,11 @@ variable "bgp_config" {
   description = "BGP configuration for FR Routing container running on the NVA."
   type = object({
     daemons    = optional(string)
-    enable     = optional(bool)
+    enable     = optional(bool, false)
     frr_config = optional(string)
   })
-  default = {
-    enable = false
-  }
+  default = {}
+  nullable = false
 }
 
 variable "cloud_config" {
@@ -52,7 +51,7 @@ variable "network_interfaces" {
   description = "Network interfaces configuration."
   type = list(object({
     routes              = optional(list(string))
-    enable_masquerading = optional(bool)
+    enable_masquerading = optional(bool, false)
     non_masq_cidrs      = optional(list(string))
   }))
 }

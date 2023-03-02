@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,9 +89,11 @@ locals {
     }
   ]
 
-  optional_run_cmds = try(var.bgp_config.enable, false) ? concat(
-    ["systemctl start frr"], var.optional_run_cmds
-  ) : var.optional_run_cmds
+  optional_run_cmds = (
+    try(var.bgp_config.enable, false)
+    ? concat(["systemctl start frr"], var.optional_run_cmds) 
+    : var.optional_run_cmds
+  )
 
   template = (
     var.cloud_config == null
