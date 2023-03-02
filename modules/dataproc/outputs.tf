@@ -37,6 +37,6 @@ output "instance_names" {
 
 output "name" {
   description = "The name of the cluster."
-  value       = google_dataproc_cluster.cluster.cluster_config.0.bucket
+  value       = google_dataproc_cluster.cluster.name
 }
 
