@@ -21,7 +21,7 @@ variable "bgp_config" {
     enable     = optional(bool, false)
     frr_config = optional(string)
   })
-  default = {}
+  default  = {}
   nullable = false
 }
 

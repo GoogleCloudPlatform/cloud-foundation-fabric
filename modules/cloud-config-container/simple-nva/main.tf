@@ -91,7 +91,7 @@ locals {
 
   optional_run_cmds = (
     try(var.bgp_config.enable, false)
-    ? concat(["systemctl start frr"], var.optional_run_cmds) 
+    ? concat(["systemctl start frr"], var.optional_run_cmds)
     : var.optional_run_cmds
   )
 
