@@ -24,13 +24,18 @@ locals {
     module.automation-tf-bootstrap-sa.iam_email,
     module.automation-tf-resman-sa.iam_email
   ]
+  billing_mode = (
+    var.billing_account.no_iam
+    ? null
+    : var.billing_account.is_org_level ? "org" : "resource"
+  )
 }
 
 # billing account in same org (IAM is in the organization.tf file)
 
 module "billing-export-project" {
   source          = "../../../modules/project"
-  count           = var.billing_account.is_org_level ? 1 : 0
+  count           = local.billing_mode == "org" ? 1 : 0
   billing_account = var.billing_account.id
   name            = "billing-exp-0"
   parent = coalesce(
@@ -52,7 +57,7 @@ module "billing-export-project" {
 
 module "billing-export-dataset" {
   source        = "../../../modules/bigquery-dataset"
-  count         = var.billing_account.is_org_level ? 1 : 0
+  count         = local.billing_mode == "org" ? 1 : 0
   project_id    = module.billing-export-project.0.project_id
   id            = "billing_export"
   friendly_name = "Billing export."
@@ -63,7 +68,7 @@ module "billing-export-dataset" {
 
 resource "google_billing_account_iam_member" "billing_ext_admin" {
   for_each = toset(
-    !var.billing_account.is_org_level ? local.billing_ext_admins : []
+    local.billing_mode == "resource" ? local.billing_ext_admins : []
   )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.admin"
@@ -72,7 +77,7 @@ resource "google_billing_account_iam_member" "billing_ext_admin" {
 
 resource "google_billing_account_iam_member" "billing_ext_cost_manager" {
   for_each = toset(
-    !var.billing_account.is_org_level ? local.billing_ext_admins : []
+    local.billing_mode == "resource" ? local.billing_ext_admins : []
   )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.costsManager"
