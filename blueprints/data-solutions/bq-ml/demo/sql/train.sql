@@ -14,14 +14,14 @@
 * limitations under the License. 
 */
 
-create or replace model `{project_id}.{dataset}.{model_name}`
-OPTIONS(model_type='{model_type}',
-        input_label_cols=['has_purchased'],
-        enable_global_explain=TRUE,
+CREATE OR REPLACE MODEL `{project_id}.{dataset}.{model_name}`
+OPTIONS(MODEL_TYPE='{model_type}',
+        INPUT_LABEL_COLS=['has_purchased'],
+        ENABLE_GLOBAL_EXPLAIN=TRUE,
         MODEL_REGISTRY='VERTEX_AI',
-        data_split_method = 'RANDOM',
-        data_split_eval_fraction = {split_fraction}
-        ) as 
-select * except (session_id, session_starting_ts, user_id) 
-from `{project_id}.{dataset}.ecommerce_abt_table`
-where extract(ISOYEAR from session_starting_ts) = 2022
+        DATA_SPLIT_METHOD = 'RANDOM',
+        DATA_SPLIT_EVAL_FRACTION = {split_fraction}
+        ) AS 
+SELECT * EXCEPT (session_id, session_starting_ts, user_id) 
+FROM `{project_id}.{dataset}.ecommerce_abt_table`
+WHERE extract(ISOYEAR FROM session_starting_ts) = 2022
