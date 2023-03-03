@@ -1,6 +1,68 @@
 # BQ ML and Vertex Pipeline
 
-This blueprint creates #TODO
+This blueprint creates the infrastructure needed to deploy and run a Vertex AI environment to develop and deploy a machine learning model to be used from Vertex AI an endpoint or in BigQuery.
+
+This is the high level diagram:
+
+![High-level diagram](diagram.png "High-level diagram")
+
+It also includes the IAM wiring needed to make such scenarios work. Regional resources are used in this example, but the same logic will apply for 'dual regional', 'multi regional' or 'global' resources.
+
+The example is designed to match real-world use cases with a minimum amount of resources, and be used as a starting point for your scenario.
+
+## Managed resources and services
+
+This sample creates several distinct groups of resources:
+
+- Networking
+  - VPC network
+  - Subnet
+  - Firewall rules for SSH access via IAP and open communication within the VPC
+  - Cloud Nat
+- IAM
+  - Vertex AI workbench service account
+  - Vertex AI pipeline service account
+- Storage
+  - GCS bucket
+  - Bigquery dataset
+
+## Customization
+
+### Virtual Private Cloud (VPC) design
+
+As is often the case in real-world configurations, this blueprint accepts as input an existing Shared-VPC via the `network_config` variable.
+
+### Customer Managed Encryption Key
+
+As is often the case in real-world configurations, this blueprint accepts as input  existing Cloud KMS keys to encrypt resources via the `service_encryption_keys` variable.
+
+## Demo
+
+In the repository `demo` folder you can find an example on how to create a Vertex AI pipeline from a publically available dataset and deploy the model to be used from a Vertex AI managed endpoint or from within Bigquery.
 
 <!-- BEGIN TFDOC -->
+
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [prefix](variables.tf#L32) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L50) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L16) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
+| [network_config](variables.tf#L22) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_create](variables.tf#L41) | Provide values if project creation is needed, uses existing project if null. Parent format:  folders/folder_id or organizations/org_id. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L55) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [bucket](outputs.tf#L15) | GCS Bucket URL. |  |
+| [dataset](outputs.tf#L20) | GCS Bucket URL. |  |
+| [notebook](outputs.tf#L25) | Vertex AI notebook details. |  |
+| [project](outputs.tf#L33) | Project id. |  |
+| [service-account-vertex](outputs.tf#L43) | Service account to be used for Vertex AI pipelines |  |
+| [vertex-ai-metadata-store](outputs.tf#L48) |  |  |
+| [vpc](outputs.tf#L38) | VPC Network. |  |
+
 <!-- END TFDOC -->
