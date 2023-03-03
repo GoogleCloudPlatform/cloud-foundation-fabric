@@ -66,3 +66,18 @@ In the repository `demo` folder you can find an example on how to create a Verte
 | [vpc](outputs.tf#L38) | VPC Network. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/data-solutions/bq-ml/"
+  project_create = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  project_id = "project-1"
+  prefix     = "prefix"
+}
+# tftest modules=9 resources=46
+```

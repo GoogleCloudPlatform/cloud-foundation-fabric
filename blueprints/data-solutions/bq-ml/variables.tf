@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# tfdoc:file:description Terraform variables.
 
 variable "location" {
   description = "The location where resources will be deployed."
