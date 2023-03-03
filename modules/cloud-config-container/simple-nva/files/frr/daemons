@@ -12,23 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-zebra=no
-bgpd=yes
-ospfd=no
-ospf6d=no
-ripd=no
-ripngd=no
-isisd=no
-pimd=no
-ldpd=no
-nhrpd=no
-eigrpd=no
-babeld=no
-sharpd=no
-staticd=no
-pbrd=no
-bfdd=no
-fabricd=no
+zebra=%{frr_daemons_enabled.zebra ? "yes" : "no"}
+bgpd=%{frr_daemons_enabled.bgpd ? "yes" : "no"}
+ospfd=%{frr_daemons_enabled.ospfd ? "yes" : "no"}
+ospf6d=%{frr_daemons_enabled.ospf6d ? "yes" : "no"}
+ripd=%{frr_daemons_enabled.ripd ? "yes" : "no"}
+ripngd=%{frr_daemons_enabled.ripngd ? "yes" : "no"}
+isisd=%{frr_daemons_enabled.isisd ? "yes" : "no"}
+pimd=%{frr_daemons_enabled.pimd ? "yes" : "no"}
+ldpd=%{frr_daemons_enabled.ldpd ? "yes" : "no"}
+nhrpd=%{frr_daemons_enabled.nhrpd ? "yes" : "no"}
+eigrpd=%{frr_daemons_enabled.eigrpd ? "yes" : "no"}
+babeld=%{frr_daemons_enabled.babeld ? "yes" : "no"}
+sharpd=%{frr_daemons_enabled.sharpd ? "yes" : "no"}
+staticd=%{frr_daemons_enabled.staticd ? "yes" : "no"}
+pbrd=%{frr_daemons_enabled.pbrd ? "yes" : "no"}
+bfdd=%{frr_daemons_enabled.bfdd ? "yes" : "no"}
+fabricd=%{frr_daemons_enabled.fabricd ? "yes" : "no"}
 
 #
 # If this option is set the /etc/init.d/frr script automatically loads

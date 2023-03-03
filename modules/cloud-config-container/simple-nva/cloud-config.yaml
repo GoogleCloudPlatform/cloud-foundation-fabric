@@ -22,6 +22,7 @@ write_files:
     content: |
       ${indent(6, data.content)}
 %{ endfor }
+
   - path: /etc/systemd/system/routing.service
     permissions: 0644
     owner: root
@@ -34,6 +35,7 @@ write_files:
       Wants=network-online.target
       [Service]
       ExecStart=/bin/sh -c "/var/run/nva/start-routing.sh"
+
   - path: /var/run/nva/start-routing.sh
     permissions: 0744
     owner: root

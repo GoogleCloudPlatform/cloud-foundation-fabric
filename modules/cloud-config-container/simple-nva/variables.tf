@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-variable "bgp_config" {
-  description = "BGP configuration for FR Routing container running on the NVA."
-  type = object({
-    daemons    = optional(string)
-    enable     = optional(bool, false)
-    frr_config = optional(string)
-  })
-  default  = {}
-  nullable = false
-}
-
 variable "cloud_config" {
   description = "Cloud config template path. If null default will be used."
   type        = string
@@ -45,6 +34,21 @@ variable "files" {
     permissions = string
   }))
   default = {}
+}
+
+variable "frr_config" {
+  description = "FRR configuration for container running on the NVA."
+  type = object({
+    daemons_enabled = optional(list())
+    config_file     = string
+  })
+  default  = null
+  validation {
+    condition = try(var.frr_config.daemons_enabled && alltrue([
+      for daemon in var.frr_config.daemons_enabled : contains(local.frr_daemons, daemon)
+    ]), true)
+    error_message = "Invalid entry specified in daemons_enabled list, must be one of ${local.frr_daemons}"
+  }
 }
 
 variable "network_interfaces" {
