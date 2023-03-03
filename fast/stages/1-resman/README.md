@@ -174,18 +174,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [billing.tf](./billing.tf) | Billing resources for external billing use cases. |  | <code>
-  )
-}
-
-# billing account in same org (resources is in the organization.tf file)
-
-# standalone billing account
-
-resource </code> · <code> ? local.billing_ext_users : []
-  )
-  billing_account_id = var.billing_account.id
-  role               = </code> · <code>google_billing_account_iam_member</code> |
+| [billing.tf](./billing.tf) | Billing resources for external billing use cases. |  | <code>google_billing_account_iam_member</code> |
 | [branch-data-platform.tf](./branch-data-platform.tf) | Data Platform stages resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> | <code>google_organization_iam_member</code> |
 | [branch-gke.tf](./branch-gke.tf) | GKE multitenant stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-networking.tf](./branch-networking.tf) | Networking stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
