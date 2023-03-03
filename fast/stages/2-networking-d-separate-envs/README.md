@@ -212,7 +212,7 @@ Variables in this stage -- like most other FAST stages -- are broadly divided in
 
 The latter set is explained in the [Customization](#customizations) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
 
-#### Using delayed billing association for projects
+### Using delayed billing association for projects
 
 This configuration is possible but unsupported and only exists for development purposes, use at your own risk:
 
