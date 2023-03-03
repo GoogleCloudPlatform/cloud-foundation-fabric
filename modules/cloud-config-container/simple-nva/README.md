@@ -66,14 +66,15 @@ module "vm" {
 ### Example with advanced routing capabilities
 
 Below a sample terraform example for bootstrapping a simple-nva powered by [COS](https://cloud.google.com/container-optimized-os/docs) and running [FRRouting](https://frrouting.org/) container.
-Please find below s sample frr.conf file based on documentation available at the following [link](https://docs.frrouting.org/en/latest/basic.html) for hosting a BGP service on FRR container.  
+Please find below s sample frr.conf file based on documentation available at the following [link](https://docs.frrouting.org/en/latest/basic.html) for hosting a BGP service with ASN 65001 on FRR container establishing a BGP session with a remote neighbor with IP address 10.128.0.2 and ASN 65002.
 
 ```
 Example frr.conf file
 
 log syslog informational
 no ipv6 forwarding
-router bgp 65500
+router bgp 65001
+ neighbor 10.128.0.2 remote-as 65002
 line vty
 
 ```
