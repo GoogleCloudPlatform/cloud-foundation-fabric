@@ -15,14 +15,14 @@
  */
 
 locals {
-  cloud_config = templatefile(local.template, {
-    files                = local.files
+  cloud_config = templatefile(local._template, {
+    files                = local._files
     enable_health_checks = var.enable_health_checks
-    network_interfaces   = local.network_interfaces
-    optional_run_cmds    = local.optional_run_cmds
+    network_interfaces   = local._network_interfaces
+    optional_run_cmds    = local._optional_run_cmds
   })
 
-  files = merge(
+  _files = merge(
     {
       "/var/run/nva/ipprefix_by_netmask.sh" = {
         content     = file("${path.module}/files/ipprefix_by_netmask.sh")
@@ -43,7 +43,7 @@ locals {
     },
     try(var.frr_config != null, false) ? {
       "/etc/frr/daemons" = {
-        content     = templatefile("${path.module}/files/frr/daemons", local.frr_daemons_enabled)
+        content     = templatefile("${path.module}/files/frr/daemons", local._frr_daemons_enabled)
         owner       = "root"
         permissions = "0744"
       }
@@ -73,11 +73,11 @@ locals {
     } : {}
   )
 
-  frr_daemons = ["zebra", "bgpd", "ospfd", "ospf6d", "ripd", "ripngd", "isisd", "pimd", "ldpd", "nhrpd", "eigrpd", "babeld", "sharpd", "staticd", "pbrd", "bfdd", "fabricd"]
+  _frr_daemons = ["zebra", "bgpd", "ospfd", "ospf6d", "ripd", "ripngd", "isisd", "pimd", "ldpd", "nhrpd", "eigrpd", "babeld", "sharpd", "staticd", "pbrd", "bfdd", "fabricd"]
 
-  frr_daemons_enabled = try({ for daemon in local.frr_daemons : "${daemon}_enabled" => contains(var.frr_config.daemons_enabled, daemon) ? "yes" : "no" }, {})
+  _frr_daemons_enabled = try({ for daemon in local._frr_daemons : "${daemon}_enabled" => contains(var.frr_config.daemons_enabled, daemon) ? "yes" : "no" }, {})
 
-  network_interfaces = [
+  _network_interfaces = [
     for index, interface in var.network_interfaces : {
       name                = "eth${index}"
       number              = index
@@ -87,13 +87,13 @@ locals {
     }
   ]
 
-  optional_run_cmds = (
+  _optional_run_cmds = (
     try(var.frr_config != null, false)
     ? concat(["systemctl start frr"], var.optional_run_cmds)
     : var.optional_run_cmds
   )
 
-  template = (
+  _template = (
     var.cloud_config == null
     ? "${path.module}/cloud-config.yaml"
     : var.cloud_config
