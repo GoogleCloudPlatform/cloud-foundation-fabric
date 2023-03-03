@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# tfdoc:file:description Output variables.
+
 output "bucket" {
   description = "GCS Bucket URL."
   value       = module.bucket.url

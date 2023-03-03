@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# tfdoc:file:description Core resources.
+
 ###############################################################################
 #                                   Project                                   #
 ###############################################################################
+
 locals {
   service_encryption_keys = var.service_encryption_keys
   shared_vpc_project      = try(var.network_config.host_project, null)
@@ -160,7 +163,7 @@ module "dataset" {
   project_id     = module.project.project_id
   id             = "${replace(var.prefix, "-", "_")}_data"
   encryption_key = try(local.service_encryption_keys.bq, null) # Example assignment of an encryption key
-  location         = "US"
+  location       = "US"
 }
 
 ###############################################################################
@@ -239,7 +242,6 @@ resource "google_notebooks_instance" "playground" {
   service_account = module.service-account-notebook.email
 
   # Enable Secure Boot 
-
   shielded_instance_config {
     enable_secure_boot = true
   }
