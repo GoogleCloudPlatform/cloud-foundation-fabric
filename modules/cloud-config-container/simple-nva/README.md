@@ -63,7 +63,20 @@ module "vm" {
 # tftest modules=1 resources=1
 ```
 
-### Example with BGP service
+### Example with advanced routing capabilities
+
+Below a sample terraform example for bootstrapping a simple-nva based on COS running [FRRouting](https://frrouting.org/) container.
+Please find below s sample frr.conf file based on documentation available at the following link for hosting a BGP service on FRR container, by default enabling  
+
+```
+Example frr.conf file
+
+log syslog informational
+no ipv6 forwarding
+router bgp 65500
+line vty
+
+```
 
 ```hcl
 locals {

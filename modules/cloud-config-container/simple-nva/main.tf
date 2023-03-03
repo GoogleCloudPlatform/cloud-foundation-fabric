@@ -22,9 +22,6 @@ locals {
     optional_run_cmds    = local.optional_run_cmds
   }))
 
-  frr_config = (
-    try(var.bgp_config.frr_config != null, false) ? var.bgp_config.frr_config : "${path.module}/files/frr/frr.conf"
-  )
   daemons = (
     try(var.bgp_config.daemons != null, false) ? var.bgp_config.daemons : "${path.module}/files/frr/daemons"
   )
@@ -47,14 +44,14 @@ locals {
         permissions = attrs.permissions
       }
     },
-    try(var.bgp_config.enable, false) ? {
+    try(var.frr_config, false) ? {
       "/etc/frr/daemons" = {
-        content     = file(local.daemons)
+        content     = templatefile(local.daemons, local.frr_daemons_enabled)
         owner       = "root"
         permissions = "0744"
       }
       "/etc/frr/frr.conf" = {
-        content     = file(local.frr_config)
+        content     = file(var.frr_config.config_file)
         owner       = "root"
         permissions = "0744"
       }
@@ -78,6 +75,10 @@ locals {
       }
     } : {}
   )
+
+  frr_daemons = ["zebra", "bgpd", "ospfd", "ospf6d", "ripd", "ripngd", "isisd", "pimd", "ldpd", "nhrpd", "eigrpd", "babeld", "sharpd", "staticd", "pbrd", "bfdd", "fabricd"]
+  
+  frr_daemons_enabled = try(merge([for daemon in local.frr_daemons : {daemon: contains(var.frr_config.daemons_enabled, daemon)}]),{})
 
   network_interfaces = [
     for index, interface in var.network_interfaces : {
