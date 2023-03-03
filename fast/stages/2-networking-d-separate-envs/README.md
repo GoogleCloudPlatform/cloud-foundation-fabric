@@ -212,6 +212,20 @@ Variables in this stage -- like most other FAST stages -- are broadly divided in
 
 The latter set is explained in the [Customization](#customizations) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
 
+### Using delayed billing association for projects
+
+This configuration is possible but unsupported and only exists for development purposes, use at your own risk:
+
+- temporarily switch `billing_account.id` to `null` in `globals.auto.tfvars.json`
+- for each project resources in the project modules used in this stage (`dev-spoke-project`, `prod-spoke-project`)
+  - apply using `-target`, for example
+    `terraform apply -target 'module.prod-spoke-project.google_project.project[0]'`
+  - untaint the project resource after applying, for example
+    `terraform untaint 'module.prod-spoke-project.google_project.project[0]'`
+- go through the process to associate the billing account with the two projects
+- switch `billing_account.id` back to the real billing account id
+- resume applying normally
+
 ### Running the stage
 
 Once provider and variable values are in place and the correct user is configured, the stage can be run:

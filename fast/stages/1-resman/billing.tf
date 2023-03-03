@@ -30,6 +30,11 @@ locals {
     local.branch_optional_sa_lists.pf-dev,
     local.branch_optional_sa_lists.pf-prod,
   )
+  billing_mode = (
+    var.billing_account.no_iam
+    ? null
+    : var.billing_account.is_org_level ? "org" : "resource"
+  )
 }
 
 # billing account in same org (resources is in the organization.tf file)
@@ -38,7 +43,7 @@ locals {
 
 resource "google_billing_account_iam_member" "billing_ext_admin" {
   for_each = toset(
-    !var.billing_account.is_org_level ? local.billing_ext_users : []
+    local.billing_mode == "resource" ? local.billing_ext_users : []
   )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.user"
@@ -47,7 +52,7 @@ resource "google_billing_account_iam_member" "billing_ext_admin" {
 
 resource "google_billing_account_iam_member" "billing_ext_costsmanager" {
   for_each = toset(
-    !var.billing_account.is_org_level ? local.billing_ext_users : []
+    local.billing_mode == "resource" ? local.billing_ext_users : []
   )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.costsManager"
