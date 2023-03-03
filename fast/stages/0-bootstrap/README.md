@@ -175,11 +175,12 @@ gcloud beta billing accounts add-iam-policy-binding $FAST_BILLING_ACCOUNT_ID \
 
 This configuration is possible but unsupported and only present for development purposes, use at your own risk:
 
-- configure the real billing account id as above, then set `billing.no_iam` to `true` in your `tfvars` file
+- configure `billing_account.id` as `null` and `billing.no_iam` to `true` in your `tfvars` file
 - apply with `terraform apply -target 'module.automation-project.google_project.project[0]'` in addition to the initial user variable
 - once Terraform raises an error run `terraform untaint 'module.automation-project.google_project.project[0]'`
 - repeat the two steps above for `'module.log-export-project.google_project.project[0]'`
 - go through the process to associate the billing account with the two projects
+- configure `billing_account.id` with the real billing account id
 - resume applying normally
 
 #### Groups
