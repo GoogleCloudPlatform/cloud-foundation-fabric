@@ -15,16 +15,13 @@
  */
 
 locals {
-  cloud_config = templatefile(local.template, merge({
+  cloud_config = templatefile(local.template, {
     files                = local.files
     enable_health_checks = var.enable_health_checks
     network_interfaces   = local.network_interfaces
     optional_run_cmds    = local.optional_run_cmds
-  }))
+  })
 
-  daemons = (
-    try(var.bgp_config.daemons != null, false) ? var.bgp_config.daemons : "${path.module}/files/frr/daemons"
-  )
   files = merge(
     {
       "/var/run/nva/ipprefix_by_netmask.sh" = {
@@ -44,9 +41,9 @@ locals {
         permissions = attrs.permissions
       }
     },
-    try(var.frr_config, false) ? {
+    try(var.frr_config != null, false) ? {
       "/etc/frr/daemons" = {
-        content     = templatefile(local.daemons, local.frr_daemons_enabled)
+        content     = templatefile("${path.module}/files/frr/daemons", local.frr_daemons_enabled)
         owner       = "root"
         permissions = "0744"
       }
@@ -77,8 +74,8 @@ locals {
   )
 
   frr_daemons = ["zebra", "bgpd", "ospfd", "ospf6d", "ripd", "ripngd", "isisd", "pimd", "ldpd", "nhrpd", "eigrpd", "babeld", "sharpd", "staticd", "pbrd", "bfdd", "fabricd"]
-  
-  frr_daemons_enabled = try(merge([for daemon in local.frr_daemons : {daemon: contains(var.frr_config.daemons_enabled, daemon)}]),{})
+
+  frr_daemons_enabled = try({ for daemon in local.frr_daemons : "${daemon}_enabled" => contains(var.frr_config.daemons_enabled, daemon) ? "yes" : "no" }, {})
 
   network_interfaces = [
     for index, interface in var.network_interfaces : {
@@ -91,7 +88,7 @@ locals {
   ]
 
   optional_run_cmds = (
-    try(var.bgp_config.enable, false)
+    try(var.frr_config != null, false)
     ? concat(["systemctl start frr"], var.optional_run_cmds)
     : var.optional_run_cmds
   )

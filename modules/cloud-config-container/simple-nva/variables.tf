@@ -39,15 +39,15 @@ variable "files" {
 variable "frr_config" {
   description = "FRR configuration for container running on the NVA."
   type = object({
-    daemons_enabled = optional(list())
+    daemons_enabled = optional(list(string))
     config_file     = string
   })
-  default  = null
+  default = null
   validation {
-    condition = try(var.frr_config.daemons_enabled && alltrue([
-      for daemon in var.frr_config.daemons_enabled : contains(local.frr_daemons, daemon)
+    condition = try(alltrue([
+      for daemon in var.frr_config.daemons_enabled : contains(["zebra", "bgpd", "ospfd", "ospf6d", "ripd", "ripngd", "isisd", "pimd", "ldpd", "nhrpd", "eigrpd", "babeld", "sharpd", "staticd", "pbrd", "bfdd", "fabricd"], daemon)
     ]), true)
-    error_message = "Invalid entry specified in daemons_enabled list, must be one of ${local.frr_daemons}"
+    error_message = "Invalid entry specified in daemons_enabled list, must be one of [zebra, bgpd, ospfd, ospf6d, ripd, ripngd, isisd, pimd, ldpd, nhrpd, eigrpd, babeld, sharpd, staticd, pbrd, bfdd, fabricd]"
   }
 }
 
