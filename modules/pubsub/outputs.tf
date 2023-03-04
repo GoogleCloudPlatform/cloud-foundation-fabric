@@ -16,8 +16,9 @@
 
 output "id" {
   description = "Topic id."
-  value       = google_pubsub_topic.default.id
+  value       = local.topic_id_static
   depends_on = [
+    google_pubsub_topic.default,
     google_pubsub_topic_iam_binding.default
   ]
 }

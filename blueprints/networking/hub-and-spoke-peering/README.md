@@ -100,3 +100,20 @@ The VPN used to connect the GKE masters VPC does not account for HA, upgrading t
 | [vms](outputs.tf#L20) | GCE VMs. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/networking/hub-and-spoke-peering"
+  prefix = "prefix"
+  project_create = {
+    billing_account = "123456-123456-123456"
+    oslogin         = true
+    parent          = "folders/123456789"
+  }
+  project_id = "project-1"
+}
+
+# tftest modules=22 resources=61
+```

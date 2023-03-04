@@ -125,12 +125,12 @@ module "automation-tf-resman-sa" {
       try(module.automation-tf-cicd-sa-resman["0"].iam_email, null)
     ])
   }
-  iam_billing_roles = !var.billing_account.is_org_level ? {
+  iam_billing_roles = local.billing_mode == "resource" ? {
     (var.billing_account.id) = [
       "roles/billing.admin", "roles/billing.costsManager"
     ]
   } : {}
-  iam_organization_roles = var.billing_account.is_org_level ? {
+  iam_organization_roles = local.billing_mode == "org" ? {
     (var.organization.id) = [
       "roles/billing.admin", "roles/billing.costsManager"
     ]

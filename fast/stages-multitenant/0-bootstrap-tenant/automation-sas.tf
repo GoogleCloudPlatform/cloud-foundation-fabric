@@ -93,12 +93,12 @@ module "automation-tf-resman-sa-stage2-3" {
   name         = "${each.key}-0"
   display_name = "Terraform ${each.value.description} service account."
   prefix       = local.prefix
-  iam_billing_roles = !var.billing_account.is_org_level ? {
+  iam_billing_roles = local.billing_mode == "resource" ? {
     (var.billing_account.id) = [
       "roles/billing.user", "roles/billing.costsManager"
     ]
   } : {}
-  iam_organization_roles = var.billing_account.is_org_level ? {
+  iam_organization_roles = local.billing_mode == "org" ? {
     (var.organization.id) = [
       "roles/billing.user", "roles/billing.costsManager"
     ]

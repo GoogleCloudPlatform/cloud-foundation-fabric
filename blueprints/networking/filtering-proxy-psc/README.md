@@ -26,3 +26,19 @@ To simplify the usage of the proxy, a Cloud DNS private zone is created in each 
 | [region](variables.tf#L75) | Default region for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 <!-- END TFDOC -->
+
+## Test
+
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/networking/filtering-proxy-psc"
+  prefix = "fabric"
+  project_create = {
+    billing_account = "123456-ABCDEF-123456"
+    parent          = "folders/1234567890"
+  }
+  project_id = "test-project"
+}
+# tftest modules=13 resources=37
+```

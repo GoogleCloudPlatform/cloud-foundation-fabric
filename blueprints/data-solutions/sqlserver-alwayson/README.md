@@ -69,3 +69,23 @@ and to `C:\GcpSetupLog.txt` file.
 | [instructions](outputs.tf#L19) | List of steps to follow after applying. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/data-solutions/sqlserver-alwayson/"
+  project_create = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  project_id         = "project-1"
+  prefix             = "test"
+  network            = "example-network"
+  subnetwork         = "example-subnetwork"
+  sql_admin_password = "password"
+  ad_domain_fqdn     = "ad.example.com"
+  ad_domain_netbios  = "ad"
+}
+# tftest modules=12 resources=38
+```

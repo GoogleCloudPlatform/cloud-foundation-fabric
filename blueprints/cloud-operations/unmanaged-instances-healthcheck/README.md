@@ -118,3 +118,15 @@ gcloud compute ssh --zone europe-west1-b  nginx-test -- 'uptime'
 | [pubsub-topic](outputs.tf#L26) | Restarter PubSub topic. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source          = "./fabric/blueprints/cloud-operations/unmanaged-instances-healthcheck"
+  project_id      = "project-1"
+  billing_account = "123456-123456-123456"
+  project_create  = true
+}
+# tftest modules=11 resources=35
+```

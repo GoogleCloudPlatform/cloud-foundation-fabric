@@ -71,6 +71,7 @@ module "bq" {
 | [views_path](variables.tf#L27) | Relative path for the folder storing view data. | <code>string</code> | ✓ |  |
 
 <!-- END TFDOC -->
+
 ## TODO
 
 - [ ] add external table support

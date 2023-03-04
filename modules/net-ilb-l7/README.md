@@ -326,8 +326,10 @@ module "ilb-l7" {
         group          = "my-neg"
         max_rate       = { per_endpoint = 1 }
       }]
+      health_checks = []
     }
   }
+  health_check_configs = {}
   neg_configs = {
     my-neg = {
       cloudrun = {
@@ -343,7 +345,7 @@ module "ilb-l7" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=5
 ```
 
 ### URL Map

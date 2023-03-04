@@ -18,7 +18,7 @@ from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
 COUNT_TEST_RE = re.compile(r'# tftest +modules=(\d+) +resources=(\d+)' +
-                           r'(?: +files=([\w,_-]+))?' +
+                           r'(?: +files=([\w@,_-]+))?' +
                            r'(?: +inventory=([\w\-.]+))?')
 
 

@@ -76,3 +76,15 @@ If you get any warnings, check the roles and remove any of them granting any of 
 | [restricted_role_grant](variables.tf#L78) | Role grant to which the restrictions will apply. | <code>string</code> |  | <code>&#34;roles&#47;resourcemanager.projectIamAdmin&#34;</code> |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source                 = "./fabric/blueprints/cloud-operations/iam-delegated-role-grants"
+  project_create         = true
+  project_id             = "project-1"
+  project_administrators = ["user:user@example.com"]
+}
+# tftest modules=2 resources=4
+```

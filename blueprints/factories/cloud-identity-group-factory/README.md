@@ -9,13 +9,22 @@ Yaml abstraction for Groups can simplify groups creation and members management.
 ### Terraform code
 
 ```hcl
-module "prod-firewall" {
-  source = "./fabric/blueprints/factories/cloud-identity-group-factory"
-
+module "groups" {
+  source      = "./fabric/blueprints/factories/cloud-identity-group-factory"
   customer_id = "customers/C0xxxxxxx"
   data_dir    = "data"
 }
-# tftest skip
+# tftest modules=2 resources=3 files=group1 inventory=example.yaml
+```
+
+```yaml
+# tftest-file id=group1 path=data/group1@example.com.yaml
+display_name: Group 1
+description: Group 1
+members:
+  - user1@example.com
+managers:
+  - user2@example.com
 ```
 
 ### Configuration Structure

@@ -289,3 +289,18 @@ Features to add in future releases:
 - Add example on how to use Cloud Data Loss Prevention
 - Add solution to handle Tables, Views, and Authorized Views lifecycle
 - Add solution to handle Metadata lifecycle
+
+## Test
+
+```hcl
+module "test" {
+  source              = "./fabric/blueprints/data-solutions/data-platform-foundations/"
+  organization_domain = "example.com"
+  project_config = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  prefix = "prefix"
+}
+# tftest modules=43 resources=278
+```
