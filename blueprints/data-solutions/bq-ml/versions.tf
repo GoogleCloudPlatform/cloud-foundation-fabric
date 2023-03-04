@@ -12,20 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Terraform version.
-
 terraform {
   required_version = ">= 1.3.1"
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 4.50.0" # tftest
+      version = ">= 4.55.0" # tftest
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 4.50.0" # tftest
+      version = ">= 4.55.0" # tftest
     }
   }
 }
-
-
