@@ -73,6 +73,6 @@ This [blueprint](./shielded-folder/) implements an opinionated folder configurat
 ### BigQuery ML and Vertex AI Pipeline
 
 <a href="./bq-ml/" title="BigQuery ML and Vertex AI Pipeline"><img src="./bq-ml/images/diagram.png" align="left" width="280px"></a>
-This [blueprint](./bq-ml/) implements the infrastructure required to have a fully functional develpement environment using BigQuery ML and Vertex AI to develop and deploy a machine learning model to be used from Vertex AI endpoint or in BigQuery ML.
+This [blueprint](./bq-ml/) implements the infrastructure required to have a fully functional development environment using BigQuery ML and Vertex AI to develop and deploy a machine learning model to be used from Vertex AI endpoint or in BigQuery ML.
 
 <br clear="left">
