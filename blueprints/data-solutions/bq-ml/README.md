@@ -45,7 +45,6 @@ To run the demo:
 - Connect to the Vertex AI workbench instance
 - Clone this repository
 - Run the and run [`demo/bmql_pipeline.ipynb`](demo/bmql_pipeline.ipynb) Jupyter Notebook.
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -69,7 +68,7 @@ To run the demo:
 | [notebook](outputs.tf#L27) | Vertex AI notebook details. |  |
 | [project](outputs.tf#L35) | Project id. |  |
 | [service-account-vertex](outputs.tf#L45) | Service account to be used for Vertex AI pipelines |  |
-| [vertex-ai-metadata-store](outputs.tf#L50) |  |  |
+| [vertex-ai-metadata-store](outputs.tf#L50) | Vertex AI Metadata Store ID. |  |
 | [vpc](outputs.tf#L40) | VPC Network. |  |
 
 <!-- END TFDOC -->

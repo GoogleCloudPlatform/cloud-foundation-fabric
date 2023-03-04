@@ -48,7 +48,6 @@ output "service-account-vertex" {
 }
 
 output "vertex-ai-metadata-store" {
-  description = ""
+  description = "Vertex AI Metadata Store ID."
   value       = google_vertex_ai_metadata_store.store.id
-
 }
