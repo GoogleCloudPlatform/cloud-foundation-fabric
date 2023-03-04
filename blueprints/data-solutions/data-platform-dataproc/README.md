@@ -6,7 +6,7 @@ The code is intentionally simple, as it's intended to provide a generic initial 
 
 The following diagram is a high-level reference of the resources created and managed here:
 
-![Data Platform architecture overview](./images/overview_diagram.png "Data Platform architecture overview")
+![Data Platform architecture overview](./images/diagram.png "Data Platform architecture overview")
 
 A demo [Airflow pipeline](demo/orchestrate_pyspark.py) is also part of this blueprint: it can be built and run on top of the foundational infrastructure to verify or test the setup quickly.
 
