@@ -37,17 +37,17 @@ output "project" {
   value       = module.project.project_id
 }
 
-output "vpc" {
-  description = "VPC Network."
-  value       = local.vpc
-}
-
 output "service-account-vertex" {
-  description = "Service account to be used for Vertex AI pipelines"
+  description = "Service account to be used for Vertex AI pipelines."
   value       = module.service-account-vertex.email
 }
 
 output "vertex-ai-metadata-store" {
   description = "Vertex AI Metadata Store ID."
   value       = google_vertex_ai_metadata_store.store.id
+}
+
+output "vpc" {
+  description = "VPC Network."
+  value       = local.vpc
 }

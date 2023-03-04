@@ -67,9 +67,9 @@ To run the demo:
 | [dataset](outputs.tf#L22) | GCS Bucket URL. |  |
 | [notebook](outputs.tf#L27) | Vertex AI notebook details. |  |
 | [project](outputs.tf#L35) | Project id. |  |
-| [service-account-vertex](outputs.tf#L45) | Service account to be used for Vertex AI pipelines |  |
-| [vertex-ai-metadata-store](outputs.tf#L50) | Vertex AI Metadata Store ID. |  |
-| [vpc](outputs.tf#L40) | VPC Network. |  |
+| [service-account-vertex](outputs.tf#L40) | Service account to be used for Vertex AI pipelines. |  |
+| [vertex-ai-metadata-store](outputs.tf#L45) | Vertex AI Metadata Store ID. |  |
+| [vpc](outputs.tf#L50) | VPC Network. |  |
 
 <!-- END TFDOC -->
 ## Test
