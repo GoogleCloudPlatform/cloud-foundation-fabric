@@ -17,11 +17,11 @@
 variable "location" {
   description = "The location where resources will be deployed."
   type        = string
-  default     = "EU"
+  default     = "US"
 }
 
 variable "network_config" {
-  description = "Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values."
+  description = "Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values."
   type = object({
     host_project      = string
     network_self_link = string
@@ -40,7 +40,7 @@ variable "prefix" {
 }
 
 variable "project_create" {
-  description = "Provide values if project creation is needed, uses existing project if null. Parent format:  folders/folder_id or organizations/org_id."
+  description = "Provide values if project creation is needed, use existing project if null. Parent format:  folders/folder_id or organizations/org_id."
   type = object({
     billing_account_id = string
     parent             = string
@@ -49,18 +49,18 @@ variable "project_create" {
 }
 
 variable "project_id" {
-  description = "Project id, references existing project if `project_create` is null."
+  description = "Project id references existing project if `project_create` is null."
   type        = string
 }
 
 variable "region" {
   description = "The region where resources will be deployed."
   type        = string
-  default     = "europe-west1"
+  default     = "us-central1"
 }
 
-variable "service_encryption_keys" { # service encription key
-  description = "Cloud KMS to use to encrypt different services. Key location should match service region."
+variable "service_encryption_keys" {
+  description = "Cloud KMS to use to encrypt different services. The key location should match the service region."
   type = object({
     bq      = string
     compute = string
