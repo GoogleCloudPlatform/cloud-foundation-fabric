@@ -16,19 +16,6 @@
 
 # tfdoc:file:description Dev spoke VPC and related resources.
 
-locals {
-  _l7ilb_subnets_dev = [
-    for v in var.l7ilb_subnets.dev : merge(v, {
-      active = true
-      region = lookup(var.regions, v.region, v.region)
-  })]
-  l7ilb_subnets_dev = [
-    for v in local._l7ilb_subnets_dev : merge(v, {
-      name = "dev-l7ilb-${local.region_shortnames[v.region]}"
-    })
-  ]
-}
-
 module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -63,7 +50,6 @@ module "dev-spoke-vpc" {
   data_folder                     = "${var.factories_config.data_dir}/subnets/dev"
   delete_default_routes_on_create = true
   psa_config                      = try(var.psa_ranges.dev, null)
-  subnets_proxy_only              = local.l7ilb_subnets_dev
   # Set explicit routes for googleapis; send everything else to NVAs
   routes = {
     private-googleapis = {
