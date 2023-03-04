@@ -1,4 +1,4 @@
-# BigQuery ML and Vertex Pipeline
+# BigQuery ML and Vertex AI Pipeline
 
 This blueprint creates the infrastructure needed to deploy and run a Vertex AI environment to develop and deploy a machine learning model to be used from Vertex AI endpoint or in BigQuery.
 
