@@ -20,16 +20,6 @@ variable "location" {
   default     = "US"
 }
 
-variable "vpc_config" {
-  description = "Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values."
-  type = object({
-    host_project      = string
-    network_self_link = string
-    subnet_self_link  = string
-  })
-  default = null
-}
-
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
@@ -65,6 +55,16 @@ variable "service_encryption_keys" {
     bq      = string
     compute = string
     storage = string
+  })
+  default = null
+}
+
+variable "vpc_config" {
+  description = "Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values."
+  type = object({
+    host_project      = string
+    network_self_link = string
+    subnet_self_link  = string
   })
   default = null
 }
