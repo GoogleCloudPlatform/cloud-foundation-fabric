@@ -45,7 +45,6 @@ To run the demo:
 - Connect to the Vertex AI workbench instance
 - Clone this repository
 - Run the and run [`demo/bmql_pipeline.ipynb`](demo/bmql_pipeline.ipynb) Jupyter Notebook.
-<!-- BEGIN TFDOC -->
 
 ## Files
 
@@ -59,17 +58,19 @@ To run the demo:
 | [vertex.tf](./vertex.tf) | Vertex resources. | <code>iam-service-account</code> | <code>google_notebooks_instance</code> · <code>google_vertex_ai_metadata_store</code> |
 | [vpc.tf](./vpc.tf) | VPC resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> | <code>google_project_iam_member</code> |
 
+<!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L33) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L51) | Project id references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L23) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L41) | Project id references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
 | [location](variables.tf#L17) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;US&#34;</code> |
-| [project_create](variables.tf#L42) | Provide values if project creation is needed, use existing project if null. Parent format:  folders/folder_id or organizations/org_id. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L56) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;us-central1&#34;</code> |
-| [service_encryption_keys](variables.tf#L62) | Cloud KMS to use to encrypt different services. The key location should match the service region. | <code title="object&#40;&#123;&#10;  bq      &#61; string&#10;  compute &#61; string&#10;  storage &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_config](variables.tf#L23) | Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_create](variables.tf#L32) | Provide values if project creation is needed, use existing project if null. Parent format:  folders/folder_id or organizations/org_id. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L46) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;us-central1&#34;</code> |
+| [service_encryption_keys](variables.tf#L52) | Cloud KMS to use to encrypt different services. The key location should match the service region. | <code title="object&#40;&#123;&#10;  bq      &#61; string&#10;  compute &#61; string&#10;  storage &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_config](variables.tf#L62) | Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
