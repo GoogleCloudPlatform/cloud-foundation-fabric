@@ -34,6 +34,8 @@ locals {
       iam_groups            = try(v.iam_groups, [])
       iam_users             = try(v.iam_users, [])
       iam_service_accounts  = try(v.iam_service_accounts, [])
+      purpose               = try(v.purpose, null)
+      active                = try(v.active, null)
     }
   }
   _factory_subnets_iam = [
@@ -45,7 +47,7 @@ locals {
         formatlist("user:%s", lookup(v, "iam_users", [])),
         formatlist("serviceAccount:%s", lookup(v, "iam_service_accounts", []))
       )
-    }
+    } if v.purpose == null
   ]
   _subnet_iam_members = flatten([
     for subnet, roles in(var.subnet_iam == null ? {} : var.subnet_iam) : [
@@ -61,17 +63,17 @@ locals {
     local._subnet_iam_members
   )
   subnets = merge(
-    { for subnet in var.subnets : "${subnet.region}/${subnet.name}" => subnet },
-    local._factory_subnets
+    { for s in var.subnets : "${s.region}/${s.name}" => s },
+    { for k, v in local._factory_subnets : k => v if v.purpose == null }
   )
-  subnets_proxy_only = {
-    for subnet in var.subnets_proxy_only :
-    "${subnet.region}/${subnet.name}" => subnet
-  }
-  subnets_psc = {
-    for subnet in var.subnets_psc :
-    "${subnet.region}/${subnet.name}" => subnet
-  }
+  subnets_proxy_only = merge(
+    { for s in var.subnets_proxy_only : "${s.region}/${s.name}" => s },
+    { for k, v in local._factory_subnets : k => v if v.purpose == "REGIONAL_MANAGED_PROXY" }
+  )
+  subnets_psc = merge(
+    { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
+    { for k, v in local._factory_subnets : k => v if v.purpose == "PRIVATE_SERVICE_CONNECT" }
+  )
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
@@ -120,9 +122,7 @@ resource "google_compute_subnetwork" "proxy_only" {
     : each.value.description
   )
   purpose = "REGIONAL_MANAGED_PROXY"
-  role = (
-    each.value.active || each.value.active == null ? "ACTIVE" : "BACKUP"
-  )
+  role    = each.value.active != false ? "ACTIVE" : "BACKUP"
 }
 
 resource "google_compute_subnetwork" "psc" {
