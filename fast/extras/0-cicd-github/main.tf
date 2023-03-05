@@ -154,4 +154,10 @@ resource "github_repository_file" "default" {
   commit_author       = var.commmit_config.author
   commit_email        = var.commmit_config.email
   overwrite_on_create = true
+
+  lifecycle {
+    ignore_changes = [
+      content,
+    ]
+  }
 }
