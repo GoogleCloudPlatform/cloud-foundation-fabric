@@ -45,6 +45,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1211)] **incompatible change:** Add support for proxy and psc subnets to net-vpc module factory ([ludoo](https://github.com/ludoo)) <!-- 2023-03-05 16:08:43+00:00 -->
 - [[#1209](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1209)] Billing exclusion support for FAST mt resman ([ludoo](https://github.com/ludoo)) <!-- 2023-03-03 16:23:37+00:00 -->
 - [[#1207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1207)] Allow preventing creation of billing IAM roles in FAST, add instructions on delayed billing association ([ludoo](https://github.com/ludoo)) <!-- 2023-03-03 08:24:42+00:00 -->
 - [[#1184](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1184)] **incompatible change:** Allow multiple peer gateways in VPN HA module ([ludoo](https://github.com/ludoo)) <!-- 2023-02-27 10:19:00+00:00 -->
@@ -63,6 +64,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1211)] **incompatible change:** Add support for proxy and psc subnets to net-vpc module factory ([ludoo](https://github.com/ludoo)) <!-- 2023-03-05 16:08:43+00:00 -->
 - [[#1206](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1206)] Dataproc module. Fix output. ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-02 12:59:19+00:00 -->
 - [[#1205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1205)] Fix issue with GKE cluster notifications topic & static output for pubsub module ([rosmo](https://github.com/rosmo)) <!-- 2023-03-02 10:43:40+00:00 -->
 - [[#1204](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1204)] Fix url_redirect issue on net-glb module ([erabusi](https://github.com/erabusi)) <!-- 2023-03-02 06:51:40+00:00 -->
@@ -100,6 +102,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1211)] **incompatible change:** Add support for proxy and psc subnets to net-vpc module factory ([ludoo](https://github.com/ludoo)) <!-- 2023-03-05 16:08:43+00:00 -->
 - [[#1209](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1209)] Billing exclusion support for FAST mt resman ([ludoo](https://github.com/ludoo)) <!-- 2023-03-03 16:23:37+00:00 -->
 - [[#1208](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1208)] Fix outdated go deps, dependabot alerts ([averbuks](https://github.com/averbuks)) <!-- 2023-03-03 06:15:09+00:00 -->
 - [[#1182](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1182)] Bump actions versions ([juliocc](https://github.com/juliocc)) <!-- 2023-02-25 16:27:20+00:00 -->
