@@ -99,30 +99,6 @@ variable "folder_ids" {
   })
 }
 
-variable "l7ilb_subnets" {
-  description = "Subnets used for L7 ILBs."
-  type = object({
-    dev = optional(list(object({
-      ip_cidr_range = string
-      region        = string
-    })), [])
-    prod = optional(list(object({
-      ip_cidr_range = string
-      region        = string
-    })), [])
-  })
-  default = {
-    dev = [
-      { ip_cidr_range = "10.128.60.0/24", region = "primary" },
-      { ip_cidr_range = "10.128.61.0/24", region = "secondary" }
-    ]
-    prod = [
-      { ip_cidr_range = "10.128.92.0/24", region = "primary" },
-      { ip_cidr_range = "10.128.93.0/24", region = "secondary" }
-    ]
-  }
-}
-
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
