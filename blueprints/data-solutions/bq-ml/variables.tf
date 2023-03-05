@@ -20,7 +20,7 @@ variable "location" {
   default     = "US"
 }
 
-variable "network_config" {
+variable "vpc_config" {
   description = "Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values."
   type = object({
     host_project      = string

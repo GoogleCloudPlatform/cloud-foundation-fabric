@@ -14,24 +14,55 @@
 * limitations under the License. 
 */
 
-CREATE view if not exists `{project_id}.{dataset}.ecommerce_abt` as
-
-with abt as (
-  SELECT user_id, session_id, city, postal_code, browser,traffic_source, min(created_at) as session_starting_ts,  sum(case when event_type = 'purchase' then 1 else 0 end) has_purchased
-  FROM `bigquery-public-data.thelook_ecommerce.events` 
-  group by user_id, session_id, city, postal_code, browser, traffic_source
-), previous_orders as (
-select user_id, array_agg (struct(created_at as order_creations_ts, o.order_id, o.status, oi.order_cost )) as user_orders
-  from `bigquery-public-data.thelook_ecommerce.orders`  o
-    join (select order_id, sum(sale_price) order_cost 
-          from `bigquery-public-data.thelook_ecommerce.order_items` group by 1) oi
-              on o.order_id = oi.order_id
-          group by 1
+CREATE VIEW if NOT EXISTS `{project_id}.{dataset}.ecommerce_abt` AS
+WITH abt AS (
+  SELECT   user_id,
+           session_id,
+           city,
+           postal_code,
+           browser,
+           traffic_source,
+           min(created_at) AS session_starting_ts,
+           sum(CASE WHEN event_type = 'purchase' THEN 1 ELSE 0 END) has_purchased
+  FROM     `bigquery-public-data.thelook_ecommerce.events` 
+  GROUP BY user_id,
+           session_id,
+           city,
+           postal_code,
+           browser,
+           traffic_source
+), previous_orders AS (
+  SELECT   user_id,
+           array_agg (struct(created_at AS order_creations_ts,
+                             o.order_id,
+                             o.status,
+                             oi.order_cost)) as user_orders
+  FROM     `bigquery-public-data.thelook_ecommerce.orders`  o
+  JOIN (SELECT  order_id,
+                sum(sale_price) order_cost 
+        FROM    `bigquery-public-data.thelook_ecommerce.order_items`
+        GROUP BY 1) oi
+  ON o.order_id = oi.order_id
+  GROUP BY 1
 )
-select abt.*, case when extract(DAYOFWEEK from session_starting_ts) in (1,7) then 'WEEKEND' else 'WEEKDAY' end as day_of_week, extract(hour from session_starting_ts) hour_of_day
-  , (select count(distinct uo.order_id) from unnest(user_orders) uo where uo.order_creations_ts < session_starting_ts and status in ('Shipped', 'Complete', 'Processing')  ) as number_of_successful_orders
-  , IFNULL((select sum(distinct uo.order_cost) from unnest(user_orders) uo where uo.order_creations_ts < session_starting_ts and status in ('Shipped', 'Complete', 'Processing') ), 0) as sum_previous_orders
-  , (select count(distinct uo.order_id) from unnest(user_orders) uo where uo.order_creations_ts < session_starting_ts and status in ('Cancelled', 'Returned')  ) as number_of_unsuccessful_orders
-from abt 
-  left join previous_orders pso 
-    on abt.user_id = pso.user_id
+SELECT    abt.*,
+          CASE WHEN extract(DAYOFWEEK FROM session_starting_ts) IN (1,7)
+          THEN 'WEEKEND' 
+          ELSE 'WEEKDAY'
+          END AS day_of_week,
+          extract(HOUR FROM session_starting_ts) hour_of_day,
+          (SELECT count(DISTINCT uo.order_id) 
+          FROM unnest(user_orders) uo 
+          WHERE uo.order_creations_ts < session_starting_ts 
+          AND status IN ('Shipped', 'Complete', 'Processing')) AS number_of_successful_orders,
+          IFNULL((SELECT sum(DISTINCT uo.order_cost) 
+                  FROM   unnest(user_orders) uo 
+                  WHERE  uo.order_creations_ts < session_starting_ts 
+                  AND    status IN ('Shipped', 'Complete', 'Processing')), 0) AS sum_previous_orders,
+          (SELECT count(DISTINCT uo.order_id) 
+          FROM   unnest(user_orders) uo 
+          WHERE  uo.order_creations_ts < session_starting_ts 
+          AND    status IN ('Cancelled', 'Returned')) AS number_of_unsuccessful_orders
+FROM      abt 
+LEFT JOIN previous_orders pso 
+ON        abt.user_id = pso.user_id
