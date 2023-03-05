@@ -104,24 +104,6 @@ variable "folder_ids" {
   })
 }
 
-variable "l7ilb_subnets" {
-  description = "Subnets used for L7 ILBs."
-  type = map(list(object({
-    ip_cidr_range = string
-    region        = string
-  })))
-  default = {
-    dev = [
-      { ip_cidr_range = "10.128.159.0/24", region = "primary" },
-      { ip_cidr_range = "10.128.191.0/24", region = "secondary" }
-    ]
-    prod = [
-      { ip_cidr_range = "10.128.223.0/24", region = "primary" },
-      { ip_cidr_range = "10.128.255.0/24", region = "secondary" }
-    ]
-  }
-}
-
 variable "onprem_cidr" {
   description = "Onprem addresses in name => range format."
   type        = map(string)
