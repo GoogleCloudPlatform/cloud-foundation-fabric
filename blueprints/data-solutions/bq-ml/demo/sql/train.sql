@@ -22,6 +22,6 @@ OPTIONS(MODEL_TYPE='{model_type}',
         DATA_SPLIT_METHOD = 'RANDOM',
         DATA_SPLIT_EVAL_FRACTION = {split_fraction}
         ) AS 
-SELECT * EXCEPT (session_id, session_starting_ts, user_id) 
-FROM `{project_id}.{dataset}.ecommerce_abt_table`
-WHERE extract(ISOYEAR FROM session_starting_ts) = 2022
+SELECT  * EXCEPT (session_id, session_starting_ts, user_id) 
+FROM    `{project_id}.{dataset}.ecommerce_abt_table`
+WHERE   extract(ISOYEAR FROM session_starting_ts) = 2022

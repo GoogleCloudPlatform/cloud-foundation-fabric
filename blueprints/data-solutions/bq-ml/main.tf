@@ -14,45 +14,20 @@
 
 # tfdoc:file:description Core resources.
 
-###############################################################################
-#                                   Project                                   #
-###############################################################################
-
 locals {
   service_encryption_keys = var.service_encryption_keys
-  shared_vpc_project      = try(var.network_config.host_project, null)
-
+  shared_vpc_project      = try(var.vpc_config.host_project, null)
   subnet = (
     local.use_shared_vpc
-    ? var.network_config.subnet_self_link
+    ? var.vpc_config.subnet_self_link
     : values(module.vpc.0.subnet_self_links)[0]
   )
+  use_shared_vpc = var.vpc_config != null
   vpc = (
     local.use_shared_vpc
-    ? var.network_config.network_self_link
+    ? var.vpc_config.network_self_link
     : module.vpc.0.self_link
   )
-  use_shared_vpc = var.network_config != null
-
-  shared_vpc_bindings = {
-    "roles/compute.networkUser" = [
-      "robot-df", "notebooks"
-    ]
-  }
-
-  shared_vpc_role_members = {
-    robot-df  = "serviceAccount:${module.project.service_accounts.robots.dataflow}"
-    notebooks = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
-  }
-
-  # reassemble in a format suitable for for_each
-  shared_vpc_bindings_map = {
-    for binding in flatten([
-      for role, members in local.shared_vpc_bindings : [
-        for member in members : { role = role, member = member }
-      ]
-    ]) : "${binding.role}-${binding.member}" => binding
-  }
 }
 
 module "project" {
@@ -75,12 +50,10 @@ module "project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com"
   ]
-
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
     attach       = true
     host_project = local.shared_vpc_project
   }
-
   service_encryption_key_ids = {
     compute = [try(local.service_encryption_keys.compute, null)]
     bq      = [try(local.service_encryption_keys.bq, null)]
@@ -89,171 +62,4 @@ module "project" {
   service_config = {
     disable_on_destroy = false, disable_dependent_services = false
   }
-}
-
-###############################################################################
-#                                Networking                                   #
-###############################################################################
-
-module "vpc" {
-  source     = "../../../modules/net-vpc"
-  count      = local.use_shared_vpc ? 0 : 1
-  project_id = module.project.project_id
-  name       = "${var.prefix}-vpc"
-  subnets = [
-    {
-      ip_cidr_range = "10.0.0.0/20"
-      name          = "${var.prefix}-subnet"
-      region        = var.region
-    }
-  ]
-}
-
-module "vpc-firewall" {
-  source     = "../../../modules/net-vpc-firewall"
-  count      = local.use_shared_vpc ? 0 : 1
-  project_id = module.project.project_id
-  network    = module.vpc.0.name
-  default_rules_config = {
-    admin_ranges = ["10.0.0.0/20"]
-  }
-  ingress_rules = {
-    #TODO Remove and rely on 'ssh' tag once terraform-provider-google/issues/9273 is fixed
-    ("${var.prefix}-iap") = {
-      description   = "Enable SSH from IAP on Notebooks."
-      source_ranges = ["35.235.240.0/20"]
-      targets       = ["notebook-instance"]
-      rules         = [{ protocol = "tcp", ports = [22] }]
-    }
-  }
-}
-
-module "cloudnat" {
-  source         = "../../../modules/net-cloudnat"
-  count          = local.use_shared_vpc ? 0 : 1
-  project_id     = module.project.project_id
-  name           = "${var.prefix}-default"
-  region         = var.region
-  router_network = module.vpc.0.name
-}
-
-resource "google_project_iam_member" "shared_vpc" {
-  count   = local.use_shared_vpc ? 1 : 0
-  project = var.network_config.host_project
-  role    = "roles/compute.networkUser"
-  member  = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
-}
-
-
-###############################################################################
-#                              Storage                                        #
-###############################################################################
-
-module "bucket" {
-  source         = "../../../modules/gcs"
-  project_id     = module.project.project_id
-  prefix         = var.prefix
-  location       = var.location
-  name           = "data"
-  encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
-}
-
-module "dataset" {
-  source         = "../../../modules/bigquery-dataset"
-  project_id     = module.project.project_id
-  id             = "${replace(var.prefix, "-", "_")}_data"
-  encryption_key = try(local.service_encryption_keys.bq, null) # Example assignment of an encryption key
-  location       = "US"
-}
-
-###############################################################################
-#                         Vertex AI                                           #
-###############################################################################
-resource "google_vertex_ai_metadata_store" "store" {
-  provider    = google-beta
-  project     = module.project.project_id
-  name        = "default" #"${var.prefix}-metadata-store"
-  description = "Vertex Ai Metadata Store"
-  region      = var.region
-  #TODO Check/Implement P4SA logic for IAM role
-  # encryption_spec {
-  #   kms_key_name = var.service_encryption_keys.ai_metadata_store
-  # }
-}
-
-module "service-account-notebook" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.project.project_id
-  name       = "notebook-sa"
-  iam_project_roles = {
-    (module.project.project_id) = [
-      "roles/bigquery.admin",
-      "roles/bigquery.jobUser",
-      "roles/bigquery.dataEditor",
-      "roles/bigquery.user",
-      "roles/dialogflow.client",
-      "roles/storage.admin",
-      "roles/aiplatform.user",
-      "roles/iam.serviceAccountUser"
-    ]
-  }
-}
-
-module "service-account-vertex" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.project.project_id
-  name       = "vertex-sa"
-  iam_project_roles = {
-    (module.project.project_id) = [
-      "roles/bigquery.admin",
-      "roles/bigquery.jobUser",
-      "roles/bigquery.dataEditor",
-      "roles/bigquery.user",
-      "roles/dialogflow.client",
-      "roles/storage.admin",
-      "roles/aiplatform.user"
-    ]
-  }
-}
-
-resource "google_notebooks_instance" "playground" {
-  name         = "${var.prefix}-notebook"
-  location     = format("%s-%s", var.region, "b")
-  machine_type = "e2-medium"
-  project      = module.project.project_id
-
-  container_image {
-    repository = "gcr.io/deeplearning-platform-release/base-cpu"
-    tag        = "latest"
-  }
-
-  install_gpu_driver = true
-  boot_disk_type     = "PD_SSD"
-  boot_disk_size_gb  = 110
-  disk_encryption    = try(local.service_encryption_keys.compute != null, false) ? "CMEK" : null
-  kms_key            = try(local.service_encryption_keys.compute, null)
-
-  no_public_ip    = true
-  no_proxy_access = false
-
-  network = local.vpc
-  subnet  = local.subnet
-
-  service_account = module.service-account-notebook.email
-
-  # Enable Secure Boot 
-  shielded_instance_config {
-    enable_secure_boot = true
-  }
-
-  # Remove once terraform-provider-google/issues/9164 is fixed
-  lifecycle {
-    ignore_changes = [disk_encryption, kms_key]
-  }
-
-  #TODO Uncomment once terraform-provider-google/issues/9273 is fixed
-  # tags = ["ssh"]
-  depends_on = [
-    google_project_iam_member.shared_vpc,
-  ]
 }

@@ -1,6 +1,6 @@
 # BigQuery ML and Vertex AI Pipeline
 
-This blueprint creates the infrastructure needed to deploy and run a Vertex AI environment to develop and deploy a machine learning model to be used from Vertex AI endpoint or in BigQuery.
+This blueprint provides the necessary infrastructure to create a complete development environment for building and deploying machine learning models using BigQuery ML and Vertex AI. With this blueprint, you can deploy your models to a Vertex AI endpoint or use them within BigQuery ML.
 
 This is the high-level diagram:
 
@@ -30,15 +30,15 @@ This sample creates several distinct groups of resources:
 
 ### Virtual Private Cloud (VPC) design
 
-As is often the case in real-world configurations, this blueprint accepts an existing Shared-VPC via the `network_config` variable as input.
+As is often the case in real-world configurations, this blueprint accepts an existing Shared-VPC via the `vpc_config` variable as input.
 
-### Customer Managed Encryption Key
+### Customer Managed Encryption Keys
 
 As is often the case in real-world configurations, this blueprint accepts as input existing Cloud KMS keys to encrypt resources via the `service_encryption_keys` variable.
 
 ## Demo
 
-In the repository [`demo`](./demo/) folder, you can find an example of creating a Vertex AI pipeline from a publically available dataset and deploying the model to be used from a Vertex AI managed endpoint or from within Bigquery.
+In the [`demo`](./demo/) folder, you can find an example of creating a Vertex AI pipeline from a publicly available dataset and deploying the model to be used from a Vertex AI managed endpoint or from within Bigquery.
 
 To run the demo:
 
@@ -47,6 +47,18 @@ To run the demo:
 - Run the and run [`demo/bmql_pipeline.ipynb`](demo/bmql_pipeline.ipynb) Jupyter Notebook.
 <!-- BEGIN TFDOC -->
 
+## Files
+
+| name | description | modules | resources |
+|---|---|---|---|
+| [datastorage.tf](./datastorage.tf) | Datastorage resources. | <code>bigquery-dataset</code> · <code>gcs</code> |  |
+| [main.tf](./main.tf) | Core resources. | <code>project</code> |  |
+| [outputs.tf](./outputs.tf) | Output variables. |  |  |
+| [variables.tf](./variables.tf) | Terraform variables. |  |  |
+| [versions.tf](./versions.tf) | Version pins. |  |  |
+| [vertex.tf](./vertex.tf) | Vertex resources. | <code>iam-service-account</code> | <code>google_notebooks_instance</code> · <code>google_vertex_ai_metadata_store</code> |
+| [vpc.tf](./vpc.tf) | VPC resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> | <code>google_project_iam_member</code> |
+
 ## Variables
 
 | name | description | type | required | default |
@@ -54,10 +66,10 @@ To run the demo:
 | [prefix](variables.tf#L33) | Prefix used for resource names. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L51) | Project id references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
 | [location](variables.tf#L17) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;US&#34;</code> |
-| [network_config](variables.tf#L23) | Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [project_create](variables.tf#L42) | Provide values if project creation is needed, use existing project if null. Parent format:  folders/folder_id or organizations/org_id. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [region](variables.tf#L56) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;us-central1&#34;</code> |
 | [service_encryption_keys](variables.tf#L62) | Cloud KMS to use to encrypt different services. The key location should match the service region. | <code title="object&#40;&#123;&#10;  bq      &#61; string&#10;  compute &#61; string&#10;  storage &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_config](variables.tf#L23) | Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
