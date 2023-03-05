@@ -57,7 +57,7 @@ variable "pull_request_config" {
   description = "Configure pull request metadata."
   type = object({
     create   = optional(bool, false)
-    title    = optional(string, "FAST initial loading or update")
+    title    = optional(string, "FAST: initial loading or update")
     body     = optional(string, "")
     base_ref = optional(string, "main")
     head_ref = optional(string, "fast-loader")
