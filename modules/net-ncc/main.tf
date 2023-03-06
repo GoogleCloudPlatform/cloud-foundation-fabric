@@ -28,16 +28,16 @@ locals {
   ])
 }
 
-resource "google_network_connectivity_hub" "ncc-hub" {
+resource "google_network_connectivity_hub" "hub" {
   project     = var.project_id
   name        = var.name
   description = var.description
 }
 
-resource "google_network_connectivity_spoke" "ncc-spoke" {
+resource "google_network_connectivity_spoke" "spoke" {
   for_each = var.spokes
   project  = var.project_id
-  hub      = google_network_connectivity_hub.ncc-hub.id
+  hub      = google_network_connectivity_hub.hub.id
   location = each.value.region
   name     = "${var.name}-spoke-${each.value.region}"
   linked_router_appliance_instances {
@@ -52,7 +52,7 @@ resource "google_network_connectivity_spoke" "ncc-spoke" {
   }
 }
 
-resource "google_compute_router" "ncc-cr" {
+resource "google_compute_router" "cr" {
   for_each = var.spokes
   project  = var.project_id
   name     = "${var.name}-cr-${each.value.region}"
@@ -78,50 +78,50 @@ resource "google_compute_router" "ncc-cr" {
   }
 }
 
-resource "google_compute_router_interface" "ncc-cr-if1" {
+resource "google_compute_router_interface" "intf1" {
   for_each           = var.spokes
   project            = var.project_id
-  name               = "${var.name}-cr-${each.value.region}-if1"
-  router             = google_compute_router.ncc-cr[each.key].name
+  name               = "intf1"
+  router             = google_compute_router.cr[each.key].name
   region             = each.value.region
   subnetwork         = each.value.subnetwork
   private_ip_address = each.value.router.ip1
 }
 
-resource "google_compute_router_interface" "ncc-cr-if2" {
+resource "google_compute_router_interface" "intf2" {
   for_each            = var.spokes
   project             = var.project_id
-  name                = "${var.name}-cr-${each.value.region}-if2"
-  router              = google_compute_router.ncc-cr[each.key].name
+  name                = "intf2"
+  router              = google_compute_router.cr[each.key].name
   region              = each.value.region
   subnetwork          = each.value.subnetwork
   private_ip_address  = each.value.router.ip2
-  redundant_interface = google_compute_router_interface.ncc-cr-if1[each.key].name
+  redundant_interface = google_compute_router_interface.intf1[each.key].name
 }
 
-resource "google_compute_router_peer" "ncc-cr-peer1" {
+resource "google_compute_router_peer" "peer1" {
   for_each = {
     for entry in local.spoke_vms : entry.ip => entry
   }
   project                   = var.project_id
   name                      = "peer1-${each.value.vm_name}"
-  router                    = google_compute_router.ncc-cr[each.value.spoke_key].name
+  router                    = google_compute_router.cr[each.value.spoke_key].name
   region                    = each.value.spoke.region
-  interface                 = google_compute_router_interface.ncc-cr-if1[each.value.spoke_key].name
+  interface                 = google_compute_router_interface.intf1[each.value.spoke_key].name
   peer_asn                  = each.value.spoke.router.peer_asn
   peer_ip_address           = each.key
   router_appliance_instance = each.value.vm
 }
 
-resource "google_compute_router_peer" "ncc-cr-peer2" {
+resource "google_compute_router_peer" "peer2" {
   for_each = {
     for entry in local.spoke_vms : entry.ip => entry
   }
   project                   = var.project_id
   name                      = "peer2-${each.value.vm_name}"
-  router                    = google_compute_router.ncc-cr[each.value.spoke_key].name
+  router                    = google_compute_router.cr[each.value.spoke_key].name
   region                    = each.value.spoke.region
-  interface                 = google_compute_router_interface.ncc-cr-if2[each.value.spoke_key].name
+  interface                 = google_compute_router_interface.intf2[each.value.spoke_key].name
   peer_asn                  = each.value.spoke.router.peer_asn
   peer_ip_address           = each.key
   router_appliance_instance = each.value.vm
