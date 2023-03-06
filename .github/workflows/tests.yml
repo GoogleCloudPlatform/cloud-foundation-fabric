@@ -60,7 +60,7 @@ jobs:
             | tee -a $HOME/.terraformrc
           echo 'disable_checkpoint = true' \
             | tee -a $HOME/.terraformrc
-          mkdir $HOME/.terraform.d/plugin-cache
+          mkdir -p $HOME/.terraform.d/plugin-cache
 
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
@@ -99,14 +99,6 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
-      - name: Configure provider cache
-        run: |
-          echo 'plugin_cache_dir = "$HOME/.terraform.d/plugin-cache"' \
-            | tee -a $HOME/.terraformrc
-          echo 'disable_checkpoint = true' \
-            | tee -a $HOME/.terraformrc
-          mkdir $HOME/.terraform.d/plugin-cache
-
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
@@ -143,14 +135,6 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
-
-      - name: Configure provider cache
-        run: |
-          echo 'plugin_cache_dir = "$HOME/.terraform.d/plugin-cache"' \
-            | tee -a $HOME/.terraformrc
-          echo 'disable_checkpoint = true' \
-            | tee -a $HOME/.terraformrc
-          mkdir $HOME/.terraform.d/plugin-cache
 
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
@@ -189,14 +173,6 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
-      - name: Configure provider cache
-        run: |
-          echo 'plugin_cache_dir = "$HOME/.terraform.d/plugin-cache"' \
-            | tee -a $HOME/.terraformrc
-          echo 'disable_checkpoint = true' \
-            | tee -a $HOME/.terraformrc
-          mkdir $HOME/.terraform.d/plugin-cache
-
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
@@ -233,14 +209,6 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
-
-      - name: Configure provider cache
-        run: |
-          echo 'plugin_cache_dir = "$HOME/.terraform.d/plugin-cache"' \
-            | tee -a $HOME/.terraformrc
-          echo 'disable_checkpoint = true' \
-            | tee -a $HOME/.terraformrc
-          mkdir $HOME/.terraform.d/plugin-cache
 
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
