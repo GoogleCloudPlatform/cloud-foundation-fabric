@@ -1,0 +1,40 @@
+name: fabric-tests
+description: Set up Fabric testing environment
+inputs:
+  HOME:
+    required: true
+  PYTHON_VERSION:
+    required: true
+  TERRAFORM_VERSION:
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Config auth
+      run: |
+        echo '{"type": "service_account", "project_id": "test-only"}' \
+          | tee -a $GOOGLE_APPLICATION_CREDENTIALS
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.PYTHON_VERSION }}
+        cache: 'pip'
+        cache-dependency-path: 'tests/requirements.txt'
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ inputs.TERRAFORM_VERSION }}
+        terraform_wrapper: false
+    - name: Configure provider cache
+      run: |
+        echo 'plugin_cache_dir = "${{ inputs.HOME }}/.terraform.d/plugin-cache"' \
+          | tee -a ${{ inputs.HOME }}/.terraformrc
+        echo 'disable_checkpoint = true' \
+          | tee -a ${{ inputs.HOME }}/.terraformrc
+        mkdir -p ${{ inputs.HOME }}/.terraform.d/plugin-cache
+    # avoid conflicts with user-installed providers on local machines
+    - name: Pin provider versions
+      run: |
+        for f in $(find . -name versions.tf); do
+          sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+        done
