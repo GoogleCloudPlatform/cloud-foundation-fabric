@@ -15,9 +15,9 @@
 */
 
 SELECT  *
-FROM    ML.EXPLAIN_PREDICT(MODEL `{project-id}.{dataset}.{model-name}`,
+FROM    ML.EXPLAIN_PREDICT(MODEL `{project_id}.{dataset}.{model-name}`,
         (SELECT   * EXCEPT (session_id, session_starting_ts, user_id, has_purchased) 
-         FROM `{project-id}.{dataset}.ecommerce_abt`
+         FROM `{project_id}.{dataset}.ecommerce_abt`
          WHERE extract(ISOYEAR FROM session_starting_ts) = 2023),
         STRUCT(5 AS top_k_features, 0.5 AS threshold))
 LIMIT   100
