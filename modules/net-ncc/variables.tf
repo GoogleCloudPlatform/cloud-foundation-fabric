@@ -46,13 +46,13 @@ variable "spokes" {
       ip = string
     }))
     router = object({
-      custom_advertise = object({
+      custom_advertise = optional(object({
         all_subnets = bool
         ip_ranges   = map(string) # map of descriptions and address ranges
-      })
+      }))
       ip1       = string
       ip2       = string
-      keepalive = number
+      keepalive = optional(number)
       peer_asn  = number
     })
   }))
