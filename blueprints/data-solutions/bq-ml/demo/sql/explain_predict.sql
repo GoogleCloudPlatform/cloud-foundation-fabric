@@ -15,7 +15,7 @@
 */
 
 SELECT  *
-FROM    ML.EXPLAIN_PREDICT(MODEL `{project_id}.{dataset}.{model-name}`,
+FROM    ML.EXPLAIN_PREDICT(MODEL `{project_id}.{dataset}.{model_name}`,
         (SELECT   * EXCEPT (session_id, session_starting_ts, user_id, has_purchased) 
          FROM `{project_id}.{dataset}.ecommerce_abt`
          WHERE extract(ISOYEAR FROM session_starting_ts) = 2023),
