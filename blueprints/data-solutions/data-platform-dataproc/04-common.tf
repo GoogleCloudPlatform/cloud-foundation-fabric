@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description common project.
+# tfdoc:file:description Common project and resources.
 
 locals {
   iam_common = {

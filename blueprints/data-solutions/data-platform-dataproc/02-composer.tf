@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description processingestration Cloud Composer definition.
+# tfdoc:file:description Cloud Composer resources.
 
 locals {
   env_variables = {
@@ -25,7 +25,7 @@ locals {
     GCP_REGION         = var.region
     LAND_PRJ           = module.land-project.project_id
     LAND_GCS           = module.land-cs-0.name
-    PHS_CLUSTER_NAME   = module.processing-dp-cluster.name
+    PHS_CLUSTER_NAME   = module.processing-dp-historyserver.name
     PROCESSING_GCS     = module.processing-cs-0.name
     PROCESSING_PRJ     = module.processing-project.project_id
     PROCESSING_SA_DP   = module.processing-sa-dp-0.email
@@ -33,11 +33,12 @@ locals {
     PROCESSING_VPC     = local.processing_vpc
   }
 }
+
 module "processing-sa-cmp-0" {
   source       = "../../../modules/iam-service-account"
   project_id   = module.processing-project.project_id
   prefix       = var.prefix
-  name         = "orc-cmp-0"
+  name         = "prc-cmp-0"
   display_name = "Data platform Composer service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
@@ -48,7 +49,7 @@ module "processing-sa-cmp-0" {
 resource "google_composer_environment" "processing-cmp-0" {
   count   = var.composer_config.disable_deployment == true ? 0 : 1
   project = module.processing-project.project_id
-  name    = "${var.prefix}-orc-cmp-0"
+  name    = "${var.prefix}-prc-cmp-0"
   region  = var.region
   config {
     software_config {

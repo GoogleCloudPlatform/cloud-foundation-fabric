@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description processingestration project and VPC.
+# tfdoc:file:description Processing project and VPC.
 
 locals {
   iam_processing = {
@@ -138,14 +138,4 @@ module "processing-nat" {
   name           = "${var.prefix}-processing"
   region         = var.region
   router_network = module.processing-vpc.0.name
-}
-
-module "processing-cs-dp-history" {
-  source         = "../../../modules/gcs"
-  project_id     = module.processing-project.project_id
-  prefix         = var.prefix
-  name           = "prc-cs-dp-history"
-  location       = var.region
-  storage_class  = "REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
 }

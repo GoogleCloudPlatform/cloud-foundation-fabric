@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description landing project and resources.
+# tfdoc:file:description Landing project and resources.
 
 locals {
   iam_lnd = {

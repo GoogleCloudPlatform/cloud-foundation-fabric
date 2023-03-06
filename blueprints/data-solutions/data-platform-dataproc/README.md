@@ -203,7 +203,7 @@ module "data-platform" {
   prefix = "myprefix"
 }
 
-# tftest modules=43 resources=278
+# tftest modules=21 resources=110
 ```
 
 ## Customizations
@@ -224,6 +224,20 @@ Once you have identified the required project granularity for your use case, we 
 ## Demo pipeline
 
 The application layer is out of scope of this script. As a demo purpuse only, one Cloud Composer DAGs is provided to document how to deploy a Cloud Dataproc Serverless job on the architecture. You can find examples in the `[demo](./demo)` folder.
+
+## Files
+
+| name | description | modules | resources |
+|---|---|---|---|
+| [01-landing.tf](./01-landing.tf) | Landing project and resources. | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
+| [02-composer.tf](./02-composer.tf) | Cloud Composer resources. | <code>iam-service-account</code> | <code>google_composer_environment</code> |
+| [02-dataproc.tf](./02-dataproc.tf) | Cloud Dataproc resources. | <code>dataproc</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [02-processing.tf](./02-processing.tf) | Processing project and VPC. | <code>gcs</code> · <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [03-curated.tf](./03-curated.tf) | Data curated project and resources. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>project</code> |  |
+| [04-common.tf](./04-common.tf) | Common project and resources. | <code>data-catalog-policy-tag</code> · <code>project</code> |  |
+| [main.tf](./main.tf) | Core locals. |  | <code>google_project_iam_member</code> |
+| [outputs.tf](./outputs.tf) | Output variables. |  |  |
+| [variables.tf](./variables.tf) | Terraform Variables. |  |  |
 
 <!-- BEGIN TFDOC -->
 
@@ -249,14 +263,12 @@ The application layer is out of scope of this script. As a demo purpuse only, on
 
 | name | description | sensitive |
 |---|---|:---:|
-| [bigquery-datasets](outputs.tf#L16) | BigQuery datasets. |  |
-| [dataproc-hystory-server](outputs.tf#L78) | Dataproc hystory server |  |
-| [dataproc_cluster](outputs.tf#L99) | List of bucket names which have been assigned to the cluster. |  |
-| [demo_commands](outputs.tf#L23) | Demo commands. Relevant only if Composer is deployed. |  |
-| [gcs-buckets](outputs.tf#L45) | GCS buckets. | ✓ |
-| [kms_keys](outputs.tf#L55) | Cloud MKS keys. |  |
-| [projects](outputs.tf#L60) | GCP Projects informations. |  |
-| [vpc_network](outputs.tf#L83) | VPC network. |  |
-| [vpc_subnet](outputs.tf#L91) | VPC subnetworks. |  |
+| [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
+| [dataproc-hystory-server](outputs.tf#L24) | List of bucket names which have been assigned to the cluster. |  |
+| [gcs-buckets](outputs.tf#L34) | GCS buckets. | ✓ |
+| [kms_keys](outputs.tf#L44) | Cloud MKS keys. |  |
+| [projects](outputs.tf#L49) | GCP Projects informations. |  |
+| [vpc_network](outputs.tf#L67) | VPC network. |  |
+| [vpc_subnet](outputs.tf#L75) | VPC subnetworks. |  |
 
 <!-- END TFDOC -->

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Trasformation project and VPC.
+# tfdoc:file:description Cloud Dataproc resources.
 
 locals {
   iam_prc = {
@@ -30,6 +30,16 @@ locals {
     ? var.network_config.network_self_link
     : module.processing-vpc.0.self_link
   )
+}
+
+module "processing-cs-dp-history" {
+  source         = "../../../modules/gcs"
+  project_id     = module.processing-project.project_id
+  prefix         = var.prefix
+  name           = "prc-cs-dp-history"
+  location       = var.region
+  storage_class  = "REGIONAL"
+  encryption_key = try(local.service_encryption_keys.storage, null)
 }
 
 module "processing-sa-dp-0" {
@@ -79,7 +89,7 @@ module "processing-dp-log-0" {
   encryption_key = try(local.service_encryption_keys.storage, null)
 }
 
-module "processing-dp-cluster" {
+module "processing-dp-historyserver" {
   source     = "../../../modules/dataproc"
   project_id = module.processing-project.project_id
   name       = "hystory-server"
