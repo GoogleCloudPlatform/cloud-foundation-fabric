@@ -15,15 +15,13 @@
  */
 
 variable "billing_account" {
-  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
+  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to `false`. To disable handling of billing IAM roles set `no_iam` to `true`."
   type = object({
     id           = string
     is_org_level = optional(bool, true)
+    no_iam       = optional(bool, false)
   })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
+  nullable = false
 }
 
 variable "bootstrap_user" {
@@ -83,10 +81,12 @@ variable "custom_role_names" {
   type = object({
     organization_iam_admin        = string
     service_project_network_admin = string
+    tenant_network_admin          = string
   })
   default = {
     organization_iam_admin        = "organizationIamAdmin"
     service_project_network_admin = "serviceProjectNetworkAdmin"
+    tenant_network_admin          = "tenantNetworkAdmin"
   }
 }
 

@@ -11,6 +11,7 @@ billing_account = {
 custom_roles = {
   # organization_iam_admin = "organizations/123456789012/roles/organizationIamAdmin",
   service_project_network_admin = "organizations/123456789012/roles/xpnServiceAdmin"
+  tenant_network_admin          = "organizations/123456789012/roles/TenantNetworkAdmin"
 }
 groups = {
   gcp-billing-admins      = "gcp-billing-admins",

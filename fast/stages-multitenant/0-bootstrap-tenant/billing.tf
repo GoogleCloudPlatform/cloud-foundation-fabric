@@ -16,23 +16,39 @@
 
 # tfdoc:file:description Billing roles for standalone billing accounts.
 
+locals {
+  billing_mode = (
+    var.billing_account.no_iam
+    ? null
+    : var.billing_account.is_org_level ? "org" : "resource"
+  )
+}
+
 # service account billing roles are in the SA module in automation.tf
 
 resource "google_billing_account_iam_member" "billing_ext_admin" {
-  for_each = toset(var.billing_account.is_org_level ? [] : [
-    "group:${local.groups.gcp-admins}",
-    module.automation-tf-resman-sa.iam_email
-  ])
+  for_each = toset(
+    local.billing_mode == "resource"
+    ? [
+      "group:${local.groups.gcp-admins}",
+      module.automation-tf-resman-sa.iam_email
+    ]
+    : []
+  )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.admin"
   member             = each.key
 }
 
 resource "google_billing_account_iam_member" "billing_ext_cost_manager" {
-  for_each = toset(var.billing_account.is_org_level ? [] : [
-    "group:${local.groups.gcp-admins}",
-    module.automation-tf-resman-sa.iam_email
-  ])
+  for_each = toset(
+    local.billing_mode == "resource"
+    ? [
+      "group:${local.groups.gcp-admins}",
+      module.automation-tf-resman-sa.iam_email
+    ]
+    : []
+  )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.costsManager"
   member             = each.key

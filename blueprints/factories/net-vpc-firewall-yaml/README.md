@@ -17,8 +17,8 @@ module "prod-firewall" {
   project_id = "my-prod-project"
   network    = "my-prod-network"
   config_directories = [
-    "./prod",
-    "./common"
+    "./firewall/prod",
+    "./firewall/common"
   ]
 
   log_config = {
@@ -32,12 +32,85 @@ module "dev-firewall" {
   project_id = "my-dev-project"
   network    = "my-dev-network"
   config_directories = [
-    "./dev",
-    "./common"
+    "./firewall/dev",
+    "./firewall/common"
   ]
 }
-# tftest skip
+# tftest modules=2 resources=16 files=common,dev,prod inventory=example.yaml
 ```
+
+```yaml
+# tftest-file id=common path=firewall/common/common.yaml
+# allow ingress from GCLB to all instances in the network
+lb-health-checks:
+  allow:
+  - ports: []
+    protocol: tcp
+  direction: INGRESS
+  priority: 1001
+  source_ranges:
+  - 35.191.0.0/16
+  - 130.211.0.0/22
+
+# deny all egress
+deny-all:
+  deny:
+  - ports: []
+    protocol: all
+  direction: EGRESS
+  priority: 65535
+  destination_ranges:
+  - 0.0.0.0/0
+```
+
+```yaml
+# tftest-file id=dev path=firewall/dev/app.yaml
+# Myapp egress
+web-app-dev-egress:
+  allow:
+    - ports: [443]
+      protocol: tcp
+  direction: EGRESS
+  destination_ranges:
+    - 192.168.0.0/24
+  target_service_accounts:
+    - myapp@myproject-dev.iam.gserviceaccount.com
+# Myapp ingress
+web-app-dev-ingress:
+  allow:
+    - ports: [1234]
+      protocol: tcp
+  direction: INGRESS
+  source_service_accounts:
+    - frontend-sa@myproject-dev.iam.gserviceaccount.com
+  target_service_accounts:
+    - web-app-a@myproject-dev.iam.gserviceaccount.com
+```
+
+```yaml
+# tftest-file id=prod path=firewall/prod/app.yaml
+# Myapp egress
+web-app-prod-egress:
+  allow:
+    - ports: [443]
+      protocol: tcp
+  direction: EGRESS
+  destination_ranges:
+    - 192.168.10.0/24
+  target_service_accounts:
+    - myapp@myproject-prod.iam.gserviceaccount.com
+# Myapp ingress
+web-app-prod-ingress:
+  allow:
+    - ports: [1234]
+      protocol: tcp
+  direction: INGRESS
+  source_service_accounts:
+    - frontend-sa@myproject-prod.iam.gserviceaccount.com
+  target_service_accounts:
+    - web-app-a@myproject-prod.iam.gserviceaccount.com
+```
+
 
 ### Configuration Structure
 
@@ -86,54 +159,6 @@ rule-name: # descriptive name, naming convention is adjusted by the module
   - myapp@myproject-id.iam.gserviceaccount.com
 ```
 
-
-Firewall rules example yaml configuration
-
-```bash
-cat ./prod/core-network/common-rules.yaml
-# allow ingress from GCLB to all instances in the network
-lb-health-checks:
-  allow:
-  - ports: []
-    protocol: tcp
-  direction: INGRESS
-  priority: 1001
-  source_ranges:
-  - 35.191.0.0/16
-  - 130.211.0.0/22
-
-# deny all egress
-deny-all:
-  deny:
-  - ports: []
-    protocol: all
-  direction: EGRESS
-  priority: 65535
-  destination_ranges:
-  - 0.0.0.0/0
-
-cat ./dev/team-a/web-app-a.yaml
-# Myapp egress
-web-app-a-egress:
-  allow:
-    - ports: [443]
-      protocol: tcp
-  direction: EGRESS
-  destination_ranges:
-    - 192.168.0.0/24
-  target_service_accounts:
-    - myapp@myproject-id.iam.gserviceaccount.com
-# Myapp ingress
-web-app-a-ingress:
-  allow:
-    - ports: [1234]
-      protocol: tcp
-  direction: INGRESS
-  source_service_accounts:
-    - frontend-sa@myproject-id.iam.gserviceaccount.com
-  target_service_accounts:
-    - web-app-a@myproject-id.iam.gserviceaccount.com
-```
 <!-- BEGIN TFDOC -->
 
 ## Variables

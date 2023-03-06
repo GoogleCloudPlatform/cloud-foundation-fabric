@@ -34,6 +34,7 @@ module "vpc" {
 ```
 
 ### Subnet Options
+
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
@@ -174,7 +175,7 @@ module "vpc-host" {
       ip_cidr_range = "10.0.0.0/24"
       name          = "subnet-1"
       region        = "europe-west1"
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = "172.16.0.0/20"
         services = "192.168.0.0/24"
       }
@@ -305,7 +306,7 @@ module "vpc" {
 
 ### Subnet Factory
 
-The `net-vpc` module includes a subnet factory (see [Resource Factories](../../blueprints/factories/)) for the massive creation of subnets leveraging one configuration file per subnet.
+The `net-vpc` module includes a subnet factory (see [Resource Factories](../../blueprints/factories/)) for the massive creation of subnets leveraging one configuration file per subnet. The factory also supports proxy-only and PSC subnets via the `purpose` attribute.
 
 ```hcl
 module "vpc" {
@@ -314,7 +315,7 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=3 files=subnet-simple,subnet-detailed inventory=factory.yaml
+# tftest modules=1 resources=6 files=subnet-simple,subnet-detailed,subnet-proxy,subnet-psc inventory=factory.yaml
 ```
 
 ```yaml
@@ -340,6 +341,20 @@ flow_logs:                        # enable, set to empty map to use defaults
   flow_sampling: 0.5
   metadata: "INCLUDE_ALL_METADATA"
   filter_expression: null
+```
+
+```yaml
+# tftest-file id=subnet-proxy path=config/subnets/subnet-proxy.yaml
+region: europe-west4
+ip_cidr_range: 10.1.0.0/24
+purpose: REGIONAL_MANAGED_PROXY
+```
+
+```yaml
+# tftest-file id=subnet-psc path=config/subnets/subnet-psc.yaml
+region: europe-west4
+ip_cidr_range: 10.2.0.0/24
+purpose: PRIVATE_SERVICE_CONNECT
 ```
 
 ### Custom Routes
@@ -379,7 +394,6 @@ module "vpc" {
 }
 # tftest modules=5 resources=15 inventory=routes.yaml
 ```
-
 
 ## Variables
 

@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -83,8 +83,8 @@ module "project" {
   }
 
   org_policies = {
-    # "constraints/compute.requireOsLogin" = {
-    #   enforce = false
+    # "compute.requireOsLogin" = {
+    #   rules = [{ enforce = false }]
     # }
     # Example of applying a project wide policy, mainly useful for Composer 1
   }
@@ -216,6 +216,11 @@ resource "google_notebooks_instance" "playground" {
   subnet  = local.subnet
 
   service_account = module.service-account-notebook.email
+
+  # Remove once terraform-provider-google/issues/9164 is fixed
+  lifecycle {
+    ignore_changes = [disk_encryption, kms_key]
+  }
 
   #TODO Uncomment once terraform-provider-google/issues/9273 is fixed
   # tags = ["ssh"]

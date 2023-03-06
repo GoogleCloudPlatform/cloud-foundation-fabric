@@ -44,19 +44,23 @@ kms_service_agents:
 
 # [opt] Labels for the project - merged with the ones defined in defaults
 labels:
-  environment: dev
+  environment: dev2
+  costcenter: apps
 
 # [opt] Org policy overrides defined at project level
 org_policies:
-  constraints/compute.disableGuestAttributesAccess:
-    enforce: true
-  constraints/compute.trustedImageProjects:
-    allow:
-      values:
+  compute.disableGuestAttributesAccess:
+    rules:
+    - enforce: true
+  compute.trustedImageProjects:
+    rules:
+    - allow:
+        values:
         - projects/fast-dev-iac-core-0
-  constraints/compute.vmExternalIpAccess:
-    deny:
-      all: true
+  compute.vmExternalIpAccess:
+    rules:
+    - deny:
+        all: true
 
 # [opt] Prefix - overrides default if set
 prefix: test1
@@ -67,7 +71,7 @@ service_accounts:
   another-service-account:
     - roles/compute.admin
   my-service-account:
-    - roles/compute.admin
+    - roles/compute.adminv1
 
 # [opt] APIs to enable on the project.
 services:
@@ -100,4 +104,4 @@ vpc:
   subnets_iam:
     europe-west1/dev-default-ew1:
       - user:foobar@example.com
-      - serviceAccount:service-account1
+      - serviceAccount:my-service-account

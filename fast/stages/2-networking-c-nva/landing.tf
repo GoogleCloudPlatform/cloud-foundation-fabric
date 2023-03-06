@@ -53,7 +53,7 @@ module "landing-untrusted-vpc" {
     inbound = false
     logging = false
   }
-  data_folder = "${var.data_dir}/subnets/landing-untrusted"
+  data_folder = "${var.factories_config.data_dir}/subnets/landing-untrusted"
 }
 
 module "landing-untrusted-firewall" {
@@ -64,31 +64,41 @@ module "landing-untrusted-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.data_dir}/firewall-rules/landing-untrusted"
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing-untrusted"
   }
 }
 
 # NAT
 
-module "landing-nat-ew1" {
+moved {
+  from = module.landing-nat-ew1
+  to   = module.landing-nat-primary
+}
+
+module "landing-nat-primary" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.landing-project.project_id
-  region         = "europe-west1"
-  name           = "ew1"
+  region         = var.regions.primary
+  name           = local.region_shortnames[var.regions.primary]
   router_create  = true
-  router_name    = "prod-nat-ew1"
+  router_name    = "prod-nat-${local.region_shortnames[var.regions.primary]}"
   router_network = module.landing-untrusted-vpc.name
   router_asn     = 4200001024
 }
 
-module "landing-nat-ew4" {
+moved {
+  from = module.landing-nat-ew4
+  to   = module.landing-nat-secondary
+}
+
+module "landing-nat-secondary" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.landing-project.project_id
-  region         = "europe-west4"
-  name           = "ew4"
+  region         = var.regions.secondary
+  name           = local.region_shortnames[var.regions.secondary]
   router_create  = true
-  router_name    = "prod-nat-ew4"
+  router_name    = "prod-nat-${local.region_shortnames[var.regions.secondary]}"
   router_network = module.landing-untrusted-vpc.name
   router_asn     = 4200001024
 }
@@ -101,7 +111,10 @@ module "landing-trusted-vpc" {
   name                            = "prod-trusted-landing-0"
   delete_default_routes_on_create = true
   mtu                             = 1500
-
+  data_folder                     = "${var.factories_config.data_dir}/subnets/landing-trusted"
+  dns_policy = {
+    inbound = true
+  }
   # Set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
@@ -115,12 +128,6 @@ module "landing-trusted-vpc" {
       next_hop      = "default-internet-gateway"
     }
   }
-
-  dns_policy = {
-    inbound = true
-  }
-
-  data_folder = "${var.data_dir}/subnets/landing-trusted"
 }
 
 module "landing-trusted-firewall" {
@@ -131,7 +138,7 @@ module "landing-trusted-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.data_dir}/firewall-rules/landing-trusted"
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing-trusted"
   }
 }

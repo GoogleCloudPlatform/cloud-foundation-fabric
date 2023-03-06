@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+echo 'Enabling IP forwarding'
+sed '/net.ipv4.ip_forward=1/s/^#//g' -i /etc/sysctl.conf &&
+sysctl -p /etc/sysctl.conf &&
+/etc/init.d/procps restart
+
+echo 'Setting routes'
+ip route add ${spoke-primary} via ${gateway-trusted} dev ens5
+ip route add ${spoke-secondary} via ${gateway-trusted} dev ens5
+
+echo 'Setting NAT masquerade, so that HCs can reach the spoke through the NVA using the trusted intf source IP'
+iptables \
+  -t nat \
+  -A POSTROUTING \
+  -s 130.211.0.0/22,35.191.0.0/16 \
+  -d ${spoke-primary} \
+  -p tcp \
+  --dport 80 \
+  -j MASQUERADE
+iptables \
+  -t nat \
+  -A POSTROUTING \
+  -s 130.211.0.0/22,35.191.0.0/16 \
+  -d ${spoke-secondary} \
+  -p tcp \
+  --dport 80 \
+  -j MASQUERADE

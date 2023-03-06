@@ -60,7 +60,7 @@ FILE_DESC_DEFAULTS = {
 }
 FILE_RE_MODULES = re.compile(
     r'(?sm)module\s*"[^"]+"\s*\{[^\}]*?source\s*=\s*"([^"]+)"')
-FILE_RE_RESOURCES = re.compile(r'(?sm)resource\s*"([^"]+)"')
+FILE_RE_RESOURCES = re.compile(r'(?sm)resource\s+"([^"]+)"')
 HEREDOC_RE = re.compile(r'(?sm)^<<\-?END(\s*.*?)\s*END$')
 MARK_BEGIN = '<!-- BEGIN TFDOC -->'
 MARK_END = '<!-- END TFDOC -->'

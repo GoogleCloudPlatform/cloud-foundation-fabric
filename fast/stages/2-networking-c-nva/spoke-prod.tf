@@ -47,10 +47,9 @@ module "prod-spoke-vpc" {
   project_id                      = module.prod-spoke-project.project_id
   name                            = "prod-spoke-0"
   mtu                             = 1500
-  data_folder                     = "${var.data_dir}/subnets/prod"
+  data_folder                     = "${var.factories_config.data_dir}/subnets/prod"
   delete_default_routes_on_create = true
   psa_config                      = try(var.psa_ranges.prod, null)
-  subnets_proxy_only              = local.l7ilb_subnets.prod
   # Set explicit routes for googleapis; send everything else to NVAs
   routes = {
     private-googleapis = {
@@ -65,33 +64,33 @@ module "prod-spoke-vpc" {
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
-    nva-ew1-to-ew1 = {
+    nva-primary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
-      tags          = ["ew1"]
+      tags          = ["primary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["primary"].forwarding_rule_address
     }
-    nva-ew4-to-ew4 = {
+    nva-secondary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
-      tags          = ["ew4"]
+      tags          = ["secondary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["secondary"].forwarding_rule_address
     }
-    nva-ew1-to-ew4 = {
+    nva-primary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
-      tags          = ["ew1"]
+      tags          = ["primary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["secondary"].forwarding_rule_address
     }
-    nva-ew4-to-ew1 = {
+    nva-secondary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
-      tags          = ["ew4"]
+      tags          = ["secondary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["primary"].forwarding_rule_address
     }
   }
 }
@@ -104,8 +103,8 @@ module "prod-spoke-firewall" {
     disabled = true
   }
   factories_config = {
-    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.data_dir}/firewall-rules/prod"
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/prod"
   }
 }
 

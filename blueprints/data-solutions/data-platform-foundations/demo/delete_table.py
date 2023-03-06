@@ -122,13 +122,13 @@ with models.DAG(
     delete_table_customers = BigQueryDeleteTableOperator(
       task_id="delete_table_customers",
       deletion_dataset_table=DWH_LAND_PRJ+"."+DWH_LAND_BQ_DATASET+".customers",
-      impersonation_chain=[TRF_SA_DF]
+      impersonation_chain=[LOD_SA_DF]
     )  
 
     delete_table_purchases = BigQueryDeleteTableOperator(
       task_id="delete_table_purchases",
       deletion_dataset_table=DWH_LAND_PRJ+"."+DWH_LAND_BQ_DATASET+".purchases",
-      impersonation_chain=[TRF_SA_DF]
+      impersonation_chain=[LOD_SA_DF]
     )   
 
     delete_table_customer_purchase_curated = BigQueryDeleteTableOperator(

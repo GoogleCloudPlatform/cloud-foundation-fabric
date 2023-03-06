@@ -75,3 +75,34 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 | [region](variables.tf#L99) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source             = "./fabric/blueprints/gke/multi-cluster-mesh-gke-fleet-api"
+  billing_account_id = "123-456-789"
+  parent             = "folders/123456789"
+  host_project_id    = "my-host-project"
+  fleet_project_id   = "my-fleet-project"
+  mgmt_project_id    = "my-mgmt-project"
+  region             = "europe-west1"
+  clusters_config = {
+    cluster-a = {
+      subnet_cidr_block   = "10.0.1.0/24"
+      master_cidr_block   = "10.16.0.0/28"
+      services_cidr_block = "192.168.1.0/24"
+      pods_cidr_block     = "172.16.0.0/20"
+    }
+    cluster-b = {
+      subnet_cidr_block   = "10.0.2.0/24"
+      master_cidr_block   = "10.16.0.16/28"
+      services_cidr_block = "192.168.2.0/24"
+      pods_cidr_block     = "172.16.16.0/20"
+    }
+  }
+  mgmt_subnet_cidr_block = "10.0.0.0/24"
+  istio_version          = "1.14.1-asm.3"
+}
+# tftest modules=13 resources=57
+```

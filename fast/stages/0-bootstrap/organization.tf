@@ -85,7 +85,7 @@ locals {
       #   "domain:${var.organization.domain}"
       # ]
     },
-    var.billing_account.is_org_level ? {
+    local.billing_mode == "org" ? {
       "roles/billing.admin" = [
         local.groups_iam.gcp-billing-admins,
         local.groups_iam.gcp-organization-admins,
@@ -186,6 +186,9 @@ module "organization" {
       "dns.networks.bindPrivateDNSZone",
       "resourcemanager.projects.get",
     ]
+    (var.custom_role_names.tenant_network_admin) = [
+      "compute.globalOperations.get",
+    ]
   }
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
@@ -217,8 +220,9 @@ resource "google_organization_iam_binding" "org_admin_delegated" {
           "roles/compute.xpnAdmin",
           "roles/orgpolicy.policyAdmin",
           "roles/resourcemanager.organizationViewer",
+          module.organization.custom_role_id[var.custom_role_names.tenant_network_admin]
         ],
-        var.billing_account.is_org_level ? [
+        local.billing_mode == "org" ? [
           "roles/billing.admin",
           "roles/billing.costsManager",
           "roles/billing.user",

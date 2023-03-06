@@ -14,6 +14,28 @@ Use the following diagram as a simple high level reference for the following sec
   <img src="diagram.svg" alt="Organization-level diagram">
 </p>
 
+## Table of contents
+
+- [Design overview and choices](#design-overview-and-choices)
+  - [User groups](#user-groups)
+  - [Organization-level IAM](#organization-level-iam)
+  - [Automation project and resources](#automation-project-and-resources)
+  - [Billing account](#billing-account)
+  - [Organization-level logging](#organization-level-logging)
+  - [Naming](#naming)
+  - [Workload Identity Federation and CI/CD](#workload-identity-federation-and-cicd)
+- [How to run this stage](#how-to-run-this-stage)
+  - [Prerequisites](#prerequisites)
+  - [Output files and cross-stage variables](#output-files-and-cross-stage-variables)
+  - [Running the stage](#running-the-stage)
+- [Customizations](#customizations)
+  - [Group names](#group-names)
+  - [IAM](#iam)
+  - [Log sinks and log destinations](#log-sinks-and-log-destinations)
+  - [Names and naming convention](#names-and-naming-convention)
+  - [Workload Identity Federation](#workload-identity-federation)
+  - [CI/CD repositories](#cicd-repositories)
+
 ## Design overview and choices
 
 As mentioned above, this stage only does the bare minimum required to bootstrap automation, and ensure that base audit and billing exports are in place from the start to provide some measure of accountability, even before the security configurations are applied in a later stage.
@@ -47,8 +69,8 @@ One other design choice worth mentioning here is using a single automation proje
 We support three use cases in regards to billing:
 
 - the billing account is part of this same organization, IAM bindings will be set at the organization level
-- the billing account is part of a different organization, billing IAM bindings will be set at the organization level in the billing account owning organization
 - the billing account is not considered part of an organization (even though it might be), billing IAM bindings are set on the billing account itself
+- billing IAM is managed separately, and no bindings should (or can) be set via Terraform, this requires a few extra steps and is definitely not recommended and mainly used for development purposes
 
 For same-organization billing, we configure a custom organization role that can set IAM bindings, via a delegated role grant to limit its scope to the relevant roles.
 
@@ -80,7 +102,7 @@ The convention is used in its full form only for specific resources with globall
 
 The [Customizations](#names-and-naming-convention) section on names below explains how to configure tokens, or implement a different naming convention.
 
-## Workload Identity Federation and CI/CD
+### Workload Identity Federation and CI/CD
 
 This stage also implements initial support for two interrelated features
 
@@ -124,7 +146,7 @@ To quickly self-grant the above roles, run the following code snippet as the ini
 export FAST_BU=$(gcloud config list --format 'value(core.account)')
 
 # find and set your org id
-gcloud organizations list --filter display_name:$partofyourdomain
+gcloud organizations list
 export FAST_ORG_ID=123456
 
 # set needed roles
@@ -139,25 +161,6 @@ done
 
 Then make sure the same user is also part of the `gcp-organization-admins` group so that impersonating the automation service account later on will be possible.
 
-#### Billing account in a different organization
-
-If you are using a billing account belonging to a different organization (e.g. in multiple organization setups), some initial configurations are needed to ensure the identities running this stage can assign billing-related roles.
-
-If the billing organization is managed by another version of this stage, we leverage the `organizationIamAdmin` role created there, to allow restricted granting of billing roles at the organization level.
-
-If that's not the case, an equivalent role needs to exist, or the predefined `resourcemanager.organizationAdmin` role can be used if not managed authoritatively. The role name then needs to be manually changed in the `billing.tf` file, in the `google_organization_iam_binding` resource.
-
-The identity applying this stage for the first time also needs two roles in billing organization, they can be removed after the first `apply` completes successfully:
-
-```bash
-export FAST_BILLING_ORG_ID=789012
-export FAST_ROLES=(roles/billing.admin roles/resourcemanager.organizationAdmin)
-for role in $FAST_ROLES; do
-  gcloud organizations add-iam-policy-binding $FAST_BILLING_ORG_ID \
-    --member user:$FAST_BU --role $role
-done
-```
-
 #### Standalone billing account
 
 If you are using a standalone billing account, the identity applying this stage for the first time needs to be a billing account administrator:
@@ -167,6 +170,18 @@ export FAST_BILLING_ACCOUNT_ID=ABCD-01234-ABCD
 gcloud beta billing accounts add-iam-policy-binding $FAST_BILLING_ACCOUNT_ID \
   --member user:$FAST_BU --role roles/billing.admin
 ```
+
+#### Preventing creation of billing-related IAM bindings
+
+This configuration is possible but unsupported and only present for development purposes, use at your own risk:
+
+- configure `billing_account.id` as `null` and `billing.no_iam` to `true` in your `tfvars` file
+- apply with `terraform apply -target 'module.automation-project.google_project.project[0]'` in addition to the initial user variable
+- once Terraform raises an error run `terraform untaint 'module.automation-project.google_project.project[0]'`
+- repeat the two steps above for `'module.log-export-project.google_project.project[0]'`
+- go through the process to associate the billing account with the two projects
+- configure `billing_account.id` with the real billing account id
+- resume applying normally
 
 #### Groups
 
@@ -187,7 +202,7 @@ Please note that FAST also supports an additional group for users with permissio
 Then make sure you have configured the correct values for the following variables by providing a `terraform.tfvars` file:
 
 - `billing_account`
-  an object containing `id` as the id of your billing account, derived from the Cloud Console UI or by running `gcloud beta billing accounts list`, and `organization_id` as the id of the organization owning it, or `null` to use the billing account in isolation
+  an object containing `id` as the id of your billing account, derived from the Cloud Console UI or by running `gcloud beta billing accounts list`, and the `is_org_level` flag that controls whether organization or account-level bindings are used, and a billing export project and dataset are created
 - `groups`
   the name mappings for your groups, if you're following the default convention you can leave this to the provided default
 - `organization.id`, `organization.domain`, `organization.customer_id`
@@ -202,7 +217,6 @@ You can also adapt the example that follows to your needs:
 # if you have too many accounts, check the Cloud Console :)
 billing_account = {
  id              = "012345-67890A-BCDEF0"
- organization_id = 1234567890
 }
 
 # use `gcloud organizations list`
@@ -237,18 +251,18 @@ Below is the outline of the output files generated by all stages, which is ident
 ```bash
 [path specified in outputs_location]
 ├── providers
-│   ├── 00-bootstrap-providers.tf
-│   ├── 01-resman-providers.tf
-│   ├── 02-networking-providers.tf
-│   ├── 02-security-providers.tf
-│   ├── 03-project-factory-dev-providers.tf
-│   ├── 03-project-factory-prod-providers.tf
-│   └── 99-sandbox-providers.tf
+│   ├── 0-bootstrap-providers.tf
+│   ├── 1-resman-providers.tf
+│   ├── 2-networking-providers.tf
+│   ├── 2-security-providers.tf
+│   ├── 3-project-factory-dev-providers.tf
+│   ├── 3-project-factory-prod-providers.tf
+│   └── 9-sandbox-providers.tf
 └── tfvars
-│   ├── 00-bootstrap.auto.tfvars.json
-│   ├── 01-resman.auto.tfvars.json
-│   ├── 02-networking.auto.tfvars.json
-│   └── 02-security.auto.tfvars.json
+│   ├── 0-bootstrap.auto.tfvars.json
+│   ├── 1-resman.auto.tfvars.json
+│   ├── 2-networking.auto.tfvars.json
+│   └── 2-security.auto.tfvars.json
 └── workflows
     └── [optional depending on the configured CI/CD repositories]
 ```
@@ -267,17 +281,34 @@ terraform apply \
 
 > If you see an error related to project name already exists, please make sure the project name is unique or the project was not deleted recently
 
-Once the initial `apply` completes successfully, configure a remote backend using the new GCS bucket, and impersonation on the automation service account for this stage. To do this you can use the generated `providers.tf` file if you have configured output files as described above, or extract its contents from Terraform's output, then migrate state with `terraform init`:
+Once the initial `apply` completes successfully, configure a remote backend using the new GCS bucket, and impersonation on the automation service account for this stage. To do this you can use the generated `providers.tf` file from either
+
+- the local filesystem if you have configured output files as described above
+- the GCS bucket where output files are always stored
+- Terraform outputs (not recommended as it's more complex)
+
+The following two snippets show how to leverage the `stage-links.sh` script in the root FAST folder to fetch the commands required for output files linking or copying, using either the local output folder configured via Terraform variables, or the GCS bucket which can be derived from the `automation` output.
 
 ```bash
-# if using output files via the outputs_location and set to `~/fast-config`
-ln -s ~/fast-config/providers/00-bootstrap* ./
-# or from outputs if not using output files
-terraform output -json providers | jq -r '.["00-bootstrap"]' \
-  > providers.tf
-# migrate state to GCS bucket configured in providers file
+../../stage-links.sh ~/fast-config
+
+# copy and paste the following commands for '0-bootstrap'
+
+ln -s ~/fast-config/providers/0-bootstrap-providers.tf ./
+```
+
+```bash
+../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+
+# copy and paste the following commands for '0-bootstrap'
+
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/0-bootstrap-providers.tf ./
+```
+
+Copy/paste the command returned by the script to link or copy the provider file, then migrate state with `terraform init` and run `terraform apply`:
+
+```bash
 terraform init -migrate-state
-# run terraform apply to remove the bootstrap_user iam binding 
 terraform apply
 ```
 
@@ -334,7 +365,7 @@ You can customize organization-level logs through the `log_sinks` variable in tw
 - creating additional log sinks to capture more logs
 - changing the destination of captured logs
 
-By default, all logs are exported to Bigquery, but FAST can create sinks to Cloud Logging Buckets, GCS, or PubSub.
+By default, all logs are exported to a log bucket, but FAST can create sinks to BigQuery, GCS, or PubSub.
 
 If you need to capture additional logs, please refer to GCP's documentation on [scenarios for exporting logging data](https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics), where you can find ready-made filter expressions for different use cases.
 
@@ -400,12 +431,6 @@ cicd_repositories = {
     name              = "my-gh-org/fast-bootstrap"
     type              = "github"
   }
-  cicd = {
-    branch            = null
-    identity_provider = "github-sample"
-    name              = "my-gh-org/fast-cicd"
-    type              = "github"
-  }
   resman = {
     branch            = "main"
     identity_provider = "github-sample"
@@ -439,7 +464,10 @@ The remaining configuration is manual, as it regards the repositories themselves
   - edit the modules source to match your modules repository
     - a simple way is using the "Replace in files" function of your editor
       - search for `source\s*= "../../../modules/([^"]+)"`
-      - replace with `source = "git@github.com:my-org/fast-modules.git//$1?ref=v1.0"`
+      - replace with:
+        - modules stored on GitHub: `source = "git@github.com:my-org/fast-modules.git//$1?ref=v1.0"`
+        - modules stored on Gitlab: `source = "git::ssh://git@gitlab.com/my-org/fast-modules.git//$1?ref=v1.0"`
+        - modules stored on Source Repositories: `source = git::https://source.developers.google.com/p/my-project/r/my-repository//$1?ref=v1.0"`. You may need to run `git config --global credential.'https://source.developers.google.com'.helper gcloud.sh` first as documented [here](https://cloud.google.com/source-repositories/docs/adding-repositories-as-remotes#add_the_repository_as_a_remote)
   - copy the generated workflow file for the stage from the GCS output files bucket or from the local clone if enabled
     - for GitHub, place it in a `.github/workflows` folder in the repository root
     - for Gitlab, rename it to `.gitlab-ci.yml` and place it in the repository root
@@ -468,12 +496,12 @@ The remaining configuration is manual, as it regards the repositories themselves
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [billing_account](variables.tf#L17) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [billing_account](variables.tf#L17) | Billing account id. If billing account is not part of the same org set `is_org_level` to `false`. To disable handling of billing IAM roles set `no_iam` to `true`. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;  no_iam       &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [organization](variables.tf#L194) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [prefix](variables.tf#L209) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  |  |
-| [bootstrap_user](variables.tf#L29) | Email of the nominal user running this stage for the first time. | <code>string</code> |  | <code>null</code> |  |
-| [cicd_repositories](variables.tf#L35) | CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed. | <code title="object&#40;&#123;&#10;  bootstrap &#61; optional&#40;object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#41;&#10;  resman &#61; optional&#40;object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [custom_role_names](variables.tf#L81) | Names of custom roles defined at the org level. | <code title="object&#40;&#123;&#10;  organization_iam_admin        &#61; string&#10;  service_project_network_admin &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  organization_iam_admin        &#61; &#34;organizationIamAdmin&#34;&#10;  service_project_network_admin &#61; &#34;serviceProjectNetworkAdmin&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [bootstrap_user](variables.tf#L27) | Email of the nominal user running this stage for the first time. | <code>string</code> |  | <code>null</code> |  |
+| [cicd_repositories](variables.tf#L33) | CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed. | <code title="object&#40;&#123;&#10;  bootstrap &#61; optional&#40;object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#41;&#10;  resman &#61; optional&#40;object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [custom_role_names](variables.tf#L79) | Names of custom roles defined at the org level. | <code title="object&#40;&#123;&#10;  organization_iam_admin        &#61; string&#10;  service_project_network_admin &#61; string&#10;  tenant_network_admin          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  organization_iam_admin        &#61; &#34;organizationIamAdmin&#34;&#10;  service_project_network_admin &#61; &#34;serviceProjectNetworkAdmin&#34;&#10;  tenant_network_admin          &#61; &#34;tenantNetworkAdmin&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [fast_features](variables.tf#L93) | Selective control for top-level FAST features. | <code title="object&#40;&#123;&#10;  data_platform   &#61; optional&#40;bool, false&#41;&#10;  gke             &#61; optional&#40;bool, false&#41;&#10;  project_factory &#61; optional&#40;bool, false&#41;&#10;  sandbox         &#61; optional&#40;bool, false&#41;&#10;  teams           &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [federated_identity_providers](variables.tf#L106) | Workload Identity Federation pools. The `cicd_repositories` variable references keys here. | <code title="map&#40;object&#40;&#123;&#10;  attribute_condition &#61; string&#10;  issuer              &#61; string&#10;  custom_settings &#61; object&#40;&#123;&#10;    issuer_uri        &#61; string&#10;    allowed_audiences &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [groups](variables.tf#L120) | Group names to grant organization-level permissions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp-billing-admins      &#61; &#34;gcp-billing-admins&#34;,&#10;  gcp-devops              &#61; &#34;gcp-devops&#34;,&#10;  gcp-network-admins      &#61; &#34;gcp-network-admins&#34;&#10;  gcp-organization-admins &#61; &#34;gcp-organization-admins&#34;&#10;  gcp-security-admins     &#61; &#34;gcp-security-admins&#34;&#10;  gcp-support &#61; &#34;gcp-devops&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |

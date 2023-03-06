@@ -25,11 +25,11 @@ The diagram below depicts the architecture.
     terraform apply
     ```
 
-    Create an A record in your DNS registrar to point the environment group hostname to the public IP address returned after the terraform configuration was applied. You might need to wait some time until the certificate is provisioned.  
- 
+    Create an A record in your DNS registrar to point the environment group hostname to the public IP address returned after the terraform configuration was applied. You might need to wait some time until the certificate is provisioned.
+
 5. Install Apigee hybrid using de ansible playbook that is in the ansible folder by running this command
 
-    ansible-playbook playbook.yaml -vvvß
+    ansible-playbook playbook.yaml -vvv
 
 ## Testing the blueprint
 
@@ -67,3 +67,18 @@ The diagram below depicts the architecture.
 | [ip_address](outputs.tf#L17) | GLB IP address. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/apigee/hybrid-gke"
+  project_create = {
+    billing_account_id = "12345-12345-12345"
+    parent             = "folders/123456789"
+  }
+  project_id = "my-project"
+  hostname   = "test.myorg.org"
+}
+# tftest modules=18 resources=59
+```

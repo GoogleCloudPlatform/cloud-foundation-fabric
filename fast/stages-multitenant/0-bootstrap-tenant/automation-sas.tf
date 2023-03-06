@@ -93,12 +93,12 @@ module "automation-tf-resman-sa-stage2-3" {
   name         = "${each.key}-0"
   display_name = "Terraform ${each.value.description} service account."
   prefix       = local.prefix
-  iam_billing_roles = !var.billing_account.is_org_level ? {
+  iam_billing_roles = local.billing_mode == "resource" ? {
     (var.billing_account.id) = [
       "roles/billing.user", "roles/billing.costsManager"
     ]
   } : {}
-  iam_organization_roles = var.billing_account.is_org_level ? {
+  iam_organization_roles = local.billing_mode == "org" ? {
     (var.organization.id) = [
       "roles/billing.user", "roles/billing.costsManager"
     ]
@@ -124,4 +124,12 @@ resource "google_organization_iam_member" "org_policy_admin_stage2_3" {
       local.iam_tenant_condition, local.branch_sas[each.key].condition
     ])
   }
+}
+
+# assign custom tenant network admin role to networking SA
+
+resource "google_organization_iam_member" "tenant_network_admin" {
+  org_id = var.organization.id
+  role   = var.custom_roles.tenant_network_admin
+  member = module.automation-tf-resman-sa-stage2-3["networking"].iam_email
 }

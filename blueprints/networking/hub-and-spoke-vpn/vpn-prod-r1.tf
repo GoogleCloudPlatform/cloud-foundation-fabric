@@ -28,7 +28,9 @@ module "landing-to-prod-vpn-r1" {
       ip_ranges   = coalesce(var.vpn_configs.land-r1.custom_ranges, {})
     }
   }
-  peer_gateway = { gcp = module.prod-to-landing-vpn-r1.self_link }
+  peer_gateways = {
+    default = { gcp = module.prod-to-landing-vpn-r1.self_link }
+  }
   tunnels = {
     0 = {
       bgp_peer = {
@@ -64,7 +66,9 @@ module "prod-to-landing-vpn-r1" {
       ip_ranges   = coalesce(var.vpn_configs.prod-r1.custom_ranges, {})
     }
   }
-  peer_gateway = { gcp = module.landing-to-prod-vpn-r1.self_link }
+  peer_gateways = {
+    default = { gcp = module.landing-to-prod-vpn-r1.self_link }
+  }
   tunnels = {
     0 = {
       bgp_peer = {

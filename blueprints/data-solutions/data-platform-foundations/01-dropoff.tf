@@ -15,36 +15,34 @@
 # tfdoc:file:description drop off project and resources.
 
 locals {
-  drop_orch_service_accounts = [
-    module.load-sa-df-0.iam_email, module.orch-sa-cmp-0.iam_email
-  ]
+  iam_drp = {
+    "roles/bigquery.dataEditor" = [
+      module.drop-sa-bq-0.iam_email, local.groups_iam.data-engineers
+    ]
+    "roles/bigquery.user" = [
+      module.load-sa-df-0.iam_email, local.groups_iam.data-engineers
+    ]
+    "roles/pubsub.publisher" = [module.drop-sa-ps-0.iam_email]
+    "roles/pubsub.subscriber" = [
+      module.orch-sa-cmp-0.iam_email, module.load-sa-df-0.iam_email
+    ]
+    "roles/storage.objectCreator" = [module.drop-sa-cs-0.iam_email]
+    "roles/storage.objectViewer"  = [module.orch-sa-cmp-0.iam_email]
+    "roles/storage.objectAdmin" = [
+      module.load-sa-df-0.iam_email, module.load-sa-df-0.iam_email
+    ]
+  }
 }
 
 module "drop-project" {
   source          = "../../../modules/project"
-  parent          = var.folder_id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "drp${local.project_suffix}"
-  group_iam = {
-    (local.groups.data-engineers) = [
-      "roles/bigquery.dataEditor",
-      "roles/pubsub.editor",
-      "roles/storage.admin",
-    ]
-  }
-  iam = {
-    "roles/bigquery.dataEditor" = [module.drop-sa-bq-0.iam_email]
-    "roles/bigquery.user"       = [module.load-sa-df-0.iam_email]
-    "roles/pubsub.publisher"    = [module.drop-sa-ps-0.iam_email]
-    "roles/pubsub.subscriber" = concat(
-      local.drop_orch_service_accounts, [module.load-sa-df-0.iam_email]
-    )
-    "roles/storage.objectAdmin"   = [module.load-sa-df-0.iam_email]
-    "roles/storage.objectCreator" = [module.drop-sa-cs-0.iam_email]
-    "roles/storage.objectViewer"  = [module.orch-sa-cmp-0.iam_email]
-    "roles/storage.admin"         = [module.load-sa-df-0.iam_email]
-  }
+  parent          = var.project_config.parent
+  billing_account = var.project_config.billing_account_id
+  project_create  = var.project_config.billing_account_id != null
+  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.drop : "${var.project_config.project_ids.drop}${local.project_suffix}"
+  iam             = var.project_config.billing_account_id != null ? local.iam_drp : null
+  iam_additive    = var.project_config.billing_account_id == null ? local.iam_drp : null
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",

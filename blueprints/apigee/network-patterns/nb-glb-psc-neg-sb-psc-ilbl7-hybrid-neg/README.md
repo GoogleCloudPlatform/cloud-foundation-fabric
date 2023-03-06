@@ -67,3 +67,17 @@ Do the following to verify that everything works as expected.
 | [ip_address](outputs.tf#L17) | GLB IP address. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source             = "./fabric/blueprints/apigee/network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg"
+  billing_account_id = "12345-12345-12345"
+  parent             = "folders/123456789"
+  apigee_project_id  = "my-apigee-project"
+  onprem_project_id  = "my-onprem-project"
+  hostname           = "test.myorg.org"
+}
+# tftest modules=14 resources=73
+```

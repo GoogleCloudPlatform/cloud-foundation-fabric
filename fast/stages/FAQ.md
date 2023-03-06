@@ -1,29 +1,13 @@
+# FAST Mini FAQ
 
-## 00-bootstrap
-
-1. How to handle requests where automation, logging and/or billing export projects are not under organization but in different folders.
-    - Run bootstrap stage and let automation, logging and/or billing projects be created under organization.
-    - Run resource manager stage or any other custom stage which creates the folders where these projects will reside. 
-    - Once folders are created add folder ids to varibale "project_parent_ids" in bootstrap stage and run bootstrap stage.
-    - This step will move the projects from organization to the parent folders specificed.
-
-## cicd
-
-1. Why do we need two seperate ServiceAccounts when configuring cicd pipelines (cicd SA and IaC SA)
-    - Having seperate service accounts helps shutdown the pipeline incase of any issues and still keep IaC SA and ability to run terraform plan/apply manually.
-    - A pipeline can only generate a token that can get access to an SA. It cannot directly call a provider file to impersonate IaC SA.
-    - Having providers file that allows impersonation to IaC SA allows flexibility to run terraform manually or from CICD Pipelines.
-    ![CICD SA and IaC SA](IaC_SA.png)
-
-## Authenciation
-
-1. If you are seeing "Permission Issues" when doing terraform apply and the identity with which you are running terraform has correct permissions;
-   run below command so that correct auth credentials are picked by ADC when terraform commands are executed
-
-   ````bash
-   gcloud auth application-default login
-   ````
-
-
-   Refer to [GCP Authentication](https://cloud.google.com/docs/authentication
-    ) and [Terraform Provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference) for more information
+- **How can the automation, logging and/or billing export projects be placed under specific folders instead of the org?**
+  - Run the bootstrap stage and let automation, logging and/or billing projects be created under the organization.
+  - Add the needed folders to the resource manager stage, or create them outside the stage in the console/gcloud or from a custom Terraform setup.
+  - Once folders have been created go back to the bootstrap stage, and edit your tfvars file by adding their ids to the `project_parent_ids` variable.
+  - Run the bootstrap stage again, the projects will be moved under the desired folders.
+- **Why do we need two separate service accounts when configuring CI/CD pipelines (CI/CD SA and IaC SA)?**
+  - To have the pipeline workflow follow the same impersonation flow ([CI/CD SA impersonates IaC SA](IaC_SA.png)) used when applying Terraform manually (user impersonates IaC SA), which allows the pipeline to consume the same auto-generated provider files.
+  - To allow disabling pipeline credentials in case of issues with a single operation, by removing the ability of the CI/CD SA to impersonate the IaC SA.
+- **How can I fix permission issues when running Terraform apply?**
+  - Make sure your account is part of the organization admin group defined in variables.
+  - Make sure you have configured [application default credentials](https://cloud.google.com/docs/authentication/application-default-credentials), rerun `gcloud auth login --update-adc` to fix them.

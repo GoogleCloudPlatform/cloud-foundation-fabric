@@ -64,9 +64,9 @@ This [blueprint](./onprem-sa-key-management) shows how to manage IAM Service Acc
 
 <br clear="left">
 
-## Workload identity federation for Terraform Enterprise workflow
+## Workload identity federation with Terraform Cloud workflows
 
-<a href="./terraform-enterprise-wif" title="Workload identity federation for Terraform Cloud/Enterprise workflow"><img src="./terraform-enterprise-wif/diagram.png" align="left" width="280px"></a> This [blueprint](./terraform-enterprise-wif) shows how to configure [Wokload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation) between [Terraform Cloud/Enterprise](https://developer.hashicorp.com/terraform/enterprise) instance and Google Cloud.
+<a href="./terraform-cloud-dynamic-credentials" title="Workload identity federation with Terraform Cloud/Enterprise workflows"><img src="./terraform-cloud-dynamic-credentials/diagram.png" align="left" width="280px"></a> This [blueprint](./terraform-cloud-dynamic-credentials) shows how to configure [Wokload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation) between [Terraform Cloud/Enterprise](https://developer.hashicorp.com/terraform/enterprise) instance and Google Cloud.
 
 <br clear="left">
 

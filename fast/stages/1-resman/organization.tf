@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ module "organization" {
         module.branch-network-sa.iam_email
       ]
     },
-    var.billing_account.is_org_level ? {
+    local.billing_mode == "org" ? {
       "roles/billing.costsManager" = concat(
         local.branch_optional_sa_lists.pf-dev,
         local.branch_optional_sa_lists.pf-prod
@@ -68,7 +68,11 @@ module "organization" {
 
   # sample subset of useful organization policies, edit to suit requirements
   org_policies = {
-    "iam.allowedPolicyMemberDomains" = { allow = { values = local.all_drs_domains } }
+    "iam.allowedPolicyMemberDomains" = {
+      rules = [
+        { allow = { values = local.all_drs_domains } }
+      ]
+    }
 
     #"gcp.resourceLocations" = {
     #   allow = { values = local.allowed_regions }

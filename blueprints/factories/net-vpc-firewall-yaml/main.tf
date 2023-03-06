@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ locals {
       for config_path in var.config_directories :
       concat(
         [
-          for config_file in fileset("${path.root}/${config_path}", "**/*.yaml") :
-          "${path.root}/${config_path}/${config_file}"
+          for config_file in fileset(config_path, "**/*.yaml") :
+          "${config_path}/${config_file}"
         ]
       )
 

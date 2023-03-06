@@ -78,3 +78,14 @@ terraform destroy -var project_id=$GOOGLE_CLOUD_PROJECT
 | [sa-credentials](outputs.tf#L17) | SA json key templates. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source         = "./fabric/blueprints/cloud-operations/onprem-sa-key-management"
+  project_create = true
+  project_id     = "test"
+}
+# tftest modules=4 resources=7
+```

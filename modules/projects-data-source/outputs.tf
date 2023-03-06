@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-output "folders" {
-  description = "Map of folders attributes keyed by folder id."
-  value       = local.all_folders
-}
-
 output "project_numbers" {
   description = "List of project numbers."
-  value       = [for _, v in local.projects : v.number]
+  value       = [for item in local.projects_after_ignore : trimprefix(item.project, "projects/")]
 }
 
 output "projects" {
-  description = "Map of projects attributes keyed by projects id."
-  value       = local.projects
+  description = "List of projects in [StandardResourceMetadata](https://cloud.google.com/asset-inventory/docs/reference/rest/v1p1beta1/resources/searchAll#StandardResourceMetadata) format."
+  value       = local.projects_after_ignore
 }

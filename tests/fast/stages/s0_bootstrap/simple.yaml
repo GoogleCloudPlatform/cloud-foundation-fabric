@@ -17,7 +17,7 @@ counts:
   google_bigquery_default_service_account: 3
   google_logging_organization_sink: 2
   google_organization_iam_binding: 19
-  google_organization_iam_custom_role: 2
+  google_organization_iam_custom_role: 3
   google_organization_iam_member: 16
   google_project: 3
   google_project_iam_binding: 9
@@ -37,6 +37,7 @@ outputs:
   custom_roles:
     organization_iam_admin: organizations/123456789012/roles/organizationIamAdmin
     service_project_network_admin: organizations/123456789012/roles/serviceProjectNetworkAdmin
+    tenant_network_admin: organizations/123456789012/roles/tenantNetworkAdmin
   outputs_bucket: fast-prod-iac-core-outputs-0
   project_ids:
     automation: fast-prod-iac-core-0

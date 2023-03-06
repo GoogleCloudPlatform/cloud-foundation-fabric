@@ -38,3 +38,30 @@ This sample creates\updates several distinct groups of resources:
 | [m4ce_gmanaged_service_account](outputs.tf#L15) | Google managed service account created automatically during the migrate connector registration.. It is used by M4CE to perform activities on target projects. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/cloud-operations/vm-migration/host-target-projects"
+  project_create = {
+    billing_account_id = "1234-ABCD-1234"
+    parent             = "folders/1234563"
+  }
+  migration_admin_users     = ["user:admin@example.com"]
+  migration_viewer_users    = ["user:viewer@example.com"]
+  migration_target_projects = [module.test-target-project.name]
+  depends_on = [
+    module.test-target-project
+  ]
+}
+
+module "test-target-project" {
+  source          = "./fabric/modules/project"
+  billing_account = "1234-ABCD-1234"
+  name            = "test-target-project"
+  project_create  = true
+}
+
+# tftest modules=5 resources=24
+```
