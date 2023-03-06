@@ -8,6 +8,8 @@ More in details, this tutorial will focus on the following three steps:
 - serve a BQ model through an API powered by Vertex AI Endpoint
 - create batch prediction via BigQuery
 
+In this tutorial we will also see how to make explainable predictions, in order to understand what are the most important features that most influence the algorithm outputs.
+
 # Dataset
 
 This tutorial uses a fictitious e-commerce dataset collecting programmatically generated data from the fictitious e-commerce store called The Look. The dataset is publicy available on BigQuery at this location `bigquery-public-data.thelook_ecommerce`.
