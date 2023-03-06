@@ -46,7 +46,6 @@ jobs:
       - name: Run tests on documentation examples
         id: pytest
         run: |
-          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
           pytest -vv -k blueprints/ tests/examples
 

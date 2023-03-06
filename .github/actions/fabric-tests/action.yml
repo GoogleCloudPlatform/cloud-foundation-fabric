@@ -2,7 +2,7 @@ name: fabric-tests
 description: Set up Fabric testing environment
 inputs:
   HOME:
-    required: true
+    default: /home/runner
   PYTHON_VERSION:
     required: true
   TERRAFORM_VERSION:
