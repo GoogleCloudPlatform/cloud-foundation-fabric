@@ -69,14 +69,14 @@ Below a sample terraform example for bootstrapping a simple-nva powered by [COS]
 Please find below s sample frr.conf file based on documentation available at the following [link](https://docs.frrouting.org/en/latest/basic.html) for hosting a BGP service with ASN 65001 on FRR container establishing a BGP session with a remote neighbor with IP address 10.128.0.2 and ASN 65002.
 
 ```
-Example frr.conf file
+# tftest-file id=frr_conf path=./frr.conf
+# Example frr.conmf file
 
 log syslog informational
 no ipv6 forwarding
 router bgp 65001
  neighbor 10.128.0.2 remote-as 65002
 line vty
-
 ```
 
 Following code assumes a file in the same folder named frr.conf exists. 
@@ -137,7 +137,7 @@ module "vm" {
   }
   tags = ["nva", "ssh"]
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 files=frr_conf
 ```
 <!-- BEGIN TFDOC -->
 
