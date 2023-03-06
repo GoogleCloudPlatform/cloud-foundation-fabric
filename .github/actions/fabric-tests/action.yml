@@ -15,8 +15,6 @@
 name: fabric-tests
 description: Set up Fabric testing environment
 inputs:
-  HOME:
-    default: /home/runner
   PYTHON_VERSION:
     required: true
   TERRAFORM_VERSION:
@@ -43,11 +41,11 @@ runs:
     - name: Configure provider cache
       shell: bash
       run: |
-        echo 'plugin_cache_dir = "${{ inputs.HOME }}/.terraform.d/plugin-cache"' \
-          | tee -a ${{ inputs.HOME }}/.terraformrc
+        echo 'plugin_cache_dir = "/home/runner/.terraform.d/plugin-cache"' \
+          | tee -a /home/runner/.terraformrc
         echo 'disable_checkpoint = true' \
-          | tee -a ${{ inputs.HOME }}/.terraformrc
-        mkdir -p ${{ inputs.HOME }}/.terraform.d/plugin-cache
+          | tee -a /home/runner/.terraformrc
+        mkdir -p /home/runner/.terraform.d/plugin-cache
     # avoid conflicts with user-installed providers on local machines
     - name: Pin provider versions
       shell: bash
