@@ -109,8 +109,8 @@ module "cos-nva" {
   source               = "./fabric/modules/cloud-config-container/simple-nva"
   enable_health_checks = true
   network_interfaces   = local.network_interfaces
-  frr_config           = {config_file = "./frr.conf", daemons_enabled = ["bgpd"]}
-  optional_run_cmds = ["ls -l"]
+  frr_config           = { config_file = "./frr.conf", daemons_enabled = ["bgpd"] }
+  optional_run_cmds    = ["ls -l"]
   # files = {
   #   "/var/lib/cloud/scripts/per-boot/firewall-rules.sh" = {
   #     content     = file("./your_path/to/firewall-rules.sh")
