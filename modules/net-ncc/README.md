@@ -10,6 +10,8 @@ The module can manage a hub, multiple spokes, and corresponding Cloud Routers an
 
 In this example a router appliance connects with a peer router in an on-premises network, and also peers with a Cloud Router.
 
+<p align="center"> <img src="images/site-to-vpc.png" width="600"> </p>
+
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
