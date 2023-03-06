@@ -11,6 +11,7 @@ runs:
   using: composite
   steps:
     - name: Config auth
+      shell: bash
       run: |
         echo '{"type": "service_account", "project_id": "test-only"}' \
           | tee -a $GOOGLE_APPLICATION_CREDENTIALS
@@ -26,6 +27,7 @@ runs:
         terraform_version: ${{ inputs.TERRAFORM_VERSION }}
         terraform_wrapper: false
     - name: Configure provider cache
+      shell: bash
       run: |
         echo 'plugin_cache_dir = "${{ inputs.HOME }}/.terraform.d/plugin-cache"' \
           | tee -a ${{ inputs.HOME }}/.terraformrc
@@ -34,6 +36,7 @@ runs:
         mkdir -p ${{ inputs.HOME }}/.terraform.d/plugin-cache
     # avoid conflicts with user-installed providers on local machines
     - name: Pin provider versions
+      shell: bash
       run: |
         for f in $(find . -name versions.tf); do
           sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
