@@ -317,3 +317,16 @@ module "ncc" {
 }
 # tftest modules=4 resources=13
 ```
+<!-- BEGIN TFDOC -->
+
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [asn](variables.tf#L17) | ASN for all CRs in the hub. | <code>number</code> | ✓ |  |
+| [name](variables.tf#L28) | The name of the NCC hub being created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L33) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
+| [spokes](variables.tf#L38) | List of NCC spokes. | <code title="map&#40;object&#40;&#123;&#10;  vpc        &#61; string&#10;  region     &#61; string&#10;  subnetwork &#61; string &#35; URI&#10;  nvas &#61; list&#40;object&#40;&#123;&#10;    vm &#61; string &#35; URI&#10;    ip &#61; string&#10;  &#125;&#41;&#41;&#10;  router &#61; object&#40;&#123;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41; &#35; map of descriptions and address ranges&#10;    &#125;&#41;&#41;&#10;    ip1       &#61; string&#10;    ip2       &#61; string&#10;    keepalive &#61; optional&#40;number&#41;&#10;    peer_asn  &#61; number&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [description](variables.tf#L22) | An optional description of the NCC hub. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
+
+<!-- END TFDOC -->
