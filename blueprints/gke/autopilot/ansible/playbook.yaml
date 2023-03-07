@@ -1,0 +1,128 @@
+# Copyright 2022 Google LLC
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- hosts: mgmt
+  gather_facts: "no"
+  vars_files:
+    - vars/vars.yaml
+  environment:
+    USE_GKE_GCLOUD_AUTH_PLUGIN: True
+  tasks:
+    - name: Download the Google Cloud SDK package repository signing key
+      get_url:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        dest: /usr/share/keyrings/cloud.google.gpg
+        force: yes
+      become: true
+      become_user: root
+    - name: Add Google Cloud SDK package repository source
+      apt_repository:
+        filename: google-cloud-sdk
+        repo: "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
+        state: present
+        update_cache: yes
+      become: true
+      become_user: root  
+    - name: Install dependencies
+      apt:
+        pkg:
+          - google-cloud-sdk-gke-gcloud-auth-plugin
+          - kubectl
+        state: present
+      become: true
+      become_user: root
+    - name: Enable bash completion for kubectl
+      shell:
+        cmd: kubectl completion bash > /etc/bash_completion.d/kubectl
+        creates: /etc/bash_completion.d/kubectl      
+      become: true
+      become_user: root        
+    - name: Get cluster credentials
+      shell: >
+        gcloud container clusters get-credentials {{ cluster }} 
+        --region {{ region }} 
+        --project {{ project_id }} 
+        --internal-ip      
+    - name: Render templates
+      template:
+        src: ../bundle/{{ item }}/kustomization.yaml.j2
+        dest: ../bundle/{{ item }}/kustomization.yaml
+      delegate_to: localhost
+      with_items:
+        - monitoring
+        - locust
+    - name: Remove bundle locally
+      local_action: 
+        module: file 
+        path: ../bundle.tar.gz 
+        state: absent
+    - name: Archive bundle locally
+      archive:
+        path: ../bundle
+        dest: ../bundle.tar.gz
+      delegate_to: localhost
+    - name: Unarchive bundle remotely
+      unarchive:
+        src: ../bundle.tar.gz
+        dest: ~/  
+    - name: Build locust image
+      shell: >
+        gcloud builds submit --tag {{ region }}-docker.pkg.dev/{{ project_id }}/registry/load-test:latest \ 
+        --project {{ project_id }} .
+      args:
+        chdir: ~/bundle/locust/image
+    - name: Enable scraping of kubelet and cAdvisor metrics
+      shell: >
+        kubectl patch operatorconfig config
+        -n gmp-public
+        --type=merge
+        -p '{"collection":{"kubeletScraping":{"interval": "30s"}}}'
+    - name: Deploy monitoring tooling
+      shell: >
+        kubectl apply -k .
+      args:
+        chdir: ~/bundle/monitoring
+    - name: Deploy app
+      shell: >
+        kubectl apply -k .
+      args:
+        chdir: ~/bundle/app
+    - name: Get forwarding rule name
+      shell: >
+        while true; do
+            forwarding_rule_name=$(kubectl get ingress -n sample -o=jsonpath='{.items[0].metadata.annotations.ingress\.kubernetes\.io\/forwarding-rule}')
+            if [ -n "$forwarding_rule_name" ]; then
+              echo $forwarding_rule_name
+              break
+            fi
+            sleep 10
+        done        
+      register: forwarding_rule_name_output
+    - name: Set fact forwarding_url_name
+      set_fact:
+        forwarding_rule_name: "{{ forwarding_rule_name_output.stdout }}"
+    - name: Render template (HPA)
+      template:
+        src: ../bundle/app/hpa.yaml.j2
+        dest: ~/bundle/app/hpa.yaml
+    - name: Apply HPA manifest
+      shell: >
+        kubectl apply -f hpa.yaml
+      args:
+        chdir: ~/bundle/app      
+    - name: Deploy locust 
+      shell: >
+        kubectl apply -k .
+      args:
+        chdir: ~/bundle/locust      
