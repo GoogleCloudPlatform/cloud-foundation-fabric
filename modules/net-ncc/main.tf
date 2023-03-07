@@ -39,7 +39,7 @@ resource "google_network_connectivity_spoke" "spoke" {
   project  = var.project_id
   hub      = google_network_connectivity_hub.hub.id
   location = each.value.region
-  name     = "${var.name}-spoke-${each.value.region}"
+  name     = "${var.name}-${each.key}"
   linked_router_appliance_instances {
     dynamic "instances" {
       for_each = each.value.nvas
