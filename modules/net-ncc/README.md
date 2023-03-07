@@ -65,3 +65,97 @@ module "ncc" {
 }
 # tftest
 ```
+
+### Connect a site to two VPC networks
+
+In the following topology, a router appliance instance has interfaces in two VPC networks. Each interface has been used to create a Router appliance spoke.
+
+```hcl
+module "vpc-a" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "network-a"
+  subnets = [
+    {
+      name          = "subnet-a"
+      ip_cidr_range = "10.1.3.0/24"
+      region        = "us-central1"
+    }
+  ]
+}
+
+module "vpc-b" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "network-b"
+  subnets = [
+    {
+      name          = "subnet-b"
+      ip_cidr_range = "192.168.10.0/24"
+      region        = "us-central1"
+    }
+  ]
+}
+
+module "nva1" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "us-central1-a"
+  name       = "router-app-a"
+  network_interfaces = [
+    {
+      network    = module.vpc-a.self_link
+      subnetwork = module.vpc-a.subnet_self_links["us-central1/subnet-a"]
+      addresses  = { external = null, internal = "10.1.3.8" }
+    },
+    {
+      network    = module.vpc-b.self_link
+      subnetwork = module.vpc-b.subnet_self_links["us-central1/subnet-b"]
+      addresses  = { external = null, internal = "192.168.10.3" }
+    }
+  ]
+  can_ip_forward = true
+}
+
+module "ncc" {
+  source     = "./fabric/modules/net-ncc"
+  asn        = 65000
+  name       = "ncc-hub"
+  project_id = "my-project"
+  spokes = {
+    spoke-a = {
+      vpc        = module.vpc-a.name
+      region     = "us-central1"
+      subnetwork = module.vpc-a.subnet_self_links["us-central1/subnet-a"]
+      nvas = [
+        {
+          vm = module.nva1.self_link
+          ip = module.nva1.internal_ips[0]
+        }
+      ]
+      router = {
+        ip1      = "10.1.3.14"
+        ip2      = "10.1.3.15"
+        peer_asn = 65001
+      }
+    },
+    spoke-b = {
+      vpc        = module.vpc-b.name
+      region     = "us-central1"
+      subnetwork = module.vpc-b.subnet_self_links["us-central1/subnet-b"]
+      nvas = [
+        {
+          vm = module.nva1.self_link
+          ip = module.nva1.internal_ips[1]
+        }
+      ]
+      router = {
+        ip1      = "192.168.10.14"
+        ip2      = "192.168.10.15"
+        peer_asn = 65001
+      }
+    }
+  }
+}
+# tftest
+```
