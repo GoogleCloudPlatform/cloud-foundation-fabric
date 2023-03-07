@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3
   google_logging_organization_sink: 2
-  google_organization_iam_binding: 19
+  google_organization_iam_binding: 20
   google_organization_iam_custom_role: 3
   google_organization_iam_member: 16
   google_project: 3
