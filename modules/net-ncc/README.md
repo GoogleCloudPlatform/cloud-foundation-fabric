@@ -162,9 +162,11 @@ module "ncc" {
 # tftest
 ```
 
-### Use load-balanced router appliance instances
+### Using load-balanced router appliances
 
 The following topology shows a site that uses load-balanced router appliance instances to connect to Google Cloud. Both router appliance instances are backing resources for the same spoke.
+
+<p align="center"> <img src="images/load-balanced-router-appliances.png" width="600"> </p>
 
 ```hcl
 module "vpc" {
