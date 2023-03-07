@@ -45,6 +45,8 @@ def _handle_discovery(resources, response):
     self_link = part.get('selfLink')
     if not self_link:
       logging.warn('invalid quota response')
+    else:
+      continue
     self_link = self_link.split('/')
     if kind == 'compute#project':
       project_id = self_link[-1]
