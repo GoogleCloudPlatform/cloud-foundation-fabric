@@ -238,3 +238,82 @@ module "ncc" {
 }
 # tftest
 ```
+
+It is possible to add custom route advertisements. For example, suppose the VPC network-a is peered to another VPC network-b using the CIDR range 10.10.0.0/24. If you want to reach this VPC network-b from the on-premises network you should advertise its range to the router appliances:
+
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "network-a"
+  subnets = [
+    {
+      name          = "subnet-a-1"
+      ip_cidr_range = "10.0.1.0/24"
+      region        = "us-west1"
+    }
+  ]
+}
+
+module "nva1" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "us-west1-a"
+  name       = "router-app-a"
+  network_interfaces = [{
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["us-west1/subnet-a-1"]
+    addresses  = { external = null, internal = "10.0.1.10" }
+  }]
+  can_ip_forward = true
+}
+
+module "nva2" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = "my-project"
+  zone       = "us-west1-b"
+  name       = "router-app-b"
+  network_interfaces = [{
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["us-west1/subnet-a-1"]
+    addresses  = { external = null, internal = "10.0.1.11" }
+  }]
+  can_ip_forward = true
+}
+
+module "ncc" {
+  source     = "./fabric/modules/net-ncc"
+  asn        = 65000
+  name       = "ncc-hub"
+  project_id = "my-project"
+  spokes = {
+    spoke-a = {
+      vpc        = module.vpc.name
+      region     = "us-west1"
+      subnetwork = module.vpc.subnet_self_links["us-west1/subnet-a-1"]
+      nvas = [
+        {
+          vm = module.nva1.self_link
+          ip = module.nva1.internal_ip
+        },
+        {
+          vm = module.nva2.self_link
+          ip = module.nva2.internal_ip
+        }
+      ]
+      router = {
+        custom_advertise = {
+          all_subnets = true
+          ip_ranges = {
+            "peered-vpc-b" = "10.10.0.0/24"
+          }
+        }
+        ip1      = "10.0.1.5"
+        ip2      = "10.0.1.6"
+        peer_asn = 65001
+      }
+    }
+  }
+}
+# tftest
+```
