@@ -63,7 +63,7 @@ module "ncc" {
     }
   }
 }
-# tftest
+# tftest modules=3 resources=10
 ```
 
 ### Connect a site to two VPC networks
@@ -159,7 +159,7 @@ module "ncc" {
     }
   }
 }
-# tftest
+# tftest modules=4 resources=18
 ```
 
 ### Using load-balanced router appliances
@@ -236,7 +236,7 @@ module "ncc" {
     }
   }
 }
-# tftest
+# tftest modules=4 resources=13
 ```
 
 It is possible to add custom route advertisements. For example, suppose the VPC network-a is peered to another VPC network-b using the CIDR range 10.10.0.0/24. If you want to reach this VPC network-b from the on-premises network you should advertise its range to the router appliances:
@@ -315,5 +315,5 @@ module "ncc" {
     }
   }
 }
-# tftest
+# tftest modules=4 resources=13
 ```
