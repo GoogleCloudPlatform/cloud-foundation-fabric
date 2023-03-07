@@ -69,3 +69,9 @@ This [blueprint](./vertex-mlops/) implements the infrastructure required to have
 This [blueprint](./shielded-folder/) implements an opinionated folder configuration according to GCP best practices. Configurations implemented on the folder would be beneficial to host workloads inheriting constraints from the folder they belong to.
 
 <br clear="left">
+
+### BigQuery ML and Vertex AI Pipeline
+
+<a href="./bq-ml/" title="BigQuery ML and Vertex AI Pipeline"><img src="./bq-ml/images/diagram.png" align="left" width="280px"></a>
+This [blueprint](./bq-ml/) provides the necessary infrastructure to create a complete development environment for building and deploying machine learning models using BigQuery ML and Vertex AI. With this blueprint, you can deploy your models to a Vertex AI endpoint or use them within BigQuery ML.
+<br clear="left">
