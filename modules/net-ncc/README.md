@@ -2,7 +2,7 @@
 
 This module allows the creation and management of an NCC-based hub-and-spoke architecture. It focuses in site-to-cloud connectivity with network virtual appliances (NVAs) as the _backing resource_ for spokes. This allows to connect an external network to Google Cloud by using a SD-WAN router or another appliance with BGP capabilities. It does not handle site-to-site data transfer which is not available in all regions, in particular in EMEA.
 
-The module can manage a hub, multiple spokes, and corresponding Cloud Routers and BGP sessions to network virtual appliances. The NVAs themselves, VPCs, and other Google Cloud resources should be handled externally.
+The module can manage a hub, multiple spokes, and corresponding Cloud Routers and BGP sessions to network virtual appliances. The NVAs themselves, VPCs, and other Google Cloud resources should be managed externally.
 
 ## Examples
 
@@ -34,7 +34,7 @@ module "nva1" {
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["us-central1/subnet-a"]
-    addresses  = {external = null, internal = "10.1.3.8"}
+    addresses  = { external = null, internal = "10.1.3.8" }
   }]
   can_ip_forward = true
 }
@@ -45,7 +45,7 @@ module "ncc" {
   name       = "ncc-hub"
   project_id = "my-project"
   spokes = {
-    spoke_A = {
+    spoke-a = {
       vpc        = module.vpc.name
       region     = "us-central1"
       subnetwork = module.vpc.subnet_self_links["us-central1/subnet-a"]
@@ -56,9 +56,9 @@ module "ncc" {
         }
       ]
       router = {
-        ip1       = "10.1.3.14"
-        ip2       = "10.1.3.15"
-        peer_asn  = 65001
+        ip1      = "10.1.3.14"
+        ip2      = "10.1.3.15"
+        peer_asn = 65001
       }
     }
   }
