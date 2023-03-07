@@ -65,7 +65,10 @@ variable "frr_config" {
         "fabricd"
       ], daemon)
     ]), true)
-    error_message = "Invalid entry specified in daemons_enabled list, must be one of [zebra, bgpd, ospfd, ospf6d, ripd, ripngd, isisd, pimd, ldpd, nhrpd, eigrpd, babeld, sharpd, staticd, pbrd, bfdd, fabricd]"
+    error_message = <<EOF
+    Invalid entry specified in daemons_enabled list, must be one of [zebra, bgpd, ospfd, ospf6d,
+    ripd, ripngd, isisd, pimd, ldpd, nhrpd, eigrpd, babeld, sharpd, staticd, pbrd, bfdd, fabricd]
+    EOF
   }
 }
 
