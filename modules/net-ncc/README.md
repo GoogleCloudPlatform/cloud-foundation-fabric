@@ -70,6 +70,8 @@ module "ncc" {
 
 In the following topology, a router appliance instance has interfaces in two VPC networks. Each interface has been used to create a Router appliance spoke.
 
+<p align="center"> <img src="images/site-to-two-vpcs.png" width="600"> </p>
+
 ```hcl
 module "vpc-a" {
   source     = "./fabric/modules/net-vpc"
