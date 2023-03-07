@@ -53,6 +53,19 @@ variable "organization" {
   type        = string
 }
 
+variable "pull_request_config" {
+  description = "Configure pull request metadata."
+  type = object({
+    create   = optional(bool, false)
+    title    = optional(string, "FAST: initial loading or update")
+    body     = optional(string, "")
+    base_ref = optional(string, "main")
+    head_ref = optional(string, "fast-loader")
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "repositories" {
   description = "Repositories to create."
   type = map(object({

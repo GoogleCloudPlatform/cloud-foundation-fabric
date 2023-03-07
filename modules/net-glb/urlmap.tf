@@ -921,9 +921,9 @@ resource "google_compute_url_map" "default" {
           }
           dynamic "url_redirect" {
             for_each = (
-              route_rules.value.default_url_redirect == null
+              route_rules.value.url_redirect == null
               ? []
-              : [route_rules.value.default_url_redirect]
+              : [route_rules.value.url_redirect]
             )
             content {
               host_redirect          = url_redirect.value.host

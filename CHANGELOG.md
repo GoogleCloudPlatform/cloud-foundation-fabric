@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1208](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1208)] Fix outdated go deps, dependabot alerts ([averbuks](https://github.com/averbuks)) <!-- 2023-03-03 06:15:09+00:00 -->
+- [[#1150](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1150)] Blueprint: GLB hybrid NEG internal ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-03-02 08:53:07+00:00 -->
+- [[#1201](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1201)] Add missing tfvars template to the tfc blueprint ([averbuks](https://github.com/averbuks)) <!-- 2023-03-01 20:10:46+00:00 -->
+- [[#1196](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1196)] Fix compute-vm:CloudKMS test for provider>=4.54.0 ([dan-farmer](https://github.com/dan-farmer)) <!-- 2023-02-28 15:53:41+00:00 -->
+- [[#1189](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1189)] Update healthchecker deps (dependabot alerts) ([averbuks](https://github.com/averbuks)) <!-- 2023-02-27 21:48:49+00:00 -->
 - [[#1184](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1184)] **incompatible change:** Allow multiple peer gateways in VPN HA module ([ludoo](https://github.com/ludoo)) <!-- 2023-02-27 10:19:00+00:00 -->
 - [[#1143](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1143)] Test blueprints from README files ([juliocc](https://github.com/juliocc)) <!-- 2023-02-27 08:57:41+00:00 -->
 - [[#1181](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1181)] Bump golang.org/x/sys from 0.0.0-20220310020820-b874c991c1a5 to 0.1.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-02-25 17:02:08+00:00 -->
@@ -27,6 +32,10 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1150](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1150)] Blueprint: GLB hybrid NEG internal ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-03-02 08:53:07+00:00 -->
+- [[#1193](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1193)] Add reference to Cloud Run blueprints ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-28 10:16:45+00:00 -->
+- [[#1188](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1188)] Add reference to Cloud Run blueprints ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-27 21:22:31+00:00 -->
+- [[#1187](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1187)] Add references to the serverless chapters ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-27 17:16:20+00:00 -->
 - [[#1179](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1179)] Added a PSC GCLB example ([cgrotz](https://github.com/cgrotz)) <!-- 2023-02-24 20:09:31+00:00 -->
 - [[#1165](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1165)] DataPlatform: Support project creation ([lcaggio](https://github.com/lcaggio)) <!-- 2023-02-23 11:10:44+00:00 -->
 - [[#1145](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1145)] FAST stage docs cleanup ([ludoo](https://github.com/ludoo)) <!-- 2023-02-15 05:42:14+00:00 -->
@@ -36,6 +45,9 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1211)] **incompatible change:** Add support for proxy and psc subnets to net-vpc module factory ([ludoo](https://github.com/ludoo)) <!-- 2023-03-05 16:08:43+00:00 -->
+- [[#1209](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1209)] Billing exclusion support for FAST mt resman ([ludoo](https://github.com/ludoo)) <!-- 2023-03-03 16:23:37+00:00 -->
+- [[#1207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1207)] Allow preventing creation of billing IAM roles in FAST, add instructions on delayed billing association ([ludoo](https://github.com/ludoo)) <!-- 2023-03-03 08:24:42+00:00 -->
 - [[#1184](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1184)] **incompatible change:** Allow multiple peer gateways in VPN HA module ([ludoo](https://github.com/ludoo)) <!-- 2023-02-27 10:19:00+00:00 -->
 - [[#1165](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1165)] DataPlatform: Support project creation ([lcaggio](https://github.com/lcaggio)) <!-- 2023-02-23 11:10:44+00:00 -->
 - [[#1170](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1170)] Add documentation about referring modules stored on CSR ([wiktorn](https://github.com/wiktorn)) <!-- 2023-02-22 09:02:54+00:00 -->
@@ -52,6 +64,19 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1211)] **incompatible change:** Add support for proxy and psc subnets to net-vpc module factory ([ludoo](https://github.com/ludoo)) <!-- 2023-03-05 16:08:43+00:00 -->
+- [[#1206](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1206)] Dataproc module. Fix output. ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-02 12:59:19+00:00 -->
+- [[#1205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1205)] Fix issue with GKE cluster notifications topic & static output for pubsub module ([rosmo](https://github.com/rosmo)) <!-- 2023-03-02 10:43:40+00:00 -->
+- [[#1204](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1204)] Fix url_redirect issue on net-glb module ([erabusi](https://github.com/erabusi)) <!-- 2023-03-02 06:51:40+00:00 -->
+- [[#1199](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1199)] [Dataproc module] Fix Variables ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-01 11:16:11+00:00 -->
+- [[#1200](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1200)] Add test for #1197 ([juliocc](https://github.com/juliocc)) <!-- 2023-03-01 09:15:13+00:00 -->
+- [[#1198](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1198)] Fix secondary ranges in net-vpc readme ([ludoo](https://github.com/ludoo)) <!-- 2023-03-01 07:08:08+00:00 -->
+- [[#1196](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1196)] Fix compute-vm:CloudKMS test for provider>=4.54.0 ([dan-farmer](https://github.com/dan-farmer)) <!-- 2023-02-28 15:53:41+00:00 -->
+- [[#1194](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1194)] Fix HTTPS health check mismapped to HTTP in compute-mig and net-ilb modules ([jogoldberg](https://github.com/jogoldberg)) <!-- 2023-02-28 14:48:13+00:00 -->
+- [[#1192](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1192)] Dataproc module: Fix outputs ([lcaggio](https://github.com/lcaggio)) <!-- 2023-02-28 10:47:23+00:00 -->
+- [[#1190](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1190)] Dataproc Module ([lcaggio](https://github.com/lcaggio)) <!-- 2023-02-28 06:45:41+00:00 -->
+- [[#1191](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1191)] Fix external gateway in VPN HA module ([ludoo](https://github.com/ludoo)) <!-- 2023-02-27 23:46:51+00:00 -->
+- [[#1186](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1186)] Fix Workload Identity for ASM in GKE hub module ([valeriobponza](https://github.com/valeriobponza)) <!-- 2023-02-27 19:17:45+00:00 -->
 - [[#1184](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1184)] **incompatible change:** Allow multiple peer gateways in VPN HA module ([ludoo](https://github.com/ludoo)) <!-- 2023-02-27 10:19:00+00:00 -->
 - [[#1177](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1177)] Implemented conditional dynamic blocks for `google_access_context_manager_service_perimeter` `spec` and `status` ([calexandre](https://github.com/calexandre)) <!-- 2023-02-25 16:04:19+00:00 -->
 - [[#1178](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1178)] adding meshconfig.googleapis.com to JIT list. ([valeriobponza](https://github.com/valeriobponza)) <!-- 2023-02-24 18:28:05+00:00 -->
@@ -77,6 +102,9 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1211)] **incompatible change:** Add support for proxy and psc subnets to net-vpc module factory ([ludoo](https://github.com/ludoo)) <!-- 2023-03-05 16:08:43+00:00 -->
+- [[#1209](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1209)] Billing exclusion support for FAST mt resman ([ludoo](https://github.com/ludoo)) <!-- 2023-03-03 16:23:37+00:00 -->
+- [[#1208](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1208)] Fix outdated go deps, dependabot alerts ([averbuks](https://github.com/averbuks)) <!-- 2023-03-03 06:15:09+00:00 -->
 - [[#1182](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1182)] Bump actions versions ([juliocc](https://github.com/juliocc)) <!-- 2023-02-25 16:27:20+00:00 -->
 - [[#1052](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1052)] **incompatible change:** FAST multitenant bootstrap and resource management, rename org-level FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2023-02-04 14:00:46+00:00 -->
 
