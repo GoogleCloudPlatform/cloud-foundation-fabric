@@ -59,9 +59,9 @@ resource "google_dataproc_cluster" "cluster" {
           dynamic "shielded_instance_config" {
             for_each = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config == null ? [] : [""]
             content {
-              enable_secure_boot          = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config.value.enable_secure_boot
-              enable_vtpm                 = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config.value.enable_vtpm
-              enable_integrity_monitoring = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config.value.enable_integrity_monitoring
+              enable_secure_boot          = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config.enable_secure_boot
+              enable_vtpm                 = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config.enable_vtpm
+              enable_integrity_monitoring = var.dataproc_config.cluster_config.gce_cluster_config.shielded_instance_config.enable_integrity_monitoring
             }
           }
         }
@@ -99,9 +99,9 @@ resource "google_dataproc_cluster" "cluster" {
           dynamic "disk_config" {
             for_each = var.dataproc_config.cluster_config.worker_config.disk_config == null ? [] : [""]
             content {
-              boot_disk_type    = var.dataproc_config.cluster_config.worker_config.disk_config.value.boot_disk_type
-              boot_disk_size_gb = var.dataproc_config.cluster_config.worker_config.disk_config.value.boot_disk_size_gb
-              num_local_ssds    = var.dataproc_config.cluster_config.worker_config.disk_config.value.num_local_ssds
+              boot_disk_type    = var.dataproc_config.cluster_config.worker_config.disk_config.boot_disk_type
+              boot_disk_size_gb = var.dataproc_config.cluster_config.worker_config.disk_config.boot_disk_size_gb
+              num_local_ssds    = var.dataproc_config.cluster_config.worker_config.disk_config.num_local_ssds
             }
           }
           image_uri = var.dataproc_config.cluster_config.worker_config.image_uri
@@ -165,20 +165,20 @@ resource "google_dataproc_cluster" "cluster" {
       dynamic "autoscaling_config" {
         for_each = var.dataproc_config.cluster_config.autoscaling_config == null ? [] : [""]
         content {
-          policy_uri = var.dataproc_config.cluster_config.autoscaling_config.value.policy_uri
+          policy_uri = var.dataproc_config.cluster_config.autoscaling_config.policy_uri
         }
       }
       dynamic "initialization_action" {
         for_each = var.dataproc_config.cluster_config.initialization_action == null ? [] : [""]
         content {
-          script      = var.dataproc_config.cluster_config.initialization_action.value.script
-          timeout_sec = var.dataproc_config.cluster_config.initialization_action.value.timeout_sec
+          script      = var.dataproc_config.cluster_config.initialization_action.script
+          timeout_sec = var.dataproc_config.cluster_config.initialization_action.timeout_sec
         }
       }
       dynamic "encryption_config" {
-        for_each = var.dataproc_config.cluster_config.encryption_config == null ? [] : [""]
+        for_each = try(var.dataproc_config.cluster_config.encryption_config.kms_key_name == null ? [] : [""], [])
         content {
-          kms_key_name = var.dataproc_config.cluster_config.encryption_config.value.kms_key_name
+          kms_key_name = var.dataproc_config.cluster_config.encryption_config.kms_key_name
         }
       }
       dynamic "dataproc_metric_config" {
@@ -243,8 +243,8 @@ resource "google_dataproc_cluster" "cluster" {
           dynamic "kubernetes_software_config" {
             for_each = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.kubernetes_software_config == null ? [] : [""]
             content {
-              component_version = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.kubernetes_software_config.value.component_version
-              properties        = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.kubernetes_software_config.value.properties
+              component_version = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.kubernetes_software_config.component_version
+              properties        = var.dataproc_config.virtual_cluster_config.kubernetes_cluster_config.kubernetes_software_config.properties
             }
           }
 

@@ -46,7 +46,7 @@ module "organization" {
         module.branch-network-sa.iam_email
       ]
     },
-    var.billing_account.is_org_level ? {
+    local.billing_mode == "org" ? {
       "roles/billing.costsManager" = concat(
         local.branch_optional_sa_lists.pf-dev,
         local.branch_optional_sa_lists.pf-prod

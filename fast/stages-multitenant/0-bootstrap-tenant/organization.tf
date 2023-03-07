@@ -32,7 +32,7 @@ module "organization" {
         "group:${local.groups.gcp-admins}"
       ]
     },
-    var.billing_account.is_org_level ? {
+    local.billing_mode == "org" ? {
       "roles/billing.admin" = [
         "group:${local.groups.gcp-admins}",
         module.automation-tf-resman-sa.iam_email
