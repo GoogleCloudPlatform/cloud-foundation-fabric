@@ -99,22 +99,6 @@ variable "folder_ids" {
   })
 }
 
-variable "l7ilb_subnets" {
-  description = "Subnets used for L7 ILBs."
-  type = map(list(object({
-    ip_cidr_range = string
-    region        = string
-  })))
-  default = {
-    prod = [
-      { ip_cidr_range = "10.128.92.0/24", region = "europe-west1" },
-    ]
-    dev = [
-      { ip_cidr_range = "10.128.60.0/24", region = "europe-west1" },
-    ]
-  }
-}
-
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."

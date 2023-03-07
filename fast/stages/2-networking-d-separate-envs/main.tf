@@ -18,19 +18,6 @@
 
 locals {
   custom_roles = coalesce(var.custom_roles, {})
-  _l7ilb_subnets = {
-    for k, v in var.l7ilb_subnets : k => [
-      for s in v : merge(s, {
-        active = true
-        region = lookup(var.regions, s.region, s.region)
-    })]
-  }
-  l7ilb_subnets = {
-    for k, v in local._l7ilb_subnets : k => [
-      for s in v : merge(s, {
-        name = "${k}-l7ilb-${local.region_shortnames[s.region]}"
-    })]
-  }
   # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),
