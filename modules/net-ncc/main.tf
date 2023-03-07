@@ -101,7 +101,7 @@ resource "google_compute_router_interface" "intf2" {
 
 resource "google_compute_router_peer" "peer1" {
   for_each = {
-    for entry in local.spoke_vms : entry.ip => entry
+    for idx, entry in local.spoke_vms : idx => entry
   }
   project                   = var.project_id
   name                      = "peer1-${each.value.vm_name}"
@@ -109,13 +109,13 @@ resource "google_compute_router_peer" "peer1" {
   region                    = each.value.spoke.region
   interface                 = google_compute_router_interface.intf1[each.value.spoke_key].name
   peer_asn                  = each.value.spoke.router.peer_asn
-  peer_ip_address           = each.key
+  peer_ip_address           = each.value.ip
   router_appliance_instance = each.value.vm
 }
 
 resource "google_compute_router_peer" "peer2" {
   for_each = {
-    for entry in local.spoke_vms : entry.ip => entry
+    for idx, entry in local.spoke_vms : idx => entry
   }
   project                   = var.project_id
   name                      = "peer2-${each.value.vm_name}"
@@ -123,6 +123,6 @@ resource "google_compute_router_peer" "peer2" {
   region                    = each.value.spoke.region
   interface                 = google_compute_router_interface.intf2[each.value.spoke_key].name
   peer_asn                  = each.value.spoke.router.peer_asn
-  peer_ip_address           = each.key
+  peer_ip_address           = each.value.ip
   router_appliance_instance = each.value.vm
 }
