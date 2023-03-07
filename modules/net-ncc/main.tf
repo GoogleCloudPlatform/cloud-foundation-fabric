@@ -55,7 +55,7 @@ resource "google_network_connectivity_spoke" "spoke" {
 resource "google_compute_router" "cr" {
   for_each = var.spokes
   project  = var.project_id
-  name     = "${var.name}-cr-${each.value.region}"
+  name     = "${var.name}-${each.key}-cr"
   network  = each.value.vpc
   region   = each.value.region
   bgp {
