@@ -15,13 +15,6 @@
  */
 
 locals {
-  cloud_config = templatefile(local._template, {
-    files                = local._files
-    enable_health_checks = var.enable_health_checks
-    network_interfaces   = local._network_interfaces
-    optional_run_cmds    = local._optional_run_cmds
-  })
-
   _files = merge(
     {
       "/var/run/nva/ipprefix_by_netmask.sh" = {
@@ -73,9 +66,31 @@ locals {
     } : {}
   )
 
-  _frr_daemons = ["zebra", "bgpd", "ospfd", "ospf6d", "ripd", "ripngd", "isisd", "pimd", "ldpd", "nhrpd", "eigrpd", "babeld", "sharpd", "staticd", "pbrd", "bfdd", "fabricd"]
+  _frr_daemons = [
+    "zebra",
+    "bgpd",
+    "ospfd",
+    "ospf6d",
+    "ripd",
+    "ripngd",
+    "isisd",
+    "pimd",
+    "ldpd",
+    "nhrpd",
+    "eigrpd",
+    "babeld",
+    "sharpd",
+    "staticd",
+    "pbrd",
+    "bfdd",
+    "fabricd"
+  ]
 
-  _frr_daemons_enabled = try({ for daemon in local._frr_daemons : "${daemon}_enabled" => contains(var.frr_config.daemons_enabled, daemon) ? "yes" : "no" }, {})
+  _frr_daemons_enabled = try(
+    {
+      for daemon in local._frr_daemons :
+      "${daemon}_enabled" => contains(var.frr_config.daemons_enabled, daemon) ? "yes" : "no"
+  }, {})
 
   _network_interfaces = [
     for index, interface in var.network_interfaces : {
@@ -98,4 +113,11 @@ locals {
     ? "${path.module}/cloud-config.yaml"
     : var.cloud_config
   )
+
+  cloud_config = templatefile(local._template, {
+    enable_health_checks = var.enable_health_checks
+    files                = local._files
+    network_interfaces   = local._network_interfaces
+    optional_run_cmds    = local._optional_run_cmds
+  })
 }

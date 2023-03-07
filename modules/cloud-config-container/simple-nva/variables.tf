@@ -45,7 +45,25 @@ variable "frr_config" {
   default = null
   validation {
     condition = try(alltrue([
-      for daemon in var.frr_config.daemons_enabled : contains(["zebra", "bgpd", "ospfd", "ospf6d", "ripd", "ripngd", "isisd", "pimd", "ldpd", "nhrpd", "eigrpd", "babeld", "sharpd", "staticd", "pbrd", "bfdd", "fabricd"], daemon)
+      for daemon in var.frr_config.daemons_enabled : contains([
+        "zebra",
+        "bgpd",
+        "ospfd",
+        "ospf6d",
+        "ripd",
+        "ripngd",
+        "isisd",
+        "pimd",
+        "ldpd",
+        "nhrpd",
+        "eigrpd",
+        "babeld",
+        "sharpd",
+        "staticd",
+        "pbrd",
+        "bfdd",
+        "fabricd"
+      ], daemon)
     ]), true)
     error_message = "Invalid entry specified in daemons_enabled list, must be one of [zebra, bgpd, ospfd, ospf6d, ripd, ripngd, isisd, pimd, ldpd, nhrpd, eigrpd, babeld, sharpd, staticd, pbrd, bfdd, fabricd]"
   }

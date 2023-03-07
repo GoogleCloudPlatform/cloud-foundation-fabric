@@ -65,8 +65,8 @@ module "vm" {
 
 ### Example with advanced routing capabilities
 
-Below a sample terraform example for bootstrapping a simple-nva powered by [COS](https://cloud.google.com/container-optimized-os/docs) and running [FRRouting](https://frrouting.org/) container.
-Please find below s sample frr.conf file based on documentation available at the following [link](https://docs.frrouting.org/en/latest/basic.html) for hosting a BGP service with ASN 65001 on FRR container establishing a BGP session with a remote neighbor with IP address 10.128.0.2 and ASN 65002.
+Find below a sample terraform example for bootstrapping a simple NVA powered by [COS](https://cloud.google.com/container-optimized-os/docs) and running [FRRouting](https://frrouting.org/) container.
+Please find below a sample frr.conf file based on the documentation available [here](https://docs.frrouting.org/en/latest/basic.html) for hosting a BGP service with ASN 65001 on FRR container establishing a BGP session with a remote neighbor with IP address 10.128.0.2 and ASN 65002.
 
 ```
 # tftest-file id=frr_conf path=./frr.conf
@@ -111,13 +111,6 @@ module "cos-nva" {
   network_interfaces   = local.network_interfaces
   frr_config           = { config_file = "./frr.conf", daemons_enabled = ["bgpd"] }
   optional_run_cmds    = ["ls -l"]
-  # files = {
-  #   "/var/lib/cloud/scripts/per-boot/firewall-rules.sh" = {
-  #     content     = file("./your_path/to/firewall-rules.sh")
-  #     owner       = "root"
-  #     permissions = 0700
-  #   }
-  # }
 }
 
 module "vm" {
