@@ -1,0 +1,184 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: custom-metrics-stackdriver-adapter
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: custom-metrics:system:auth-delegator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+- kind: ServiceAccount
+  name: custom-metrics-stackdriver-adapter
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: custom-metrics-auth-reader
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+- kind: ServiceAccount
+  name: custom-metrics-stackdriver-adapter
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: custom-metrics-resource-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+- kind: ServiceAccount
+  name: custom-metrics-stackdriver-adapter
+  namespace: monitoring
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custom-metrics-stackdriver-adapter
+  namespace: monitoring
+  labels:
+    run: custom-metrics-stackdriver-adapter
+    k8s-app: custom-metrics-stackdriver-adapter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: custom-metrics-stackdriver-adapter
+      k8s-app: custom-metrics-stackdriver-adapter
+  template:
+    metadata:
+      labels:
+        run: custom-metrics-stackdriver-adapter
+        k8s-app: custom-metrics-stackdriver-adapter
+        kubernetes.io/cluster-service: "true"
+    spec:
+      serviceAccountName: custom-metrics-stackdriver-adapter
+      containers:
+      - image: gcr.io/gke-release/custom-metrics-stackdriver-adapter:v0.13.1-gke.0
+        imagePullPolicy: Always
+        name: pod-custom-metrics-stackdriver-adapter
+        command:
+        - /adapter
+        - --use-new-resource-model=false
+        resources:
+          limits:
+            cpu: 100m
+            memory: 150Mi
+          requests:
+            memory: 150Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: custom-metrics-stackdriver-adapter
+    k8s-app: custom-metrics-stackdriver-adapter
+    kubernetes.io/cluster-service: 'true'
+    kubernetes.io/name: Adapter
+  name: custom-metrics-stackdriver-adapter
+  namespace: monitoring
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 443
+  selector:
+    run: custom-metrics-stackdriver-adapter
+    k8s-app: custom-metrics-stackdriver-adapter
+  type: ClusterIP
+---
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1beta1.custom.metrics.k8s.io
+spec:
+  insecureSkipTLSVerify: true
+  group: custom.metrics.k8s.io
+  groupPriorityMinimum: 100
+  versionPriority: 100
+  service:
+    name: custom-metrics-stackdriver-adapter
+    namespace: monitoring
+  version: v1beta1
+---
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1beta2.custom.metrics.k8s.io
+spec:
+  insecureSkipTLSVerify: true
+  group: custom.metrics.k8s.io
+  groupPriorityMinimum: 100
+  versionPriority: 200
+  service:
+    name: custom-metrics-stackdriver-adapter
+    namespace: monitoring
+  version: v1beta2
+---
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1beta1.external.metrics.k8s.io
+spec:
+  insecureSkipTLSVerify: true
+  group: external.metrics.k8s.io
+  groupPriorityMinimum: 100
+  versionPriority: 100
+  service:
+    name: custom-metrics-stackdriver-adapter
+    namespace: monitoring
+  version: v1beta1
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: external-metrics-reader
+rules:
+- apiGroups:
+  - "external.metrics.k8s.io"
+  resources:
+  - "*"
+  verbs:
+  - list
+  - get
+  - watch©
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: external-metrics-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-metrics-reader
+subjects:
+- kind: ServiceAccount
+  name: horizontal-pod-autoscaler
+  namespace: kube-system
