@@ -34,10 +34,13 @@ variable "data_transfer" {
   default     = false
 }
 
-variable "description" {
-  description = "An optional description of the NCC hub."
-  type        = string
-  default     = "Terraform-managed."
+variable "hub" {
+  description = "The name of the NCC hub to create or use."
+  type = object({
+    create      = optional(bool, false)
+    name        = string
+    description = optional(string)
+  })
 }
 
 variable "ip_intf1" {
@@ -59,7 +62,7 @@ variable "keepalive" {
 }
 
 variable "name" {
-  description = "The name of the NCC hub being created."
+  description = "The name of the NCC spoke."
   type        = string
 }
 
