@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output "cloud_config" {
-  description = "Rendered cloud-config file to be passed as user-data instance metadata."
-  value       = local.cloud_config
+output "urls" {
+  description = "Grafanam, locust and application URLs."
+  value       = local.urls
 }

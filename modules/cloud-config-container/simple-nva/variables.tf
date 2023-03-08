@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,53 @@ variable "files" {
   default = {}
 }
 
+variable "frr_config" {
+  description = "FRR configuration for container running on the NVA."
+  type = object({
+    daemons_enabled = optional(list(string))
+    config_file     = string
+  })
+  default = null
+  validation {
+    condition = try(alltrue([
+      for daemon in var.frr_config.daemons_enabled : contains([
+        "zebra",
+        "bgpd",
+        "ospfd",
+        "ospf6d",
+        "ripd",
+        "ripngd",
+        "isisd",
+        "pimd",
+        "ldpd",
+        "nhrpd",
+        "eigrpd",
+        "babeld",
+        "sharpd",
+        "staticd",
+        "pbrd",
+        "bfdd",
+        "fabricd"
+      ], daemon)
+    ]), true)
+    error_message = <<EOF
+    Invalid entry specified in daemons_enabled list, must be one of [zebra, bgpd, ospfd, ospf6d,
+    ripd, ripngd, isisd, pimd, ldpd, nhrpd, eigrpd, babeld, sharpd, staticd, pbrd, bfdd, fabricd]
+    EOF
+  }
+}
+
 variable "network_interfaces" {
   description = "Network interfaces configuration."
   type = list(object({
-    routes = optional(list(string))
+    routes              = optional(list(string))
+    enable_masquerading = optional(bool, false)
+    non_masq_cidrs      = optional(list(string))
   }))
+}
+
+variable "optional_run_cmds" {
+  description = "Optional Cloud Init run commands to execute."
+  type        = list(string)
+  default     = []
 }

@@ -6,7 +6,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#      https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# https://stackoverflow.com/questions/50413579/bash-convert-netmask-in-cidr-notation
-c=0 x=0$(printf '%o' ${1//./ })
-while [ $x -gt 0 ]; do
-  let c+=$((x % 2)) 'x>>=1'
-done
-echo $c
+LOCUS_OPTS="-f /home/locust/locust-files"
+LOCUST_MODE=${LOCUST_MODE:-standalone}
+
+if [[ "$LOCUST_MODE" = "master" ]]; then
+    LOCUS_OPTS="$LOCUS_OPTS --master"
+elif [[ "$LOCUST_MODE" = "worker" ]]; then
+    LOCUS_OPTS="$LOCUS_OPTS --worker --master-host=$LOCUST_MASTER"
+fi
+
+locust $LOCUS_OPTS
