@@ -15,8 +15,21 @@
  */
 
 variable "asn" {
-  description = "ASN for all CRs in the hub."
+  description = "Autonomous System Number for the CR. All spokes in a hub should use the same ASN."
   type        = number
+}
+
+variable "custom_advertise" {
+  description = "IP ranges to advertise if not using default route advertisement (subnet ranges)."
+  type = object({
+    all_subnets = bool
+    ip_ranges   = map(string) # map of descriptions and address ranges
+  })
+}
+
+variable "data_transfer" {
+  description = "Site-to-site data transfer feature, available only in some regions."
+  type        = bool
 }
 
 variable "description" {
@@ -25,9 +38,29 @@ variable "description" {
   default     = "Terraform-managed."
 }
 
+variable "ip_intf1" {
+  description = "IP address for the CR interface 1. It must belong to the primary range of the subnet."
+  type        = string
+}
+
+variable "ip_intf2" {
+  description = "IP address for the CR interface 2. It must belong to the primary range of the subnet."
+  type        = string
+}
+
+variable "keepalive" {
+  description = "The interval in seconds between BGP keepalive messages that are sent to the peer."
+  type        = number
+}
+
 variable "name" {
   description = "The name of the NCC hub being created."
   type        = string
+}
+
+variable "peer_asn" {
+  description = "Peer Autonomous System Number used by the router appliances."
+  type        = number
 }
 
 variable "project_id" {
@@ -35,25 +68,25 @@ variable "project_id" {
   type        = string
 }
 
-variable "spokes" {
-  description = "List of NCC spokes."
-  type = map(object({
-    vpc        = string
-    region     = string
-    subnetwork = string # URI
-    nvas = list(object({
-      vm = string # URI
-      ip = string
-    }))
-    router = object({
-      custom_advertise = optional(object({
-        all_subnets = bool
-        ip_ranges   = map(string) # map of descriptions and address ranges
-      }))
-      ip1       = string
-      ip2       = string
-      keepalive = optional(number)
-      peer_asn  = number
-    })
+variable "ras" {
+  description = "List of router appliances this spoke is associated with."
+  type = list(object({
+    vm = string # URI
+    ip = string
   }))
+}
+
+variable "region" {
+  description = "Region where the spoke is located."
+  type        = string
+}
+
+variable "subnetwork" {
+  description = "The URI of the subnetwork that CR interfaces belong to."
+  type        = string
+}
+
+variable "vpc" {
+  description = "A reference to the network to which the CR belongs."
+  type        = string
 }
