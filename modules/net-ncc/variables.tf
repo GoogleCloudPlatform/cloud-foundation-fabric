@@ -41,13 +41,15 @@ variable "description" {
 }
 
 variable "ip_intf1" {
-  description = "IP address for the CR interface 1. It must belong to the primary range of the subnet."
+  description = "IP address for the CR interface 1. It must belong to the primary range of the subnet. If you don't specify a value Google will try to find a free address."
   type        = string
+  default     = null
 }
 
 variable "ip_intf2" {
-  description = "IP address for the CR interface 2. It must belong to the primary range of the subnet."
+  description = "IP address for the CR interface 2. It must belong to the primary range of the subnet. If you don't specify a value Google will try to find a free address."
   type        = string
+  default     = null
 }
 
 variable "keepalive" {
