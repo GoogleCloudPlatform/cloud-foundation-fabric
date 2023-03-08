@@ -10,15 +10,15 @@ The module manages a hub (optionally), a spoke, and the corresponding Cloud Rout
 
 ```hcl
 module "spoke-ra" {
-  source     = "./fabric/modules/net-ncc"
+  source     = "./fabric/modules/ncc-spoke-ra"
   hub        = { create = true, name = "ncc-hub" }
   name       = "spoke-ra"
-  project_id = var.project_id
+  project_id = "my-project"
   asn        = 65000
   peer_asn   = 65001
   ras = [
     {
-      vm = var.ra.self_link
+      vm = "projects/my-project/zones/europe-west1-b/instances/router-app"
       ip = "10.0.0.3"
     }
   ]
@@ -26,58 +26,58 @@ module "spoke-ra" {
   subnetwork = var.subnet.self_link
   vpc        = "my-vpc"
 }
-# tftest modules=300 resources=100
+# tftest modules=1 resources=7
 ```
 
 ### Two spokes
 
 ```hcl
-module "spoke-ra-1" {
-  source     = "./fabric/modules/net-ncc"
+module "spoke-ra-a" {
+  source     = "./fabric/modules/ncc-spoke-ra"
   hub        = { name = "ncc-hub" }
-  name       = "spoke-ra-1"
-  project_id = var.project_id
+  name       = "spoke-ra-a"
+  project_id = "my-project"
   asn        = 65000
   peer_asn   = 65001
   ras = [
     {
-      vm = var.ra1.self_link
+      vm = "projects/my-project/zones/europe-west1-b/instances/router-app-a"
       ip = "10.0.0.3"
     }
   ]
   region     = "europe-west1"
-  subnetwork = var.subnet1.self_link
+  subnetwork = "projects/my-project/regions/europe-west1/subnetworks/subnet"
   vpc        = "my-vpc1"
 }
 
-module "spoke-ra-2" {
-  source     = "./fabric/modules/net-ncc"
+module "spoke-ra-b" {
+  source     = "./fabric/modules/ncc-spoke-ra"
   hub        = { name = "ncc-hub" }
-  name       = "spoke-ra-2"
-  project_id = var.project_id
+  name       = "spoke-ra-b"
+  project_id = "my-project"
   asn        = 65000
   peer_asn   = 65002
   ras = [
     {
-      vm = var.ra2.self_link
+      vm = "projects/my-project/zones/europe-west3-b/instances/router-app-b"
       ip = "10.1.0.5"
     }
   ]
   region     = "europe-west3"
-  subnetwork = var.subnet2.self_link
+  subnetwork = "projects/my-project/regions/europe-west3/subnetworks/subnet"
   vpc        = "my-vpc2"
 }
-# tftest modules=300 resources=100
+# tftest modules=2 resources=12
 ```
 
 ### Spoke with load-balanced router appliances
 
 ```hcl
 module "spoke-ra" {
-  source     = "./fabric/modules/net-ncc"
+  source     = "./fabric/modules/ncc-spoke-ra"
   hub        = { name = "ncc-hub" }
   name       = "spoke-ra"
-  project_id = var.project_id
+  project_id = "my-project"
   asn        = 65000
   custom_advertise = {
     all_subnets = true
@@ -90,11 +90,11 @@ module "spoke-ra" {
   peer_asn = 65001
   ras = [
     {
-      vm = var.ra1.self_link
+      vm = "projects/my-project/zones/europe-west1-b/instances/router-app-a"
       ip = "10.0.0.3"
     },
     {
-      vm = var.ra2.self_link
+      vm = "projects/my-project/zones/europe-west1-c/instances/router-app-b"
       ip = "10.0.0.4"
     }
   ]
@@ -102,7 +102,7 @@ module "spoke-ra" {
   subnetwork = var.subnet.self_link
   vpc        = "my-vpc"
 }
-# tftest modules=300 resources=100
+# tftest modules=1 resources=8
 ```
 <!-- BEGIN TFDOC -->
 
