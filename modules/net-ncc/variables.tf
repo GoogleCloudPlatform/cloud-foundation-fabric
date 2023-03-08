@@ -25,6 +25,7 @@ variable "custom_advertise" {
     all_subnets = bool
     ip_ranges   = map(string) # map of descriptions and address ranges
   })
+  default = null
 }
 
 variable "data_transfer" {
