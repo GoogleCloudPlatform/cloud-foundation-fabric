@@ -25,14 +25,15 @@ locals {
 }
 
 resource "google_network_connectivity_hub" "hub" {
+  count       = var.hub.create ? 1 : 0
   project     = var.project_id
-  name        = var.name
-  description = var.description
+  name        = var.hub.name
+  description = var.hub.description
 }
 
 resource "google_network_connectivity_spoke" "spoke-ra" {
   project  = var.project_id
-  hub      = google_network_connectivity_hub.hub.id
+  hub      = try(google_network_connectivity_hub.hub[0].name, var.hub.name)
   location = var.region
   name     = var.name
   linked_router_appliance_instances {
