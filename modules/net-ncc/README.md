@@ -1,321 +1,108 @@
-# Network Connectivity Center Module
+# NCC Spoke RA Module
 
-This module allows the creation and management of an NCC-based hub-and-spoke architecture. It focuses in site-to-cloud connectivity with network virtual appliances (NVAs) as the _backing resource_ for spokes. This allows to connect an external network to Google Cloud by using a SD-WAN router or another appliance with BGP capabilities. It does not handle site-to-site data transfer which is not available in all regions, in particular in EMEA.
+This module allows management of NCC Spokes backed by Router Appliances. Network virtual appliances used as router appliances allow to connect an external network to Google Cloud by using a SD-WAN router or another appliance with BGP capabilities (_site-to-cloud_ connectivity). It is also possible to enable site-to-site data transfer, although this feature is not available in all regions, particularly not in EMEA.
 
-The module can manage a hub, multiple spokes, and corresponding Cloud Routers and BGP sessions to network virtual appliances. The NVAs themselves, VPCs, and other Google Cloud resources should be managed externally.
+The module manages a hub (optionally), a spoke, and the corresponding Cloud Router and BGP sessions to the router appliance(s).
 
 ## Examples
 
-### Connect a site to a VPC network
-
-In this example a router appliance connects with a peer router in an on-premises network, and also peers with a Cloud Router.
-
-<p align="center"> <img src="images/site-to-vpc.png" width="600"> </p>
+### Simple hub & spoke
 
 ```hcl
-module "vpc" {
-  source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
-  name       = "network-a"
-  subnets = [
+module "spoke-ra" {
+  source     = "./fabric/modules/net-ncc"
+  hub        = { create = true, name = "ncc-hub" }
+  name       = "spoke-ra"
+  project_id = var.project_id
+  asn        = 65000
+  peer_asn   = 65001
+  ras = [
     {
-      name          = "subnet-a"
-      ip_cidr_range = "10.1.3.0/24"
-      region        = "us-central1"
+      vm = var.ra.self_link
+      ip = "10.0.0.3"
     }
   ]
+  region     = "europe-west1"
+  subnetwork = var.subnet.self_link
+  vpc        = "my-vpc"
 }
-
-module "nva1" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "us-central1-a"
-  name       = "router-app-a"
-  network_interfaces = [{
-    network    = module.vpc.self_link
-    subnetwork = module.vpc.subnet_self_links["us-central1/subnet-a"]
-    addresses  = { external = null, internal = "10.1.3.8" }
-  }]
-  can_ip_forward = true
-}
-
-module "ncc" {
-  source     = "./fabric/modules/net-ncc"
-  asn        = 65000
-  name       = "ncc-hub"
-  project_id = "my-project"
-  spokes = {
-    spoke-a = {
-      vpc        = module.vpc.name
-      region     = "us-central1"
-      subnetwork = module.vpc.subnet_self_links["us-central1/subnet-a"]
-      nvas = [
-        {
-          vm = module.nva1.self_link
-          ip = module.nva1.internal_ip
-        }
-      ]
-      router = {
-        ip1      = "10.1.3.14"
-        ip2      = "10.1.3.15"
-        peer_asn = 65001
-      }
-    }
-  }
-}
-# tftest modules=3 resources=10
+# tftest modules=300 resources=100
 ```
 
-### Connect a site to two VPC networks
-
-In the following topology, a router appliance instance has interfaces in two VPC networks. Each interface has been used to create a Router appliance spoke.
-
-<p align="center"> <img src="images/site-to-two-vpcs.png" width="600"> </p>
+### Two spokes
 
 ```hcl
-module "vpc-a" {
-  source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
-  name       = "network-a"
-  subnets = [
+module "spoke-ra-1" {
+  source     = "./fabric/modules/net-ncc"
+  hub        = { name = "ncc-hub" }
+  name       = "spoke-ra-1"
+  project_id = var.project_id
+  asn        = 65000
+  peer_asn   = 65001
+  ras = [
     {
-      name          = "subnet-a"
-      ip_cidr_range = "10.1.3.0/24"
-      region        = "us-central1"
+      vm = var.ra1.self_link
+      ip = "10.0.0.3"
     }
   ]
+  region     = "europe-west1"
+  subnetwork = var.subnet1.self_link
+  vpc        = "my-vpc1"
 }
 
-module "vpc-b" {
-  source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
-  name       = "network-b"
-  subnets = [
+module "spoke-ra-2" {
+  source     = "./fabric/modules/net-ncc"
+  hub        = { name = "ncc-hub" }
+  name       = "spoke-ra-2"
+  project_id = var.project_id
+  asn        = 65000
+  peer_asn   = 65002
+  ras = [
     {
-      name          = "subnet-b"
-      ip_cidr_range = "192.168.10.0/24"
-      region        = "us-central1"
+      vm = var.ra2.self_link
+      ip = "10.1.0.5"
     }
   ]
+  region     = "europe-west3"
+  subnetwork = var.subnet2.self_link
+  vpc        = "my-vpc2"
 }
+# tftest modules=300 resources=100
+```
 
-module "nva1" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "us-central1-a"
-  name       = "router-app-a"
-  network_interfaces = [
+### Spoke with load-balanced router appliances
+
+```hcl
+module "spoke-ra" {
+  source     = "./fabric/modules/net-ncc"
+  hub        = { name = "ncc-hub" }
+  name       = "spoke-ra"
+  project_id = var.project_id
+  asn        = 65000
+  custom_advertise = {
+    all_subnets = true
+    ip_ranges = {
+      "peered-vpc" = "10.10.0.0/24"
+    }
+  }
+  ip_intf1 = "10.0.0.14"
+  ip_intf2 = "10.0.0.15"
+  peer_asn = 65001
+  ras = [
     {
-      network    = module.vpc-a.self_link
-      subnetwork = module.vpc-a.subnet_self_links["us-central1/subnet-a"]
-      addresses  = { external = null, internal = "10.1.3.8" }
+      vm = var.ra1.self_link
+      ip = "10.0.0.3"
     },
     {
-      network    = module.vpc-b.self_link
-      subnetwork = module.vpc-b.subnet_self_links["us-central1/subnet-b"]
-      addresses  = { external = null, internal = "192.168.10.3" }
+      vm = var.ra2.self_link
+      ip = "10.0.0.4"
     }
   ]
-  can_ip_forward = true
+  region     = "europe-west1"
+  subnetwork = var.subnet.self_link
+  vpc        = "my-vpc"
 }
-
-module "ncc" {
-  source     = "./fabric/modules/net-ncc"
-  asn        = 65000
-  name       = "ncc-hub"
-  project_id = "my-project"
-  spokes = {
-    spoke-a = {
-      vpc        = module.vpc-a.name
-      region     = "us-central1"
-      subnetwork = module.vpc-a.subnet_self_links["us-central1/subnet-a"]
-      nvas = [
-        {
-          vm = module.nva1.self_link
-          ip = module.nva1.internal_ips[0]
-        }
-      ]
-      router = {
-        ip1      = "10.1.3.14"
-        ip2      = "10.1.3.15"
-        peer_asn = 65001
-      }
-    },
-    spoke-b = {
-      vpc        = module.vpc-b.name
-      region     = "us-central1"
-      subnetwork = module.vpc-b.subnet_self_links["us-central1/subnet-b"]
-      nvas = [
-        {
-          vm = module.nva1.self_link
-          ip = module.nva1.internal_ips[1]
-        }
-      ]
-      router = {
-        ip1      = "192.168.10.14"
-        ip2      = "192.168.10.15"
-        peer_asn = 65001
-      }
-    }
-  }
-}
-# tftest modules=4 resources=18
-```
-
-### Using load-balanced router appliances
-
-The following topology shows a site that uses load-balanced router appliance instances to connect to Google Cloud. Both router appliance instances are backing resources for the same spoke.
-
-<p align="center"> <img src="images/load-balanced-router-appliances.png" width="600"> </p>
-
-```hcl
-module "vpc" {
-  source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
-  name       = "network-a"
-  subnets = [
-    {
-      name          = "subnet-a-1"
-      ip_cidr_range = "10.0.1.0/24"
-      region        = "us-west1"
-    }
-  ]
-}
-
-module "nva1" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "us-west1-a"
-  name       = "router-app-a"
-  network_interfaces = [{
-    network    = module.vpc.self_link
-    subnetwork = module.vpc.subnet_self_links["us-west1/subnet-a-1"]
-    addresses  = { external = null, internal = "10.0.1.10" }
-  }]
-  can_ip_forward = true
-}
-
-module "nva2" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "us-west1-b"
-  name       = "router-app-b"
-  network_interfaces = [{
-    network    = module.vpc.self_link
-    subnetwork = module.vpc.subnet_self_links["us-west1/subnet-a-1"]
-    addresses  = { external = null, internal = "10.0.1.11" }
-  }]
-  can_ip_forward = true
-}
-
-module "ncc" {
-  source     = "./fabric/modules/net-ncc"
-  asn        = 65000
-  name       = "ncc-hub"
-  project_id = "my-project"
-  spokes = {
-    spoke-a = {
-      vpc        = module.vpc.name
-      region     = "us-west1"
-      subnetwork = module.vpc.subnet_self_links["us-west1/subnet-a-1"]
-      nvas = [
-        {
-          vm = module.nva1.self_link
-          ip = module.nva1.internal_ip
-        },
-        {
-          vm = module.nva2.self_link
-          ip = module.nva2.internal_ip
-        }
-      ]
-      router = {
-        ip1      = "10.0.1.5"
-        ip2      = "10.0.1.6"
-        peer_asn = 65001
-      }
-    }
-  }
-}
-# tftest modules=4 resources=13
-```
-
-It is possible to add custom route advertisements. For example, suppose the VPC network-a is peered to another VPC network-b using the CIDR range 10.10.0.0/24. If you want to reach this VPC network-b from the on-premises network you should advertise its range to the router appliances:
-
-```hcl
-module "vpc" {
-  source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
-  name       = "network-a"
-  subnets = [
-    {
-      name          = "subnet-a-1"
-      ip_cidr_range = "10.0.1.0/24"
-      region        = "us-west1"
-    }
-  ]
-}
-
-module "nva1" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "us-west1-a"
-  name       = "router-app-a"
-  network_interfaces = [{
-    network    = module.vpc.self_link
-    subnetwork = module.vpc.subnet_self_links["us-west1/subnet-a-1"]
-    addresses  = { external = null, internal = "10.0.1.10" }
-  }]
-  can_ip_forward = true
-}
-
-module "nva2" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = "my-project"
-  zone       = "us-west1-b"
-  name       = "router-app-b"
-  network_interfaces = [{
-    network    = module.vpc.self_link
-    subnetwork = module.vpc.subnet_self_links["us-west1/subnet-a-1"]
-    addresses  = { external = null, internal = "10.0.1.11" }
-  }]
-  can_ip_forward = true
-}
-
-module "ncc" {
-  source     = "./fabric/modules/net-ncc"
-  asn        = 65000
-  name       = "ncc-hub"
-  project_id = "my-project"
-  spokes = {
-    spoke-a = {
-      vpc        = module.vpc.name
-      region     = "us-west1"
-      subnetwork = module.vpc.subnet_self_links["us-west1/subnet-a-1"]
-      nvas = [
-        {
-          vm = module.nva1.self_link
-          ip = module.nva1.internal_ip
-        },
-        {
-          vm = module.nva2.self_link
-          ip = module.nva2.internal_ip
-        }
-      ]
-      router = {
-        custom_advertise = {
-          all_subnets = true
-          ip_ranges = {
-            "peered-vpc-b" = "10.10.0.0/24"
-          }
-        }
-        ip1      = "10.0.1.5"
-        ip2      = "10.0.1.6"
-        peer_asn = 65001
-      }
-    }
-  }
-}
-# tftest modules=4 resources=13
+# tftest modules=300 resources=100
 ```
 <!-- BEGIN TFDOC -->
 
@@ -323,10 +110,25 @@ module "ncc" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [asn](variables.tf#L17) | ASN for all CRs in the hub. | <code>number</code> | ✓ |  |
-| [name](variables.tf#L28) | The name of the NCC hub being created. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L33) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
-| [spokes](variables.tf#L38) | List of NCC spokes. | <code title="map&#40;object&#40;&#123;&#10;  vpc        &#61; string&#10;  region     &#61; string&#10;  subnetwork &#61; string &#35; URI&#10;  nvas &#61; list&#40;object&#40;&#123;&#10;    vm &#61; string &#35; URI&#10;    ip &#61; string&#10;  &#125;&#41;&#41;&#10;  router &#61; object&#40;&#123;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41; &#35; map of descriptions and address ranges&#10;    &#125;&#41;&#41;&#10;    ip1       &#61; string&#10;    ip2       &#61; string&#10;    keepalive &#61; optional&#40;number&#41;&#10;    peer_asn  &#61; number&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [description](variables.tf#L22) | An optional description of the NCC hub. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
+| [asn](variables.tf#L17) | Autonomous System Number for the CR. All spokes in a hub should use the same ASN. | <code>number</code> | ✓ |  |
+| [hub](variables.tf#L37) | The name of the NCC hub to create or use. | <code title="object&#40;&#123;&#10;  create      &#61; optional&#40;bool, false&#41;&#10;  name        &#61; string&#10;  description &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L64) | The name of the NCC spoke. | <code>string</code> | ✓ |  |
+| [peer_asn](variables.tf#L69) | Peer Autonomous System Number used by the router appliances. | <code>number</code> | ✓ |  |
+| [project_id](variables.tf#L74) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
+| [ras](variables.tf#L79) | List of router appliances this spoke is associated with. | <code title="list&#40;object&#40;&#123;&#10;  vm &#61; string &#35; URI&#10;  ip &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [region](variables.tf#L87) | Region where the spoke is located. | <code>string</code> | ✓ |  |
+| [subnetwork](variables.tf#L92) | The URI of the subnetwork that CR interfaces belong to. | <code>string</code> | ✓ |  |
+| [vpc](variables.tf#L97) | A reference to the network to which the CR belongs. | <code>string</code> | ✓ |  |
+| [custom_advertise](variables.tf#L22) | IP ranges to advertise if not using default route advertisement (subnet ranges). | <code title="object&#40;&#123;&#10;  all_subnets &#61; bool&#10;  ip_ranges   &#61; map&#40;string&#41; &#35; map of descriptions and address ranges&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [data_transfer](variables.tf#L31) | Site-to-site data transfer feature, available only in some regions. | <code>bool</code> |  | <code>false</code> |
+| [ip_intf1](variables.tf#L46) | IP address for the CR interface 1. It must belong to the primary range of the subnet. If you don't specify a value Google will try to find a free address. | <code>string</code> |  | <code>null</code> |
+| [ip_intf2](variables.tf#L52) | IP address for the CR interface 2. It must belong to the primary range of the subnet. If you don't specify a value Google will try to find a free address. | <code>string</code> |  | <code>null</code> |
+| [keepalive](variables.tf#L58) | The interval in seconds between BGP keepalive messages that are sent to the peer. | <code>number</code> |  | <code>null</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [hub_name](outputs.tf#L17) | NCC hub name (only if auto-created). |  |
 
 <!-- END TFDOC -->
