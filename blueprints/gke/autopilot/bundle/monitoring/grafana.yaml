@@ -1,0 +1,184 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana
+  namespace: monitoring
+data:
+  allow-snippet-annotations: "false"
+  grafana.ini: |
+    [analytics]
+    check_for_updates = true
+    [grafana_net]
+    url = https://grafana.net
+    [log]
+    mode = console
+    [paths]
+    data = /var/lib/grafana/
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - access: proxy
+      editable: true
+      isDefault: true
+      jsonData:
+        timeInterval: 5s
+      name: Prometheus
+      orgId: 1
+      type: prometheus
+      url: http://frontend.monitoring.svc.cluster.local:9090
+  dashboardproviders.yaml: |
+    apiVersion: 1
+    providers:
+    - disableDeletion: false
+      folder: k8s
+      name: k8s
+      options:
+        path: /var/lib/grafana/dashboards/k8s
+      orgId: 1
+      type: file
+    - disableDeletion: false
+      folder: locust
+      name: locust
+      options:
+        path: /var/lib/grafana/dashboards/locust
+      orgId: 1
+      type: file
+    - disableDeletion: false
+      folder: nginx
+      name: nginx
+      options:
+        path: /var/lib/grafana/dashboards/nginx
+      orgId: 1
+      type: file                 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      tolerations:
+        - key: group
+          operator: Equal
+          value: monitoring
+          effect: NoSchedule
+      nodeSelector:
+        group: monitoring
+      containers:
+      - name: grafana
+        image: grafana/grafana:8.3.4
+        ports:
+        - name: web
+          containerPort: 3000
+        env:          
+          - name: GF_PATHS_DATA
+            value: /var/lib/grafana/
+          - name: GF_PATHS_LOGS
+            value: /var/log/grafana            
+          - name: GF_PATHS_PLUGINS
+            value: /var/lib/grafana/plugins            
+          - name: GF_PATHS_PROVISIONING
+            value: /etc/grafana/provisioning
+          - name: "GF_AUTH_ANONYMOUS_ENABLED"
+            value: "true"
+          - name: "GF_AUTH_ANONYMOUS_ORG_ROLE"
+            value: "Admin"
+          - name: "GF_AUTH_BASIC_ENABLED"
+            value: "false"
+          - name: "GF_SECURITY_ADMIN_PASSWORD"
+            value: "-"
+          - name: "GF_SECURITY_ADMIN_USER"
+            value: "-"            
+        volumeMounts:
+          - name: config
+            mountPath: "/etc/grafana/grafana.ini"
+            subPath: grafana.ini
+          - name: storage
+            mountPath: "/var/lib/grafana"
+          - name: k8s-grafana-dashboards
+            mountPath: "/var/lib/grafana/dashboards/k8s"
+          - name: locust-grafana-dashboards
+            mountPath: "/var/lib/grafana/dashboards/locust"  
+          - name: nginx-grafana-dashboards
+            mountPath: "/var/lib/grafana/dashboards/nginx"                         
+          - name: config
+            mountPath: "/etc/grafana/provisioning/datasources/datasources.yaml"
+            subPath: "datasources.yaml"
+          - name: config
+            mountPath: "/etc/grafana/provisioning/dashboards/dashboardproviders.yaml"
+            subPath: "dashboardproviders.yaml"
+        resources:
+          requests:
+            cpu: 30m
+            memory: 100Mi
+          limits:
+            memory: 100Mi
+        livenessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 60
+          timeoutSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000                     
+      volumes:
+        - name: config
+          configMap:
+            name: grafana 
+        - name: k8s-grafana-dashboards
+          configMap:
+            name: k8s-grafana-dashboards
+        - name: locust-grafana-dashboards
+          configMap:
+            name: locust-grafana-dashboards
+        - name: nginx-grafana-dashboards
+          configMap:
+            name: nginx-grafana-dashboards            
+        - name: storage
+          emptyDir: {}             
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+    cloud.google.com/app-protocols: '{"web":"HTTP"}'
+    cloud.google.com/backend-config: '{"default": "backendconfig"}'
+spec:
+  clusterIP: None
+  selector:
+    app: grafana
+  ports:
+  - name: web
+    port: 3000

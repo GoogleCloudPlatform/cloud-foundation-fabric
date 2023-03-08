@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-output "cloud_config" {
-  description = "Rendered cloud-config file to be passed as user-data instance metadata."
-  value       = local.cloud_config
+locals {
+  urls = { for k, v in module.addresses.global_addresses : k => "http://${v.address}" }
+}
+
+module "addresses" {
+  source           = "../../../modules/net-address"
+  project_id       = module.project.project_id
+  global_addresses = ["grafana", "locust", "app"]
 }
