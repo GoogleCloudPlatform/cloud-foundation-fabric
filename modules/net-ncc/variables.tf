@@ -53,6 +53,7 @@ variable "ip_intf2" {
 variable "keepalive" {
   description = "The interval in seconds between BGP keepalive messages that are sent to the peer."
   type        = number
+  default     = null
 }
 
 variable "name" {
