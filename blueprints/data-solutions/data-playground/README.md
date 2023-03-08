@@ -17,30 +17,35 @@ This sample creates several distinct groups of resources:
 - One BigQuery dataset
 
 ## Virtual Private Cloud (VPC) design
+
 As is often the case in real-world configurations, this blueprint accepts as input an existing Shared-VPC via the network_config variable. Make sure that 'container.googleapis.com', 'notebooks.googleapis.com' and 'servicenetworking.googleapis.com' are enabled in the VPC host project.
 
 If the network_config variable is not provided, one VPC will be created in each project that supports network resources (load, transformation and orchestration).
 
 ## Deploy your enviroment
+
 We assume the identiy running the following steps has the following role:
 
 - resourcemanager.projectCreator in case a new project will be created.
 - owner on the project in case you use an existing project.
 
 Run Terraform init:
+
 ```
-$ terraform init
+terraform init
 ```
 
 Configure the Terraform variable in your terraform.tfvars file. You need to spefify at least the following variables:
+
 ```
 prefix = "prefix"
 project_id      = "data-001"
 ```
 
 You can run now:
+
 ```
-$ terraform apply
+terraform apply
 ```
 
 You can now connect to the Vertex AI notbook to perform your data analysy.
@@ -81,5 +86,5 @@ module "test" {
     parent             = "folders/467898377"
   }
 }
-# tftest modules=8 resources=39
+# tftest modules=8 resources=40
 ```
