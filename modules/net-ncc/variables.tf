@@ -31,6 +31,7 @@ variable "custom_advertise" {
 variable "data_transfer" {
   description = "Site-to-site data transfer feature, available only in some regions."
   type        = bool
+  default     = false
 }
 
 variable "description" {
