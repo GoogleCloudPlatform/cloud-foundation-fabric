@@ -60,8 +60,8 @@ variable "router_config" {
       all_subnets = bool
       ip_ranges   = map(string) # map of descriptions and address ranges
     }))
-    ip_interface1 = optional(string)
-    ip_interface2 = optional(string)
+    ip_interface1 = string
+    ip_interface2 = string
     keepalive     = optional(number)
     peer_asn      = number
   })
