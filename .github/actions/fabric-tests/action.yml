@@ -45,7 +45,7 @@ runs:
           | tee -a /home/runner/.terraformrc
         echo 'disable_checkpoint = true' \
           | tee -a /home/runner/.terraformrc
-        mkdir -p /home/runner/.terraform.d/plugin-cache
+        mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
     # avoid conflicts with user-installed providers on local machines
     - name: Pin provider versions
       shell: bash
@@ -53,3 +53,7 @@ runs:
         for f in $(find . -name versions.tf); do
           sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
         done
+    - name: Install Python Dependencies
+      shell: bash
+      run: |
+        pip install -r tests/requirements.txt
