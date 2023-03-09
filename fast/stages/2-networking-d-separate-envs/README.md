@@ -37,6 +37,7 @@ The following diagram illustrates the high-level design, and should be used as a
   - [Running the stage](#running-the-stage)
   - [Post-deployment activities](#post-deployment-activities)
 - [Customizations](#customizations)
+  - [Configuring the VPNs to on prem](#configuring-the-vpns-to-on-prem)
   - [Changing default regions](#changing-default-regions)
 
 ## Design overview and choices
@@ -129,7 +130,7 @@ Subnets for [L7 ILBs](https://cloud.google.com/load-balancing/docs/l7-internal/p
 
 ### VPNs
 
-Connectivity to on-prem is implemented with HA VPN ([`net-vpn`](../../../modules/net-vpn-ha)) and defined in `vpn-onprem-{dev,prod}.tf`. The files provisionally implement each a single logical connection between onprem and environment at `europe-west1`, and the relevant parameters for its configuration are found in variable `vpn_onprem_configs`.
+Connectivity to on-prem is implemented with HA VPN ([`net-vpn`](../../../modules/net-vpn-ha)) and defined in `vpn-onprem.tf`. The file implements a single logical connection between each environment and onprem in the primary region, and the relevant parameters for its configuration are found in the `vpn_onprem_dev_primary_config` and `vpn_onprem_prod_primary_config` variables.
 
 ### Routing and BGP
 
@@ -256,6 +257,55 @@ Per variable `vpn_onprem_configs` such ranges are advertised to onprem - further
 - A private DNS zone for `googleapis.com` should be created and configured per [this article](https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid#config-domain)
 
 ## Customizations
+
+### Configuring the VPNs to on prem
+
+This stage includes basic support for an HA VPN connecting each environment landing zone in the primary region to on prem. Configuration is via the `vpn_onprem_dev_primary_config` and `vpn_onprem_prod_primary_config` variables, that closely mirrors the variables defined in the [`net-vpn-ha`](../../../modules/net-vpn-ha/).
+
+Support for the onprem VPNs is disabled by default so that no resources are created, this is an example of how to configure one variable to enable the VPN for dev in the primary region:
+
+```hcl
+vpn_onprem_dev_primary_config = {
+  peer_external_gateways = {
+    default = {
+      redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+      interfaces      = ["8.8.8.8"]
+    }
+  }
+  router_config = {
+    asn = 65501
+    custom_advertise = {
+      all_subnets = false
+      ip_ranges   = {
+        "10.1.0.0/16"     = "gcp"
+        "35.199.192.0/19" = "gcp-dns"
+        "199.36.153.4/30" = "gcp-restricted"
+      }
+    }
+  }
+  tunnels = {
+    "0" = {
+      bgp_peer = {
+        address = "169.254.1.1"
+        asn     = 65500
+      }
+      bgp_session_range     = "169.254.1.2/30"
+      shared_secret         = "foo"
+      vpn_gateway_interface = 0
+    }
+    "1" = {
+      bgp_peer = {
+        address = "169.254.2.1"
+        asn     = 64513
+      }
+      bgp_session_range     = "169.254.2.2/30"
+      shared_secret         = "foo"
+      vpn_gateway_interface = 1
+    }
+  }
+}
+# tftest skip
+```
 
 ### Changing default regions
 

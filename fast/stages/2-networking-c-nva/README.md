@@ -47,6 +47,7 @@ The final number of subnets, and their IP addressing will depend on the user-spe
   - [Post-deployment activities](#post-deployment-activities)
 - [Customizations](#customizations)
   - [Changing default regions](#changing-default-regions)
+  - [Configuring the VPNs to on prem](#configuring-the-vpns-to-on-prem)
   - [Adding an environment](#adding-an-environment)
 
 ## Design overview and choices

@@ -17,9 +17,14 @@
 # tfdoc:file:description VPN between landing and onprem.
 
 locals {
-  onprem_peer_gateways = try(
-    var.vpn_onprem_primary_config.peer_external_gateways, {}
-  )
+  onprem_peer_gateways = {
+    primary = try(
+      var.vpn_onprem_primary_config.peer_external_gateways, {}
+    )
+    secondary = try(
+      var.vpn_onprem_secondary_config.peer_external_gateways, {}
+    )
+  }
 }
 
 module "landing-to-onprem-primary-vpn" {
@@ -31,7 +36,7 @@ module "landing-to-onprem-primary-vpn" {
   name          = "vpn-to-onprem-${local.region_shortnames[var.regions.primary]}"
   router_config = try(var.vpn_onprem_primary_config.router_config, {})
   peer_gateways = {
-    for k, v in local.onprem_peer_gateways : k => { external = v }
+    for k, v in local.onprem_peer_gateways.primary : k => { external = v }
   }
   tunnels = try(var.vpn_onprem_primary_config.tunnels, {})
 }
@@ -45,7 +50,7 @@ module "landing-to-onprem-secondary-vpn" {
   name          = "vpn-to-onprem-${local.region_shortnames[var.regions.secondary]}"
   router_config = try(var.vpn_onprem_secondary_config.router_config, {})
   peer_gateways = {
-    for k, v in local.onprem_peer_gateways : k => { external = v }
+    for k, v in local.onprem_peer_gateways.secondary : k => { external = v }
   }
   tunnels = try(var.vpn_onprem_secondary_config.tunnels, {})
 }
