@@ -137,7 +137,7 @@ module "spoke-ra" {
 | [project_id](variables.tf#L37) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L42) | Region where the spoke is located. | <code>string</code> | ✓ |  |
 | [router_appliances](variables.tf#L47) | List of router appliances this spoke is associated with. | <code title="list&#40;object&#40;&#123;&#10;  internal_ip  &#61; string&#10;  vm_self_link &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [router_config](variables.tf#L55) | Configuration of the Cloud Router. | <code title="object&#40;&#123;&#10;  asn &#61; number&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41; &#35; map of descriptions and address ranges&#10;  &#125;&#41;&#41;&#10;  ip_interface1 &#61; string&#10;  ip_interface2 &#61; string&#10;  keepalive     &#61; optional&#40;number&#41;&#10;  peer_asn      &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [router_config](variables.tf#L55) | Configuration of the Cloud Router. | <code title="object&#40;&#123;&#10;  asn &#61; number&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ip_interface1 &#61; string&#10;  ip_interface2 &#61; string&#10;  keepalive     &#61; optional&#40;number&#41;&#10;  peer_asn      &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [vpc_config](variables.tf#L70) | Network and subnetwork for the CR interfaces. | <code title="object&#40;&#123;&#10;  network_name     &#61; string&#10;  subnet_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [data_transfer](variables.tf#L17) | Site-to-site data transfer feature, available only in some regions. | <code>bool</code> |  | <code>false</code> |
 
@@ -145,6 +145,8 @@ module "spoke-ra" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [hub_name](outputs.tf#L17) | NCC hub name (only if auto-created). |  |
+| [hub](outputs.tf#L17) | NCC hub resource (only if auto-created). |  |
+| [router](outputs.tf#L22) | Cloud Router resource. |  |
+| [spoke-ra](outputs.tf#L27) | NCC spoke resource. |  |
 
 <!-- END TFDOC -->
