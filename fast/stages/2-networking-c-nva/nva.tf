@@ -21,19 +21,19 @@ locals {
     {
       name = "untrusted"
       routes = [
-        var.custom_adv.gcp_landing_untrusted_primary,
-        var.custom_adv.gcp_landing_untrusted_secondary,
+        var.gcp_ranges.gcp_landing_untrusted_primary,
+        var.gcp_ranges.gcp_landing_untrusted_secondary,
       ]
     },
     {
       name = "trusted"
       routes = [
-        var.custom_adv.gcp_dev_primary,
-        var.custom_adv.gcp_dev_secondary,
-        var.custom_adv.gcp_landing_trusted_primary,
-        var.custom_adv.gcp_landing_trusted_secondary,
-        var.custom_adv.gcp_prod_primary,
-        var.custom_adv.gcp_prod_secondary,
+        var.gcp_ranges.gcp_dev_primary,
+        var.gcp_ranges.gcp_dev_secondary,
+        var.gcp_ranges.gcp_landing_trusted_primary,
+        var.gcp_ranges.gcp_landing_trusted_secondary,
+        var.gcp_ranges.gcp_prod_primary,
+        var.gcp_ranges.gcp_prod_secondary,
       ]
     },
   ]
