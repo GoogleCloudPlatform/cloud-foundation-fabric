@@ -112,7 +112,7 @@ module "spoke-ra" {
     custom_advertise = {
       all_subnets = true
       ip_ranges = {
-        "peered-vpc" = "10.10.0.0/24"
+        "10.10.0.0/24" = "peered-vpc"
       }
     }
     ip_interface1 = "10.0.0.14"
