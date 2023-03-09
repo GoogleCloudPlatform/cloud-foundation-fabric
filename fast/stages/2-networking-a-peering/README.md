@@ -165,7 +165,7 @@ Subnets for [L7 ILBs](https://cloud.google.com/load-balancing/docs/l7-internal/p
 
 ### VPNs
 
-Connectivity to on-prem is implemented with HA VPN ([`net-vpn`](../../../modules/net-vpn-ha)) and defined in [`vpn-onprem.tf`](./vpn-onprem-primary.tf). The file provisionally implements a single logical connection between onprem and landing at `europe-west1`, and the relevant parameters for its configuration are found in variable `vpn_onprem_primary_configs`. An example configuration is provided [below](#configuring-the-vpn-to-on-prem).
+Connectivity to on-prem is implemented with HA VPN ([`net-vpn`](../../../modules/net-vpn-ha)) and defined in [`vpn-onprem.tf`](./vpn-onprem.tf). The file provisionally implements a single logical connection between onprem and landing at `europe-west1`, and the relevant parameters for its configuration are found in variable `vpn_onprem_primary_configs`. An example configuration is provided [below](#configuring-the-vpn-to-on-prem).
 
 ### Routing and BGP
 
@@ -303,7 +303,7 @@ Regions are defined via the `regions` variable which sets up a mapping between t
 - change the values of the mappings in the `regions` variable to the regions you are going to use
 - change the regions in the factory subnet files in the `data` folder
 
-## Configuring the VPN to on prem
+### Configuring the VPN to on prem
 
 This stage includes basic support for an HA VPN connecting the landing zone in the primary region to on prem. Configuration is via the `vpn_onprem_primary_config` variable, that closely mirrors the variables defined in the [`net-vpn-ha`](../../../modules/net-vpn-ha/).
 
@@ -321,7 +321,11 @@ vpn_onprem_primary_config = {
     asn = 65501
     custom_advertise = {
       all_subnets = false
-      ip_ranges   = { "10.1.0.0/16" = "gcp" }
+      ip_ranges   = {
+        "10.1.0.0/16"     = "gcp"
+        "35.199.192.0/19  = "gcp-dns
+        "199.36.153.4/30" = "gcp-restricted"
+      }
     }
   }
   tunnels = {
@@ -384,7 +388,7 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [test-resources.tf](./test-resources.tf) | temporary instances for testing | <code>compute-vm</code> |  |
 | [variables-peerings.tf](./variables-peerings.tf) | Peering related variables. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
-| [vpn-onprem-primary.tf](./vpn-onprem-primary.tf) | VPN between landing and onprem. | <code>net-vpn-ha</code> |  |
+| [vpn-onprem.tf](./vpn-onprem.tf) | VPN between landing and onprem. | <code>net-vpn-ha</code> |  |
 
 ## Variables
 
