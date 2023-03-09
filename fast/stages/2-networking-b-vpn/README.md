@@ -337,7 +337,7 @@ vpn_onprem_primary_config = {
       all_subnets = false
       ip_ranges   = {
         "10.1.0.0/16"     = "gcp"
-        "35.199.192.0/19  = "gcp-dns
+        "35.199.192.0/19" = "gcp-dns"
         "199.36.153.4/30" = "gcp-restricted"
       }
     }
