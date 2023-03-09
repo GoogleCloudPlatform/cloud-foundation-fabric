@@ -43,10 +43,7 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests on documentation examples
-        id: pytest
-        run: |
-          pip install -r tests/requirements.txt
-          pytest -vv -k blueprints/ tests/examples
+        run: pytest -vv -k blueprints/ tests/examples
 
   examples-modules:
     runs-on: ubuntu-latest
@@ -60,11 +57,7 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests on documentation examples
-        id: pytest
-        run: |
-          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
-          pip install -r tests/requirements.txt
-          pytest -vv -k modules/ tests/examples
+        run: pytest -vv -k modules/ tests/examples
 
   blueprints:
     runs-on: ubuntu-latest
@@ -78,11 +71,7 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests environments
-        id: pytest
-        run: |
-          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
-          pip install -r tests/requirements.txt
-          pytest -vv tests/blueprints
+        run: pytest -vv tests/blueprints
 
   modules:
     runs-on: ubuntu-latest
@@ -96,11 +85,7 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests modules
-        id: pytest
-        run: |
-          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
-          pip install -r tests/requirements.txt
-          pytest -vv tests/modules
+        run: pytest -vv tests/modules
 
   fast:
     runs-on: ubuntu-latest
@@ -114,8 +99,4 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests on FAST stages
-        id: pytest
-        run: |
-          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
-          pip install -r tests/requirements.txt
-          pytest -vv tests/fast
+        run: pytest -vv tests/fast
