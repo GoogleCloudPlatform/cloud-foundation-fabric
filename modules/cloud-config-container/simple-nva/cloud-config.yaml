@@ -1,6 +1,6 @@
 #cloud-config
 
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ write_files:
     content: |
       ${indent(6, data.content)}
 %{ endfor }
+
   - path: /etc/systemd/system/routing.service
     permissions: 0644
     owner: root
@@ -34,6 +35,7 @@ write_files:
       Wants=network-online.target
       [Service]
       ExecStart=/bin/sh -c "/var/run/nva/start-routing.sh"
+
   - path: /var/run/nva/start-routing.sh
     permissions: 0744
     owner: root
@@ -42,6 +44,12 @@ write_files:
 %{ for interface in network_interfaces ~}
 %{ if enable_health_checks ~}
       /var/run/nva/policy_based_routing.sh ${interface.name}
+%{ endif ~}
+%{ if interface.enable_masquerading ~}
+%{ for cidr in interface.non_masq_cidrs ~}
+      iptables -t nat -A POSTROUTING -o ${interface.name} -d ${cidr} -j ACCEPT
+%{ endfor ~}
+      iptables -t nat -A POSTROUTING -o ${interface.name} -j MASQUERADE
 %{ endif ~}
 %{ for route in interface.routes ~}
       ip route add ${route} via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/${interface.number}/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}
@@ -55,4 +63,6 @@ runcmd:
   - systemctl daemon-reload
   - systemctl enable routing
   - systemctl start routing
-  
+%{ for cmd in optional_run_cmds ~}
+  - ${cmd}
+%{ endfor ~}

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ locals {
   # organization authoritative IAM bindings, in an easy to edit format before
   # they are combined with var.iam a bit further in locals
   _iam = {
+    "roles/billing.creator" = []
     "roles/browser" = [
       "domain:${var.organization.domain}"
     ]
