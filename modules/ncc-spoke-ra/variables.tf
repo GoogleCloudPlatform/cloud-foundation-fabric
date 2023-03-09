@@ -24,8 +24,8 @@ variable "hub" {
   description = "The name of the NCC hub to create or use."
   type = object({
     create      = optional(bool, false)
-    name        = string
     description = optional(string)
+    name        = string
   })
 }
 
@@ -47,8 +47,8 @@ variable "region" {
 variable "router_appliances" {
   description = "List of router appliances this spoke is associated with."
   type = list(object({
-    vm = string # URI
-    ip = string
+    internal_ip  = string
+    vm_self_link = string
   }))
 }
 
