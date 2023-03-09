@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1229](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1229)] Removed unnecessary files ([apichick](https://github.com/apichick)) <!-- 2023-03-09 13:06:18+00:00 -->
+- [[#1227](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1227)] Add CMEK support on BQML blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-09 09:12:50+00:00 -->
+- [[#1225](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1225)] Fix on bqml demo ([gioconte](https://github.com/gioconte)) <!-- 2023-03-08 17:40:40+00:00 -->
+- [[#1217](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1217)] Added autopilot blueprint ([apichick](https://github.com/apichick)) <!-- 2023-03-07 15:05:15+00:00 -->
+- [[#1210](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1210)] Blueprint - BigQuery ML and Vertex AI Pipeline ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-06 12:51:02+00:00 -->
 - [[#1208](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1208)] Fix outdated go deps, dependabot alerts ([averbuks](https://github.com/averbuks)) <!-- 2023-03-03 06:15:09+00:00 -->
 - [[#1150](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1150)] Blueprint: GLB hybrid NEG internal ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-03-02 08:53:07+00:00 -->
 - [[#1201](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1201)] Add missing tfvars template to the tfc blueprint ([averbuks](https://github.com/averbuks)) <!-- 2023-03-01 20:10:46+00:00 -->
@@ -32,6 +37,10 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1230](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1230)] Update contributing guide with new test framework ([juliocc](https://github.com/juliocc)) <!-- 2023-03-09 14:16:08+00:00 -->
+- [[#1221](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1221)] FAQ on installing Fast on a non-empty org ([skalolazka](https://github.com/skalolazka)) <!-- 2023-03-07 16:23:46+00:00 -->
+- [[#1217](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1217)] Added autopilot blueprint ([apichick](https://github.com/apichick)) <!-- 2023-03-07 15:05:15+00:00 -->
+- [[#1210](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1210)] Blueprint - BigQuery ML and Vertex AI Pipeline ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-06 12:51:02+00:00 -->
 - [[#1150](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1150)] Blueprint: GLB hybrid NEG internal ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-03-02 08:53:07+00:00 -->
 - [[#1193](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1193)] Add reference to Cloud Run blueprints ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-28 10:16:45+00:00 -->
 - [[#1188](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1188)] Add reference to Cloud Run blueprints ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-27 21:22:31+00:00 -->
@@ -45,6 +54,11 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1228](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1228)] **incompatible change:** Simplify VPN implementation in FAST networking stages ([ludoo](https://github.com/ludoo)) <!-- 2023-03-09 16:57:45+00:00 -->
+- [[#1222](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1222)] Manage billing.creator role authoritatively in FAST bootstrap. ([juliocc](https://github.com/juliocc)) <!-- 2023-03-07 18:04:07+00:00 -->
+- [[#1213](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1213)] feat: Add Pull Request support to 0-cicd-github ([antonkovach](https://github.com/antonkovach)) <!-- 2023-03-06 08:32:36+00:00 -->
+- [[#1203](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1203)] Update subnet sample yaml files to use subnet_secondary_ranges ([jmound](https://github.com/jmound)) <!-- 2023-03-05 18:37:23+00:00 -->
+- [[#1212](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1212)] feat: skip committing unchanged files in 0-cicd-github ([antonkovach](https://github.com/antonkovach)) <!-- 2023-03-05 18:16:48+00:00 -->
 - [[#1211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1211)] **incompatible change:** Add support for proxy and psc subnets to net-vpc module factory ([ludoo](https://github.com/ludoo)) <!-- 2023-03-05 16:08:43+00:00 -->
 - [[#1209](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1209)] Billing exclusion support for FAST mt resman ([ludoo](https://github.com/ludoo)) <!-- 2023-03-03 16:23:37+00:00 -->
 - [[#1207](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1207)] Allow preventing creation of billing IAM roles in FAST, add instructions on delayed billing association ([ludoo](https://github.com/ludoo)) <!-- 2023-03-03 08:24:42+00:00 -->
@@ -64,6 +78,10 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1219](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1219)] Network Connectivity Center module ([juliodiez](https://github.com/juliodiez)) <!-- 2023-03-09 15:01:51+00:00 -->
+- [[#1227](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1227)] Add CMEK support on BQML blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-09 09:12:50+00:00 -->
+- [[#1224](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1224)] Fix JIT notebook service account. ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-08 15:33:40+00:00 -->
+- [[#1195](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1195)] Extended simple-nva module to manage BGP service running on FR routing docker container ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-03-08 08:43:13+00:00 -->
 - [[#1211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1211)] **incompatible change:** Add support for proxy and psc subnets to net-vpc module factory ([ludoo](https://github.com/ludoo)) <!-- 2023-03-05 16:08:43+00:00 -->
 - [[#1206](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1206)] Dataproc module. Fix output. ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-02 12:59:19+00:00 -->
 - [[#1205](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1205)] Fix issue with GKE cluster notifications topic & static output for pubsub module ([rosmo](https://github.com/rosmo)) <!-- 2023-03-02 10:43:40+00:00 -->
@@ -102,6 +120,9 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1231](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1231)] Simplify testing workflow ([juliocc](https://github.com/juliocc)) <!-- 2023-03-09 15:27:05+00:00 -->
+- [[#1216](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1216)] Use composite action for test workflow prerequisite steps ([ludoo](https://github.com/ludoo)) <!-- 2023-03-06 10:44:58+00:00 -->
+- [[#1215](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1215)] Try plugin cache, split examples tests ([ludoo](https://github.com/ludoo)) <!-- 2023-03-06 09:38:40+00:00 -->
 - [[#1211](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1211)] **incompatible change:** Add support for proxy and psc subnets to net-vpc module factory ([ludoo](https://github.com/ludoo)) <!-- 2023-03-05 16:08:43+00:00 -->
 - [[#1209](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1209)] Billing exclusion support for FAST mt resman ([ludoo](https://github.com/ludoo)) <!-- 2023-03-03 16:23:37+00:00 -->
 - [[#1208](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1208)] Fix outdated go deps, dependabot alerts ([averbuks](https://github.com/averbuks)) <!-- 2023-03-03 06:15:09+00:00 -->
