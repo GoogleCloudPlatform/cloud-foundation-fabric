@@ -89,12 +89,10 @@ variable "region" {
   type        = string
 }
 
-variable "subnetwork" {
-  description = "The URI of the subnetwork that CR interfaces belong to."
-  type        = string
-}
-
-variable "vpc" {
-  description = "A reference to the network to which the CR belongs."
-  type        = string
+variable "vpc_config" {
+  description = "Network and subnetwork for the CR interfaces."
+  type = object({
+    network_name     = string
+    subnet_self_link = string
+  })
 }

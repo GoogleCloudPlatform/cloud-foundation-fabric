@@ -51,7 +51,7 @@ resource "google_network_connectivity_spoke" "spoke-ra" {
 resource "google_compute_router" "cr" {
   project = var.project_id
   name    = "${var.name}-cr"
-  network = var.vpc
+  network = var.vpc_config.network_name
   region  = var.region
   bgp {
     advertise_mode = (
@@ -78,7 +78,7 @@ resource "google_compute_router_interface" "intf1" {
   name               = "intf1"
   router             = google_compute_router.cr.name
   region             = var.region
-  subnetwork         = var.subnetwork
+  subnetwork         = var.vpc_config.subnet_self_link
   private_ip_address = var.ip_intf1
 }
 
@@ -87,7 +87,7 @@ resource "google_compute_router_interface" "intf2" {
   name                = "intf2"
   router              = google_compute_router.cr.name
   region              = var.region
-  subnetwork          = var.subnetwork
+  subnetwork          = var.vpc_config.subnet_self_link
   private_ip_address  = var.ip_intf2
   redundant_interface = google_compute_router_interface.intf1.name
 }
