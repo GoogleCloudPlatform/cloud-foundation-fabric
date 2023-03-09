@@ -578,7 +578,7 @@ variable "prefix" {
 }
 ```
 
-### Interacting with checks, tests and tools
+### Interacting with checks and tools
 
 Our modules are designed for composition and live in a monorepo together with several end-to-end blueprints, so it was inevitable that over time we found ways of ensuring that a change does not break consumers.
 
@@ -642,7 +642,7 @@ Options:
 
 The test workflow runs test suites in parallel. Refer to the next section for more details on running and writing tests.
 
-#### Using and writing tests
+## Using and writing tests
 
 Our testing approach follows a simple philosophy: we mainly test to ensure code works, and that it does not break due to changes to dependencies (modules) or provider resources.
 
@@ -650,11 +650,239 @@ This makes testing very simple, as a successful `terraform plan` run in a test c
 
 As our testing needs are very simple, we also wanted to reduce the friction required to write new tests as much as possible: our tests are written in Python and use `pytest` which is the standard for the language, leveraging our [`tftest`](https://pypi.org/project/tftest/) library, which wraps the Terraform executable and returns familiar data structures for most commands.
 
-Writing `pytest` unit tests to check plan results is really easy, but since wrapping modules and examples in dedicated fixtures and hand-coding checks gets annoying after a while, we developed a thin layer that allows us to use `tfvars` files to run tests, and `yaml` results to check results. In some specific situations you might still want to interact directly with `tftest` via Python, if that's the case skip to the legacy approach below.
+Writing `pytest` unit tests to check plan results is really easy, but since wrapping modules and examples in dedicated fixtures and hand-coding checks gets annoying after a while, we developed additional ways that allows to simplify the overall process.
 
-##### Testing end-to-end examples via `tfvars` and `yaml`
+In the following sections we describe the three testing approaches we currently have:
 
-Our new approach to testing requires you to:
+- [Example-based tests](#testing-via-readmemd-example-blocks): this is the perhaps the easiest and most common way to test either a module or a blueprint. You simply have to provide an example call to your module and a few metadata values in the module's README.md.
+- [tfvars-based tests](#testing-via-tfvars-and-yaml): allows you to test a module or blueprint by providing variables and an expected plan result.
+- Python-based (legacy) tests: in some situations you might still want to interact directly with `tftest` via Python, if that's the case, use this method to write custom Python logic to test you module in any way you see fit.
+
+### Testing via README.md example blocks.
+
+This is the preferred method to write tests for modules and blueprints. Example-based tests are triggered from [HCL Markdown fenced code blocks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#syntax-highlighting) in any file named README.md, hence there's no need to create any additional files or revert to Python to write a test. Most of our documentation examples are using this method.
+
+To enable an example for testing just use the special `tftest` comment as the last line in the example, listing the number of modules and resources expected.
+
+A [few preset variables](./tests/examples/variables.tf) are available for use, as shown in this example from the `dns` module documentation.
+
+```hcl
+module "private-dns" {
+  source          = "./modules/dns"
+  project_id      = "myproject"
+  type            = "private"
+  name            = "test-example"
+  domain          = "test.example."
+  client_networks = [var.vpc.self_link]
+  recordsets = {
+    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
+  }
+}
+# tftest modules=1 resources=2
+```
+
+This is enough to tell our test suite to run this example and assert that the resulting plan has one module (`modules=1`) and two resources (`resources=2`)
+
+Note that all HCL code examples in READMEs are automatically tested. To prevent this behavior, include `tftest skip` somewhere in the code.
+
+#### Testing examples against an inventory YAML
+
+If you want to go further, you can provide define a `yaml` "inventory" with the plan and output results you want to test.
+
+Continuing with the example above, imagine you want ensure the plan also includes the creation of the A record specified in the `recordsets` variable. To do this we add the `inventory` parameter to the `tftest` directive, as shown below.
+
+```hcl
+module "private-dns" {
+  source          = "./modules/dns"
+  project_id      = "myproject"
+  type            = "private"
+  name            = "test-example"
+  domain          = "test.example."
+  client_networks = [var.vpc.self_link]
+  recordsets = {
+    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
+  }
+}
+# tftest modules=1 resources=2 inventory=recordsets.yaml
+```
+
+Next define the corresponding "inventory" `yaml` file which will be used to assert values from the plan. The inventory is loaded from `tests/[module path]/examples/[inventory_name]`. In our example we have to create `tests/modules/dns/examples/recordsets.yaml`.
+
+In the inventory file you have three sections available, and all of them are optional:
+
+- `values` is a map of resource indexes (the same ones used by Terraform state) and their attribute name and values; you can define just the attributes you are interested in and the other will be ignored
+- `counts` is a map of resource types (eg `google_compute_engine`) and the number of times each type occurs in the plan; here too just define the ones the that need checking
+- `outputs` is a map of outputs and their values; where a value is unknown at plan time use the special `__missing__` token
+
+Going back to our example, we create the inventory with values for the recordset and we also include the zone for good measure.
+
+```yaml
+# file: tests/modules/dns/examples/recordsets.yaml
+values:
+  module.private-dns.google_dns_managed_zone.non-public[0]:
+    dns_name: test.example.
+    forwarding_config: []
+    name: test-example
+    peering_config: []
+    project: myproject
+    reverse_lookup: false
+    service_directory_config: []
+    visibility: private
+  module.private-dns.google_dns_record_set.cloud-static-records["A localhost"]:
+    managed_zone: test-example
+    name: localhost.test.example.
+    project: myproject
+    routing_policy: []
+    rrdatas:
+    - 127.0.0.1
+    ttl: 300
+    type: A
+
+counts:
+  google_dns_managed_zone: 1
+  google_dns_record_set: 1
+```
+
+#### Using external files
+
+In some situations you module might require additional files to properly test your module. This is a common situation with modules that implement [factories](blueprints/factories/README.md) that drive the creation of resource from YAML files. If you're in this situation, you can still example-based tests as described below:
+
+- create your regular hcl code block example and add the `tftest` directive as described above.
+- create a new code block with the contents of you additional file and use the `tftest-file` directive. You have to specify a label for the file and a relative path where the file will live.
+- update your hcl code block to use the `files` parameters and pass a comma separated list of file ids that you want to make available to the module.
+
+Continuing with the DNS example, imagine you want to load the recordsets from a YAML file
+
+```hcl
+module "private-dns" {
+  source          = "./modules/dns"
+  project_id      = "myproject"
+  type            = "private"
+  name            = "test-example"
+  domain          = "test.example."
+  client_networks = [var.vpc.self_link]
+  recordsets      = yamldecode(file("records/example.yaml"))
+}
+# tftest modules=1 resources=2 files=records
+```
+```yaml
+# tftest-file id=records path=records/example.yaml
+A localhost:
+ ttl: 300
+ records: ["127.0.0.1"]
+A myhost:
+ ttl: 600
+ records: ["10.10.0.1"]
+```
+
+Note that you use the `files` parameters together with `inventory` to allow more fine-grained assertions. Please review the [subnet factory](modules/net-vpc#subnet-factory) in the `net-vpc` module for example of this.
+
+#### Running tests for specific examples
+
+As mentioned before, we use pytest as our test runner, so you can use any of the standard test selection options available in pytest.
+
+Example-based test are named based on the section within the README.md that contains. You can use this name to select specific tests.
+
+Here we show a few commonly used selection commands:
+- Run all examples:
+  - `pytest tests/examples/`
+- Run all examples for modules:
+  - `pytest -k modules/ tests/examples`
+- Run all examples for the `net-vpc` module:
+  - `pytest -k 'net and vpc' tests/examples`
+- Run a specific example in module `net-vpc`:
+  - `pytest -k 'modules and dns and private'`
+  - `pytest -v 'tests/examples/test_plan.py::test_example[modules/dns:Private Zone]'`
+- Run tests for all blueprints expect those under the gke directory:
+  - `pytest -k 'blueprints and not gke'`
+
+Tip: you can use `pytest --collect-only` to fine tune your selection query without actually running the tests. Once you find the expression matching your desired tests, remove the `collect-only` flag.
+
+#### Generating the inventory automatically
+
+Building an inventory file by hand is difficult. To simplify this task, the default test runner for examples prints the inventory for the full plan if it succeeds. Therefore, you can start without an inventory and then run a test to get the full plan and extract the pieces you want to build the inventory file.
+
+Suppose you want to generate the inventory for the last DNS example above (the one creating the recordsets from a YAML file). Assuming that example is under the "Private Zone" section in the README for the `dns`, you can run the following command to build the inventory:
+
+```bash
+pytest -s 'tests/examples/test_plan.py::test_example[modules/dns:Private Zone]'
+```
+
+which will generate a output similar to this:
+
+```
+==================================== test session starts ====================================
+platform ... -- Python 3.11.2, pytest-7.2.1, pluggy-1.0.0
+rootdir: ...
+plugins: xdist-3.1.0
+collected 1 item
+
+tests/examples/test_plan.py
+
+values:
+  module.private-dns.google_dns_managed_zone.non-public[0]:
+    description: Terraform managed.
+    dns_name: test.example.
+    dnssec_config: []
+    force_destroy: false
+    forwarding_config: []
+    labels: null
+    name: test-example
+    peering_config: []
+    private_visibility_config:
+    - gke_clusters: []
+      networks:
+      - network_url: projects/xxx/global/networks/aaa
+    project: myproject
+    reverse_lookup: false
+    service_directory_config: []
+    timeouts: null
+    visibility: private
+  module.private-dns.google_dns_record_set.cloud-static-records["A localhost"]:
+    managed_zone: test-example
+    name: localhost.test.example.
+    project: myproject
+    routing_policy: []
+    rrdatas:
+    - 127.0.0.1
+    ttl: 300
+    type: A
+  module.private-dns.google_dns_record_set.cloud-static-records["A myhost"]:
+    managed_zone: test-example
+    name: myhost.test.example.
+    project: myproject
+    routing_policy: []
+    rrdatas:
+    - 10.10.0.1
+    ttl: 600
+    type: A
+
+counts:
+  google_dns_managed_zone: 1
+  google_dns_record_set: 2
+  modules: 1
+  resources: 3
+
+outputs: {}
+
+.
+
+===================================== 1 passed in 3.46s =====================================
+```
+
+You can use that output to build the inventory file.
+
+Note that for complex modules, the output can be very large and includes a lot of details about the resources. Extract only those resources and fields that are relevant to your test. There is a fine balance between asserting the critical bits related to your test scenario and including too many details that end up making the test too specific.
+
+#### Building tests for blueprints
+
+Generally blueprints are used as top-level modules which means that usually their READMEs include sample values for their variables but there are no examples showing how to use them as modules.
+
+If you want to test a blueprint using an example, we suggest adding a "Test" section at the end of the README and include the example there. See any existing module for a [concrete example](blueprints/cloud-operations/asset-inventory-feed-remediation#test).
+
+### Testing via it `tfvars` and `yaml` (aka `tftest`-based tests)
+
+The second approach to testing requires you to:
 
 - create a folder in the right `tests` hierarchy where specific test files will be hosted
 - define `tfvars` files each with a specific variable configuration to test
@@ -663,11 +891,10 @@ Our new approach to testing requires you to:
 
 Let's go through each step in succession, assuming you are testing the new `net-glb` module.
 
-First create a new folder under `tests/modules` replacing any dash in the module name with underscores. You also need to create an empty `__init__.py` file in it, since the folder represents a package from the point of view of `pytest`. Note that if you were testing a blueprint the folder would go in `tests/blueprints`.
+First create a new folder under `tests/modules` replacing any dash in the module name with underscores. Note that if you were testing a blueprint the folder would go in `tests/blueprints`.
 
 ```bash
 mkdir tests/modules/net_glb
-touch tests/modules/net_glb/__init__.py
 ```
 
 Then define a `tfvars` file with one of the module configurations you want to test. If you have a lot of variables which are shared across different tests, you can group all the common variables in a single `tfvars` file and associate it with each test's specific `tfvars` file (check the [organization module test](./tests/modules/organization/tftest.yaml) for an example).
@@ -683,10 +910,10 @@ backend_buckets_config = {
 }
 ```
 
-Next define the corresponding inventory `yaml` file which will be used to assert values from the plan that uses the `tfvars` file above. In the inventory file you have three sections available:
+Next define the corresponding "inventory" `yaml` file which will be used to assert values from the plan that uses the `tfvars` file above. In the inventory file you have three sections available:
 
 - `values` is a map of resource indexes (the same ones used by Terraform state) and their attribute name and values; you can define just the attributes you are interested in and the other will be ignored
-- `counts` is a map of resource types (eg `google_compute_engine`) and the number of times each type occurs in the plan; here too just define the ones the need checking
+- `counts` is a map of resource types (eg `google_compute_engine`) and the number of times each type occurs in the plan; here too just define the ones the that need checking
 - `outputs` is a map of outputs and their values; where a value is unknown at plan time use the special `__missing__` token
 
 ```yaml
@@ -721,17 +948,74 @@ module: modules/net-glb
 # common_tfvars:
 #   - defaults.tfvars
 tests:
+  # run a test named `test-plan`, load the specified tfvars files
+  # use the default inventory file of `test-plan.yaml`
   test-plan:
-    tfvars:
+    tfvars: # if ommited, we load test-plan.tfvars by default
       - test-plan.tfvars
       - test-plan-extra.tfvars
+    inventory:
+      - test-plan.yaml
+
+  # You can ommit the tfvars and inventory sections and they will
+  # default to the name of the test. The following two examples are equivalent:
+  #
+  # test-plan2:
+  #   tfvars:
+  #     - test-plan2.tfvars
+  #   inventory:
+  #     - test-plan2.yaml
+  # test-plan2:
 ```
 
 A good example of tests showing different ways of leveraging our framework is in the [`tests/modules/organization`](./tests/modules/organization) folder.
 
-##### Writing tests in Python (legacy approach)
+#### Generating the inventory for `tftest`-based tests
 
-Where possible, we recommend using the testing framework described in the previous section. However, if you need it, you can still write tests using Python directly.
+Just as you can generate an initial inventory for example-based tests, you can do the same for `tftest`-based tests. Currently the process relies on an additional tool (`tools/plan_summary.py`) abut but we have plans to unify both cases through in the future.
+
+As an example, if you want to generate the inventory for the `organization` module using the `common.tfvars` and `audit_config.tfvars` found in `tests/modules/organization/`, simply run `plan_summary.py` as follows:
+
+```bash
+$ python tools/plan_summary.py modules/organization \
+   tests/modules/organization/common.tfvars \
+   tests/modules/organization/audit_config.tfvars
+
+values:
+  google_organization_iam_audit_config.config["allServices"]:
+    audit_log_config:
+    - exempted_members:
+      - user:me@example.org
+      log_type: DATA_WRITE
+    - exempted_members: []
+      log_type: DATA_READ
+    org_id: '1234567890'
+    service: allServices
+
+counts:
+  google_organization_iam_audit_config: 1
+  modules: 0
+  resources: 1
+
+outputs:
+  custom_role_id: {}
+  custom_roles: {}
+  firewall_policies: {}
+  firewall_policy_id: {}
+  network_tag_keys: {}
+  network_tag_values: {}
+  organization_id: organizations/1234567890
+  sink_writer_identities: {}
+  tag_keys: {}
+  tag_values: {}
+
+```
+
+You can now use this output to create the inventory file for your test. As mentioned before, please only use those values relevant to your test scenario.
+
+### Writing tests in Python (legacy approach)
+
+Where possible, we recommend using the testing methods described in the previous sections. However, if you need it, you can still write tests using Python directly.
 
 In general, you should try to use the `plan_summary` fixture, which runs a a terraform plan and returns a `PlanSummary` object. The most important arguments to `plan_summary` are:
 - the path of the Terraform module you want to test, relative to the root of the repository
@@ -756,32 +1040,9 @@ def test_name(plan_summary, tfvars_to_yaml, tmp_path):
 
 For more examples on how to write python tests, check the tests for the [`organization`](./tests/modules/organization/test_plan_org_policies.py) module.
 
-#### Testing documentation examples
-
-Most of our documentation examples are also tested via the `examples` test suite. To enable an example for testing just use the special `tftest` comment as the last line in the example, listing the number of modules and resources expected.
-
-A [few preset variables](./tests/examples/variables.tf) are available for use, as shown in this example from the `dns` module documentation.
-
-```hcl
-module "private-dns" {
-  source          = "./modules/dns"
-  project_id      = "myproject"
-  type            = "private"
-  name            = "test-example"
-  domain          = "test.example."
-  client_networks = [var.vpc.self_link]
-  recordsets = {
-    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
-  }
-}
-# tftest modules=1 resources=2
-```
-
-Note that all HCL code examples in READMEs are automatically tested. To prevent this behavior, include `tftest skip` somewhere in the code.
-
 #### Running tests from a temporary directory
 
-    Most of the time you can run tests using the `pytest` command as described in previous. However, the `plan_summary` fixture allows copying the root module and running the test from a temporary directory.
+Most of the time you can run tests using the `pytest` command as described in previous. However, the `plan_summary` fixture allows copying the root module and running the test from a temporary directory.
 
 To enable this option, just define the environment variable `TFTEST_COPY` and any tests using the `plan_summary` fixture will automatically run from a temporary directory.
 
@@ -796,7 +1057,7 @@ Running tests from temporary directories is useful if:
   ```
 
 
-#### Fabric tools
+## Fabric tools
 
 The main tool you will interact with in development is `tfdoc`, used to generate file, output and variable tables in README documents.
 
