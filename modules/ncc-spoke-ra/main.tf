@@ -66,8 +66,8 @@ resource "google_compute_router" "cr" {
     dynamic "advertised_ip_ranges" {
       for_each = try(var.router_config.custom_advertise.ip_ranges, {})
       content {
-        description = advertised_ip_ranges.key
-        range       = advertised_ip_ranges.value
+        description = advertised_ip_ranges.value
+        range       = advertised_ip_ranges.key
       }
     }
     asn                = var.router_config.asn

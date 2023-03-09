@@ -58,7 +58,7 @@ variable "router_config" {
     asn = number
     custom_advertise = optional(object({
       all_subnets = bool
-      ip_ranges   = map(string) # map of descriptions and address ranges
+      ip_ranges   = map(string)
     }))
     ip_interface1 = string
     ip_interface2 = string
