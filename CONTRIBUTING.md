@@ -19,7 +19,7 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
     - [Running tests for specific examples](#running-tests-for-specific-examples)
     - [Generating the inventory automatically](#generating-the-inventory-automatically)
     - [Building tests for blueprints](#building-tests-for-blueprints)
-  + [Testing via it `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-it--tfvars--and--yaml---aka--tftest--based-tests-)
+  + [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via--tfvars--and--yaml---aka--tftest--based-tests-)
     - [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for--tftest--based-tests)
   + [Writing tests in Python (legacy approach)](#writing-tests-in-python--legacy-approach-)
   + [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
@@ -659,13 +659,13 @@ This makes testing very simple, as a successful `terraform plan` run in a test c
 
 As our testing needs are very simple, we also wanted to reduce the friction required to write new tests as much as possible: our tests are written in Python and use `pytest` which is the standard for the language, leveraging our [`tftest`](https://pypi.org/project/tftest/) library, which wraps the Terraform executable and returns familiar data structures for most commands.
 
-Writing `pytest` unit tests to check plan results is really easy, but since wrapping modules and examples in dedicated fixtures and hand-coding checks gets annoying after a while, we developed additional ways that allows to simplify the overall process.
+Writing `pytest` unit tests to check plan results is really easy, but since wrapping modules and examples in dedicated fixtures and hand-coding checks gets annoying after a while, we developed additional ways that allow us to simplify the overall process.
 
 In the following sections we describe the three testing approaches we currently have:
 
-- [Example-based tests](#testing-via-readmemd-example-blocks): this is the perhaps the easiest and most common way to test either a module or a blueprint. You simply have to provide an example call to your module and a few metadata values in the module's README.md.
-- [tfvars-based tests](#testing-via-tfvars-and-yaml): allows you to test a module or blueprint by providing variables and an expected plan result.
-- Python-based (legacy) tests: in some situations you might still want to interact directly with `tftest` via Python, if that's the case, use this method to write custom Python logic to test you module in any way you see fit.
+- [Example-based tests](#testing-via-readmemd-example-blocks): this is perhaps the easiest and most common way to test either a module or a blueprint. You simply have to provide an example call to your module and a few metadata values in the module's README.md.
+- [tfvars-based tests](#testing-via-tfvars-and-yaml): allows you to test a module or blueprint by providing variables via tfvar files and an expected plan result in form of an inventory. This type of test is useful, for example, for FAST stages that don't have any examples within their READMEs.
+- [Python-based (legacy) tests](#writing-tests-in-python--legacy-approach-): in some situations you might still want to interact directly with `tftest` via Python, if that's the case, use this method to write custom Python logic to test your module in any way you see fit.
 
 ### Testing via README.md example blocks.
 
@@ -696,9 +696,9 @@ Note that all HCL code examples in READMEs are automatically tested. To prevent 
 
 #### Testing examples against an inventory YAML
 
-If you want to go further, you can provide define a `yaml` "inventory" with the plan and output results you want to test.
+If you want to go further, you can define a `yaml` "inventory" with the plan and output results you want to test.
 
-Continuing with the example above, imagine you want ensure the plan also includes the creation of the A record specified in the `recordsets` variable. To do this we add the `inventory` parameter to the `tftest` directive, as shown below.
+Continuing with the example above, imagine you want to ensure the plan also includes the creation of the A record specified in the `recordsets` variable. To do this we add the `inventory` parameter to the `tftest` directive, as shown below.
 
 ```hcl
 module "private-dns" {
@@ -719,8 +719,8 @@ Next define the corresponding "inventory" `yaml` file which will be used to asse
 
 In the inventory file you have three sections available, and all of them are optional:
 
-- `values` is a map of resource indexes (the same ones used by Terraform state) and their attribute name and values; you can define just the attributes you are interested in and the other will be ignored
-- `counts` is a map of resource types (eg `google_compute_engine`) and the number of times each type occurs in the plan; here too just define the ones the that need checking
+- `values` is a map of resource indexes (the same ones used by Terraform state) and their attribute name and values; you can define just the attributes you are interested in and the rest will be ignored
+- `counts` is a map of resource types (eg `google_compute_engine`) and the number of times each type occurs in the plan; here too only define the ones that need checking
 - `outputs` is a map of outputs and their values; where a value is unknown at plan time use the special `__missing__` token
 
 Going back to our example, we create the inventory with values for the recordset and we also include the zone for good measure.
@@ -754,10 +754,10 @@ counts:
 
 #### Using external files
 
-In some situations you module might require additional files to properly test your module. This is a common situation with modules that implement [factories](blueprints/factories/README.md) that drive the creation of resource from YAML files. If you're in this situation, you can still example-based tests as described below:
+In some situations your module might require additional files to properly test it. This is a common situation with modules that implement [factories](blueprints/factories/README.md) that drive the creation of resource from YAML files. If you're in this situation, you can still use example-based tests as described below:
 
-- create your regular hcl code block example and add the `tftest` directive as described above.
-- create a new code block with the contents of you additional file and use the `tftest-file` directive. You have to specify a label for the file and a relative path where the file will live.
+- create your regular `hcl` code block example and add the `tftest` directive as described above.
+- create a new code block with the contents of the additional file and use the `tftest-file` directive. You have to specify a label for the file and a relative path where the file will live.
 - update your hcl code block to use the `files` parameters and pass a comma separated list of file ids that you want to make available to the module.
 
 Continuing with the DNS example, imagine you want to load the recordsets from a YAML file
@@ -788,9 +788,9 @@ Note that you use the `files` parameters together with `inventory` to allow more
 
 #### Running tests for specific examples
 
-As mentioned before, we use pytest as our test runner, so you can use any of the standard test selection options available in pytest.
+As mentioned before, we use `pytest` as our test runner, so you can use any of the standard [test selection options](https://docs.pytest.org/en/latest/how-to/usage.html) available in `pytest`.
 
-Example-based test are named based on the section within the README.md that contains. You can use this name to select specific tests.
+Example-based test are named based on the section within the README.md that contains them. You can use this name to select specific tests.
 
 Here we show a few commonly used selection commands:
 - Run all examples:
@@ -802,7 +802,7 @@ Here we show a few commonly used selection commands:
 - Run a specific example in module `net-vpc`:
   - `pytest -k 'modules and dns and private'`
   - `pytest -v 'tests/examples/test_plan.py::test_example[modules/dns:Private Zone]'`
-- Run tests for all blueprints expect those under the gke directory:
+- Run tests for all blueprints except those under the gke directory:
   - `pytest -k 'blueprints and not gke'`
 
 Tip: you can use `pytest --collect-only` to fine tune your selection query without actually running the tests. Once you find the expression matching your desired tests, remove the `collect-only` flag.
@@ -889,7 +889,7 @@ Generally blueprints are used as top-level modules which means that usually thei
 
 If you want to test a blueprint using an example, we suggest adding a "Test" section at the end of the README and include the example there. See any existing module for a [concrete example](blueprints/cloud-operations/asset-inventory-feed-remediation#test).
 
-### Testing via it `tfvars` and `yaml` (aka `tftest`-based tests)
+### Testing via `tfvars` and `yaml` (aka `tftest`-based tests)
 
 The second approach to testing requires you to:
 
