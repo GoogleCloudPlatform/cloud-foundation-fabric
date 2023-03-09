@@ -55,21 +55,21 @@ resource "google_compute_router" "cr" {
   region  = var.region
   bgp {
     advertise_mode = (
-      var.custom_advertise != null ? "CUSTOM" : "DEFAULT"
+      var.router_config.custom_advertise != null ? "CUSTOM" : "DEFAULT"
     )
     advertised_groups = (
-      try(var.custom_advertise.all_subnets, false)
+      try(var.router_config.custom_advertise.all_subnets, false)
       ? ["ALL_SUBNETS"] : []
     )
     dynamic "advertised_ip_ranges" {
-      for_each = try(var.custom_advertise.ip_ranges, {})
+      for_each = try(var.router_config.custom_advertise.ip_ranges, {})
       content {
         description = advertised_ip_ranges.key
         range       = advertised_ip_ranges.value
       }
     }
-    asn                = var.asn
-    keepalive_interval = try(var.keepalive, null)
+    asn                = var.router_config.asn
+    keepalive_interval = try(var.router_config.keepalive, null)
   }
 }
 
@@ -79,7 +79,7 @@ resource "google_compute_router_interface" "intf1" {
   router             = google_compute_router.cr.name
   region             = var.region
   subnetwork         = var.vpc_config.subnet_self_link
-  private_ip_address = var.ip_intf1
+  private_ip_address = var.router_config.ip_interface1
 }
 
 resource "google_compute_router_interface" "intf2" {
@@ -88,7 +88,7 @@ resource "google_compute_router_interface" "intf2" {
   router              = google_compute_router.cr.name
   region              = var.region
   subnetwork          = var.vpc_config.subnet_self_link
-  private_ip_address  = var.ip_intf2
+  private_ip_address  = var.router_config.ip_interface2
   redundant_interface = google_compute_router_interface.intf1.name
 }
 
@@ -101,7 +101,7 @@ resource "google_compute_router_peer" "peer1" {
   router                    = google_compute_router.cr.name
   region                    = var.region
   interface                 = google_compute_router_interface.intf1.name
-  peer_asn                  = var.peer_asn
+  peer_asn                  = var.router_config.peer_asn
   peer_ip_address           = each.value.ip
   router_appliance_instance = each.value.vm
 }
@@ -115,7 +115,7 @@ resource "google_compute_router_peer" "peer2" {
   router                    = google_compute_router.cr.name
   region                    = var.region
   interface                 = google_compute_router_interface.intf2.name
-  peer_asn                  = var.peer_asn
+  peer_asn                  = var.router_config.peer_asn
   peer_ip_address           = each.value.ip
   router_appliance_instance = each.value.vm
 }
