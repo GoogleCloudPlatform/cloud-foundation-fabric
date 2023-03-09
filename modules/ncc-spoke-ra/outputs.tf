@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-output "hub_name" {
-  description = "NCC hub name (only if auto-created)."
-  value       = one(google_network_connectivity_hub.hub[*].name)
+output "hub" {
+  description = "NCC hub resource (only if auto-created)."
+  value       = one(google_network_connectivity_hub.hub[*])
+}
+
+output "router" {
+  description = "Cloud Router resource."
+  value       = google_compute_router.cr
+}
+
+output "spoke-ra" {
+  description = "NCC spoke resource."
+  value       = google_network_connectivity_spoke.spoke-ra
 }
