@@ -14,6 +14,7 @@
 
 import re
 import subprocess
+import yaml
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
@@ -49,7 +50,7 @@ def test_example(plan_validator, tmp_path, example):
     summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
                              tf_var_files=[])
 
-    import yaml
+    print("\n")
     print(yaml.dump({"values": summary.values}))
     print(yaml.dump({"counts": summary.counts}))
     print(yaml.dump({"outputs": summary.outputs}))
