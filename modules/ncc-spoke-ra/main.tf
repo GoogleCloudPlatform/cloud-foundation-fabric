@@ -17,9 +17,11 @@
 locals {
   spoke_vms = [
     for ras in var.router_appliances : {
-      ip      = ras.ip
-      vm      = ras.vm
-      vm_name = element(split("/", ras.vm), length(split("/", ras.vm)) - 1)
+      ip = ras.internal_ip
+      vm = ras.vm_self_link
+      vm_name = element(
+        split("/", ras.vm_self_link), length(split("/", ras.vm_self_link)) - 1
+      )
     }
   ]
 }
@@ -40,8 +42,8 @@ resource "google_network_connectivity_spoke" "spoke-ra" {
     dynamic "instances" {
       for_each = var.router_appliances
       content {
-        virtual_machine = instances.value["vm"]
-        ip_address      = instances.value["ip"]
+        ip_address      = instances.value["internal_ip"]
+        virtual_machine = instances.value["vm_self_link"]
       }
     }
     site_to_site_data_transfer = var.data_transfer
