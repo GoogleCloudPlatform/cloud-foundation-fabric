@@ -16,7 +16,7 @@
 
 locals {
   spoke_vms = [
-    for ras in var.ras : {
+    for ras in var.router_appliances : {
       ip      = ras.ip
       vm      = ras.vm
       vm_name = element(split("/", ras.vm), length(split("/", ras.vm)) - 1)
@@ -38,7 +38,7 @@ resource "google_network_connectivity_spoke" "spoke-ra" {
   name     = var.name
   linked_router_appliance_instances {
     dynamic "instances" {
-      for_each = var.ras
+      for_each = var.router_appliances
       content {
         virtual_machine = instances.value["vm"]
         ip_address      = instances.value["ip"]

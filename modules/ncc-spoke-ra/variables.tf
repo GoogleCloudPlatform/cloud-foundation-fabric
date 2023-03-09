@@ -76,7 +76,7 @@ variable "project_id" {
   type        = string
 }
 
-variable "ras" {
+variable "router_appliances" {
   description = "List of router appliances this spoke is associated with."
   type = list(object({
     vm = string # URI
