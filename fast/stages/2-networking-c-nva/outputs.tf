@@ -78,13 +78,13 @@ output "tfvars" {
 
 output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
-  value = local.enable_onprem_vpn == false ? null : {
-    onprem-primary = {
-      for v in module.landing-to-onprem-primary-vpn[0].gateway.vpn_interfaces :
+  value = {
+    onprem-primary = var.vpn_onprem_primary_config == null ? {} : {
+      for v in module.landing-to-onprem-primary-vpn.0.gateway.vpn_interfaces :
       v.id => v.ip_address
     }
-    onprem-secondary = {
-      for v in module.landing-to-onprem-secondary-vpn[0].gateway.vpn_interfaces :
+    onprem-secondary = var.vpn_onprem_secondary_config == null ? {} : {
+      for v in module.landing-to-onprem-secondary-vpn.0.gateway.vpn_interfaces :
       v.id => v.ip_address
     }
   }

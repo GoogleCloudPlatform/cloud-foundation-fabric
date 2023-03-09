@@ -35,28 +35,6 @@ variable "billing_account" {
   }
 }
 
-variable "custom_adv" {
-  description = "Custom advertisement definitions in name => range format."
-  type        = map(string)
-  default = {
-    cloud_dns                       = "35.199.192.0/19"
-    gcp_all                         = "10.128.0.0/16"
-    gcp_dev_primary                 = "10.128.128.0/19"
-    gcp_dev_secondary               = "10.128.160.0/19"
-    gcp_landing_trusted_primary     = "10.128.64.0/19"
-    gcp_landing_trusted_secondary   = "10.128.96.0/19"
-    gcp_landing_untrusted_primary   = "10.128.0.0/19"
-    gcp_landing_untrusted_secondary = "10.128.32.0/19"
-    gcp_prod_primary                = "10.128.192.0/19"
-    gcp_prod_secondary              = "10.128.224.0/19"
-    googleapis_private              = "199.36.153.8/30"
-    googleapis_restricted           = "199.36.153.4/30"
-    rfc_1918_10                     = "10.0.0.0/8"
-    rfc_1918_172                    = "172.16.0.0/12"
-    rfc_1918_192                    = "192.168.0.0/16"
-  }
-}
-
 variable "custom_roles" {
   # tfdoc:variable:source 0-bootstrap
   description = "Custom roles defined at the org level, in key => id format."
@@ -102,6 +80,21 @@ variable "folder_ids" {
     networking-dev  = string
     networking-prod = string
   })
+}
+
+variable "gcp_ranges" {
+  description = "GCP address ranges in name => range format."
+  type        = map(string)
+  default = {
+    gcp_dev_primary                 = "10.128.128.0/19"
+    gcp_dev_secondary               = "10.128.160.0/19"
+    gcp_landing_trusted_primary     = "10.128.64.0/19"
+    gcp_landing_trusted_secondary   = "10.128.96.0/19"
+    gcp_landing_untrusted_primary   = "10.128.0.0/19"
+    gcp_landing_untrusted_secondary = "10.128.32.0/19"
+    gcp_prod_primary                = "10.128.192.0/19"
+    gcp_prod_secondary              = "10.128.224.0/19"
+  }
 }
 
 variable "onprem_cidr" {
@@ -172,29 +165,6 @@ variable "regions" {
   }
 }
 
-variable "router_configs" {
-  description = "Configurations for CRs and onprem routers."
-  type = map(object({
-    adv = object({
-      custom  = list(string)
-      default = bool
-    })
-    asn = number
-  }))
-  default = {
-    landing-trusted-primary = {
-      asn = "64512"
-      adv = null
-      # adv = { default = false, custom = [] }
-    }
-    landing-trusted-secondary = {
-      asn = "64512"
-      adv = null
-      # adv = { default = false, custom = [] }
-    }
-  }
-}
-
 variable "service_accounts" {
   # tfdoc:variable:source 1-resman
   description = "Automation service accounts in name => email format."
@@ -209,81 +179,88 @@ variable "service_accounts" {
   default = null
 }
 
-variable "vpn_onprem_configs" {
-  description = "VPN gateway configuration for onprem interconnection."
-  type = map(object({
-    adv = object({
-      default = bool
-      custom  = list(string)
-    })
-    peer_external_gateway = object({
+variable "vpn_onprem_primary_config" {
+  description = "VPN gateway configuration for onprem interconnection in the primary region."
+  type = object({
+    peer_external_gateways = map(object({
       redundancy_type = string
       interfaces      = list(string)
+    }))
+    router_config = object({
+      create    = optional(bool, true)
+      asn       = number
+      name      = optional(string)
+      keepalive = optional(number)
+      custom_advertise = optional(object({
+        all_subnets = bool
+        ip_ranges   = map(string)
+      }))
     })
-    tunnels = list(object({
-      peer_asn                        = number
-      peer_external_gateway_interface = number
-      secret                          = string
-      session_range                   = string
+    tunnels = map(object({
+      bgp_peer = object({
+        address        = string
+        asn            = number
+        route_priority = optional(number, 1000)
+        custom_advertise = optional(object({
+          all_subnets          = bool
+          all_vpc_subnets      = bool
+          all_peer_vpc_subnets = bool
+          ip_ranges            = map(string)
+        }))
+      })
+      # each BGP session on the same Cloud Router must use a unique /30 CIDR
+      # from the 169.254.0.0/16 block.
+      bgp_session_range               = string
+      ike_version                     = optional(number, 2)
+      peer_external_gateway_interface = optional(number)
+      peer_gateway                    = optional(string, "default")
+      router                          = optional(string)
+      shared_secret                   = optional(string)
       vpn_gateway_interface           = number
     }))
-  }))
-  default = {
-    landing-trusted-primary = {
-      adv = {
-        default = false
-        custom = [
-          "cloud_dns", "googleapis_private", "googleapis_restricted", "gcp_all"
-        ]
-      }
-      peer_external_gateway = {
-        redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
-        interfaces      = ["8.8.8.8"]
-      }
-      tunnels = [
-        {
-          peer_asn                        = 65534
-          peer_external_gateway_interface = 0
-          secret                          = "foobar"
-          session_range                   = "169.254.1.0/30"
-          vpn_gateway_interface           = 0
-        },
-        {
-          peer_asn                        = 65534
-          peer_external_gateway_interface = 0
-          secret                          = "foobar"
-          session_range                   = "169.254.1.4/30"
-          vpn_gateway_interface           = 1
-        }
-      ]
-    }
-    landing-trusted-secondary = {
-      adv = {
-        default = false
-        custom = [
-          "cloud_dns", "googleapis_private", "googleapis_restricted", "gcp_all"
-        ]
-      }
-      peer_external_gateway = {
-        redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
-        interfaces      = ["8.8.8.8"]
-      }
-      tunnels = [
-        {
-          peer_asn                        = 65534
-          peer_external_gateway_interface = 0
-          secret                          = "foobar"
-          session_range                   = "169.254.1.0/30"
-          vpn_gateway_interface           = 0
-        },
-        {
-          peer_asn                        = 65534
-          peer_external_gateway_interface = 0
-          secret                          = "foobar"
-          session_range                   = "169.254.1.4/30"
-          vpn_gateway_interface           = 1
-        }
-      ]
-    }
-  }
+  })
+  default = null
+}
+
+variable "vpn_onprem_secondary_config" {
+  description = "VPN gateway configuration for onprem interconnection in the secondary region."
+  type = object({
+    peer_external_gateways = map(object({
+      redundancy_type = string
+      interfaces      = list(string)
+    }))
+    router_config = object({
+      create    = optional(bool, true)
+      asn       = number
+      name      = optional(string)
+      keepalive = optional(number)
+      custom_advertise = optional(object({
+        all_subnets = bool
+        ip_ranges   = map(string)
+      }))
+    })
+    tunnels = map(object({
+      bgp_peer = object({
+        address        = string
+        asn            = number
+        route_priority = optional(number, 1000)
+        custom_advertise = optional(object({
+          all_subnets          = bool
+          all_vpc_subnets      = bool
+          all_peer_vpc_subnets = bool
+          ip_ranges            = map(string)
+        }))
+      })
+      # each BGP session on the same Cloud Router must use a unique /30 CIDR
+      # from the 169.254.0.0/16 block.
+      bgp_session_range               = string
+      ike_version                     = optional(number, 2)
+      peer_external_gateway_interface = optional(number)
+      peer_gateway                    = optional(string, "default")
+      router                          = optional(string)
+      shared_secret                   = optional(string)
+      vpn_gateway_interface           = number
+    }))
+  })
+  default = null
 }

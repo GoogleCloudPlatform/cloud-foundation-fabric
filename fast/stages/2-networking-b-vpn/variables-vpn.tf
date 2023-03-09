@@ -14,52 +14,40 @@
  * limitations under the License.
  */
 
-
-variable "router_spoke_configs" {
-  description = "Configurations for routers used for internal connectivity."
-  type = map(object({
-    adv = object({
-      custom  = list(string)
-      default = bool
+variable "vpn_configs" {
+  description = "Hub to spokes VPN configurations."
+  type = object({
+    dev = object({
+      asn = number
+      custom_advertise = optional(object({
+        all_subnets = bool
+        ip_ranges   = map(string)
+      }))
     })
-    asn = number
-  }))
+    landing = object({
+      asn = number
+      custom_advertise = optional(object({
+        all_subnets = bool
+        ip_ranges   = map(string)
+      }))
+    })
+    prod = object({
+      asn = number
+      custom_advertise = optional(object({
+        all_subnets = bool
+        ip_ranges   = map(string)
+      }))
+    })
+  })
   default = {
-    landing-primary      = { asn = "64512", adv = null }
-    landing-secondary    = { asn = "64512", adv = null }
-    spoke-dev-primary    = { asn = "64513", adv = null }
-    spoke-dev-secondary  = { asn = "64513", adv = null }
-    spoke-prod-primary   = { asn = "64514", adv = null }
-    spoke-prod-secondary = { asn = "64514", adv = null }
-  }
-}
-
-variable "vpn_spoke_configs" {
-  description = "VPN gateway configuration for spokes."
-  type = map(object({
-    default = bool
-    custom  = list(string)
-  }))
-  default = {
-    landing-primary = {
-      default = false
-      custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
+    dev = {
+      asn = 65501
     }
-    landing-secondary = {
-      default = false
-      custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
+    landing = {
+      asn = 65500
     }
-    dev-primary = {
-      default = false
-      custom  = ["gcp_dev"]
-    }
-    prod-primary = {
-      default = false
-      custom  = ["gcp_prod"]
-    }
-    prod-secondary = {
-      default = false
-      custom  = ["gcp_prod"]
+    prod = {
+      asn = 65502
     }
   }
 }
