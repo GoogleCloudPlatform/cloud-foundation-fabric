@@ -55,9 +55,10 @@ module "project" {
     host_project = local.shared_vpc_project
   }
   service_encryption_key_ids = {
-    compute = [try(local.service_encryption_keys.compute, null)]
-    bq      = [try(local.service_encryption_keys.bq, null)]
-    storage = [try(local.service_encryption_keys.storage, null)]
+    aiplatform = [try(local.service_encryption_keys.compute, null)]
+    compute    = [try(local.service_encryption_keys.compute, null)]
+    bq         = [try(local.service_encryption_keys.bq, null)]
+    storage    = [try(local.service_encryption_keys.storage, null)]
   }
   service_config = {
     disable_on_destroy = false, disable_dependent_services = false
