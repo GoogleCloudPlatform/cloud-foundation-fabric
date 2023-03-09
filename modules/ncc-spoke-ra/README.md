@@ -14,17 +14,23 @@ module "spoke-ra" {
   hub        = { create = true, name = "ncc-hub" }
   name       = "spoke-ra"
   project_id = "my-project"
-  asn        = 65000
-  peer_asn   = 65001
-  ras = [
+  region     = "europe-west1"
+  router_appliances = [
     {
-      vm = "projects/my-project/zones/europe-west1-b/instances/router-app"
-      ip = "10.0.0.3"
+      internal_ip  = "10.0.0.3"
+      vm_self_link = "projects/my-project/zones/europe-west1-b/instances/router-app"
     }
   ]
-  region     = "europe-west1"
-  subnetwork = var.subnet.self_link
-  vpc        = "my-vpc"
+  router_config = {
+    asn           = 65000
+    ip_interface1 = "10.0.0.14"
+    ip_interface2 = "10.0.0.15"
+    peer_asn      = 65001
+  }
+  vpc_config = {
+    network_name     = "my-vpc"
+    subnet_self_link = var.subnet.self_link
+  }
 }
 # tftest modules=1 resources=7
 ```
@@ -37,17 +43,23 @@ module "spoke-ra-a" {
   hub        = { name = "ncc-hub" }
   name       = "spoke-ra-a"
   project_id = "my-project"
-  asn        = 65000
-  peer_asn   = 65001
-  ras = [
+  region     = "europe-west1"
+  router_appliances = [
     {
-      vm = "projects/my-project/zones/europe-west1-b/instances/router-app-a"
-      ip = "10.0.0.3"
+      internal_ip  = "10.0.0.3"
+      vm_self_link = "projects/my-project/zones/europe-west1-b/instances/router-app-a"
     }
   ]
-  region     = "europe-west1"
-  subnetwork = "projects/my-project/regions/europe-west1/subnetworks/subnet"
-  vpc        = "my-vpc1"
+  router_config = {
+    asn           = 65000
+    ip_interface1 = "10.0.0.14"
+    ip_interface2 = "10.0.0.15"
+    peer_asn      = 65001
+  }
+  vpc_config = {
+    network_name     = "my-vpc1"
+    subnet_self_link = "projects/my-project/regions/europe-west1/subnetworks/subnet"
+  }
 }
 
 module "spoke-ra-b" {
@@ -55,17 +67,23 @@ module "spoke-ra-b" {
   hub        = { name = "ncc-hub" }
   name       = "spoke-ra-b"
   project_id = "my-project"
-  asn        = 65000
-  peer_asn   = 65002
-  ras = [
+  region     = "europe-west3"
+  router_appliances = [
     {
-      vm = "projects/my-project/zones/europe-west3-b/instances/router-app-b"
-      ip = "10.1.0.5"
+      internal_ip  = "10.1.0.5"
+      vm_self_link = "projects/my-project/zones/europe-west3-b/instances/router-app-b"
     }
   ]
-  region     = "europe-west3"
-  subnetwork = "projects/my-project/regions/europe-west3/subnetworks/subnet"
-  vpc        = "my-vpc2"
+  router_config = {
+    asn           = 65000
+    ip_interface1 = "10.0.0.14"
+    ip_interface2 = "10.0.0.15"
+    peer_asn      = 65002
+  }
+  vpc_config = {
+    network_name     = "my-vpc2"
+    subnet_self_link = "projects/my-project/regions/europe-west3/subnetworks/subnet"
+  }
 }
 # tftest modules=2 resources=12
 ```
@@ -78,29 +96,33 @@ module "spoke-ra" {
   hub        = { name = "ncc-hub" }
   name       = "spoke-ra"
   project_id = "my-project"
-  asn        = 65000
-  custom_advertise = {
-    all_subnets = true
-    ip_ranges = {
-      "peered-vpc" = "10.10.0.0/24"
-    }
-  }
-  ip_intf1 = "10.0.0.14"
-  ip_intf2 = "10.0.0.15"
-  peer_asn = 65001
-  ras = [
+  region     = "europe-west1"
+  router_appliances = [
     {
-      vm = "projects/my-project/zones/europe-west1-b/instances/router-app-a"
-      ip = "10.0.0.3"
+      internal_ip  = "10.0.0.3"
+      vm_self_link = "projects/my-project/zones/europe-west1-b/instances/router-app-a"
     },
     {
-      vm = "projects/my-project/zones/europe-west1-c/instances/router-app-b"
-      ip = "10.0.0.4"
+      internal_ip  = "10.0.0.4"
+      vm_self_link = "projects/my-project/zones/europe-west1-c/instances/router-app-b"
     }
   ]
-  region     = "europe-west1"
-  subnetwork = var.subnet.self_link
-  vpc        = "my-vpc"
+  router_config = {
+    asn = 65000
+    custom_advertise = {
+      all_subnets = true
+      ip_ranges = {
+        "peered-vpc" = "10.10.0.0/24"
+      }
+    }
+    ip_interface1 = "10.0.0.14"
+    ip_interface2 = "10.0.0.15"
+    peer_asn      = 65001
+  }
+  vpc_config = {
+    network_name     = "my-vpc"
+    subnet_self_link = var.subnet.self_link
+  }
 }
 # tftest modules=1 resources=8
 ```
