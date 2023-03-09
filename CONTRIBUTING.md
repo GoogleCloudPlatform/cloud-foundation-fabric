@@ -754,7 +754,7 @@ counts:
 
 #### Using external files
 
-In some situations your module might require additional files to properly test it. This is a common situation with modules that implement [factories](blueprints/factories/README.md) that drive the creation of resource from YAML files. If you're in this situation, you can still use example-based tests as described below:
+In some situations your module might require additional files to properly test it. This is a common situation with modules that implement [factories](blueprints/factories/README.md) that drive the creation of resources from YAML files. If you're in this situation, you can still use example-based tests as described below:
 
 - create your regular `hcl` code block example and add the `tftest` directive as described above.
 - create a new code block with the contents of the additional file and use the `tftest-file` directive. You have to specify a label for the file and a relative path where the file will live.
@@ -784,7 +784,7 @@ A myhost:
  records: ["10.10.0.1"]
 ```
 
-Note that you use the `files` parameters together with `inventory` to allow more fine-grained assertions. Please review the [subnet factory](modules/net-vpc#subnet-factory) in the `net-vpc` module for example of this.
+Note that you can use the `files` parameters together with `inventory` to allow more fine-grained assertions. Please review the [subnet factory](modules/net-vpc#subnet-factory) in the `net-vpc` module for an example of this.
 
 #### Running tests for specific examples
 
@@ -887,7 +887,7 @@ Note that for complex modules, the output can be very large and includes a lot o
 
 Generally blueprints are used as top-level modules which means that usually their READMEs include sample values for their variables but there are no examples showing how to use them as modules.
 
-If you want to test a blueprint using an example, we suggest adding a "Test" section at the end of the README and include the example there. See any existing module for a [concrete example](blueprints/cloud-operations/asset-inventory-feed-remediation#test).
+If you want to test a blueprint using an example, we suggest adding a "Test" section at the end of the README and include the example there. See any existing blueprint for a [concrete example](blueprints/cloud-operations/asset-inventory-feed-remediation#test).
 
 ### Testing via `tfvars` and `yaml` (aka `tftest`-based tests)
 
@@ -981,7 +981,7 @@ A good example of tests showing different ways of leveraging our framework is in
 
 #### Generating the inventory for `tftest`-based tests
 
-Just as you can generate an initial inventory for example-based tests, you can do the same for `tftest`-based tests. Currently the process relies on an additional tool (`tools/plan_summary.py`) abut but we have plans to unify both cases through in the future.
+Just as you can generate an initial inventory for example-based tests, you can do the same for `tftest`-based tests. Currently the process relies on an additional tool (`tools/plan_summary.py`) but but we have plans to unify both cases in the future.
 
 As an example, if you want to generate the inventory for the `organization` module using the `common.tfvars` and `audit_config.tfvars` found in `tests/modules/organization/`, simply run `plan_summary.py` as follows:
 
