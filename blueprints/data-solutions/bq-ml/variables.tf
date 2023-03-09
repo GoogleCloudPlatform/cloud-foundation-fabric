@@ -52,9 +52,10 @@ variable "region" {
 variable "service_encryption_keys" {
   description = "Cloud KMS to use to encrypt different services. The key location should match the service region."
   type = object({
-    bq      = string
-    compute = string
-    storage = string
+    aiplatform = optional(string, null)
+    bq         = optional(string, null)
+    compute    = optional(string, null)
+    storage    = optional(string, null)
   })
   default = null
 }
