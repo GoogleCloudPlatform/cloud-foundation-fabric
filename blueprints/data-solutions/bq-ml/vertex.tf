@@ -17,13 +17,20 @@
 resource "google_vertex_ai_metadata_store" "store" {
   provider    = google-beta
   project     = module.project.project_id
-  name        = "default" #"${var.prefix}-metadata-store"
+  name        = "default"
   description = "Vertex Ai Metadata Store"
   region      = var.region
-  #TODO Check/Implement P4SA logic for IAM role
-  # encryption_spec {
-  #   kms_key_name = var.service_encryption_keys.ai_metadata_store
-  # }
+  dynamic "encryption_spec" {
+    for_each = try(var.service_encryption_keys.aiplatform, null) == null ? [] : [""]
+
+    content {
+      kms_key_name = try(var.service_encryption_keys.aiplatform, null)
+    }
+  }
+  # `state` value will be decided automatically based on the result of the configuration
+  lifecycle {
+    ignore_changes = [state]
+  }
 }
 
 module "service-account-notebook" {
