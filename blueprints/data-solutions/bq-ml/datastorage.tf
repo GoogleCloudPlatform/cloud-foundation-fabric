@@ -28,5 +28,5 @@ module "dataset" {
   project_id     = module.project.project_id
   id             = "${replace(var.prefix, "-", "_")}_data"
   encryption_key = try(local.service_encryption_keys.bq, null) # Example assignment of an encryption key
-  location       = "US"
+  location       = var.location
 }
