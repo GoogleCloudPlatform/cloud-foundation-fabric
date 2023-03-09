@@ -4,17 +4,26 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
 
 ## Table of Contents
 
-[I just found a bug / have a feature request!](#i-just-found-a-bug--have-a-feature-request)
-
-[Quick developer workflow](#quick-developer-workflow)
-
-[Developer's Handbook](#developers-handbook)
-
-- [The Zen of Fabric](#the-zen-of-fabric)
-- [Design principles in action](#design-principles-in-action)
-- [FAST stage design](#fast-stage-design)
-- [Style guide reference](#style-guide-reference)
-- [Checks, tests and tools](#interacting-with-checks-tests-and-tools)
+* [I just found a bug / have a feature request](#i-just-found-a-bug---have-a-feature-request)
+* [Quick developer workflow](#quick-developer-workflow)
+* [Developer's handbook](#developer-s-handbook)
+  + [The Zen of Fabric](#the-zen-of-fabric)
+  + [Design principles in action](#design-principles-in-action)
+  + [FAST stage design](#fast-stage-design)
+  + [Style guide reference](#style-guide-reference)
+  + [Interacting with checks and tools](#interacting-with-checks-and-tools)
+* [Using and writing tests](#using-and-writing-tests)
+  + [Testing via README.md example blocks.](#testing-via-readmemd-example-blocks)
+    - [Testing examples against an inventory YAML](#testing-examples-against-an-inventory-yaml)
+    - [Using external files](#using-external-files)
+    - [Running tests for specific examples](#running-tests-for-specific-examples)
+    - [Generating the inventory automatically](#generating-the-inventory-automatically)
+    - [Building tests for blueprints](#building-tests-for-blueprints)
+  + [Testing via it `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-it--tfvars--and--yaml---aka--tftest--based-tests-)
+    - [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for--tftest--based-tests)
+  + [Writing tests in Python (legacy approach)](#writing-tests-in-python--legacy-approach-)
+  + [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
+* [Fabric tools](#fabric-tools)
 
 ## I just found a bug / have a feature request
 
@@ -1040,7 +1049,7 @@ def test_name(plan_summary, tfvars_to_yaml, tmp_path):
 
 For more examples on how to write python tests, check the tests for the [`organization`](./tests/modules/organization/test_plan_org_policies.py) module.
 
-#### Running tests from a temporary directory
+### Running tests from a temporary directory
 
 Most of the time you can run tests using the `pytest` command as described in previous. However, the `plan_summary` fixture allows copying the root module and running the test from a temporary directory.
 
