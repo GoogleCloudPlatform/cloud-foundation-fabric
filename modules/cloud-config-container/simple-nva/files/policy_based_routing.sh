@@ -34,8 +34,22 @@ do
       ip route add $IF_GW src $IF_IP dev $IF_NAME table hc-$IF_NAME
       ip route add default via $IF_GW dev $IF_NAME table hc-$IF_NAME
     }
+    
     # configure PBR route for LB
     ip rule list | grep -qF "$IP" || ip rule add from $IP/32 table hc-$IF_NAME
+
+    # remove previously configure PBR for old LB removed from network interface
+    # get list of ip rules on this network interface and retrieve LB IP addresses
+    PBR_LB_IPS_STR=$(ip rule list | grep "hc-$IF_NAME" | cut -f 2 -d " " |  tr -s '\n' ' ')
+    PBR_LB_IPS=($PBR_LB_IPS_STR)
+    for PBR_IP in "${PBR_LB_IPS[@]}"
+    do
+      # check if the PBR LB IP belongs to the current LB IPs attached to the network interface, 
+      # if not delete the corresponding PBR rule
+      echo ${IPS_LB[@]} | grep "$PBR_IP" || {
+        ip rule del from $PBR_IP
+      }
+    done
   done
   sleep 2
 done
