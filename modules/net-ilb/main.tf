@@ -81,8 +81,8 @@ resource "google_compute_region_backend_service" "default" {
       )
       idle_timeout_sec = local.bs_conntrack.idle_timeout_sec
       tracking_mode = (
-        local.bs_conntrack.track_per_session != null
-        ? local.bs_conntrack.track_per_session
+        local.bs_conntrack.tracking_mode != null
+        ? local.bs_conntrack.tracking_mode
         : null
       )
     }
