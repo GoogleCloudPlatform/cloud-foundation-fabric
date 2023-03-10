@@ -10,9 +10,90 @@ You can create as many files as you like, the code will loop through it and crea
 
 ## Example
 
+### Directory structure
+
+```
+.
+├── data
+│   ├── vm1.yaml
+│   ├── vm2.yaml
+├── main.tf
+└── variables.tf
+```
+
+### VM configuration
+
+```yaml
+# ./data/vm1.yaml
+# One file per vm
+
+project_id: vm-factory-testing
+name: "instance-01"
+region: "us-central1"
+zone: "us-central1-a"
+service_account_create: true
+network_interfaces: 
+    - nat: false
+      network: "projects/vm-factory-testing/global/networks/default"
+      subnetwork: "projects/vm-factory-testing/regions/us-central1/subnetworks/default"
+      addresses: null
+
+attached_disks:
+      - name: "data1"
+        size:  "10"
+        source_type: null
+        options: 
+          auto_delete: false
+          mode: "READ_WRITE"
+          replica_zone: null
+          type: "pd-ssd"
+```
+
+```yaml
+# ./data/vm2.yaml
+# One file per vm
+
+project_id: vm-factory-testing
+name: "instance-02"
+region: "us-central1"
+zone: "us-central1-a"
+service_account_create: false
+network_interfaces: 
+    - nat: false
+      network: "projects/vm-factory-testing/global/networks/default"
+      subnetwork: "projects/vm-factory-testing/regions/us-central1/subnetworks/default"
+      addresses: null
+
+attached_disks:
+      - name: "data1"
+        size:  "10"
+        source_type: null
+        options: 
+          auto_delete: false
+          mode: "READ_WRITE"
+          replica_zone: null
+          type: "pd-ssd"
+      - name: "data2"
+        size:  "10"
+        source_type: "image"
+        source: "image-1"
+        options: 
+          auto_delete: false
+          mode: "READ_WRITE"
+          replica_zone: null
+          type: "pd-ssd"
+```
+
 ### Terraform code
 
 ```hcl
+locals {
+  vms = {
+    for f in fileset("${var.data_dir}", "**/*.yaml") :
+    trimsuffix(f, ".yaml") => yamldecode(file("${var.data_dir}/${f}"))
+  }
+}
+
 module "vm-disk-factory-example" {
   source = "../../../modules/compute-vm"
 
