@@ -50,6 +50,7 @@ These modules are used in the examples included in this repository. If you are u
 - [L7 ILB](./net-ilb-l7)
 - [VPC](./net-vpc)
 - [VPC firewall](./net-vpc-firewall)
+- [VPC firewall policy](./net-vpc-firewall-policy)
 - [VPC peering](./net-vpc-peering)
 - [VPN dynamic](./net-vpn-dynamic)
 - [HA VPN](./net-vpn-ha)
