@@ -37,6 +37,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1232](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1232)] Network firewall policy module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-10 08:21:50+00:00 -->
 - [[#1230](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1230)] Update contributing guide with new test framework ([juliocc](https://github.com/juliocc)) <!-- 2023-03-09 14:16:08+00:00 -->
 - [[#1221](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1221)] FAQ on installing Fast on a non-empty org ([skalolazka](https://github.com/skalolazka)) <!-- 2023-03-07 16:23:46+00:00 -->
 - [[#1217](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1217)] Added autopilot blueprint ([apichick](https://github.com/apichick)) <!-- 2023-03-07 15:05:15+00:00 -->
@@ -78,6 +79,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1232](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1232)] Network firewall policy module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-10 08:21:50+00:00 -->
 - [[#1219](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1219)] Network Connectivity Center module ([juliodiez](https://github.com/juliodiez)) <!-- 2023-03-09 15:01:51+00:00 -->
 - [[#1227](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1227)] Add CMEK support on BQML blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-09 09:12:50+00:00 -->
 - [[#1224](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1224)] Fix JIT notebook service account. ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-08 15:33:40+00:00 -->
