@@ -1,0 +1,27 @@
+project_id: vm-factory-testing
+name: "instance-01"
+region: "us-central1"
+zone: "us-central1-a"
+service_account_create: true
+network_interfaces: 
+    - nat: false
+      network: "projects/vm-factory-testing/global/networks/default"
+      subnetwork: "projects/vm-factory-testing/regions/us-central1/subnetworks/default"
+      addresses: null
+
+attached_disks:
+      - name: "data1"
+        size:  "10"
+        source_type: null
+        options: 
+          auto_delete: false
+          mode: "READ_WRITE"
+          replica_zone: null
+          type: "pd-ssd"
+      - name: "data2"
+        size: "20"
+        source_type: null
+        options: 
+          mode: "READ_ONLY"
+          replica_zone: null
+          type: "pd-ssd"
