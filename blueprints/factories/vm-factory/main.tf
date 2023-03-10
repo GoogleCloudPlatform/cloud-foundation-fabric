@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 locals {
   vms = {
     for f in fileset("${var.data_dir}", "**/*.yaml") :
