@@ -27,7 +27,7 @@ variable "backend_service_config" {
     connection_tracking = optional(object({
       idle_timeout_sec          = optional(number)
       persist_conn_on_unhealthy = optional(string)
-      track_per_session         = optional(true)
+      track_per_session         = optional(bool)
     }))
     enable_subsetting = optional(bool)
     failover_config = optional(object({
