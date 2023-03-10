@@ -6,7 +6,7 @@ The module interface deviates slightly from the [`net-vpc-firewall`](../net-vpc-
 
 It also makes fewer assumptions about implicit defaults, only using one to set `match.layer4_configs` to `[{ protocol = "all" }]` if no explicit set of protocols and ports has been specified.
 
-A factory implementation will be adder in a subsequent release.
+A factory implementation will be added in a subsequent release.
 
 ## Example
 
