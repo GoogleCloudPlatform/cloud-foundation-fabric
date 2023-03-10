@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ resource "google_compute_network_firewall_policy" "default" {
 resource "google_compute_network_firewall_policy_association" "default" {
   for_each          = toset(var.region == null ? var.target_vpcs : [])
   project           = var.project_id
-  name              = "${var.name}-${each.key}"
+  name              = "${var.name}-${reverse(split("/", each.key))[0]}"
   attachment_target = each.key
   firewall_policy   = google_compute_network_firewall_policy.default.0.name
 }
@@ -64,7 +64,7 @@ resource "google_compute_network_firewall_policy_rule" "default" {
     dest_ip_ranges = each.value.match.destination_ranges
     src_ip_ranges  = each.value.match.source_ranges
     dynamic "layer4_configs" {
-      for_each = coalesce(each.value.match.layer4_configs, {})
+      for_each = each.value.match.layer4_configs
       content {
         ip_protocol = layer4_configs.value.protocol
         ports       = layer4_configs.value.ports
@@ -102,7 +102,7 @@ resource "google_compute_region_network_firewall_policy" "default" {
 resource "google_compute_region_network_firewall_policy_association" "default" {
   for_each          = toset(var.region != null ? var.target_vpcs : [])
   project           = var.project_id
-  name              = "${var.name}-${each.key}"
+  name              = "${var.name}-${reverse(split("/", each.key))[0]}"
   region            = var.region
   attachment_target = each.key
   firewall_policy   = google_compute_region_network_firewall_policy.default.0.name
@@ -113,7 +113,7 @@ resource "google_compute_region_network_firewall_policy_rule" "default" {
   for_each                = var.region != null ? local.rules : {}
   project                 = var.project_id
   region                  = var.region
-  firewall_policy         = google_compute_network_firewall_policy.default.0.name
+  firewall_policy         = google_compute_region_network_firewall_policy.default.0.name
   rule_name               = each.key
   action                  = each.value.action
   description             = each.value.description
@@ -126,7 +126,7 @@ resource "google_compute_region_network_firewall_policy_rule" "default" {
     dest_ip_ranges = each.value.match.destination_ranges
     src_ip_ranges  = each.value.match.source_ranges
     dynamic "layer4_configs" {
-      for_each = coalesce(each.value.match.layer4_configs, {})
+      for_each = each.value.match.layer4_configs
       content {
         ip_protocol = layer4_configs.value.protocol
         ports       = layer4_configs.value.ports

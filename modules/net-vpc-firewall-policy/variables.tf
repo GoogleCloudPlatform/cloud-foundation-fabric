@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,31 @@ variable "description" {
 variable "egress_rules" {
   description = "List of egress rule definitions, action can be 'allow', 'deny', 'goto_next'. The match.layer4configs map is in protocol => optional [ports] format."
   type = map(object({
+    priority                = number
     action                  = optional(string, "deny")
     description             = optional(string)
     disabled                = optional(bool, false)
     enable_logging          = optional(bool)
-    priority                = optional(number, 1000)
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
     match = object({
       destination_ranges = optional(list(string))
-      layer4_configs     = optional(map(list(string)))
       source_ranges      = optional(list(string))
       source_tags        = optional(list(string))
+      layer4_configs = optional(list(object({
+        protocol = optional(string, "all")
+        ports    = optional(list(string))
+      })), [{}])
     })
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.egress_rules : v.match.destination_ranges != null
+    ])
+    error_message = "Engress rules need destination ranges."
+  }
   validation {
     condition = alltrue([
       for k, v in var.egress_rules :
@@ -51,25 +60,32 @@ variable "egress_rules" {
 variable "ingress_rules" {
   description = "List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next'."
   type = map(object({
+    priority                = number
     action                  = optional(string, "allow")
     description             = optional(string)
     disabled                = optional(bool, false)
     enable_logging          = optional(bool)
-    priority                = optional(number, 1000)
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
     match = object({
       destination_ranges = optional(list(string))
       source_ranges      = optional(list(string))
       source_tags        = optional(list(string))
-      layer4_configs = list(object({
-        protocol = string
+      layer4_configs = optional(list(object({
+        protocol = optional(string, "all")
         ports    = optional(list(string))
-      }))
+      })), [{}])
     })
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.ingress_rules :
+      v.match.source_ranges != null || v.match.source_tags != null
+    ])
+    error_message = "Ingress rules need source ranges or tags."
+  }
   validation {
     condition = alltrue([
       for k, v in var.ingress_rules :
@@ -98,7 +114,7 @@ variable "region" {
 }
 
 variable "target_vpcs" {
-  description = "Names of the VPCS to which this policy will be attached."
+  description = "VPC ids to which this policy will be attached."
   type        = list(string)
   default     = []
   nullable    = false
