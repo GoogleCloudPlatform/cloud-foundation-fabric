@@ -1,3 +1,5 @@
+# skip boilerplate check
+
 project_id: vm-factory-testing
 name: "instance-02"
 region: "us-central1"
