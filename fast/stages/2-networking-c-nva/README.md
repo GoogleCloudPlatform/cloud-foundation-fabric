@@ -407,18 +407,20 @@ vpn_onprem_primary_config = {
         address = "169.254.1.1"
         asn     = 65500
       }
-      bgp_session_range     = "169.254.1.2/30"
-      shared_secret         = "foo"
-      vpn_gateway_interface = 0
+      bgp_session_range               = "169.254.1.2/30"
+      peer_external_gateway_interface = 0
+      shared_secret                   = "foo"
+      vpn_gateway_interface           = 0
     }
     "1" = {
       bgp_peer = {
         address = "169.254.2.1"
         asn     = 64513
       }
-      bgp_session_range     = "169.254.2.2/30"
-      shared_secret         = "foo"
-      vpn_gateway_interface = 1
+      bgp_session_range               = "169.254.2.2/30"
+      peer_external_gateway_interface = 1
+      shared_secret                   = "foo"
+      vpn_gateway_interface           = 1
     }
   }
 }
