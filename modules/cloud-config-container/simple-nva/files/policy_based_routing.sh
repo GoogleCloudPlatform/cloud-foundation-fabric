@@ -37,21 +37,21 @@ do
 
     # configure PBR route for LB
     ip rule list | grep -qF "$IP" || ip rule add from $IP/32 table hc-$IF_NAME
+  done
 
-    # remove previously configure PBR for old LB removed from network interface
-    # first get list of PBR on this network interface and retrieve LB IP addresses
-    PBR_LB_IPS_STR=$(ip rule list | grep "hc-$IF_NAME" | cut -f 2 -d " " |  tr -s '\n' ' ')
-    PBR_LB_IPS=($PBR_LB_IPS_STR)
+  # remove previously configure PBR for old LB removed from network interface
+  # first get list of PBR on this network interface and retrieve LB IP addresses
+  PBR_LB_IPS_STR=$(ip rule list | grep "hc-$IF_NAME" | cut -f 2 -d " " |  tr -s '\n' ' ')
+  PBR_LB_IPS=($PBR_LB_IPS_STR)
 
-    # iterate over PBR LB IP addresses
-    for PBR_IP in "${PBR_LB_IPS[@]}"
-    do
-      # check if the PBR LB IP belongs to the current array of LB IPs attached to the
-      # network interface, if not delete the corresponding PBR rule
-      echo ${IPS_LB[@]} | grep "$PBR_IP" || {
-        ip rule del from $PBR_IP
-      }
-    done
+  # iterate over PBR LB IP addresses
+  for PBR_IP in "${PBR_LB_IPS[@]}"
+  do
+    # check if the PBR LB IP belongs to the current array of LB IPs attached to the
+    # network interface, if not delete the corresponding PBR rule
+    if [ -z "$IPS_LB" ] || ! echo ${IPS_LB[@]} | grep --quiet "$PBR_IP" ; then
+      ip rule del from $PBR_IP
+    fi
   done
   sleep 2
 done
