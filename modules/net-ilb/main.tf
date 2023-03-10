@@ -80,11 +80,7 @@ resource "google_compute_region_backend_service" "default" {
         : null
       )
       idle_timeout_sec = local.bs_conntrack.idle_timeout_sec
-      tracking_mode = (
-        local.bs_conntrack.tracking_mode != null
-        ? local.bs_conntrack.tracking_mode
-        : null
-      )
+      tracking_mode = try(local.bs_conntrack.track_per_session ? "PER_SESSION" : "PER_CONNECTION", null)
     }
   }
 
