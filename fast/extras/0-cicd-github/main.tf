@@ -20,11 +20,13 @@ locals {
       for f in concat(
         [for f in fileset(path.module, "${v.populate_from}/*.svg") : f],
         [for f in fileset(path.module, "${v.populate_from}/*.md") : f],
+        [for f in fileset(path.module, "${v.populate_from}/*.sample") : f],
+        [for f in fileset(path.module, "${v.populate_from}/data/**/*.*") : f],
         [for f in fileset(path.module, "${v.populate_from}/*.tf") : f]
         ) : {
         repository = k
         file       = f
-        name       = replace(f, "${v.populate_from}/", "")
+        name       = replace(replace(f, "${v.populate_from}/", ""), "data/", "data.sample/")
       }
     ] if v.populate_from != null
   ])
@@ -143,14 +145,18 @@ resource "github_branch" "default" {
     : {}
   )
   repository    = each.key
-  branch        = var.pull_request_config.head_ref
-  source_branch = var.pull_request_config.base_ref
+  branch        = var.pull_request_config.create == true ? var.pull_request_config.head_ref : "main"
+  source_branch = var.pull_request_config.create == true ? var.pull_request_config.base_ref : ""
+
+  depends_on = [
+    github_repository.default
+  ]
 }
 
 resource "github_repository_file" "default" {
   for_each   = local.modules_repo == null ? {} : local.repository_files
   repository = local.repositories[each.value.repository]
-  branch     = try(var.pull_request_config.head_ref, "main")
+  branch     = var.pull_request_config.create == true ? var.pull_request_config.head_ref : "main"
   file       = each.value.name
   content = (
     endswith(each.value.name, ".tf") && local.modules_repo != null
@@ -171,6 +177,11 @@ resource "github_repository_file" "default" {
       content,
     ]
   }
+
+  depends_on = [
+    github_branch.default,
+    github_repository.default,
+  ]
 }
 
 resource "github_repository_pull_request" "default" {
@@ -184,4 +195,8 @@ resource "github_repository_pull_request" "default" {
   body            = var.pull_request_config.body
   base_ref        = var.pull_request_config.base_ref
   head_ref        = var.pull_request_config.head_ref
+
+  depends_on = [
+    github_repository_file.default,
+  ]
 }
