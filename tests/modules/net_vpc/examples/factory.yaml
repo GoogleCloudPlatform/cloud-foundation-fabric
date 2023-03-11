@@ -34,14 +34,24 @@ values:
     secondary_ip_range:
     - ip_cidr_range: 192.168.0.0/24
       range_name: secondary-range-a
-  module.vpc.google_compute_subnetwork.subnetwork["europe-west4/subnet-simple"]:
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west4/simple"]:
     description: Terraform-managed.
     ip_cidr_range: 10.0.1.0/24
     log_config: []
-    name: subnet-simple
+    name: simple
     private_ip_google_access: true
     project: my-project
     region: europe-west4
+    role: null
+    secondary_ip_range: []
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west8/simple"]:
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.2.0/24
+    log_config: []
+    name: simple
+    private_ip_google_access: true
+    project: my-project
+    region: europe-west8
     role: null
     secondary_ip_range: []
   module.vpc.google_compute_subnetwork_iam_binding.binding["europe-west1/subnet-detailed.roles/compute.networkUser"]:
@@ -65,5 +75,5 @@ values:
 
 counts:
   google_compute_network: 1
-  google_compute_subnetwork: 4
+  google_compute_subnetwork: 5
   google_compute_subnetwork_iam_binding: 1
