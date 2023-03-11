@@ -81,9 +81,9 @@ module "nva-template" {
     }
   ]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    size  = 10
-    type  = "pd-balanced"
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   options = {
     allow_stopping_for_update = true
