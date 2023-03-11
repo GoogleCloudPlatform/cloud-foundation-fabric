@@ -22,8 +22,8 @@ locals {
     trimsuffix(basename(f), ".yaml") => yamldecode(file("${var.data_folder}/${f}"))
   }
   _factory_subnets = {
-    for k, v in local._factory_data : "${v.region}/${k}" => {
-      name                  = k
+    for k, v in local._factory_data : "${v.region}/${try(v.name, k)}" => {
+      name                  = try(v.name, k)
       ip_cidr_range         = v.ip_cidr_range
       region                = v.region
       description           = try(v.description, null)
