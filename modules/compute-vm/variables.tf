@@ -88,9 +88,12 @@ variable "boot_disk" {
       image = optional(string, "projects/debian-cloud/global/images/family/debian-11")
       size  = optional(number, 10)
       type  = optional(string, "pd-balanced")
-    }), {})
+    }))
   })
-  default = {}
+  default = {
+    initialize_params = {}
+  }
+  nullable = false
 }
 
 variable "can_ip_forward" {
