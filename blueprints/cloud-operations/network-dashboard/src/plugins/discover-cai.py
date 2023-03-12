@@ -98,7 +98,7 @@ def _handle_resource(resources, asset_type, data):
   # derive parent type and id and skip if parent is not within scope
   parent_data = _get_parent(data['parent'], resources)
   if not parent_data:
-    LOGGER.info(f'{resource["self_link"]} outside perimeter')
+    LOGGER.debug(f'{resource["self_link"]} outside perimeter')
     LOGGER.debug([
         resources['organization'], resources['folders'],
         resources['projects:number']
