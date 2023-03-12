@@ -25,6 +25,7 @@ locals {
     "dataflow" : ["dataflow", "compute"]
   }
   _service_accounts_robot_services = {
+    aiplatform        = "service-%s@gcp-sa-aiplatform"
     apigee            = "service-%s@gcp-sa-apigee"
     artifactregistry  = "service-%s@gcp-sa-artifactregistry"
     bq                = "bq-%s@bigquery-encryption"

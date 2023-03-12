@@ -17,34 +17,34 @@
 variable "dataproc_config" {
   description = "Dataproc cluster config."
   type = object({
-    graceful_decommission_timeout = optional(string, null)
+    graceful_decommission_timeout = optional(string)
     cluster_config = optional(object({
-      staging_bucket = optional(string, null)
-      temp_bucket    = optional(string, null)
+      staging_bucket = optional(string)
+      temp_bucket    = optional(string)
       gce_cluster_config = optional(object({
-        zone                   = optional(string, null)
-        network                = optional(string, null)
-        subnetwork             = optional(string, null)
-        service_account        = optional(string, null)
-        service_account_scopes = optional(list(string), null)
+        zone                   = optional(string)
+        network                = optional(string)
+        subnetwork             = optional(string)
+        service_account        = optional(string)
+        service_account_scopes = optional(list(string))
         tags                   = optional(list(string), [])
-        internal_ip_only       = optional(bool, null)
+        internal_ip_only       = optional(bool)
         metadata               = optional(map(string), {})
         reservation_affinity = optional(object({
           consume_reservation_type = string
           key                      = string
           values                   = string
-        }), null)
+        }))
         node_group_affinity = optional(object({
           node_group_uri = string
-        }), null)
+        }))
 
         shielded_instance_config = optional(object({
           enable_secure_boot          = bool
           enable_vtpm                 = bool
           enable_integrity_monitoring = bool
-        }), null)
-      }), null)
+        }))
+      }))
       master_config = optional(object({
         num_instances    = number
         machine_type     = string
@@ -53,12 +53,12 @@ variable "dataproc_config" {
           boot_disk_type    = string
           boot_disk_size_gb = number
           num_local_ssds    = number
-        }), null)
+        }))
         accelerators = optional(object({
           accelerator_type  = string
           accelerator_count = number
-        }), null)
-      }), null)
+        }))
+      }))
       worker_config = optional(object({
         num_instances    = number
         machine_type     = string
@@ -67,13 +67,13 @@ variable "dataproc_config" {
           boot_disk_type    = string
           boot_disk_size_gb = number
           num_local_ssds    = number
-        }), null)
+        }))
         image_uri = string
         accelerators = optional(object({
           accelerator_type  = string
           accelerator_count = number
-        }), null)
-      }), null)
+        }))
+      }))
       preemptible_worker_config = optional(object({
         num_instances  = number
         preemptibility = string
@@ -81,102 +81,102 @@ variable "dataproc_config" {
           boot_disk_type    = string
           boot_disk_size_gb = number
           num_local_ssds    = number
-        }), null)
-      }), null)
+        }))
+      }))
       software_config = optional(object({
-        image_version       = optional(string, null)
+        image_version       = optional(string)
         override_properties = map(string)
-        optional_components = optional(list(string), null)
-      }), null)
+        optional_components = optional(list(string))
+      }))
       security_config = optional(object({
         kerberos_config = object({
-          cross_realm_trust_admin_server        = optional(string, null)
-          cross_realm_trust_kdc                 = optional(string, null)
-          cross_realm_trust_realm               = optional(string, null)
-          cross_realm_trust_shared_password_uri = optional(string, null)
-          enable_kerberos                       = optional(string, null)
-          kdc_db_key_uri                        = optional(string, null)
-          key_password_uri                      = optional(string, null)
-          keystore_uri                          = optional(string, null)
-          keystore_password_uri                 = optional(string, null)
+          cross_realm_trust_admin_server        = optional(string)
+          cross_realm_trust_kdc                 = optional(string)
+          cross_realm_trust_realm               = optional(string)
+          cross_realm_trust_shared_password_uri = optional(string)
+          enable_kerberos                       = optional(string)
+          kdc_db_key_uri                        = optional(string)
+          key_password_uri                      = optional(string)
+          keystore_uri                          = optional(string)
+          keystore_password_uri                 = optional(string)
           kms_key_uri                           = string
-          realm                                 = optional(string, null)
+          realm                                 = optional(string)
           root_principal_password_uri           = string
-          tgt_lifetime_hours                    = optional(string, null)
-          truststore_password_uri               = optional(string, null)
-          truststore_uri                        = optional(string, null)
+          tgt_lifetime_hours                    = optional(string)
+          truststore_password_uri               = optional(string)
+          truststore_uri                        = optional(string)
         })
-      }), null)
+      }))
       autoscaling_config = optional(object({
         policy_uri = string
-      }), null)
+      }))
       initialization_action = optional(object({
         script      = string
-        timeout_sec = optional(string, null)
-      }), null)
+        timeout_sec = optional(string)
+      }))
       encryption_config = optional(object({
         kms_key_name = string
-      }), null)
+      }))
       lifecycle_config = optional(object({
-        idle_delete_ttl  = optional(string, null)
-        auto_delete_time = optional(string, null)
-      }), null)
+        idle_delete_ttl  = optional(string)
+        auto_delete_time = optional(string)
+      }))
       endpoint_config = optional(object({
         enable_http_port_access = string
-      }), null)
+      }))
       dataproc_metric_config = optional(object({
         metrics = list(object({
           metric_source    = string
-          metric_overrides = optional(string, null)
+          metric_overrides = optional(string)
         }))
-      }), null)
+      }))
       metastore_config = optional(object({
         dataproc_metastore_service = string
-      }), null)
-    }), null)
+      }))
+    }))
 
     virtual_cluster_config = optional(object({
-      staging_bucket = optional(string, null)
+      staging_bucket = optional(string)
       auxiliary_services_config = optional(object({
         metastore_config = optional(object({
           dataproc_metastore_service = string
-        }), null)
+        }))
         spark_history_server_config = optional(object({
           dataproc_cluster = string
-        }), null)
-      }), null)
+        }))
+      }))
       kubernetes_cluster_config = object({
-        kubernetes_namespace = optional(string, null)
+        kubernetes_namespace = optional(string)
         kubernetes_software_config = object({
           component_version = list(map(string))
-          properties        = optional(list(map(string)), null)
+          properties        = optional(list(map(string)))
         })
 
         gke_cluster_config = object({
-          gke_cluster_target = optional(string, null)
+          gke_cluster_target = optional(string)
           node_pool_target = optional(object({
             node_pool = string
             roles     = list(string)
             node_pool_config = optional(object({
               autoscaling = optional(object({
-                min_node_count = optional(number, null)
-                max_node_count = optional(number, null)
-              }), null)
+                min_node_count = optional(number)
+                max_node_count = optional(number)
+              }))
 
               config = object({
-                machine_type     = optional(string, null)
-                preemptible      = optional(bool, null)
-                local_ssd_count  = optional(number, null)
-                min_cpu_platform = optional(string, null)
-                spot             = optional(bool, null)
+                machine_type     = optional(string)
+                preemptible      = optional(bool)
+                local_ssd_count  = optional(number)
+                min_cpu_platform = optional(string)
+                spot             = optional(bool)
               })
 
-              locations = optional(list(string), null)
-            }), null)
-          }), null)
+              locations = optional(list(string))
+            }))
+          }))
         })
       })
-    }), null)
+    }))
   })
   default = {}
 }

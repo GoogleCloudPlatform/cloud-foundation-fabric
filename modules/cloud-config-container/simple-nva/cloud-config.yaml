@@ -34,8 +34,8 @@ write_files:
       After=network-online.target
       Wants=network-online.target
       [Service]
+      RemainAfterExit=true
       ExecStart=/bin/sh -c "/var/run/nva/start-routing.sh"
-
   - path: /var/run/nva/start-routing.sh
     permissions: 0744
     owner: root
@@ -43,7 +43,7 @@ write_files:
       iptables --policy FORWARD ACCEPT
 %{ for interface in network_interfaces ~}
 %{ if enable_health_checks ~}
-      /var/run/nva/policy_based_routing.sh ${interface.name}
+      /var/run/nva/policy_based_routing.sh ${interface.name} &>/dev/null &
 %{ endif ~}
 %{ if interface.enable_masquerading ~}
 %{ for cidr in interface.non_masq_cidrs ~}

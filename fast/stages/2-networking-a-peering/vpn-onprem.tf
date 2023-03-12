@@ -17,54 +17,21 @@
 # tfdoc:file:description VPN between landing and onprem.
 
 locals {
-  enable_onprem_vpn = var.vpn_onprem_configs != null
-  bgp_peer_options_onprem = local.enable_onprem_vpn == false ? null : {
-    for k, v in var.vpn_onprem_configs :
-    k => v.adv == null ? null : {
-      advertise_groups = []
-      advertise_ip_ranges = {
-        for adv in(v.adv == null ? [] : v.adv.custom) :
-        var.custom_adv[adv] => adv
-      }
-      advertise_mode = try(v.adv.default, false) ? "DEFAULT" : "CUSTOM"
-      route_priority = null
-    }
-  }
-}
-
-moved {
-  from = module.landing-to-onprem-ew1-vpn
-  to   = module.landing-to-onprem-primary-vpn
+  onprem_peer_gateways = try(
+    var.vpn_onprem_primary_config.peer_external_gateways, {}
+  )
 }
 
 module "landing-to-onprem-primary-vpn" {
-  count      = local.enable_onprem_vpn ? 1 : 0
-  source     = "../../../modules/net-vpn-ha"
-  project_id = module.landing-project.project_id
-  network    = module.landing-vpc.self_link
-  region     = var.regions.primary
-  name       = "vpn-to-onprem-${local.region_shortnames[var.regions.primary]}"
-  router_config = {
-    name = "landing-onprem-vpn-${local.region_shortnames[var.regions.primary]}"
-    asn  = var.router_onprem_configs.landing-primary.asn
-  }
+  count         = var.vpn_onprem_primary_config == null ? 0 : 1
+  source        = "../../../modules/net-vpn-ha"
+  project_id    = module.landing-project.project_id
+  network       = module.landing-vpc.self_link
+  region        = var.regions.primary
+  name          = "vpn-to-onprem-${local.region_shortnames[var.regions.primary]}"
+  router_config = try(var.vpn_onprem_primary_config.router_config, {})
   peer_gateways = {
-    default = {
-      external = var.vpn_onprem_configs.landing-primary.peer_external_gateway
-    }
+    for k, v in local.onprem_peer_gateways : k => { external = v }
   }
-  tunnels = {
-    for t in var.vpn_onprem_configs.landing-primary.tunnels :
-    "remote-${t.vpn_gateway_interface}-${t.peer_external_gateway_interface}" => {
-      bgp_peer = {
-        address = cidrhost(t.session_range, 1)
-        asn     = t.peer_asn
-      }
-      bgp_peer_options                = local.bgp_peer_options_onprem.landing-primary
-      bgp_session_range               = "${cidrhost(t.session_range, 2)}/30"
-      peer_external_gateway_interface = t.peer_external_gateway_interface
-      shared_secret                   = t.secret
-      vpn_gateway_interface           = t.vpn_gateway_interface
-    }
-  }
+  tunnels = try(var.vpn_onprem_primary_config.tunnels, {})
 }
