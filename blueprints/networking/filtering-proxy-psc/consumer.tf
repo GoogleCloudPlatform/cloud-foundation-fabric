@@ -48,11 +48,6 @@ module "test-vm-consumer" {
     nat        = false
     addresses  = null
   }]
-  boot_disk = {
-    image = "debian-cloud/debian-10"
-    type  = "pd-standard"
-    size  = 10
-  }
   service_account_create = true
   metadata = {
     startup-script = templatefile("${path.module}/startup.sh", { proxy_url = "http://proxy.internal:3128" })
@@ -60,7 +55,7 @@ module "test-vm-consumer" {
 }
 
 ###############################################################################
-#                                 PSC Consuner                                #
+#                                 PSC Consumer                                #
 ###############################################################################
 
 resource "google_compute_address" "psc_endpoint_address" {
