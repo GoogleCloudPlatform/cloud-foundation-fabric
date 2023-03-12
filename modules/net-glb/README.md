@@ -214,9 +214,10 @@ module "glb-0" {
 }
 # tftest modules=1 resources=6
 ```
+
 #### Managed Instance Groups
 
-This example shows how to use the module with a manage instance group as backend: 
+This example shows how to use the module with a manage instance group as backend:
 
 ```hcl
 module "win-template" {
@@ -227,9 +228,10 @@ module "win-template" {
   instance_type   = "n2d-standard-2"
   create_template = true
   boot_disk = {
-    image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
-    type  = "pd-balanced"
-    size  = 70
+    initialize_params = {
+      image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
+      size  = 70
+    }
   }
   network_interfaces = [{
     network    = var.vpc.self_link

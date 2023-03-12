@@ -28,9 +28,9 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   create_template = true
   metadata = {
@@ -71,9 +71,9 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   create_template = true
   metadata = {
@@ -122,9 +122,9 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   create_template = true
   metadata = {
@@ -174,9 +174,9 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   create_template = true
   metadata = {
@@ -225,9 +225,9 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   create_template = true
   metadata = {
@@ -282,9 +282,9 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   attached_disks = [{
     name        = "repd-1"
@@ -352,9 +352,9 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   attached_disks = [{
     name        = "repd-1"

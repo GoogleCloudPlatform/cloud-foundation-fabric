@@ -163,14 +163,18 @@ resource "google_compute_instance" "default" {
   }
 
   boot_disk {
-    auto_delete = var.boot_disk.auto_delete
-    initialize_params {
-      type  = var.boot_disk.type
-      image = var.boot_disk.image
-      size  = var.boot_disk.size
-    }
+    auto_delete             = var.boot_disk.auto_delete
+    source                  = var.boot_disk.source
     disk_encryption_key_raw = var.encryption != null ? var.encryption.disk_encryption_key_raw : null
     kms_key_self_link       = var.encryption != null ? var.encryption.kms_key_self_link : null
+    dynamic "initialize_params" {
+      for_each = var.boot_disk.initialize_params == null ? [] : [""]
+      content {
+        image = var.boot_disk.initialize_params.image
+        size  = var.boot_disk.initialize_params.size
+        type  = var.boot_disk.initialize_params.type
+      }
+    }
   }
 
   dynamic "confidential_instance_config" {
@@ -268,9 +272,9 @@ resource "google_compute_instance_template" "default" {
   disk {
     auto_delete  = var.boot_disk.auto_delete
     boot         = true
-    disk_size_gb = var.boot_disk.size
-    disk_type    = var.boot_disk.type
-    source_image = var.boot_disk.image
+    disk_size_gb = var.boot_disk.initialize_params.size
+    disk_type    = var.boot_disk.initialize_params.type
+    source_image = var.boot_disk.initialize_params.image
   }
 
   dynamic "confidential_instance_config" {

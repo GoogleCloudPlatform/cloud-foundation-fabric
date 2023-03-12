@@ -147,7 +147,9 @@ module "squid-vm" {
     subnetwork = module.vpc.subnet_self_links["${var.region}/proxy"]
   }]
   boot_disk = {
-    image = "cos-cloud/cos-stable"
+    initialize_params = {
+      image = "cos-cloud/cos-stable"
+    }
   }
   service_account        = module.service-account-squid.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
