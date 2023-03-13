@@ -20,13 +20,13 @@ locals {
       for f in concat(
         [for f in fileset(path.module, "${v.populate_from}/*.svg") : f],
         [for f in fileset(path.module, "${v.populate_from}/*.md") : f],
-        [for f in fileset(path.module, "${v.populate_from}/*.sample") : f],
-        [for f in fileset(path.module, "${v.populate_from}/data/**/*.*") : f],
+        (v.populate_samples ? [for f in fileset(path.module, "${v.populate_from}/*.sample") : f] : []),
+        (v.populate_samples ? [for f in fileset(path.module, "${v.populate_from}/data/**/*.*") : f] : []),
         [for f in fileset(path.module, "${v.populate_from}/*.tf") : f]
         ) : {
         repository = k
         file       = f
-        name       = replace(replace(f, "${v.populate_from}/", ""), "data/", "data.sample/")
+        name       = replace(replace(f, "${v.populate_from}/", ""), (v.populate_samples ? "data/" : ""), (v.populate_samples ? "data.sample/" : ""))
       }
     ] if v.populate_from != null
   ])
