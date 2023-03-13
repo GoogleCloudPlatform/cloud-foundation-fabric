@@ -83,16 +83,17 @@ variable "boot_disk" {
   description = "Boot disk properties."
   type = object({
     auto_delete = optional(bool, true)
-    image       = optional(string, "projects/debian-cloud/global/images/family/debian-11")
-    size        = optional(number, 10)
-    type        = optional(string, "pd-balanced")
+    source      = optional(string)
+    initialize_params = optional(object({
+      image = optional(string, "projects/debian-cloud/global/images/family/debian-11")
+      size  = optional(number, 10)
+      type  = optional(string, "pd-balanced")
+    }))
   })
   default = {
-    auto_delete = true
-    image       = "projects/debian-cloud/global/images/family/debian-11"
-    type        = "pd-balanced"
-    size        = 10
+    initialize_params = {}
   }
+  nullable = false
 }
 
 variable "can_ip_forward" {

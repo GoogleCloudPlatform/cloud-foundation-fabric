@@ -36,4 +36,5 @@ module "mgmt_server" {
     type  = var.mgmt_server_config.disk_type
     size  = var.mgmt_server_config.disk_size
   }
+  tags = ["ssh"]
 }

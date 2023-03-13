@@ -266,11 +266,13 @@ def main_cf_pubsub(event, context):
               help='Load JSON resources from file, skips init and discovery.')
 @click.option('--debug-plugin',
               help='Run only core and specified timeseries plugin.')
+@click.option('--debug', is_flag=True, default=False,
+              help='Turn on debug logging.')
 def main(discovery_root, monitoring_project, project=None, folder=None,
          custom_quota_file=None, dump_file=None, load_file=None,
-         debug_plugin=None):
+         debug_plugin=None, debug=False):
   'CLI entry point.'
-  logging.basicConfig(level=logging.INFO)
+  logging.basicConfig(level=logging.INFO if not debug else logging.DEBUG)
   if discovery_root.partition('/')[0] not in ('folders', 'organizations'):
     raise SystemExit('Invalid discovery root.')
   descriptors = []
