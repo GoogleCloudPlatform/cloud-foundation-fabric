@@ -17,8 +17,8 @@
 module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = var.network
-  vpc_create = (var.project_create != null)
+  name       = var.vpc_name
+  vpc_create = var.vpc_create
   subnets = [
     {
       ip_cidr_range = var.mgmt_subnet_cidr_block
@@ -35,6 +35,12 @@ module "vpc" {
       }
     }
   ]
+}
+
+module "firewall" {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.project.project_id
+  network    = module.vpc.name
 }
 
 module "nat" {

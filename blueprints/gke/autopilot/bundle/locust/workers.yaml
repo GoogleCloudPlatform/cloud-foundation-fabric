@@ -44,8 +44,9 @@ spec:
               value: worker
             - name: LOCUST_MASTER
               value: locust-master
-          requests:
-            cpu: 20m
-            memory: 50Mi
-          limits:
-            memory: 50Mi     
+          resources:              
+            requests:
+              cpu: 20m
+              memory: 50Mi
+            limits:
+              memory: 50Mi     
