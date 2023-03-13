@@ -42,3 +42,39 @@ This sample creates\update several distinct groups of resources:
 <!-- END TFDOC -->
 ## Manual Steps
 Once this blueprint is deployed the M4CE [m4ce_gmanaged_service_account](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/target-sa-compute-engine#configuring_the_default_service_account) has to be configured to grant the access to the shared VPC and allow the deploy of Compute Engine instances as the result of the migration.
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/cloud-operations/vm-migration/host-target-sharedvpc"
+  project_create = {
+    billing_account_id = "1234-ABCD-1234"
+    parent             = "folders/1234563"
+  }
+  migration_admin_users     = ["user:admin@example.com"]
+  migration_viewer_users    = ["user:viewer@example.com"]
+  migration_target_projects = [module.test-target-project.name]
+  sharedvpc_host_projects   = [module.test-sharedvpc-host-project.name]
+  depends_on = [
+    module.test-target-project,
+    module.test-sharedvpc-host-project,
+  ]
+}
+
+module "test-target-project" {
+  source          = "./fabric/modules/project"
+  billing_account = "1234-ABCD-1234"
+  name            = "test-target-project"
+  project_create  = true
+}
+
+module "test-sharedvpc-host-project" {
+  source          = "./fabric/modules/project"
+  billing_account = "1234-ABCD-1234"
+  name            = "test-sharedvpc-host-project"
+  project_create  = true
+}
+
+# tftest modules=7 resources=25
+```

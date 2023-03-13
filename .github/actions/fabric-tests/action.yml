@@ -1,0 +1,59 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: fabric-tests
+description: Set up Fabric testing environment
+inputs:
+  PYTHON_VERSION:
+    required: true
+  TERRAFORM_VERSION:
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Config auth
+      shell: bash
+      run: |
+        echo '{"type": "service_account", "project_id": "test-only"}' \
+          | tee -a $GOOGLE_APPLICATION_CREDENTIALS
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.PYTHON_VERSION }}
+        cache: 'pip'
+        cache-dependency-path: 'tests/requirements.txt'
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ inputs.TERRAFORM_VERSION }}
+        terraform_wrapper: false
+    - name: Configure provider cache
+      shell: bash
+      run: |
+        echo 'plugin_cache_dir = "/home/runner/.terraform.d/plugin-cache"' \
+          | tee -a /home/runner/.terraformrc
+        echo 'disable_checkpoint = true' \
+          | tee -a /home/runner/.terraformrc
+        mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+    # avoid conflicts with user-installed providers on local machines
+    - name: Pin provider versions
+      shell: bash
+      run: |
+        for f in $(find . -name versions.tf); do
+          sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+        done
+    - name: Install Python Dependencies
+      shell: bash
+      run: |
+        pip install -r tests/requirements.txt

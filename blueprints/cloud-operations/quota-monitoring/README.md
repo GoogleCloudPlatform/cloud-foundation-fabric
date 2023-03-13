@@ -52,3 +52,15 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 | [schedule_config](variables.tf#L66) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source         = "./fabric/blueprints/cloud-operations/quota-monitoring"
+  name           = "name"
+  project_create = true
+  project_id     = "test"
+}
+# tftest modules=4 resources=14
+```

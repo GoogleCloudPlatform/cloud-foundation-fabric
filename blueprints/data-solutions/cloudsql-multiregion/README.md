@@ -165,3 +165,20 @@ The above command will delete the associated resources so there will be no billa
 | [service_accounts](outputs.tf#L46) | Service Accounts. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source                 = "./fabric/blueprints/data-solutions/cloudsql-multiregion/"
+  data_eng_principals    = ["dataeng@example.com"]
+  postgres_user_password = "my-root-password"
+  project_id             = "project"
+  project_create = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  prefix = "prefix"
+}
+# tftest modules=10 resources=50
+```

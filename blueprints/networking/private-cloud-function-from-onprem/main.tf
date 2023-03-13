@@ -86,7 +86,9 @@ module "vpn-onprem" {
       ip_ranges   = {}
     }
   }
-  peer_gateway = { gcp = module.vpn-hub.self_link }
+  peer_gateways = {
+    default = { gcp = module.vpn-hub.self_link }
+  }
   tunnels = {
     tunnel-0 = {
       bgp_peer = {
@@ -122,7 +124,9 @@ module "vpn-hub" {
       }
     }
   }
-  peer_gateway = { gcp = module.vpn-onprem.self_link }
+  peer_gateways = {
+    default = { gcp = module.vpn-onprem.self_link }
+  }
 
   tunnels = {
     tunnel-0 = {

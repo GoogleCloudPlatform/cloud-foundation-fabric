@@ -74,3 +74,20 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 | [ip_address](outputs.tf#L15) | IP address. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/cloud-operations/adfs"
+  prefix = "test"
+  project_create = {
+    billing_account_id = "12345-12345-12345"
+    parent             = "folders/123456789"
+  }
+  project_id           = "project-1"
+  ad_dns_domain_name   = "example.com"
+  adfs_dns_domain_name = "adfs.example.com"
+}
+# tftest modules=5 resources=18
+```

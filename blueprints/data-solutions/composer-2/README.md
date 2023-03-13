@@ -113,3 +113,18 @@ service_encryption_keys = {
 | [composer_dag_gcs](outputs.tf#L22) | The Cloud Storage prefix of the DAGs for the Cloud Composer environment. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source     = "./fabric/blueprints/data-solutions/composer-2/"
+  project_id = "project"
+  project_create = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  prefix = "prefix"
+}
+# tftest modules=5 resources=26
+```

@@ -25,6 +25,7 @@ locals {
     "dataflow" : ["dataflow", "compute"]
   }
   _service_accounts_robot_services = {
+    aiplatform        = "service-%s@gcp-sa-aiplatform"
     apigee            = "service-%s@gcp-sa-apigee"
     artifactregistry  = "service-%s@gcp-sa-artifactregistry"
     bq                = "bq-%s@bigquery-encryption"
@@ -83,6 +84,7 @@ locals {
     "multiclusteringress.googleapis.com", # grant roles/multiclusteringress.serviceAgent to multicluster-ingress
     "pubsub.googleapis.com",              # grant roles/pubsub.serviceAgent to pubsub
     "meshconfig.googleapis.com",          # grant roles/anthosservicemesh.serviceAgent to meshconfig
+    "notebooks.googleapis.com",           # no grants needed
     "secretmanager.googleapis.com",       # no grants needed
     "sqladmin.googleapis.com",            # grant roles/cloudsql.serviceAgent to sqladmin (TODO: verify)
   ]

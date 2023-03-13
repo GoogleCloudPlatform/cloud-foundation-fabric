@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ locals {
   # organization authoritative IAM bindings, in an easy to edit format before
   # they are combined with var.iam a bit further in locals
   _iam = {
+    "roles/billing.creator" = []
     "roles/browser" = [
       "domain:${var.organization.domain}"
     ]
@@ -85,7 +86,7 @@ locals {
       #   "domain:${var.organization.domain}"
       # ]
     },
-    var.billing_account.is_org_level ? {
+    local.billing_mode == "org" ? {
       "roles/billing.admin" = [
         local.groups_iam.gcp-billing-admins,
         local.groups_iam.gcp-organization-admins,
@@ -222,7 +223,7 @@ resource "google_organization_iam_binding" "org_admin_delegated" {
           "roles/resourcemanager.organizationViewer",
           module.organization.custom_role_id[var.custom_role_names.tenant_network_admin]
         ],
-        var.billing_account.is_org_level ? [
+        local.billing_mode == "org" ? [
           "roles/billing.admin",
           "roles/billing.costsManager",
           "roles/billing.user",

@@ -18,6 +18,7 @@ values:
     - kms_key_self_link: kms_key_self_link
       kms_key_service_account: null
       raw_key: null
+      rsa_encrypted_key: null
     labels:
       disk_name: attached-disk
       disk_type: pd-balanced
@@ -36,7 +37,7 @@ values:
     - auto_delete: true
       disk_encryption_key_raw: null
       initialize_params:
-      - image: projects/debian-cloud/global/images/family/debian-10
+      - image: projects/debian-cloud/global/images/family/debian-11
         size: 10
         type: pd-balanced
       kms_key_self_link: kms_key_self_link

@@ -76,7 +76,7 @@ module "projects" {
   service_identities_iam = try(each.value.service_identities_iam, {})
   vpc                    = try(each.value.vpc, null)
 }
-# tftest modules=7 resources=29
+# tftest modules=7 resources=30 inventory=example.yaml
 ```
 
 ### Projects configuration

@@ -13,11 +13,6 @@ folder_ids = {
   networking-dev  = null
   networking-prod = null
 }
-region_trigram = {
-  europe-west1 = "ew1"
-  europe-west3 = "ew3"
-  europe-west8 = "ew8"
-}
 service_accounts = {
   data-platform-dev    = "string"
   data-platform-prod   = "string"

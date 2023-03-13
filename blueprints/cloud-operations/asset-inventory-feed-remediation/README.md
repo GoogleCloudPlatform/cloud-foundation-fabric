@@ -72,3 +72,15 @@ Run the `subscription_pull` command until it returns nothing, then run the follo
 | [tag_show](outputs.tf#L49) | Instance add tag command. |  |
 
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test" {
+  source         = "./fabric/blueprints/cloud-operations/asset-inventory-feed-remediation"
+  project_create = true
+  project_id     = "project-1"
+}
+
+# tftest modules=7 resources=21
+```

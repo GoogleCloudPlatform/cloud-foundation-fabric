@@ -27,7 +27,9 @@ module "landing-to-dev-vpn-r1" {
     name   = "${var.prefix}-lnd-vpn-r1"
     asn    = 64514
   }
-  peer_gateway = { gcp = module.dev-to-landing-vpn-r1.self_link }
+  peer_gateways = {
+    default = { gcp = module.dev-to-landing-vpn-r1.self_link }
+  }
   tunnels = {
     0 = {
       bgp_peer = {
@@ -63,7 +65,9 @@ module "dev-to-landing-vpn-r1" {
       mode        = "CUSTOM"
     }
   }
-  peer_gateway = { gcp = module.landing-to-dev-vpn-r1.self_link }
+  peer_gateways = {
+    default = { gcp = module.landing-to-dev-vpn-r1.self_link }
+  }
   tunnels = {
     0 = {
       bgp_peer = {
