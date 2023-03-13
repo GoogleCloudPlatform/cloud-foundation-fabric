@@ -29,7 +29,8 @@ module "project" {
   services = [
     "artifactregistry.googleapis.com",
     "cloudbuild.googleapis.com",
-    "container.googleapis.com"
+    "container.googleapis.com",
+    "compute.googleapis.com"
   ]
   iam = {
     "roles/monitoring.viewer"            = [module.monitoring_sa.iam_email]

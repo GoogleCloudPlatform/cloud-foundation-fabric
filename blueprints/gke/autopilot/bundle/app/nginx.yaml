@@ -70,11 +70,12 @@ spec:
           initialDelaySeconds: 2
           periodSeconds: 2
           failureThreshold: 1 
-        requests:
-          cpu: 10m
-          memory: 10Mi
-        limits:
-          memory: 10Mi            
+        resources:
+          requests:
+            cpu: 10m
+            memory: 10Mi
+          limits:
+            memory: 10Mi            
       - name: nginx-prometheus-exporter
         image: nginx/nginx-prometheus-exporter:0.10.0
         ports:
@@ -83,11 +84,12 @@ spec:
         env:
         - name: SCRAPE_URI
           value: http://localhost:8080/stub_status
-        requests:
-          cpu: 5m
-          memory: 5Mi
-        limits:
-          memory: 5Mi            
+        resources:
+          requests:
+            cpu: 5m
+            memory: 5Mi
+          limits:
+            memory: 5Mi            
       volumes:
       - name: nginx-config
         configMap:

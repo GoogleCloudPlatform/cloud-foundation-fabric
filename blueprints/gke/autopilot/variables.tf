@@ -56,13 +56,6 @@ variable "mgmt_subnet_cidr_block" {
   default     = "10.0.2.0/24"
 }
 
-variable "network" {
-  description = "VPC name."
-  type        = string
-  default     = "vpc"
-  nullable    = false
-}
-
 variable "project_create" {
   description = "Parameters for the creation of the new project."
   type = object({
@@ -81,4 +74,17 @@ variable "region" {
   description = "Region."
   type        = string
   default     = "europe-west1"
+}
+
+variable "vpc_create" {
+  description = "Flag indicating whether the VPC should be created or not."
+  type        = bool
+  default     = true
+}
+
+variable "vpc_name" {
+  description = "VPC name."
+  type        = string
+  nullable    = false
+  default     = "vpc"
 }
