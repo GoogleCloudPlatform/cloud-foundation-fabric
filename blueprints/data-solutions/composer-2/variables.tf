@@ -67,6 +67,10 @@ variable "network_config" {
     host_project      = string
     network_self_link = string
     subnet_self_link  = string
+    composer_ip_ranges = object({
+      cloudsql   = string
+      gke_master = string
+    })
     composer_secondary_ranges = object({
       pods     = string
       services = string
