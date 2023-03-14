@@ -117,11 +117,13 @@ module "branch-gke-prod-sa" {
 }
 
 module "branch-gke-dev-gcs" {
-  source     = "../../../modules/gcs"
-  count      = var.fast_features.gke ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "dev-resman-gke-0"
-  prefix     = var.prefix
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.gke ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "dev-resman-gke-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-gke-dev-sa.0.iam_email]
@@ -129,11 +131,13 @@ module "branch-gke-dev-gcs" {
 }
 
 module "branch-gke-prod-gcs" {
-  source     = "../../../modules/gcs"
-  count      = var.fast_features.gke ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "prod-resman-gke-0"
-  prefix     = var.prefix
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.gke ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "prod-resman-gke-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-gke-prod-sa.0.iam_email]
