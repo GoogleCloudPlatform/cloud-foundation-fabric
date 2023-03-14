@@ -124,7 +124,7 @@ module "branch-gke-dev-gcs" {
   prefix        = var.prefix
   location      = var.locations.gcs
   storage_class = local.gcs_storage_class
-  versioning = true
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-gke-dev-sa.0.iam_email]
   }
@@ -138,7 +138,7 @@ module "branch-gke-prod-gcs" {
   prefix        = var.prefix
   location      = var.locations.gcs
   storage_class = local.gcs_storage_class
-  versioning = true
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-gke-prod-sa.0.iam_email]
   }
