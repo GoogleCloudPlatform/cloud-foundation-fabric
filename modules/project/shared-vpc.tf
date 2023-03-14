@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,4 +73,12 @@ resource "google_project_iam_member" "shared_vpc_host_robots" {
     ? "serviceAccount:${local.service_account_cloud_services}"
     : "serviceAccount:${local.service_accounts_robots[each.value.service]}"
   )
+  depends_on = [
+    google_project_service.project_services,
+    google_project_service_identity.servicenetworking,
+    google_project_service_identity.jit_si,
+    google_project_default_service_accounts.default_service_accounts,
+    data.google_bigquery_default_service_account.bq_sa,
+    data.google_storage_project_service_account.gcs_sa,
+  ]
 }
