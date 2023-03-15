@@ -1,0 +1,19 @@
+name: Run CI
+
+on:
+  workflow_dispatch:
+    branches: ["ci"]
+
+jobs:
+  run-ci:
+    name: "Test CI"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+          
+      - run: |
+          ls
+          cd cloud-foundation-fabric
+          git status
