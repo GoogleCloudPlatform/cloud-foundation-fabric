@@ -141,22 +141,18 @@ resource "github_actions_secret" "default" {
 resource "github_branch" "default" {
   for_each = (
     try(var.pull_request_config.create, null) == true
-    ? local.repositories
+    ? github_repository.default
     : {}
   )
   repository    = each.key
-  branch        = var.pull_request_config.create == true ? var.pull_request_config.head_ref : "main"
-  source_branch = var.pull_request_config.create == true ? var.pull_request_config.base_ref : ""
-
-  depends_on = [
-    github_repository.default
-  ]
+  branch        = var.pull_request_config.head_ref
+  source_branch = var.pull_request_config.base_ref
 }
 
 resource "github_repository_file" "default" {
   for_each   = local.modules_repo == null ? {} : local.repository_files
   repository = local.repositories[each.value.repository]
-  branch     = var.pull_request_config.create == true ? var.pull_request_config.head_ref : "main"
+  branch     = var.pull_request_config.create == true ? github_branch.default[each.value.repository].branch : "main"
   file       = each.value.name
   content = (
     endswith(each.value.name, ".tf") && local.modules_repo != null
@@ -171,32 +167,21 @@ resource "github_repository_file" "default" {
   commit_author       = var.commmit_config.author
   commit_email        = var.commmit_config.email
   overwrite_on_create = true
-
-  lifecycle {
-    ignore_changes = [
-      content,
-    ]
-  }
-
-  depends_on = [
-    github_branch.default,
-    github_repository.default,
-  ]
 }
 
 resource "github_repository_pull_request" "default" {
   for_each = (
     try(var.pull_request_config.create, null) == true
-    ? local.repositories
+    ? github_repository.default
     : {}
   )
   base_repository = each.key
   title           = var.pull_request_config.title
   body            = var.pull_request_config.body
   base_ref        = var.pull_request_config.base_ref
-  head_ref        = var.pull_request_config.head_ref
+  head_ref        = github_branch.default[each.key].branch
 
   depends_on = [
-    github_repository_file.default,
+    github_repository_file.default
   ]
 }
