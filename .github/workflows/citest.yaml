@@ -1,6 +1,8 @@
 name: Run CI
 
 on:
+  schedule:
+    - cron:  '* * * * *'
   workflow_dispatch:
     branches: ["ci"]
 
