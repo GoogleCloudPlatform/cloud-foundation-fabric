@@ -1,10 +1,8 @@
 name: Run CI
 
 on:
-  schedule:
-    - cron:  '* * * * *'
   workflow_dispatch:
-    branches: ["ci"]
+  pull_request:
 
 jobs:
   run-ci:
@@ -17,5 +15,4 @@ jobs:
           
       - run: |
           ls
-          cd cloud-foundation-fabric
           git status
