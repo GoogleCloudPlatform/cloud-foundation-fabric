@@ -16,7 +16,6 @@ name: Run CI
 
 on:
   workflow_dispatch:
-    branches: ["ci"]
 
 jobs:
   run-ci:
