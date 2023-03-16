@@ -23,5 +23,11 @@ terraform {
       source  = "hashicorp/google-beta"
       version = ">= 4.55.0" # tftest
     }
+    local = {
+      source  = "hashicorp/local"
+      version = "2.2.3"
+    }
   }
 }
+
+
