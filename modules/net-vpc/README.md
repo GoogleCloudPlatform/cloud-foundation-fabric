@@ -1,10 +1,20 @@
-# Minimalistic VPC module
+# VPC module
 
-This module allows creation and management of VPC networks including subnetworks and subnetwork IAM bindings, Shared VPC activation and service project registration, and one-to-one peering.
+This module allows creation and management of VPC networks including subnetworks and subnetwork IAM bindings, and most features and options related to VPCs and subnets.
 
 ## Examples
 
-The module allows for several different VPC configurations, some of the most common are shown below.
+- [Simple VPC](#simple-vpc)
+- [Subnet Options](#subnet-options)
+- [Subnet IAM](#subnet-iam)
+- [Peering](#peering)
+- [Shared VPC](#shared-vpc)
+- [Private Service Networking](#private-service-networking)
+- [Private Service Networking with Peering Routes](#private-service-networking-with-peering-routes)
+- [Subnets for Private Service Connect, Proxy-only subnets](#subnets-for-private-service-connect-proxy-only-subnets)
+- [DNS Policies](#dns-policies)
+- [Subnet Factory](#subnet-factory)
+- [Custom Routes](#custom-routes)
 
 ### Simple VPC
 
