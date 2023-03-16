@@ -161,7 +161,9 @@ module "test-vm" {
   name          = "${var.name}-test"
   instance_type = "e2-micro"
   boot_disk = {
-    image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2104"
+    initialize_params = {
+      image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2104"
+    }
   }
   network_interfaces = [{
     network    = module.vpc-onprem.self_link

@@ -32,9 +32,11 @@ module "mgmt_server" {
   }]
   service_account_create = true
   boot_disk = {
-    image = var.mgmt_server_config.image
-    type  = var.mgmt_server_config.disk_type
-    size  = var.mgmt_server_config.disk_size
+    initialize_params = {
+      image = var.mgmt_server_config.image
+      type  = var.mgmt_server_config.disk_type
+      size  = var.mgmt_server_config.disk_size
+    }
   }
   tags = ["ssh"]
 }
