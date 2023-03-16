@@ -31,6 +31,7 @@ locals {
       flow_logs_config      = try(v.flow_logs, null)
       ipv6                  = try(v.ipv6, null)
       secondary_ip_ranges   = try(v.secondary_ip_ranges, null)
+      iam_additive          = try(v.iam_additive, [])
       iam_groups            = try(v.iam_groups, [])
       iam_users             = try(v.iam_users, [])
       iam_service_accounts  = try(v.iam_service_accounts, [])
@@ -38,6 +39,15 @@ locals {
       active                = try(v.active, null)
     }
   }
+  _factory_subnets_iam_additive = flatten([
+    for k, v in local._factory_subnets : [
+      for member in lookup(v, "iam_additive", []) : {
+        member = member
+        subnet = k
+        role   = "roles/compute.networkUser"
+      }
+    ] if v.purpose == null
+  ])
   _factory_subnets_iam = [
     for k, v in local._factory_subnets : {
       subnet = k
@@ -49,6 +59,17 @@ locals {
       )
     } if v.purpose == null
   ]
+  _subnet_iam_additive_members = flatten([
+    for subnet, roles in var.subnet_iam_additive : [
+      for role, members in roles : [
+        for member in members : {
+          member = member
+          role   = role
+          subnet = subnet
+        }
+      ]
+    ]
+  ])
   _subnet_iam_members = flatten([
     for subnet, roles in(var.subnet_iam == null ? {} : var.subnet_iam) : [
       for role, members in roles : {
@@ -58,6 +79,10 @@ locals {
       }
     ]
   ])
+  subnet_iam_additive_members = concat(
+    local._factory_subnets_iam_additive,
+    local._subnet_iam_additive_members
+  )
   subnet_iam_members = concat(
     [for k in local._factory_subnets_iam : k if length(k.members) > 0],
     local._subnet_iam_members
@@ -150,4 +175,16 @@ resource "google_compute_subnetwork_iam_binding" "binding" {
   region     = google_compute_subnetwork.subnetwork[each.value.subnet].region
   role       = each.value.role
   members    = each.value.members
+}
+
+resource "google_compute_subnetwork_iam_member" "binding" {
+  for_each = {
+    for binding in local.subnet_iam_additive_members :
+    "${binding.subnet}.${binding.role}.${binding.member}" => binding
+  }
+  project    = var.project_id
+  subnetwork = google_compute_subnetwork.subnetwork[each.value.subnet].name
+  region     = google_compute_subnetwork.subnetwork[each.value.subnet].region
+  role       = each.value.role
+  member     = each.value.member
 }
