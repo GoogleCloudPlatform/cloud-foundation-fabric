@@ -114,6 +114,39 @@ The `create_options` repository attribute controls creation: if the attribute is
 
 Initial population depends on a modules repository being configured in the `modules_config` variable described in the preceding section and on the`populate_from` attributes in each repository where population is required, which point to the folder holding the files to be committed.
 
+Each repository may contain some sample tfvars and data files that can be used as a starting point for your own files. By default, the samples are not populate. However, you can enable this by setting the `populate_samples` attribute to `true`. Here's an updated example:
+
+```tfvars
+repositories = {
+  fast_00_bootstrap = {
+    create_options = {
+      description = "FAST bootstrap."
+      features = {
+        issues = true
+      }
+    }
+    populate_from = "../../stages/0-bootstrap"
+    populate_samples = true
+  }
+  fast_01_resman = {
+    create_options = {
+      description = "FAST resource management."
+      features = {
+        issues = true
+      }
+    }
+    populate_from = "../../stages/1-resman"
+    populate_samples = true
+  }
+  fast_02_networking = {
+    populate_from = "../../stages/2-networking-peering"
+    populate_samples = true
+  }
+}
+# tftest skip
+
+Please note that setting `populate_samples` to `true` will populate the sample files to the repository, potentially overwriting any existing files with the same name. To minimize the risk of overwriting existing files, we populate the original `data` directory to a `data.sample` directory. In any case, be careful when enabling this option and review commit history to check any changes made to the sample files.
+
 ### Commit configuration
 
 An optional variable `commit_config` can be used to configure the author, email, and message used in commits for the initial population of files. Its defaults are probably fine for most use cases.
@@ -158,7 +191,7 @@ terraform state list | grep github_repository_file | awk '{print "terraform stat
 | [commmit_config](variables.tf#L17) | Configure commit metadata. | <code title="object&#40;&#123;&#10;  author  &#61; optional&#40;string, &#34;FAST loader&#34;&#41;&#10;  email   &#61; optional&#40;string, &#34;fast-loader&#64;fast.gcp.tf&#34;&#41;&#10;  message &#61; optional&#40;string, &#34;FAST initial loading&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [modules_config](variables.tf#L28) | Configure access to repository module via key, and replacement for modules sources in stage repositories. | <code title="object&#40;&#123;&#10;  repository_name &#61; string&#10;  source_ref      &#61; optional&#40;string&#41;&#10;  module_prefix   &#61; optional&#40;string, &#34;&#34;&#41;&#10;  key_config &#61; optional&#40;object&#40;&#123;&#10;    create_key     &#61; optional&#40;bool, false&#41;&#10;    create_secrets &#61; optional&#40;bool, false&#41;&#10;    keypair_path   &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [pull_request_config](variables.tf#L56) | Configure pull request metadata. | <code title="object&#40;&#123;&#10;  create   &#61; optional&#40;bool, false&#41;&#10;  title    &#61; optional&#40;string, &#34;FAST: initial loading or update&#34;&#41;&#10;  body     &#61; optional&#40;string, &#34;&#34;&#41;&#10;  base_ref &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  head_ref &#61; optional&#40;string, &#34;fast-loader&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [repositories](variables.tf#L69) | Repositories to create. | <code title="map&#40;object&#40;&#123;&#10;  create_options &#61; optional&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      auto_merge   &#61; optional&#40;bool&#41;&#10;      merge_commit &#61; optional&#40;bool&#41;&#10;      rebase_merge &#61; optional&#40;bool&#41;&#10;      squash_merge &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    auto_init   &#61; optional&#40;bool&#41;&#10;    description &#61; optional&#40;string&#41;&#10;    features &#61; optional&#40;object&#40;&#123;&#10;      issues   &#61; optional&#40;bool&#41;&#10;      projects &#61; optional&#40;bool&#41;&#10;      wiki     &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    templates &#61; optional&#40;object&#40;&#123;&#10;      gitignore &#61; optional&#40;string, &#34;Terraform&#34;&#41;&#10;      license   &#61; optional&#40;string&#41;&#10;      repository &#61; optional&#40;object&#40;&#123;&#10;        name  &#61; string&#10;        owner &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    visibility &#61; optional&#40;string, &#34;private&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  populate_from &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [repositories](variables.tf#L69) | Repositories to create. | <code title="map&#40;object&#40;&#123;&#10;  create_options &#61; optional&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      auto_merge   &#61; optional&#40;bool&#41;&#10;      merge_commit &#61; optional&#40;bool&#41;&#10;      rebase_merge &#61; optional&#40;bool&#41;&#10;      squash_merge &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    auto_init   &#61; optional&#40;bool&#41;&#10;    description &#61; optional&#40;string&#41;&#10;    features &#61; optional&#40;object&#40;&#123;&#10;      issues   &#61; optional&#40;bool&#41;&#10;      projects &#61; optional&#40;bool&#41;&#10;      wiki     &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    templates &#61; optional&#40;object&#40;&#123;&#10;      gitignore &#61; optional&#40;string, &#34;Terraform&#34;&#41;&#10;      license   &#61; optional&#40;string&#41;&#10;      repository &#61; optional&#40;object&#40;&#123;&#10;        name  &#61; string&#10;        owner &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    visibility &#61; optional&#40;string, &#34;private&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  populate_from    &#61; optional&#40;string&#41;&#10;  populate_samples &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

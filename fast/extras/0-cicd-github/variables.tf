@@ -93,7 +93,8 @@ variable "repositories" {
       }), {})
       visibility = optional(string, "private")
     }))
-    populate_from = optional(string)
+    populate_from    = optional(string)
+    populate_samples = optional(bool, false)
   }))
   default  = {}
   nullable = true
