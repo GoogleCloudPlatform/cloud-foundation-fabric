@@ -315,7 +315,7 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=7 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-psc inventory=factory.yaml
+# tftest modules=1 resources=9 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-psc inventory=factory.yaml
 ```
 
 ```yaml
@@ -338,13 +338,17 @@ region: europe-west1
 description: Sample description
 ip_cidr_range: 10.0.0.0/24
 # optional attributes
-enable_private_access: false   # defaults to true
-iam_users: ["foobar@example.com"] # grant compute/networkUser to users
-iam_groups: ["lorem@example.com"] # grant compute/networkUser to groups
-iam_service_accounts: ["fbz@prj.iam.gserviceaccount.com"]
-secondary_ip_ranges:              # map of secondary ip ranges
+enable_private_access: false  # defaults to true
+iam:                          # grant roles/compute.networkUser
+  - group:lorem@example.com
+  - serviceAccount:fbz@prj.iam.gserviceaccount.com
+  - user:foobar@example.com
+iam_additive:                 # grant roles/compute.networkUser
+  - user:foo@example.com
+  - serviceAccount:fbx@prj.iam.gserviceaccount.com
+secondary_ip_ranges:          # map of secondary ip ranges
   secondary-range-a: 192.168.0.0/24
-flow_logs:                        # enable, set to empty map to use defaults
+flow_logs:                    # enable, set to empty map to use defaults
   aggregation_interval: "INTERVAL_5_SEC"
   flow_sampling: 0.5
   metadata: "INCLUDE_ALL_METADATA"
@@ -402,6 +406,7 @@ module "vpc" {
 }
 # tftest modules=5 resources=15 inventory=routes.yaml
 ```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

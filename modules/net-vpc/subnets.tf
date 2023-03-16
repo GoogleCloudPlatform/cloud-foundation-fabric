@@ -31,10 +31,8 @@ locals {
       flow_logs_config      = try(v.flow_logs, null)
       ipv6                  = try(v.ipv6, null)
       secondary_ip_ranges   = try(v.secondary_ip_ranges, null)
+      iam                   = try(v.iam, [])
       iam_additive          = try(v.iam_additive, [])
-      iam_groups            = try(v.iam_groups, [])
-      iam_users             = try(v.iam_users, [])
-      iam_service_accounts  = try(v.iam_service_accounts, [])
       purpose               = try(v.purpose, null)
       active                = try(v.active, null)
     }
@@ -50,14 +48,10 @@ locals {
   ])
   _factory_subnets_iam = [
     for k, v in local._factory_subnets : {
-      subnet = k
-      role   = "roles/compute.networkUser"
-      members = concat(
-        formatlist("group:%s", lookup(v, "iam_groups", [])),
-        formatlist("user:%s", lookup(v, "iam_users", [])),
-        formatlist("serviceAccount:%s", lookup(v, "iam_service_accounts", []))
-      )
-    } if v.purpose == null
+      subnet  = k
+      role    = "roles/compute.networkUser"
+      members = v.iam
+    } if v.purpose == null && v.iam != null
   ]
   _subnet_iam_additive_members = flatten([
     for subnet, roles in var.subnet_iam_additive : [
