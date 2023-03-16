@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1257](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1257)] Fixes related to boot_disk in compute-vm module ([apichick](https://github.com/apichick)) <!-- 2023-03-16 15:24:26+00:00 -->
+- [[#1256](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1256)] **incompatible change:** Pin local provider ([ludoo](https://github.com/ludoo)) <!-- 2023-03-16 10:59:07+00:00 -->
+- [[#1245](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1245)] Composer-2 - Fix 1236 ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-13 20:48:22+00:00 -->
+- [[#1243](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1243)] Autopilot fixes ([apichick](https://github.com/apichick)) <!-- 2023-03-13 13:17:20+00:00 -->
+- [[#1241](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1241)] **incompatible change:** Allow using existing boot disk in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-12 09:54:00+00:00 -->
+- [[#1218](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1218)] Small fixes on Network Dashboard cloud function code ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-03-12 09:53:22+00:00 -->
 - [[#1229](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1229)] Removed unnecessary files ([apichick](https://github.com/apichick)) <!-- 2023-03-09 13:06:18+00:00 -->
 - [[#1227](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1227)] Add CMEK support on BQML blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-09 09:12:50+00:00 -->
 - [[#1225](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1225)] Fix on bqml demo ([gioconte](https://github.com/gioconte)) <!-- 2023-03-08 17:40:40+00:00 -->
@@ -37,6 +43,8 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1257](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1257)] Fixes related to boot_disk in compute-vm module ([apichick](https://github.com/apichick)) <!-- 2023-03-16 15:24:26+00:00 -->
+- [[#1248](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1248)] Add link to public serverless networking guide ([juliodiez](https://github.com/juliodiez)) <!-- 2023-03-14 17:05:45+00:00 -->
 - [[#1232](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1232)] Network firewall policy module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-10 08:21:50+00:00 -->
 - [[#1230](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1230)] Update contributing guide with new test framework ([juliocc](https://github.com/juliocc)) <!-- 2023-03-09 14:16:08+00:00 -->
 - [[#1221](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1221)] FAQ on installing Fast on a non-empty org ([skalolazka](https://github.com/skalolazka)) <!-- 2023-03-07 16:23:46+00:00 -->
@@ -55,6 +63,11 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1240](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1240)] feat: Enable populating of data directory and .sample files and update dependencies in 0-cicd-github ([antonkovach](https://github.com/antonkovach)) <!-- 2023-03-15 13:55:08+00:00 -->
+- [[#1249](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1249)] Document need to set `outputs_location` explicitly in every stage ([ludoo](https://github.com/ludoo)) <!-- 2023-03-15 10:43:44+00:00 -->
+- [[#1247](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1247)] Fast: resman: location and storage class added to GKE GCS buckets ([skalolazka](https://github.com/skalolazka)) <!-- 2023-03-14 15:37:16+00:00 -->
+- [[#1241](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1241)] **incompatible change:** Allow using existing boot disk in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-12 09:54:00+00:00 -->
+- [[#1237](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1237)] Add missing attribute to FAST onprem VPN examples ([ludoo](https://github.com/ludoo)) <!-- 2023-03-10 14:58:34+00:00 -->
 - [[#1228](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1228)] **incompatible change:** Simplify VPN implementation in FAST networking stages ([ludoo](https://github.com/ludoo)) <!-- 2023-03-09 16:57:45+00:00 -->
 - [[#1222](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1222)] Manage billing.creator role authoritatively in FAST bootstrap. ([juliocc](https://github.com/juliocc)) <!-- 2023-03-07 18:04:07+00:00 -->
 - [[#1213](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1213)] feat: Add Pull Request support to 0-cicd-github ([antonkovach](https://github.com/antonkovach)) <!-- 2023-03-06 08:32:36+00:00 -->
@@ -79,6 +92,12 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1256](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1256)] **incompatible change:** Pin local provider ([ludoo](https://github.com/ludoo)) <!-- 2023-03-16 10:59:07+00:00 -->
+- [[#1246](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1246)] Delay creation of SVPC host bindings until APIs and JIT SAs are done ([juliocc](https://github.com/juliocc)) <!-- 2023-03-14 14:16:59+00:00 -->
+- [[#1241](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1241)] **incompatible change:** Allow using existing boot disk in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-12 09:54:00+00:00 -->
+- [[#1239](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1239)] Allow overriding name in net-vpc subnet factory ([ludoo](https://github.com/ludoo)) <!-- 2023-03-11 08:30:43+00:00 -->
+- [[#1226](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1226)] Fix policy_based_routing.sh script on simple-nva module ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-03-10 17:36:08+00:00 -->
+- [[#1234](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1234)] Fixed connection tracking configuration on LB backend in net-ilb module  ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-03-10 14:25:30+00:00 -->
 - [[#1232](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1232)] Network firewall policy module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-10 08:21:50+00:00 -->
 - [[#1219](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1219)] Network Connectivity Center module ([juliodiez](https://github.com/juliodiez)) <!-- 2023-03-09 15:01:51+00:00 -->
 - [[#1227](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1227)] Add CMEK support on BQML blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-09 09:12:50+00:00 -->
@@ -122,6 +141,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1242](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1242)] Remove container image workflows ([kunzese](https://github.com/kunzese)) <!-- 2023-03-13 07:39:04+00:00 -->
 - [[#1231](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1231)] Simplify testing workflow ([juliocc](https://github.com/juliocc)) <!-- 2023-03-09 15:27:05+00:00 -->
 - [[#1216](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1216)] Use composite action for test workflow prerequisite steps ([ludoo](https://github.com/ludoo)) <!-- 2023-03-06 10:44:58+00:00 -->
 - [[#1215](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1215)] Try plugin cache, split examples tests ([ludoo](https://github.com/ludoo)) <!-- 2023-03-06 09:38:40+00:00 -->
