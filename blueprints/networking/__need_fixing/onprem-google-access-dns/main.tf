@@ -302,7 +302,9 @@ module "vm-onprem" {
   instance_type = "f1-micro"
   name          = "onprem"
   boot_disk = {
-    image = "ubuntu-os-cloud/ubuntu-1804-lts"
+    initialize_params = {
+      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+    }
   }
   metadata = {
     user-data = module.config-onprem.cloud_config
