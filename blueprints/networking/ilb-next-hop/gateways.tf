@@ -23,9 +23,11 @@ module "gw" {
   instance_type = "f1-micro"
 
   boot_disk = {
-    image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
-    type  = "pd-ssd",
-    size  = 10
+    initialize_params = {
+      image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
+      type  = "pd-ssd",
+      size  = 10
+    }
   }
 
   network_interfaces = [

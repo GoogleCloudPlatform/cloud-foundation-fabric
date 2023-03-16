@@ -310,9 +310,11 @@ module "simple-vm-example" {
   zone       = "europe-west1-b"
   name       = "test"
   boot_disk  = {
-    image = "projects/debian-cloud/global/images/family/cos-97-lts"
-    type = "pd-balanced"
-    size = 10
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/cos-97-lts"
+      type = "pd-balanced"
+      size = 10
+    }
   }
 }
 ```

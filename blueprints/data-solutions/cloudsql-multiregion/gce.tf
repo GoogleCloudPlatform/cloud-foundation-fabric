@@ -46,9 +46,11 @@ module "test-vm" {
   service_account        = module.service-account-sql.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   boot_disk = {
-    image = "projects/debian-cloud/global/images/family/debian-10"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-10"
+      type  = "pd-ssd"
+      size  = 10
+    }
   }
   encryption = var.service_encryption_keys != null ? {
     encrypt_boot            = true

@@ -81,9 +81,11 @@ module "server" {
   }
   service_account_create = true
   boot_disk = {
-    image = var.image
-    type  = var.disk_type
-    size  = var.disk_size
+    initialize_params = {
+      image = var.image
+      type  = var.disk_type
+      size  = var.disk_size
+    }
   }
   group = {
     named_ports = {
