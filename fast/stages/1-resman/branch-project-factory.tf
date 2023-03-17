@@ -30,7 +30,7 @@ module "branch-pf-dev-sa" {
     ])
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
 
@@ -48,7 +48,7 @@ module "branch-pf-prod-sa" {
     ])
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
 
