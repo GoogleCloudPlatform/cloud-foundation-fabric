@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,109 @@
 
 # tfdoc:file:description Project factory.
 
+# TODO: allow identities to no have the domain part and append org domain if needed
 
 locals {
-  _defaults = yamldecode(file(var.defaults_file))
-  _defaults_net = {
-    billing_account_id   = var.billing_account.id
-    environment_dns_zone = var.environment_dns_zone
-    shared_vpc_self_link = try(var.vpc_self_links["dev-spoke-0"], null)
-    vpc_host_project     = try(var.host_project_ids["dev-spoke-0"], null)
+  _all_vpc_hosts = {
+    for k, v in var.host_project_ids :
+    "fast:${k}" => v
   }
-  defaults = merge(local._defaults, local._defaults_net)
+  _default_services = [
+    "billingbudgets.googleapis.com",
+    "essentialcontacts.googleapis.com",
+    "orgpolicy.googleapis.com",
+  ]
+  _projects_raw = {
+    for f in fileset(var.data_path, "**/*.yaml") :
+    trimsuffix(f, ".yaml") => yamldecode(file("${var.data_path}/${f}"))
+  }
   projects = {
-    for f in fileset("${var.data_dir}", "**/*.yaml") :
-    trimsuffix(f, ".yaml") => yamldecode(file("${var.data_dir}/${f}"))
+    for k, v in local._projects_raw :
+    k => merge(v, {
+      # project attributes
+      name             = lookup(v, "id", basename(k))
+      descriptive_name = lookup(v, "descriptive_name", null)
+      billing_account  = lookup(v, "billing_account_id", var.billing_account.id)
+      #parent           = lookup(local._all_parents, v.parent, v.parent)
+      parent = v.parent
+      labels = lookup(v, "labels", null)
+      # iam and policies
+      iam = {
+        for role, members in lookup(v, "iam", {}) :
+        role => [
+          for member in members :
+          endswith(member, "@") ? "${member}${var.organization.domain}" : member
+        ]
+      }
+      iam_additive = {
+        for role, members in lookup(v, "iam_additive", {}) :
+        role => [
+          for member in members :
+          endswith(member, "@") ? "${member}${var.organization.domain}" : member
+        ]
+      }
+      group_iam = {
+        for role, groups in lookup(v, "group_iam", {}) :
+        role => [
+          for group in groups :
+          endswith(group, "@") ? "group:${group}${var.organization.domain}" : "group:${group}"
+        ]
+      }
+      org_policies = lookup(v, "org_policies", null)
+      tag_bindings = {
+        for k2, v2 in lookup(v, "tag_bindings", {}) :
+        k2 => lookup(var.tag_values, v2, v2)
+      }
+      # management
+      services = distinct(concat(lookup(v, "services", []), local._default_services))
+      contacts = { for x in lookup(v, "contacts", []) : x => ["ALL"] }
+      # billing budget
+      budget = lookup(v, "budget", null)
+      # networking
+      shared_vpc_service_config = lookup(v, "vpc", null) == null ? null : {
+        host_project         = lookup(local._all_vpc_hosts, v.vpc.host_project, v.vpc.host_project)
+        service_identity_iam = lookup(v.vpc, "service_identity_iam", null)
+      }
+    })
   }
+  subnet_bindings = flatten([
+    for k, v in local._projects_raw : [
+      for subnet, members in try(v.vpc.subnets_iam, {}) : [
+        for member in members : {
+          host_project = lookup(local._all_vpc_hosts, v.vpc.host_project, v.vpc.host_project),
+          region       = split("/", subnet)[0],
+          subnet       = split("/", subnet)[1],
+          member       = endswith(member, "@") ? "${member}${var.organization.domain}" : member
+        }
+      ]
+    ]
+  ])
 }
 
 module "projects" {
-  source                 = "../../../../blueprints/factories/project-factory"
-  for_each               = local.projects
-  defaults               = local.defaults
-  project_id             = each.key
-  billing_account_id     = try(each.value.billing_account_id, null)
-  billing_alert          = try(each.value.billing_alert, null)
-  dns_zones              = try(each.value.dns_zones, [])
-  essential_contacts     = try(each.value.essential_contacts, [])
-  folder_id              = try(each.value.folder_id, local.defaults.folder_id)
-  group_iam              = try(each.value.group_iam, {})
-  iam                    = try(each.value.iam, {})
-  kms_service_agents     = try(each.value.kms, {})
-  labels                 = try(each.value.labels, {})
-  org_policies           = try(each.value.org_policies, null)
-  prefix                 = var.prefix
-  service_accounts       = try(each.value.service_accounts, {})
-  service_accounts_iam   = try(each.value.service_accounts_iam, {})
-  services               = try(each.value.services, [])
-  service_identities_iam = try(each.value.service_identities_iam, {})
-  vpc                    = try(each.value.vpc, null)
+  source                    = "../../../../modules/project"
+  for_each                  = local.projects
+  billing_account           = each.value.billing_account
+  parent                    = each.value.parent
+  prefix                    = var.prefix
+  name                      = each.value.name
+  descriptive_name          = each.value.descriptive_name
+  labels                    = each.value.labels
+  services                  = each.value.services
+  iam                       = each.value.iam
+  iam_additive              = each.value.iam_additive
+  group_iam                 = each.value.group_iam
+  org_policies              = each.value.org_policies
+  contacts                  = each.value.contacts
+  shared_vpc_service_config = each.value.shared_vpc_service_config
+  tag_bindings              = each.value.tag_bindings
 }
 
-
+resource "google_compute_subnetwork_iam_member" "default" {
+  for_each   = { for b in local.subnet_bindings : join("/", values(b)) => b }
+  project    = each.value.host_project
+  subnetwork = "projects/${each.value.host_project}/regions/${each.value.region}/subnetworks/${each.value.subnet}"
+  region     = each.value.region
+  role       = "roles/compute.networkUser"
+  member     = each.value.member
+}

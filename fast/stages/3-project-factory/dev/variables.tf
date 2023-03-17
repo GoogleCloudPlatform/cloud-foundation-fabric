@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,32 +29,28 @@ variable "billing_account" {
   }
 }
 
-variable "data_dir" {
-  description = "Relative path for the folder storing configuration data."
+variable "data_path" {
+  description = "Relative path for the folder storing project configuration data."
   type        = string
   default     = "data/projects"
 }
 
-variable "defaults_file" {
-  description = "Relative path for the file storing the project factory configuration."
-  type        = string
-  default     = "data/defaults.yaml"
-}
-
-variable "environment_dns_zone" {
-  # tfdoc:variable:source 2-networking
-  description = "DNS zone suffix for environment."
-  type        = string
-  default     = null
-}
-
 variable "host_project_ids" {
   # tfdoc:variable:source 2-networking
-  description = "Host project for the shared VPC."
+  description = "Shared VPC project ids."
   type = object({
-    dev-spoke-0 = string
+    dev-spoke-0  = string
+    prod-landing = string
+    prod-spoke-0 = string
   })
-  default = null
+}
+
+variable "organization" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Organization details."
+  type = object({
+    domain = string
+  })
 }
 
 variable "prefix" {
@@ -66,6 +62,12 @@ variable "prefix" {
     condition     = try(length(var.prefix), 0) < 10
     error_message = "Use a maximum of 9 characters for prefix."
   }
+}
+
+variable "tag_values" {
+  # tfdoc:variable:source 1-resman
+  description = "Map of tag short names to tag ids."
+  type        = map(string)
 }
 
 variable "vpc_self_links" {
