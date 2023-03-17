@@ -47,7 +47,7 @@ module "branch-teams-sa" {
   display_name = "Terraform resman teams service account."
   prefix       = var.prefix
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
 

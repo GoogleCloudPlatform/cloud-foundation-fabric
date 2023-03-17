@@ -88,7 +88,7 @@ module "branch-gke-dev-sa" {
     )
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
 
@@ -112,7 +112,7 @@ module "branch-gke-prod-sa" {
     )
   }
   iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+    (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
 

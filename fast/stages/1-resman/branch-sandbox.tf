@@ -16,11 +16,6 @@
 
 # tfdoc:file:description Sandbox stage resources.
 
-moved {
-  from = module.branch-sandbox-folder
-  to   = module.branch-sandbox-folder.0
-}
-
 module "branch-sandbox-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.sandbox ? 1 : 0
@@ -43,11 +38,6 @@ module "branch-sandbox-folder" {
   }
 }
 
-moved {
-  from = module.branch-sandbox-gcs
-  to   = module.branch-sandbox-gcs.0
-}
-
 module "branch-sandbox-gcs" {
   source        = "../../../modules/gcs"
   count         = var.fast_features.sandbox ? 1 : 0
@@ -60,11 +50,6 @@ module "branch-sandbox-gcs" {
   iam = {
     "roles/storage.objectAdmin" = [module.branch-sandbox-sa.0.iam_email]
   }
-}
-
-moved {
-  from = module.branch-sandbox-sa
-  to   = module.branch-sandbox-sa.0
 }
 
 module "branch-sandbox-sa" {
