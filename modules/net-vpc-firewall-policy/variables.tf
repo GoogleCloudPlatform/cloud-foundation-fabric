@@ -114,8 +114,8 @@ variable "region" {
 }
 
 variable "target_vpcs" {
-  description = "VPC ids to which this policy will be attached."
-  type        = list(string)
-  default     = []
+  description = "VPC ids to which this policy will be attached, in descriptive name => self link format."
+  type        = map(string)
+  default     = {}
   nullable    = false
 }

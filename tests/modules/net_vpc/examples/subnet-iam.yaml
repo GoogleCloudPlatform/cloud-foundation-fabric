@@ -34,11 +34,16 @@ values:
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
-  module.vpc.google_compute_subnetwork_iam_binding.binding["europe-west1/subnet-2.roles/compute.networkUser"]:
+  module.vpc.google_compute_subnetwork_iam_member.binding["europe-west1/subnet-2.roles/compute.networkUser.user:user2@example.com"]:
     condition: []
-    members:
-    - group:group2@example.com
-    - user:user2@example.com
+    member: user:user2@example.com
+    project: my-project
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: subnet-2
+  module.vpc.google_compute_subnetwork_iam_member.binding["europe-west1/subnet-2.roles/compute.networkUser.group:group2@example.com"]:
+    condition: []
+    member: group:group2@example.com
     project: my-project
     region: europe-west1
     role: roles/compute.networkUser
@@ -47,8 +52,7 @@ values:
 counts:
   google_compute_network: 1
   google_compute_subnetwork: 2
-  google_compute_subnetwork_iam_binding: 2
-  modules: 1
-  resources: 5
+  google_compute_subnetwork_iam_binding: 1
+  google_compute_subnetwork_iam_member: 2
 
 outputs: {}

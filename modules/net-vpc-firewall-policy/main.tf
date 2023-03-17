@@ -40,10 +40,10 @@ resource "google_compute_network_firewall_policy" "default" {
 }
 
 resource "google_compute_network_firewall_policy_association" "default" {
-  for_each          = toset(var.region == null ? var.target_vpcs : [])
+  for_each          = var.region == null ? var.target_vpcs : {}
   project           = var.project_id
-  name              = "${var.name}-${reverse(split("/", each.key))[0]}"
-  attachment_target = each.key
+  name              = "${var.name}-${each.key}"
+  attachment_target = each.value
   firewall_policy   = google_compute_network_firewall_policy.default.0.name
 }
 
@@ -100,11 +100,11 @@ resource "google_compute_region_network_firewall_policy" "default" {
 }
 
 resource "google_compute_region_network_firewall_policy_association" "default" {
-  for_each          = toset(var.region != null ? var.target_vpcs : [])
+  for_each          = var.region != null ? var.target_vpcs : {}
   project           = var.project_id
-  name              = "${var.name}-${reverse(split("/", each.key))[0]}"
   region            = var.region
-  attachment_target = each.key
+  name              = "${var.name}-${each.key}"
+  attachment_target = each.value
   firewall_policy   = google_compute_region_network_firewall_policy.default.0.name
 }
 
