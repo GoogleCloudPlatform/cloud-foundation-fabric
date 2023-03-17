@@ -191,10 +191,13 @@ The Data Platform is meant to be executed by a Service Account (or a regular use
 There are three sets of variables you will need to fill in:
 
 ```tfvars
-billing_account_id  = "111111-222222-333333"
-older_id            = "folders/123456789012"
-organization_domain = "domain.com"
-prefix              = "myco"
+prefix                  = "dat-plat"
+project_config = {
+    parent              = "folders/1111111111"
+    billing_account_id  = "1111111-2222222-33333333"
+}
+organization_domain     = "domain.com"
+~                                        
 ```
 
 For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration. Remember to create team groups described [below](#groups).

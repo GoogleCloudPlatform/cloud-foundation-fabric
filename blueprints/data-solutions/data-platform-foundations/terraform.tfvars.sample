@@ -1,4 +1,6 @@
-prefix              = "prefix"
-folder_id           = "folders/123456789012"
-billing_account_id  = "111111-222222-333333"
-organization_domain = "example.com"
+prefix              	= "dat-plat"
+project_config = {
+    parent              = "folders/1111111111"
+    billing_account_id  = "1111111-2222222-33333333"
+}
+organization_domain 	= "domain.com"
