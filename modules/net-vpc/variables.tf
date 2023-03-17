@@ -136,6 +136,13 @@ variable "subnet_iam" {
   default     = {}
 }
 
+variable "subnet_iam_additive" {
+  description = "Subnet IAM additive bindings in {REGION/NAME => {ROLE => [MEMBERS]}} format."
+  type        = map(map(list(string)))
+  default     = {}
+  nullable    = false
+}
+
 variable "subnets" {
   description = "Subnet configuration."
   type = list(object({
