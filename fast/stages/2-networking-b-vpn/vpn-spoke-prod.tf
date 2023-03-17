@@ -36,6 +36,7 @@ module "prod-to-landing-primary-vpn" {
         asn     = var.vpn_configs.landing.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-primary.0, 2)}/30"
+      shared_secret         = module.landing-to-spokes-primary-vpn.random_secret
       vpn_gateway_interface = 0
     }
     1 = {
@@ -44,6 +45,7 @@ module "prod-to-landing-primary-vpn" {
         asn     = var.vpn_configs.landing.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-primary.1, 2)}/30"
+      shared_secret         = module.landing-to-spokes-primary-vpn.random_secret
       vpn_gateway_interface = 1
     }
   }
@@ -69,6 +71,7 @@ module "prod-to-landing-secondary-vpn" {
         asn     = var.vpn_configs.landing.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-secondary.0, 2)}/30"
+      shared_secret         = module.landing-to-spokes-secondary-vpn.random_secret
       vpn_gateway_interface = 0
     }
     1 = {
@@ -77,6 +80,7 @@ module "prod-to-landing-secondary-vpn" {
         asn     = var.vpn_configs.landing.asn
       }
       bgp_session_range     = "${cidrhost(local.bgp_session_ranges.prod-secondary.1, 2)}/30"
+      shared_secret         = module.landing-to-spokes-secondary-vpn.random_secret
       vpn_gateway_interface = 1
     }
   }
