@@ -16,8 +16,6 @@
 
 # tfdoc:file:description Project factory.
 
-# TODO: allow identities to no have the domain part and append org domain if needed
-
 locals {
   _all_vpc_hosts = {
     for k, v in var.host_project_ids :

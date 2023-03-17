@@ -43,6 +43,7 @@ variable "host_project_ids" {
     prod-landing = string
     prod-spoke-0 = string
   })
+  default = {}
 }
 
 variable "organization" {
@@ -68,13 +69,4 @@ variable "tag_values" {
   # tfdoc:variable:source 1-resman
   description = "Map of tag short names to tag ids."
   type        = map(string)
-}
-
-variable "vpc_self_links" {
-  # tfdoc:variable:source 2-networking
-  description = "Self link for the shared VPC."
-  type = object({
-    dev-spoke-0 = string
-  })
-  default = null
 }

@@ -52,8 +52,8 @@ services:
 
 # [opt] Shared VPC configuration
 vpc:
-  # Host project the project will be service project of
-  # TODO: can use fast:dev-spoke-0, fast:prod-spoke-0, fast:prod-landing
+  # Host project the project will be service project of. Can use
+  # fast:dev-spoke-0, fast:prod-spoke-0, fast:prod-landing
   host_project: fast:dev-spoke-0
 
   # [opt] Subnets in the host project where principals will be granted networkUser
