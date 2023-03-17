@@ -138,7 +138,7 @@ variable "subnet_iam" {
 
 variable "subnet_iam_additive" {
   description = "Subnet IAM additive bindings in {REGION/NAME => {ROLE => [MEMBERS]}} format."
-  type        = map(list(string))
+  type        = map(map(list(string)))
   default     = {}
   nullable    = false
 }
