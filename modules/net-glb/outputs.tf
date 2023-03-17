@@ -26,6 +26,13 @@ output "backend_service_ids" {
   }
 }
 
+output "backend_service_names" {
+  description = "Backend service resource names."
+  value = {
+    for k, v in google_compute_backend_service.default : k => v.name
+  }
+}
+
 output "forwarding_rule" {
   description = "Forwarding rule resource."
   value       = google_compute_global_forwarding_rule.default
