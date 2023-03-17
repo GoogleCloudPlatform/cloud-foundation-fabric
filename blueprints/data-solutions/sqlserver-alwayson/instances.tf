@@ -73,9 +73,11 @@ module "nodes" {
   }]
 
   boot_disk = {
-    image = var.node_image
-    type  = "pd-ssd"
-    size  = var.boot_disk_size
+    initialize_params = {
+      image = var.node_image
+      type  = "pd-ssd"
+      size  = var.boot_disk_size
+    }
   }
 
   attached_disks = [{

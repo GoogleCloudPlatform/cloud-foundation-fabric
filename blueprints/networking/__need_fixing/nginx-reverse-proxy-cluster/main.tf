@@ -289,7 +289,9 @@ module "proxy-vm" {
     subnetwork = module.vpc.subnet_self_links[format("%s/%s", var.region, var.subnetwork)]
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
   }
   create_template = true
   metadata = {

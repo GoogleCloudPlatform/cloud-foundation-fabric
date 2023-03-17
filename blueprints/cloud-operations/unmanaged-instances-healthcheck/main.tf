@@ -234,9 +234,11 @@ module "test-vm" {
   zone       = "${var.region}-b"
   name       = "nginx-test"
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+      type  = "pd-ssd"
+      size  = 10
+    }
   }
   metadata = {
     user-data              = module.cos-nginx.cloud_config

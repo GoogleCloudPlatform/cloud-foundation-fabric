@@ -134,10 +134,11 @@ module "vm_example" {
     }
   ]
   boot_disk = {
-    image        = "projects/debian-cloud/global/images/family/debian-10"
-    type         = "pd-ssd"
-    size         = 10
-    encrypt_disk = true
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-10"
+      type  = "pd-ssd"
+      size  = 10
+    }
   }
   tags = ["ssh"]
   encryption = {

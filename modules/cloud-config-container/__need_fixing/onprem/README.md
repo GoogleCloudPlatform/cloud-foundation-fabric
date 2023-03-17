@@ -58,9 +58,11 @@ module "vm" {
     google-logging-enabled = true
   }
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+      type  = "pd-ssd"
+      size  = 10
+    }
   }
   tags = ["ssh"]
 }

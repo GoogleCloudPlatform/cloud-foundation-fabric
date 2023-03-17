@@ -132,9 +132,11 @@ module "instance-group" {
     addresses  = null
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+      type  = "pd-ssd"
+      size  = 10
+    }
   }
   tags = ["http-server", "ssh"]
   metadata = {
