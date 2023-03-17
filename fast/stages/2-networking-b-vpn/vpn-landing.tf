@@ -34,10 +34,6 @@ locals {
   }
 }
 
-output "foo" {
-  value = local.bgp_session_ranges
-}
-
 module "landing-to-spokes-primary-vpn" {
   source     = "../../../modules/net-vpn-ha"
   project_id = module.landing-project.project_id
