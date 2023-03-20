@@ -41,7 +41,8 @@ locals {
         permissions = "0744"
       }
       "/etc/frr/frr.conf" = {
-        content     = file(var.frr_config.config_file)
+        # content can either be the path to the config file or the config string
+        content     = try(file(var.frr_config.config_file), var.frr_config.config_file)
         owner       = "root"
         permissions = "0744"
       }
