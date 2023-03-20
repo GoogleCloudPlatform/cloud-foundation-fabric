@@ -39,7 +39,7 @@ variable "files" {
 variable "frr_config" {
   description = "FRR configuration for container running on the NVA."
   type = object({
-    config          = string
+    config_file     = string
     daemons_enabled = optional(list(string))
   })
   default = null
