@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -193,6 +193,11 @@ resource "google_cloud_run_service" "service" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [
+      metadata.0.annotations
+    ]
+  }
 }
 
 resource "google_cloud_run_service_iam_binding" "binding" {
