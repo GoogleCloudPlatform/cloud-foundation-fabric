@@ -75,48 +75,50 @@ resource "google_compute_router" "cr" {
   }
 }
 
-resource "google_compute_router_interface" "intf1" {
+resource "google_compute_router_interface" "intf_0" {
   project            = var.project_id
-  name               = "intf1"
+  name               = "${google_compute_router.cr.name}-intf0"
   router             = google_compute_router.cr.name
   region             = var.region
   subnetwork         = var.vpc_config.subnet_self_link
-  private_ip_address = var.router_config.ip_interface1
+  private_ip_address = var.router_config.ip_interface0
 }
 
-resource "google_compute_router_interface" "intf2" {
+resource "google_compute_router_interface" "intf_1" {
   project             = var.project_id
-  name                = "intf2"
+  name                = "${google_compute_router.cr.name}-intf1"
   router              = google_compute_router.cr.name
   region              = var.region
   subnetwork          = var.vpc_config.subnet_self_link
-  private_ip_address  = var.router_config.ip_interface2
-  redundant_interface = google_compute_router_interface.intf1.name
+  private_ip_address  = var.router_config.ip_interface1
+  redundant_interface = google_compute_router_interface.intf_0.name
 }
 
-resource "google_compute_router_peer" "peer1" {
+resource "google_compute_router_peer" "peer_0" {
   for_each = {
     for idx, entry in local.spoke_vms : idx => entry
   }
   project                   = var.project_id
-  name                      = "peer1-${each.value.vm_name}"
+  name                      = "${google_compute_router.cr.name}-${each.value.vm_name}-peer1"
   router                    = google_compute_router.cr.name
   region                    = var.region
-  interface                 = google_compute_router_interface.intf1.name
+  advertised_route_priority = var.router_config.routes_priority
+  interface                 = google_compute_router_interface.intf_0.name
   peer_asn                  = var.router_config.peer_asn
   peer_ip_address           = each.value.ip
   router_appliance_instance = each.value.vm
 }
 
-resource "google_compute_router_peer" "peer2" {
+resource "google_compute_router_peer" "peer_1" {
   for_each = {
     for idx, entry in local.spoke_vms : idx => entry
   }
   project                   = var.project_id
-  name                      = "peer2-${each.value.vm_name}"
+  name                      = "${google_compute_router.cr.name}-${each.value.vm_name}-peer2"
   router                    = google_compute_router.cr.name
   region                    = var.region
-  interface                 = google_compute_router_interface.intf2.name
+  advertised_route_priority = var.router_config.routes_priority
+  interface                 = google_compute_router_interface.intf_1.name
   peer_asn                  = var.router_config.peer_asn
   peer_ip_address           = each.value.ip
   router_appliance_instance = each.value.vm
