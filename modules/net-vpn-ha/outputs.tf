@@ -32,6 +32,13 @@ output "gateway" {
   value       = one(google_compute_ha_vpn_gateway.ha_gateway[*])
 }
 
+output "id" {
+  description = "Static gateway id."
+  value = (
+    "projects/${var.project_id}/regions/${var.region}/vpnGateways/${var.name}"
+  )
+}
+
 output "name" {
   description = "VPN gateway name (only if auto-created). ."
   value       = one(google_compute_ha_vpn_gateway.ha_gateway[*].name)
