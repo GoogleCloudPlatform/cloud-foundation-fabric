@@ -147,13 +147,14 @@ module "vpn_ha" {
 | [bgp_peers](outputs.tf#L18) | BGP peer resources. |  |
 | [external_gateway](outputs.tf#L25) | External VPN gateway resource. |  |
 | [gateway](outputs.tf#L30) | VPN gateway resource (only if auto-created). |  |
-| [name](outputs.tf#L35) | VPN gateway name (only if auto-created). . |  |
-| [random_secret](outputs.tf#L40) | Generated secret. |  |
-| [router](outputs.tf#L45) | Router resource (only if auto-created). |  |
-| [router_name](outputs.tf#L50) | Router name. |  |
-| [self_link](outputs.tf#L55) | HA VPN gateway self link. |  |
-| [tunnel_names](outputs.tf#L60) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L68) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L76) | VPN tunnel resources. |  |
+| [id](outputs.tf#L35) | Static gateway id. |  |
+| [name](outputs.tf#L42) | VPN gateway name (only if auto-created). . |  |
+| [random_secret](outputs.tf#L47) | Generated secret. |  |
+| [router](outputs.tf#L52) | Router resource (only if auto-created). |  |
+| [router_name](outputs.tf#L57) | Router name. |  |
+| [self_link](outputs.tf#L62) | HA VPN gateway self link. |  |
+| [tunnel_names](outputs.tf#L67) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L75) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L83) | VPN tunnel resources. |  |
 
 <!-- END TFDOC -->
