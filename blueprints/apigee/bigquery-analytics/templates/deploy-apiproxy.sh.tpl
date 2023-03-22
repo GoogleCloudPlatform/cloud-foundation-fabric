@@ -35,7 +35,3 @@ curl -v -X POST \
 curl -v -X POST \
 -H "Authorization: Bearer $TOKEN" \
 "https://apigee.googleapis.com/v1/organizations/$ORG_NAME/environments/$ENV_NAME/apis/httpbin/revisions/1/deployments"
-
-curl -v \
--H "Authorization: Bearer $TOKEN" \
-"https://apigee.googleapis.com/v1/organizations/$ORG_NAME/environments/$ENV_NAME/apis/httpbin/revisions/1/deployments"
