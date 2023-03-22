@@ -26,13 +26,12 @@ wget https://github.com/apigee/api-platform-samples/raw/master/sample-proxies/ap
 
 export TOKEN=$(gcloud auth print-access-token)
 
-REVISION=$(curl -v -X POST \
+curl -v -X POST \
 -H "Authorization: Bearer $TOKEN" \
 -H "Content-Type:application/octet-stream" \
 -T 'apiproxy.zip' \
-"https://apigee.googleapis.com/v1/organizations/$ORG_NAME/apis?name=httpbin&action=import" \ 
-| jq -r '.revision')
+"https://apigee.googleapis.com/v1/organizations/$ORG_NAME/apis?name=httpbin&action=import"
 
 curl -v -X POST \
 -H "Authorization: Bearer $TOKEN" \
-"https://apigee.googleapis.com/v1/organizations/$ORG_NAME/environments/$ENV_NAME/apis/httpbin/revisions/$REVISION/deployments"
+"https://apigee.googleapis.com/v1/organizations/$ORG_NAME/environments/$ENV_NAME/apis/httpbin/revisions/1/deployments"
