@@ -20,6 +20,7 @@ locals {
   routing_config = [
     {
       name = "untrusted"
+      enable_masquerading = true
       routes = [
         var.gcp_ranges.gcp_landing_untrusted_primary,
         var.gcp_ranges.gcp_landing_untrusted_secondary,
