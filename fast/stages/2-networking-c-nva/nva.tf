@@ -19,7 +19,7 @@ locals {
   # local.routing_config[0] sets up the first interface, and so on.
   routing_config = [
     {
-      name = "untrusted"
+      name                = "untrusted"
       enable_masquerading = true
       routes = [
         var.gcp_ranges.gcp_landing_untrusted_primary,
