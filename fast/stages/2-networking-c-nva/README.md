@@ -23,32 +23,41 @@ The final number of subnets, and their IP addressing will depend on the user-spe
 
 ## Table of contents
 
-- [Design overview and choices](#design-overview-and-choices)
-  - [Multi-regional deployment](#multi-regional-deployment)
-  - [VPC design](#vpc-design)
-  - [External connectivity](#external-connectivity)
-  - [Internal connectivity](#internal-connectivity)
-  - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
-  - [Internet egress](#internet-egress)
-  - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
-  - [DNS](#dns)
-- [Stage structure and files layout](#stage-structure-and-files-layout)
-  - [VPCs](#vpcs)
-  - [VPNs](#vpns)
-  - [Routing and BGP](#routing-and-bgp)
-  - [Firewall](#firewall)
-  - [DNS architecture](#dns-architecture)
-  - [Private Google Access](#private-google-access)
-- [How to run this stage](#how-to-run-this-stage)
-  - [Provider and Terraform variables](#provider-and-terraform-variables)
-  - [Impersonating the automation service account](#impersonating-the-automation-service-account)
-  - [Variable configuration](#variable-configuration)
-  - [Running the stage](#running-the-stage)
-  - [Post-deployment activities](#post-deployment-activities)
-- [Customizations](#customizations)
-  - [Changing default regions](#changing-default-regions)
-  - [Configuring the VPNs to on prem](#configuring-the-vpns-to-on-prem)
-  - [Adding an environment](#adding-an-environment)
+- [Networking with Network Virtual Appliance](#networking-with-network-virtual-appliance)
+  - [Table of contents](#table-of-contents)
+  - [Design overview and choices](#design-overview-and-choices)
+    - [Multi-regional deployment](#multi-regional-deployment)
+    - [VPC design](#vpc-design)
+    - [External connectivity](#external-connectivity)
+    - [Internal connectivity](#internal-connectivity)
+    - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
+    - [Internet egress](#internet-egress)
+    - [VPC and Hierarchical Firewall](#vpc-and-hierarchical-firewall)
+    - [DNS](#dns)
+  - [Stage structure and files layout](#stage-structure-and-files-layout)
+    - [VPCs](#vpcs)
+    - [VPNs](#vpns)
+    - [Routing and BGP](#routing-and-bgp)
+    - [Firewall](#firewall)
+    - [DNS architecture](#dns-architecture)
+      - [Cloud environment](#cloud-environment)
+      - [Cloud to on-prem](#cloud-to-on-prem)
+      - [On-prem to cloud](#on-prem-to-cloud)
+  - [How to run this stage](#how-to-run-this-stage)
+    - [Provider and Terraform variables](#provider-and-terraform-variables)
+    - [Impersonating the automation service account](#impersonating-the-automation-service-account)
+    - [Variable configuration](#variable-configuration)
+    - [Using delayed billing association for projects](#using-delayed-billing-association-for-projects)
+    - [Running the stage](#running-the-stage)
+    - [Post-deployment activities](#post-deployment-activities)
+      - [Private Google Access](#private-google-access)
+  - [Customizations](#customizations)
+    - [Changing default regions](#changing-default-regions)
+    - [Configuring the VPNs to on prem](#configuring-the-vpns-to-on-prem)
+    - [Adding an environment](#adding-an-environment)
+  - [Files](#files)
+  - [Variables](#variables)
+  - [Outputs](#outputs)
 
 ## Design overview and choices
 
@@ -445,8 +454,6 @@ The new VPC requires a set of dedicated CIDRs, one per region, added to variable
 >`gcp_ranges` is a map that "resolves" CIDR names to the actual addresses, and will be used later to configure routing.
 >
 Variables managing L7 Internal Load Balancers (`l7ilb_subnets`) and Private Service Access (`psa_ranges`) should also be adapted, and subnets and firewall rules for the new spoke should be added, as described above.
-
-Configure the NVAs deployed or update the sample [NVA config file](data/nva-startup-script.tftpl) making sure they support the new subnets.
 
 DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS resolution to Landing through DNS peering, and optionally define a private zone (e.g. `dev.gcp.example.com`) which the landing peers to. To configure DNS for a new environment, copy one of the other environments DNS files [e.g. (dns-dev.tf)](dns-dev.tf) into a new `dns-*.tf` file suffixed with the environment name (e.g. `dns-staging.tf`), and update its content accordingly. Don't forget to add a peering zone from the landing to the newly created environment private zone.
 
