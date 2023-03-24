@@ -76,6 +76,9 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
       state = State.SKIP
     else:
       try:
+        print(
+            f'{readme_path.parent} {files} {show_extra} {exclude_files} {len(readme)}'
+        )
         new_doc = tfdoc.create_doc(readme_path.parent, files, show_extra,
                                    exclude_files, readme)
         newvars = new_doc.variables
