@@ -19,6 +19,4 @@ common_tfvars:
 tests:
   stage:
     extra_files:
-      - ../../plugins/2-networking-serverless-connector/local-serverless-connector.tf
-      - ../../plugins/2-networking-serverless-connector/local-serverless-connector-outputs.tf
-      - ../../plugins/2-networking-serverless-connector/local-serverless-connector-variables.tf
+      - ../../plugins/2-networking-serverless-connector/*.tf

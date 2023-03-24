@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 
 import collections
 import contextlib
+import glob
 import itertools
 import os
 import shutil
@@ -98,7 +99,9 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
   with _prepare_root_module(module_path) as test_path:
     binary = os.environ.get('TERRAFORM', 'terraform')
     tf = tftest.TerraformTest(test_path, binary=binary)
-    extra_files = [(module_path / x).resolve() for x in extra_files or []]
+    extra_files = [(module_path / filename).resolve()
+                   for x in extra_files or []
+                   for filename in glob.glob(x, root_dir=module_path)]
     tf.setup(extra_files=extra_files, upgrade=True)
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
     plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars=tf_vars)
