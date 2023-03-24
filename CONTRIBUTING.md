@@ -19,7 +19,7 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
     - [Running tests for specific examples](#running-tests-for-specific-examples)
     - [Generating the inventory automatically](#generating-the-inventory-automatically)
     - [Building tests for blueprints](#building-tests-for-blueprints)
-  + [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via--tfvars--and--yaml---aka--tftest--based-tests-)
+  + [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-tfvars-and-yaml-aka-tftest-based-tests)
     - [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for--tftest--based-tests)
   + [Writing tests in Python (legacy approach)](#writing-tests-in-python--legacy-approach-)
   + [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
