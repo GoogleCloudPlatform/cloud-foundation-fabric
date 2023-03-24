@@ -26,7 +26,6 @@ fast/**/terraform.tfvars
 fast/**/terraform.tfvars.json
 fast/**/terraform-*.auto.tfvars.json
 fast/**/[0-9]*.auto.tfvars*
-fast/**/[0-9]*/local-*.tf
 **/node_modules
 fast/**/globals.auto.tfvars.json
 cloud_sql_proxy

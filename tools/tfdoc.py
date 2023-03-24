@@ -200,7 +200,6 @@ def parse_variables(basepath, exclude_files=None):
   exclude_files = exclude_files or []
   names = glob.glob(os.path.join(basepath, 'variables*tf'))
   names += glob.glob(os.path.join(basepath, 'local-*variables*tf'))
-  print(f'{basepath} {names} {glob.glob(os.path.join(basepath, "*"))}')
   for name in names:
     shortname = os.path.basename(name)
     if shortname in exclude_files:
