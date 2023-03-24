@@ -1,0 +1,2 @@
+stages/[0-9]*/local-*.tf
+stages-multitenant/[0-9]*/local-*.tf

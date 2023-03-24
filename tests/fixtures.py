@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 import collections
 import contextlib
-import itertools
+import glob
 import os
 import shutil
 import tempfile
@@ -34,7 +34,7 @@ def _prepare_root_module(path):
 
   If the TFTEST_COPY environment variable is set, `path` is copied to
   a temporary directory and a few terraform files (e.g.
-  terraform.tfvars) are delete to ensure a clean test environment.
+  terraform.tfvars) are deleted to ensure a clean test environment.
   Otherwise, `path` is simply returned untouched.
   """
   if os.environ.get('TFTEST_COPY'):
@@ -62,7 +62,8 @@ def _prepare_root_module(path):
     yield path
 
 
-def plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
+def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
+                 **tf_vars):
   """
   Run a Terraform plan on the module located at `module_path`.
 
@@ -97,7 +98,10 @@ def plan_summary(module_path, basedir, tf_var_files=None, **tf_vars):
   with _prepare_root_module(module_path) as test_path:
     binary = os.environ.get('TERRAFORM', 'terraform')
     tf = tftest.TerraformTest(test_path, binary=binary)
-    tf.setup(upgrade=True)
+    extra_files = [(module_path / filename).resolve()
+                   for x in extra_files or []
+                   for filename in glob.glob(x, root_dir=module_path)]
+    tf.setup(extra_files=extra_files, upgrade=True)
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
     plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars=tf_vars)
 
@@ -135,19 +139,21 @@ def plan_summary_fixture(request):
   to the directory of the calling test
   """
 
-  def inner(module_path, basedir=None, tf_var_files=None, **tf_vars):
+  def inner(module_path, basedir=None, tf_var_files=None, extra_files=None,
+            **tf_vars):
     if basedir is None:
       basedir = Path(request.fspath).parent
     return plan_summary(module_path=module_path, basedir=basedir,
-                        tf_var_files=tf_var_files, **tf_vars)
+                        tf_var_files=tf_var_files, extra_files=extra_files,
+                        **tf_vars)
 
   return inner
 
 
 def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
-                   **tf_vars):
+                   extra_files=None, **tf_vars):
   summary = plan_summary(module_path=module_path, tf_var_files=tf_var_files,
-                         basedir=basedir, **tf_vars)
+                         extra_files=extra_files, basedir=basedir, **tf_vars)
 
   # allow single single string for inventory_paths
   if not isinstance(inventory_paths, list):
