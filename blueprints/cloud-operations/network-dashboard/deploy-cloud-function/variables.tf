@@ -30,6 +30,10 @@ variable "cloud_function_config" {
     memory_mb            = optional(number, 256)
     source_dir           = optional(string, "../src")
     timeout_seconds      = optional(number, 540)
+    vpc_connector = optional(object({
+      name            = string
+      egress_settings = optional(string, "ALL_TRAFFIC")
+    }))
   })
   default  = {}
   nullable = false
@@ -70,6 +74,12 @@ variable "labels" {
   description = "Billing labels used for the Cloud Function, and the project if project_create is true."
   type        = map(string)
   default     = {}
+}
+
+variable "monitoring_project" {
+  description = "Project where generated metrics will be written. Default is to use the same project where the Cloud Function is deployed."
+  type        = string
+  default     = null
 }
 
 variable "name" {
