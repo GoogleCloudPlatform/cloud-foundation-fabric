@@ -22,4 +22,4 @@ As an example, the [`2-networking/serverless-connector` plugin](./2-networking-s
 
 - [`local-serverless-connector.tf`](./2-networking-serverless-connector/local-serverless-connector.tf) managing resources including the subnets needed in each VPC and the connectors themselves
 - [`local-serverless-connector-outputs.tf`](./2-networking-serverless-connector/local-serverless-connector-outputs.tf) defining a single `serverless_connectors` output for the plugin, and optional output files
-- [`local-serverless-connector-variables.tf`](./2-networking/serverless-connector-local-serverless-connector-variables.tf) defining a single `serverless_connector_config` variable used to configure the plugin
+- [`local-serverless-connector-variables.tf`](./2-networking-serverless-connector/local-serverless-connector-variables.tf) defining a single `serverless_connector_config` variable used to configure the plugin
