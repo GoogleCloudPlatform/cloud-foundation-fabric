@@ -81,6 +81,15 @@ module "cloud-function" {
       resource = module.pubsub.topic.id
     }
   }
+  vpc_connector = (
+    var.cloud_function_config.vpc_connector == null
+    ? null
+    : {
+      create          = false
+      name            = var.cloud_function_config.vpc_connector.name
+      egress_settings = var.cloud_function_config.vpc_connector.egress_settings
+    }
+  )
 }
 
 resource "google_cloud_scheduler_job" "default" {
@@ -94,10 +103,14 @@ resource "google_cloud_scheduler_job" "default" {
     attributes = {}
     topic_name = module.pubsub.topic.id
     data = base64encode(jsonencode({
-      discovery_root     = var.discovery_config.discovery_root
-      folders            = var.discovery_config.monitored_folders
-      projects           = var.discovery_config.monitored_projects
-      monitoring_project = module.project.project_id
+      discovery_root = var.discovery_config.discovery_root
+      folders        = var.discovery_config.monitored_folders
+      projects       = var.discovery_config.monitored_projects
+      monitoring_project = (
+        var.monitoring_project == null
+        ? module.project.project_id
+        : var.monitoring_project
+      )
       custom_quota = (
         var.discovery_config.custom_quota_file == null
         ? { networks = {}, projects = {} }
