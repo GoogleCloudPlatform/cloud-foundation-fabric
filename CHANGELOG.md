@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1272](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1272)] Removed repeated command in script used to deploy API proxy ([apichick](https://github.com/apichick)) <!-- 2023-03-22 10:16:39+00:00 -->
+- [[#1261](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1261)] Fix variable terraform.tfvars.sample ([dedeco](https://github.com/dedeco)) <!-- 2023-03-17 10:13:11+00:00 -->
 - [[#1257](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1257)] Fixes related to boot_disk in compute-vm module ([apichick](https://github.com/apichick)) <!-- 2023-03-16 15:24:26+00:00 -->
 - [[#1256](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1256)] **incompatible change:** Pin local provider ([ludoo](https://github.com/ludoo)) <!-- 2023-03-16 10:59:07+00:00 -->
 - [[#1245](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1245)] Composer-2 - Fix 1236 ([lcaggio](https://github.com/lcaggio)) <!-- 2023-03-13 20:48:22+00:00 -->
@@ -63,6 +65,10 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1266](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1266)] FAST plugin system ([ludoo](https://github.com/ludoo)) <!-- 2023-03-24 12:28:32+00:00 -->
+- [[#1273](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1273)] Small fixes to FAST Networking stage with NVAs  ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-03-23 08:57:01+00:00 -->
+- [[#1265](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1265)] Fix FAST hub and spoke with VPN networking stage ([ludoo](https://github.com/ludoo)) <!-- 2023-03-17 19:52:40+00:00 -->
+- [[#1263](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1263)] Widen scope for prod project factory SA to dev ([ludoo](https://github.com/ludoo)) <!-- 2023-03-17 16:24:56+00:00 -->
 - [[#1240](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1240)] feat: Enable populating of data directory and .sample files and update dependencies in 0-cicd-github ([antonkovach](https://github.com/antonkovach)) <!-- 2023-03-15 13:55:08+00:00 -->
 - [[#1249](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1249)] Document need to set `outputs_location` explicitly in every stage ([ludoo](https://github.com/ludoo)) <!-- 2023-03-15 10:43:44+00:00 -->
 - [[#1247](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1247)] Fast: resman: location and storage class added to GKE GCS buckets ([skalolazka](https://github.com/skalolazka)) <!-- 2023-03-14 15:37:16+00:00 -->
@@ -92,6 +98,13 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1270](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1270)] Add static gateway id to outputs of VPN ha module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-21 17:08:46+00:00 -->
+- [[#1269](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1269)] Ignore changes to metadata.0.annotations in Cloud Run module ([juliocc](https://github.com/juliocc)) <!-- 2023-03-21 11:21:59+00:00 -->
+- [[#1267](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1267)] Improvements to NCC-RA spoke module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-03-21 07:07:44+00:00 -->
+- [[#1268](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1268)] simple-nva: add ability to parse BGP configs as strings. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-03-21 06:41:13+00:00 -->
+- [[#1258](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1258)] Add backend service names to outputs for net-glb and net-ilb-l7  ([rosmo](https://github.com/rosmo)) <!-- 2023-03-17 10:40:11+00:00 -->
+- [[#1259](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1259)] Add support for `iam_additive` and simplify factory interface in net VPC module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-17 10:12:35+00:00 -->
+- [[#1255](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1255)] **incompatible change:** Change `target_vpcs` variable in firewall policy module to support dynamic values ([ludoo](https://github.com/ludoo)) <!-- 2023-03-17 07:14:10+00:00 -->
 - [[#1256](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1256)] **incompatible change:** Pin local provider ([ludoo](https://github.com/ludoo)) <!-- 2023-03-16 10:59:07+00:00 -->
 - [[#1246](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1246)] Delay creation of SVPC host bindings until APIs and JIT SAs are done ([juliocc](https://github.com/juliocc)) <!-- 2023-03-14 14:16:59+00:00 -->
 - [[#1241](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1241)] **incompatible change:** Allow using existing boot disk in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-12 09:54:00+00:00 -->
@@ -141,6 +154,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1266](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1266)] FAST plugin system ([ludoo](https://github.com/ludoo)) <!-- 2023-03-24 12:28:32+00:00 -->
 - [[#1242](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1242)] Remove container image workflows ([kunzese](https://github.com/kunzese)) <!-- 2023-03-13 07:39:04+00:00 -->
 - [[#1231](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1231)] Simplify testing workflow ([juliocc](https://github.com/juliocc)) <!-- 2023-03-09 15:27:05+00:00 -->
 - [[#1216](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1216)] Use composite action for test workflow prerequisite steps ([ludoo](https://github.com/ludoo)) <!-- 2023-03-06 10:44:58+00:00 -->
