@@ -88,7 +88,7 @@ class FabricTestItem(pytest.Item):
 
   def runtest(self):
     s = plan_validator(self.module, self.inventory, self.parent.path.parent,
-                       self.tf_var_files)
+                       self.tf_var_files, self.extra_files)
 
   def reportinfo(self):
     return self.path, None, self.name

@@ -14,25 +14,12 @@
 
 import hashlib
 
-from pathlib import Path
-
 from deepdiff import DeepDiff
-
-BASEDIR = Path(__file__).parent
-FIXTURE_PEERING = BASEDIR / 'fixture'
-FIXTURE_VPN = BASEDIR.parent / 's2_networking_b_vpn/fixture'
+from pathlib import Path
 
 STAGES = Path(__file__).parents[4] / 'fast/stages'
 STAGE_PEERING = STAGES / '2-networking-a-peering'
 STAGE_VPN = STAGES / '2-networking-b-vpn'
-
-
-def test_counts(plan_summary):
-  "Test stage."
-  summary = plan_summary("fast/stages/2-networking-a-peering",
-                         tf_var_files=["common.tfvars"])
-  assert summary.counts["modules"] > 0
-  assert summary.counts["resources"] > 0
 
 
 def test_vpn_peering_parity(plan_summary):
@@ -65,7 +52,7 @@ def compute_md5(filename):
   return md5hash.hexdigest()
 
 
-def test_vpn_peering_checksums(e2e_plan_runner):
+def test_vpn_peering_checksums():
   '''Compare MD5 sums of common files in the vpn and peering
   networking stages'''
   peering_files = {

@@ -98,7 +98,7 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
   with _prepare_root_module(module_path) as test_path:
     binary = os.environ.get('TERRAFORM', 'terraform')
     tf = tftest.TerraformTest(test_path, binary=binary)
-    extra_files = [(basedir / x).resolve() for x in extra_files or []]
+    extra_files = [(module_path / x).resolve() for x in extra_files or []]
     tf.setup(extra_files=extra_files, upgrade=True)
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
     plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars=tf_vars)
