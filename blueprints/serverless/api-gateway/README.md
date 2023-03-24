@@ -23,7 +23,6 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
-
 <!-- BEGIN TFDOC -->
 
 ## Variables

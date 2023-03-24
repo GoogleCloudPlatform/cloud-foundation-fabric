@@ -175,7 +175,9 @@ def parse_files(basepath, exclude_files=None):
 def parse_outputs(basepath, exclude_files=None):
   'Return a list of Output named tuples for root module outputs*.tf.'
   exclude_files = exclude_files or []
-  for name in glob.glob(os.path.join(basepath, 'outputs*tf')):
+  names = glob.glob(os.path.join(basepath, 'outputs*tf'))
+  names += glob.glob(os.path.join(basepath, 'local-*outputs*tf'))
+  for name in names:
     shortname = os.path.basename(name)
     if shortname in exclude_files:
       continue
@@ -196,7 +198,9 @@ def parse_outputs(basepath, exclude_files=None):
 def parse_variables(basepath, exclude_files=None):
   'Return a list of Variable named tuples for root module variables*.tf.'
   exclude_files = exclude_files or []
-  for name in glob.glob(os.path.join(basepath, 'variables*tf')):
+  names = glob.glob(os.path.join(basepath, 'variables*tf'))
+  names += glob.glob(os.path.join(basepath, 'local-*variables*tf'))
+  for name in names:
     shortname = os.path.basename(name)
     if shortname in exclude_files:
       continue
