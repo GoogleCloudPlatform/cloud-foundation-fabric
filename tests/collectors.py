@@ -37,6 +37,9 @@ class FabricTestFile(pytest.File):
     have the following structure:
 
     test-name:
+      extra_files:
+        - bar.tf
+        - foo.tf
       tfvars:
         - tfvars1.tfvars
         - tfvars2.tfvars
@@ -60,27 +63,32 @@ class FabricTestFile(pytest.File):
     common = raw.pop('common_tfvars', [])
     for test_name, spec in raw.get('tests', {}).items():
       spec = {} if spec is None else spec
+      extra_files = spec.get('extra_files')
       inventories = spec.get('inventory', [f'{test_name}.yaml'])
-      tfvars = common + [f'{test_name}.tfvars'] + spec.get('tfvars', [])
+      tf_var_files = common + [f'{test_name}.tfvars'] + spec.get('tfvars', [])
       for i in inventories:
         name = test_name
         if isinstance(inventories, list) and len(inventories) > 1:
           name = f'{test_name}[{i}]'
         yield FabricTestItem.from_parent(self, name=name, module=module,
-                                         inventory=[i], tfvars=tfvars)
+                                         inventory=[i],
+                                         tf_var_files=tf_var_files,
+                                         extra_files=extra_files)
 
 
 class FabricTestItem(pytest.Item):
 
-  def __init__(self, name, parent, module, inventory, tfvars):
+  def __init__(self, name, parent, module, inventory, tf_var_files,
+               extra_files=None):
     super().__init__(name, parent)
     self.module = module
     self.inventory = inventory
-    self.tfvars = tfvars
+    self.tf_var_files = tf_var_files
+    self.extra_files = extra_files
 
   def runtest(self):
     s = plan_validator(self.module, self.inventory, self.parent.path.parent,
-                       self.tfvars)
+                       self.tf_var_files, self.extra_files)
 
   def reportinfo(self):
     return self.path, None, self.name

@@ -4,26 +4,26 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
 
 ## Table of Contents
 
-* [I just found a bug / have a feature request](#i-just-found-a-bug---have-a-feature-request)
-* [Quick developer workflow](#quick-developer-workflow)
-* [Developer's handbook](#developers-handbook)
-  + [The Zen of Fabric](#the-zen-of-fabric)
-  + [Design principles in action](#design-principles-in-action)
-  + [FAST stage design](#fast-stage-design)
-  + [Style guide reference](#style-guide-reference)
-  + [Interacting with checks and tools](#interacting-with-checks-and-tools)
-* [Using and writing tests](#using-and-writing-tests)
-  + [Testing via README.md example blocks.](#testing-via-readmemd-example-blocks)
-    - [Testing examples against an inventory YAML](#testing-examples-against-an-inventory-yaml)
-    - [Using external files](#using-external-files)
-    - [Running tests for specific examples](#running-tests-for-specific-examples)
-    - [Generating the inventory automatically](#generating-the-inventory-automatically)
-    - [Building tests for blueprints](#building-tests-for-blueprints)
-  + [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-tfvars-and-yaml-aka-tftest-based-tests)
-    - [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for--tftest--based-tests)
-  + [Writing tests in Python (legacy approach)](#writing-tests-in-python--legacy-approach-)
-  + [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
-* [Fabric tools](#fabric-tools)
+- [I just found a bug / have a feature request](#i-just-found-a-bug--have-a-feature-request)
+- [Quick developer workflow](#quick-developer-workflow)
+- [Developer's handbook](#developers-handbook)
+  * [The Zen of Fabric](#the-zen-of-fabric)
+  * [Design principles in action](#design-principles-in-action)
+  * [FAST stage design](#fast-stage-design)
+  * [Style guide reference](#style-guide-reference)
+  * [Interacting with checks and tools](#interacting-with-checks-and-tools)
+- [Using and writing tests](#using-and-writing-tests)
+  * [Testing via README.md example blocks.](#testing-via-readmemd-example-blocks)
+    + [Testing examples against an inventory YAML](#testing-examples-against-an-inventory-yaml)
+    + [Using external files](#using-external-files)
+    + [Running tests for specific examples](#running-tests-for-specific-examples)
+    + [Generating the inventory automatically](#generating-the-inventory-automatically)
+    + [Building tests for blueprints](#building-tests-for-blueprints)
+  * [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-tfvars-and-yaml-aka-tftest-based-tests)
+    + [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for-tftest-based-tests)
+  * [Writing tests in Python (legacy approach)](#writing-tests-in-python-legacy-approach)
+  * [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
+- [Fabric tools](#fabric-tools)
 
 ## I just found a bug / have a feature request
 
@@ -967,6 +967,10 @@ tests:
       - test-plan-extra.tfvars
     inventory:
       - test-plan.yaml
+  # You can use `extra_files` to include additional tf files outside 
+  # the module's path before running the test.
+  # extra_files:  
+  #   - ../plugin-x/*.tf
 
   # You can ommit the tfvars and inventory sections and they will
   # default to the name of the test. The following two examples are equivalent:
