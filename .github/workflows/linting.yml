@@ -56,7 +56,7 @@ jobs:
       - name: Check documentation
         id: documentation-fabric
         run: |
-          python3 tools/check_documentation.py modules fast blueprints
+          python3 tools/check_documentation.py --show-diffs modules fast blueprints
 
       - name: Check documentation links
         id: documentation-links-fabric
