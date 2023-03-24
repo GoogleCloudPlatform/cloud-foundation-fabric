@@ -22,7 +22,7 @@
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.landing-project.project_id
 #   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-lnd-unt-primary-0"
+#   name       = "test-vm-lnd-unt-pri-0"
 #   network_interfaces = [{
 #     network    = module.landing-untrusted-vpc.self_link
 #     subnetwork = module.landing-untrusted-vpc.subnet_self_links["${var.regions.primary}/landing-untrusted-default-${local.region_shortnames[var.regions.primary]}"]
@@ -30,7 +30,9 @@
 #   tags                   = ["primary", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
-#     image = "projects/debian-cloud/global/images/family/debian-10"
+#     initialize_params = {
+#         image = "projects/debian-cloud/global/images/family/debian-10"
+#     }
 #   }
 #   options = {
 #     spot               = true
@@ -48,7 +50,7 @@
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.landing-project.project_id
 #   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-lnd-unt-secondary-0"
+#   name       = "test-vm-lnd-unt-sec-0"
 #   network_interfaces = [{
 #     network    = module.landing-untrusted-vpc.self_link
 #     subnetwork = module.landing-untrusted-vpc.subnet_self_links["${var.regions.secondary}/landing-untrusted-default-${local.region_shortnames[var.regions.secondary]}"]
@@ -56,7 +58,9 @@
 #   tags                   = ["secondary", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
-#     image = "projects/debian-cloud/global/images/family/debian-10"
+#     initialize_params = {
+#         image = "projects/debian-cloud/global/images/family/debian-10"
+#     }
 #   }
 #   options = {
 #     spot               = true
@@ -76,7 +80,7 @@
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.landing-project.project_id
 #   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-lnd-tru-primary-0"
+#   name       = "test-vm-lnd-tru-pri-0"
 #   network_interfaces = [{
 #     network    = module.landing-trusted-vpc.self_link
 #     subnetwork = module.landing-trusted-vpc.subnet_self_links["${var.regions.primary}/landing-trusted-default-${local.region_shortnames[var.regions.primary]}"]
@@ -84,7 +88,9 @@
 #   tags                   = ["primary", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
-#     image = "projects/debian-cloud/global/images/family/debian-10"
+#     initialize_params = {
+#         image = "projects/debian-cloud/global/images/family/debian-10"
+#     }
 #   }
 #   options = {
 #     spot               = true
@@ -102,7 +108,7 @@
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.landing-project.project_id
 #   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-lnd-tru-secondary-0"
+#   name       = "test-vm-lnd-tru-sec-0"
 #   network_interfaces = [{
 #     network    = module.landing-trusted-vpc.self_link
 #     subnetwork = module.landing-trusted-vpc.subnet_self_links["${var.regions.secondary}/landing-trusted-default-${local.region_shortnames[var.regions.secondary]}"]
@@ -110,7 +116,9 @@
 #   tags                   = ["secondary", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
-#     image = "projects/debian-cloud/global/images/family/debian-10"
+#     initialize_params = {
+#         image = "projects/debian-cloud/global/images/family/debian-10"
+#     }
 #   }
 #   options = {
 #     spot               = true
@@ -130,7 +138,7 @@
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.dev-spoke-project.project_id
 #   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-dev-primary-0"
+#   name       = "test-vm-dev-pri-0"
 #   network_interfaces = [{
 #     network = module.dev-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
@@ -139,7 +147,9 @@
 #   tags                   = ["primary", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
-#     image = "projects/debian-cloud/global/images/family/debian-10"
+#     initialize_params = {
+#         image = "projects/debian-cloud/global/images/family/debian-10"
+#     }
 #   }
 #   options = {
 #     spot               = true
@@ -157,7 +167,7 @@
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.dev-spoke-project.project_id
 #   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-dev-secondary-0"
+#   name       = "test-vm-dev-sec-0"
 #   network_interfaces = [{
 #     network = module.dev-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
@@ -166,7 +176,9 @@
 #   tags                   = ["secondary", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
-#     image = "projects/debian-cloud/global/images/family/debian-10"
+#     initialize_params = {
+#         image = "projects/debian-cloud/global/images/family/debian-10"
+#     }
 #   }
 #   options = {
 #     spot               = true
@@ -186,7 +198,7 @@
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.prod-spoke-project.project_id
 #   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-prod-primary-0"
+#   name       = "test-vm-prod-pri-0"
 #   network_interfaces = [{
 #     network = module.prod-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
@@ -195,9 +207,11 @@
 #   tags                   = ["primary", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
-#     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
+#     initialize_params = {
+#         image = "projects/debian-cloud/global/images/family/debian-10"
+#         type  = "pd-balanced"
+#         size  = 10
+#     }
 #   }
 #   options = {
 #     spot               = true
@@ -215,7 +229,7 @@
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.prod-spoke-project.project_id
 #   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-prod-secondary-0"
+#   name       = "test-vm-prod-sec-0"
 #   network_interfaces = [{
 #     network = module.prod-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
@@ -224,7 +238,9 @@
 #   tags                   = ["secondary", "ssh"]
 #   service_account_create = true
 #   boot_disk = {
-#     image = "projects/debian-cloud/global/images/family/debian-10"
+#     initialize_params = {
+#         image = "projects/debian-cloud/global/images/family/debian-10"
+#     }
 #   }
 #   options = {
 #     spot               = true

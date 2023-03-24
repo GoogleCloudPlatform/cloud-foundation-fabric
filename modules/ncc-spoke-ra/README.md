@@ -23,8 +23,8 @@ module "spoke-ra" {
   ]
   router_config = {
     asn           = 65000
-    ip_interface1 = "10.0.0.14"
-    ip_interface2 = "10.0.0.15"
+    ip_interface0 = "10.0.0.14"
+    ip_interface1 = "10.0.0.15"
     peer_asn      = 65001
   }
   vpc_config = {
@@ -52,8 +52,8 @@ module "spoke-ra-a" {
   ]
   router_config = {
     asn           = 65000
-    ip_interface1 = "10.0.0.14"
-    ip_interface2 = "10.0.0.15"
+    ip_interface0 = "10.0.0.14"
+    ip_interface1 = "10.0.0.15"
     peer_asn      = 65001
   }
   vpc_config = {
@@ -76,8 +76,8 @@ module "spoke-ra-b" {
   ]
   router_config = {
     asn           = 65000
-    ip_interface1 = "10.0.0.14"
-    ip_interface2 = "10.0.0.15"
+    ip_interface0 = "10.0.0.14"
+    ip_interface1 = "10.0.0.15"
     peer_asn      = 65002
   }
   vpc_config = {
@@ -115,8 +115,8 @@ module "spoke-ra" {
         "10.10.0.0/24" = "peered-vpc"
       }
     }
-    ip_interface1 = "10.0.0.14"
-    ip_interface2 = "10.0.0.15"
+    ip_interface0 = "10.0.0.14"
+    ip_interface1 = "10.0.0.15"
     peer_asn      = 65001
   }
   vpc_config = {
@@ -137,8 +137,8 @@ module "spoke-ra" {
 | [project_id](variables.tf#L37) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L42) | Region where the spoke is located. | <code>string</code> | ✓ |  |
 | [router_appliances](variables.tf#L47) | List of router appliances this spoke is associated with. | <code title="list&#40;object&#40;&#123;&#10;  internal_ip  &#61; string&#10;  vm_self_link &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [router_config](variables.tf#L55) | Configuration of the Cloud Router. | <code title="object&#40;&#123;&#10;  asn &#61; number&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ip_interface1 &#61; string&#10;  ip_interface2 &#61; string&#10;  keepalive     &#61; optional&#40;number&#41;&#10;  peer_asn      &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [vpc_config](variables.tf#L70) | Network and subnetwork for the CR interfaces. | <code title="object&#40;&#123;&#10;  network_name     &#61; string&#10;  subnet_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [router_config](variables.tf#L55) | Configuration of the Cloud Router. | <code title="object&#40;&#123;&#10;  asn &#61; number&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ip_interface0   &#61; string&#10;  ip_interface1   &#61; string&#10;  keepalive       &#61; optional&#40;number&#41;&#10;  peer_asn        &#61; number&#10;  routes_priority &#61; optional&#40;number, 100&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vpc_config](variables.tf#L71) | Network and subnetwork for the CR interfaces. | <code title="object&#40;&#123;&#10;  network_name     &#61; string&#10;  subnet_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [data_transfer](variables.tf#L17) | Site-to-site data transfer feature, available only in some regions. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs
