@@ -16,7 +16,6 @@
 import collections
 import contextlib
 import glob
-import itertools
 import os
 import shutil
 import tempfile
