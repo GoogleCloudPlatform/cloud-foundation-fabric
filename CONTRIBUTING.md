@@ -967,6 +967,10 @@ tests:
       - test-plan-extra.tfvars
     inventory:
       - test-plan.yaml
+  # You can use `extra_files` to include additional tf files outside 
+  # the module's path before running the test.
+  # extra_files:  
+  #   - ../plugin-x/*.tf
 
   # You can ommit the tfvars and inventory sections and they will
   # default to the name of the test. The following two examples are equivalent:
