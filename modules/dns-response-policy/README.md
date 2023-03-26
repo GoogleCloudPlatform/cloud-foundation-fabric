@@ -27,7 +27,7 @@ module "dns-policy" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=simple.yaml
 ```
 
 ### Use existing policy and override resolution via wildcard with exceptions
@@ -65,7 +65,7 @@ module "dns-policy" {
     }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=nocreate.yaml
 ```
 <!-- BEGIN TFDOC -->
 
