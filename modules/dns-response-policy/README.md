@@ -67,25 +67,26 @@ module "dns-policy" {
 }
 # tftest modules=1 resources=3
 ```
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L36) | Zone name, must be unique within the project. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L48) | Project id for the zone. | <code>string</code> | ✓ |  |
-| [clusters](variables.tf#L17) | List of GKE cluster ids to which this policy is applied. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [name](variables.tf#L30) | Zone name, must be unique within the project. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L49) | Project id for the zone. | <code>string</code> | ✓ |  |
+| [clusters](variables.tf#L17) | Map of GKE clusters to which this policy is applied in name => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L24) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [id](variables.tf#L30) | Use the existing policy matching id and only manage rules. | <code>string</code> |  | <code>null</code> |
-| [networks](variables.tf#L41) | List of VPC self links to which this policy is applied. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [rules](variables.tf#L53) | Map of policy rules in name => rule format. Local data takes precedence over behavior. | <code title="map&#40;object&#40;&#123;&#10;  dns_name &#61; string&#10;  behavior &#61; optional&#40;string, &#34;bypassResponsePolicy&#34;&#41;&#10;  local_data &#61; optional&#40;map&#40;object&#40;&#123;&#10;    ttl &#61; optional&#40;number&#41;&#10;    rrdatas &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [networks](variables.tf#L35) | Map of VPC self links to which this policy is applied in name => self link format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [policy_create](variables.tf#L42) | Set to false to use the existing policy matching name and only manage rules. | <code>bool</code> |  | <code>true</code> |
+| [rules](variables.tf#L54) | Map of policy rules in name => rule format. Local data takes precedence over behavior and is in the form record type => attributes. | <code title="map&#40;object&#40;&#123;&#10;  dns_name &#61; string&#10;  behavior &#61; optional&#40;string, &#34;bypassResponsePolicy&#34;&#41;&#10;  local_data &#61; optional&#40;map&#40;object&#40;&#123;&#10;    ttl     &#61; optional&#40;number&#41;&#10;    rrdatas &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L17) | Policy id. |  |
+| [name](outputs.tf#L22) | Policy name. |  |
+| [policy](outputs.tf#L27) | Policy resource. |  |
 
 <!-- END TFDOC -->
