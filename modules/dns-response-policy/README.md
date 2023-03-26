@@ -1,6 +1,6 @@
 # Google Cloud DNS Response Policy
 
-This module allows management of a [Google Cloud DNS policy and its rules](https://cloud.google.com/dns/docs/zones/manage-response-policies). The policy can be already existing and passed in via its id.
+This module allows management of a [Google Cloud DNS policy and its rules](https://cloud.google.com/dns/docs/zones/manage-response-policies). The policy can already exist and be referenced by name by setting the `policy_create` variable to `false`.
 
 ## Examples
 
@@ -73,7 +73,7 @@ module "dns-policy" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L30) | Zone name, must be unique within the project. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L30) | Policy name. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L49) | Project id for the zone. | <code>string</code> | ✓ |  |
 | [clusters](variables.tf#L17) | Map of GKE clusters to which this policy is applied in name => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L24) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
