@@ -38,7 +38,7 @@ variable "bundle_config" {
   description = "Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null."
   type = object({
     source_dir  = string
-    output_path = optional(string, "/tmp/bundle.zip")
+    output_path = optional(string)
     excludes    = optional(list(string))
   })
 }
