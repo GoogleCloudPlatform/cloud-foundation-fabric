@@ -77,12 +77,21 @@ locals {
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count         = local.vpc_connector_create ? 1 : 0
-  project       = var.project_id
-  name          = var.vpc_connector_create.name
-  region        = var.region
-  ip_cidr_range = var.vpc_connector_create.ip_cidr_range
-  network       = var.vpc_connector_create.vpc_self_link
+  count   = local.vpc_connector_create ? 1 : 0
+  project = var.project_id
+  name = (
+    var.vpc_connector_create.name != null
+    ? var.vpc_connector_create.name
+    : var.name
+  )
+  region         = var.region
+  ip_cidr_range  = var.vpc_connector_create.ip_cidr_range
+  network        = var.vpc_connector_create.vpc_self_link
+  machine_type   = var.vpc_connector_create.machine_type
+  max_instances  = var.vpc_connector_create.instances.max
+  max_throughput = var.vpc_connector_create.throughput.max
+  min_instances  = var.vpc_connector_create.instances.min
+  min_throughput = var.vpc_connector_create.throughput.min
 }
 
 resource "google_cloud_run_service" "service" {
