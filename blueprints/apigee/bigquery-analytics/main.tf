@@ -287,7 +287,7 @@ resource "local_file" "create_datastore_file" {
     path           = var.path
   })
   filename        = "${path.module}/create-datastore.sh"
-  file_permission = "0777"
+  file_permission = "0755"
 }
 
 resource "local_file" "deploy_apiproxy_file" {
@@ -295,5 +295,5 @@ resource "local_file" "deploy_apiproxy_file" {
     org_name = module.apigee.org_name
   })
   filename        = "${path.module}/deploy-apiproxy.sh"
-  file_permission = "0777"
+  file_permission = "0755"
 }
