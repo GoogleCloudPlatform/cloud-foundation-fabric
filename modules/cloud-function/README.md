@@ -219,6 +219,35 @@ module "cf-http" {
 }
 # tftest modules=1 resources=2
 ```
+
+### Multiple Cloud Functions within project
+
+When deploying multiple functions do not reuse `bundle_config.output_path` between instances as the result is undefined. Default `output_path` creates file in `/tmp` folder using project Id and function name to avoid name conflicts.
+
+```hcl
+module "cf-http-one" {
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http-one"
+  bucket_name = "test-cf-bundles"
+  bundle_config = {
+    source_dir = "fabric/assets"
+  }
+}
+
+module "cf-http-two" {
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http-two"
+  bucket_name = "test-cf-bundles"
+  bundle_config = {
+    source_dir = "fabric/assets"
+  }
+}
+# tftest modules=2 resources=4 inventory=multiple_functions.yaml
+
+
+```
 <!-- BEGIN TFDOC -->
 
 ## Variables
