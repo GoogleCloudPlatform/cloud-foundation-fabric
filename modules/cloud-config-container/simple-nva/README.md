@@ -173,8 +173,8 @@ module "vm" {
 | [enable_health_checks](variables.tf#L23) | Configures routing to enable responses to health check probes. | <code>bool</code> |  | <code>false</code> |
 | [files](variables.tf#L29) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [frr_config](variables.tf#L39) | FRR configuration for container running on the NVA. | <code title="object&#40;&#123;&#10;  config_file     &#61; string&#10;  daemons_enabled &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [optional_firewall_open_ports](variables.tf#L90) | Optional Ports to be opened on the local firewall. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [optional_run_cmds](variables.tf#L84) | Optional Cloud Init run commands to execute. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [optional_firewall_open_ports](variables.tf#L84) | Optional Ports to be opened on the local firewall. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [optional_run_cmds](variables.tf#L90) | Optional Cloud Init run commands to execute. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 

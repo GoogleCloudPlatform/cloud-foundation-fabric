@@ -81,14 +81,14 @@ variable "network_interfaces" {
   }))
 }
 
-variable "optional_run_cmds" {
-  description = "Optional Cloud Init run commands to execute."
+variable "optional_firewall_open_ports" {
+  description = "Optional Ports to be opened on the local firewall."
   type        = list(string)
   default     = []
 }
 
-variable "optional_firewall_open_ports" {
-  description = "Optional Ports to be opened on the local firewall."
+variable "optional_run_cmds" {
+  description = "Optional Cloud Init run commands to execute."
   type        = list(string)
   default     = []
 }
