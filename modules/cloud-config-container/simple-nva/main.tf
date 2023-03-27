@@ -109,10 +109,10 @@ locals {
     : var.run_cmds
   )
 
-  _tcp_ports = concat(try(
+  _tcp_ports = concat(flatten(try(
     [
       for daemon, ports in local._frr_daemons : contains(var.frr_config.daemons_enabled, daemon) ? ports.tcp : []
-  ], []), var.open_ports.tcp)
+  ], [])), var.open_ports.tcp)
 
   _template = (
     var.cloud_config == null
@@ -120,10 +120,10 @@ locals {
     : var.cloud_config
   )
 
-  _udp_ports = concat(try(
+  _udp_ports = concat(flatten(try(
     [
       for daemon, ports in local._frr_daemons : contains(var.frr_config.daemons_enabled, daemon) ? ports.udp : []
-  ], []), var.open_ports.udp)
+  ], [])), var.open_ports.udp)
 
   cloud_config = templatefile(local._template, {
     enable_health_checks = var.enable_health_checks
