@@ -260,7 +260,7 @@ resource "local_file" "app_file" {
     image     = local.image
   })
   filename        = "${path.module}/app/app.yaml"
-  file_permission = "0666"
+  file_permission = "0644"
 }
 
 resource "local_file" "rbac_file" {
@@ -269,5 +269,5 @@ resource "local_file" "rbac_file" {
     google_sa = module.app_cb_sa.email
   })
   filename        = "${path.module}/tenant-setup.yaml"
-  file_permission = "0666"
+  file_permission = "0644"
 }
