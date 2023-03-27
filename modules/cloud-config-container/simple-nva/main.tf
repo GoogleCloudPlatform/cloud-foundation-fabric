@@ -67,31 +67,38 @@ locals {
     } : {}
   )
 
-  _frr_daemons = [
-    "zebra",
-    "bgpd",
-    "ospfd",
-    "ospf6d",
-    "ripd",
-    "ripngd",
-    "isisd",
-    "pimd",
-    "ldpd",
-    "nhrpd",
-    "eigrpd",
-    "babeld",
-    "sharpd",
-    "staticd",
-    "pbrd",
-    "bfdd",
-    "fabricd"
-  ]
+  _frr_daemons = {
+    "zebra": []
+    "bgpd": ["179"]
+    "ospfd": []
+    "ospf6d": []
+    "ripd": ["520"]
+    "ripngd": ["521"]
+    "isisd": []
+    "pimd": []
+    "ldpd": ["646"]
+    "nhrpd": []
+    "eigrpd" : []
+    "babeld": []
+    "sharpd": []
+    "staticd": []
+    "pbrd": []
+    "bfdd": ["3784"]
+    "fabricd": []
+  }
 
   _frr_daemons_enabled = try(
     {
-      for daemon in local._frr_daemons :
+      for daemon in keys(local._frr_daemons) :
       "${daemon}_enabled" => contains(var.frr_config.daemons_enabled, daemon) ? "yes" : "no"
   }, {})
+
+  _frr_required_ports = try(
+    [
+      for daemon, ports in local._frr_daemons : contains(var.frr_config.daemons_enabled, daemon) ? ports : []
+    ], [])
+
+  _local_firewall_ports = concat(var.optional_firewall_open_ports, flatten(local._frr_required_ports))
 
   _network_interfaces = [
     for index, interface in var.network_interfaces : {
@@ -118,6 +125,7 @@ locals {
   cloud_config = templatefile(local._template, {
     enable_health_checks = var.enable_health_checks
     files                = local._files
+    firewall_open_ports  = local._local_firewall_ports
     network_interfaces   = local._network_interfaces
     optional_run_cmds    = local._optional_run_cmds
   })
