@@ -68,23 +68,23 @@ locals {
   )
 
   _frr_daemons = {
-    "zebra": []
-    "bgpd": ["179"]
-    "ospfd": []
-    "ospf6d": []
-    "ripd": ["520"]
-    "ripngd": ["521"]
-    "isisd": []
-    "pimd": []
-    "ldpd": ["646"]
-    "nhrpd": []
+    "zebra" : []
+    "bgpd" : ["179"]
+    "ospfd" : []
+    "ospf6d" : []
+    "ripd" : ["520"]
+    "ripngd" : ["521"]
+    "isisd" : []
+    "pimd" : []
+    "ldpd" : ["646"]
+    "nhrpd" : []
     "eigrpd" : []
-    "babeld": []
-    "sharpd": []
-    "staticd": []
-    "pbrd": []
-    "bfdd": ["3784"]
-    "fabricd": []
+    "babeld" : []
+    "sharpd" : []
+    "staticd" : []
+    "pbrd" : []
+    "bfdd" : ["3784"]
+    "fabricd" : []
   }
 
   _frr_daemons_enabled = try(
@@ -96,7 +96,7 @@ locals {
   _frr_required_ports = try(
     [
       for daemon, ports in local._frr_daemons : contains(var.frr_config.daemons_enabled, daemon) ? ports : []
-    ], [])
+  ], [])
 
   _local_firewall_ports = concat(var.optional_firewall_open_ports, flatten(local._frr_required_ports))
 
