@@ -38,6 +38,7 @@ locals {
     container-engine  = "service-%s@container-engine-robot"
     containerregistry = "service-%s@containerregistry"
     dataflow          = "service-%s@dataflow-service-producer-prod"
+    dataplex          = "service-%s@gcp-sa-dataplex"
     dataproc          = "service-%s@dataproc-accounts"
     fleet             = "service-%s@gcp-sa-gkehub"
     gae-flex          = "service-%s@gae-api-prod"
