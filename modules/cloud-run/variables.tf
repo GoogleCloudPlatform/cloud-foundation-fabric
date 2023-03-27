@@ -24,36 +24,79 @@ variable "audit_log_triggers" {
   default = null
 }
 
+variable "container_concurrency" {
+  description = "Maximum allowed in-flight (concurrent) requests per container of the revision."
+  type        = string
+  default     = null
+}
+
 variable "containers" {
-  description = "Containers."
-  type = list(object({
-    image = string
-    options = object({
-      command = list(string)
-      args    = list(string)
-      env     = map(string)
-      env_from = map(object({
+  description = "Containers in arbitrary key => attributes format."
+  type = map(object({
+    image   = string
+    args    = optional(list(string))
+    command = optional(list(string))
+    env = optional(map(object({
+      value = string
+      from_key = optional(object({
         key  = string
         name = string
       }))
-    })
-    resources = object({
-      limits = object({
-        cpu    = string
-        memory = string
+    })), {})
+    liveness_probe = optional(object({
+      action = object({
+        grcp = optional(object({
+          port    = optional(number)
+          service = optional(string)
+        }))
+        http_get = optional(object({
+          http_headers = optional(map(string), {})
+          path         = optional(string)
+        }))
       })
-      requests = object({
-        cpu    = string
-        memory = string
-      })
-    })
-    ports = list(object({
-      name           = string
-      protocol       = string
-      container_port = string
+      failure_threshold     = optional(number)
+      initial_delay_seconds = optional(number)
+      period_seconds        = optional(number)
+      timeout_seconds       = optional(number)
     }))
-    volume_mounts = map(string)
+    ports = optional(map(object({
+      container_port = optional(number)
+      name           = optional(string)
+      protocol       = optional(string)
+    })), {})
+    resources = optional(object({
+      limits = optional(object({
+        cpu    = string
+        memory = string
+      }))
+      requests = optional(object({
+        cpu    = string
+        memory = string
+      }))
+    }))
+    startup_probe = optional(object({
+      action = object({
+        grcp = optional(object({
+          port    = optional(number)
+          service = optional(string)
+        }))
+        http_get = optional(object({
+          http_headers = optional(map(string), {})
+          path         = optional(string)
+        }))
+        tcp_socket = optional(object({
+          port = optional(number)
+        }))
+      })
+      failure_threshold     = optional(number)
+      initial_delay_seconds = optional(number)
+      period_seconds        = optional(number)
+      timeout_seconds       = optional(number)
+    }))
+    volume_mounts = optional(map(string), {})
   }))
+  default  = {}
+  nullable = false
 }
 
 variable "iam" {
@@ -109,15 +152,16 @@ variable "region" {
 variable "revision_annotations" {
   description = "Configure revision template annotations."
   type = object({
-    autoscaling = object({
+    autoscaling = optional(object({
       max_scale = number
       min_scale = number
-    })
-    cloudsql_instances  = list(string)
-    vpcaccess_connector = string
-    vpcaccess_egress    = string
+    }))
+    cloudsql_instances  = optional(list(string), [])
+    vpcaccess_connector = optional(string)
+    vpcaccess_egress    = optional(string)
   })
-  default = null
+  default  = {}
+  nullable = false
 }
 
 variable "revision_name" {
@@ -138,23 +182,35 @@ variable "service_account_create" {
   default     = false
 }
 
-variable "traffic" {
-  description = "Traffic."
-  type        = map(number)
+variable "timeout_seconds" {
+  description = "Maximum duration the instance is allowed for responding to a request."
+  type        = number
   default     = null
 }
 
-variable "volumes" {
-  description = "Volumes."
-  type = list(object({
-    name        = string
-    secret_name = string
-    items = list(object({
-      key  = string
-      path = string
-    }))
+variable "traffic" {
+  description = "Traffic steering configuration. If revision name is null the latest revision will be used."
+  type = map(object({
+    percent       = number
+    revision_name = optional(string)
+    tag           = optional(string)
   }))
-  default = null
+  default  = {}
+  nullable = false
+}
+
+variable "volumes" {
+  description = "Named volumes in containers in name => attributes format."
+  type = map(object({
+    secret_name  = string
+    default_mode = optional(string)
+    items = optional(map(object({
+      path = string
+      mode = optional(string)
+    })))
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "vpc_connector_create" {
