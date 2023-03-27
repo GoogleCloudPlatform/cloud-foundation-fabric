@@ -89,5 +89,5 @@ resource "local_file" "deploy_apiproxy_file" {
     org = module.project.project_id
   })
   filename        = "${path.module}/deploy-apiproxy.sh"
-  file_permission = "0777"
+  file_permission = "0755"
 }

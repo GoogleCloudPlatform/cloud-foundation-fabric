@@ -130,7 +130,7 @@ resource "local_file" "vars_file" {
     adfs_dns_domain_name = var.adfs_dns_domain_name
   })
   filename        = "${path.module}/ansible/vars/vars.yaml"
-  file_permission = "0666"
+  file_permission = "0644"
 }
 
 resource "local_file" "gssh_file" {
@@ -139,5 +139,5 @@ resource "local_file" "gssh_file" {
     project_id = var.project_id
   })
   filename        = "${path.module}/ansible/gssh.sh"
-  file_permission = "0777"
+  file_permission = "0755"
 }
