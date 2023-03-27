@@ -54,9 +54,10 @@ write_files:
 %{ for route in interface.routes ~}
       ip route add ${route} via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/${interface.number}/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}
 %{ endfor ~}
-%{ for port in firewall_open_ports ~}
-      iptables -A INPUT -p all --dport ${port} -j ACCEPT
 %{ endfor ~}
+%{ for port in firewall_open_ports ~}
+      iptables -A INPUT -p tcp --dport ${port} -j ACCEPT
+      iptables -A INPUT -p udp --dport ${port} -j ACCEPT
 %{ endfor ~}
 
 bootcmd:
