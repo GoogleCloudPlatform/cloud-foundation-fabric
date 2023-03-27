@@ -68,23 +68,23 @@ locals {
   )
 
   _frr_daemons = {
-    "zebra" : []
-    "bgpd" : ["179"]
-    "ospfd" : []
-    "ospf6d" : []
-    "ripd" : ["520"]
-    "ripngd" : ["521"]
-    "isisd" : []
-    "pimd" : []
-    "ldpd" : ["646"]
-    "nhrpd" : []
-    "eigrpd" : []
-    "babeld" : []
-    "sharpd" : []
-    "staticd" : []
-    "pbrd" : []
-    "bfdd" : ["3784"]
-    "fabricd" : []
+    "zebra" : { tcp = [], udp = [] }
+    "bgpd" : { tcp = ["179"], udp = [] }
+    "ospfd" : { tcp = [], udp = [] }
+    "ospf6d" : { tcp = [], udp = [] }
+    "ripd" : { tcp = [], udp = ["520"] }
+    "ripngd" : { tcp = [], udp = ["521"] }
+    "isisd" : { tcp = [], udp = [] }
+    "pimd" : { tcp = [], udp = [] }
+    "ldpd" : { tcp = ["646"], udp = ["646"] }
+    "nhrpd" : { tcp = [], udp = [] }
+    "eigrpd" : { tcp = [], udp = [] }
+    "babeld" : { tcp = [], udp = [] }
+    "sharpd" : { tcp = [], udp = [] }
+    "staticd" : { tcp = [], udp = [] }
+    "pbrd" : { tcp = [], udp = [] }
+    "bfdd" : { tcp = [], udp = ["3784"] }
+    "fabricd" : { tcp = [], udp = [] }
   }
 
   _frr_daemons_enabled = try(
@@ -92,13 +92,6 @@ locals {
       for daemon in keys(local._frr_daemons) :
       "${daemon}_enabled" => contains(var.frr_config.daemons_enabled, daemon) ? "yes" : "no"
   }, {})
-
-  _frr_required_ports = try(
-    [
-      for daemon, ports in local._frr_daemons : contains(var.frr_config.daemons_enabled, daemon) ? ports : []
-  ], [])
-
-  _local_firewall_ports = concat(var.optional_firewall_open_ports, flatten(local._frr_required_ports))
 
   _network_interfaces = [
     for index, interface in var.network_interfaces : {
@@ -110,11 +103,16 @@ locals {
     }
   ]
 
-  _optional_run_cmds = (
+  _run_cmds = (
     try(var.frr_config != null, false)
-    ? concat(["systemctl start frr"], var.optional_run_cmds)
-    : var.optional_run_cmds
+    ? concat(["systemctl start frr"], var.run_cmds)
+    : var.run_cmds
   )
+
+  _tcp_ports = concat(try(
+    [
+      for daemon, ports in local._frr_daemons : contains(var.frr_config.daemons_enabled, daemon) ? ports.tcp : []
+  ], []), var.open_ports.tcp)
 
   _template = (
     var.cloud_config == null
@@ -122,11 +120,17 @@ locals {
     : var.cloud_config
   )
 
+  _udp_ports = concat(try(
+    [
+      for daemon, ports in local._frr_daemons : contains(var.frr_config.daemons_enabled, daemon) ? ports.udp : []
+  ], []), var.open_ports.udp)
+
   cloud_config = templatefile(local._template, {
     enable_health_checks = var.enable_health_checks
     files                = local._files
-    firewall_open_ports  = local._local_firewall_ports
     network_interfaces   = local._network_interfaces
-    optional_run_cmds    = local._optional_run_cmds
+    open_tcp_ports       = local._tcp_ports
+    open_udp_ports       = local._udp_ports
+    run_cmds             = local._run_cmds
   })
 }

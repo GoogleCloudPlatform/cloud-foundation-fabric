@@ -81,14 +81,20 @@ variable "network_interfaces" {
   }))
 }
 
-variable "optional_firewall_open_ports" {
-  description = "Optional Ports to be opened on the local firewall."
-  type        = list(string)
-  default     = []
+variable "open_ports" {
+  description = "Optional firewall ports to open."
+  type = object({
+    tcp = list(string)
+    udp = list(string)
+  })
+  default = {
+    tcp = []
+    udp = []
+  }
 }
 
-variable "optional_run_cmds" {
-  description = "Optional Cloud Init run commands to execute."
+variable "run_cmds" {
+  description = "Optional cloud init run commands to execute."
   type        = list(string)
   default     = []
 }
