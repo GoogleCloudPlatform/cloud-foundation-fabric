@@ -86,3 +86,9 @@ variable "optional_run_cmds" {
   type        = list(string)
   default     = []
 }
+
+variable "optional_firewall_open_ports" {
+  description = "Optional Ports to be opened on the local firewall."
+  type        = list(string)
+  default     = []
+}
