@@ -37,5 +37,5 @@ resource "local_file" "deploy_apiproxy_file" {
     environment  = local.environment
   })
   filename        = "${path.module}/deploy-apiproxy.sh"
-  file_permission = "0777"
+  file_permission = "0755"
 }
