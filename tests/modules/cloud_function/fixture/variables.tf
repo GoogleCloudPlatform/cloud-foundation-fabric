@@ -19,11 +19,6 @@ variable "bucket_name" {
   default = "test"
 }
 
-variable "instance_count" {
-  type    = number
-  default = 1
-}
-
 variable "v2" {
   type    = any
   default = false
