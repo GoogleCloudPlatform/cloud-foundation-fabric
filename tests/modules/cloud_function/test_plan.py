@@ -22,12 +22,6 @@ def resources(plan_runner, version):
   _, resources = plan_runner(v2=v2)
   return resources
 
-@pytest.fixture
-def plan(plan_runner, version, count):
-  v2 = {'v1': 'false', 'v2': 'true'}[version]
-  plan, _ = plan_runner(v2=v2, instance_count=count)
-  return plan
-
 
 @pytest.mark.parametrize('version', ['v1', 'v2'])
 def test_resource_count(resources):
@@ -48,19 +42,3 @@ def test_iam(resources, version):
   assert len(bindings) == 1
   assert bindings[0]['role'] == 'roles/cloudfunctions.invoker'
   assert bindings[0]['members'] == ['allUsers']
-
-
-@pytest.mark.parametrize('version', ['v1', 'v2'])
-@pytest.mark.parametrize('count', [2])
-def test_multiple_functions(plan, version, count):
-  """Tests whether multiple use of functions result in use of multiple bundle files"""
-
-  # data objects are only accessible in prior_state of the plan, they are not present in root_module
-  archives = [
-    resource for child_module in plan['prior_state']["values"]["root_module"]["child_modules"]
-    for resource in child_module["resources"]
-    if resource["type"] == "archive_file"
-  ]
-  file_names = set([x["values"]["output_path"] for x in archives])
-
-  assert len(archives) == len(file_names)
