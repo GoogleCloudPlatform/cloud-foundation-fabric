@@ -387,7 +387,7 @@ resource "google_container_cluster" "cluster" {
 }
 
 resource "google_gke_backup_backup_plan" "backup_plan" {
-  for_each =  try(var.backup_configs.enable_backup_agent, false) ? var.backup_configs.backup_plans : null
+  for_each =  try(var.backup_configs.enable_backup_agent, false) ? var.backup_configs.backup_plans : {}
   name = each.key
   cluster = google_container_cluster.cluster.id
   location = each.value.region
