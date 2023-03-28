@@ -387,11 +387,11 @@ resource "google_container_cluster" "cluster" {
 }
 
 resource "google_gke_backup_backup_plan" "backup_plan" {
-  for_each =  try(var.backup_configs.enable_backup_agent, false) ? var.backup_configs.backup_plans : {}
-  name = each.key
-  cluster = google_container_cluster.cluster.id
+  for_each = try(var.backup_configs.enable_backup_agent, false) ? var.backup_configs.backup_plans : {}
+  name     = each.key
+  cluster  = google_container_cluster.cluster.id
   location = each.value.region
-  project = var.project_id
+  project  = var.project_id
   retention_policy {
     backup_delete_lock_days = try(each.value.retention_policy_delete_lock_days)
     backup_retain_days      = try(each.value.retention_policy_days)
@@ -403,8 +403,8 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
   #TODO add support for configs
   backup_config {
     include_volume_data = true
-    include_secrets = true
-    all_namespaces = true
+    include_secrets     = true
+    all_namespaces      = true
   }
 }
 

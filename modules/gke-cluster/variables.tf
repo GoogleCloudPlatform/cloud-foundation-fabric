@@ -16,13 +16,13 @@
 
 variable "backup_configs" {
   description = "Configuration for Backup for GKE."
-  type = object({    
+  type = object({
     enable_backup_agent = optional(bool, false)
-    backup_plans = optional(map( object({
-      region    = string
-      schedule  = string
-      retention_policy_days = optional(string)
-      retention_policy_lock = optional(bool, false)
+    backup_plans = optional(map(object({
+      region                            = string
+      schedule                          = string
+      retention_policy_days             = optional(string)
+      retention_policy_lock             = optional(bool, false)
       retention_policy_delete_lock_days = optional(string)
     })))
   })
