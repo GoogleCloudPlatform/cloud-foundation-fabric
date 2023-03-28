@@ -80,7 +80,6 @@ resource "google_gke_hub_feature_membership" "servicemesh" {
 
   mesh {
     management    = "MANAGEMENT_AUTOMATIC"
-    control_plane = "AUTOMATIC"
   }
 }
 
