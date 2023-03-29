@@ -14,15 +14,25 @@
 
 values:
   module.cluster-1.google_container_cluster.cluster:
-    backup_configs:
-      enable_backup_agent: true
-      backup_plans:
-        backup-1:
-          region: europe-west2
-          schedule: 0 9 * * 1
-          retention_policy_days: 30
-          retention_policy_lock: false
-          retention_policy_delete_lock_days: 15
+    location: europe-west1-b
+    name: cluster-1
 
+  module.cluster-1.google_gke_backup_backup_plan.backup_plan["backup-1"]:
+    backup_config:
+    - all_namespaces: true
+      encryption_key: []
+      include_secrets: true
+      include_volume_data: true
+      selected_applications: []
+      selected_namespaces: []
+    backup_schedule:
+    - cron_schedule: 0 9 * * 1
+    location: europe-west-2
+    name: backup-1
+    project: project-id
+    retention_policy:
+    - locked: false
+   
 counts:
   google_container_cluster: 1
+  google_gke_backup_backup_plan: 1

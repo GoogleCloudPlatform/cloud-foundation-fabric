@@ -24,9 +24,10 @@ variable "backup_configs" {
       retention_policy_days             = optional(string)
       retention_policy_lock             = optional(bool, false)
       retention_policy_delete_lock_days = optional(string)
-    })))
+    })), {})
   })
-  default = null
+  default  = {}
+  nullable = false
 }
 
 variable "cluster_autoscaling" {
