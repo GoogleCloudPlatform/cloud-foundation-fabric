@@ -33,7 +33,8 @@ def init(resources):
 def start_discovery(resources, response=None):
   'Plugin entry point, group and return discovered networks.'
   LOGGER.info(f'discovery (has response: {response is not None})')
-  grouped = itertools.groupby(resources['networks'].values(),
-                              lambda v: v['project_id'])
+  grouped = itertools.groupby(
+      sorted(resources['networks'].values(), key=lambda i: i['project_id']),
+      lambda i: i['project_id'])
   for project_id, vpcs in grouped:
     yield Resource(NAME, project_id, [v['self_link'] for v in vpcs])
