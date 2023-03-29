@@ -153,15 +153,6 @@ module "cluster-1" {
 ```
 <!-- BEGIN TFDOC -->
 
-## Files
-
-| name | description | resources |
-|---|---|---|
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_network_peering_routes_config</code> · <code>google_container_cluster</code> · <code>google_gke_backup_backup_plan</code> · <code>google_pubsub_topic</code> |
-| [outputs.tf](./outputs.tf) | Module outputs. |  |
-| [variables.tf](./variables.tf) | Module variables. |  |
-| [versions.tf](./versions.tf) | Version pins. |  |
-
 ## Variables
 
 | name | description | type | required | default |
