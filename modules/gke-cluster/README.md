@@ -126,30 +126,30 @@ module "cluster-1" {
 
 ### Backup for GKE
 
-This example shows how to [enable the Backup for GKE agent and configure a Backup Plan](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns) for GKE Standard clusters.
+This example shows how to [enable the Backup for GKE agent and configure a Backup Plan](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke) for GKE Standard clusters.
 
 ```hcl
 module "cluster-1" {
   source     = "./fabric/modules/gke-cluster"
   project_id = var.project_id
   name       = "cluster-1"
-  location   = "europe-west1"
+  location   = "europe-west1-b"
   vpc_config = {
     network               = var.vpc.self_link
     subnetwork            = var.subnet.self_link
     secondary_range_names = { pods = "pods", services = "services" }
   }
-  backup_configs = { 
+  backup_configs = {
     enable_backup_agent = true
     backup_plans = {
       "backup-1" = {
-        region    = "europe-west-2"
-        schedule  = "0 9 * * 1"
-      }      
+        region   = "europe-west-2"
+        schedule = "0 9 * * 1"
+      }
     }
   }
 }
-# tftest modules=1 resources=1 inventory=backup.yaml
+# tftest modules=1 resources=2 inventory=backup.yaml
 ```
 <!-- BEGIN TFDOC -->
 
