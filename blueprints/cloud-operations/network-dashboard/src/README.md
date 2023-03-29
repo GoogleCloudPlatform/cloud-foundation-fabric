@@ -76,7 +76,7 @@ The main module cycles through stages, calling stage plugins in succession itera
 
 ## Debugging and Troubleshooting
 
-Note that python version >= 3.9 is required.
+Note that python version >= 3.10 is required.
 
 If you run into a `ModuleNotFoundError`, install the required dependencies:
 `pip3 install -r requirements.txt`
