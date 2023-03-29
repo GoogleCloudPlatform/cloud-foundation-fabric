@@ -55,6 +55,12 @@ write_files:
       ip route add ${route} via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/${interface.number}/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}
 %{ endfor ~}
 %{ endfor ~}
+%{ for port in open_tcp_ports ~}
+      iptables -A INPUT -p tcp --dport ${port} -j ACCEPT
+%{ endfor ~}
+%{ for port in open_udp_ports ~}
+      iptables -A INPUT -p udp --dport ${port} -j ACCEPT
+%{ endfor ~}
 
 bootcmd:
   - systemctl start node-problem-detector
@@ -63,6 +69,6 @@ runcmd:
   - systemctl daemon-reload
   - systemctl enable routing
   - systemctl start routing
-%{ for cmd in optional_run_cmds ~}
+%{ for cmd in run_cmds ~}
   - ${cmd}
 %{ endfor ~}

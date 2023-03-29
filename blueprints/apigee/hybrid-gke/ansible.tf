@@ -27,7 +27,7 @@ resource "local_file" "vars_file" {
     ingress_ip_name  = local.ingress_ip_name
   })
   filename        = "${path.module}/ansible/vars/vars.yaml"
-  file_permission = "0666"
+  file_permission = "0644"
 }
 
 resource "local_file" "gssh_file" {
@@ -36,5 +36,5 @@ resource "local_file" "gssh_file" {
     zone       = var.zone
   })
   filename        = "${path.module}/ansible/gssh.sh"
-  file_permission = "0777"
+  file_permission = "0755"
 }
