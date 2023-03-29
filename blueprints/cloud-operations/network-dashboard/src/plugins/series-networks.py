@@ -81,8 +81,12 @@ def _forwarding_rules(resources):
   forwarding_rules_l7 = itertools.filterfalse(
       functools.partial(filter, 'INTERNAL_MANAGED'), forwarding_rules)
   # group each iterator by network and return timeseries
-  grouped_l4 = itertools.groupby(forwarding_rules_l4, lambda i: i['network'])
-  grouped_l7 = itertools.groupby(forwarding_rules_l7, lambda i: i['network'])
+  grouped_l4 = itertools.groupby(
+      sorted(forwarding_rules_l4, key=lambda i: i['network']),
+      lambda i: i['network'])
+  grouped_l7 = itertools.groupby(
+      sorted(forwarding_rules_l7, key=lambda i: i['network']),
+      lambda i: i['network'])
   return itertools.chain(
       _group_timeseries('forwarding_rules_l4', resources, grouped_l4,
                         'INTERNAL_FORWARDING_RULES_PER_NETWORK'),
@@ -95,7 +99,9 @@ def _instances(resources):
   'Groups instances by network and returns relevant timeseries.'
   instance_networks = itertools.chain.from_iterable(
       i['networks'] for i in resources['instances'].values())
-  grouped = itertools.groupby(instance_networks, lambda i: i['network'])
+  grouped = itertools.groupby(
+      sorted(instance_networks, key=lambda i: i['network']),
+      lambda i: i['network'])
   return _group_timeseries('instances', resources, grouped,
                            'INSTANCES_PER_NETWORK_GLOBAL')
 
@@ -120,8 +126,9 @@ def _peerings(resources):
 
 def _subnet_ranges(resources):
   'Groups subnetworks by network and returns relevant timeseries.'
-  grouped = itertools.groupby(resources['subnetworks'].values(),
-                              lambda v: v['network'])
+  grouped = itertools.groupby(
+      sorted(resources['subnetworks'].values(), key=lambda i: i['network']),
+      lambda i: i['network'])
   return _group_timeseries('subnets', resources, grouped,
                            'SUBNET_RANGES_PER_NETWORK')
 
