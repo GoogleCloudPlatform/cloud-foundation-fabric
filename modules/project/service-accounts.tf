@@ -30,6 +30,7 @@ locals {
     artifactregistry  = "service-%s@gcp-sa-artifactregistry"
     bq                = "bq-%s@bigquery-encryption"
     cloudasset        = "service-%s@gcp-sa-cloudasset"
+    cloudbatch        = "service-%s@gcp-sa-cloudbatch"
     cloudbuild        = "service-%s@gcp-sa-cloudbuild"
     cloudfunctions    = "service-%s@gcf-admin-robot"
     cloudrun          = "service-%s@serverless-robot-prod"
