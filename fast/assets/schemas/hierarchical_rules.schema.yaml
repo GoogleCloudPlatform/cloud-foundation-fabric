@@ -17,7 +17,7 @@ map(include('hierarchical_rule'))
 hierarchical_rule:
   description: str()
   direction: enum("INGRESS", "EGRESS")
-  action: enum("allow", "deny")
+  action: enum("allow", "deny", "goto_next")
   priority: int()
   ranges: list(str())
   target_resources: any(null(), list(str()))
