@@ -38,8 +38,9 @@ def timeseries(resources):
     yield MetricDescriptor(f'project/{dtype}', name, ('project',),
                            dtype.endswith('ratio'))
   # group firewall rules by network then prepare and return timeseries
-  grouped = itertools.groupby(resources['firewall_rules'].values(),
-                              lambda v: v['network'])
+  grouped = itertools.groupby(
+      sorted(resources['firewall_rules'].values(), key=lambda i: i['network']),
+      lambda i: i['network'])
   for network_id, rules in grouped:
     count = len(list(rules))
     labels = {
@@ -48,8 +49,9 @@ def timeseries(resources):
     }
     yield TimeSeries('network/firewall_rules_used', count, labels)
   # group firewall rules by project then prepare and return timeseries
-  grouped = itertools.groupby(resources['firewall_rules'].values(),
-                              lambda v: v['project_id'])
+  grouped = itertools.groupby(
+      sorted(resources['firewall_rules'].values(),
+             key=lambda i: i['project_id']), lambda i: i['project_id'])
   for project_id, rules in grouped:
     count = len(list(rules))
     limit = int(resources['quota'][project_id]['global']['FIREWALLS'])
