@@ -6,56 +6,28 @@ Cloud Run management, with support for IAM roles and optional Eventarc trigger c
 
 ### Environment variables
 
-This deploys a Cloud Run service and sets some environment variables.
+Container environment values can be declared as key-value strings or as references to Secret Manager secrets. Both can be combined as long as there's no duplication of keys:
 
 ```hcl
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
-  containers = [{
-    image = "us-docker.pkg.dev/cloudrun/container/hello"
-    options = {
-      command = null
-      args    = null
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
       env = {
-        "VAR1" : "VALUE1",
-        "VAR2" : "VALUE2",
+        VAR1 = "VALUE1"
+        VAR2 = "VALUE2"
       }
-      env_from = null
-    }
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
-}
-# tftest modules=1 resources=1
-```
-
-### Environment variables (value read from secret)
-
-```hcl
-module "cloud_run" {
-  source     = "./fabric/modules/cloud-run"
-  project_id = "my-project"
-  name       = "hello"
-  containers = [{
-    image = "us-docker.pkg.dev/cloudrun/container/hello"
-    options = {
-      command = null
-      args    = null
-      env     = null
       env_from = {
-        "CREDENTIALS" : {
+        SECRET1 = {
           name = "credentials"
           key  = "1"
         }
       }
     }
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
+  }
 }
 # tftest modules=1 resources=1
 ```

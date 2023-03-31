@@ -37,12 +37,12 @@ locals {
   )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   revision_annotations = merge(
-    var.revision_annotations.autoscaling == null ? {} : {
+    try(var.revision_annotations.autoscaling, null) == null ? {} : {
       "autoscaling.knative.dev/maxScale" = (
         var.revision_annotations.autoscaling.max_scale
       )
     },
-    var.revision_annotations.autoscaling.min_scale == null ? {} : {
+    try(var.revision_annotations.autoscaling.min_scale, null) == null ? {} : {
       "autoscaling.knative.dev/minScale" = (
         var.revision_annotations.autoscaling.min_scale
       )
@@ -115,14 +115,17 @@ resource "google_cloud_run_service" "service" {
             for_each = containers.value.env
             content {
               name  = env.key
-              value = env.value.from_key != null ? null : env.value.value
-              dynamic "value_from" {
-                for_each = env.value.from_key != null ? [""] : []
-                content {
-                  secret_key_ref {
-                    key  = env.value.from_key.key
-                    name = env.value.from_key.name
-                  }
+              value = env.value
+            }
+          }
+          dynamic "env" {
+            for_each = containers.value.env_from_key
+            content {
+              name = env.key
+              value_from {
+                secret_key_ref {
+                  key  = env.value.key
+                  name = env.value.name
                 }
               }
             }

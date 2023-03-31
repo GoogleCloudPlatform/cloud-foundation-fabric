@@ -36,12 +36,10 @@ variable "containers" {
     image   = string
     args    = optional(list(string))
     command = optional(list(string))
-    env = optional(map(object({
-      value = string
-      from_key = optional(object({
-        key  = string
-        name = string
-      }))
+    env     = optional(map(string), {})
+    env_from_key = optional(map(object({
+      key  = string
+      name = string
     })), {})
     liveness_probe = optional(object({
       action = object({
