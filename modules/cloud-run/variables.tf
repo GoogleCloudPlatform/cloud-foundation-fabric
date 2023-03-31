@@ -15,15 +15,6 @@
  * limitations under the License.
  */
 
-variable "audit_log_triggers" {
-  description = "Event arc triggers (Audit log)."
-  type = list(object({
-    service_name = string
-    method_name  = string
-  }))
-  default = null
-}
-
 variable "container_concurrency" {
   description = "Maximum allowed in-flight (concurrent) requests per container of the revision."
   type        = string
@@ -97,6 +88,18 @@ variable "containers" {
   nullable = false
 }
 
+variable "eventarc_triggers" {
+  description = "Event arc triggers for different sources."
+  type = object({
+    audit_log = optional(map(object({
+      method  = string
+      service = string
+    })), {})
+    pubsub = optional(map(string), {})
+  })
+  default = {}
+}
+
 variable "iam" {
   description = "IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
@@ -133,12 +136,6 @@ variable "prefix" {
 variable "project_id" {
   description = "Project id used for all resources."
   type        = string
-}
-
-variable "pubsub_triggers" {
-  description = "Eventarc triggers (Pub/Sub)."
-  type        = list(string)
-  default     = null
 }
 
 variable "region" {

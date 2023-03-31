@@ -98,7 +98,12 @@ module "cloud_run" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
-  pubsub_triggers = ["topic1", "topic2"]
+  eventarc_triggers = {
+    pubsub = {
+      topic-1 = "topic1"
+      topic-2 = "topic2"
+    }
+  }
 }
 # tftest modules=1 resources=3
 ```
@@ -117,10 +122,14 @@ module "cloud_run" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
-  audit_log_triggers = [{
-    service_name = "cloudresourcemanager.googleapis.com"
-    method_name  = "SetIamPolicy"
-  }]
+  eventarc_triggers = {
+    audit_log = {
+      setiampolicy = {
+        method  = "SetIamPolicy"
+        service = "cloudresourcemanager.googleapis.com"
+      }
+    }
+  }
 }
 # tftest modules=1 resources=2
 ```

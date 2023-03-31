@@ -299,11 +299,8 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_eventarc_trigger" "audit_log_triggers" {
-  for_each = var.audit_log_triggers == null ? {} : {
-    for trigger in var.audit_log_triggers :
-    "${trigger.service_name}-${trigger.method_name}" => trigger
-  }
-  name     = "${local.prefix}${each.key}-audit-log-trigger"
+  for_each = var.eventarc_triggers.audit_log
+  name     = "${local.prefix}audit-log-${each.key}"
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   matching_criteria {
@@ -312,11 +309,11 @@ resource "google_eventarc_trigger" "audit_log_triggers" {
   }
   matching_criteria {
     attribute = "serviceName"
-    value     = each.value.service_name
+    value     = each.value.service
   }
   matching_criteria {
     attribute = "methodName"
-    value     = each.value.method_name
+    value     = each.value.method
   }
   destination {
     cloud_run_service {
@@ -327,24 +324,17 @@ resource "google_eventarc_trigger" "audit_log_triggers" {
 }
 
 resource "google_eventarc_trigger" "pubsub_triggers" {
-  for_each = var.pubsub_triggers == null ? [] : toset(var.pubsub_triggers)
-  name = (
-    each.value == ""
-    ? "${local.prefix}default-pubsub-trigger"
-    : "${local.prefix}${each.value}-pubsub-trigger"
-  )
+  for_each = var.eventarc_triggers.pubsub
+  name     = "${local.prefix}pubsub-${each.key}"
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   matching_criteria {
     attribute = "type"
     value     = "google.cloud.pubsub.topic.v1.messagePublished"
   }
-  dynamic "transport" {
-    for_each = each.value == null ? [] : [""]
-    content {
-      pubsub {
-        topic = each.value
-      }
+  transport {
+    pubsub {
+      topic = each.value
     }
   }
   destination {
