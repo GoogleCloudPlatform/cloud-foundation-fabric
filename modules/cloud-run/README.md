@@ -41,25 +41,23 @@ module "cloud_run" {
   name          = "hello"
   region        = var.region
   revision_name = "green"
-  containers = [{
-    image     = "us-docker.pkg.dev/cloudrun/container/hello"
-    options   = null
-    ports     = null
-    resources = null
-    volume_mounts = {
-      "credentials" : "/credentials"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      volume_mounts = {
+        "credentials" = "/credentials"
+      }
     }
-  }]
-  volumes = [
-    {
+  }
+  volumes = {
+    credentials = {
       name        = "credentials"
       secret_name = "credentials"
-      items = [{
-        key  = "1"
-        path = "v1.txt"
-      }]
+      items = {
+        v1 = { path = "v1.txt" }
+      }
     }
-  ]
+  }
 }
 # tftest modules=1 resources=1
 ```
