@@ -265,11 +265,11 @@ resource "google_cloud_run_service" "service" {
     for_each = var.traffic
     content {
       percent         = traffic.value.percent
-      latest_revision = traffic.value.revision_name == null
+      latest_revision = traffic.value.latest == true
       revision_name = (
-        traffic.value.revision_name == null
+        traffic.value.latest == true
         ? null
-        : "${var.name}-${traffic.value.revision_name}"
+        : "${var.name}-${traffic.key}"
       )
       tag = traffic.value.tag
     }

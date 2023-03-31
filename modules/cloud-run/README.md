@@ -40,7 +40,6 @@ module "cloud_run" {
   project_id    = var.project_id
   name          = "hello"
   region        = var.region
-  revision_name = "green"
   containers = {
     hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
@@ -72,16 +71,18 @@ module "cloud_run" {
   project_id    = "my-project"
   name          = "hello"
   revision_name = "green"
-  containers = [{
-    image         = "us-docker.pkg.dev/cloudrun/container/hello"
-    options       = null
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
+  containers = {
+    hello = {
+      image         = "us-docker.pkg.dev/cloudrun/container/hello"
+      options       = null
+      ports         = null
+      resources     = null
+      volume_mounts = null
+    }
+  }
   traffic = {
-    "blue"  = 25
-    "green" = 75
+    blue  = { percent = 25 }
+    green = { percent = 75 }
   }
 }
 # tftest modules=1 resources=1

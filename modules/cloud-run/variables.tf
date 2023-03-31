@@ -189,9 +189,9 @@ variable "timeout_seconds" {
 variable "traffic" {
   description = "Traffic steering configuration. If revision name is null the latest revision will be used."
   type = map(object({
-    percent       = number
-    revision_name = optional(string)
-    tag           = optional(string)
+    percent = number
+    latest  = optional(bool)
+    tag     = optional(string)
   }))
   default  = {}
   nullable = false
