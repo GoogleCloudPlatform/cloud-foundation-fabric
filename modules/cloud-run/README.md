@@ -74,10 +74,6 @@ module "cloud_run" {
   containers = {
     hello = {
       image         = "us-docker.pkg.dev/cloudrun/container/hello"
-      options       = null
-      ports         = null
-      resources     = null
-      volume_mounts = null
     }
   }
   traffic = {
@@ -97,17 +93,12 @@ module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
-  containers = [{
-    image         = "us-docker.pkg.dev/cloudrun/container/hello"
-    options       = null
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
-  pubsub_triggers = [
-    "topic1",
-    "topic2"
-  ]
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
+  pubsub_triggers = ["topic1", "topic2"]
 }
 # tftest modules=1 resources=3
 ```
