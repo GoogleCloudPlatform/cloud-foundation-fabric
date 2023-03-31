@@ -36,10 +36,10 @@ module "cloud_run" {
 
 ```hcl
 module "cloud_run" {
-  source        = "./fabric/modules/cloud-run"
-  project_id    = var.project_id
-  name          = "hello"
-  region        = var.region
+  source     = "./fabric/modules/cloud-run"
+  project_id = var.project_id
+  name       = "hello"
+  region     = var.region
   containers = {
     hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
@@ -73,7 +73,7 @@ module "cloud_run" {
   revision_name = "green"
   containers = {
     hello = {
-      image         = "us-docker.pkg.dev/cloudrun/container/hello"
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
   traffic = {
@@ -134,13 +134,11 @@ module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
-  containers = [{
-    image         = "us-docker.pkg.dev/cloudrun/container/hello"
-    options       = null
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
   service_account_create = true
 }
 # tftest modules=1 resources=2
@@ -153,13 +151,11 @@ module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
-  containers = [{
-    image         = "us-docker.pkg.dev/cloudrun/container/hello"
-    options       = null
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
   service_account = "cloud-run@my-project.iam.gserviceaccount.com"
 }
 # tftest modules=1 resources=1
