@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
+variable "backup_configs" {
+  description = "Configuration for Backup for GKE."
+  type = object({
+    enable_backup_agent = optional(bool, false)
+    backup_plans = optional(map(object({
+      region                            = string
+      schedule                          = string
+      retention_policy_days             = optional(string)
+      retention_policy_lock             = optional(bool, false)
+      retention_policy_delete_lock_days = optional(string)
+    })), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "cluster_autoscaling" {
   description = "Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler."
   type = object({
@@ -49,7 +65,6 @@ variable "enable_addons" {
     dns_cache                      = optional(bool, false)
     gce_persistent_disk_csi_driver = optional(bool, false)
     gcp_filestore_csi_driver       = optional(bool, false)
-    gke_backup_agent               = optional(bool, false)
     horizontal_pod_autoscaling     = optional(bool, false)
     http_load_balancing            = optional(bool, false)
     istio = optional(object({

@@ -119,7 +119,7 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_addons.config_connector
     }
     gke_backup_agent_config {
-      enabled = var.enable_addons.gke_backup_agent
+      enabled = var.backup_configs.enable_backup_agent
     }
   }
 
@@ -385,6 +385,29 @@ resource "google_container_cluster" "cluster" {
     }
   }
 }
+
+resource "google_gke_backup_backup_plan" "backup_plan" {
+  for_each = var.backup_configs.enable_backup_agent ? var.backup_configs.backup_plans : {}
+  name     = each.key
+  cluster  = google_container_cluster.cluster.id
+  location = each.value.region
+  project  = var.project_id
+  retention_policy {
+    backup_delete_lock_days = try(each.value.retention_policy_delete_lock_days)
+    backup_retain_days      = try(each.value.retention_policy_days)
+    locked                  = try(each.value.retention_policy_lock)
+  }
+  backup_schedule {
+    cron_schedule = each.value.schedule
+  }
+  #TODO add support for configs
+  backup_config {
+    include_volume_data = true
+    include_secrets     = true
+    all_namespaces      = true
+  }
+}
+
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
   count = (

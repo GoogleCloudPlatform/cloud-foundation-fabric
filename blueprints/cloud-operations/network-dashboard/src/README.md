@@ -2,9 +2,10 @@
 
 This tool constitutes the discovery and data gathering side of the Network Dashboard, and can be used in combination with the related [Terraform deployment examples](../), or packaged in different ways including standalone manual use.
 
-- [Quick Usage Example](#quick-usage-example)
-- [High Level Architecture and Plugin Design](#high-level-architecture-and-plugin-design)
-- [Debugging and Troubleshooting](#debugging-and-troubleshooting)
+- [Network Dashboard Discovery Tool](#network-dashboard-discovery-tool)
+  - [Quick Usage Example](#quick-usage-example)
+  - [High Level Architecture and Plugin Design](#high-level-architecture-and-plugin-design)
+  - [Debugging and Troubleshooting](#debugging-and-troubleshooting)
 
 ## Quick Usage Example
 
@@ -48,7 +49,7 @@ A typical invocation might look like this:
 ```bash
 ./main.py \
   -dr organizations/1234567890 \
-  -op my-monitoring-project \
+  -mon my-monitoring-project \
   --folder 1234567890 --folder 987654321 \
   --project my-net-project \
   --custom-quota-file custom-quotas.yaml
@@ -75,7 +76,7 @@ The main module cycles through stages, calling stage plugins in succession itera
 
 ## Debugging and Troubleshooting
 
-Note that python version > 3.8 is required.
+Note that python version >= 3.10 is required.
 
 If you run into a `ModuleNotFoundError`, install the required dependencies:
 `pip3 install -r requirements.txt`
@@ -90,7 +91,7 @@ This is an example call that stores discovery results to a file:
 ```bash
 ./main.py \
   -dr organizations/1234567890 \
-  -op my-monitoring-project \
+  -mon my-monitoring-project \
   --folder 1234567890 --folder 987654321 \
   --project my-net-project \
   --custom-quota-file custom-quotas.yaml \
@@ -102,7 +103,7 @@ And this is the corresponding call that skips the discovery phase and also runs 
 ```bash
 ./main.py \
   -dr organizations/1234567890 \
-  -op my-monitoring-project \
+  -mon my-monitoring-project \
   --folder 1234567890 --folder 987654321 \
   --project my-net-project \
   --custom-quota-file custom-quotas.yaml \

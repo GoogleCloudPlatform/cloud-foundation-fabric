@@ -76,6 +76,7 @@ Refer to the [Cloud Function deployment instructions](./deploy-cloud-function/) 
 - The tool assumes global routing is ON, this impacts dynamic routes usage calculation.
 - The tool assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation.
 - The tool assumes all networks in peering groups have the same global routing and custom routes sharing configuration.
+- The tool assumes both Shared VPCs service projects and host projects to be in scope.
 
 ## TODO
 
