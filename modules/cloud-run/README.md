@@ -112,19 +112,15 @@ module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
-  containers = [{
-    image         = "us-docker.pkg.dev/cloudrun/container/hello"
-    options       = null
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
-  audit_log_triggers = [
-    {
-      service_name = "cloudresourcemanager.googleapis.com"
-      method_name  = "SetIamPolicy"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
-  ]
+  }
+  audit_log_triggers = [{
+    service_name = "cloudresourcemanager.googleapis.com"
+    method_name  = "SetIamPolicy"
+  }]
 }
 # tftest modules=1 resources=2
 ```
