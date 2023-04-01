@@ -1,8 +1,16 @@
 # Cloud Run Module
 
-Cloud Run management, with support for IAM roles and optional Eventarc trigger creation.
+Cloud Run management, with support for IAM roles, revision annotations and optional Eventarc trigger creation.
 
 ## Examples
+
+- [IAM and environment variables](#iam-and-environment-variables)
+- [Mounting secrets as volumes](#mounting-secrets-as-volumes)
+- [Revision annotations](#revision-annotations)
+- [VPC Access Connector creation](#vpc-access-connector-creation)
+- [Traffic split](#traffic-split)
+- [Eventarc triggers](#eventarc-triggers)
+- [Service account](#service-account)
 
 ### IAM and environment variables
 
@@ -35,7 +43,7 @@ module "cloud_run" {
 # tftest modules=1 resources=2
 ```
 
-### Secret mounted as volume
+### Mounting secrets as volumes
 
 ```hcl
 module "cloud_run" {
@@ -64,6 +72,55 @@ module "cloud_run" {
 # tftest modules=1 resources=1
 ```
 
+### Revision annotations
+
+Annotations can be specified via the `revision_annotations` variable:
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run"
+  project_id = var.project_id
+  name       = "hello"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
+  revision_annotations = {
+    autoscaling = {
+      max_scale = 10
+      min_scale = 1
+    }
+    cloudsql_unstances = ["sql-0", "sql-1"]
+    vpcaccess_connector = "foo"
+    vpcaccess_egress = "all-traffic"
+  }
+}
+# tftest modules=1 resources=1
+```
+
+### VPC Access Connector creation
+
+If creation of a [VPC Access Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access) is required, use the `vpc_connector_create` variable which also support optional attribtues for number of instances, machine type, and throughput (not shown here). The annotation to use the connector will be added automatically.
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run"
+  project_id = var.project_id
+  name       = "hello"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
+  vpc_connector_create = {
+    ip_cidr_range = "10.10.10.0/24"
+    vpc_self_link = var.vpc
+  }
+}
+# tftest modules=1 resources=2
+```
+
 ### Traffic split
 
 This deploys a Cloud Run service with traffic split between two revisions.
@@ -87,7 +144,9 @@ module "cloud_run" {
 # tftest modules=1 resources=1
 ```
 
-### Eventarc trigger (Pub/Sub)
+### Eventarc triggers
+
+#### PubSub
 
 This deploys a Cloud Run service that will be triggered when messages are published to Pub/Sub topics.
 
@@ -111,7 +170,7 @@ module "cloud_run" {
 # tftest modules=1 resources=3
 ```
 
-### Eventarc trigger (Audit logs)
+#### Audit logs
 
 This deploys a Cloud Run service that will be triggered when specific log events are written to Google Cloud audit logs.
 
@@ -137,7 +196,7 @@ module "cloud_run" {
 # tftest modules=1 resources=2
 ```
 
-### Service account management
+### Service account
 
 To use a custom service account managed by the module, set `service_account_create` to `true` and leave `service_account` set to `null` value (default).
 
