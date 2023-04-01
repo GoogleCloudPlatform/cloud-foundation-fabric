@@ -91,9 +91,9 @@ module "cloud_run" {
       max_scale = 10
       min_scale = 1
     }
-    cloudsql_unstances = ["sql-0", "sql-1"]
+    cloudsql_unstances  = ["sql-0", "sql-1"]
     vpcaccess_connector = "foo"
-    vpcaccess_egress = "all-traffic"
+    vpcaccess_egress    = "all-traffic"
   }
 }
 # tftest modules=1 resources=1
@@ -115,7 +115,7 @@ module "cloud_run" {
   }
   vpc_connector_create = {
     ip_cidr_range = "10.10.10.0/24"
-    vpc_self_link = var.vpc
+    vpc_self_link = "projects/example/host/global/networks/host"
   }
 }
 # tftest modules=1 resources=2
