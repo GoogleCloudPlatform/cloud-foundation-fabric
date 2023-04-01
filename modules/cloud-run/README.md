@@ -40,7 +40,7 @@ module "cloud_run" {
     "roles/run.invoker" = ["allUsers"]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=simple.yaml
 ```
 
 ### Mounting secrets as volumes
@@ -69,7 +69,7 @@ module "cloud_run" {
     }
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=secrets.yaml
 ```
 
 ### Revision annotations
@@ -96,7 +96,7 @@ module "cloud_run" {
     vpcaccess_egress    = "all-traffic"
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=revision-annotations.yaml
 ```
 
 ### VPC Access Connector creation
@@ -118,7 +118,7 @@ module "cloud_run" {
     vpc_self_link = "projects/example/host/global/networks/host"
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=connector.yaml
 ```
 
 ### Traffic split
@@ -141,7 +141,7 @@ module "cloud_run" {
     green = { percent = 75 }
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=traffic.yaml
 ```
 
 ### Eventarc triggers
@@ -167,7 +167,7 @@ module "cloud_run" {
     }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=eventarc.yaml
 ```
 
 #### Audit logs
@@ -193,7 +193,7 @@ module "cloud_run" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=audit-logs.yaml
 ```
 
 ### Service account
@@ -212,7 +212,7 @@ module "cloud_run" {
   }
   service_account_create = true
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=service-account.yaml
 ```
 
 To use an externally managed service account, pass its email in `service_account` and leave `service_account_create` to `false` (the default).
@@ -229,7 +229,7 @@ module "cloud_run" {
   }
   service_account = "cloud-run@my-project.iam.gserviceaccount.com"
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=service-account-external.yaml
 ```
 <!-- BEGIN TFDOC -->
 
