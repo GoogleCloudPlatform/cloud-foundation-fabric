@@ -43,13 +43,11 @@ module "cloud_run" {
   project_id = module.project.project_id
   name       = var.run_svc_name
   region     = var.region
-  containers = [{
-    image         = var.image
-    options       = null
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
+  containers = {
+    default = {
+      image = var.image
+    }
+  }
   iam = {
     "roles/run.invoker" = ["allUsers"]
   }
