@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 <!-- None < 2023-03-24 12:44:02+00:00 -->
-- [[#1284](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1284)] Update Provider and Terraform variables section ([gcardamone](https://github.com/gcardamone)) <!-- 2023-03-28 14:18:45+00:00 -->
 
 ### BLUEPRINTS
 
@@ -20,12 +19,13 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
-- [[#1285](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1285)] Update hierarchical_rules.schema.yaml ([sruffilli](https://github.com/sruffilli)) <!-- 2023-03-30 06:30:53+00:00 -->
+- [[#1285](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1285)] Update YAML schema for hierarchical firewall rules ([sruffilli](https://github.com/sruffilli)) <!-- 2023-03-30 06:30:53+00:00 -->
+- [[#1284](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1284)] Update Provider and Terraform variables section in FAST project factory ([gcardamone](https://github.com/gcardamone)) <!-- 2023-03-28 14:18:45+00:00 -->
 
 ### MODULES
 
 - [[#1293](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1293)] Refactor cloud run module to use optionals and support all features ([ludoo](https://github.com/ludoo)) <!-- 2023-04-01 12:06:30+00:00 -->
-- [[#1287](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1287)] **incompatible change:** Add Backup for GKE plans support in GKE cluster module and removing deprecated control_plane field from GKE hub module ([valeriobponza](https://github.com/valeriobponza)) <!-- 2023-03-30 10:47:40+00:00 -->
+- [[#1287](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1287)] **incompatible change:** Add support for backup and remove deprecated control plane field in GKE module ([valeriobponza](https://github.com/valeriobponza)) <!-- 2023-03-30 10:47:40+00:00 -->
 - [[#1295](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1295)] Load all service agents identities from yaml ([juliocc](https://github.com/juliocc)) <!-- 2023-03-30 07:02:05+00:00 -->
 - [[#1294](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1294)] Add Cloud Batch service identity ([wiktorn](https://github.com/wiktorn)) <!-- 2023-03-30 06:05:12+00:00 -->
 - [[#1280](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1280)] Add Dataplex Service Identity  ([wiktorn](https://github.com/wiktorn)) <!-- 2023-03-27 20:11:07+00:00 -->
