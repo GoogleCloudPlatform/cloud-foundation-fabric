@@ -4,7 +4,38 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2023-02-04 13:47:22+00:00 -->
+<!-- None < 2023-03-24 12:44:02+00:00 -->
+- [[#1284](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1284)] Update Provider and Terraform variables section ([gcardamone](https://github.com/gcardamone)) <!-- 2023-03-28 14:18:45+00:00 -->
+
+### BLUEPRINTS
+
+- [[#1293](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1293)] Refactor cloud run module to use optionals and support all features ([ludoo](https://github.com/ludoo)) <!-- 2023-04-01 12:06:30+00:00 -->
+- [[#1289](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1289)] **incompatible change:** Network Dashboard improvements and bug fixing ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-03-29 12:54:07+00:00 -->
+- [[#1283](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1283)] Fixed permissions of files created ([apichick](https://github.com/apichick)) <!-- 2023-03-27 19:33:49+00:00 -->
+- [[#1274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1274)] Add support for VPC Connector and different monitoring project to network dashboard deploy ([ludoo](https://github.com/ludoo)) <!-- 2023-03-24 14:29:13+00:00 -->
+
+### DOCUMENTATION
+
+- [[#1276](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1276)] DNS Response Policy module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-26 15:42:58+00:00 -->
+
+### FAST
+
+- [[#1285](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1285)] Update hierarchical_rules.schema.yaml ([sruffilli](https://github.com/sruffilli)) <!-- 2023-03-30 06:30:53+00:00 -->
+
+### MODULES
+
+- [[#1293](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1293)] Refactor cloud run module to use optionals and support all features ([ludoo](https://github.com/ludoo)) <!-- 2023-04-01 12:06:30+00:00 -->
+- [[#1287](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1287)] **incompatible change:** Add Backup for GKE plans support in GKE cluster module and removing deprecated control_plane field from GKE hub module ([valeriobponza](https://github.com/valeriobponza)) <!-- 2023-03-30 10:47:40+00:00 -->
+- [[#1295](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1295)] Load all service agents identities from yaml ([juliocc](https://github.com/juliocc)) <!-- 2023-03-30 07:02:05+00:00 -->
+- [[#1294](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1294)] Add Cloud Batch service identity ([wiktorn](https://github.com/wiktorn)) <!-- 2023-03-30 06:05:12+00:00 -->
+- [[#1280](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1280)] Add Dataplex Service Identity  ([wiktorn](https://github.com/wiktorn)) <!-- 2023-03-27 20:11:07+00:00 -->
+- [[#1282](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1282)] Added local firewall management (iptables) on the NVA for dealing with COS default deny on inbound connections ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-03-27 14:32:57+00:00 -->
+- [[#1281](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1281)] Use unique bundle name for Cloud Function ([wiktorn](https://github.com/wiktorn)) <!-- 2023-03-27 12:13:38+00:00 -->
+- [[#1278](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1278)] DNS policy module fixes ([ludoo](https://github.com/ludoo)) <!-- 2023-03-26 16:39:07+00:00 -->
+- [[#1276](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1276)] DNS Response Policy module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-26 15:42:58+00:00 -->
+
+## [21.0.0] - 2023-03-24
+<!-- 2023-03-24 12:44:02+00:00 < 2023-02-04 13:47:22+00:00 -->
 
 ### BLUEPRINTS
 
@@ -1096,7 +1127,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v20.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v21.0.0...HEAD
+[21.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v20.0.0...v21.0.0
 [20.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v19.0.0...v20.0.0
 [19.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v18.0.0...v19.0.0
 [18.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v16.0.0...v18.0.0
