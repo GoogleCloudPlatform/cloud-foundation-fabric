@@ -4,9 +4,9 @@ Cloud Run management, with support for IAM roles and optional Eventarc trigger c
 
 ## Examples
 
-### Environment variables
+### IAM and environment variables
 
-Container environment values can be declared as key-value strings or as references to Secret Manager secrets. Both can be combined as long as there's no duplication of keys:
+IAM bindings support the usual syntax. Container environment values can be declared as key-value strings or as references to Secret Manager secrets. Both can be combined as long as there's no duplication of keys:
 
 ```hcl
 module "cloud_run" {
@@ -28,8 +28,11 @@ module "cloud_run" {
       }
     }
   }
+  iam = {
+    "roles/run.invoker" = ["allUsers"]
+  }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=2
 ```
 
 ### Secret mounted as volume
