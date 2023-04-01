@@ -18,11 +18,24 @@ locals {
   cloud_run_domain = "run.app."
   service_name_cr1 = "cart"
   service_name_cr2 = "checkout"
-  tf_id = (var.tf_identity == null ? null :
-    length(regexall("iam.gserviceaccount.com", var.tf_identity)) > 0 ?
-  "serviceAccount:${var.tf_identity}" : "user:${var.tf_identity}")
-  vpc_sc_create = (length(module.project_prj1) > 0 &&
-  (var.access_policy != null || var.access_policy_create != null)) ? 1 : 0
+  tf_id = (
+    var.tf_identity == null
+    ? null
+    : (
+      length(regexall("iam.gserviceaccount.com", var.tf_identity)) > 0
+      ? "serviceAccount:${var.tf_identity}"
+      : "user:${var.tf_identity}"
+    )
+  )
+  vpc_sc_create = (
+    (
+      length(module.project_prj1) > 0
+      &&
+      (var.access_policy != null || var.access_policy_create != null)
+    )
+    ? 1
+    : 0
+  )
 }
 
 ###############################################################################
@@ -109,13 +122,11 @@ module "cloud_run_hello" {
   project_id = module.project_main.project_id
   name       = "hello"
   region     = var.region
-  containers = [{
-    image         = var.image
-    options       = null
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
+  containers = {
+    default = {
+      image = var.image
+    }
+  }
   iam = {
     "roles/run.invoker" = ["allUsers"]
   }
@@ -129,13 +140,11 @@ module "cloud_run_cart" {
   project_id = module.project_svc1[0].project_id
   name       = local.service_name_cr1 # "cart"
   region     = var.region
-  containers = [{
-    image         = var.image
-    options       = null
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
+  containers = {
+    default = {
+      image = var.image
+    }
+  }
   iam = {
     "roles/run.invoker" = ["allUsers"]
   }
@@ -149,13 +158,11 @@ module "cloud_run_checkout" {
   project_id = module.project_svc1[0].project_id
   name       = local.service_name_cr2 # "checkout"
   region     = var.region
-  containers = [{
-    image         = var.image
-    options       = null
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
+  containers = {
+    default = {
+      image = var.image
+    }
+  }
   iam = {
     "roles/run.invoker" = ["allUsers"]
   }
