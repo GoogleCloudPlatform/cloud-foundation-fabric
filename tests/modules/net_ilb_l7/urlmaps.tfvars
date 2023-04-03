@@ -23,6 +23,18 @@ urlmap_config = {
         paths   = ["/video", "/video/*"]
         service = "video"
       }]
+      route_rules = [{
+        priority = 1
+        service  = "default"
+        match_rules = [{
+          ignore_case = true
+        }]
+        url_redirect = {
+          host  = "foo.example.org"
+          https = true
+          path  = "/foo"
+        }
+      }]
     }
   }
 }
