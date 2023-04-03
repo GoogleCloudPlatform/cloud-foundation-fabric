@@ -48,7 +48,7 @@ locals {
       }
       "/etc/frr/vtysh.conf" = {
         # content can either be the path to the config file or the config string
-        content     = file("${path.module}/files/frr/daemons")
+        content     = file("${path.module}/files/frr/vtysh.conf")
         owner       = "root"
         permissions = "0644"
       }
