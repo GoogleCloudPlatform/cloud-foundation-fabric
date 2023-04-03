@@ -46,6 +46,12 @@ locals {
         owner       = "root"
         permissions = "0744"
       }
+      "/etc/frr/vtysh.conf" = {
+        # content can either be the path to the config file or the config string
+        content     = file("${path.module}/files/frr/daemons")
+        owner       = "root"
+        permissions = "0644"
+      }
       "/etc/systemd/system/frr.service" = {
         content     = file("${path.module}/files/frr/frr.service")
         owner       = "root"
