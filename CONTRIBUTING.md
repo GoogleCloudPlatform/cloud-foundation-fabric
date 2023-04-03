@@ -123,6 +123,10 @@ This section illustrates how our design principles translate into actual code. W
 
 #### Design by logical entity instead of product/feature
 
+> “The most fundamental problem in computer science is problem decomposition: how to take a complex problem and divide it up into pieces that can be solved independently.”
+>
+> — John Ousterhout in "A Philosophy of Software Design"
+
 This is probably our oldest and most important design principle. When designing a module or a FAST stage we look at its domain from a functional point of view: **what is the subset of resources (or modules for FAST) that fully describes one entity and allows encapsulating its full configuration?**
 
 It's a radically different approach from designing by product or feature, where boundaries are drawn around a single GCP functionality.
@@ -200,6 +204,12 @@ We have several such interfaces defined for IAM, log sinks, organizational polic
 
 #### Design interfaces to support actual usage
 
+> “When developing a module, look for opportunities to take a little bit of extra suffering upon yourself in order to reduce the suffering of your users.”
+> 
+> “Providing choice is good, but interfaces should be designed to make the common case as simple as possible”
+> 
+> — John Ousterhout in "A Philosophy of Software Design"
+ 
 Variables should not simply map to the underlying resource attributes, but their **interfaces should be designed to match common use cases** to reduce friction and offer the highest possible degree of legibility.
 
 This translates into different practical approaches:
@@ -285,6 +295,11 @@ module "project" {
 ```
 
 #### Design compact variable spaces
+
+> "The best modules are those whose interfaces are much simpler than their implementations"
+>
+> — John Ousterhout in "A Philosophy of Software Design"
+
 
 Designing variable spaces is one of the most complex aspects to get right, as they are the main entry point through which users consume modules, examples and FAST stages. We always strive to **design small variable spaces by leveraging objects and implementing defaults** so that users can quickly produce highly readable code.
 
@@ -412,6 +427,10 @@ Due to their increased complexity and larger scope, FAST stages have some additi
 Each FAST stage should be designed so that it can optionally be used in isolation, with no dependencies on anything other than its variables.
 
 #### Stage interfaces
+
+> “The best modules are those that provide powerful functionality yet have simple interfaces.”
+>
+> — John Ousterhout in "A Philosophy of Software Design"
 
 Stages are designed based on the concept of ["contracts" or interfaces](./fast/README.md#contracts-and-stages), which define what information is produced by one stage via outputs, which is then consumed by subsequent stages via variables.
 
