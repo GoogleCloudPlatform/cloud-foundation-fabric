@@ -295,6 +295,7 @@ module "project" {
 ```
 
 #### Design compact variable spaces
+
 > "The best modules are those whose interfaces are much simpler than their implementations"
 >
 > — John Ousterhout in "A Philosophy of Software Design"
