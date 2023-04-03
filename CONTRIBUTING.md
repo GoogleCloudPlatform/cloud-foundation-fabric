@@ -202,7 +202,7 @@ We have several such interfaces defined for IAM, log sinks, organizational polic
 
 > “When developing a module, look for opportunities to take a little bit of extra suffering upon yourself in order to reduce the suffering of your users.”
 > 
-> - John Ousterhout in "A Philosophy of Software Design"
+> \- John Ousterhout in "A Philosophy of Software Design"
  
 Variables should not simply map to the underlying resource attributes, but their **interfaces should be designed to match common use cases** to reduce friction and offer the highest possible degree of legibility.
 
