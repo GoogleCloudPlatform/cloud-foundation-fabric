@@ -52,6 +52,11 @@ locals {
         owner       = "root"
         permissions = "0644"
       }
+      "/etc/profile.d/00-aliases.sh" = {
+        content     = "alias vtysh='sudo docker exec -it frr sh -c vtysh'"
+        owner       = "root"
+        permissions = "0644"
+      }
       "/etc/systemd/system/frr.service" = {
         content     = file("${path.module}/files/frr/frr.service")
         owner       = "root"
