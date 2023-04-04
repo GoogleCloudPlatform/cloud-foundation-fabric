@@ -24,6 +24,7 @@ module "gke-cluster" {
   cluster_autoscaling      = each.value.cluster_autoscaling
   description              = each.value.description
   enable_features          = each.value.enable_features
+  enable_addons            = each.value.enable_addons
   issue_client_certificate = each.value.issue_client_certificate
   labels                   = each.value.labels
   location                 = each.value.location
