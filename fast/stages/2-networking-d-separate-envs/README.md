@@ -6,7 +6,7 @@ While no communication between environment is implemented on this design, that c
 
 - [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) - which is not recommended as it would effectively create a full line of sight between workloads belonging to different environments
 - [VPN HA](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) tunnels between environments, exchanging a subset of well-defined routes.
-- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) connecting the different environments, allowing the use of NVAs to enforce networking policies.
+- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) implemented in [2-networking-c-nva](../2-networking-c-nva) and [2-networking-e-nva-bgp](../2-networking-e-nva-bgp) connecting the different environments, allowing the use of NVAs to enforce networking policies.
 
 The following diagram illustrates the high-level design, and should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will of course depend on customer-specific requirements, and can be easily changed via variables or external data files without having to edit the actual code.
 
