@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Production spoke VPC and related resources.
+# tfdoc:file:description Dev spoke VPC and related resources.
 
-module "prod-spoke-project" {
+module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
-  name            = "prod-net-spoke-0"
-  parent          = var.folder_ids.networking-prod
+  name            = "dev-net-spoke-0"
+  parent          = var.folder_ids.networking-dev
   prefix          = var.prefix
   services = [
     "compute.googleapis.com",
@@ -37,20 +37,21 @@ module "prod-spoke-project" {
   metric_scopes = [module.landing-project.project_id]
   iam = {
     "roles/dns.admin" = compact([
-      try(local.service_accounts.gke-prod, null),
+      try(local.service_accounts.gke-dev, null),
+      try(local.service_accounts.project-factory-dev, null),
       try(local.service_accounts.project-factory-prod, null),
     ])
   }
 }
 
-module "prod-spoke-vpc" {
+module "dev-spoke-vpc" {
   source                          = "../../../modules/net-vpc"
-  project_id                      = module.prod-spoke-project.project_id
-  name                            = "prod-spoke-0"
+  project_id                      = module.dev-spoke-project.project_id
+  name                            = "dev-spoke-0"
   mtu                             = 1500
-  data_folder                     = "${var.factories_config.data_dir}/subnets/prod"
+  data_folder                     = "${var.factories_config.data_dir}/subnets/dev"
   delete_default_routes_on_create = true
-  psa_config                      = try(var.psa_ranges.prod, null)
+  psa_config                      = try(var.psa_ranges.dev, null)
   # Set explicit routes for googleapis; send everything else to NVAs
   routes = {
     private-googleapis = {
@@ -65,69 +66,44 @@ module "prod-spoke-vpc" {
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
-    nva-primary-to-primary = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1000
-      tags          = ["primary"]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["primary"].forwarding_rule_address
-    }
-    nva-secondary-to-secondary = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1000
-      tags          = ["secondary"]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["secondary"].forwarding_rule_address
-    }
-    nva-primary-to-secondary = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1001
-      tags          = ["primary"]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["secondary"].forwarding_rule_address
-    }
-    nva-secondary-to-primary = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1001
-      tags          = ["secondary"]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["primary"].forwarding_rule_address
-    }
   }
 }
 
-module "prod-spoke-firewall" {
+module "dev-spoke-firewall" {
   source     = "../../../modules/net-vpc-firewall"
-  project_id = module.prod-spoke-project.project_id
-  network    = module.prod-spoke-vpc.name
+  project_id = module.dev-spoke-project.project_id
+  network    = module.dev-spoke-vpc.name
   default_rules_config = {
     disabled = true
   }
   factories_config = {
     cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/prod"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dev"
   }
 }
 
-module "peering-prod" {
-  source        = "../../../modules/net-vpc-peering"
-  prefix        = "prod-peering-0"
-  local_network = module.prod-spoke-vpc.self_link
-  peer_network  = module.landing-trusted-vpc.self_link
+module "peering-dev" {
+  source                     = "../../../modules/net-vpc-peering"
+  prefix                     = "dev-peering-0"
+  local_network              = module.dev-spoke-vpc.self_link
+  peer_network               = module.landing-trusted-vpc.self_link
+  export_local_custom_routes = true
+  export_peer_custom_routes  = true
 }
 
 # Create delegated grants for stage3 service accounts
-resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
-  project = module.prod-spoke-project.project_id
+resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
+  project = module.dev-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = compact([
-    try(local.service_accounts.data-platform-prod, null),
+    try(local.service_accounts.data-platform-dev, null),
+    try(local.service_accounts.project-factory-dev, null),
     try(local.service_accounts.project-factory-prod, null),
-    try(local.service_accounts.gke-prod, null),
+    try(local.service_accounts.gke-dev, null),
   ])
   condition {
-    title       = "prod_stage3_sa_delegated_grants"
-    description = "Production host project delegated grants."
+    title       = "dev_stage3_sa_delegated_grants"
+    description = "Development host project delegated grants."
     expression = format(
       "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
       join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))

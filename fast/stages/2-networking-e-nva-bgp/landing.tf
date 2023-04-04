@@ -26,6 +26,7 @@ module "landing-project" {
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
+    "networkconnectivity.googleapis.com",
     "networkmanagement.googleapis.com",
     "stackdriver.googleapis.com"
   ]

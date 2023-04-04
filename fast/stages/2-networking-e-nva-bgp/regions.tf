@@ -21,6 +21,10 @@ locals {
   _region_cardinal = {
     southeast = "se"
   }
+  _regions_cross = {
+    primary   = var.regions["secondary"]
+    secondary = var.regions["primary"]
+  }
   # only map when the first character would not work
   _region_geo = {
     australia = "o"

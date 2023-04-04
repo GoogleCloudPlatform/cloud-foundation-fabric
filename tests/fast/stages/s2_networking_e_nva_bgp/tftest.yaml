@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-counts:
-  modules: 45
-  resources: 168
+module: fast/stages/2-networking-e-nva-bgp
+common_tfvars:
+  - common.tfvars
+
+tests:
+  stage:
+    extra_files:
+      - ../../plugins/2-networking-serverless-connector/*.tf
