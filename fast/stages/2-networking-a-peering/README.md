@@ -72,13 +72,13 @@ As mentioned initially, there are of course other ways to implement internal con
 
 This is a summary of the main options:
 
-- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (implemented by [2-networking-vpn](../2-networking-b-vpn/))
+- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (implemented by [2-networking-b-vpn](../2-networking-b-vpn/))
   - Pros: simple compatibility with GCP services that leverage peering internally, better control on routes, avoids peering groups shared quotas and limits
   - Cons: additional cost, marginal increase in latency, requires multiple tunnels for full bandwidth
 - [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (implemented here)
   - Pros: no additional costs, full bandwidth with no configurations, no extra latency, total environment isolation
   - Cons: no transitivity (e.g. to GKE masters, Cloud SQL, etc.), no selective exchange of routes, several quotas and limits shared between VPCs in a peering group
-- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented by [2-networking-nva](../2-networking-c-nva/))
+- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented by [2-networking-c-nva](../2-networking-c-nva/) and [2-networking-e-nva-bgp](../2-networking-e-nva-bgp/))
   - Pros: additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
 

@@ -176,9 +176,10 @@ In this stage, we will deploy one of the 3 available Hub&Spoke networking topolo
 1. VPC Peering
 2. HA VPN
 3. Multi-NIC appliances (NVA)
+4. Multi-NIC appliances (NVA) with NCC / BGP support
 
 ```bash
-# move to the 02-networking-XXX directory (where XXX should be one of vpn|peering|nva)
+# move to the 02-networking-XXX directory (where XXX should be one of a-peering|b-vpn|c-nva|d-separate-envs|e-nva-bgp)
 cd $FAST_PWD/2-networking-XXX
 
 # setup providers and variables from previous stages
