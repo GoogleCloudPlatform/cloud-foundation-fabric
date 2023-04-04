@@ -18,5 +18,3 @@ common_tfvars:
 
 tests:
   stage:
-    extra_files:
-      - ../../plugins/2-networking-serverless-connector/*.tf
