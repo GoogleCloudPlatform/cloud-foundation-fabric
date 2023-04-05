@@ -12,32 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  module.cluster-1-nodepool-1.google_container_node_pool.nodepool:
-    cluster: cluster-1
-    location: europe-west1-b
-    name: nodepool-1
-    node_config:
-    - boot_disk_kms_key: null
-      disk_type: pd-balanced
-      ephemeral_storage_config: []
-      gcfs_config: []
-      gvnic: []
-      kubelet_config: []
-      linux_node_config: []
-      logging_variant: DEFAULT
-      node_group: null
-      oauth_scopes:
-      - https://www.googleapis.com/auth/cloud-platform
-      preemptible: false
-      reservation_affinity: []
-      resource_labels: null
-      sandbox_config: []
-      service_account: foo-bar@myproject.iam.gserviceaccount.com
-      spot: false
-      tags: null
-      taint: []
-    project: myproject
-
 counts:
   google_container_node_pool: 1

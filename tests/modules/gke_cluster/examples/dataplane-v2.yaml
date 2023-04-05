@@ -15,10 +15,6 @@
 values:
   module.cluster-1.google_container_cluster.cluster:
     datapath_provider: ADVANCED_DATAPATH
-    ip_allocation_policy:
-    - cluster_secondary_range_name: pods
-      services_secondary_range_name: services
-    location: europe-west1-b
     master_authorized_networks_config:
     - cidr_blocks:
       - cidr_block: 10.0.0.0/8
@@ -37,7 +33,6 @@ values:
     remove_default_node_pool: true
     resource_labels:
       environment: dev
-    subnetwork: subnet_self_link
     workload_identity_config:
     - workload_pool: myproject.svc.id.goog
 

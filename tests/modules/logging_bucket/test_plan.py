@@ -23,6 +23,7 @@ def test_project_logging_bucket(plan_runner):
   assert resource["values"] == {
       "bucket_id": "mybucket",
       "cmek_settings": [],
+      "enable_analytics": None,
       "project": "myproject",
       "location": "global",
       "retention_days": 30,
