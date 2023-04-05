@@ -18,13 +18,15 @@ values:
     location: europe-west1-b
     name: nodepool-1
     node_config:
-    - boot_disk_kms_key: null
+    - advanced_machine_features: []
+      boot_disk_kms_key: null
       disk_type: pd-balanced
       ephemeral_storage_config: []
       gcfs_config: []
       gvnic: []
       kubelet_config: []
       linux_node_config: []
+      local_nvme_ssd_block_config: []
       logging_variant: DEFAULT
       node_group: null
       oauth_scopes:

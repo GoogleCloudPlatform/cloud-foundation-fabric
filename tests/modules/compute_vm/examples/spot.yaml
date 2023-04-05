@@ -19,6 +19,7 @@ values:
     scheduling:
     - automatic_restart: false
       instance_termination_action: STOP
+      maintenance_interval: null
       max_run_duration: []
       min_node_cpus: null
       node_affinities: []

@@ -18,6 +18,7 @@ values:
     ip_allocation_policy:
     - cluster_secondary_range_name: pods
       services_secondary_range_name: services
+      stack_type: IPV4
     location: europe-west1-b
     master_authorized_networks_config:
     - cidr_blocks:

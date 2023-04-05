@@ -27,7 +27,8 @@ values:
       auto_upgrade: false
     name: nodepool-1
     node_config:
-    - boot_disk_kms_key: null
+    - advanced_machine_features: []
+      boot_disk_kms_key: null
       disk_size_gb: 50
       disk_type: pd-ssd
       ephemeral_storage_config:
@@ -38,6 +39,7 @@ values:
       labels:
         environment: dev
       linux_node_config: []
+      local_nvme_ssd_block_config: []
       logging_variant: DEFAULT
       machine_type: n2-standard-2
       node_group: null
