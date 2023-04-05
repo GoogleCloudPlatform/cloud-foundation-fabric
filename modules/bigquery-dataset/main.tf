@@ -40,8 +40,10 @@ resource "google_bigquery_dataset" "default" {
   location      = var.location
 
   delete_contents_on_destroy      = var.options.delete_contents_on_destroy
+  default_collation               = var.options.default_collation
   default_table_expiration_ms     = var.options.default_table_expiration_ms
   default_partition_expiration_ms = var.options.default_partition_expiration_ms
+  is_case_insensitive             = var.options.is_case_insensitive
   max_time_travel_hours           = var.options.max_time_travel_hours
   dynamic "access" {
     for_each = var.dataset_access ? local.access_domain : {}

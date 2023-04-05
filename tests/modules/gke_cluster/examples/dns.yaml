@@ -18,11 +18,6 @@ values:
     - cluster_dns: CLOUD_DNS
       cluster_dns_domain: gke.local
       cluster_dns_scope: CLUSTER_SCOPE
-    ip_allocation_policy:
-    - cluster_secondary_range_name: pods
-      services_secondary_range_name: services
-    location: europe-west1-b
-    name: cluster-1
 
 counts:
   google_container_cluster: 1

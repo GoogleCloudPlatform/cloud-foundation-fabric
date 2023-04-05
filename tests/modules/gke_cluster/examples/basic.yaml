@@ -14,17 +14,6 @@
 
 values:
   module.cluster-1.google_container_cluster.cluster:
-    default_max_pods_per_node: 32
-    ip_allocation_policy:
-    - cluster_secondary_range_name: pods
-      services_secondary_range_name: services
-    location: europe-west1-b
-    master_authorized_networks_config:
-    - cidr_blocks:
-      - cidr_block: 10.0.0.0/8
-        display_name: internal-vms
-    name: cluster-1
-    network: projects/xxx/global/networks/aaa
     private_cluster_config:
     - enable_private_endpoint: true
       enable_private_nodes: true
@@ -32,11 +21,9 @@ values:
       - enabled: false
       master_ipv4_cidr_block: 192.168.0.0/28
       private_endpoint_subnetwork: null
-    project: myproject
     remove_default_node_pool: true
     resource_labels:
       environment: dev
-    subnetwork: subnet_self_link
 
 counts:
   google_container_cluster: 1

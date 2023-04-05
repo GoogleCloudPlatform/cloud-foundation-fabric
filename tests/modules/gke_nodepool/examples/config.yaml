@@ -12,48 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  module.cluster-1-nodepool-1.google_container_node_pool.nodepool:
-    autoscaling:
-    - max_node_count: 10
-      min_node_count: 1
-      total_max_node_count: null
-      total_min_node_count: null
-    cluster: cluster-1
-    initial_node_count: 1
-    location: europe-west1-b
-    management:
-    - auto_repair: true
-      auto_upgrade: false
-    name: nodepool-1
-    node_config:
-    - boot_disk_kms_key: null
-      disk_size_gb: 50
-      disk_type: pd-ssd
-      ephemeral_storage_config:
-      - local_ssd_count: 1
-      gcfs_config: []
-      gvnic: []
-      kubelet_config: []
-      labels:
-        environment: dev
-      linux_node_config: []
-      logging_variant: DEFAULT
-      machine_type: n2-standard-2
-      node_group: null
-      oauth_scopes:
-      - https://www.googleapis.com/auth/cloud-platform
-      preemptible: false
-      reservation_affinity: []
-      resource_labels: null
-      sandbox_config: []
-      spot: true
-      tags: null
-      taint: []
-    placement_policy: []
-    project: myproject
-  module.cluster-1-nodepool-1.google_service_account.service_account[0]: {}
-
 counts:
   google_container_node_pool: 1
   google_service_account: 1

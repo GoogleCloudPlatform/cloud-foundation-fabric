@@ -15,18 +15,6 @@
 values:
   module.cluster-autopilot.google_container_cluster.cluster:
     enable_autopilot: true
-    ip_allocation_policy:
-    - cluster_secondary_range_name: pods
-      services_secondary_range_name: services
-    location: europe-west1-b
-    master_authorized_networks_config:
-    - cidr_blocks:
-      - cidr_block: 10.0.0.0/8
-        display_name: internal-vms
-    name: cluster-autopilot
-    network: projects/xxx/global/networks/aaa
-    project: myproject
-    subnetwork: subnet_self_link
 
 counts:
   google_container_cluster: 1
