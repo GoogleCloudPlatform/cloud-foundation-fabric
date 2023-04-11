@@ -136,7 +136,7 @@ module "firewall" {
 # tftest modules=0 resources=0
 ```
 
-#### Including source & destination ranges
+### Including source & destination ranges
 
 Custom rules now support including both source & destination ranges in Ingress and Egress rules:
 
