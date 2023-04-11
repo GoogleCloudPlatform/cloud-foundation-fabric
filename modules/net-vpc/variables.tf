@@ -51,6 +51,18 @@ variable "dns_policy" {
   default = null
 }
 
+variable "firewall_policy_enforcement_order" {
+  description = "Order that Firewall Rules and Firewall Policies are evaluated. Can be either 'BEFORE_CLASSIC_FIREWALL' or 'AFTER_CLASSIC_FIREWALL'."
+  type        = string
+  nullable    = false
+  default     = "AFTER_CLASSIC_FIREWALL"
+
+  validation {
+    condition     = var.firewall_policy_enforcement_order == "BEFORE_CLASSIC_FIREWALL" || var.firewall_policy_enforcement_order == "AFTER_CLASSIC_FIREWALL"
+    error_message = "Enforcement order must be BEFORE_CLASSIC_FIREWALL or AFTER_CLASSIC_FIREWALL."
+  }
+}
+
 variable "mtu" {
   description = "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 (the default) and the maximum value is 1500 bytes."
   type        = number
