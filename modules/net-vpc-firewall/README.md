@@ -136,6 +136,36 @@ module "firewall" {
 # tftest modules=0 resources=0
 ```
 
+#### Including source & destination ranges
+
+Custom rules now support including both source & destination ranges in Ingress and Egress rules:
+
+```hcl
+module "firewall" {
+  source     = "./fabric/modules/net-vpc-firewall"
+  project_id = "my-project"
+  network    = "my-network"
+  default_rules_config = {
+    disabled = true
+  }
+  egress_rules = {
+    allow-egress-source-destination-ranges = {
+      description   = "Deny egress using source and destination ranges"
+      source_ranges = ["10.132.0.0/20", "10.138.0.0/20"]
+      destination_ranges = ["172.16.0.0/12"]
+    }
+  }
+  ingress_rules = {
+    allow-ingress-source-destination-ranges = {
+      description   = "Allow ingress using source and destination ranges"
+      source_ranges = ["172.16.0.0/12"]
+      destination_ranges = ["10.132.0.0/20", "10.138.0.0/20"]
+    }
+  }
+}
+# tftest modules=1 resources=2
+```
+
 ### Rules Factory
 
 The module includes a rules factory (see [Resource Factories](../../blueprints/factories/)) for the massive creation of rules leveraging YaML configuration files. Each configuration file can optionally contain more than one rule which a structure that reflects the `custom_rules` variable.
