@@ -149,7 +149,7 @@ module "firewall" {
     disabled = true
   }
   egress_rules = {
-    allow-egress-source-destination-ranges = {
+    deny-egress-source-destination-ranges = {
       description   = "Deny egress using source and destination ranges"
       source_ranges = ["10.132.0.0/20", "10.138.0.0/20"]
       destination_ranges = ["172.16.0.0/12"]
