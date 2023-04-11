@@ -150,15 +150,15 @@ module "firewall" {
   }
   egress_rules = {
     deny-egress-source-destination-ranges = {
-      description   = "Deny egress using source and destination ranges"
-      source_ranges = ["10.132.0.0/20", "10.138.0.0/20"]
+      description        = "Deny egress using source and destination ranges"
+      source_ranges      = ["10.132.0.0/20", "10.138.0.0/20"]
       destination_ranges = ["172.16.0.0/12"]
     }
   }
   ingress_rules = {
     allow-ingress-source-destination-ranges = {
-      description   = "Allow ingress using source and destination ranges"
-      source_ranges = ["172.16.0.0/12"]
+      description        = "Allow ingress using source and destination ranges"
+      source_ranges      = ["172.16.0.0/12"]
       destination_ranges = ["10.132.0.0/20", "10.138.0.0/20"]
     }
   }
