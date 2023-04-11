@@ -4,17 +4,22 @@ This module allows creation and management of VPC networks including subnetworks
 
 ## Examples
 
-- [Simple VPC](#simple-vpc)
-- [Subnet Options](#subnet-options)
-- [Subnet IAM](#subnet-iam)
-- [Peering](#peering)
-- [Shared VPC](#shared-vpc)
-- [Private Service Networking](#private-service-networking)
-- [Private Service Networking with Peering Routes](#private-service-networking-with-peering-routes)
-- [Subnets for Private Service Connect, Proxy-only subnets](#subnets-for-private-service-connect-proxy-only-subnets)
-- [DNS Policies](#dns-policies)
-- [Subnet Factory](#subnet-factory)
-- [Custom Routes](#custom-routes)
+- [VPC module](#vpc-module)
+  - [Examples](#examples)
+    - [Simple VPC](#simple-vpc)
+    - [Subnet Options](#subnet-options)
+    - [Subnet IAM](#subnet-iam)
+    - [Peering](#peering)
+    - [Shared VPC](#shared-vpc)
+    - [Private Service Networking](#private-service-networking)
+    - [Private Service Networking with peering routes](#private-service-networking-with-peering-routes)
+    - [Subnets for Private Service Connect, Proxy-only subnets](#subnets-for-private-service-connect-proxy-only-subnets)
+    - [DNS Policies](#dns-policies)
+    - [Subnet Factory](#subnet-factory)
+    - [Custom Routes](#custom-routes)
+    - [Allow Firewall Policy to be evaluated before Firewall Rules](#allow-firewall-policy-to-be-evaluated-before-firewall-rules)
+  - [Variables](#variables)
+  - [Outputs](#outputs)
 
 ### Simple VPC
 
@@ -417,6 +422,34 @@ module "vpc" {
   }
 }
 # tftest modules=5 resources=15 inventory=routes.yaml
+```
+
+### Allow Firewall Policy to be evaluated before Firewall Rules
+
+```hcl
+module "vpc" {
+  source                            = "./fabric/modules/net-vpc"
+  project_id                        = "my-project"
+  name                              = "my-network"
+  firewall_policy_enforcement_order = "BEFORE_CLASSIC_FIREWALL"
+  subnets = [
+    {
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
+      region        = "europe-west1"
+      secondary_ip_ranges = {
+        pods     = "172.16.0.0/20"
+        services = "192.168.0.0/24"
+      }
+    },
+    {
+      ip_cidr_range = "10.0.16.0/24"
+      name          = "production"
+      region        = "europe-west2"
+    }
+  ]
+}
+# tftest modules=1 resources=3 inventory=firewall_policy_enforcement_order.yaml
 ```
 <!-- BEGIN TFDOC -->
 
