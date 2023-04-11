@@ -229,8 +229,8 @@ variable "prefix" {
   type        = string
 
   validation {
-    condition     = try(length(var.prefix), 0) < 10
-    error_message = "Use a maximum of 9 characters for prefix."
+    condition     = try(length(var.prefix), 0) < 13
+    error_message = "Use a maximum of 12 characters for prefix (which is a combination of org prefix and tenant short name)."
   }
 }
 
