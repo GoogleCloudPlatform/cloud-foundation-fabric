@@ -21,8 +21,8 @@ class TestUser(HttpUser):
 
     host = os.getenv("URL", "http://nginx.sample.svc.cluster.local")
 
-    wait_time = between(int(os.getenv('MIN_WAIT_TIME'), 1),
-                        int(os.getenv('MAX_WAIT_TIME'), 2))
+    wait_time = between(int(os.getenv('MIN_WAIT_TIME', 1)),
+                        int(os.getenv('MAX_WAIT_TIME', 2)))
 
     @task
     def home(self):
