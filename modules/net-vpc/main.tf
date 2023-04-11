@@ -42,8 +42,7 @@ resource "google_compute_network" "network" {
   delete_default_routes_on_create           = var.delete_default_routes_on_create
   mtu                                       = var.mtu
   routing_mode                              = var.routing_mode
-  network_firewall_policy_enforcement_order = var.firewall_enforcement_order
-
+  network_firewall_policy_enforcement_order = var.firewall_policy_enforcement_order
 }
 
 resource "google_compute_network_peering" "local" {
