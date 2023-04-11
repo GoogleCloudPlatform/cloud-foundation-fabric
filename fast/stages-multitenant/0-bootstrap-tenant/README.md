@@ -89,7 +89,7 @@ outputs_location = "~/fast-config"
 
 ### Global overrides
 
-The globals variable file linekd above contains definition which were set for the organization, for example the locations used for log sink destinations. These might not be correct for each tenant, so this stage allows overriding them via the tenant configuration variable described in the next section.
+The globals variable file linked above contains definition which were set for the organization, for example the locations used for log sink destinations. These might not be correct for each tenant, so this stage allows overriding them via the tenant configuration variable described in the next section.
 
 ### Tenant-level configuration
 
