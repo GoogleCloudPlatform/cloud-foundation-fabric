@@ -71,7 +71,7 @@ variable "ingress_rules" {
   type = map(object({
     deny               = optional(bool, false)
     description        = optional(string)
-    destination_ranges = optional(list(string))
+    destination_ranges = optional(list(string), []) # empty list is needed as default to allow deletion after initial creation with a value
     disabled           = optional(bool, false)
     enable_logging = optional(object({
       include_metadata = optional(bool)

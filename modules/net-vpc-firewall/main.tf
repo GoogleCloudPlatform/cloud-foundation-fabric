@@ -101,7 +101,8 @@ resource "google_compute_firewall" "custom-rules" {
       ? ["0.0.0.0/0"]
       : each.value.source_ranges
     )
-    : each.value.source_ranges #for egress, we will include the range only if != null. Previously, always included a null
+    #for egress, we will include the source_ranges when provided. Previously, null was forced
+    : each.value.source_ranges
   )
   destination_ranges = (
     each.value.direction == "EGRESS"
@@ -110,7 +111,8 @@ resource "google_compute_firewall" "custom-rules" {
       ? ["0.0.0.0/0"]
       : each.value.destination_ranges
     )
-    : each.value.destination_ranges #for ingress, we will include the range only if != null. Previously, always included a null
+    #for ingress, we will include the destination_ranges when provided. Previously, null was forced
+    : each.value.destination_ranges
   )
   source_tags = (
     each.value.use_service_accounts || each.value.direction == "EGRESS"
