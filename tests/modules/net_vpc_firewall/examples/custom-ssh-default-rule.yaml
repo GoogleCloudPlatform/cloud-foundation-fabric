@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,42 +13,28 @@
 # limitations under the License.
 
 values:
-  google_compute_firewall.custom-rules["allow-healthchecks"]:
+  module.firewall.google_compute_firewall.allow-tag-http[0]: {}
+  module.firewall.google_compute_firewall.allow-tag-https[0]: {}
+  module.firewall.google_compute_firewall.allow-tag-ssh[0]:
     allow:
-      - ports:
-          - "80"
-          - "443"
-        protocol: tcp
+    - ports:
+      - '22'
+      protocol: tcp
     deny: []
-    description: Allow ingress from healthchecks.
-    direction: INGRESS
-    disabled: false
+    description: Allow SSH to machines with matching tags.
+    disabled: null
     log_config: []
-    name: allow-healthchecks
-    network: test-network
+    name: my-network-ingress-tag-ssh
+    network: my-network
     priority: 1000
-    project: test-project
+    project: my-project
     source_ranges:
-      - 130.211.0.0/22
-      - 209.85.152.0/22
-      - 209.85.204.0/22
-      - 35.191.0.0/16
+    - 10.0.0.0/8
     source_service_accounts: null
     source_tags: null
     target_service_accounts: null
     target_tags:
-      - lb-backends
-    timeouts: null
+    - ssh-default
 
 counts:
-  google_compute_firewall: 1
-  modules: 0
-  resources: 1
-
-outputs:
-  default_rules:
-    admin: []
-    http: []
-    https: []
-    ssh: []
-  rules: __missing__
+  google_compute_firewall: 3
