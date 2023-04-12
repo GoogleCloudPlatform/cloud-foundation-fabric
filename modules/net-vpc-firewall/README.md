@@ -22,7 +22,7 @@ module "firewall" {
     admin_ranges = ["10.0.0.0/8"]
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=basic.yaml
 ```
 
 ### Custom rules
@@ -77,7 +77,7 @@ module "firewall" {
     }
   }
 }
-# tftest modules=1 resources=9
+# tftest modules=1 resources=9 inventory=custom-rules.yaml
 ```
 
 ### Controlling or turning off default rules
@@ -103,7 +103,7 @@ module "firewall" {
     ssh_tags   = ["ssh-default"]
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=custom-ssh-default-rule.yaml
 ```
 
 #### Disabling predefined rules
@@ -119,7 +119,7 @@ module "firewall" {
     ssh_ranges = []
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=no-ssh-default-rules.yaml
 ```
 
 Or the entire set of rules can be disabled via the `disabled` attribute:
@@ -133,7 +133,7 @@ module "firewall" {
     disabled = true
   }
 }
-# tftest modules=0 resources=0
+# tftest modules=0 resources=0 inventory=no-default-rules.yaml
 ```
 
 ### Including source & destination ranges
@@ -163,7 +163,7 @@ module "firewall" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=local-ranges.yaml
 ```
 
 ### Rules Factory
@@ -181,7 +181,7 @@ module "firewall" {
   }
   default_rules_config = { disabled = true }
 }
-# tftest modules=1 resources=3 files=lbs,cidrs
+# tftest modules=1 resources=3 files=lbs,cidrs inventory=factory.yaml
 ```
 
 ```yaml
