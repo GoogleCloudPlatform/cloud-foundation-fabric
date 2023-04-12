@@ -45,6 +45,7 @@ variable "egress_rules" {
       include_metadata = optional(bool)
     }))
     priority             = optional(number, 1000)
+    source_ranges        = optional(list(string))
     targets              = optional(list(string))
     use_service_accounts = optional(bool, false)
     rules = optional(list(object({
@@ -68,9 +69,10 @@ variable "factories_config" {
 variable "ingress_rules" {
   description = "List of ingress rule definitions, default to allow action. Null source ranges will be replaced with 0/0."
   type = map(object({
-    deny        = optional(bool, false)
-    description = optional(string)
-    disabled    = optional(bool, false)
+    deny               = optional(bool, false)
+    description        = optional(string)
+    destination_ranges = optional(list(string), []) # empty list is needed as default to allow deletion after initial creation with a value. See https://github.com/hashicorp/terraform-provider-google/issues/14270
+    disabled           = optional(bool, false)
     enable_logging = optional(object({
       include_metadata = optional(bool)
     }))
