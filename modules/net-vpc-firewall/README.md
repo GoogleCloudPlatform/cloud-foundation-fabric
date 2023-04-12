@@ -138,7 +138,7 @@ module "firewall" {
 
 ### Including source & destination ranges
 
-Custom rules now support including both source & destination ranges in Ingress and Egress rules:
+Custom rules now support including both source & destination ranges in ingress and egress rules:
 
 ```hcl
 module "firewall" {
