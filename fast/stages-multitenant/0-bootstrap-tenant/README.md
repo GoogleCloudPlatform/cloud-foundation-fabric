@@ -52,7 +52,9 @@ As most of the features of this stage follow the same design and configurations 
 
 ## Naming
 
-This stage sets the prefix used to name tenant resources, and passes it downstream to the other tenant stages together with the other globals needed by the tenant. The default is to append the tenant short name (a 3 or 4 letter acronym or abbreviation) to the organization-level prefix, if that is not desired this can be changed by editing local definitions in the `main.tf` file. Just be aware that some resources have name length constraints.
+This stage sets the prefix used to name tenant resources, and passes it downstream to the other tenant stages together with the other globals needed by the tenant. The default is to append the tenant short name (an acronym or abbreviation with a minimum of 2 and a maximum of 4 characters) to the organization-level prefix. If that is not desired this can be changed by editing local definitions in the `main.tf` file. Just be aware that some resources have name length constraints.
+
+Note that if the organization-level prefix contains 9 characters then the tenant-level prefix will be limited to 2 characters. Use a shorter organization-level prefix if you want to use a longer tenant-level prefix.
 
 ## How to run this stage
 
