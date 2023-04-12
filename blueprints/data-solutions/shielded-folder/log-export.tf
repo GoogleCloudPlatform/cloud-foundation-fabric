@@ -73,7 +73,7 @@ module "log-export-dataset" {
   id             = "${var.prefix}_audit_export"
   friendly_name  = "Audit logs export."
   location       = replace(var.log_locations.bq, "europe", "EU")
-  encryption_key = var.enable_features.encryption ? module.log-kms[var.log_locations.bq].keys["bq"].id : false
+  encryption_key = var.enable_features.encryption ? module.log-kms[var.log_locations.bq].keys["bq"].id : null
 }
 
 module "log-export-gcs" {

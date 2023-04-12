@@ -90,7 +90,8 @@ We are intentionally not supporting random prefix/suffixes for names, as that is
 
 What is implemented here is a fairly common convention, composed of tokens ordered by relative importance:
 
-- a static prefix less or equal to 9 characters (e.g. `myco` or `myco-gcp`)
+- an organization-level static prefix less or equal to 9 characters (e.g. `myco` or `myco-gcp`)
+- an optional tenant-level prefix, if using multitenant stages
 - an environment identifier (e.g. `prod`)
 - a team/owner identifier (e.g. `sec` for Security)
 - a context identifier (e.g. `core` or `kms`)
@@ -208,7 +209,11 @@ Then make sure you have configured the correct values for the following variable
 - `organization.id`, `organization.domain`, `organization.customer_id`
   the id, domain and customer id of your organization, derived from the Cloud Console UI or by running `gcloud organizations list`
 - `prefix`
-  the fixed prefix used in your naming, maximum 9 characters long
+  the fixed org-level prefix used in your naming, maximum 9 characters long. Note that if you are using multitenant stages, then you will later need to configure a `tenant prefix`. 
+  This `tenant prefix` can have a maximum length of 2 characters, 
+  plus any unused characters from the from the `prefix`. 
+  For example, if you specify a `prefix` that is 7 characters long, 
+  then your `tenant prefix` can have a maximum of 4 characters.
 
 You can also adapt the example that follows to your needs:
 

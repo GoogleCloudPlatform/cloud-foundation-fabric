@@ -34,14 +34,15 @@ data "google_compute_network" "network" {
 }
 
 resource "google_compute_network" "network" {
-  count                           = var.vpc_create ? 1 : 0
-  project                         = var.project_id
-  name                            = var.name
-  description                     = var.description
-  auto_create_subnetworks         = var.auto_create_subnetworks
-  delete_default_routes_on_create = var.delete_default_routes_on_create
-  mtu                             = var.mtu
-  routing_mode                    = var.routing_mode
+  count                                     = var.vpc_create ? 1 : 0
+  project                                   = var.project_id
+  name                                      = var.name
+  description                               = var.description
+  auto_create_subnetworks                   = var.auto_create_subnetworks
+  delete_default_routes_on_create           = var.delete_default_routes_on_create
+  mtu                                       = var.mtu
+  routing_mode                              = var.routing_mode
+  network_firewall_policy_enforcement_order = var.firewall_policy_enforcement_order
 }
 
 resource "google_compute_network_peering" "local" {
