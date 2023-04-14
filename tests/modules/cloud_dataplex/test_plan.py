@@ -13,26 +13,13 @@
 # limitations under the License.
 
 
-def test_dataplex_instance(plan_runner):
-    "Test dataplex instance."
+def test_dataplex_lake(plan_runner):
+    "Test dataplex lake."
 
     _, resources = plan_runner()
-    assert len(resources) == 1
+    assert len(resources) == 3
     r = resources[0]
     assert r['values']['project'] == 'myproject'
-    assert r['values']['name'] == 'test'
-    assert r['values']['region'] == 'europe-west2'
-
-
-def test_prefix(plan_runner):
-    "Test dataplex prefix."
-
-    _, resources = plan_runner(prefix="prefix")
-    assert len(resources) == 1
-    r = resources[0]
-    assert r['values']['name'] == 'prefix-test'
-
-    _, resources = plan_runner(prefix="prefix")
-    assert len(resources) == 1
-    r = resources[0]
-    assert r['values']['name'] == 'prefix-db'
+    assert r['values']['name'] == 'test_gcs'
+    assert r['values']['location'] == 'europe-west2'
+    assert r['values']['lake'] == 'test-terraform-lake'
