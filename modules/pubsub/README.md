@@ -16,7 +16,7 @@ module "pubsub" {
     "roles/pubsub.subscriber" = ["user:user1@example.com"]
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=simple.yaml
 ```
 
 ### Topic with schema
@@ -48,7 +48,7 @@ module "topic_with_schema" {
     })
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=schema.yaml
 ```
 
 ### Subscriptions
@@ -74,7 +74,7 @@ module "pubsub" {
     }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=subscriptions.yaml
 ```
 
 ### Push subscriptions
