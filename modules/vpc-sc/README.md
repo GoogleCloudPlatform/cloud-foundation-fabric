@@ -31,7 +31,7 @@ module "test" {
     title  = "vpcsc-policy"
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=access-policy.yaml
 ```
 
 If you need the module to create a scoped policy for you, specify 'scopes' of the policy in the `access_policy_create` variable:
@@ -46,7 +46,7 @@ module "test" {
     scopes = ["folders/456789"]
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=scoped-access-policy.yaml
 ```
 
 ### Access levels
@@ -72,7 +72,7 @@ module "test" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=access-levels.yaml
 ```
 
 ### Service perimeters
@@ -103,7 +103,7 @@ module "test" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=bridge.yaml
 ```
 
 #### Regular type
@@ -172,7 +172,7 @@ module "test" {
     }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=regular.yaml
 ```
 
 ## Notes
