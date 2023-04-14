@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,3 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+values:
+  module.container_registry.google_container_registry.registry:
+    location: EU
+    project: myproject
+  module.container_registry.google_storage_bucket_iam_binding.bindings["roles/storage.admin"]:
+    condition: []
+    members:
+    - group:cicd@example.com
+    role: roles/storage.admin
+
+counts:
+  google_container_registry: 1
+  google_storage_bucket_iam_binding: 1
