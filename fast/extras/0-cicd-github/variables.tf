@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "commmit_config" {
+variable "commit_config" {
   description = "Configure commit metadata."
   type = object({
     author  = optional(string, "FAST loader")
