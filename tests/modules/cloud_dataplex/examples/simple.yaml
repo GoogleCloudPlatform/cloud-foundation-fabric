@@ -1,0 +1,51 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.dataplex.google_dataplex_asset.primary:
+    dataplex_zone: zone
+    discovery_spec:
+    - enabled: true
+      exclude_patterns: null
+      include_patterns: null
+      schedule: 15 15 * * *
+    lake: test-terraform-lake
+    location: europe-west2
+    name: test_gcs
+    project: myproject
+    resource_spec:
+    - name: projects/myproject/buckets/test_gcs
+      type: STORAGE_BUCKET
+  module.dataplex.google_dataplex_lake.basic_lake:
+    location: europe-west2
+    metastore: []
+    name: test-terraform-lake
+    project: myproject
+  module.dataplex.google_dataplex_zone.basic_zone:
+    discovery_spec:
+    - enabled: false
+      exclude_patterns: null
+      include_patterns: null
+    lake: test-terraform-lake
+    location: europe-west2
+    name: zone
+    project: myproject
+    resource_spec:
+    - location_type: SINGLE_REGION
+    type: RAW
+
+counts:
+  google_dataplex_asset: 1
+  google_dataplex_lake: 1
+  google_dataplex_zone: 1

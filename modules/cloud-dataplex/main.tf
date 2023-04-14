@@ -30,14 +30,14 @@ resource "google_dataplex_zone" "basic_zone" {
   location = var.region
   provider = google-beta
   lake     = google_dataplex_lake.basic_lake.name
-  type     = "RAW"
+  type     = var.zone_type
 
   discovery_spec {
-    enabled = false
+    enabled = var.enabled
   }
 
   resource_spec {
-    location_type = "SINGLE_REGION"
+    location_type = var.location_type
   }
 
   project = var.project_id
@@ -52,13 +52,13 @@ resource "google_dataplex_asset" "primary" {
   dataplex_zone = google_dataplex_zone.basic_zone.name
 
   discovery_spec {
-    enabled  = true
-    schedule = "15 15 * * *"
+    enabled  = var.discovery_spec_enabled
+    schedule = var.cron_schedule
   }
 
   resource_spec {
     name = "projects/${var.project_id}/buckets/${var.bucket_name}"
-    type = "STORAGE_BUCKET"
+    type = var.resource_spec_type
   }
   project = var.project_id
 }
