@@ -1,0 +1,58 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.test.google_access_context_manager_service_perimeter.bridge["b1"]:
+    description: null
+    name: accessPolicies/12345678/servicePerimeters/b1
+    parent: accessPolicies/12345678
+    perimeter_type: PERIMETER_TYPE_BRIDGE
+    spec: []
+    status:
+    - access_levels: null
+      egress_policies: []
+      ingress_policies: []
+      resources:
+      - projects/111110
+      - projects/111111
+      restricted_services: null
+      vpc_accessible_services: []
+    title: b1
+    use_explicit_dry_run_spec: false
+  module.test.google_access_context_manager_service_perimeter.bridge["b2"]:
+    description: null
+    name: accessPolicies/12345678/servicePerimeters/b2
+    parent: accessPolicies/12345678
+    perimeter_type: PERIMETER_TYPE_BRIDGE
+    spec:
+    - access_levels: null
+      egress_policies: []
+      ingress_policies: []
+      resources:
+      - projects/222220
+      - projects/222221
+      restricted_services: null
+      vpc_accessible_services: []
+    status:
+    - access_levels: null
+      egress_policies: []
+      ingress_policies: []
+      resources: []
+      restricted_services: null
+      vpc_accessible_services: []
+    title: b2
+    use_explicit_dry_run_spec: true
+
+counts:
+  google_access_context_manager_service_perimeter: 2
