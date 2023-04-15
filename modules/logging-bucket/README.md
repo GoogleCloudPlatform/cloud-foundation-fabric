@@ -57,10 +57,7 @@ module "bucket-billing-account" {
 }
 # tftest modules=2 resources=2 inventory=org-ba.yaml
 ```
-
 <!-- BEGIN TFDOC -->
-
-
 
 ## Variables
 
