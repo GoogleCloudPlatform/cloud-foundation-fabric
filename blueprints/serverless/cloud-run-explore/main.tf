@@ -49,7 +49,10 @@ module "cloud_run" {
     }
   }
   iam = {
-    "roles/run.invoker" = ["allUsers"]
+    "roles/run.invoker" = (local.gclb_create && var.iap.enabled
+      ? ["serviceAccount:${google_project_service_identity.iap_sa[0].email}"]
+      : ["allUsers"]
+    )
   }
   ingress_settings = var.ingress_settings
 }
@@ -182,4 +185,14 @@ resource "google_iap_web_iam_member" "iap_iam" {
   project = module.project.project_id
   role    = "roles/iap.httpsResourceAccessor"
   member  = "user:${var.iap.email}"
+}
+
+# SA service agent for IAP, which invokes CR
+# Note:
+# Once created, this resource cannot be updated or destroyed. These actions are a no-op.
+resource "google_project_service_identity" "iap_sa" {
+  provider = google-beta
+  count    = local.gclb_create && var.iap.enabled ? 1 : 0
+  project  = module.project.project_id
+  service  = "iap.googleapis.com"
 }
