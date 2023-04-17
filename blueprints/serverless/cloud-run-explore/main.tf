@@ -15,7 +15,8 @@
  */
 
 locals {
-  gclb_create = var.custom_domain == null ? false : true
+  gclb_create  = var.custom_domain == null ? false : true
+  iap_sa_email = try(google_project_service_identity.iap_sa[0].email, "")
 }
 
 module "project" {
@@ -50,7 +51,7 @@ module "cloud_run" {
   }
   iam = {
     "roles/run.invoker" = (local.gclb_create && var.iap.enabled
-      ? ["serviceAccount:${google_project_service_identity.iap_sa[0].email}"]
+      ? ["serviceAccount:${local.iap_sa_email}"]
       : ["allUsers"]
     )
   }
