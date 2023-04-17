@@ -37,7 +37,7 @@ variable "backend_buckets_config" {
       max_ttl                         = optional(number)
       negative_caching                = optional(bool)
       request_coalescing              = optional(bool)
-      serve_while_stale               = optional(bool)
+      serve_while_stale               = optional(number)
       signed_url_cache_max_age_sec    = optional(number)
       cache_key_policy = optional(object({
         include_http_headers   = optional(list(string))
