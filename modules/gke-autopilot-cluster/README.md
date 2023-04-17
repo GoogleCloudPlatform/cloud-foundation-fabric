@@ -111,7 +111,7 @@ module "cluster-1" {
 | [node_locations](variables.tf#L194) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [private_cluster_config](variables.tf#L201) | Private cluster configuration. | <code title="object&#40;&#123;&#10;  enable_private_endpoint &#61; optional&#40;bool&#41;&#10;  master_global_access    &#61; optional&#40;bool&#41;&#10;  peering_config &#61; optional&#40;object&#40;&#123;&#10;    export_routes &#61; optional&#40;bool&#41;&#10;    import_routes &#61; optional&#40;bool&#41;&#10;    project_id    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [release_channel](variables.tf#L220) | Release channel for GKE upgrades. | <code>string</code> |  | <code>null</code> |
-| [service_account](variables.tf#L226) | The Google Cloud Platform Service Account to be used by the node VMs created by GKE Autopilot | <code>string</code> |  | <code>null</code> |
+| [service_account](variables.tf#L226) | The Google Cloud Platform Service Account to be used by the node VMs created by GKE Autopilot. | <code>string</code> |  | <code>null</code> |
 | [tags](variables.tf#L232) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
