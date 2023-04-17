@@ -113,8 +113,14 @@ resource "github_repository_deploy_key" "default" {
   count = (
     try(var.modules_config.key_config.create_key, null) == true ? 1 : 0
   )
-  title      = "Modules repository access"
-  repository = local.modules_repo
+  title = "Modules repository access"
+  # if an organization is part of the repo name, we need to strip it
+  # as the resource interpolates the provider org
+  repository = (
+    length(split("/", local.modules_repo)) == 1
+    ? local.modules_repo
+    : split("/", local.modules_repo)[1]
+  )
   key = (
     try(var.modules_config.key_config.keypair_path, null) == null
     ? tls_private_key.default.public_key_openssh
