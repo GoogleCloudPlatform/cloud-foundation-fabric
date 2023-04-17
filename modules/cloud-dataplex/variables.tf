@@ -88,7 +88,7 @@ variable "zone_name" {
 }
 
 variable "zone_type" {
-  description = "The location type of the Dataplax Lake."
+  description = "Zone type for the Dataplex lake. Either `RAW` or `CURATED`."
   type        = string
   default     = "RAW"
 }

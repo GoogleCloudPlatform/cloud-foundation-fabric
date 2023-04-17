@@ -47,7 +47,7 @@ module "dataplex" {
 | [region](variables.tf#L72) | Region of the Dataplax Lake. | <code>string</code> |  | <code>&#34;europe-west2&#34;</code> |
 | [resource_spec_type](variables.tf#L78) | Resource specification type of the Dataplax Asset. | <code>string</code> |  | <code>&#34;STORAGE_BUCKET&#34;</code> |
 | [zone_name](variables.tf#L84) | Zone of the Dataplex Zone. | <code>string</code> |  | <code>&#34;zone&#34;</code> |
-| [zone_type](variables.tf#L90) | The location type of the Dataplax Lake. | <code>string</code> |  | <code>&#34;RAW&#34;</code> |
+| [zone_type](variables.tf#L90) | Zone type for the Dataplex lake. Either `RAW` or `CURATED`. | <code>string</code> |  | <code>&#34;RAW&#34;</code> |
 
 ## Outputs
 
