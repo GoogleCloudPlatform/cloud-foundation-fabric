@@ -169,9 +169,9 @@ resource "github_repository_file" "default" {
     )
     : file(each.value.file)
   )
-  commit_message      = "${var.commmit_config.message} (${each.value.name})"
-  commit_author       = var.commmit_config.author
-  commit_email        = var.commmit_config.email
+  commit_message      = "${var.commit_config.message} (${each.value.name})"
+  commit_author       = var.commit_config.author
+  commit_email        = var.commit_config.email
   overwrite_on_create = true
 }
 
