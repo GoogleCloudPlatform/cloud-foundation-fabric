@@ -15,7 +15,7 @@ module "repo" {
     "roles/source.reader" = ["user:foo@example.com"]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=simple.yaml
 ```
 
 ### Repository with Cloud Build trigger
@@ -41,7 +41,7 @@ module "repo" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=trigger.yaml
 ```
 
 <!-- TFDOC OPTS files:1 -->

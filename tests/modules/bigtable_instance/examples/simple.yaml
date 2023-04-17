@@ -1,0 +1,52 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.bigtable-instance.google_bigtable_instance.default:
+    cluster:
+    - autoscaling_config: []
+      cluster_id: my-cluster
+      storage_type: SSD
+      zone: europe-west1-b
+    deletion_protection: true
+    instance_type: PRODUCTION
+    name: instance
+    project: my-project
+  module.bigtable-instance.google_bigtable_instance_iam_binding.default["roles/bigtable.user"]:
+    condition: []
+    instance: instance
+    members:
+    - user:viewer@testdomain.com
+    project: my-project
+    role: roles/bigtable.user
+  module.bigtable-instance.google_bigtable_table.default["test1"]:
+    column_family: []
+    instance_name: instance
+    name: test1
+    project: my-project
+    split_keys: []
+  module.bigtable-instance.google_bigtable_table.default["test2"]:
+    column_family: []
+    instance_name: instance
+    name: test2
+    project: my-project
+    split_keys:
+    - a
+    - b
+    - c
+
+counts:
+  google_bigtable_instance: 1
+  google_bigtable_instance_iam_binding: 1
+  google_bigtable_table: 2

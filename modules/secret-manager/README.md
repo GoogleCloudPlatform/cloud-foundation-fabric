@@ -45,7 +45,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=iam.yaml
 ```
 
 ### Secret versions
@@ -70,7 +70,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=versions.yaml
 ```
 <!-- BEGIN TFDOC -->
 

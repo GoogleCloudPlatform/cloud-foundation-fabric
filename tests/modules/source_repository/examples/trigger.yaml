@@ -1,0 +1,40 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.repo.google_cloudbuild_trigger.default["foo"]:
+    filename: ci/workflow-foo.yaml
+    included_files:
+    - '**/*tf'
+    location: global
+    name: foo
+    project: my-project
+    substitutions:
+      BAR: '1'
+    trigger_template:
+    - branch_name: main
+      commit_sha: null
+      dir: null
+      invert_regex: null
+      repo_name: my-repo
+      tag_name: null
+    webhook_config: []
+  module.repo.google_sourcerepo_repository.default:
+    name: my-repo
+    project: my-project
+    pubsub_configs: []
+
+counts:
+  google_cloudbuild_trigger: 1
+  google_sourcerepo_repository: 1
