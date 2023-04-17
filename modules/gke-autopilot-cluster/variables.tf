@@ -224,7 +224,7 @@ variable "release_channel" {
 }
 
 variable "service_account" {
-  description = "The Google Cloud Platform Service Account to be used by the node VMs created by GKE Autopilot"
+  description = "The Google Cloud Platform Service Account to be used by the node VMs created by GKE Autopilot."
   type        = string
   default     = null
 }
