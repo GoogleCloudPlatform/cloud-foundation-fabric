@@ -28,7 +28,7 @@ module "group" {
     "service-account@my-gcp-project.iam.gserviceaccount.com"
   ]
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=members.yaml
 ```
 
 ### Group with managers

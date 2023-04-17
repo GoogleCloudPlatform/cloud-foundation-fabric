@@ -18,7 +18,7 @@ module "endpoint" {
     ]
   }
 }
-# tftest modules=1 resources=2 files=openapi
+# tftest modules=1 resources=2 files=openapi inventory=simple.yaml
 ```
 
 ```yaml
