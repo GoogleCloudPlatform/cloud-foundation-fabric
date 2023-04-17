@@ -33,85 +33,45 @@ resource "google_container_cluster" "cluster" {
   network            = var.vpc_config.network
   subnetwork         = var.vpc_config.subnetwork
   resource_labels    = var.labels
-  default_max_pods_per_node = (
-    var.enable_features.autopilot ? null : var.max_pods_per_node
-  )
-  enable_intranode_visibility = (
-    var.enable_features.autopilot ? null : var.enable_features.intranode_visibility
-  )
+  # default_max_pods_per_node = (
+  #   var.enable_features.autopilot ? null : var.max_pods_per_node
+  # )
+  # enable_intranode_visibility = (
+  #   var.enable_features.autopilot ? null : var.enable_features.intranode_visibility
+  # )
   enable_l4_ilb_subsetting = var.enable_features.l4_ilb_subsetting
-  enable_shielded_nodes = (
-    var.enable_features.autopilot ? null : var.enable_features.shielded_nodes
-  )
-  enable_tpu               = var.enable_features.tpu
-  initial_node_count       = 1
-  remove_default_node_pool = var.enable_features.autopilot ? null : true
-  datapath_provider = (
-    var.enable_features.dataplane_v2 || var.enable_features.autopilot
-    ? "ADVANCED_DATAPATH"
-    : "DATAPATH_PROVIDER_UNSPECIFIED"
-  )
-  enable_autopilot = var.enable_features.autopilot ? true : null
+  # enable_shielded_nodes = (
+  #   var.enable_features.autopilot ? null : var.enable_features.shielded_nodes
+  # )
+  enable_tpu         = var.enable_features.tpu
+  initial_node_count = 1
+  # remove_default_node_pool = var.enable_features.autopilot ? null : true
 
-  # the default nodepool is deleted here, use the gke-nodepool module instead
-  # default nodepool configuration based on a shielded_nodes variable
-  dynamic "node_config" {
-    for_each = var.enable_features.autopilot ? [] : [""]
-    content {
-      dynamic "shielded_instance_config" {
-        for_each = var.enable_features.shielded_nodes ? [""] : []
-        content {
-          enable_secure_boot          = true
-          enable_integrity_monitoring = true
-        }
-      }
-      tags = var.tags
-    }
-  }
-
-
+  enable_autopilot = true
 
   addons_config {
-    dynamic "dns_cache_config" {
-      for_each = !var.enable_features.autopilot ? [""] : []
-      content {
-        enabled = var.enable_addons.dns_cache
-      }
-    }
+    # dns_cache_config {
+    #   enabled = var.enable_addons.dns_cache
+    # }
     http_load_balancing {
       disabled = !var.enable_addons.http_load_balancing
     }
     horizontal_pod_autoscaling {
       disabled = !var.enable_addons.horizontal_pod_autoscaling
     }
-    dynamic "network_policy_config" {
-      for_each = !var.enable_features.autopilot ? [""] : []
-      content {
-        disabled = !var.enable_addons.network_policy
-      }
-    }
+    # network_policy_config {
+    #   disabled = !var.enable_addons.network_policy
+    # }
     cloudrun_config {
       disabled = !var.enable_addons.cloudrun
     }
-    istio_config {
-      disabled = var.enable_addons.istio == null
-      auth = (
-        try(var.enable_addons.istio.enable_tls, false) ? "AUTH_MUTUAL_TLS" : "AUTH_NONE"
-      )
-    }
-    gce_persistent_disk_csi_driver_config {
-      enabled = (
-        var.enable_features.autopilot
-        ? true
-        : var.enable_addons.gce_persistent_disk_csi_driver
-      )
-    }
-    dynamic "gcp_filestore_csi_driver_config" {
-      for_each = !var.enable_features.autopilot ? [""] : []
-      content {
-        enabled = var.enable_addons.gcp_filestore_csi_driver
-      }
-    }
+    # istio_config {
+    #   disabled = var.enable_addons.istio == null
+    #   auth = (
+    #     try(var.enable_addons.istio.enable_tls, false) ? "AUTH_MUTUAL_TLS" : "AUTH_NONE"
+    #   )
+    # }
+
     kalm_config {
       enabled = var.enable_addons.kalm
     }
@@ -137,37 +97,12 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic "cluster_autoscaling" {
-    for_each = var.cluster_autoscaling == null ? [] : [""]
-    content {
-      enabled = var.enable_features.autopilot ? null : true
-
-      dynamic "auto_provisioning_defaults" {
-        for_each = var.cluster_autoscaling.auto_provisioning_defaults != null ? [""] : []
-        content {
-          boot_disk_kms_key = var.cluster_autoscaling.auto_provisioning_defaults.boot_disk_kms_key
-          image_type        = var.cluster_autoscaling.auto_provisioning_defaults.image_type
-          oauth_scopes      = var.cluster_autoscaling.auto_provisioning_defaults.oauth_scopes
-          service_account   = var.cluster_autoscaling.auto_provisioning_defaults.service_account
-        }
+  cluster_autoscaling {
+    dynamic "auto_provisioning_defaults" {
+      for_each = var.service_account != null ? [""] : []
+      content {
+        service_account = var.service_account
       }
-      dynamic "resource_limits" {
-        for_each = var.cluster_autoscaling.cpu_limits != null ? [""] : []
-        content {
-          resource_type = "cpu"
-          minimum       = var.cluster_autoscaling.cpu_limits.min
-          maximum       = var.cluster_autoscaling.cpu_limits.max
-        }
-      }
-      dynamic "resource_limits" {
-        for_each = var.cluster_autoscaling.mem_limits != null ? [""] : []
-        content {
-          resource_type = "memory"
-          minimum       = var.cluster_autoscaling.mem_limits.min
-          maximum       = var.cluster_autoscaling.mem_limits.max
-        }
-      }
-      // TODO: support GPUs too
     }
   }
 
@@ -203,12 +138,12 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic "logging_config" {
-    for_each = var.logging_config != null && !var.enable_features.autopilot ? [""] : []
-    content {
-      enable_components = var.logging_config
-    }
-  }
+  # dynamic "logging_config" {
+  #   for_each = var.logging_config != null && !var.enable_features.autopilot ? [""] : []
+  #   content {
+  #     enable_components = var.logging_config
+  #   }
+  # }
 
   dynamic "gateway_api_config" {
     for_each = var.enable_features.gateway_api ? [""] : []
@@ -282,33 +217,33 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic "monitoring_config" {
-    for_each = var.monitoring_config != null && !var.enable_features.autopilot ? [""] : []
-    content {
-      enable_components = var.monitoring_config.enable_components
-      dynamic "managed_prometheus" {
-        for_each = (
-          try(var.monitoring_config.managed_prometheus, null) == true ? [""] : []
-        )
-        content {
-          enabled = true
-        }
-      }
-    }
-  }
+  # dynamic "monitoring_config" {
+  #   for_each = var.monitoring_config != null && !var.enable_features.autopilot ? [""] : []
+  #   content {
+  #     enable_components = var.monitoring_config.enable_components
+  #     dynamic "managed_prometheus" {
+  #       for_each = (
+  #         try(var.monitoring_config.managed_prometheus, null) == true ? [""] : []
+  #       )
+  #       content {
+  #         enabled = true
+  #       }
+  #     }
+  #   }
+  # }
 
-  # dataplane v2 has bult-in network policies
-  dynamic "network_policy" {
-    for_each = (
-      var.enable_addons.network_policy && !var.enable_features.dataplane_v2
-      ? [""]
-      : []
-    )
-    content {
-      enabled  = true
-      provider = "CALICO"
-    }
-  }
+  # # dataplane v2 has bult-in network policies
+  # dynamic "network_policy" {
+  #   for_each = (
+  #     var.enable_addons.network_policy && !var.enable_features.dataplane_v2
+  #     ? [""]
+  #     : []
+  #   )
+  #   content {
+  #     enabled  = true
+  #     provider = "CALICO"
+  #   }
+  # }
 
   dynamic "notification_config" {
     for_each = var.enable_features.upgrade_notifications != null ? [""] : []
@@ -378,12 +313,12 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic "workload_identity_config" {
-    for_each = (var.enable_features.workload_identity && !var.enable_features.autopilot) ? [""] : []
-    content {
-      workload_pool = "${var.project_id}.svc.id.goog"
-    }
-  }
+  #   dynamic "workload_identity_config" {
+  #     for_each = (var.enable_features.workload_identity && !var.enable_features.autopilot) ? [""] : []
+  #     content {
+  #       workload_pool = "${var.project_id}.svc.id.goog"
+  #     }
+  #   }
 }
 
 resource "google_gke_backup_backup_plan" "backup_plan" {
