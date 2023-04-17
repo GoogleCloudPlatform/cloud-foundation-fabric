@@ -51,11 +51,6 @@ variable "backup_configs" {
 #   default = null
 # }
 
-variable "service_account" {
-  description = "The Google Cloud Platform Service Account to be used by the node VMs created by GKE Autopilot"
-  type        = string
-  default     = null
-}
 variable "description" {
   description = "Cluster description."
   type        = string
@@ -224,6 +219,12 @@ variable "project_id" {
 
 variable "release_channel" {
   description = "Release channel for GKE upgrades."
+  type        = string
+  default     = null
+}
+
+variable "service_account" {
+  description = "The Google Cloud Platform Service Account to be used by the node VMs created by GKE Autopilot"
   type        = string
   default     = null
 }
