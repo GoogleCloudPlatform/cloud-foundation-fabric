@@ -32,7 +32,7 @@ module "bigtable-instance" {
     "roles/bigtable.user" = ["user:viewer@testdomain.com"]
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=simple.yaml
 ```
 
 ### Instance with tables and column families
@@ -65,7 +65,7 @@ module "bigtable-instance" {
     }
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=columns.yaml
 ```
 
 ### Instance with replication enabled
@@ -88,7 +88,7 @@ module "bigtable-instance" {
     }
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=replication.yaml
 ```
 
 ### Instance with garbage collection policy
@@ -118,7 +118,7 @@ module "bigtable-instance" {
     }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=gc.yaml
 ```
 
 ### Instance with default garbage collection policy
@@ -172,7 +172,7 @@ module "bigtable-instance" {
     }
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=static.yaml
 ```
 
 ### Instance with autoscaling (based on CPU only)
@@ -198,7 +198,7 @@ module "bigtable-instance" {
 
 
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=autoscaling1.yaml
 ```
 
 ### Instance with autoscaling (based on CPU and/or storage)
@@ -222,7 +222,7 @@ module "bigtable-instance" {
     }
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=autoscaling2.yaml
 ```
 <!-- BEGIN TFDOC -->
 

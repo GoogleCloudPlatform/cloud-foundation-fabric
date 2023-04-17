@@ -259,6 +259,7 @@ resource "google_cloud_run_service" "service" {
 
   metadata {
     annotations = local.annotations
+    labels      = var.labels
   }
 
   dynamic "traffic" {

@@ -30,6 +30,7 @@ locals {
     "roles/cloudbuild.builds.editor"                  = [local.groups_iam.data-engineers]
     "roles/cloudbuild.serviceAgent"                   = [module.orch-sa-df-build.iam_email]
     "roles/composer.admin"                            = [local.groups_iam.data-engineers]
+    "roles/composer.user"                             = [local.groups_iam.data-engineers]
     "roles/composer.environmentAndStorageObjectAdmin" = [local.groups_iam.data-engineers]
     "roles/composer.ServiceAgentV2Ext" = [
       "serviceAccount:${module.orch-project.service_accounts.robots.composer}"

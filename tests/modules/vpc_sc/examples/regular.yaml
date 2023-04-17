@@ -1,0 +1,93 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.test.google_access_context_manager_access_level.basic["a1"]:
+    basic:
+    - combining_function: AND
+      conditions:
+      - device_policy: []
+        ip_subnetworks: []
+        members:
+        - user:user1@example.com
+        negate: null
+        regions: []
+        required_access_levels: []
+    custom: []
+    name: accessPolicies/12345678/accessLevels/a1
+    parent: accessPolicies/12345678
+    title: a1
+  module.test.google_access_context_manager_access_level.basic["a2"]:
+    basic:
+    - combining_function: AND
+      conditions:
+      - device_policy: []
+        ip_subnetworks: []
+        members:
+        - user:user2@example.com
+        negate: null
+        regions: []
+        required_access_levels: []
+    custom: []
+    name: accessPolicies/12345678/accessLevels/a2
+    parent: accessPolicies/12345678
+    title: a2
+  module.test.google_access_context_manager_service_perimeter.regular["r1"]:
+    name: accessPolicies/12345678/servicePerimeters/r1
+    parent: accessPolicies/12345678
+    perimeter_type: PERIMETER_TYPE_REGULAR
+    spec: []
+    status:
+    - egress_policies:
+      - egress_from:
+        - identities:
+          - serviceAccount:foo@myproject.iam.gserviceaccount.com
+          identity_type: ANY_IDENTITY
+        egress_to:
+        - external_resources: null
+          operations:
+          - method_selectors:
+            - method: '*'
+              permission: null
+            service_name: storage.googleapis.com
+          resources:
+          - projects/123456789
+      ingress_policies:
+      - ingress_from:
+        - identities:
+          - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
+          identity_type: null
+          sources:
+          - resource: null
+        ingress_to:
+        - operations:
+          - method_selectors: []
+            service_name: '*'
+          resources:
+          - '*'
+      resources:
+      - projects/11111
+      - projects/111111
+      restricted_services:
+      - storage.googleapis.com
+      vpc_accessible_services:
+      - allowed_services:
+        - storage.googleapis.com
+        enable_restriction: true
+    title: r1
+    use_explicit_dry_run_spec: false
+
+counts:
+  google_access_context_manager_access_level: 2
+  google_access_context_manager_service_perimeter: 1

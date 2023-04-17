@@ -17,7 +17,7 @@ module "bucket" {
   parent      = var.project_id
   id          = "mybucket"
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=project.yaml
 ```
 
 
@@ -37,7 +37,25 @@ module "bucket-default" {
   id          = "_Default"
   retention   = 10
 }
-# tftest modules=2 resources=2
+# tftest modules=2 resources=2 inventory=retention.yaml
+```
+
+### Organization and billing account buckets
+```hcl
+module "bucket-organization" {
+  source      = "./fabric/modules/logging-bucket"
+  parent_type = "organization"
+  parent      = "organizations/012345"
+  id          = "mybucket"
+}
+
+module "bucket-billing-account" {
+  source      = "./fabric/modules/logging-bucket"
+  parent_type = "billing_account"
+  parent      = "012345"
+  id          = "mybucket"
+}
+# tftest modules=2 resources=2 inventory=org-ba.yaml
 ```
 <!-- BEGIN TFDOC -->
 
