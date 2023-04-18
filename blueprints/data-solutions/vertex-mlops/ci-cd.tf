@@ -44,14 +44,11 @@ module "artifact_registry" {
   project_id = module.project.project_id
   location   = var.region
   format     = "DOCKER"
-  #  iam = {
-  #    "roles/artifactregistry.admin" = ["group:cicd@example.com"]
-  #  }
 }
 
 module "service-account-github" {
   source     = "../../../modules/iam-service-account"
-  name       = "sa-github"
+  name       = "${var.prefix}-sa-github"
   project_id = module.project.project_id
   iam        = var.identity_pool_claims == null ? {} : { "roles/iam.workloadIdentityUser" = ["principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool[0].name}/${var.identity_pool_claims}"] }
 }
@@ -63,6 +60,9 @@ module "secret-manager" {
   secrets = {
     github-key = [var.region]
   }
+  # encryption_key = {
+  #   "${var.region}" = try(var.service_encryption_keys["secretmanager"], null)
+  # }
   iam = {
     github-key = {
       "roles/secretmanager.secretAccessor" = [

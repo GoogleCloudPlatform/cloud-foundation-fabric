@@ -30,9 +30,9 @@ variable "dataset_name" {
 variable "groups" {
   description = "Name of the groups (name@domain.org) to apply opinionated IAM permissions."
   type = object({
-    gcp-ml-ds     = string
-    gcp-ml-eng    = string
-    gcp-ml-viewer = string
+    gcp-ml-ds     = optional(string, null)
+    gcp-ml-eng    = optional(string, null)
+    gcp-ml-viewer = optional(string, null)
   })
   default = {
     gcp-ml-ds     = null
@@ -71,16 +71,24 @@ variable "network_config" {
 }
 
 variable "notebooks" {
-  description = "Vertex AI workbenchs to be deployed."
+  description = "Vertex AI workbenchs to be deployed. Service Account runtime/instances deployed."
   type = map(object({
-    owner            = string
-    region           = string
-    subnet           = string
-    internal_ip_only = optional(bool, false)
-    idle_shutdown    = optional(bool)
+    type             = string
+    machine_type     = optional(string, "n1-standard-4")
+    internal_ip_only = optional(bool, true)
+    idle_shutdown    = optional(bool, false)
+    owner            = optional(string, null)
   }))
-  default  = {}
-  nullable = false
+  validation {
+    condition = alltrue([
+    for k, v in var.notebooks : contains(["USER_MANAGED", "MANAGED"], v.type)])
+    error_message = "All `type` must be one of `USER_MANAGED` or `MANAGED`."
+  }
+  validation {
+    condition = alltrue([
+    for k, v in var.notebooks : (v.type == "MANAGED" && try(v.owner != null, false) || v.type == "USER_MANAGED")])
+    error_message = "`owner` must be set for `MANAGED` instances."
+  }
 }
 
 variable "prefix" {
@@ -89,38 +97,17 @@ variable "prefix" {
   default     = null
 }
 
-variable "project_create" {
-  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+variable "project_config" {
+  description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
   type = object({
-    billing_account_id = string
+    billing_account_id = optional(string, null)
     parent             = string
+    project_id         = string
   })
-  default = null
-}
-
-variable "project_id" {
-  description = "Project id, references existing project if `project_create` is null."
-  type        = string
-}
-
-variable "project_services" {
-  description = "List of core services enabled on all projects."
-  type        = list(string)
-  default = [
-    "aiplatform.googleapis.com",
-    "artifactregistry.googleapis.com",
-    "bigquery.googleapis.com",
-    "cloudbuild.googleapis.com",
-    "compute.googleapis.com",
-    "datacatalog.googleapis.com",
-    "dataflow.googleapis.com",
-    "iam.googleapis.com",
-    "monitoring.googleapis.com",
-    "notebooks.googleapis.com",
-    "secretmanager.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "serviceusage.googleapis.com"
-  ]
+  validation {
+    condition     = var.project_config.project_id != null
+    error_message = "Project id must be set."
+  }
 }
 
 variable "region" {
@@ -135,18 +122,20 @@ variable "repo_name" {
   default     = null
 }
 
-variable "sa_mlops_name" {
-  description = "Name for the MLOPs Service Account."
-  type        = string
-  default     = "sa-mlops"
-}
-
-variable "service_encryption_keys" { # service encription key
+variable "service_encryption_keys" {
   description = "Cloud KMS to use to encrypt different services. Key location should match service region."
   type = object({
-    bq      = string
-    compute = string
-    storage = string
+    aiplatform    = optional(string, null)
+    bq            = optional(string, null)
+    notebooks     = optional(string, null)
+    secretmanager = optional(string, null)
+    storage       = optional(string, null)
   })
-  default = null
+  default = {
+    aiplatform    = null
+    bq            = null
+    notebooks     = null
+    secretmanager = null
+    storage       = null
+  }
 }
