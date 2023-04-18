@@ -117,7 +117,7 @@ module "gcs-bucket" {
 module "gcs-bucket-cloudbuild" {
   source         = "../../../modules/gcs"
   project_id     = module.project.project_id
-  name           = "${var.project_id}_cloudbuild"
+  name           = "${var.prefix}_cloudbuild"
   prefix         = var.prefix
   location       = var.region
   storage_class  = "REGIONAL"
@@ -190,19 +190,19 @@ module "cloudnat" {
 
 module "project" {
   source          = "../../../modules/project"
-  name            = var.project_id
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
+  name            = var.project_config.project_id
+  parent          = try(var.project_config.parent, null)
+  billing_account = try(var.project_config.billing_account_id, null)
+  project_create  = var.project_config.billing_account_id != null
   prefix          = var.prefix
   group_iam       = local.group_iam
   iam = {
-    "roles/aiplatform.user"         = [module.service-account-mlops.iam_email]
+    "roles/aiplatform.user"         = [module.service-account-mlops.iam_email, module.service-account-notebook.iam_email]
     "roles/artifactregistry.reader" = [module.service-account-mlops.iam_email]
     "roles/artifactregistry.writer" = [module.service-account-github.iam_email]
-    "roles/bigquery.dataEditor"     = [module.service-account-mlops.iam_email]
-    "roles/bigquery.jobUser"        = [module.service-account-mlops.iam_email]
-    "roles/bigquery.user"           = [module.service-account-mlops.iam_email]
+    "roles/bigquery.dataEditor"     = [module.service-account-mlops.iam_email, module.service-account-notebook.iam_email]
+    "roles/bigquery.jobUser"        = [module.service-account-mlops.iam_email, module.service-account-notebook.iam_email]
+    "roles/bigquery.user"           = [module.service-account-mlops.iam_email, module.service-account-notebook.iam_email]
     "roles/cloudbuild.builds.editor" = [
       module.service-account-mlops.iam_email,
       module.service-account-github.iam_email
@@ -213,6 +213,8 @@ module "project" {
     "roles/dataflow.worker"        = [module.service-account-mlops.iam_email]
     "roles/iam.serviceAccountUser" = [
       module.service-account-mlops.iam_email,
+      module.service-account-notebook.iam_email,
+      module.service-account-github.iam_email,
       "serviceAccount:${module.project.service_accounts.robots.cloudbuild}"
     ]
     "roles/monitoring.metricWriter" = [module.service-account-mlops.iam_email]
@@ -223,28 +225,40 @@ module "project" {
     ]
     "roles/storage.admin" = [
       module.service-account-mlops.iam_email,
-      module.service-account-github.iam_email
+      module.service-account-github.iam_email,
+      module.service-account-notebook.iam_email
     ]
   }
   labels = var.labels
 
-  org_policies = {
-    # Example of applying a project wide policy
-    # "compute.requireOsLogin" = {
-    #   rules = [{ enforce = false }]
-    # }
-  }
-
   service_encryption_key_ids = {
+    aiplatform = [try(local.service_encryption_keys.aiplatform, null)]
     bq         = [try(local.service_encryption_keys.bq, null)]
-    compute    = [try(local.service_encryption_keys.compute, null)]
     cloudbuild = [try(local.service_encryption_keys.storage, null)]
-    notebooks  = [try(local.service_encryption_keys.compute, null)]
+    notebooks  = [try(local.service_encryption_keys.notebooks, null)]
     storage    = [try(local.service_encryption_keys.storage, null)]
   }
-  services = var.project_services
 
-
+  services = [
+    "aiplatform.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "bigquery.googleapis.com",
+    "bigquerystorage.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "compute.googleapis.com",
+    "datacatalog.googleapis.com",
+    "dataflow.googleapis.com",
+    "iam.googleapis.com",
+    "ml.googleapis.com",
+    "monitoring.googleapis.com",
+    "notebooks.googleapis.com",
+    "secretmanager.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "serviceusage.googleapis.com",
+    "stackdriver.googleapis.com",
+    "storage.googleapis.com",
+    "storage-component.googleapis.com"
+  ]
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
     attach       = true
     host_project = local.shared_vpc_project
@@ -254,11 +268,8 @@ module "project" {
 
 module "service-account-mlops" {
   source     = "../../../modules/iam-service-account"
-  name       = var.sa_mlops_name
+  name       = "${var.prefix}-sa-mlops"
   project_id = module.project.project_id
-  iam = {
-    "roles/iam.serviceAccountUser" = [module.service-account-github.iam_email]
-  }
 }
 
 resource "google_project_iam_member" "shared_vpc" {
@@ -268,11 +279,8 @@ resource "google_project_iam_member" "shared_vpc" {
   member  = "serviceAccount:${module.project.service_accounts.robots.notebooks}"
 }
 
-
 resource "google_sourcerepo_repository" "code-repo" {
   count   = var.repo_name == null ? 0 : 1
   name    = var.repo_name
   project = module.project.project_id
 }
-
-

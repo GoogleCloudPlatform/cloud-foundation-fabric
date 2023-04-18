@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-# TODO(): proper outputs
-
-
 locals {
   docker_split = try(split("/", module.artifact_registry.id), null)
   docker_repo  = try("${local.docker_split[3]}-docker.pkg.dev/${local.docker_split[1]}/${local.docker_split[5]}", null)
@@ -31,22 +28,19 @@ locals {
 }
 
 output "github" {
-
   description = "Github Configuration."
   value       = local.gh_config
 }
 
 output "notebook" {
-  description = "Vertex AI managed notebook details."
-  value       = { for k, v in resource.google_notebooks_runtime.runtime : k => v.id }
+  description = "Vertex AI notebooks ids."
+  value = merge(
+    { for k, v in resource.google_notebooks_runtime.runtime : k => v.id },
+    { for k, v in resource.google_notebooks_instance.playground : k => v.id }
+  )
 }
 
 output "project" {
   description = "The project resource as return by the `project` module."
   value       = module.project
-}
-
-output "project_id" {
-  description = "Project ID."
-  value       = module.project.project_id
 }
