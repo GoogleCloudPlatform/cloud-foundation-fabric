@@ -17,8 +17,8 @@
 # tfdoc:file:description Subnet resources.
 
 locals {
-  _factory_data = var.data_folder == null ? tomap({}) : {
-    for f in fileset(var.data_folder, "**/*.yaml") :
+  _factory_data = {
+    for f in try(fileset(var.data_folder, "**/*.yaml"), []) :
     trimsuffix(basename(f), ".yaml") => yamldecode(file("${var.data_folder}/${f}"))
   }
   _factory_subnets = {
