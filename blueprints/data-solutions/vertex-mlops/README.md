@@ -71,12 +71,10 @@ This blueprint can be used as a building block for setting up an end2end ML Ops 
 | name | description | sensitive |
 |---|---|:---:|
 | [github](outputs.tf#L30) | Github Configuration. |  |
-| [notebook](outputs.tf#L35) | Vertex AI managed notebook details. |  |
+| [notebook](outputs.tf#L35) | Vertex AI notebooks ids. |  |
 | [project](outputs.tf#L43) | The project resource as return by the `project` module. |  |
-| [project_id](outputs.tf#L48) | Project ID. |  |
 
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl
