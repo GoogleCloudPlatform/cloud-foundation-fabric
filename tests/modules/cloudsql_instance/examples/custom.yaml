@@ -1,0 +1,59 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.db.google_sql_database.databases["departments"]:
+    deletion_policy: DELETE
+    instance: db
+    name: departments
+    project: project-id
+  module.db.google_sql_database.databases["people"]:
+    deletion_policy: DELETE
+    instance: db
+    name: people
+    project: project-id
+  module.db.google_sql_database_instance.primary: {}
+  module.db.google_sql_user.users["user1"]:
+    deletion_policy: null
+    instance: db
+    name: user1
+    password_policy: []
+    project: project-id
+    type: null
+  module.db.google_sql_user.users["user2"]:
+    deletion_policy: null
+    instance: db
+    name: user2
+    password_policy: []
+    project: project-id
+    type: null
+  module.db.random_password.passwords["user1"]:
+    keepers: null
+    length: 16
+    lower: true
+    min_lower: 0
+    min_numeric: 0
+    min_special: 0
+    min_upper: 0
+    number: true
+    numeric: true
+    override_special: null
+    special: true
+    upper: true
+
+counts:
+  google_sql_database: 2
+  google_sql_database_instance: 1
+  google_sql_user: 2
+  modules: 1

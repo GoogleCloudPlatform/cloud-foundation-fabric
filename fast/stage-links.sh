@@ -70,18 +70,34 @@ case $STAGE_NAME in
     exit 1
   fi
   unset GLOBALS
-  PROVIDER="providers/1-resman-tenant-providers.tf"
-  TFVARS="tfvars/0-bootstrap-tenant.auto.tfvars.json"
+  PROVIDER="tenants/$TENANT/providers/1-resman-tenant-providers.tf"
+  TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json"
   ;;
 "2-networking"*)
-  PROVIDER="providers/2-networking-providers.tf"
-  TFVARS="tfvars/0-bootstrap.auto.tfvars.json
-  tfvars/1-resman.auto.tfvars.json"
+  if [[ -z "$TENANT" ]]; then
+    echo "# if this is a tenant stage, set a \$TENANT variable with the tenant shortname and run the command again"
+    PROVIDER="providers/2-networking-providers.tf"
+    TFVARS="tfvars/0-bootstrap.auto.tfvars.json
+    tfvars/1-resman.auto.tfvars.json"
+  else
+    unset GLOBALS
+    PROVIDER="tenants/$TENANT/providers/2-networking-providers.tf"
+    TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json
+    tenants/$TENANT/tfvars/1-resman.auto.tfvars.json"
+  fi
   ;;
 "2-security"*)
-  PROVIDER="providers/2-security-providers.tf"
-  TFVARS="tfvars/0-bootstrap.auto.tfvars.json
-  tfvars/1-resman.auto.tfvars.json"
+  if [[ -z "$TENANT" ]]; then
+    echo "# if this is a tenant stage, set a \$TENANT variable with the tenant shortname and run the command again"
+    PROVIDER="providers/2-security-providers.tf"
+    TFVARS="tfvars/0-bootstrap.auto.tfvars.json
+    tfvars/1-resman.auto.tfvars.json"
+  else
+    unset GLOBALS
+    PROVIDER="tenants/$TENANT/providers/2-security-providers.tf"
+    TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json
+    tenants/$TENANT/tfvars/1-resman.auto.tfvars.json"
+  fi
   ;;
 *)
   # check for a "dev" stage 3

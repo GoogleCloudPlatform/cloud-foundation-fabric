@@ -36,7 +36,6 @@ locals {
 }
 
 resource "google_secret_manager_secret" "default" {
-  provider  = google-beta
   for_each  = var.secrets
   project   = var.project_id
   secret_id = each.key
@@ -59,6 +58,12 @@ resource "google_secret_manager_secret" "default" {
           iterator = location
           content {
             location = location.value
+            dynamic "customer_managed_encryption" {
+              for_each = try(var.encryption_key[location.value] != null ? [""] : [], [])
+              content {
+                kms_key_name = var.encryption_key[location.value]
+              }
+            }
           }
         }
       }

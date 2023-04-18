@@ -1,0 +1,36 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.service-directory.google_service_directory_endpoint.default["one/first"]:
+    address: 127.0.0.1
+    endpoint_id: first
+    port: 80
+  module.service-directory.google_service_directory_endpoint.default["one/second"]:
+    address: 127.0.0.2
+    endpoint_id: second
+    port: 80
+  module.service-directory.google_service_directory_namespace.default:
+    location: europe-west1
+    namespace_id: sd-1
+    project: my-project
+  module.service-directory.google_service_directory_service.default["one"]:
+    metadata: null
+    service_id: one
+
+counts:
+  google_service_directory_endpoint: 2
+  google_service_directory_namespace: 1
+  google_service_directory_service: 1
+  google_service_directory_service_iam_binding: 1

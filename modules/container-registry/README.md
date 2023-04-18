@@ -13,7 +13,7 @@ module "container_registry" {
     "roles/storage.admin" = ["group:cicd@example.com"]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=simple.yaml
 ```
 <!-- BEGIN TFDOC -->
 
