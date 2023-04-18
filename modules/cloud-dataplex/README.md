@@ -17,7 +17,7 @@ module "dataplex" {
   region     = "europe-west2"
   zone_name  = "zone"
   asset = {
-    test_gcs = {
+    "test_gcs" = {
       bucket_name            = "test_gcs"
       cron_schedule          = "15 15 * * *"
       discovery_spec_enabled = true

@@ -16,16 +16,16 @@
 
 output "asset" {
   description = "The asset attached to the lake of Dataplex Lake."
-  value       = values(google_dataplex_asset.primary)[*].name
+  value       = google_dataplex_asset.primary["test_gcs"].name
 }
 
 output "lake" {
   description = "The lake name of Dataplex Lake."
-  value       = google_dataplex_lake.basic_lake.display_name
+  value       = google_dataplex_lake.basic_lake.name
 }
 
 output "zone" {
   description = "The zone name of Dataplex Lake."
-  value       = google_dataplex_zone.basic_zone.display_name
+  value       = google_dataplex_zone.basic_zone.name
 }
 
