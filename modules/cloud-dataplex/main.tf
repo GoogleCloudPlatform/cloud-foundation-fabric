@@ -44,7 +44,8 @@ resource "google_dataplex_zone" "basic_zone" {
 }
 
 resource "google_dataplex_asset" "primary" {
-  name     = var.asset_name
+  for_each = var.asset
+  name     = each.key
   location = var.region
   provider = google-beta
 
@@ -52,13 +53,13 @@ resource "google_dataplex_asset" "primary" {
   dataplex_zone = google_dataplex_zone.basic_zone.name
 
   discovery_spec {
-    enabled  = var.discovery_spec_enabled
-    schedule = var.cron_schedule
+    enabled  = each.value.discovery_spec_enabled
+    schedule = each.value.cron_schedule
   }
 
   resource_spec {
-    name = "projects/${var.project_id}/buckets/${var.bucket_name}"
-    type = var.resource_spec_type
+    name = "projects/${var.project_id}/buckets/${each.value.bucket_name}"
+    type = each.value.resource_spec_type
   }
   project = var.project_id
 }

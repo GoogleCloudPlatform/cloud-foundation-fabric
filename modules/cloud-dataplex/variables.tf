@@ -14,34 +14,19 @@
  * limitations under the License.
  */
 
-
-variable "asset_name" {
-  description = "Asset of the Dataplex Asset."
-  type        = string
-  default     = "test_gcs"
-}
-
-variable "bucket_name" {
-  description = "Bucket name of the Dataplex asset."
-  type        = string
-  default     = "test_gcs"
-}
-
-variable "cron_schedule" {
-  description = "The schedule of data discovery of the Dataplax Lake."
-  type        = string
-  default     = "15 15 * * *"
-}
-
-variable "discovery_spec_enabled" {
-  description = "Bucket name of the Dataplex asset."
-  type        = string
-  default     = true
+variable "asset" {
+  description = "Asset of the Dataplex Lake."
+  type = map(object({
+    bucket_name            = string
+    cron_schedule          = optional(string, "15 15 * * *")
+    discovery_spec_enabled = optional(bool, true)
+    resource_spec_type     = optional(string, "STORAGE_BUCKET")
+  }))
 }
 
 variable "enabled" {
-  description = "Bucket name of the Dataplex asset."
-  type        = string
+  description = "Discovery of the Dataplex Zone."
+  type        = bool
   default     = false
 }
 
@@ -52,39 +37,28 @@ variable "location_type" {
 }
 
 variable "name" {
-  description = "Name of dataplex lake instance."
+  description = "Name of Dataplex Lake."
   type        = string
-  default     = "terraform-lake"
 }
 
 variable "prefix" {
-  description = "Optional prefix used to generate instance names."
+  description = "Optional prefix used to generate Dataplex Lake."
   type        = string
-  default     = "test"
 }
 
 variable "project_id" {
-  description = "The ID of the project where this instances will be created."
+  description = "The ID of the project where this Dataplex Lake will be created."
   type        = string
-  default     = "myproject"
 }
 
 variable "region" {
   description = "Region of the Dataplax Lake."
   type        = string
-  default     = "europe-west2"
-}
-
-variable "resource_spec_type" {
-  description = "Resource specification type of the Dataplax Asset."
-  type        = string
-  default     = "STORAGE_BUCKET"
 }
 
 variable "zone_name" {
   description = "Zone of the Dataplex Zone."
   type        = string
-  default     = "zone"
 }
 
 variable "zone_type" {
