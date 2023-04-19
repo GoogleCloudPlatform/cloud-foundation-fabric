@@ -60,9 +60,9 @@ module "secret-manager" {
   secrets = {
     github-key = [var.region]
   }
-  # encryption_key = {
-  #   "${var.region}" = try(var.service_encryption_keys["secretmanager"], null)
-  # }
+  encryption_key = {
+    "${var.region}" = var.service_encryption_keys.secretmanager
+  }
   iam = {
     github-key = {
       "roles/secretmanager.secretAccessor" = [

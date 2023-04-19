@@ -64,8 +64,7 @@ locals {
     }
   )
 
-  service_encryption_keys = var.service_encryption_keys
-  shared_vpc_project      = try(var.network_config.host_project, null)
+  shared_vpc_project = try(var.network_config.host_project, null)
 
   subnet = (
     local.use_shared_vpc
@@ -109,7 +108,7 @@ module "gcs-bucket" {
   location       = var.region
   storage_class  = "REGIONAL"
   versioning     = false
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
 }
 
 # Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘gcp.resourceLocations’"
@@ -122,7 +121,7 @@ module "gcs-bucket-cloudbuild" {
   location       = var.region
   storage_class  = "REGIONAL"
   versioning     = false
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
 }
 
 module "bq-dataset" {
@@ -131,7 +130,7 @@ module "bq-dataset" {
   project_id     = module.project.project_id
   id             = var.dataset_name
   location       = var.region
-  encryption_key = try(local.service_encryption_keys.bq, null)
+  encryption_key = var.service_encryption_keys.bq
 }
 
 module "vpc-local" {
@@ -191,18 +190,27 @@ module "cloudnat" {
 module "project" {
   source          = "../../../modules/project"
   name            = var.project_config.project_id
-  parent          = try(var.project_config.parent, null)
-  billing_account = try(var.project_config.billing_account_id, null)
+  parent          = var.project_config.parent
+  billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.prefix
   group_iam       = local.group_iam
   iam = {
-    "roles/aiplatform.user"         = [module.service-account-mlops.iam_email, module.service-account-notebook.iam_email]
+    "roles/aiplatform.user" = [
+      module.service-account-mlops.iam_email,
+      module.service-account-notebook.iam_email
+    ]
     "roles/artifactregistry.reader" = [module.service-account-mlops.iam_email]
     "roles/artifactregistry.writer" = [module.service-account-github.iam_email]
-    "roles/bigquery.dataEditor"     = [module.service-account-mlops.iam_email, module.service-account-notebook.iam_email]
-    "roles/bigquery.jobUser"        = [module.service-account-mlops.iam_email, module.service-account-notebook.iam_email]
-    "roles/bigquery.user"           = [module.service-account-mlops.iam_email, module.service-account-notebook.iam_email]
+    "roles/bigquery.dataEditor" = [
+      module.service-account-mlops.iam_email,
+      module.service-account-notebook.iam_email
+    ]
+    "roles/bigquery.jobUser" = [
+      module.service-account-mlops.iam_email,
+      module.service-account-notebook.iam_email
+    ]
+    "roles/bigquery.user" = [module.service-account-mlops.iam_email, module.service-account-notebook.iam_email]
     "roles/cloudbuild.builds.editor" = [
       module.service-account-mlops.iam_email,
       module.service-account-github.iam_email
@@ -232,11 +240,12 @@ module "project" {
   labels = var.labels
 
   service_encryption_key_ids = {
-    aiplatform = [try(local.service_encryption_keys.aiplatform, null)]
-    bq         = [try(local.service_encryption_keys.bq, null)]
-    cloudbuild = [try(local.service_encryption_keys.storage, null)]
-    notebooks  = [try(local.service_encryption_keys.notebooks, null)]
-    storage    = [try(local.service_encryption_keys.storage, null)]
+    aiplatform    = [var.service_encryption_keys.aiplatform]
+    bq            = [var.service_encryption_keys.bq]
+    cloudbuild    = [var.service_encryption_keys.storage]
+    notebooks     = [var.service_encryption_keys.notebooks]
+    secretmanager = [var.service_encryption_keys.secretmanager]
+    storage       = [var.service_encryption_keys.storage]
   }
 
   services = [
