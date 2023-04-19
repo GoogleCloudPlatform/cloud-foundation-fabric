@@ -88,7 +88,7 @@ resource "google_compute_region_ssl_certificate" "default" {
   name        = "${var.name}-${each.key}"
   certificate = each.value.certificate
   private_key = each.value.private_key
-  
+
   lifecycle {
     create_before_destroy = true
   }
