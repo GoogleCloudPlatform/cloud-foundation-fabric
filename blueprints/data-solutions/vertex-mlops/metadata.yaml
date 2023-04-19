@@ -19,9 +19,9 @@ metadata:
 spec:
   title: MLOps with Vertex AI
   source:
-    repo: https://github.com/GoogleCloudPlatform/terraform-google-three-tier-web-app.git
+    repo: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git
     sourceType: git
-  version: 21.0.0
+  version: 1.0.0
   actuationTool:
     type: Terraform
     version: '>= 0.13'
@@ -47,11 +47,23 @@ spec:
   variables:
   - name: notebooks
     description: Vertex AI workbenchs to be deployed. Service Account runtime/instances deployed.
-    type: map(object({...}))
+    type: |-
+      map(object({
+        type             = string
+        machine_type     = optional(string, "n1-standard-4")
+        internal_ip_only = optional(bool, true)
+        idle_shutdown    = optional(bool, false)
+        owner            = optional(string)
+      }))
     required: true
   - name: project_config
     description: Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format.
-    type: object({...})
+    type: |-
+      object({
+        billing_account_id = optional(string)
+        parent             = optional(string)
+        project_id         = string
+      })
     required: true
   - name: bucket_name
     description: GCS bucket name to store the Vertex AI artifacts.
@@ -65,39 +77,65 @@ spec:
     required: false
   - name: groups
     description: Name of the groups (group_name@domain.org) to apply opinionated IAM permissions.
-    type: object({...})
+    type: |-
+      object({
+        gcp-ml-ds     = optional(string),
+        gcp-ml-eng    = optional(string),
+        gcp-ml-viewer = optional(string)
+      })
+    default: {}
     required: false
   - name: identity_pool_claims
     description: Claims to be used by Workload Identity Federation (i.e.: attribute.repository/ORGANIZATION/REPO). If a not null value is provided, then google_iam_workload_identity_pool resource will be created.
     type: string
+    default: null
     required: false
   - name: labels
     description: Labels to be assigned at project level.
     type: map(string)
     required: false
+    default: {}
   - name: location
     description: Location used for multi-regional resources.
     type: string
+    default: eu
     required: false
   - name: network_config
     description: Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values.
-    type: object({…})
+    type: |-
+      object({
+        host_project      = string
+        network_self_link = string
+        subnet_self_link  = string
+      })
+    default: null
     required: false
   - name: prefix
     description: Prefix used for the project id.
     type: string
+    default: null
     required: false
   - name: region
     description: Region used for regional resources.
     type: string
+    default: europe-west4
     required: false
   - name: repo_name
     description: Cloud Source Repository name. null to avoid to create it.
     type: string
+    default: null
     required: false
   - name: service_encryption_keys	
     description: Cloud KMS to use to encrypt different services. Key location should match service region.
-    type: object({…})
+    type: |-
+      object({
+        aiplatform    = optional(string)
+        bq            = optional(string)
+        notebooks     = optional(string)
+        secretmanager = optional(string)
+        storage       = optional(string)
+      })
+    default: {}
     required: false
   outputs:
   - name: github
