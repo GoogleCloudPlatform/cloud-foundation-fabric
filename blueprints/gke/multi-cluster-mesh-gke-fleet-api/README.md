@@ -53,7 +53,7 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 | name | description | modules | resources |
 |---|---|---|---|
 | [ansible.tf](./ansible.tf) | Ansible generated files. |  | <code>local_file</code> |
-| [gke.tf](./gke.tf) | GKE cluster and hub resources. | <code>gke-cluster</code> · <code>gke-hub</code> · <code>gke-nodepool</code> |  |
+| [gke.tf](./gke.tf) | GKE cluster and hub resources. | <code>gke-standard-cluster</code> · <code>gke-hub</code> · <code>gke-nodepool</code> |  |
 | [main.tf](./main.tf) | Project resources. | <code>project</code> |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [vm.tf](./vm.tf) | Management server. | <code>compute-vm</code> |  |
