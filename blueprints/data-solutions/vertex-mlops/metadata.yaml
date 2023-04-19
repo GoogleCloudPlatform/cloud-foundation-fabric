@@ -1,0 +1,131 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: blueprints.cloud.google.com/v1alpha1
+kind: BlueprintMetadata
+metadata:
+  name: terraform-google-fabric-data_solutiont-vertex_mlops
+spec:
+  title: MLOps with Vertex AI
+  source:
+    repo: https://github.com/GoogleCloudPlatform/terraform-google-three-tier-web-app.git
+    sourceType: git
+  version: 21.0.0
+  actuationTool:
+    type: Terraform
+    version: '>= 0.13'
+  description:
+    tagline: MLOps with Vertex AI
+    detailed: |-
+      This example implements the infrastructure required to deploy an end-to-end MLOps process using Vertex AI platform.
+    architecture:
+    - Vertex Workbench (for the experimentation environment).
+    - GCP Project (optional) to host all the resources.
+    - Isolated VPC network and a subnet to be used by Vertex and Dataflow. Alternatively, an external Shared VPC can be configured using the `network_config`variable.
+    - Firewall rule to allow the internal subnet communication required by Dataflow.
+    - Cloud NAT required to reach the internet from the different computing resources (Vertex and Dataflow).
+    - GCS buckets to host Vertex AI and Cloud Build Artifacts. By default the buckets will be regional and should match the Vertex AI region for the different resources (i.e. Vertex Managed Dataset) and processes (i.e. Vertex trainining).
+    - BigQuery Dataset where the training data will be stored. This is optional, since the training data could be already hosted in an existing BigQuery dataset.
+    - Artifact Registry Docker repository to host the custom images.
+    - Service account (`PREFIX-sa-mlops`) with the minimum permissions required by Vertex AI and Dataflow (if this service is used inside of the Vertex AI Pipeline).
+    - Service account (`PREFIX-sa-github@`) to be used by Workload Identity Federation, to federate Github identity (Optional).
+    - Secret Manager to store the Github SSH key to get access the CICD code repo.
+  documentation:
+  - title: Architecture Diagram
+    url: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/blueprints/data-solutions/vertex-mlops/images/mlops_projects.png
+  variables:
+  - name: notebooks
+    description: Vertex AI workbenchs to be deployed. Service Account runtime/instances deployed.
+    type: map(object({...}))
+    required: true
+  - name: project_config
+    description: Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format.
+    type: object({...})
+    required: true
+  - name: bucket_name
+    description: GCS bucket name to store the Vertex AI artifacts.
+    type: string
+    default: null
+    required: false
+  - name: dataset_name
+    description: BigQuery Dataset to store the training data.
+    type: string
+    default: null
+    required: false
+  - name: groups
+    description: Name of the groups (group_name@domain.org) to apply opinionated IAM permissions.
+    type: object({...})
+    required: false
+  - name: identity_pool_claims
+    description: Claims to be used by Workload Identity Federation (i.e.: attribute.repository/ORGANIZATION/REPO). If a not null value is provided, then google_iam_workload_identity_pool resource will be created.
+    type: string
+    required: false
+  - name: labels
+    description: Labels to be assigned at project level.
+    type: map(string)
+    required: false
+  - name: location
+    description: Location used for multi-regional resources.
+    type: string
+    required: false
+  - name: network_config
+    description: Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values.
+    type: object({…})
+    required: false
+  - name: prefix
+    description: Prefix used for the project id.
+    type: string
+    required: false
+  - name: region
+    description: Region used for regional resources.
+    type: string
+    required: false
+  - name: repo_name
+    description: Cloud Source Repository name. null to avoid to create it.
+    type: string
+    required: false
+  - name: service_encryption_keys	
+    description: Cloud KMS to use to encrypt different services. Key location should match service region.
+    type: object({…})
+    required: false
+  outputs:
+  - name: github
+    description: Github Configuration.
+  - name: notebook
+    description: Vertex AI notebooks ids.
+  - name: project
+    description: The project resource as return by the project module.
+  roles:
+  - level: Project
+    roles:
+    - roles/owner
+  services:
+  - aiplatform.googleapis.com
+  - artifactregistry.googleapis.com
+  - bigquery.googleapis.com
+  - bigquerystorage.googleapis.com
+  - cloudbuild.googleapis.com
+  - compute.googleapis.com
+  - datacatalog.googleapis.com
+  - dataflow.googleapis.com
+  - iam.googleapis.com
+  - ml.googleapis.com
+  - monitoring.googleapis.com
+  - notebooks.googleapis.com
+  - secretmanager.googleapis.com
+  - servicenetworking.googleapis.com
+  - serviceusage.googleapis.com
+  - stackdriver.googleapis.com
+  - storage.googleapis.com
+  - storage-component.googleapis.com
