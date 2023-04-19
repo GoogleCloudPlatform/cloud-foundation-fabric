@@ -21,10 +21,10 @@ resource "google_vertex_ai_metadata_store" "store" {
   description = "Vertex Ai Metadata Store"
   region      = var.region
   dynamic "encryption_spec" {
-    for_each = try(var.service_encryption_keys.aiplatform, null) == null ? [] : [""]
+    for_each = var.service_encryption_keys.aiplatform == null ? [] : [""]
 
     content {
-      kms_key_name = try(var.service_encryption_keys.aiplatform, null)
+      kms_key_name = var.service_encryption_keys.aiplatform
     }
   }
   # `state` value will be decided automatically based on the result of the configuration
@@ -42,7 +42,6 @@ module "service-account-notebook" {
 resource "google_notebooks_runtime" "runtime" {
   for_each = { for k, v in var.notebooks : k => v if v.type == "MANAGED" }
   name     = "${var.prefix}-${each.key}"
-
   project  = module.project.project_id
   location = var.region
   access_config {
@@ -59,9 +58,9 @@ resource "google_notebooks_runtime" "runtime" {
       subnet           = local.subnet
       internal_ip_only = var.notebooks[each.key].internal_ip_only
       dynamic "encryption_config" {
-        for_each = try(local.service_encryption_keys.notebooks, null) == null ? [] : [1]
+        for_each = var.service_encryption_keys.notebooks == null ? [] : [1]
         content {
-          kms_key = local.service_encryption_keys.notebooks
+          kms_key = var.service_encryption_keys.notebooks
         }
       }
       metadata = {
@@ -83,7 +82,7 @@ resource "google_notebooks_runtime" "runtime" {
 resource "google_notebooks_instance" "playground" {
   for_each     = { for k, v in var.notebooks : k => v if v.type == "USER_MANAGED" }
   name         = "${var.prefix}-${each.key}"
-  location     = format("%s-%s", var.region, "b")
+  location     = "${var.region}-b"
   machine_type = var.notebooks[each.key].machine_type
   project      = module.project.project_id
 
@@ -95,8 +94,8 @@ resource "google_notebooks_instance" "playground" {
   install_gpu_driver = true
   boot_disk_type     = "PD_SSD"
   boot_disk_size_gb  = 110
-  disk_encryption    = try(local.service_encryption_keys.notebooks != null, false) ? "CMEK" : null
-  kms_key            = try(local.service_encryption_keys.notebooks, null)
+  disk_encryption    = var.service_encryption_keys.notebooks != null ? "CMEK" : null
+  kms_key            = var.service_encryption_keys.notebooks
 
   no_public_ip    = var.notebooks[each.key].internal_ip_only
   no_proxy_access = false

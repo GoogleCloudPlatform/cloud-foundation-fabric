@@ -30,9 +30,9 @@ variable "dataset_name" {
 variable "groups" {
   description = "Name of the groups (name@domain.org) to apply opinionated IAM permissions."
   type = object({
-    gcp-ml-ds     = optional(string, null)
-    gcp-ml-eng    = optional(string, null)
-    gcp-ml-viewer = optional(string, null)
+    gcp-ml-ds     = optional(string)
+    gcp-ml-eng    = optional(string)
+    gcp-ml-viewer = optional(string)
   })
   default = {
     gcp-ml-ds     = null
@@ -77,7 +77,7 @@ variable "notebooks" {
     machine_type     = optional(string, "n1-standard-4")
     internal_ip_only = optional(bool, true)
     idle_shutdown    = optional(bool, false)
-    owner            = optional(string, null)
+    owner            = optional(string)
   }))
   validation {
     condition = alltrue([
@@ -100,14 +100,15 @@ variable "prefix" {
 variable "project_config" {
   description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
   type = object({
-    billing_account_id = optional(string, null)
-    parent             = string
+    billing_account_id = optional(string)
+    parent             = optional(string)
     project_id         = string
   })
   validation {
     condition     = var.project_config.project_id != null
     error_message = "Project id must be set."
   }
+  nullable = false
 }
 
 variable "region" {
@@ -125,17 +126,12 @@ variable "repo_name" {
 variable "service_encryption_keys" {
   description = "Cloud KMS to use to encrypt different services. Key location should match service region."
   type = object({
-    aiplatform    = optional(string, null)
-    bq            = optional(string, null)
-    notebooks     = optional(string, null)
-    secretmanager = optional(string, null)
-    storage       = optional(string, null)
+    aiplatform    = optional(string)
+    bq            = optional(string)
+    notebooks     = optional(string)
+    secretmanager = optional(string)
+    storage       = optional(string)
   })
-  default = {
-    aiplatform    = null
-    bq            = null
-    notebooks     = null
-    secretmanager = null
-    storage       = null
-  }
+  default  = {}
+  nullable = false
 }
