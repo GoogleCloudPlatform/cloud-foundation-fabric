@@ -34,11 +34,7 @@ variable "groups" {
     gcp-ml-eng    = optional(string)
     gcp-ml-viewer = optional(string)
   })
-  default = {
-    gcp-ml-ds     = null
-    gcp-ml-eng    = null
-    gcp-ml-viewer = null
-  }
+  default  = {}
   nullable = false
 }
 
