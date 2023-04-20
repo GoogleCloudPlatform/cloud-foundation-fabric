@@ -21,10 +21,10 @@ spec:
   source:
     repo: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git
     sourceType: git
-  version: 1.0.0
+  version: 21.0.0
   actuationTool:
     type: Terraform
-    version: '>= 0.13'
+    version: '>=  1.3.0'
   description:
     tagline: MLOps with Vertex AI
     detailed: |-
