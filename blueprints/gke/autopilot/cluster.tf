@@ -15,7 +15,7 @@
  */
 
 module "cluster" {
-  source     = "../../../modules/gke-autopilot-cluster"
+  source     = "../../../modules/gke-cluster-autopilot"
   project_id = module.project.project_id
   name       = "cluster"
   location   = var.region

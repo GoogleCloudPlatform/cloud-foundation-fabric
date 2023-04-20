@@ -1,4 +1,4 @@
-# GKE Autopilot cluster module
+# GKE cluster Autopilot  module
 
 This module allows simplified creation and management of GKE Autopilot clusters. Some sensible defaults are set initially, in order to allow less verbose usage for most use cases.
 
@@ -8,7 +8,7 @@ This module allows simplified creation and management of GKE Autopilot clusters.
 
 ```hcl
 module "cluster-1" {
-  source     = "./fabric/modules/gke-autopilot-cluster"
+  source     = "./fabric/modules/gke-cluster-autopilot"
   project_id = "myproject"
   name       = "cluster-1"
   location   = "europe-west1"
@@ -42,7 +42,7 @@ This example shows how to [use Cloud DNS as a Kubernetes DNS provider](https://c
 
 ```hcl
 module "cluster-1" {
-  source     = "./fabric/modules/gke-autopilot-cluster"
+  source     = "./fabric/modules/gke-cluster-autopilot"
   project_id = var.project_id
   name       = "cluster-1"
   location   = "europe-west1"
@@ -69,7 +69,7 @@ This example shows how to [enable the Backup for GKE agent and configure a Backu
 
 ```hcl
 module "cluster-1" {
-  source     = "./fabric/modules/gke-autopilot-cluster"
+  source     = "./fabric/modules/gke-cluster-autopilot"
   project_id = var.project_id
   name       = "cluster-1"
   location   = "europe-west1"
