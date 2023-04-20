@@ -30,27 +30,6 @@ variable "backup_configs" {
   nullable = false
 }
 
-# variable "cluster_autoscaling" {
-#   description = "Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler."
-#   type = object({
-#     auto_provisioning_defaults = optional(object({
-#       boot_disk_kms_key = optional(string)
-#       image_type        = optional(string)
-#       oauth_scopes      = optional(list(string))
-#       service_account   = optional(string)
-#     }))
-#     cpu_limits = optional(object({
-#       min = number
-#       max = number
-#     }))
-#     mem_limits = optional(object({
-#       min = number
-#       max = number
-#     }))
-#   })
-#   default = null
-# }
-
 variable "description" {
   description = "Cluster description."
   type        = string
@@ -81,7 +60,6 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
-    # autopilot            = optional(bool, false)
     binary_authorization = optional(bool, false)
     dns = optional(object({
       provider = optional(string)
@@ -92,10 +70,8 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
-    # dataplane_v2         = optional(bool, false)
-    gateway_api     = optional(bool, false)
-    groups_for_rbac = optional(string)
-    # intranode_visibility = optional(bool, false)
+    gateway_api         = optional(bool, false)
+    groups_for_rbac     = optional(string)
     l4_ilb_subsetting   = optional(bool, false)
     mesh_certificates   = optional(bool)
     pod_security_policy = optional(bool, false)
@@ -104,13 +80,11 @@ variable "enable_features" {
       enable_network_egress_metering       = optional(bool)
       enable_resource_consumption_metering = optional(bool)
     }))
-    # shielded_nodes = optional(bool, false)
     tpu = optional(bool, false)
     upgrade_notifications = optional(object({
       topic_id = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
-    # workload_identity        = optional(bool, true)
   })
   default = {
 
@@ -134,11 +108,6 @@ variable "location" {
   type        = string
 }
 
-# variable "logging_config" {
-#   description = "Logging configuration."
-#   type        = list(string)
-#   default     = ["SYSTEM_COMPONENTS"]
-# }
 
 variable "maintenance_config" {
   description = "Maintenance window configuration."
@@ -163,28 +132,11 @@ variable "maintenance_config" {
   }
 }
 
-# variable "max_pods_per_node" {
-#   description = "Maximum number of pods per node in this cluster."
-#   type        = number
-#   default     = 110
-# }
-
 variable "min_master_version" {
   description = "Minimum version of the master, defaults to the version of the most recent official release."
   type        = string
   default     = null
 }
-
-# variable "monitoring_config" {
-#   description = "Monitoring components."
-#   type = object({
-#     enable_components  = optional(list(string))
-#     managed_prometheus = optional(bool)
-#   })
-#   default = {
-#     enable_components = ["SYSTEM_COMPONENTS"]
-#   }
-# }
 
 variable "name" {
   description = "Cluster name."

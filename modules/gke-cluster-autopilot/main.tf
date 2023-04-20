@@ -29,48 +29,26 @@ resource "google_container_cluster" "cluster" {
   node_locations = (
     length(var.node_locations) == 0 ? null : var.node_locations
   )
-  min_master_version = var.min_master_version
-  network            = var.vpc_config.network
-  subnetwork         = var.vpc_config.subnetwork
-  resource_labels    = var.labels
-  # default_max_pods_per_node = (
-  #   var.enable_features.autopilot ? null : var.max_pods_per_node
-  # )
-  # enable_intranode_visibility = (
-  #   var.enable_features.autopilot ? null : var.enable_features.intranode_visibility
-  # )
+  min_master_version       = var.min_master_version
+  network                  = var.vpc_config.network
+  subnetwork               = var.vpc_config.subnetwork
+  resource_labels          = var.labels
   enable_l4_ilb_subsetting = var.enable_features.l4_ilb_subsetting
-  # enable_shielded_nodes = (
-  #   var.enable_features.autopilot ? null : var.enable_features.shielded_nodes
-  # )
-  enable_tpu         = var.enable_features.tpu
-  initial_node_count = 1
-  # remove_default_node_pool = var.enable_features.autopilot ? null : true
+  enable_tpu               = var.enable_features.tpu
+  initial_node_count       = 1
 
   enable_autopilot = true
 
   addons_config {
-    # dns_cache_config {
-    #   enabled = var.enable_addons.dns_cache
-    # }
     http_load_balancing {
       disabled = !var.enable_addons.http_load_balancing
     }
     horizontal_pod_autoscaling {
       disabled = !var.enable_addons.horizontal_pod_autoscaling
     }
-    # network_policy_config {
-    #   disabled = !var.enable_addons.network_policy
-    # }
     cloudrun_config {
       disabled = !var.enable_addons.cloudrun
     }
-    # istio_config {
-    #   disabled = var.enable_addons.istio == null
-    #   auth = (
-    #     try(var.enable_addons.istio.enable_tls, false) ? "AUTH_MUTUAL_TLS" : "AUTH_NONE"
-    #   )
-    # }
 
     kalm_config {
       enabled = var.enable_addons.kalm
@@ -130,6 +108,7 @@ resource "google_container_cluster" "cluster" {
       services_ipv4_cidr_block = var.vpc_config.secondary_range_blocks.services
     }
   }
+
   dynamic "ip_allocation_policy" {
     for_each = var.vpc_config.secondary_range_names != null ? [""] : []
     content {
@@ -137,13 +116,6 @@ resource "google_container_cluster" "cluster" {
       services_secondary_range_name = var.vpc_config.secondary_range_names.services
     }
   }
-
-  # dynamic "logging_config" {
-  #   for_each = var.logging_config != null && !var.enable_features.autopilot ? [""] : []
-  #   content {
-  #     enable_components = var.logging_config
-  #   }
-  # }
 
   dynamic "gateway_api_config" {
     for_each = var.enable_features.gateway_api ? [""] : []
@@ -217,34 +189,6 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  # dynamic "monitoring_config" {
-  #   for_each = var.monitoring_config != null && !var.enable_features.autopilot ? [""] : []
-  #   content {
-  #     enable_components = var.monitoring_config.enable_components
-  #     dynamic "managed_prometheus" {
-  #       for_each = (
-  #         try(var.monitoring_config.managed_prometheus, null) == true ? [""] : []
-  #       )
-  #       content {
-  #         enabled = true
-  #       }
-  #     }
-  #   }
-  # }
-
-  # # dataplane v2 has bult-in network policies
-  # dynamic "network_policy" {
-  #   for_each = (
-  #     var.enable_addons.network_policy && !var.enable_features.dataplane_v2
-  #     ? [""]
-  #     : []
-  #   )
-  #   content {
-  #     enabled  = true
-  #     provider = "CALICO"
-  #   }
-  # }
-
   dynamic "notification_config" {
     for_each = var.enable_features.upgrade_notifications != null ? [""] : []
     content {
@@ -312,13 +256,6 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_features.vertical_pod_autoscaling
     }
   }
-
-  #   dynamic "workload_identity_config" {
-  #     for_each = (var.enable_features.workload_identity && !var.enable_features.autopilot) ? [""] : []
-  #     content {
-  #       workload_pool = "${var.project_id}.svc.id.goog"
-  #     }
-  #   }
 }
 
 resource "google_gke_backup_backup_plan" "backup_plan" {
