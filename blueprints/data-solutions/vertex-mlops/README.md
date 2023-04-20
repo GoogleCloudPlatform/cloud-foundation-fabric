@@ -1,6 +1,10 @@
 # MLOps with Vertex AI
 
-## Introduction
+## Tagline
+
+Create a Vertex AI environment needed for MLOps.
+
+## Detailed
 
 This example implements the infrastructure required to deploy an end-to-end [MLOps process](https://services.google.com/fh/files/misc/practitioners_guide_to_mlops_whitepaper.pdf) using [Vertex AI](https://cloud.google.com/vertex-ai) platform.
 
@@ -8,17 +12,19 @@ This example implements the infrastructure required to deploy an end-to-end [MLO
 
 The blueprint will deploy all the required resources to have a fully functional MLOPs environment containing:
 
-- Vertex Workbench (for the experimentation environment).
-- GCP Project (optional) to host all the resources.
-- Isolated VPC network and a subnet to be used by Vertex and Dataflow. Alternatively, an external Shared VPC can be configured using the `network_config`variable.
-- Firewall rule to allow the internal subnet communication required by Dataflow.
-- Cloud NAT required to reach the internet from the different computing resources (Vertex and Dataflow).
-- GCS buckets to host Vertex AI and Cloud Build Artifacts. By default the buckets will be regional and should match the Vertex AI region for the different resources (i.e. Vertex Managed Dataset) and processes (i.e. Vertex trainining).
-- BigQuery Dataset where the training data will be stored. This is optional, since the training data could be already hosted in an existing BigQuery dataset.
-- Artifact Registry Docker repository to host the custom images.
-- Service account (`PREFIX-sa-mlops`) with the minimum permissions required by Vertex AI and Dataflow (if this service is used inside of the Vertex AI Pipeline).
-- Service account (`PREFIX-sa-github@`) to be used by Workload Identity Federation, to federate Github identity (Optional).
-- Secret Manager to store the Github SSH key to get access the CICD code repo.
+1. Vertex Workbench (for the experimentation environment).
+1. GCP Project (optional) to host all the resources.
+1. Isolated VPC network and a subnet to be used by Vertex and Dataflow. Alternatively, an external Shared VPC can be configured using the `network_config`variable.
+1. Firewall rule to allow the internal subnet communication required by Dataflow.
+1. Cloud NAT required to reach the internet from the different computing resources (Vertex and Dataflow).
+1. GCS buckets to host Vertex AI and Cloud Build Artifacts. By default the buckets will be regional and should match the Vertex AI region for the different resources (i.e. Vertex Managed Dataset) and processes (i.e. Vertex trainining).
+1. BigQuery Dataset where the training data will be stored. This is optional, since the training data could be already hosted in an existing BigQuery dataset.
+1. Artifact Registry Docker repository to host the custom images.
+1. Service account (`PREFIX-sa-mlops`) with the minimum permissions required by Vertex AI and Dataflow (if this service is used inside of the Vertex AI Pipeline).
+1. Service account (`PREFIX-sa-github@`) to be used by Workload Identity Federation, to federate Github identity (Optional).
+1. Secret Manager to store the Github SSH key to get access the CICD code repo.
+
+## Documentation
 
 ![MLOps project description](./images/mlops_projects.png "MLOps project description")
 
@@ -46,6 +52,29 @@ Please note that these groups are not suitable for production grade environments
 ## What's next?
 
 This blueprint can be used as a building block for setting up an end2end ML Ops solution. As next step, you can follow this [guide](https://cloud.google.com/architecture/architecture-for-mlops-using-tfx-kubeflow-pipelines-and-cloud-build) to setup a Vertex AI pipeline and run it on the deployed infraestructure.
+
+## Usage
+
+Basic usage of this module is as follows:
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/data-solutions/vertex-mlops/"
+  notebooks = {
+    "myworkbench" = {
+      type = "USER_MANAGED"
+    }
+  }
+  prefix = "pref-dev"
+  project_config = {
+    billing_account_id = "000000-123456-123456"
+    parent             = "folders/111111111111"
+    project_id         = "test-dev"
+  }
+}
+# tftest modules=11 resources=60
+```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
