@@ -70,10 +70,10 @@ spec:
           containerPort: 8081
         resources:
           requests:
-            cpu: 10m
-            memory: 50Mi
+            cpu: 250m
+            memory: 500Mi
           limits:
-            memory: 50Mi
+            memory: 500Mi
         securityContext:
           allowPrivilegeEscalation: false
           privileged: false
