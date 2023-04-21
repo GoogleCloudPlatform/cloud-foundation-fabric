@@ -240,7 +240,7 @@ module "service-account-gce" {
 ################################################################################
 
 module "cluster-1" {
-  source     = "../../../modules/gke-cluster"
+  source     = "../../../modules/gke-cluster-standard"
   name       = "${var.prefix}-cluster-1"
   project_id = module.project.project_id
   location   = "${var.region}-b"

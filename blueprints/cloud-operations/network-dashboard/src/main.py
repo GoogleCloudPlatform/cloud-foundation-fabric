@@ -80,8 +80,9 @@ def do_discovery(resources):
           resources[result.type][result.id][result.key] = result.data
         else:
           resources[result.type][result.id] = result.data
-  LOGGER.info('discovery end {}'.format(
-      {k: len(v) for k, v in resources.items() if not isinstance(v, str)}))
+  LOGGER.info('discovery end {}'.format({
+      k: len(v) for k, v in resources.items() if not isinstance(v, str)
+  }))
 
 
 def do_init(resources, discovery_root, monitoring_project, folders=None,
