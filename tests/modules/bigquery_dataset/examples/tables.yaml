@@ -1,0 +1,39 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.bigquery-dataset.google_bigquery_dataset.default:
+    dataset_id: my_dataset
+    project: my-project
+  module.bigquery-dataset.google_bigquery_table.default["countries"]:
+    clustering: null
+    dataset_id: my_dataset
+    deletion_protection: true
+    description: Terraform managed.
+    friendly_name: Countries
+    materialized_view: []
+    project: my-project
+    range_partitioning: []
+    schema: '[{"name":"country","type":"STRING"},{"name":"population","type":"INT64"}]'
+    table_id: countries
+    time_partitioning: []
+    view: []
+
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_table: 1
+  modules: 1
+  resources: 2
+
+outputs: {}
