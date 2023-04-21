@@ -46,7 +46,7 @@ module "vpc" {
 }
 
 module "cluster_1" {
-  source     = "./fabric/modules/gke-cluster"
+  source     = "./fabric/modules/gke-cluster-standard"
   project_id = module.project.project_id
   name       = "cluster-1"
   location   = "europe-west1"
@@ -212,7 +212,7 @@ module "firewall" {
 }
 
 module "cluster_1" {
-  source     = "./fabric/modules/gke-cluster"
+  source     = "./fabric/modules/gke-cluster-standard"
   project_id = module.project.project_id
   name       = "cluster-1"
   location   = "europe-west1"
@@ -253,7 +253,7 @@ module "cluster_1_nodepool" {
 }
 
 module "cluster_2" {
-  source     = "./fabric/modules/gke-cluster"
+  source     = "./fabric/modules/gke-cluster-standard"
   project_id = module.project.project_id
   name       = "cluster-2"
   location   = "europe-west4"

@@ -13,8 +13,26 @@
 # limitations under the License.
 
 values:
-  module.cluster-autopilot.google_container_cluster.cluster:
-    enable_autopilot: true
+  module.cluster-1.google_container_cluster.cluster:
+    location: europe-west1
+    name: cluster-1
 
+  module.cluster-1.google_gke_backup_backup_plan.backup_plan["backup-1"]:
+    backup_config:
+    - all_namespaces: true
+      encryption_key: []
+      include_secrets: true
+      include_volume_data: true
+      selected_applications: []
+      selected_namespaces: []
+    backup_schedule:
+    - cron_schedule: 0 9 * * 1
+    location: europe-west-2
+    name: backup-1
+    project: project-id
+    retention_policy:
+    - locked: false
+   
 counts:
   google_container_cluster: 1
+  google_gke_backup_backup_plan: 1

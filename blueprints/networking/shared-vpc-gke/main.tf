@@ -197,7 +197,7 @@ module "vm-bastion" {
 ################################################################################
 
 module "cluster-1" {
-  source     = "../../../modules/gke-cluster"
+  source     = "../../../modules/gke-cluster-standard"
   count      = var.cluster_create ? 1 : 0
   name       = "cluster-1"
   project_id = module.project-svc-gke.project_id
