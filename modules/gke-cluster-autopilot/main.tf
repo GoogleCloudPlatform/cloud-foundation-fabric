@@ -15,12 +15,6 @@
  */
 
 resource "google_container_cluster" "cluster" {
-  lifecycle {
-    ignore_changes = [
-      node_config[0].boot_disk_kms_key,
-      node_config[0].spot
-    ]
-  }
   provider    = google-beta
   project     = var.project_id
   name        = var.name
@@ -277,6 +271,12 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     include_volume_data = true
     include_secrets     = true
     all_namespaces      = true
+  }
+  lifecycle {
+    ignore_changes = [
+      node_config[0].boot_disk_kms_key,
+      node_config[0].spot
+    ]
   }
 }
 
