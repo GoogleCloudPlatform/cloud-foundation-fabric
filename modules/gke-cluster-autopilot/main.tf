@@ -272,12 +272,6 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     include_secrets     = true
     all_namespaces      = true
   }
-  lifecycle {
-    ignore_changes = [
-      node_config[0].boot_disk_kms_key,
-      node_config[0].spot
-    ]
-  }
 }
 
 
