@@ -16,10 +16,9 @@ import pytest
 
 
 @pytest.fixture
-def resources(plan_summary, plan_runner, version):
+def resources(plan_summary, version):
   # convert `version` to a boolean suitable for the `v2` variable
   v2 = {'v1': 'false', 'v2': 'true'}[version]
-  #_, resources = plan_runner(v2=v2)
   summary = plan_summary('modules/cloud-function',
                          tf_var_files=['common.tfvars'], v2=v2)
   return summary
