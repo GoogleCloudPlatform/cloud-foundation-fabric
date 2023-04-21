@@ -17,7 +17,7 @@
 # tfdoc:file:description GKE clusters.
 
 module "gke-cluster" {
-  source                   = "../../../modules/gke-cluster"
+  source                   = "../../../modules/gke-cluster-standard"
   for_each                 = var.clusters
   name                     = each.key
   project_id               = module.gke-project-0.project_id

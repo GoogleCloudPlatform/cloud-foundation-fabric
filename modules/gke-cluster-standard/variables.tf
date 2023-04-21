@@ -83,7 +83,6 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
-    autopilot            = optional(bool, false)
     binary_authorization = optional(bool, false)
     dns = optional(object({
       provider = optional(string)

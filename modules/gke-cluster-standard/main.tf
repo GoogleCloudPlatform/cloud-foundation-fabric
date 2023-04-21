@@ -15,12 +15,6 @@
  */
 
 resource "google_container_cluster" "cluster" {
-  lifecycle {
-    ignore_changes = [
-      node_config[0].boot_disk_kms_key,
-      node_config[0].spot
-    ]
-  }
   provider    = google-beta
   project     = var.project_id
   name        = var.name
@@ -29,54 +23,39 @@ resource "google_container_cluster" "cluster" {
   node_locations = (
     length(var.node_locations) == 0 ? null : var.node_locations
   )
-  min_master_version = var.min_master_version
-  network            = var.vpc_config.network
-  subnetwork         = var.vpc_config.subnetwork
-  resource_labels    = var.labels
-  default_max_pods_per_node = (
-    var.enable_features.autopilot ? null : var.max_pods_per_node
-  )
-  enable_intranode_visibility = (
-    var.enable_features.autopilot ? null : var.enable_features.intranode_visibility
-  )
-  enable_l4_ilb_subsetting = var.enable_features.l4_ilb_subsetting
-  enable_shielded_nodes = (
-    var.enable_features.autopilot ? null : var.enable_features.shielded_nodes
-  )
-  enable_tpu               = var.enable_features.tpu
-  initial_node_count       = 1
-  remove_default_node_pool = var.enable_features.autopilot ? null : true
+  min_master_version          = var.min_master_version
+  network                     = var.vpc_config.network
+  subnetwork                  = var.vpc_config.subnetwork
+  resource_labels             = var.labels
+  default_max_pods_per_node   = var.max_pods_per_node
+  enable_intranode_visibility = var.enable_features.intranode_visibility
+  enable_l4_ilb_subsetting    = var.enable_features.l4_ilb_subsetting
+  enable_shielded_nodes       = var.enable_features.shielded_nodes
+  enable_tpu                  = var.enable_features.tpu
+  initial_node_count          = 1
+  remove_default_node_pool    = true
   datapath_provider = (
-    var.enable_features.dataplane_v2 || var.enable_features.autopilot
+    var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"
     : "DATAPATH_PROVIDER_UNSPECIFIED"
   )
-  enable_autopilot = var.enable_features.autopilot ? true : null
 
   # the default nodepool is deleted here, use the gke-nodepool module instead
   # default nodepool configuration based on a shielded_nodes variable
-  dynamic "node_config" {
-    for_each = var.enable_features.autopilot ? [] : [""]
-    content {
-      dynamic "shielded_instance_config" {
-        for_each = var.enable_features.shielded_nodes ? [""] : []
-        content {
-          enable_secure_boot          = true
-          enable_integrity_monitoring = true
-        }
+  node_config {
+    dynamic "shielded_instance_config" {
+      for_each = var.enable_features.shielded_nodes ? [""] : []
+      content {
+        enable_secure_boot          = true
+        enable_integrity_monitoring = true
       }
-      tags = var.tags
     }
+    tags = var.tags
   }
 
-
-
   addons_config {
-    dynamic "dns_cache_config" {
-      for_each = !var.enable_features.autopilot ? [""] : []
-      content {
-        enabled = var.enable_addons.dns_cache
-      }
+    dns_cache_config {
+      enabled = var.enable_addons.dns_cache
     }
     http_load_balancing {
       disabled = !var.enable_addons.http_load_balancing
@@ -84,11 +63,8 @@ resource "google_container_cluster" "cluster" {
     horizontal_pod_autoscaling {
       disabled = !var.enable_addons.horizontal_pod_autoscaling
     }
-    dynamic "network_policy_config" {
-      for_each = !var.enable_features.autopilot ? [""] : []
-      content {
-        disabled = !var.enable_addons.network_policy
-      }
+    network_policy_config {
+      disabled = !var.enable_addons.network_policy
     }
     cloudrun_config {
       disabled = !var.enable_addons.cloudrun
@@ -100,17 +76,10 @@ resource "google_container_cluster" "cluster" {
       )
     }
     gce_persistent_disk_csi_driver_config {
-      enabled = (
-        var.enable_features.autopilot
-        ? true
-        : var.enable_addons.gce_persistent_disk_csi_driver
-      )
+      enabled = var.enable_addons.gce_persistent_disk_csi_driver
     }
-    dynamic "gcp_filestore_csi_driver_config" {
-      for_each = !var.enable_features.autopilot ? [""] : []
-      content {
-        enabled = var.enable_addons.gcp_filestore_csi_driver
-      }
+    gcp_filestore_csi_driver_config {
+      enabled = var.enable_addons.gcp_filestore_csi_driver
     }
     kalm_config {
       enabled = var.enable_addons.kalm
@@ -140,7 +109,7 @@ resource "google_container_cluster" "cluster" {
   dynamic "cluster_autoscaling" {
     for_each = var.cluster_autoscaling == null ? [] : [""]
     content {
-      enabled = var.enable_features.autopilot ? null : true
+      enabled = true
 
       dynamic "auto_provisioning_defaults" {
         for_each = var.cluster_autoscaling.auto_provisioning_defaults != null ? [""] : []
@@ -204,7 +173,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "logging_config" {
-    for_each = var.logging_config != null && !var.enable_features.autopilot ? [""] : []
+    for_each = var.logging_config != null ? [""] : []
     content {
       enable_components = var.logging_config
     }
@@ -283,7 +252,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "monitoring_config" {
-    for_each = var.monitoring_config != null && !var.enable_features.autopilot ? [""] : []
+    for_each = var.monitoring_config != null ? [""] : []
     content {
       enable_components = var.monitoring_config.enable_components
       dynamic "managed_prometheus" {
@@ -379,10 +348,16 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "workload_identity_config" {
-    for_each = (var.enable_features.workload_identity && !var.enable_features.autopilot) ? [""] : []
+    for_each = var.enable_features.workload_identity ? [""] : []
     content {
       workload_pool = "${var.project_id}.svc.id.goog"
     }
+  }
+  lifecycle {
+    ignore_changes = [
+      node_config[0].boot_disk_kms_key,
+      node_config[0].spot
+    ]
   }
 }
 
