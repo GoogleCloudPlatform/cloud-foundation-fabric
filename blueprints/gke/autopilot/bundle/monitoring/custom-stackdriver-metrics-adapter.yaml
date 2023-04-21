@@ -89,10 +89,10 @@ spec:
         - --use-new-resource-model=false
         resources:
           limits:
-            cpu: 100m
-            memory: 150Mi
+            cpu: 250m
+            memory: 500Mi
           requests:
-            memory: 150Mi
+            memory: 500Mi
 ---
 apiVersion: v1
 kind: Service
