@@ -143,6 +143,7 @@ def plan_summary_fixture(request):
             **tf_vars):
     if basedir is None:
       basedir = Path(request.fspath).parent
+      print(f"{basedir=}")
     return plan_summary(module_path=module_path, basedir=basedir,
                         tf_var_files=tf_var_files, extra_files=extra_files,
                         **tf_vars)
