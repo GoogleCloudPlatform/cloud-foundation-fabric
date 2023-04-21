@@ -1,0 +1,38 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.addresses.google_compute_address.internal["ilb-1"]:
+    address_type: INTERNAL
+    labels: null
+    name: ilb-1
+    network: null
+    prefix_length: null
+    project: project-id
+    purpose: SHARED_LOADBALANCER_VIP
+    region: region
+    subnetwork: subnet_self_link
+  module.addresses.google_compute_address.internal["ilb-2"]:
+    address: 10.0.0.2
+    address_type: INTERNAL
+    labels: null
+    name: ilb-2
+    network: null
+    prefix_length: null
+    project: project-id
+    region: region
+    subnetwork: subnet_self_link
+
+counts:
+  google_compute_address: 2
