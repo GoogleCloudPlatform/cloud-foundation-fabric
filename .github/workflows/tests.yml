@@ -43,9 +43,6 @@ jobs:
 
       - shell: bash
         run: |
-          echo 'plugin_cache_dir = "/home/runner/.terraform.d/plugin-cache"' | tee -a /home/runner/.terraformrc
-          echo 'disable_checkpoint = true' | tee -a /home/runner/.terraformrc
-          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           cp default-versions.tf tools/lockfile
           cd tools/lockfile
           terraform init
@@ -55,6 +52,15 @@ jobs:
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
+
+      - shell: bash
+        run: |
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          echo 'plugin_cache_dir = "/home/runner/.terraform.d/plugin-cache"' | tee -a /home/runner/.terraformrc
+          echo 'disable_checkpoint = true' | tee -a /home/runner/.terraformrc
+          cd tools/lockfile
+          rm -rf .terraform*
+          terraform init
 
       - name: tf provider cache content
         shell: bash
