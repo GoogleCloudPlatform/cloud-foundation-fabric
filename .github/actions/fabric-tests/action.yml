@@ -53,6 +53,7 @@ runs:
 
     - shell: bash
       run: |
+        ls -R
         cat tools/lockfile/.terraform.lock.hcl
 
     - name: Cache Terraform
