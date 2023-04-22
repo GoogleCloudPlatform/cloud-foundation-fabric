@@ -72,7 +72,7 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests on documentation examples
-        run: pytest -vv -k blueprints/ tests/examples
+        run: pytest -vv -n4 -k blueprints/ tests/examples
 
   examples-modules:
     runs-on: ubuntu-latest
@@ -87,7 +87,7 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests on documentation examples
-        run: pytest -vv -k modules/ tests/examples
+        run: pytest -vv -n4 -k modules/ tests/examples
 
   blueprints:
     runs-on: ubuntu-latest
@@ -102,7 +102,7 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests environments
-        run: pytest -vv tests/blueprints
+        run: pytest -vv -n4 tests/blueprints
 
   modules:
     runs-on: ubuntu-latest
@@ -117,7 +117,7 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests modules
-        run: pytest -vv tests/modules
+        run: pytest -vv -n4 tests/modules
 
   fast:
     runs-on: ubuntu-latest
@@ -132,4 +132,4 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests on FAST stages
-        run: pytest -vv tests/fast
+        run: pytest -vv -n4 tests/fast
