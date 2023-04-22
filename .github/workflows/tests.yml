@@ -49,10 +49,16 @@ jobs:
 
       - shell: bash
         run: |
+          echo 'plugin_cache_dir = "/home/runner/.terraform.d/plugin-cache"' | tee -a /home/runner/.terraformrc
+          echo 'disable_checkpoint = true' | tee -a /home/runner/.terraformrc
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           cp default-versions.tf tools/lockfile
           cd tools/lockfile
           terraform init
+
+      - shell: bash
+        run: |
+          cat tools/lockfile/.terraform.lock.hcl
 
       - uses: actions/upload-artifact@v3
         with:
