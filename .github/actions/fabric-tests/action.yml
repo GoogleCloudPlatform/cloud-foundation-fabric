@@ -50,7 +50,7 @@ runs:
     - uses: actions/download-artifact@v3
       with:
         name: lockfile
-        path: tool/lockfile
+        path: tools/lockfile
 
     - shell: bash
       run: |
