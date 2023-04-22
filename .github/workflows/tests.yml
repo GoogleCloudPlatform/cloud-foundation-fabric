@@ -44,6 +44,7 @@ jobs:
       - shell: bash
         run: |
           cp default-versions.tf tools/lockfile
+          sed -i 's/>=\(.*# tftest\)/=\1/g' tools/lockfile/default-versions.tf;
           cd tools/lockfile
           terraform init
 
