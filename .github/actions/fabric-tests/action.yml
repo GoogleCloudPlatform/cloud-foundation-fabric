@@ -46,6 +46,17 @@ runs:
         echo 'disable_checkpoint = true' \
           | tee -a /home/runner/.terraformrc
         mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+
+    - uses: actions/download-artifact@v3
+      with:
+        name: lockfile
+
+    - name: Cache Terraform
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+        key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
+
     # avoid conflicts with user-installed providers on local machines
     - name: Pin provider versions
       shell: bash
