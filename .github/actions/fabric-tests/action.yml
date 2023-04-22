@@ -50,12 +50,12 @@ runs:
     - uses: actions/download-artifact@v3
       with:
         name: lockfile
-        path: tmp/
+        path: tool/lockfile
 
     - shell: bash
       run: |
-        ls -Ra tmp
-        cat tmp/tools/lockfile/.terraform.lock.hcl
+        ls -Ra tools/lockfile
+        cat tools/lockfile/.terraform.lock.hcl
 
     - name: Cache Terraform
       uses: actions/cache@v3
