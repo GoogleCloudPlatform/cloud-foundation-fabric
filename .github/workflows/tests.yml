@@ -50,6 +50,7 @@ jobs:
       - shell: bash
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          cp default-versions.tf tools/lockfile
           cd tools/lockfile
           terraform init
 
