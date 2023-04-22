@@ -52,11 +52,6 @@ runs:
         name: lockfile
         path: tools/lockfile
 
-    - shell: bash
-      run: |
-        ls -Ra tools/lockfile
-        cat tools/lockfile/.terraform.lock.hcl
-
     - name: Cache Terraform
       uses: actions/cache@v3
       with:

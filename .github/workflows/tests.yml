@@ -41,12 +41,6 @@ jobs:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
 
-      - name: Cache Terraform
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
-
       - shell: bash
         run: |
           echo 'plugin_cache_dir = "/home/runner/.terraform.d/plugin-cache"' | tee -a /home/runner/.terraformrc
@@ -56,9 +50,16 @@ jobs:
           cd tools/lockfile
           terraform init
 
-      - shell: bash
+      - name: Cache Terraform
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+          key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
+
+      - name: tf provider cache content
+        shell: bash
         run: |
-          cat tools/lockfile/.terraform.lock.hcl
+          ls -Ra /home/runner/.terraform.d/plugin-cache
 
       - uses: actions/upload-artifact@v3
         with:
