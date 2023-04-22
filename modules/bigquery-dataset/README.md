@@ -35,7 +35,7 @@ module "bigquery-dataset" {
     view_1         = "my-project|my-dataset|my-table"
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=simple.yaml
 ```
 
 ### IAM roles
@@ -51,7 +51,7 @@ module "bigquery-dataset" {
     "roles/bigquery.dataOwner" = ["user:user1@example.org"]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=iam.yaml
 ```
 
 ### Dataset options
@@ -70,7 +70,7 @@ module "bigquery-dataset" {
     max_time_travel_hours           = 168
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=options.yaml
 ```
 
 ### Tables and views
@@ -100,7 +100,7 @@ module "bigquery-dataset" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=tables.yaml
 ```
 
 If partitioning is needed, populate the `partitioning` variable using either the `time` or `range` attribute.
@@ -132,7 +132,7 @@ module "bigquery-dataset" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=partitioning.yaml
 ```
 
 To create views use the `view` variable. If you're querying a table created by the same module `terraform apply` will initially fail and eventually succeed once the underlying table has been created. You can probably also use the module's output in the view's query to create a dependency on the table.
@@ -170,7 +170,7 @@ module "bigquery-dataset" {
   }
 }
 
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=views.yaml
 ```
 <!-- BEGIN TFDOC -->
 

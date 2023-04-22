@@ -54,7 +54,7 @@ module "cluster_1" {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["europe-west1/cluster-1"]
     master_authorized_ranges = {
-      fc1918_10_8 = "10.0.0.0/8"
+      rfc1918_10_8 = "10.0.0.0/8"
     }
     master_ipv4_cidr_block = "192.168.0.0/28"
   }
@@ -119,7 +119,7 @@ module "hub" {
   }
 }
 
-# tftest modules=4 resources=16
+# tftest modules=4 resources=16 inventory=full.yaml
 ```
 
 ## Multi-cluster mesh on GKE

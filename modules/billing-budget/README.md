@@ -32,7 +32,7 @@ module "budget" {
     emails     = ["user@example.com"]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=email.yaml
 ```
 
 ### Pubsub notification
@@ -59,7 +59,7 @@ module "pubsub" {
   name       = "budget-topic"
 }
 
-# tftest modules=2 resources=2
+# tftest modules=2 resources=2 inventory=pubsub.yaml
 ```
 <!-- BEGIN TFDOC -->
 

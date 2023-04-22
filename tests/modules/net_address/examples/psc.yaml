@@ -1,0 +1,33 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.addresses.google_compute_global_address.psc["one"]:
+    address_type: INTERNAL
+    name: one
+    network: projects/xxx/global/networks/aaa
+    prefix_length: null
+    project: project-id
+    purpose: PRIVATE_SERVICE_CONNECT
+  module.addresses.google_compute_global_address.psc["two"]:
+    address: 10.0.0.32
+    address_type: INTERNAL
+    name: two
+    network: projects/xxx/global/networks/aaa
+    prefix_length: null
+    project: project-id
+    purpose: PRIVATE_SERVICE_CONNECT
+
+counts:
+  google_compute_global_address: 2
