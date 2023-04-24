@@ -46,7 +46,7 @@ module "nginx-mig" {
   target_size       = 2
   instance_template = module.nginx-template.template.self_link
 }
-# tftest modules=2 resources=2
+# tftest modules=2 resources=2 inventory=simple.yaml
 ```
 
 ### Multiple versions
@@ -149,7 +149,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest modules=2 resources=3
+# tftest modules=2 resources=3 inventory=health-check.yaml
 ```
 
 ### Autoscaling
@@ -202,7 +202,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest modules=2 resources=3
+# tftest modules=2 resources=3 inventory=autoscaling.yaml
 ```
 
 ### Update policy
@@ -408,7 +408,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest modules=2 resources=4
+# tftest modules=2 resources=4 inventory=stateful.yaml
 
 ```
 <!-- BEGIN TFDOC -->

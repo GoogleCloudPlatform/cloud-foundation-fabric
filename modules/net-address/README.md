@@ -11,12 +11,12 @@ module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = var.project_id
   external_addresses = {
-    nat-1      = var.region
-    vpn-remote = var.region
+    one = "europe-west1"
+    two = "europe-west2"
   }
   global_addresses = ["app-1", "app-2"]
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=external.yaml
 ```
 
 ### Internal addresses
@@ -38,7 +38,7 @@ module "addresses" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=internal.yaml
 ```
 
 ### PSA addresses
@@ -55,7 +55,7 @@ module "addresses" {
     }
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=psa.yaml
 ```
 
 ### PSC addresses
@@ -75,7 +75,7 @@ module "addresses" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=psc.yaml
 ```
 <!-- BEGIN TFDOC -->
 

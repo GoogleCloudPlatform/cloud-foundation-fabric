@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,29 +16,28 @@ import pytest
 
 
 @pytest.fixture
-def resources(plan_runner, version):
+def resources(plan_summary, version):
   # convert `version` to a boolean suitable for the `v2` variable
   v2 = {'v1': 'false', 'v2': 'true'}[version]
-  _, resources = plan_runner(v2=v2)
-  return resources
+  summary = plan_summary('modules/cloud-function',
+                         tf_var_files=['common.tfvars'], v2=v2)
+  return summary
 
 
 @pytest.mark.parametrize('version', ['v1', 'v2'])
 def test_resource_count(resources):
   "Test number of resources created."
-  assert len(resources) == 3
+  assert resources.counts['resources'] == 3
 
 
 @pytest.mark.parametrize('version', ['v1', 'v2'])
 def test_iam(resources, version):
   "Test IAM binding resources."
-
-  types = {
+  type = {
       'v1': 'google_cloudfunctions_function_iam_binding',
       'v2': 'google_cloudfunctions2_function_iam_binding'
-  }
-
-  bindings = [r['values'] for r in resources if r['type'] == types[version]]
-  assert len(bindings) == 1
-  assert bindings[0]['role'] == 'roles/cloudfunctions.invoker'
-  assert bindings[0]['members'] == ['allUsers']
+  }[version]
+  key = f'{type}.default["roles/cloudfunctions.invoker"]'
+  binding = resources.values[key]
+  assert binding['role'] == 'roles/cloudfunctions.invoker'
+  assert binding['members'] == ['allUsers']
