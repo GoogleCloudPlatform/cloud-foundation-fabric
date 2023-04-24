@@ -86,5 +86,5 @@ module "test" {
     parent             = "folders/467898377"
   }
 }
-# tftest modules=8 resources=40
+# tftest modules=8 resources=41
 ```
