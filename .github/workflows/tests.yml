@@ -42,10 +42,14 @@ jobs:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
 
-      - shell: bash
+      - name: Build lockfile and fetch providers
+        shell: bash
         run: |
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          echo 'plugin_cache_dir = "${{ env.TF_PLUGIN_CACHE_DIR }}"' | tee -a /home/runner/.terraformrc
+          echo 'disable_checkpoint = true' | tee -a /home/runner/.terraformrc
           cp default-versions.tf tools/lockfile
-          sed -i 's/>=\(.*# tftest\)/=\1/g' tools/lockfile/default-versions.tf;
+          sed -i 's/>=\(.*# tftest\)/=\1/g' tools/lockfile/default-versions.tf
           cd tools/lockfile
           terraform init
 
@@ -55,21 +59,13 @@ jobs:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
 
-      - shell: bash
-        run: |
-          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
-          echo 'plugin_cache_dir = "/home/runner/.terraform.d/plugin-cache"' | tee -a /home/runner/.terraformrc
-          echo 'disable_checkpoint = true' | tee -a /home/runner/.terraformrc
-          cd tools/lockfile
-          rm -rf .terraform*
-          terraform init
-
       - name: tf provider cache content
         shell: bash
         run: |
           ls -Ra /home/runner/.terraform.d/plugin-cache
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload lockfile
+        uses: actions/upload-artifact@v3
         with:
           name: lockfile
           path: tools/lockfile/.terraform.lock.hcl
