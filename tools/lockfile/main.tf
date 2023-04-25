@@ -14,9 +14,7 @@
 
 resource "local_file" "default" {}
 resource "google_service_account" "sa1" {}
-resource "google_service_account" "sa2" {
-  provider = google-beta
-}
+resource "google_service_account" "sa2" { provider = google-beta }
 resource "random_pet" "default" {}
 resource "tls_private_key" "default" {}
 resource "github_branch" "default" {}
@@ -24,3 +22,4 @@ resource "time_static" "default" {}
 resource "vsphere_role" "default" {}
 resource "azurerm_resource_group" "default" {}
 resource "azuread_user" "default" {}
+data "archive_file" "bundle" {}
