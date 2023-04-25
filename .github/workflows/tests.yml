@@ -53,16 +53,11 @@ jobs:
           cd tools/lockfile
           terraform init -upgrade=true
 
-      - name: Cache Terraform
+      - name: Upload Terraform provider cache
         uses: actions/cache@v3
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
-
-      - name: tf provider cache content
-        shell: bash
-        run: |
-          ls -Ra /home/runner/.terraform.d/plugin-cache
 
       - name: Upload lockfile
         uses: actions/upload-artifact@v3
