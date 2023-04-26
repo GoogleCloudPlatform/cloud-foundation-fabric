@@ -29,10 +29,46 @@ env:
   PYTHON_VERSION: "3.10"
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TF_VERSION: 1.4.4
+  TFTEST_COPY: 1
 
 jobs:
+  setup-tf-providers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Build lockfile and fetch providers
+        shell: bash
+        run: |
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          echo 'plugin_cache_dir = "${{ env.TF_PLUGIN_CACHE_DIR }}"' | tee -a /home/runner/.terraformrc
+          echo 'disable_checkpoint = true' | tee -a /home/runner/.terraformrc
+          cp default-versions.tf tools/lockfile
+          sed -i 's/>=\(.*# tftest\)/=\1/g' tools/lockfile/default-versions.tf
+          cd tools/lockfile
+          terraform init -upgrade=true
+
+      - name: Upload Terraform provider cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+          key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
+
+      - name: Upload lockfile
+        uses: actions/upload-artifact@v3
+        with:
+          name: lockfile
+          path: tools/lockfile/.terraform.lock.hcl
+
+
   examples-blueprints:
     runs-on: ubuntu-latest
+    needs: setup-tf-providers
     steps:
       - uses: actions/checkout@v3
 
@@ -43,10 +79,11 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests on documentation examples
-        run: pytest -vv -k blueprints/ tests/examples
+        run: pytest -vv -n4 -k blueprints/ tests/examples
 
   examples-modules:
     runs-on: ubuntu-latest
+    needs: setup-tf-providers
     steps:
       - uses: actions/checkout@v3
 
@@ -57,10 +94,11 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests on documentation examples
-        run: pytest -vv -k modules/ tests/examples
+        run: pytest -vv -n4 -k modules/ tests/examples
 
   blueprints:
     runs-on: ubuntu-latest
+    needs: setup-tf-providers
     steps:
       - uses: actions/checkout@v3
 
@@ -71,10 +109,11 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests environments
-        run: pytest -vv tests/blueprints
+        run: pytest -vv -n4 tests/blueprints
 
   modules:
     runs-on: ubuntu-latest
+    needs: setup-tf-providers
     steps:
       - uses: actions/checkout@v3
 
@@ -85,10 +124,11 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests modules
-        run: pytest -vv tests/modules
+        run: pytest -vv -n4 tests/modules
 
   fast:
     runs-on: ubuntu-latest
+    needs: setup-tf-providers
     steps:
       - uses: actions/checkout@v3
 
@@ -99,4 +139,4 @@ jobs:
           TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run tests on FAST stages
-        run: pytest -vv tests/fast
+        run: pytest -vv -n4 tests/fast

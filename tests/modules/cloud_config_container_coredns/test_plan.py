@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@ import re
 import yaml
 
 
-def test_defaults(apply_runner):
-  "Test defalt configuration."
-  _, output = apply_runner()
-  cloud_config = output['cloud_config']
+def test_defaults(plan_summary):
+  "Test default configuration."
+  summary = plan_summary('modules/cloud-config-container/coredns/')
+  cloud_config = summary.outputs['cloud_config']['value']
   yaml.safe_load(cloud_config)
   assert cloud_config.startswith('#cloud-config')
   assert re.findall(r'(?m)^\s+\-\s*path:\s*(\S+)', cloud_config) == [
