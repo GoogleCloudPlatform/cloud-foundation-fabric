@@ -25,6 +25,7 @@ import pytest
 import tftest
 import yaml
 
+_REPO_ROOT = Path(__file__).parents[1]
 PlanSummary = collections.namedtuple('PlanSummary', 'values counts outputs')
 
 
@@ -51,10 +52,14 @@ def _prepare_root_module(path):
                                                '*.auto.tfvars.json',
                                                '[0-9]-*-providers.tf',
                                                'terraform.tfstate*',
+                                               '.terraform.lock.hcl',
                                                'terraform.tfvars', '.terraform')
 
       shutil.copytree(path, tmp_path, dirs_exist_ok=True,
                       ignore=ignore_patterns)
+      lockfile = _REPO_ROOT / 'tools' / 'lockfile' / '.terraform.lock.hcl'
+      if lockfile.exists():
+        shutil.copy(lockfile, tmp_path / '.terraform.lock.hcl')
 
       yield tmp_path
   else:
@@ -94,7 +99,7 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
   """
   # make the module_path relative to the root of the repo while still
   # supporting absolute paths
-  module_path = Path(__file__).parents[1] / module_path
+  module_path = _REPO_ROOT / module_path
   with _prepare_root_module(module_path) as test_path:
     binary = os.environ.get('TERRAFORM', 'terraform')
     tf = tftest.TerraformTest(test_path, binary=binary)
