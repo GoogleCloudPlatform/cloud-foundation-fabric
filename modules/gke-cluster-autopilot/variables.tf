@@ -158,7 +158,6 @@ variable "private_cluster_config" {
     peering_config = optional(object({
       export_routes = optional(bool)
       import_routes = optional(bool)
-      project_id    = optional(string)
     }))
   })
   default = null
