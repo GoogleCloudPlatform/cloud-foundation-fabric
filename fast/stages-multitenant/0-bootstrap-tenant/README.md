@@ -222,10 +222,10 @@ This configuration is possible but unsupported and only exists for development p
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_workflows](outputs.tf#L102) | CI/CD workflows for tenant bootstrap and resource management stages. | ✓ |  |
-| [federated_identity](outputs.tf#L108) | Workload Identity Federation pool and providers. |  |  |
-| [provider](outputs.tf#L118) | Terraform provider file for tenant resource management stage. | ✓ | <code>stage-01</code> |
-| [tenant_resources](outputs.tf#L125) | Tenant-level resources. |  |  |
-| [tfvars](outputs.tf#L136) | Terraform variable files for the following tenant stages. | ✓ |  |
+| [cicd_workflows](outputs.tf#L107) | CI/CD workflows for tenant bootstrap and resource management stages. | ✓ |  |
+| [federated_identity](outputs.tf#L113) | Workload Identity Federation pool and providers. |  |  |
+| [provider](outputs.tf#L123) | Terraform provider file for tenant resource management stage. | ✓ | <code>stage-01</code> |
+| [tenant_resources](outputs.tf#L130) | Tenant-level resources. |  |  |
+| [tfvars](outputs.tf#L141) | Terraform variable files for the following tenant stages. | ✓ |  |
 
 <!-- END TFDOC -->
