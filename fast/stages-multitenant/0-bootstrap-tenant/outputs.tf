@@ -85,10 +85,15 @@ locals {
     fast_features   = local.fast_features
     groups          = var.tenant_config.groups
     locations       = local.locations
-    organization    = var.organization
-    prefix          = local.prefix
-    root_node       = module.tenant-folder.id
-    short_name      = var.tenant_config.short_name
+    logging = {
+      project_id        = module.log-export-project.project_id
+      project_number    = module.log-export-project.number
+      writer_identities = module.organization.sink_writer_identities
+    }
+    organization = var.organization
+    prefix       = local.prefix
+    root_node    = module.tenant-folder.id
+    short_name   = var.tenant_config.short_name
     tags = {
       keys  = var.tag_keys
       names = var.tag_names
