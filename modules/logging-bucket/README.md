@@ -1,6 +1,6 @@
 # Google Cloud Logging Buckets Module
 
-This module manages [logging buckets](https://cloud.google.com/logging/docs/storage#logs-buckets) for a project, folder, organization or billing account.
+This module manages [logging buckets](https://cloud.google.com/logging/docs/routing/overview#buckets) for a project, folder, organization or billing account.
 
 Note that some logging buckets are automatically created for a given folder, project, organization, and billing account cannot be deleted. Creating a resource of this type will acquire and update the resource that already exists at the desired location. These buckets cannot be removed so deleting this resource will remove the bucket config from your terraform state but will leave the logging bucket unchanged. The buckets that are currently automatically created are "_Default" and "_Required".
 

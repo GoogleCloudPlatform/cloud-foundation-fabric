@@ -24,7 +24,7 @@ Building Compute Engine image (Packer part):
 
 ## Using Packer's service account
 
-The following blueprint leverages [service account impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts)
+The following blueprint leverages [service account impersonation](https://cloud.google.com/iam/docs/service-account-overview#impersonation)
 to execute any operations on GCP as a dedicated Packer service account. Depending on how you execute
 the Packer tool, you need to grant your principal rights to impersonate Packer's service account.
 

@@ -5,7 +5,7 @@ The image is provisioned with a sample shell scripts to update OS packages and i
 
 The example uses following GCP features:
 
-* [service account impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts)
+* [service account impersonation](https://cloud.google.com/iam/docs/service-account-overview#impersonation)
 * [Identity-Aware Proxy](https://cloud.google.com/iap/docs/using-tcp-forwarding) tunnel
 <!-- BEGIN TFDOC -->
 
