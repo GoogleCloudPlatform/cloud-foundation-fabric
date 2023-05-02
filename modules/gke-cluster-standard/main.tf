@@ -378,7 +378,7 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     include_secrets     = each.value.include_secrets
 
     dynamic "encryption_key" {
-      for_each = lookup(each.value, "encryption_key", null) != null ? [""] : []
+      for_each = each.value.encryption_key != null ? [""] : []
       content {
         gcp_kms_encryption_key = each.value.encryption_key
       }
@@ -386,7 +386,7 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
 
     all_namespaces = lookup(each.value, "namespaces", null) != null ? null : true
     dynamic "selected_namespaces" {
-      for_each = lookup(each.value, "namespaces", null) != null ? [""] : []
+      for_each = each.value.namespaces != null ? [""] : []
       content {
         namespaces = each.value.namespaces
       }
