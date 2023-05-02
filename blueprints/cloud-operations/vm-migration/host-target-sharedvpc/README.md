@@ -16,10 +16,10 @@ This sample creates\update several distinct groups of resources:
   - M4CE host project with [required services](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#enabling_required_services_on_the_host_project) deployed on a new or existing project. 
   - M4CE target project prerequisites deployed on existing projects. 
 - IAM
-  - Create a [service account](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#step-3) used at runtime by the M4CE connector for data replication
-  - Grant [migration admin roles](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#using_predefined_roles) to provided user accounts.
-  - Grant [migration viewer role](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#using_predefined_roles) to provided user accounts.
-  - Grant [roles on shared VPC](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/target-project#configure-permissions) to migration admins
+  - Create a [service account](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/migrate-connector#step-3) used at runtime by the M4CE connector for data replication
+  - Grant [migration admin roles](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/enable-services#using_predefined_roles) to provided user accounts.
+  - Grant [migration viewer role](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/enable-services#using_predefined_roles) to provided user accounts.
+  - Grant [roles on shared VPC](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/target-project#configure-permissions) to migration admins
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -41,7 +41,7 @@ This sample creates\update several distinct groups of resources:
 
 <!-- END TFDOC -->
 ## Manual Steps
-Once this blueprint is deployed the M4CE [m4ce_gmanaged_service_account](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/target-sa-compute-engine#configuring_the_default_service_account) has to be configured to grant the access to the shared VPC and allow the deploy of Compute Engine instances as the result of the migration.
+Once this blueprint is deployed the M4CE [m4ce_gmanaged_service_account](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/target-sa-compute-engine#configuring_the_default_service_account) has to be configured to grant the access to the shared VPC and allow the deploy of Compute Engine instances as the result of the migration.
 
 ## Test
 

@@ -17,9 +17,9 @@ This sample creates several distinct groups of resources:
 - networking
   - Default VPC network
 - IAM
-  - One [service account](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#step-3) used at runtime by the M4CE connector for data replication
-  - Grant [migration admin roles](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#using_predefined_roles) to admin user accounts
-  - Grant [migration viewer role](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#using_predefined_roles) to viewer user accounts
+  - One [service account](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/migrate-connector#step-3) used at runtime by the M4CE connector for data replication
+  - Grant [migration admin roles](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/enable-services#using_predefined_roles) to admin user accounts
+  - Grant [migration viewer role](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/enable-services#using_predefined_roles) to viewer user accounts
 <!-- BEGIN TFDOC -->
 
 ## Variables
