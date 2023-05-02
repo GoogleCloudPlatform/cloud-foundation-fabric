@@ -7,7 +7,7 @@ This blueprint shows how to deploy a filtering HTTP proxy to restrict Internet a
 
 The VPC is a Shared VPC and all the service projects will be located under a folder enforcing the `compute.vmExternalIpAccess` [organization policy](https://cloud.google.com/resource-manager/docs/organization-policy/org-policy-constraints). This prevents the service projects from having external IPs, thus forcing all outbound Internet connections through the proxy.
 
-To allow Internet connectivity to the proxy subnet, a Cloud NAT instance is configured to allow usage from [that subnet only](https://cloud.google.com/nat/docs/using-nat#specify_subnet_ranges_for_nat). All other subnets are not allowed to use the Cloud NAT instance.
+To allow Internet connectivity to the proxy subnet, a Cloud NAT instance is configured to allow usage from [that subnet only](https://cloud.google.com/nat/docs/set-up-manage-network-address-translation#specify_subnet_ranges_for_nat). All other subnets are not allowed to use the Cloud NAT instance.
 
 To simplify the usage of the proxy, a Cloud DNS private zone is created and the IP address of the proxy is exposed with the FQDN `proxy.internal`.
 
