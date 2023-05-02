@@ -1,6 +1,6 @@
 # M4CE(v5) - ESXi Connector
 
-This blueprint deploys a virtual machine from an OVA image and the security prerequisites to run the Migrate for Compute Engine (v5) [connector](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector) on VMWare ESXi.
+This blueprint deploys a virtual machine from an OVA image and the security prerequisites to run the Migrate for Compute Engine (v5) [connector](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/migrate-connector) on VMWare ESXi.
 
 The blueprint is designed to deploy the M4CE (v5) connector on and existing VMWare environment. The [network configuration](https://cloud.google.com/migrate/compute-engine/docs/5.0/concepts/architecture#migration_architecture) required to allow the communication of the migrate connector to the GCP API is not included in this blueprint.
 
@@ -13,9 +13,9 @@ This is the high level diagram:
 This sample creates several distinct groups of resources:
 
 - virtual machine
-  - [M4CE migrate connector](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#installing_the_migrate_connector) 
+  - [M4CE migrate connector](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/migrate-connector#step-InstallMigrateConnector)
 - IAM
-  - [vCenter user role](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#step-1)
+  - [vCenter user role](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/migrate-connector#step-1)
 <!-- BEGIN TFDOC -->
 
 ## Variables
