@@ -27,6 +27,12 @@ variable "export_peer_custom_routes" {
   default     = false
 }
 
+variable "export_subnet_routes_with_public_ip" {
+  description = "Export subnet routes with public ip"
+  type        = bool
+  default     = true
+}
+
 variable "local_network" {
   description = "Resource link of the network to add a peering to."
   type        = string
