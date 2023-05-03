@@ -15,7 +15,7 @@
  */
 
 module "cluster" {
-  source     = "../../../modules/gke-cluster"
+  source     = "../../../modules/gke-cluster-autopilot"
   project_id = module.project.project_id
   name       = "cluster"
   location   = var.region
@@ -29,18 +29,18 @@ module "cluster" {
     master_authorized_ranges = var.cluster_network_config.master_authorized_cidr_blocks
     master_ipv4_cidr_block   = var.cluster_network_config.master_cidr_block
   }
-  enable_features = {
-    autopilot = true
-  }
-  monitoring_config = {
-    enenable_components = ["SYSTEM_COMPONENTS"]
-    managed_prometheus  = true
-  }
-  cluster_autoscaling = {
-    auto_provisioning_defaults = {
-      service_account = module.node_sa.email
-    }
-  }
+  # enable_features = {
+  #   autopilot = true
+  # }
+  # monitoring_config = {
+  #   enenable_components = ["SYSTEM_COMPONENTS"]
+  #   managed_prometheus  = true
+  # }
+  # cluster_autoscaling = {
+  #   auto_provisioning_defaults = {
+  #     service_account = module.node_sa.email
+  #   }
+  # }
   release_channel = "RAPID"
   depends_on = [
     module.project

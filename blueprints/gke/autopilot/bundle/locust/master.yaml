@@ -54,10 +54,10 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 50m
-              memory: 50Mi
+              cpu: 250m
+              memory: 500Mi
             limits:
-              memory: 50Mi           
+              memory: 500Mi           
         - name: locust-prometheus-exporter
           image: containersol/locust_exporter
           ports:
@@ -65,10 +65,10 @@ spec:
               containerPort: 9646
           resources:
             requests:
-              cpu: 5m
-              memory: 5Mi
+              cpu: 250m
+              memory: 500Mi
             limits:
-              memory: 5Mi   
+              memory: 500Mi
 ---
 kind: Service
 apiVersion: v1

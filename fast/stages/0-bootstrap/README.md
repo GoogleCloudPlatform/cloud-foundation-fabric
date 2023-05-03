@@ -515,21 +515,21 @@ The remaining configuration is manual, as it regards the repositories themselves
 | [locations](variables.tf#L150) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  bq      &#61; string&#10;  gcs     &#61; string&#10;  logging &#61; string&#10;  pubsub  &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  bq      &#61; &#34;EU&#34;&#10;  gcs     &#61; &#34;EU&#34;&#10;  logging &#61; &#34;global&#34;&#10;  pubsub  &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [log_sinks](variables.tf#L169) | Org-level log sinks, in name => {type, filter} format. | <code title="map&#40;object&#40;&#123;&#10;  filter &#61; string&#10;  type   &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  audit-logs &#61; &#123;&#10;    filter &#61; &#34;logName:&#92;&#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Factivity&#92;&#34; OR logName:&#92;&#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Fsystem_event&#92;&#34;&#34;&#10;    type   &#61; &#34;logging&#34;&#10;  &#125;&#10;  vpc-sc &#61; &#123;&#10;    filter &#61; &#34;protoPayload.metadata.&#64;type&#61;&#92;&#34;type.googleapis.com&#47;google.cloud.audit.VpcServiceControlAuditMetadata&#92;&#34;&#34;&#10;    type   &#61; &#34;logging&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [outputs_location](variables.tf#L203) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable. | <code>string</code> |  | <code>null</code> |  |
-| [project_parent_ids](variables.tf#L219) | Optional parents for projects created here in folders/nnnnnnn format. Null values will use the organization as parent. | <code title="object&#40;&#123;&#10;  automation &#61; string&#10;  billing    &#61; string&#10;  logging    &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  automation &#61; null&#10;  billing    &#61; null&#10;  logging    &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [project_parent_ids](variables.tf#L218) | Optional parents for projects created here in folders/nnnnnnn format. Null values will use the organization as parent. | <code title="object&#40;&#123;&#10;  automation &#61; string&#10;  billing    &#61; string&#10;  logging    &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  automation &#61; null&#10;  billing    &#61; null&#10;  logging    &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [automation](outputs.tf#L86) | Automation resources. |  |  |
-| [billing_dataset](outputs.tf#L91) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L96) | CI/CD repository configurations. |  |  |
-| [custom_roles](outputs.tf#L108) | Organization-level custom roles. |  |  |
-| [federated_identity](outputs.tf#L113) | Workload Identity Federation pool and providers. |  |  |
-| [outputs_bucket](outputs.tf#L123) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L128) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L138) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L145) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L154) | Terraform variable files for the following stages. | ✓ |  |
+| [automation](outputs.tf#L91) | Automation resources. |  |  |
+| [billing_dataset](outputs.tf#L96) | BigQuery dataset prepared for billing export. |  |  |
+| [cicd_repositories](outputs.tf#L101) | CI/CD repository configurations. |  |  |
+| [custom_roles](outputs.tf#L113) | Organization-level custom roles. |  |  |
+| [federated_identity](outputs.tf#L118) | Workload Identity Federation pool and providers. |  |  |
+| [outputs_bucket](outputs.tf#L128) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L133) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L143) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L150) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L159) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
