@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1346](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1346)] **incompatible change:** FAST: shorten stage 3 prefixes, enforce prefix length in stage 3s ([ludoo](https://github.com/ludoo)) <!-- 2023-05-03 05:39:41+00:00 -->
 - [[#1345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1345)] chore: update metadata schema ([bharathkkb](https://github.com/bharathkkb)) <!-- 2023-04-28 22:14:21+00:00 -->
 - [[#1343](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1343)] Fix because of changes in the cloud functions module and the Apigee a… ([apichick](https://github.com/apichick)) <!-- 2023-04-27 12:53:51+00:00 -->
 - [[#1342](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1342)] Add directory to vertex-mlops blueprint metadata ([juliocc](https://github.com/juliocc)) <!-- 2023-04-27 07:27:31+00:00 -->
@@ -40,6 +41,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1346](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1346)] **incompatible change:** FAST: shorten stage 3 prefixes, enforce prefix length in stage 3s ([ludoo](https://github.com/ludoo)) <!-- 2023-05-03 05:39:41+00:00 -->
 - [[#1344](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1344)] Add logging details to bootstrap outputs ([juliocc](https://github.com/juliocc)) <!-- 2023-04-27 11:27:25+00:00 -->
 - [[#1324](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1324)] Fix typo in FAST cicd extra stage variable name ([ludoo](https://github.com/ludoo)) <!-- 2023-04-17 07:40:05+00:00 -->
 - [[#1328](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1328)] Strip org name from deploy key repo in FAST cicd stage ([ludoo](https://github.com/ludoo)) <!-- 2023-04-17 06:59:08+00:00 -->
