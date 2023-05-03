@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-variable "asset" {
-  description = "Asset of the Dataplex Lake."
-  type = map(object({
-    bucket_name            = string
-    cron_schedule          = optional(string, "15 15 * * *")
-    discovery_spec_enabled = optional(bool, true)
-    resource_spec_type     = optional(string, "STORAGE_BUCKET")
-  }))
-}
-
 variable "enabled" {
   description = "Discovery of the Dataplex Zone."
   type        = bool
@@ -56,13 +46,16 @@ variable "region" {
   type        = string
 }
 
-variable "zone_name" {
-  description = "Zone of the Dataplex Zone."
-  type        = string
-}
-
-variable "zone_type" {
-  description = "Zone type for the Dataplex lake. Either `RAW` or `CURATED`."
-  type        = string
-  default     = "RAW"
+variable "zones" {
+  description = "Dataplex lake zones, such as `RAW` and `CURATED`."
+  type = map(object({
+    type      = string
+    discovery = optional(bool, true)
+    assets = map(object({
+      bucket_name            = string
+      cron_schedule          = optional(string, "15 15 * * *")
+      discovery_spec_enabled = optional(bool, true)
+      resource_spec_type     = optional(string, "STORAGE_BUCKET")
+    }))
+  }))
 }

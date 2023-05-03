@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-output "asset" {
-  description = "The asset attached to the lake of Dataplex Lake."
-  value       = google_dataplex_asset.primary["test_gcs"].name
+output "assets" {
+  description = "Assets attached to the lake of Dataplex Lake."
+  value       = local.zone_assets[*]["asset_name"]
 }
 
 output "lake" {
@@ -24,8 +24,8 @@ output "lake" {
   value       = google_dataplex_lake.basic_lake.name
 }
 
-output "zone" {
+output "zones" {
   description = "The zone name of Dataplex Lake."
-  value       = google_dataplex_zone.basic_zone.name
+  value       = local.zone_assets[*]["zone_name"]
 }
 

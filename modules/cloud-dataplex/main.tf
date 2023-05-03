@@ -16,6 +16,18 @@
 
 locals {
   prefix = var.prefix == null ? "" : "${var.prefix}-"
+  zone_assets = flatten ([
+    for zone, zones_info in var.zones: [
+      for asset, asset_data in zones_info.assets: {
+        zone_name = zone
+        asset_name = asset
+        bucket_name = asset_data.bucket_name
+        cron_schedule = asset_data.cron_schedule
+        discovery_spec_enabled = asset_data.discovery_spec_enabled
+        resource_spec_type = asset_data.resource_spec_type
+      }
+    ]
+  ])
 }
 
 resource "google_dataplex_lake" "basic_lake" {
@@ -26,14 +38,15 @@ resource "google_dataplex_lake" "basic_lake" {
 }
 
 resource "google_dataplex_zone" "basic_zone" {
-  name     = var.zone_name
+  for_each = var.zones
+  name     = each.key
   location = var.region
   provider = google-beta
   lake     = google_dataplex_lake.basic_lake.name
-  type     = var.zone_type
+  type     = each.value.type
 
   discovery_spec {
-    enabled = var.enabled
+    enabled = each.value.discovery
   }
 
   resource_spec {
@@ -44,13 +57,15 @@ resource "google_dataplex_zone" "basic_zone" {
 }
 
 resource "google_dataplex_asset" "primary" {
-  for_each = var.asset
-  name     = each.key
+  for_each = {
+      for tm in local.zone_assets : "${tm.zone_name}-${tm.asset_name}" => tm
+  }
+  name     = each.value.asset_name
   location = var.region
   provider = google-beta
 
   lake          = google_dataplex_lake.basic_lake.name
-  dataplex_zone = google_dataplex_zone.basic_zone.name
+  dataplex_zone = google_dataplex_zone.basic_zone[each.value.zone_name].name
 
   discovery_spec {
     enabled  = each.value.discovery_spec_enabled

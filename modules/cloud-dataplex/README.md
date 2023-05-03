@@ -15,15 +15,32 @@ module "dataplex" {
   prefix     = "test"
   project_id = "myproject"
   region     = "europe-west2"
-  zone_name  = "zone"
-  asset = {
-    "test_gcs" = {
-      bucket_name            = "test_gcs"
-      cron_schedule          = "15 15 * * *"
-      discovery_spec_enabled = true
-      resource_spec_type     = "STORAGE_BUCKET"
-    }
+  zones = {
+  zone_1 = {
+    type      = "RAW"
+    discovery = true
+    assets = {
+      asset_1 = {
+        bucket_name            = "asset_1"
+        cron_schedule          = "15 15 * * *"
+        discovery_spec_enabled = true
+        resource_spec_type     = "STORAGE_BUCKET"
+        }
+      }
+  },
+  zone_2 = {
+    type      = "CURATED"
+    discovery = true
+    assets = {
+      asset_2 = {
+        bucket_name            = "asset_2"
+        cron_schedule          = "15 15 * * *"
+        discovery_spec_enabled = true
+        resource_spec_type     = "STORAGE_BUCKET"
+        }
+      }
   }
+}
 }
 
 # tftest modules=1 resources=3
@@ -41,22 +58,20 @@ module "dataplex" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [asset](variables.tf#L17) | Asset of the Dataplex Lake. | <code title="map&#40;object&#40;&#123;&#10;  bucket_name            &#61; string&#10;  cron_schedule          &#61; optional&#40;string, &#34;15 15 &#42; &#42; &#42;&#34;&#41;&#10;  discovery_spec_enabled &#61; optional&#40;bool, true&#41;&#10;  resource_spec_type     &#61; optional&#40;string, &#34;STORAGE_BUCKET&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [name](variables.tf#L39) | Name of Dataplex Lake. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L44) | Optional prefix used to generate Dataplex Lake. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L49) | The ID of the project where this Dataplex Lake will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L54) | Region of the Dataplax Lake. | <code>string</code> | ✓ |  |
-| [zone_name](variables.tf#L59) | Zone of the Dataplex Zone. | <code>string</code> | ✓ |  |
-| [enabled](variables.tf#L27) | Discovery of the Dataplex Zone. | <code>bool</code> |  | <code>false</code> |
-| [location_type](variables.tf#L33) | The location type of the Dataplax Lake. | <code>string</code> |  | <code>&#34;SINGLE_REGION&#34;</code> |
-| [zone_type](variables.tf#L64) | Zone type for the Dataplex lake. Either `RAW` or `CURATED`. | <code>string</code> |  | <code>&#34;RAW&#34;</code> |
+| [name](variables.tf#L29) | Name of Dataplex Lake. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L34) | Optional prefix used to generate Dataplex Lake. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L39) | The ID of the project where this Dataplex Lake will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L44) | Region of the Dataplax Lake. | <code>string</code> | ✓ |  |
+| [zones](variables.tf#L49) | Dataplex lake zones, such as `RAW` and `CURATED`. | <code title="map&#40;object&#40;&#123;&#10;  type      &#61; string&#10;  discovery &#61; optional&#40;bool, true&#41;&#10;  assets &#61; map&#40;object&#40;&#123;&#10;    bucket_name            &#61; string&#10;    cron_schedule          &#61; optional&#40;string, &#34;15 15 &#42; &#42; &#42;&#34;&#41;&#10;    discovery_spec_enabled &#61; optional&#40;bool, true&#41;&#10;    resource_spec_type     &#61; optional&#40;string, &#34;STORAGE_BUCKET&#34;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [enabled](variables.tf#L17) | Discovery of the Dataplex Zone. | <code>bool</code> |  | <code>false</code> |
+| [location_type](variables.tf#L23) | The location type of the Dataplax Lake. | <code>string</code> |  | <code>&#34;SINGLE_REGION&#34;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [asset](outputs.tf#L17) | The asset attached to the lake of Dataplex Lake. |  |
+| [assets](outputs.tf#L17) | Assets attached to the lake of Dataplex Lake. |  |
 | [lake](outputs.tf#L22) | The lake name of Dataplex Lake. |  |
-| [zone](outputs.tf#L27) | The zone name of Dataplex Lake. |  |
+| [zones](outputs.tf#L27) | The zone name of Dataplex Lake. |  |
 
 <!-- END TFDOC -->
