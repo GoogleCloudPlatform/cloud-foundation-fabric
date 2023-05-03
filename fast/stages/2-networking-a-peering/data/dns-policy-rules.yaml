@@ -1,3 +1,5 @@
+# skip boilerplate check
+
 accounts:
   dns_name: "accounts.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
