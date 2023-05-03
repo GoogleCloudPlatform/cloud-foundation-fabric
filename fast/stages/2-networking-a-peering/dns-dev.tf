@@ -18,7 +18,12 @@
 
 # GCP-specific environment zone
 
-module "dev-dns-private-zone" {
+moved {
+  from = module.dev-dns-private-zone
+  to   = module.dev-dns-priv-example
+}
+
+module "dev-dns-priv-example" {
   source          = "../../../modules/dns"
   project_id      = module.dev-spoke-project.project_id
   type            = "private"
@@ -32,7 +37,12 @@ module "dev-dns-private-zone" {
 
 # root zone peering to landing to centralize configuration; remove if unneeded
 
-module "dev-landing-root-dns-peering" {
+moved {
+  from = module.dev-landing-root-dns-peering
+  to   = module.dev-dns-peer-landing-root
+}
+
+module "dev-dns-peer-landing-root" {
   source          = "../../../modules/dns"
   project_id      = module.dev-spoke-project.project_id
   type            = "peering"
@@ -42,7 +52,12 @@ module "dev-landing-root-dns-peering" {
   peer_network    = module.landing-vpc.self_link
 }
 
-module "dev-reverse-10-dns-peering" {
+moved {
+  from = module.dev-reverse-10-dns-peering
+  to   = module.dev-dns-peer-landing-rev-10
+}
+
+module "dev-dns-peer-landing-rev-10" {
   source          = "../../../modules/dns"
   project_id      = module.dev-spoke-project.project_id
   type            = "peering"
