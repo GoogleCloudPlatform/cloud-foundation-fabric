@@ -16,9 +16,48 @@
 
 # tfdoc:file:description Landing DNS zones and peerings setup.
 
+locals {
+  googleapis_domains = {
+    accounts           = "accounts.google.com."
+    backupdr-cloud     = "backupdr.cloud.google.com."
+    backupdr-cloud-all = "*.backupdr.cloud.google.com."
+    backupdr-gu        = "backupdr.googleusercontent.google.com."
+    backupdr-gu-all    = "*.backupdr.googleusercontent.google.com."
+    cloudfunctions     = "*.cloudfunctions.net."
+    cloudproxy         = "*.cloudproxy.app."
+    composer-cloud-all = "*.composer.cloud.google.com."
+    composer-gu-all    = "*.composer.googleusercontent.com."
+    datafusion-all     = "*.datafusion.cloud.google.com."
+    datafusion-gu-all  = "*.datafusion.googleusercontent.com."
+    dataproc           = "dataproc.cloud.google.com."
+    dataproc-all       = "*.dataproc.cloud.google.com."
+    dataproc-gu        = "dataproc.googleusercontent.com."
+    dataproc-gu-all    = "*.dataproc.googleusercontent.com."
+    dl                 = "dl.google.com."
+    gcr                = "gcr.io."
+    gcr-all            = "*.gcr.io."
+    gstatic-all        = "*.gstatic.com."
+    notebooks-all      = "*.notebooks.cloud.google.com."
+    notebooks-gu-all   = "*.notebooks.googleusercontent.com."
+    packages-cloud     = "packages.cloud.google.com."
+    packages-cloud-all = "*.packages.cloud.google.com."
+    pkgdev             = "pkg.dev."
+    pkgdev-all         = "*.pkg.dev."
+    pkigoog            = "pki.goog."
+    pkigoog-all        = "*.pki.goog."
+    run-all            = "*.run.app."
+    source             = "source.developers.google.com."
+  }
+}
+
 # forwarding to on-prem DNS resolvers
 
-module "onprem-example-dns-forwarding" {
+moved {
+  from = module.onprem-example-dns-forwarding
+  to   = module.landing-dns-fwd-onprem-example
+}
+
+module "landing-dns-fwd-onprem-example" {
   source     = "../../../modules/dns"
   project_id = module.landing-project.project_id
   type       = "forwarding"
@@ -31,7 +70,12 @@ module "onprem-example-dns-forwarding" {
   forwarders = { for ip in var.dns.onprem : ip => null }
 }
 
-module "reverse-10-dns-forwarding" {
+moved {
+  from = module.reverse-10-dns-forwarding
+  to   = module.landing-dns-fwd-onprem-rev-10
+}
+
+module "landing-dns-fwd-onprem-rev-10" {
   source     = "../../../modules/dns"
   project_id = module.landing-project.project_id
   type       = "forwarding"
@@ -44,7 +88,12 @@ module "reverse-10-dns-forwarding" {
   forwarders = { for ip in var.dns.onprem : ip => null }
 }
 
-module "gcp-example-dns-private-zone" {
+moved {
+  from = module.gcp-example-dns-private-zone
+  to   = module.landing-dns-priv-gcp
+}
+
+module "landing-dns-priv-gcp" {
   source     = "../../../modules/dns"
   project_id = module.landing-project.project_id
   type       = "private"
@@ -61,95 +110,42 @@ module "gcp-example-dns-private-zone" {
 
 # Google APIs
 
-module "googleapis-private-zone" {
-  source     = "../../../modules/dns"
+module "landing-dns-policy-googleapis" {
+  source     = "../../../modules/dns-response-policy"
   project_id = module.landing-project.project_id
-  type       = "private"
-  name       = "googleapis-com"
-  domain     = "googleapis.com."
-  client_networks = [
-    module.landing-untrusted-vpc.self_link,
-    module.landing-trusted-vpc.self_link
-  ]
-  recordsets = {
-    "A private" = { records = [
-      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-    ] }
-    "A restricted" = { records = [
-      "199.36.153.4", "199.36.153.5", "199.36.153.6", "199.36.153.7"
-    ] }
-    "CNAME *" = { records = ["private.googleapis.com."] }
+  name       = "googleapis"
+  networks = {
+    landing-trusted   = module.landing-trusted-vpc.self_link
+    landing-untrusted = module.landing-untrusted-vpc.self_link
   }
-}
-
-module "gcrio-private-zone" {
-  source     = "../../../modules/dns"
-  project_id = module.landing-project.project_id
-  type       = "private"
-  name       = "gcr-io"
-  domain     = "gcr.io."
-  client_networks = [
-    module.landing-untrusted-vpc.self_link,
-    module.landing-trusted-vpc.self_link
-  ]
-  recordsets = {
-    "A gcr.io." = { ttl = 300, records = [
-      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-    ] }
-    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
-  }
-}
-
-module "packages-private-zone" {
-  source     = "../../../modules/dns"
-  project_id = module.landing-project.project_id
-  type       = "private"
-  name       = "packages-cloud"
-  domain     = "packages.cloud.google.com."
-  client_networks = [
-    module.landing-untrusted-vpc.self_link,
-    module.landing-trusted-vpc.self_link
-  ]
-  recordsets = {
-    "A packages.cloud.google.com." = { ttl = 300, records = [
-      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-    ] }
-    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
-  }
-}
-
-module "pkgdev-private-zone" {
-  source     = "../../../modules/dns"
-  project_id = module.landing-project.project_id
-  type       = "private"
-  name       = "pkg-dev"
-  domain     = "pkg.dev."
-  client_networks = [
-    module.landing-untrusted-vpc.self_link,
-    module.landing-trusted-vpc.self_link
-  ]
-  recordsets = {
-    "A pkg.dev." = { ttl = 300, records = [
-      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-    ] }
-    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
-  }
-}
-
-module "pkigoog-private-zone" {
-  source     = "../../../modules/dns"
-  project_id = module.landing-project.project_id
-  type       = "private"
-  name       = "pki-goog"
-  domain     = "pki.goog."
-  client_networks = [
-    module.landing-untrusted-vpc.self_link,
-    module.landing-trusted-vpc.self_link
-  ]
-  recordsets = {
-    "A pki.goog." = { ttl = 300, records = [
-      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-    ] }
-    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
-  }
+  rules = merge(
+    {
+      googleapis-all = {
+        dns_name = "*.googleapis.com."
+        local_data = { CNAME = { rrdatas = [
+          "private.googleapis.com."
+        ] } }
+      }
+      googleapis-private = {
+        dns_name = "private.googleapis.com."
+        local_data = { A = { rrdatas = [
+          "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
+        ] } }
+      }
+      googleapis-restricted = {
+        dns_name = "restricted.googleapis.com."
+        local_data = { A = { rrdatas = [
+          "199.36.153.4", "199.36.153.5", "199.36.153.6", "199.36.153.7"
+        ] } }
+      }
+    },
+    {
+      for k, v in local.googleapis_domains : k => {
+        dns_name = v
+        local_data = { CNAME = { rrdatas = [
+          "private.googleapis.com."
+        ] } }
+      }
+    }
+  )
 }

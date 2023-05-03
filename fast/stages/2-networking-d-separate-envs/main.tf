@@ -18,6 +18,37 @@
 
 locals {
   custom_roles = coalesce(var.custom_roles, {})
+  googleapis_domains = {
+    accounts           = "accounts.google.com."
+    backupdr-cloud     = "backupdr.cloud.google.com."
+    backupdr-cloud-all = "*.backupdr.cloud.google.com."
+    backupdr-gu        = "backupdr.googleusercontent.google.com."
+    backupdr-gu-all    = "*.backupdr.googleusercontent.google.com."
+    cloudfunctions     = "*.cloudfunctions.net."
+    cloudproxy         = "*.cloudproxy.app."
+    composer-cloud-all = "*.composer.cloud.google.com."
+    composer-gu-all    = "*.composer.googleusercontent.com."
+    datafusion-all     = "*.datafusion.cloud.google.com."
+    datafusion-gu-all  = "*.datafusion.googleusercontent.com."
+    dataproc           = "dataproc.cloud.google.com."
+    dataproc-all       = "*.dataproc.cloud.google.com."
+    dataproc-gu        = "dataproc.googleusercontent.com."
+    dataproc-gu-all    = "*.dataproc.googleusercontent.com."
+    dl                 = "dl.google.com."
+    gcr                = "gcr.io."
+    gcr-all            = "*.gcr.io."
+    gstatic-all        = "*.gstatic.com."
+    notebooks-all      = "*.notebooks.cloud.google.com."
+    notebooks-gu-all   = "*.notebooks.googleusercontent.com."
+    packages-cloud     = "packages.cloud.google.com."
+    packages-cloud-all = "*.packages.cloud.google.com."
+    pkgdev             = "pkg.dev."
+    pkgdev-all         = "*.pkg.dev."
+    pkigoog            = "pki.goog."
+    pkigoog-all        = "*.pki.goog."
+    run-all            = "*.run.app."
+    source             = "source.developers.google.com."
+  }
   # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),
