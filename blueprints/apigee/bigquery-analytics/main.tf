@@ -43,9 +43,7 @@ module "project" {
       module.function_gcs2bq.service_account_iam_email
     ]
     "roles/logging.logWriter" = [
-      module.function_export.service_account_iam_email
-    ]
-    "roles/logging.logWriter" = [
+      module.function_export.service_account_iam_email,
       module.function_gcs2bq.service_account_iam_email
     ]
     "roles/apigee.admin" = [
