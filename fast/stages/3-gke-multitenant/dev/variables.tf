@@ -217,6 +217,10 @@ variable "outputs_location" {
 variable "prefix" {
   description = "Prefix used for resources that need unique names."
   type        = string
+  validation {
+    condition     = try(length(var.prefix), 0) < 13
+    error_message = "Use a maximum of 12 characters for prefix."
+  }
 }
 
 variable "project_services" {
