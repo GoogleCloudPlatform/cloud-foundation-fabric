@@ -266,11 +266,25 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
   backup_schedule {
     cron_schedule = each.value.schedule
   }
-  #TODO add support for configs
+
   backup_config {
-    include_volume_data = true
-    include_secrets     = true
-    all_namespaces      = true
+    include_volume_data = each.value.include_volume_data
+    include_secrets     = each.value.include_secrets
+
+    dynamic "encryption_key" {
+      for_each = each.value.encryption_key != null ? [""] : []
+      content {
+        gcp_kms_encryption_key = each.value.encryption_key
+      }
+    }
+
+    all_namespaces = lookup(each.value, "namespaces", null) != null ? null : true
+    dynamic "selected_namespaces" {
+      for_each = each.value.namespaces != null ? [""] : []
+      content {
+        namespaces = each.value.namespaces
+      }
+    }
   }
 }
 

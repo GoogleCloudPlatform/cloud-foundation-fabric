@@ -8,6 +8,13 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1345)] chore: update metadata schema ([bharathkkb](https://github.com/bharathkkb)) <!-- 2023-04-28 22:14:21+00:00 -->
+- [[#1343](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1343)] Fix because of changes in the cloud functions module and the Apigee a… ([apichick](https://github.com/apichick)) <!-- 2023-04-27 12:53:51+00:00 -->
+- [[#1342](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1342)] Add directory to vertex-mlops blueprint metadata ([juliocc](https://github.com/juliocc)) <!-- 2023-04-27 07:27:31+00:00 -->
+- [[#1337](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1337)] Improve Vertex mlops blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-04-24 19:01:40+00:00 -->
+- [[#1338](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1338)] Set all resource requests to the autopilot minimum as the existing va… ([apichick](https://github.com/apichick)) <!-- 2023-04-21 12:26:49+00:00 -->
+- [[#1330](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1330)] Separating GKE Standard and Autopilot Modules ([avinashkumar1289](https://github.com/avinashkumar1289)) <!-- 2023-04-21 12:08:14+00:00 -->
+- [[#1334](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1334)] Rename mlops blueprint providers file ([ludoo](https://github.com/ludoo)) <!-- 2023-04-18 09:44:09+00:00 -->
 - [[#1333](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1333)] Add providers to vertex-mlops blueprint ([juliocc](https://github.com/juliocc)) <!-- 2023-04-18 08:05:15+00:00 -->
 - [[#1331](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1331)] IAP for Cloud Run GA ([juliodiez](https://github.com/juliodiez)) <!-- 2023-04-17 14:43:08+00:00 -->
 - [[#1309](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1309)] [DataPlatform] Fix data-eng role on orchestration project ([lcaggio](https://github.com/lcaggio)) <!-- 2023-04-12 14:23:01+00:00 -->
@@ -23,6 +30,8 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1347](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1347)] Fix external documentation links ([bobidle](https://github.com/bobidle)) <!-- 2023-05-02 05:26:58+00:00 -->
+- [[#1330](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1330)] Separating GKE Standard and Autopilot Modules ([avinashkumar1289](https://github.com/avinashkumar1289)) <!-- 2023-04-21 12:08:14+00:00 -->
 - [[#1309](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1309)] [DataPlatform] Fix data-eng role on orchestration project ([lcaggio](https://github.com/lcaggio)) <!-- 2023-04-12 14:23:01+00:00 -->
 - [[#1311](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1311)] Fixed type in readme for FAST stages ([derailed-dash](https://github.com/derailed-dash)) <!-- 2023-04-08 19:56:19+00:00 -->
 - [[#892](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/892)] Add network NVA NCC stage ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-04-04 18:41:05+00:00 -->
@@ -31,6 +40,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1344](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1344)] Add logging details to bootstrap outputs ([juliocc](https://github.com/juliocc)) <!-- 2023-04-27 11:27:25+00:00 -->
 - [[#1324](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1324)] Fix typo in FAST cicd extra stage variable name ([ludoo](https://github.com/ludoo)) <!-- 2023-04-17 07:40:05+00:00 -->
 - [[#1328](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1328)] Strip org name from deploy key repo in FAST cicd stage ([ludoo](https://github.com/ludoo)) <!-- 2023-04-17 06:59:08+00:00 -->
 - [[#1318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1318)] Allow longer org prefix plus tenant prefix ([derailed-dash](https://github.com/derailed-dash)) <!-- 2023-04-11 23:36:37+00:00 -->
@@ -42,6 +52,12 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1349](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1349)] Enhance GKE Backup Configuration Support ([tacchino](https://github.com/tacchino)) <!-- 2023-05-02 14:59:12+00:00 -->
+- [[#1348](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1348)] Ignore entire node config in standard cluster ([ludoo](https://github.com/ludoo)) <!-- 2023-05-02 13:23:03+00:00 -->
+- [[#1337](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1337)] Improve Vertex mlops blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-04-24 19:01:40+00:00 -->
+- [[#1330](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1330)] Separating GKE Standard and Autopilot Modules ([avinashkumar1289](https://github.com/avinashkumar1289)) <!-- 2023-04-21 12:08:14+00:00 -->
+- [[#1336](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1336)] Certificate renewal through terraform  ([bjohnrl](https://github.com/bjohnrl)) <!-- 2023-04-19 09:20:01+00:00 -->
+- [[#1335](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1335)] Inconsistent conditional result types error in net-vpc module ([jamesmao-xyz](https://github.com/jamesmao-xyz)) <!-- 2023-04-18 11:07:17+00:00 -->
 - [[#1332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1332)] Add CMEK support on Secret manager module ([lcaggio](https://github.com/lcaggio)) <!-- 2023-04-18 05:05:10+00:00 -->
 - [[#1326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1326)] Remove net-interconnect-attachment-direct ([juliocc](https://github.com/juliocc)) <!-- 2023-04-14 09:28:26+00:00 -->
 - [[#1322](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1322)] Add inventories to net-vpc-firewall tests ([juliocc](https://github.com/juliocc)) <!-- 2023-04-12 12:27:34+00:00 -->
@@ -65,6 +81,8 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1340](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1340)] Extend tests to use lockfile if available ([juliocc](https://github.com/juliocc)) <!-- 2023-04-26 09:10:13+00:00 -->
+- [[#1339](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1339)] Deprecate plan runner fixture and all its variants ([juliocc](https://github.com/juliocc)) <!-- 2023-04-22 11:43:51+00:00 -->
 - [[#1327](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1327)] Migrate more tests ([juliocc](https://github.com/juliocc)) <!-- 2023-04-17 07:18:07+00:00 -->
 - [[#1307](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1307)] Bump Terraform version ([ludoo](https://github.com/ludoo)) <!-- 2023-04-05 07:15:23+00:00 -->
 
