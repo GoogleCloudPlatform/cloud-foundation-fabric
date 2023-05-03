@@ -46,7 +46,7 @@ module "data-platform" {
     }
   }
   organization_domain     = var.organization.domain
-  prefix                  = "${var.prefix}-dev-data"
+  prefix                  = "${var.prefix}-dev-dt"
   project_services        = var.project_services
   project_suffix          = "0"
   region                  = var.region

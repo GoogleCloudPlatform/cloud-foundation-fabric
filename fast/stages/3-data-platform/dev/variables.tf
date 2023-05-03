@@ -167,6 +167,10 @@ variable "prefix" {
   # tfdoc:variable:source 00-globals
   description = "Unique prefix used for resource names. Not used for projects if 'project_create' is null."
   type        = string
+  validation {
+    condition     = try(length(var.prefix), 0) < 13
+    error_message = "Use a maximum of 12 characters for prefix."
+  }
 }
 
 variable "project_services" {

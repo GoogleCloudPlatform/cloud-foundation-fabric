@@ -75,10 +75,14 @@ module "orch-project" {
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.orc : "${var.project_config.project_ids.orc}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.iam_orch : null
-  iam_additive    = var.project_config.billing_account_id == null ? local.iam_orch : null
-  oslogin         = false
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.orc
+    : "${var.project_config.project_ids.orc}${local.project_suffix}"
+  )
+  iam          = var.project_config.billing_account_id != null ? local.iam_orch : null
+  iam_additive = var.project_config.billing_account_id == null ? local.iam_orch : null
+  oslogin      = false
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",
@@ -194,7 +198,7 @@ module "orch-sa-df-build" {
   prefix       = var.prefix
   name         = "orc-sa-df-build"
   display_name = "Data platform Dataflow build service account"
-  # Note values below should pertain to the system / group / users who are able to 
+  # Note values below should pertain to the system / group / users who are able to
   # invoke the build via this service account
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
