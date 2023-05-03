@@ -16,15 +16,15 @@
 
 locals {
   prefix = var.prefix == null ? "" : "${var.prefix}-"
-  zone_assets = flatten ([
-    for zone, zones_info in var.zones: [
-      for asset, asset_data in zones_info.assets: {
-        zone_name = zone
-        asset_name = asset
-        bucket_name = asset_data.bucket_name
-        cron_schedule = asset_data.cron_schedule
+  zone_assets = flatten([
+    for zone, zones_info in var.zones : [
+      for asset, asset_data in zones_info.assets : {
+        zone_name              = zone
+        asset_name             = asset
+        bucket_name            = asset_data.bucket_name
+        cron_schedule          = asset_data.cron_schedule
         discovery_spec_enabled = asset_data.discovery_spec_enabled
-        resource_spec_type = asset_data.resource_spec_type
+        resource_spec_type     = asset_data.resource_spec_type
       }
     ]
   ])
@@ -58,7 +58,7 @@ resource "google_dataplex_zone" "basic_zone" {
 
 resource "google_dataplex_asset" "primary" {
   for_each = {
-      for tm in local.zone_assets : "${tm.zone_name}-${tm.asset_name}" => tm
+    for tm in local.zone_assets : "${tm.zone_name}-${tm.asset_name}" => tm
   }
   name     = each.value.asset_name
   location = var.region

@@ -12,8 +12,8 @@ zones = {
         cron_schedule          = "15 15 * * *"
         discovery_spec_enabled = true
         resource_spec_type     = "STORAGE_BUCKET"
-        }
       }
+    }
   },
   zone_2 = {
     type      = "CURATED"
@@ -24,7 +24,7 @@ zones = {
         cron_schedule          = "15 15 * * *"
         discovery_spec_enabled = true
         resource_spec_type     = "STORAGE_BUCKET"
-        }
       }
+    }
   }
 }
