@@ -69,34 +69,5 @@ module "prod-dns-policy-googleapis" {
   networks = {
     prod = module.prod-spoke-vpc.self_link
   }
-  rules = merge(
-    {
-      googleapis-all = {
-        dns_name = "*.googleapis.com."
-        local_data = { CNAME = { rrdatas = [
-          "private.googleapis.com."
-        ] } }
-      }
-      googleapis-private = {
-        dns_name = "private.googleapis.com."
-        local_data = { A = { rrdatas = [
-          "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-        ] } }
-      }
-      googleapis-restricted = {
-        dns_name = "restricted.googleapis.com."
-        local_data = { A = { rrdatas = [
-          "199.36.153.4", "199.36.153.5", "199.36.153.6", "199.36.153.7"
-        ] } }
-      }
-    },
-    {
-      for k, v in local.googleapis_domains : k => {
-        dns_name = v
-        local_data = { CNAME = { rrdatas = [
-          "private.googleapis.com."
-        ] } }
-      }
-    }
-  )
+  rules_file = var.factories_config.dns_policy_rules_file
 }

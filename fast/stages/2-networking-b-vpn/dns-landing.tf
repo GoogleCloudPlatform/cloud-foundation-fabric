@@ -16,40 +16,6 @@
 
 # tfdoc:file:description Landing DNS zones and peerings setup.
 
-locals {
-  googleapis_domains = {
-    accounts           = "accounts.google.com."
-    backupdr-cloud     = "backupdr.cloud.google.com."
-    backupdr-cloud-all = "*.backupdr.cloud.google.com."
-    backupdr-gu        = "backupdr.googleusercontent.google.com."
-    backupdr-gu-all    = "*.backupdr.googleusercontent.google.com."
-    cloudfunctions     = "*.cloudfunctions.net."
-    cloudproxy         = "*.cloudproxy.app."
-    composer-cloud-all = "*.composer.cloud.google.com."
-    composer-gu-all    = "*.composer.googleusercontent.com."
-    datafusion-all     = "*.datafusion.cloud.google.com."
-    datafusion-gu-all  = "*.datafusion.googleusercontent.com."
-    dataproc           = "dataproc.cloud.google.com."
-    dataproc-all       = "*.dataproc.cloud.google.com."
-    dataproc-gu        = "dataproc.googleusercontent.com."
-    dataproc-gu-all    = "*.dataproc.googleusercontent.com."
-    dl                 = "dl.google.com."
-    gcr                = "gcr.io."
-    gcr-all            = "*.gcr.io."
-    gstatic-all        = "*.gstatic.com."
-    notebooks-all      = "*.notebooks.cloud.google.com."
-    notebooks-gu-all   = "*.notebooks.googleusercontent.com."
-    packages-cloud     = "packages.cloud.google.com."
-    packages-cloud-all = "*.packages.cloud.google.com."
-    pkgdev             = "pkg.dev."
-    pkgdev-all         = "*.pkg.dev."
-    pkigoog            = "pki.goog."
-    pkigoog-all        = "*.pki.goog."
-    run-all            = "*.run.app."
-    source             = "source.developers.google.com."
-  }
-}
-
 # forwarding to on-prem DNS resolvers
 
 moved {
@@ -108,34 +74,5 @@ module "landing-dns-policy-googleapis" {
   networks = {
     landing = module.landing-vpc.self_link
   }
-  rules = merge(
-    {
-      googleapis-all = {
-        dns_name = "*.googleapis.com."
-        local_data = { CNAME = { rrdatas = [
-          "private.googleapis.com."
-        ] } }
-      }
-      googleapis-private = {
-        dns_name = "private.googleapis.com."
-        local_data = { A = { rrdatas = [
-          "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-        ] } }
-      }
-      googleapis-restricted = {
-        dns_name = "restricted.googleapis.com."
-        local_data = { A = { rrdatas = [
-          "199.36.153.4", "199.36.153.5", "199.36.153.6", "199.36.153.7"
-        ] } }
-      }
-    },
-    {
-      for k, v in local.googleapis_domains : k => {
-        dns_name = v
-        local_data = { CNAME = { rrdatas = [
-          "private.googleapis.com."
-        ] } }
-      }
-    }
-  )
+  rules_file = var.factories_config.dns_policy_rules_file
 }
