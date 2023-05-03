@@ -50,7 +50,7 @@ module "peering-a-c" {
 | [peer_network](variables.tf#L47) | Resource link of the peer network. | <code>string</code> | ✓ |  |
 | [export_local_custom_routes](variables.tf#L18) | Export custom routes to peer network from local network. | <code>bool</code> |  | <code>false</code> |
 | [export_peer_custom_routes](variables.tf#L24) | Export custom routes to local network from peer network. | <code>bool</code> |  | <code>false</code> |
-| [export_subnet_routes_with_public_ip](variables.tf#L30) | Export subnet routes with public IP from peer network. | <code>bool</code> |  | <code>true</code> |
+| [export_public_ip_routes](variables.tf#L30) | Export subnet routes with public IP from peer network. | <code>bool</code> |  | <code>true</code> |
 | [peer_create_peering](variables.tf#L41) | Create the peering on the remote side. If false, only the peering from this network to the remote network is created. | <code>bool</code> |  | <code>true</code> |
 | [prefix](variables.tf#L52) | Optional name prefix for the network peerings. | <code>string</code> |  | <code>null</code> |
 

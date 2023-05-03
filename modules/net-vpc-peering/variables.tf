@@ -27,7 +27,7 @@ variable "export_peer_custom_routes" {
   default     = false
 }
 
-variable "export_subnet_routes_with_public_ip" {
+variable "export_public_ip_routes" {
   description = "Export subnet routes with public ip"
   type        = bool
   default     = true
