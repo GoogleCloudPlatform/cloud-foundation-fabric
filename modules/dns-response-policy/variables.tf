@@ -64,3 +64,9 @@ variable "rules" {
   default  = {}
   nullable = false
 }
+
+variable "rules_file" {
+  description = "Optional data file in YAML format listing rules that will be combined with those passed in via the `rules` variable."
+  type        = string
+  default     = null
+}
