@@ -15,6 +15,17 @@
  */
 
 locals {
+  _factory_rules = try(yamldecode(file(var.rules_file)), {})
+  factory_rules = {
+    for k, v in local._factory_rules : k => {
+      dns_name = v.dns_name
+      behavior = lookup(v, "behavior", "bypassResponsePolicy")
+      local_data = {
+        for kk, vv in lookup(v, "local_data", {}) :
+        kk => merge({ ttl = null, rrdatas = [] }, vv)
+      }
+    }
+  }
   policy_name = (
     var.policy_create
     ? google_dns_response_policy.default.0.response_policy_name
@@ -43,7 +54,7 @@ resource "google_dns_response_policy" "default" {
 
 resource "google_dns_response_policy_rule" "default" {
   provider        = google-beta
-  for_each        = var.rules
+  for_each        = merge(local.factory_rules, var.rules)
   project         = var.project_id
   response_policy = local.policy_name
   rule_name       = each.key

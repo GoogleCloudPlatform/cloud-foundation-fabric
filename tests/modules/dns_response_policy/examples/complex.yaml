@@ -13,19 +13,34 @@
 # limitations under the License.
 
 values:
-  module.dns-policy.google_dns_response_policy_rule.default["default"]:
+  module.dns-policy.google_dns_response_policy_rule.default["gcr"]:
     behavior: null
-    dns_name: '*.googleapis.com.'
+    dns_name: gcr.io.
     local_data:
-    - local_datas:
-      - name: '*.googleapis.com.'
-        rrdatas:
-        - restricted.googleapis.com.
-        ttl: null
-        type: CNAME
+      - local_datas:
+          - name: gcr.io.
+            rrdatas:
+              - restricted.googleapis.com.
+            ttl: null
+            type: CNAME
     project: myproject
     response_policy: googleapis
-    rule_name: default
+    rule_name: gcr
+    timeouts: null
+  module.dns-policy.google_dns_response_policy_rule.default["googleapis-all"]:
+    behavior: null
+    dns_name: "*.googleapis.com."
+    local_data:
+      - local_datas:
+          - name: "*.googleapis.com."
+            rrdatas:
+              - restricted.googleapis.com.
+            ttl: null
+            type: CNAME
+    project: myproject
+    response_policy: googleapis
+    rule_name: googleapis-all
+    timeouts: null
   module.dns-policy.google_dns_response_policy_rule.default["pubsub"]:
     behavior: bypassResponsePolicy
     dns_name: pubsub.googleapis.com.
@@ -33,20 +48,28 @@ values:
     project: myproject
     response_policy: googleapis
     rule_name: pubsub
+    timeouts: null
   module.dns-policy.google_dns_response_policy_rule.default["restricted"]:
     behavior: null
     dns_name: restricted.googleapis.com.
     local_data:
-    - local_datas:
-      - name: restricted.googleapis.com.
-        rrdatas:
-        - 199.36.153.4
-        - 199.36.153.5
-        ttl: null
-        type: A
+      - local_datas:
+          - name: restricted.googleapis.com.
+            rrdatas:
+              - 199.36.153.4
+              - 199.36.153.5
+              - 199.36.153.6
+              - 199.36.153.7
+            ttl: null
+            type: A
     project: myproject
     response_policy: googleapis
     rule_name: restricted
+    timeouts: null
 
 counts:
-  google_dns_response_policy_rule: 3
+  google_dns_response_policy_rule: 4
+  modules: 1
+  resources: 4
+
+outputs: {}

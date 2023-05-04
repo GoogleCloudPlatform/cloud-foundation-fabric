@@ -30,7 +30,12 @@ module "prod-dns-private-zone" {
   }
 }
 
-module "prod-onprem-example-dns-forwarding" {
+moved {
+  from = module.prod-onprem-example-dns-forwarding
+  to   = module.prod-dns-fwd-onprem-example
+}
+
+module "prod-dns-fwd-onprem-example" {
   source          = "../../../modules/dns"
   project_id      = module.prod-spoke-project.project_id
   type            = "forwarding"
@@ -40,7 +45,12 @@ module "prod-onprem-example-dns-forwarding" {
   forwarders      = { for ip in var.dns.prod : ip => null }
 }
 
-module "prod-reverse-10-dns-forwarding" {
+moved {
+  from = module.prod-reverse-10-dns-forwarding
+  to   = module.prod-dns-fwd-onprem-rev-10
+}
+
+module "prod-dns-fwd-onprem-rev-10" {
   source          = "../../../modules/dns"
   project_id      = module.prod-spoke-project.project_id
   type            = "forwarding"
@@ -52,80 +62,12 @@ module "prod-reverse-10-dns-forwarding" {
 
 # Google APIs
 
-module "prod-googleapis-private-zone" {
-  source          = "../../../modules/dns"
-  project_id      = module.prod-spoke-project.project_id
-  type            = "private"
-  name            = "googleapis-com"
-  domain          = "googleapis.com."
-  client_networks = [module.prod-spoke-vpc.self_link]
-  recordsets = {
-    "A private" = { records = [
-      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-    ] }
-    "A restricted" = { records = [
-      "199.36.153.4", "199.36.153.5", "199.36.153.6", "199.36.153.7"
-    ] }
-    "CNAME *" = { records = ["private.googleapis.com."] }
+module "prod-dns-policy-googleapis" {
+  source     = "../../../modules/dns-response-policy"
+  project_id = module.prod-spoke-project.project_id
+  name       = "googleapis"
+  networks = {
+    prod = module.prod-spoke-vpc.self_link
   }
-}
-
-module "prod-gcrio-private-zone" {
-  source          = "../../../modules/dns"
-  project_id      = module.prod-spoke-project.project_id
-  type            = "private"
-  name            = "gcr-io"
-  domain          = "gcr.io."
-  client_networks = [module.prod-spoke-vpc.self_link]
-  recordsets = {
-    "A gcr.io." = { ttl = 300, records = [
-      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-    ] }
-    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
-  }
-}
-
-module "prod-packages-private-zone" {
-  source          = "../../../modules/dns"
-  project_id      = module.prod-spoke-project.project_id
-  type            = "private"
-  name            = "packages-cloud"
-  domain          = "packages.cloud.google.com."
-  client_networks = [module.prod-spoke-vpc.self_link]
-  recordsets = {
-    "A packages.cloud.google.com." = { ttl = 300, records = [
-      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-    ] }
-    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
-  }
-}
-
-module "prod-pkgdev-private-zone" {
-  source          = "../../../modules/dns"
-  project_id      = module.prod-spoke-project.project_id
-  type            = "private"
-  name            = "pkg-dev"
-  domain          = "pkg.dev."
-  client_networks = [module.prod-spoke-vpc.self_link]
-  recordsets = {
-    "A pkg.dev." = { ttl = 300, records = [
-      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-    ] }
-    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
-  }
-}
-
-module "prod-pkigoog-private-zone" {
-  source          = "../../../modules/dns"
-  project_id      = module.prod-spoke-project.project_id
-  type            = "private"
-  name            = "pki-goog"
-  domain          = "pki.goog."
-  client_networks = [module.prod-spoke-vpc.self_link]
-  recordsets = {
-    "A pki.goog." = { ttl = 300, records = [
-      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
-    ] }
-    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
-  }
+  rules_file = var.factories_config.dns_policy_rules_file
 }
