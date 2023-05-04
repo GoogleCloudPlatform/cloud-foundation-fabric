@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "enabled" {
-  description = "Discovery of the Dataplex Zone."
-  type        = bool
-  default     = false
-}
-
 variable "location_type" {
   description = "The location type of the Dataplax Lake."
   type        = string
