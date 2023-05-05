@@ -41,7 +41,8 @@ values:
     network: projects/example/host/global/networks/host
     project: project-id
     region: europe-west1
-    subnet: []
+    subnet:
+    - name: null
 
 counts:
   google_cloud_run_service: 1
