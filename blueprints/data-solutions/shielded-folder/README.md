@@ -176,9 +176,9 @@ terraform apply
 |---|---|:---:|
 | [folders](outputs.tf#L15) | Folders id. |  |
 | [folders_sink_writer_identities](outputs.tf#L23) | Folders id. |  |
+| [kms_keys](outputs.tf#L31) | Cloud KMS encryption keys created. |  |
 
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl

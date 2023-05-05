@@ -40,7 +40,7 @@ output "notebook" {
   )
 }
 
-output "project" {
-  description = "The project resource as return by the `project` module."
-  value       = module.project
+output "project_id" {
+  description = "Project ID."
+  value       = module.project.project_id
 }

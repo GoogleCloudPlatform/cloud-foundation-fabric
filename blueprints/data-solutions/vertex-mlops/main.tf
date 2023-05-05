@@ -242,6 +242,7 @@ module "project" {
   service_encryption_key_ids = {
     aiplatform    = [var.service_encryption_keys.aiplatform]
     bq            = [var.service_encryption_keys.bq]
+    compute       = [var.service_encryption_keys.notebooks]
     cloudbuild    = [var.service_encryption_keys.storage]
     notebooks     = [var.service_encryption_keys.notebooks]
     secretmanager = [var.service_encryption_keys.secretmanager]
