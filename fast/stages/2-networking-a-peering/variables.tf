@@ -55,8 +55,9 @@ variable "dns" {
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
-    data_dir             = optional(string, "data")
-    firewall_policy_name = optional(string, "factory")
+    data_dir              = optional(string, "data")
+    dns_policy_rules_file = optional(string, "data/dns-policy-rules.yaml")
+    firewall_policy_name  = optional(string, "factory")
   })
   default = {
     data_dir = "data"
