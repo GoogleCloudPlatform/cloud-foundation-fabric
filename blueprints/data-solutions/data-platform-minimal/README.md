@@ -1,16 +1,16 @@
-# Data Platform
+# Minimal Data Platform
 
-This module implements an opinionated Data Platform Architecture that creates and setup projects and related resources that compose an end-to-end data environment.
+This module implements a minimal opinionated Data Platform Architecture based on Dataproc Serverless resources. It creates and setup projects and related resources that compose an end-to-end data environment.
 
-For a minimal Data Platform, plese refer to the [Minimal Data Platform](../data-platform-minimal/) blueprint.
+For a complete, more versatile and configurable Data Platform, plese refer to the [Data Platform](../data-platform-foundations/) blueprint.
 
 The code is intentionally simple, as it's intended to provide a generic initial setup and then allow easy customizations to complete the implementation of the intended design.
 
 The following diagram is a high-level reference of the resources created and managed here:
 
-![Data Platform architecture overview](./images/overview_diagram.png "Data Platform architecture overview")
+![Data Platform architecture overview](./images/diagram.png "Data Platform architecture overview")
 
-A demo Airflow pipeline is also part of this blueprint: it can be built and run on top of the foundational infrastructure to verify or test the setup quickly.
+A demo [Airflow pipeline](demo/orchestrate_pyspark.py) is also part of this blueprint: it can be built and run on top of the foundational infrastructure to verify or test the setup quickly.
 
 ## Design overview and choices
 
@@ -25,51 +25,39 @@ The approach adapts to different high-level requirements:
 
 The code in this blueprint doesn't address Organization-level configurations (Organization policy, VPC-SC, centralized logs). We expect those elements to be managed by automation stages external to this script like those in [FAST](../../../fast) and this blueprint deployed on top of them as one of the [stages](../../../fast/stages/3-data-platform/dev/README.md).
 
-### Project structure
+## Project structure
 
 The Data Platform is designed to rely on several projects, one project per data stage. The stages identified are:
 
-- drop off
-- load
-- data warehouse
-- orchestration
-- transformation
-- exposure
+- landing
+- processing
+- curated
+- common
 
 This separation into projects allows adhering to the least-privilege principle by using project-level roles.
 
 The script will create the following projects:
 
-- **Drop off** Used to store temporary data. Data is pushed to Cloud Storage, BigQuery, or Cloud PubSub. Resources are configured with a customizable lifecycle policy.
-- **Load** Used to load data from the drop off zone to the data warehouse. The load is made with minimal to zero transformation logic (mainly `cast`). Anonymization or tokenization of Personally Identifiable Information (PII) can be implemented here or in the transformation stage, depending on your requirements. The use of [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) is recommended. When you need to handle workloads from different teams, if strong role separation is needed between them, we suggest to customize the scirpt and have separate `Load` projects.
-- **Data Warehouse** Several projects distributed across 3 separate layers, to host progressively processed and refined data:
-  - **Landing - Raw data** Structured Data, stored in relevant formats: structured data stored in BigQuery, unstructured data stored on Cloud Storage with additional metadata stored in BigQuery (for example pictures stored in Cloud Storage and analysis of the images for Cloud Vision API stored in BigQuery).
-  - **Curated - Cleansed, aggregated and curated data**
-  - **Confidential - Curated and unencrypted layer**
-- **Orchestration** Used to host Cloud Composer, which orchestrates all tasks that move data across layers.
-- **Transformation** Used to move data between Data Warehouse layers. We strongly suggest relying on BigQuery Engine to perform the transformations. If BigQuery doesn't have the features needed to perform your transformations, you can use Cloud Dataflow with [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates). This stage can also optionally anonymize or tokenize PII. When you need to handle workloads from different teams, if strong role separation is needed between them, we suggest to customize the scirpt and have separate `Tranformation` projects.
-- **Exposure** Used to host resources that share processed data with external systems. Depending on the access pattern, data can be presented via Cloud SQL, BigQuery, or Bigtable. For BigQuery data, we strongly suggest relying on [Authorized views](https://cloud.google.com/bigquery/docs/authorized-views).
+- **Landing** Data, stored in relevant formats. Structured data can be stored in BigQuery or in GCS using an appropriate file format such as AVRO or Parquet. Unstructured data stored on Cloud Storage.
+- **Processing** Used to host all resources needed to process and orchestrate data movement. Cloud Composer orchestrates all tasks that move data across layers. Cloud Dataproc Serveless process and move data between layers. Anonymization or tokenization of Personally Identifiable Information (PII) can be implemented here using Cloud DLP or a custom solution, depending on your requirements.
+- **Curated** Cleansed, aggregated and curated data.
+- **Common** Common services such as [Cloud DLP](https://cloud.google.com/dlp) or [Data Catalog](https://cloud.google.com/data-catalog/docs/concepts/overview).
 
-### Roles
+## Roles
 
 We assign roles on resources at the project level, granting the appropriate roles via groups (humans) and service accounts (services and applications) according to best practices.
 
-### Service accounts
+## Service accounts
 
-Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. The table below shows a high level overview of roles for each service account on each data layer, using `READ` or `WRITE` access patterns for simplicity. For detailed roles please refer to the code.
+Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. The table below shows a high level overview of roles for each service account on each data layer, using READ or WRITE access patterns for simplicity.
 
-|Service Account|Drop off|DWH Landing|DWH Curated|DWH Confidential|
-|-|:-:|:-:|:-:|:-:|
-|`drop-sa`|`WRITE`|-|-|-|
-|`load-sa`|`READ`|`READ`/`WRITE`|-|-|
-|`transformation-sa`|-|`READ`/`WRITE`|`READ`/`WRITE`|`READ`/`WRITE`|
-|`orchestration-sa`|-|-|-|-|
+A full reference of IAM roles managed by the Data Platform is [available here](IAM.md).
 
-A full reference of IAM roles managed by the Data Platform [is available here](./IAM.md).
+For detailed roles please refer to the code.
 
 Using of service account keys within a data pipeline exposes to several security risks deriving from a credentials leak. This blueprint shows how to leverage impersonation to avoid the need of creating keys.
 
-### User groups
+## User groups
 
 User groups provide a stable frame of reference that allows decoupling the final set of permissions from the stage where entities and resources are created, and their IAM bindings defined.
 
@@ -78,16 +66,6 @@ We use three groups to control access to resources:
 - *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
 - *Data Analysts*. They perform analysis on datasets, with read access to the Data Warehouse Confidential project, and BigQuery READ/WRITE access to the playground project.
 - *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
-
-The table below shows a high level overview of roles for each group on each project, using `READ`, `WRITE` and `ADMIN` access patterns for simplicity. For detailed roles please refer to the code.
-
-|Group|Drop off|Load|Transformation|DHW Landing|DWH Curated|DWH Confidential|Orchestration|Common|
-|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|Data Engineers|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|
-|Data Analysts|-|-|-|-|-|`READ`|-|-|
-|Data Security|-|-|-|-|-|-|-|-|`ADMIN`|
-
-You can configure groups via the `groups` variable.
 
 ### Virtual Private Cloud (VPC) design
 
@@ -99,8 +77,7 @@ If the `network_config` variable is not provided, one VPC will be created in eac
 
 To deploy this blueprint with self-managed VPCs you need the following ranges:
 
-- one /24 for the load project VPC subnet used for Cloud Dataflow workers
-- one /24 for the transformation VPC subnet used for Cloud Dataflow workers
+- one /24 for the processing project VPC subnet used for Cloud Dataproc workers
 - one /24 range for the orchestration VPC subnet used for Composer workers
 - one /22 and one /24 ranges for the secondary ranges associated with the orchestration VPC subnet
 
@@ -129,11 +106,10 @@ To configure the use of Cloud KMS on resources, you have to specify the key id o
 
 ```tfvars
 service_encryption_keys = {
-    bq       = "KEY_URL_MULTIREGIONAL"
-    composer = "KEY_URL_REGIONAL"
-    dataflow = "KEY_URL_REGIONAL"
-    storage  = "KEY_URL_MULTIREGIONAL"
-    pubsub   = "KEY_URL_MULTIREGIONAL"
+    bq       = "KEY_URL"
+    composer = "KEY_URL"
+    compute  = "KEY_URL"
+    storage  = "KEY_URL"
 }
 ```
 
@@ -145,10 +121,10 @@ We suggest using Cloud Data Loss Prevention to identify/mask/tokenize your confi
 
 While implementing a Data Loss Prevention strategy is out of scope for this blueprint, we enable the service in two different projects so that [Cloud Data Loss Prevention templates](https://cloud.google.com/dlp/docs/concepts-templates) can be configured in one of two ways:
 
-- during the ingestion phase, from Dataflow
-- during the transformation phase, from [BigQuery](https://cloud.google.com/bigquery/docs/scan-with-dlp) or [Cloud Dataflow](https://cloud.google.com/architecture/running-automated-dataflow-pipeline-de-identify-pii-dataset)
+- during the ingestion phase, from Cloud Dataproc
+- within the curated layer, in [BigQuery](https://cloud.google.com/bigquery/docs/scan-with-dlp) or [Cloud Dataproc](https://cloud.google.com/dataproct)
 
-Cloud Data Loss Prevention resources and templates should be stored in the security project:
+Cloud Data Loss Prevention resources and templates should be stored in the Common project:
 
 ![Centralized Cloud Data Loss Prevention high-level diagram](./images/dlp_diagram.png "Centralized Cloud Data Loss Prevention high-level diagram")
 
@@ -193,16 +169,17 @@ The Data Platform is meant to be executed by a Service Account (or a regular use
 There are three sets of variables you will need to fill in:
 
 ```tfvars
-prefix                  = "dat-plat"
 project_config = {
-    parent              = "folders/1111111111"
-    billing_account_id  = "1111111-2222222-33333333"
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
 }
-organization_domain     = "domain.com"
-~                                        
+organization_domain = "domain.com"
+prefix              = "myprefix"
 ```
 
-For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration. Remember to create team groups described [below](#groups).
+For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration.
+
+*Remember* to create team groups described [below](#groups).
 
 Once the configuration is complete, run the project factory by running
 
@@ -217,7 +194,7 @@ While this blueprint can be used as a standalone deployment, it can also be call
 
 ```hcl
 module "data-platform" {
-  source              = "./fabric/blueprints/data-solutions/data-platform-foundations"
+  source              = "./fabric/blueprints/data-solutions/data-platform-minimal/"
   organization_domain = "example.com"
   project_config = {
     billing_account_id = "123456-123456-123456"
@@ -226,14 +203,10 @@ module "data-platform" {
   prefix = "myprefix"
 }
 
-# tftest modules=43 resources=279
+# tftest modules=21 resources=110
 ```
 
 ## Customizations
-
-### Create Cloud Key Management keys as part of the Data Platform
-
-To create Cloud Key Management keys in the Data Platform you can uncomment the Cloud Key Management resources configured in the [`06-common.tf`](./06-common.tf) file and update Cloud Key Management keys pointers on `local.service_encryption_keys.*` to the local resource created.
 
 ### Assign roles at BQ Dataset level
 
@@ -244,68 +217,94 @@ To do this, you need to remove IAM binging at project-level for the `data-analys
 
 The solution can be deployed by creating projects on a given parent (organization or folder) or on existing projects. Configure variable `project_config` accordingly.
 
-When you rely on existing projects, the blueprint is designed to rely on different projects configuring IAM binding with an additive approach. For discovery or experimentation purposes, you may also configure `project_config.project_ids` to point different projects to one project with the granularity you need. For example, deploy resources from the 'load' project with resources in the 'transformation' project.
+When you deploy the blueprint on existing projects, the blueprint is designed to rely on different projects configuring IAM binding with an additive approach.
 
 Once you have identified the required project granularity for your use case, we suggest adapting the terraform script accordingly and relying on authoritative IAM binding.
 
+### Shared VPC
+
+To configure the use of a shared VPC, configure the `network_config`, example:
+
+```tfvars
+network_config = {
+  host_project      = "PROJECT_ID"
+  network_self_link = "https://www.googleapis.com/compute/v1/projects/PROJECT_ID/global/networks/NAME"
+  subnet_self_links = {
+    processing_dataproc = "https://www.googleapis.com/compute/v1/projects/PROJECT_ID/regions/REGION/subnetworks/NAME"
+    processing_composer = "https://www.googleapis.com/compute/v1/projects/PROJECT_ID/regions/REGION/subnetworks/NAME"
+  }
+  composer_ip_ranges = {    
+    cloudsql   = "192.168.XXX.XXX/24"
+    gke_master = "192.168.XXX.XXX/28"
+  }
+  composer_secondary_ranges = {
+    pods     = "pods"
+    services = "services"
+  }
+}
+```
+
+### Customer Managed Encryption key
+
+To configure the use of Cloud KMS on resources, configure the `service_encryption_keys` variable. Key locations should match resource locations. Example:
+
+```tfvars
+service_encryption_keys = {
+    bq       = "KEY_URL"
+    composer = "KEY_URL"
+    compute  = "KEY_URL"
+    storage  = "KEY_URL"
+}
+```
+
 ## Demo pipeline
 
-The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `drop off` area to the `Data Warehouse Confidential` dataset suing different features.
+The application layer is out of scope of this script. As a demo purpuse only, one Cloud Composer DAGs is provided to document how to deploy a Cloud Dataproc Serverless job on the architecture. You can find examples in the `[demo](./demo)` folder.
 
-You can find examples in the `[demo](./demo)` folder.
+## Files
+
+| name | description | modules | resources |
+|---|---|---|---|
+| [01-landing.tf](./01-landing.tf) | Landing project and resources. | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
+| [02-composer.tf](./02-composer.tf) | Cloud Composer resources. | <code>iam-service-account</code> | <code>google_composer_environment</code> |
+| [02-dataproc.tf](./02-dataproc.tf) | Cloud Dataproc resources. | <code>dataproc</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [02-processing.tf](./02-processing.tf) | Processing project and VPC. | <code>gcs</code> · <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [03-curated.tf](./03-curated.tf) | Data curated project and resources. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>project</code> |  |
+| [04-common.tf](./04-common.tf) | Common project and resources. | <code>data-catalog-policy-tag</code> · <code>project</code> |  |
+| [main.tf](./main.tf) | Core locals. |  | <code>google_project_iam_member</code> |
+| [outputs.tf](./outputs.tf) | Output variables. |  |  |
+| [variables.tf](./variables.tf) | Terraform Variables. |  |  |
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization_domain](variables.tf#L156) | Organization domain. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L161) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_config](variables.tf#L170) | Provide 'billing_account_id' value if project creation is needed, uses existing 'project_ids' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string, null&#41;&#10;  parent             &#61; string&#10;  project_ids &#61; optional&#40;object&#40;&#123;&#10;    drop     &#61; string&#10;    load     &#61; string&#10;    orc      &#61; string&#10;    trf      &#61; string&#10;    dwh-lnd  &#61; string&#10;    dwh-cur  &#61; string&#10;    dwh-conf &#61; string&#10;    common   &#61; string&#10;    exp      &#61; string&#10;    &#125;&#41;, &#123;&#10;    drop     &#61; &#34;drp&#34;&#10;    load     &#61; &#34;lod&#34;&#10;    orc      &#61; &#34;orc&#34;&#10;    trf      &#61; &#34;trf&#34;&#10;    dwh-lnd  &#61; &#34;dwh-lnd&#34;&#10;    dwh-cur  &#61; &#34;dwh-cur&#34;&#10;    dwh-conf &#61; &#34;dwh-conf&#34;&#10;    common   &#61; &#34;cmn&#34;&#10;    exp      &#61; &#34;exp&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [organization_domain](variables.tf#L155) | Organization domain. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L160) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_config](variables.tf#L169) | Provide 'billing_account_id' value if project creation is needed, uses existing 'project_ids' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string, null&#41;&#10;  parent             &#61; string&#10;  project_ids &#61; optional&#40;object&#40;&#123;&#10;    landing    &#61; string&#10;    processing &#61; string&#10;    curated    &#61; string&#10;    common     &#61; string&#10;    &#125;&#41;, &#123;&#10;    landing    &#61; &#34;lnd&#34;&#10;    processing &#61; &#34;prc&#34;&#10;    curated    &#61; &#34;cur&#34;&#10;    common     &#61; &#34;cmn&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [composer_config](variables.tf#L17) | Cloud Composer config. | <code title="object&#40;&#123;&#10;  disable_deployment &#61; optional&#40;bool&#41;&#10;  environment_size   &#61; optional&#40;string, &#34;ENVIRONMENT_SIZE_SMALL&#34;&#41;&#10;  software_config &#61; optional&#40;object&#40;&#123;&#10;    airflow_config_overrides &#61; optional&#40;any&#41;&#10;    pypi_packages            &#61; optional&#40;any&#41;&#10;    env_variables            &#61; optional&#40;map&#40;string&#41;&#41;&#10;    image_version            &#61; string&#10;    &#125;&#41;, &#123;&#10;    image_version &#61; &#34;composer-2-airflow-2&#34;&#10;  &#125;&#41;&#10;  workloads_config &#61; optional&#40;object&#40;&#123;&#10;    scheduler &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;        count      &#61; number&#10;      &#125;&#10;      &#41;, &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      count      &#61; 1&#10;    &#125;&#41;&#10;    web_server &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;      &#125;&#10;      &#41;, &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;    &#125;&#41;&#10;    worker &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;        min_count  &#61; number&#10;        max_count  &#61; number&#10;      &#125;&#10;      &#41;, &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      min_count  &#61; 1&#10;      max_count  &#61; 3&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  environment_size &#61; &#34;ENVIRONMENT_SIZE_SMALL&#34;&#10;  software_config &#61; &#123;&#10;    image_version &#61; &#34;composer-2-airflow-2&#34;&#10;  &#125;&#10;  workloads_config &#61; &#123;&#10;    scheduler &#61; &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      count      &#61; 1&#10;    &#125;&#10;    web_server &#61; &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;    &#125;&#10;    worker &#61; &#123;&#10;      cpu        &#61; 0.5&#10;      memory_gb  &#61; 1.875&#10;      storage_gb &#61; 1&#10;      min_count  &#61; 1&#10;      max_count  &#61; 3&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [data_catalog_tags](variables.tf#L100) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code title="&#123;&#10;  &#34;3_Confidential&#34; &#61; null&#10;  &#34;2_Private&#34;      &#61; null&#10;  &#34;1_Sensitive&#34;    &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [data_force_destroy](variables.tf#L111) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |
 | [groups](variables.tf#L117) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [location](variables.tf#L127) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
-| [network_config](variables.tf#L133) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_services](variables.tf#L204) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [project_suffix](variables.tf#L215) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
-| [region](variables.tf#L221) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [service_encryption_keys](variables.tf#L227) | Cloud KMS to use to encrypt different services. Key location should match service region. | <code title="object&#40;&#123;&#10;  bq       &#61; string&#10;  composer &#61; string&#10;  dataflow &#61; string&#10;  storage  &#61; string&#10;  pubsub   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [network_config](variables.tf#L133) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    processing_dataproc &#61; string&#10;    processing_composer &#61; string&#10;  &#125;&#41;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_services](variables.tf#L193) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [project_suffix](variables.tf#L204) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L210) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [service_encryption_keys](variables.tf#L216) | Cloud KMS to use to encrypt different services. Key location should match service region. | <code title="object&#40;&#123;&#10;  bq       &#61; string&#10;  composer &#61; string&#10;  compute  &#61; string&#10;  storage  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [bigquery-datasets](outputs.tf#L16) | BigQuery datasets. |  |
-| [demo_commands](outputs.tf#L26) | Demo commands. Relevant only if Composer is deployed. |  |
-| [df_template](outputs.tf#L49) | Dataflow template image and template details. |  |
-| [gcs-buckets](outputs.tf#L58) | GCS buckets. |  |
-| [kms_keys](outputs.tf#L71) | Cloud MKS keys. |  |
-| [projects](outputs.tf#L76) | GCP Projects informations. |  |
-| [vpc_network](outputs.tf#L102) | VPC network. |  |
-| [vpc_subnet](outputs.tf#L111) | VPC subnetworks. |  |
+| [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
+| [dataproc-hystory-server](outputs.tf#L24) | List of bucket names which have been assigned to the cluster. |  |
+| [gcs-buckets](outputs.tf#L34) | GCS buckets. | ✓ |
+| [kms_keys](outputs.tf#L44) | Cloud MKS keys. |  |
+| [projects](outputs.tf#L49) | GCP Projects informations. |  |
+| [vpc_network](outputs.tf#L67) | VPC network. |  |
+| [vpc_subnet](outputs.tf#L75) | VPC subnetworks. |  |
 
 <!-- END TFDOC -->
-## TODOs
-
-Features to add in future releases:
-
-- Add example on how to use Cloud Data Loss Prevention
-- Add solution to handle Tables, Views, and Authorized Views lifecycle
-- Add solution to handle Metadata lifecycle
-
-## Test
-
-```hcl
-module "test" {
-  source              = "./fabric/blueprints/data-solutions/data-platform-foundations/"
-  organization_domain = "example.com"
-  project_config = {
-    billing_account_id = "123456-123456-123456"
-    parent             = "folders/12345678"
-  }
-  prefix = "prefix"
-}
-# tftest modules=43 resources=279
-```
