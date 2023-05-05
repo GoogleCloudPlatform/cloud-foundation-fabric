@@ -29,6 +29,7 @@ module "prod-spoke-project" {
     "networkmanagement.googleapis.com",
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
+    "vpcaccess.googleapis.com"
   ]
   shared_vpc_host_config = {
     enabled = true

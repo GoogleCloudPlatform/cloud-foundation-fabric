@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "encryption_key" {
+  description = "Self link of the KMS keys in {LOCATION => KEY} format. A key must be provided for all replica locations."
+  type        = map(string)
+  default     = null
+}
+
 variable "iam" {
   description = "IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format."
   type        = map(map(list(string)))

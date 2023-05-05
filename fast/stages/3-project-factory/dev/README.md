@@ -28,7 +28,7 @@ The project factory takes care of the following activities:
   
 ## How to run this stage
 
-This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../0-bootstrap), [`01-resman`](../../1-resman), 02-networking (either [VPN](../../2-networking-b-vpn) or [NVA](../../2-networking-c-nva)) and [`02-security`](../../2-security)) have been run.
+This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../0-bootstrap), [`01-resman`](../../1-resman), 02-networking (either [VPN](../../2-networking-b-vpn), [NVA](../../2-networking-c-nva), [NVA with BGP support](../../2-networking-e-nva-bgp)) and [`02-security`](../../2-security)) have been run.
 
 It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
 
@@ -51,32 +51,36 @@ It's of course possible to run this stage in isolation, by making sure the archi
 - If networking is used (e.g., for VMs, GKE Clusters or AppEngine flex), VPC Host projects and their subnets should exist when creating projects
 - If per-environment DNS sub-zones are required, one "root" zone per environment should exist when creating projects (e.g., dev.gcp.example.com.)
 
-### Providers configuration
+### Provider and Terraform variables
 
-If you're running this on top of FAST, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+
+The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
 ```bash
-# Variable `outputs_location` is set to `~/fast-config` in stage 01-resman
-$ cd fabric-fast/stages/03-project-factory/dev
-ln -s ~/fast-config/providers/03-project-factory-dev-providers.tf .
+../../../stage-links.sh ~/fast-config
+
+# copy and paste the following commands for '3-project-factory'
+
+ln -s /home/ludomagno/fast-config/providers/3-project-factory-providers.tf ./
+ln -s /home/ludomagno/fast-config/tfvars/globals.auto.tfvars.json ./
+ln -s /home/ludomagno/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s /home/ludomagno/fast-config/tfvars/1-resman.auto.tfvars.json ./
+ln -s /home/ludomagno/fast-config/tfvars/2-networking.auto.tfvars.json ./
+ln -s /home/ludomagno/fast-config/tfvars/2-security.auto.tfvars.json ./
 ```
 
-### Variable configuration
-
-There are two broad sets of variables you will need to fill in:
-
-- variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
-- variables specific to resources managed by this stage
-
-To avoid the tedious job of filling in the first group of variables with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
-
-If you configured a valid path for `outputs_location` in the bootstrap and networking stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
-
 ```bash
-# Variable `outputs_location` is set to `~/fast-config`
-ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
-ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
+../../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+
+# copy and paste the following commands for '3-project-factory'
+
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-project-factory-providers.tf ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/globals.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.auto.tfvars.json ./
+gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-security.auto.tfvars.json ./
 ```
 
 If you're not using Fast, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.

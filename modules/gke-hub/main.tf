@@ -79,8 +79,7 @@ resource "google_gke_hub_feature_membership" "servicemesh" {
   membership = google_gke_hub_membership.default[each.key].membership_id
 
   mesh {
-    management    = "MANAGEMENT_AUTOMATIC"
-    control_plane = "AUTOMATIC"
+    management = "MANAGEMENT_AUTOMATIC"
   }
 }
 

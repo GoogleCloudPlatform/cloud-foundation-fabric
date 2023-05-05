@@ -37,14 +37,14 @@ Implemented via separate stages that configure separate FAST-enabled  hierarchie
 - [Security](2-security/README.md)  
   Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.\
   Exports: KMS key ids
-- Networking ([Peering](2-networking-a-peering/README.md)/[VPN](2-networking-b-vpn/README.md)/[NVA](2-networking-c-nva/README.md)/[Separate environments](2-networking-d-separate-envs/README.md))  
-  Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, and includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets. It's currently available in four flavors: [spokes connected via VPC peering](2-networking-a-peering/README.md), [spokes connected via VPN](2-networking-b-vpn/README.md), [and spokes connected via appliances](2-networking-c-nva/README.md), and [separated network environments](2-networking-d-separate-envs/README.md).\
+- Networking ([Peering](2-networking-a-peering/README.md)/[VPN](2-networking-b-vpn/README.md)/[NVA](2-networking-c-nva/README.md)/[NVA with BGP support](2-networking-e-nva-bgp/README.md)/[Separate environments](2-networking-d-separate-envs/README.md))  
+  Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, and includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets. It's currently available in four flavors: [spokes connected via VPC peering](2-networking-a-peering/README.md), [spokes connected via VPN](2-networking-b-vpn/README.md), [spokes connected via appliances](2-networking-c-nva/README.md), [spokes connected via appliances leveraging NCC and BGP](2-networking-e-nva-bgp/README.md) and [separated network environments](2-networking-d-separate-envs/README.md).\
   Exports: host project ids and numbers, vpc self links
 
 ## Environment-level resources (3)
 
 - [Project Factory](3-project-factory/dev/)  
-  YAML-based fatory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
+  YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
 - [Data Platform](3-data-platform/dev/)
 - [GKE Multitenant](3-gke-multitenant/dev/)
 - GCE Migration (in development)

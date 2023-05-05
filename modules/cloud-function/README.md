@@ -219,6 +219,35 @@ module "cf-http" {
 }
 # tftest modules=1 resources=2
 ```
+
+### Multiple Cloud Functions within project
+
+When deploying multiple functions do not reuse `bundle_config.output_path` between instances as the result is undefined. Default `output_path` creates file in `/tmp` folder using project Id and function name to avoid name conflicts.
+
+```hcl
+module "cf-http-one" {
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http-one"
+  bucket_name = "test-cf-bundles"
+  bundle_config = {
+    source_dir = "fabric/assets"
+  }
+}
+
+module "cf-http-two" {
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http-two"
+  bucket_name = "test-cf-bundles"
+  bundle_config = {
+    source_dir = "fabric/assets"
+  }
+}
+# tftest modules=2 resources=4 inventory=multiple_functions.yaml
+
+
+```
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -226,7 +255,7 @@ module "cf-http" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [bucket_name](variables.tf#L26) | Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null. | <code>string</code> | ✓ |  |
-| [bundle_config](variables.tf#L37) | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;  source_dir  &#61; string&#10;  output_path &#61; optional&#40;string, &#34;&#47;tmp&#47;bundle.zip&#34;&#41;&#10;  excludes    &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [bundle_config](variables.tf#L37) | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;  source_dir  &#61; string&#10;  output_path &#61; optional&#40;string&#41;&#10;  excludes    &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [name](variables.tf#L94) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L109) | Project id used for all resources. | <code>string</code> | ✓ |  |
 | [bucket_config](variables.tf#L17) | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;  location                  &#61; optional&#40;string&#41;&#10;  lifecycle_delete_age_days &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |

@@ -234,7 +234,7 @@ module "gke" {
 
 | name | description | modules |
 |---|---|---|
-| [gke-clusters.tf](./gke-clusters.tf) | GKE clusters. | <code>gke-cluster</code> |
+| [gke-clusters.tf](./gke-clusters.tf) | GKE clusters. | <code>gke-cluster-standard</code> |
 | [gke-hub.tf](./gke-hub.tf) | GKE hub configuration. | <code>gke-hub</code> |
 | [gke-nodepools.tf](./gke-nodepools.tf) | GKE nodepools. | <code>gke-nodepool</code> |
 | [main.tf](./main.tf) | Project and usage dataset. | <code>bigquery-dataset</code> · <code>project</code> |

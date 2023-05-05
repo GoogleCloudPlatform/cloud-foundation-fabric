@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,11 @@ locals {
       project_number               = module.automation-project.number
     }
     custom_roles = local.custom_roles
+    logging = {
+      project_id        = module.log-export-project.project_id
+      project_number    = module.log-export-project.number
+      writer_identities = module.organization.sink_writer_identities
+    }
   }
   tfvars_globals = {
     billing_account = var.billing_account

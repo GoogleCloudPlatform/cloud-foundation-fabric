@@ -40,7 +40,7 @@ module "db" {
   database_version = "POSTGRES_13"
   tier             = "db-g1-small"
 }
-# tftest modules=3 resources=9
+# tftest modules=3 resources=9 inventory=simple.yaml
 ```
 
 ## Cross-regional read replica
@@ -50,6 +50,7 @@ module "db" {
   source           = "./fabric/modules/cloudsql-instance"
   project_id       = var.project_id
   network          = var.vpc.self_link
+  prefix           = "myprefix"
   name             = "db"
   region           = "europe-west1"
   database_version = "POSTGRES_13"
@@ -60,7 +61,7 @@ module "db" {
     replica2 = { region = "us-central1", encryption_key_name = null }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=replicas.yaml
 ```
 
 ## Custom flags, databases and users
@@ -91,7 +92,7 @@ module "db" {
     user2 = "mypassword"
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=6 inventory=custom.yaml
 ```
 
 ### CMEK encryption
@@ -140,6 +141,28 @@ module "db" {
 
 # tftest modules=3 resources=10
 ```
+
+### Enable public IP
+
+Use `ipv_enabled` to create instances with a public IP.
+
+```hcl
+module "db" {
+  source           = "./fabric/modules/cloudsql-instance"
+  project_id       = var.project_id
+  network          = var.vpc.self_link
+  name             = "db"
+  region           = "europe-west1"
+  tier             = "db-g1-small"
+  database_version = "MYSQL_8_0"
+  ipv4_enabled     = true
+  replicas = {
+    replica1 = { region = "europe-west3", encryption_key_name = null }
+  }
+}
+# tftest modules=1 resources=2 inventory=public-ip.yaml
+```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

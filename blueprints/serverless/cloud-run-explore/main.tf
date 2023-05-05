@@ -15,7 +15,8 @@
  */
 
 locals {
-  gclb_create = var.custom_domain == null ? false : true
+  gclb_create  = var.custom_domain == null ? false : true
+  iap_sa_email = try(google_project_service_identity.iap_sa[0].email, "")
 }
 
 module "project" {
@@ -43,15 +44,16 @@ module "cloud_run" {
   project_id = module.project.project_id
   name       = var.run_svc_name
   region     = var.region
-  containers = [{
-    image         = var.image
-    options       = null
-    ports         = null
-    resources     = null
-    volume_mounts = null
-  }]
+  containers = {
+    default = {
+      image = var.image
+    }
+  }
   iam = {
-    "roles/run.invoker" = ["allUsers"]
+    "roles/run.invoker" = (local.gclb_create && var.iap.enabled
+      ? ["serviceAccount:${local.iap_sa_email}"]
+      : ["allUsers"]
+    )
   }
   ingress_settings = var.ingress_settings
 }
@@ -184,4 +186,14 @@ resource "google_iap_web_iam_member" "iap_iam" {
   project = module.project.project_id
   role    = "roles/iap.httpsResourceAccessor"
   member  = "user:${var.iap.email}"
+}
+
+# SA service agent for IAP, which invokes CR
+# Note:
+# Once created, this resource cannot be updated or destroyed. These actions are a no-op.
+resource "google_project_service_identity" "iap_sa" {
+  provider = google-beta
+  count    = local.gclb_create && var.iap.enabled ? 1 : 0
+  project  = module.project.project_id
+  service  = "iap.googleapis.com"
 }

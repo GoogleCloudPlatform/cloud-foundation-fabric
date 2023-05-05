@@ -28,3 +28,7 @@ output "folders_sink_writer_identities" {
   }
 }
 
+output "kms_keys" {
+  description = "Cloud KMS encryption keys created."
+  value       = { for k, v in module.sec-kms : k => v.key_ids }
+}

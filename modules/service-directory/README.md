@@ -21,7 +21,7 @@ module "service-directory" {
     ]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=simple.yaml
 ```
 
 ### Services with IAM and endpoints
@@ -50,7 +50,7 @@ module "service-directory" {
     "one/second" = { address = "127.0.0.2", port = 80, metadata = {} }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=services.yaml
 ```
 
 ### DNS based zone
@@ -85,7 +85,7 @@ module "dns-sd" {
   client_networks             = [var.vpc.self_link]
   service_directory_namespace = module.service-directory.id
 }
-# tftest modules=2 resources=5
+# tftest modules=2 resources=5 inventory=dns.yaml
 ```
 <!-- BEGIN TFDOC -->
 

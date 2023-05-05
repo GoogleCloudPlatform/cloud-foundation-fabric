@@ -1,4 +1,3 @@
-data_dir = "../../../../../fast/stages/2-networking-b-vpn/data/"
 automation = {
   outputs_bucket = "test"
 }

@@ -39,8 +39,8 @@ variable "files" {
 variable "frr_config" {
   description = "FRR configuration for container running on the NVA."
   type = object({
-    daemons_enabled = optional(list(string))
     config_file     = string
+    daemons_enabled = optional(list(string))
   })
   default = null
   validation {
@@ -81,8 +81,20 @@ variable "network_interfaces" {
   }))
 }
 
-variable "optional_run_cmds" {
-  description = "Optional Cloud Init run commands to execute."
+variable "open_ports" {
+  description = "Optional firewall ports to open."
+  type = object({
+    tcp = list(string)
+    udp = list(string)
+  })
+  default = {
+    tcp = []
+    udp = []
+  }
+}
+
+variable "run_cmds" {
+  description = "Optional cloud init run commands to execute."
   type        = list(string)
   default     = []
 }

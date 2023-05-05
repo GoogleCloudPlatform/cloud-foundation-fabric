@@ -443,5 +443,15 @@
     "mode": "NULLABLE",
     "name": "x_apigee_mintng_price_multiplier",
     "type": "NUMERIC"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "sense_flag_headers",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "sense_action_id",
+    "type": "STRING"
   }
 ]

@@ -60,7 +60,8 @@ def _static(resources):
   'Computes network and project-level timeseries for dynamic routes.'
   filter = lambda v: v['next_hop_type'] in ('peering', 'network')
   routes = itertools.filterfalse(filter, resources['routes'].values())
-  grouped = itertools.groupby(routes, lambda v: v['network'])
+  grouped = itertools.groupby(sorted(routes, key=lambda i: i['network']),
+                              lambda i: i['network'])
   project_counts = {}
   for network_id, elements in grouped:
     network = resources['networks'].get(network_id)

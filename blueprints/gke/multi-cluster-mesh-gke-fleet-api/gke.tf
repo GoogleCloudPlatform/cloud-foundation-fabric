@@ -18,7 +18,7 @@
 
 module "clusters" {
   for_each   = var.clusters_config
-  source     = "../../../modules/gke-cluster"
+  source     = "../../../modules/gke-cluster-standard"
   project_id = module.fleet_project.project_id
   name       = each.key
   location   = var.region

@@ -37,7 +37,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.3.2
+          terraform_version: 1.4.4
 
       - name: Install dependencies
         run: |
@@ -56,7 +56,7 @@ jobs:
       - name: Check documentation
         id: documentation-fabric
         run: |
-          python3 tools/check_documentation.py modules fast blueprints
+          python3 tools/check_documentation.py --show-diffs modules fast blueprints
 
       - name: Check documentation links
         id: documentation-links-fabric

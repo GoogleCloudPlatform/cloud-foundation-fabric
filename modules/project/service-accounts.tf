@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,69 +24,33 @@ locals {
     ]
     "dataflow" : ["dataflow", "compute"]
   }
-  _service_accounts_robot_services = {
-    aiplatform        = "service-%s@gcp-sa-aiplatform"
-    apigee            = "service-%s@gcp-sa-apigee"
-    artifactregistry  = "service-%s@gcp-sa-artifactregistry"
-    bq                = "bq-%s@bigquery-encryption"
-    cloudasset        = "service-%s@gcp-sa-cloudasset"
-    cloudbuild        = "service-%s@gcp-sa-cloudbuild"
-    cloudfunctions    = "service-%s@gcf-admin-robot"
-    cloudrun          = "service-%s@serverless-robot-prod"
-    composer          = "service-%s@cloudcomposer-accounts"
-    compute           = "service-%s@compute-system"
-    container-engine  = "service-%s@container-engine-robot"
-    containerregistry = "service-%s@containerregistry"
-    dataflow          = "service-%s@dataflow-service-producer-prod"
-    dataproc          = "service-%s@dataproc-accounts"
-    fleet             = "service-%s@gcp-sa-gkehub"
-    gae-flex          = "service-%s@gae-api-prod"
-    # TODO: deprecate gcf
-    gcf = "service-%s@gcf-admin-robot"
-    # TODO: jit?
-    gke-mcs                  = "service-%s@gcp-sa-mcsd"
-    monitoring-notifications = "service-%s@gcp-sa-monitoring-notification"
-    multicluster-ingress     = "service-%s@gcp-sa-multiclusteringress"
-    multicluster-discovery   = "service-%s@gcp-sa-mcsd"
-    notebooks                = "service-%s@gcp-sa-notebooks"
-    pubsub                   = "service-%s@gcp-sa-pubsub"
-    secretmanager            = "service-%s@gcp-sa-secretmanager"
-    servicemesh              = "service-%s@gcp-sa-servicemesh"
-    sql                      = "service-%s@gcp-sa-cloud-sql"
-    sqladmin                 = "service-%s@gcp-sa-cloud-sql"
-    storage                  = "service-%s@gs-project-accounts"
-  }
+  _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   service_accounts_default = {
-    compute = "${local.project.number}-compute@developer.gserviceaccount.com"
-    gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
+    compute      = "${local.project.number}-compute@developer.gserviceaccount.com"
+    gae          = "${local.project.project_id}@appspot.gserviceaccount.com"
+    workstations = "service-${local.project.number}@gcp-sa-workstationsvm.iam.gserviceaccount.com"
   }
   service_account_cloud_services = (
     "${local.project.number}@cloudservices.gserviceaccount.com"
   )
   service_accounts_robots = merge(
     {
-      for k, v in local._service_accounts_robot_services :
-      k => "${format(v, local.project.number)}.iam.gserviceaccount.com"
+      for agent in local._service_agents_data :
+      agent.name => format(agent.service_agent, local.project.number)
+    },
+    {
+      for agent in local._service_agents_data :
+      agent.alias => format(agent.service_agent, local.project.number)
+      if lookup(agent, "alias", null) != null
     },
     {
       gke-mcs-importer = "${local.project.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]"
     }
   )
-  # JIT-ed service accounts are created without default roles granted, these needs to be assigned manually to them
-  # Roles can be found here: https://cloud.google.com/iam/docs/service-agents
-  # Remember to update "Service identities requiring manual IAM grants" in README.md when updating this list
   service_accounts_jit_services = [
-    "apigee.googleapis.com",              # grant roles/apigee.serviceAgent to apigee
-    "artifactregistry.googleapis.com",    # grant roles/artifactregistry.serviceAgent to artifactregistry
-    "cloudasset.googleapis.com",          # grant roles/cloudasset.serviceAgent to cloudasset
-    "cloudbuild.googleapis.com",          # grant roles/cloudbuild.builds.builder to cloudbuild
-    "gkehub.googleapis.com",              # grant roles/gkehub.serviceAgent to fleet
-    "multiclusteringress.googleapis.com", # grant roles/multiclusteringress.serviceAgent to multicluster-ingress
-    "pubsub.googleapis.com",              # grant roles/pubsub.serviceAgent to pubsub
-    "meshconfig.googleapis.com",          # grant roles/anthosservicemesh.serviceAgent to meshconfig
-    "notebooks.googleapis.com",           # no grants needed
-    "secretmanager.googleapis.com",       # no grants needed
-    "sqladmin.googleapis.com",            # grant roles/cloudsql.serviceAgent to sqladmin (TODO: verify)
+    for agent in local._service_agents_data :
+    "${agent.name}.googleapis.com"
+    if lookup(agent, "jit", false)
   ]
   service_accounts_cmek_service_keys = distinct(flatten([
     for s in keys(var.service_encryption_key_ids) : [

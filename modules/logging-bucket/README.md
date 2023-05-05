@@ -1,6 +1,6 @@
 # Google Cloud Logging Buckets Module
 
-This module manages [logging buckets](https://cloud.google.com/logging/docs/storage#logs-buckets) for a project, folder, organization or billing account.
+This module manages [logging buckets](https://cloud.google.com/logging/docs/routing/overview#buckets) for a project, folder, organization or billing account.
 
 Note that some logging buckets are automatically created for a given folder, project, organization, and billing account cannot be deleted. Creating a resource of this type will acquire and update the resource that already exists at the desired location. These buckets cannot be removed so deleting this resource will remove the bucket config from your terraform state but will leave the logging bucket unchanged. The buckets that are currently automatically created are "_Default" and "_Required".
 
@@ -17,7 +17,7 @@ module "bucket" {
   parent      = var.project_id
   id          = "mybucket"
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=1 inventory=project.yaml
 ```
 
 
@@ -37,7 +37,25 @@ module "bucket-default" {
   id          = "_Default"
   retention   = 10
 }
-# tftest modules=2 resources=2
+# tftest modules=2 resources=2 inventory=retention.yaml
+```
+
+### Organization and billing account buckets
+```hcl
+module "bucket-organization" {
+  source      = "./fabric/modules/logging-bucket"
+  parent_type = "organization"
+  parent      = "organizations/012345"
+  id          = "mybucket"
+}
+
+module "bucket-billing-account" {
+  source      = "./fabric/modules/logging-bucket"
+  parent_type = "billing_account"
+  parent      = "012345"
+  id          = "mybucket"
+}
+# tftest modules=2 resources=2 inventory=org-ba.yaml
 ```
 <!-- BEGIN TFDOC -->
 

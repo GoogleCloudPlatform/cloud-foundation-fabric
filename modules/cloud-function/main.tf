@@ -267,8 +267,8 @@ resource "google_storage_bucket_object" "bundle" {
 data "archive_file" "bundle" {
   type             = "zip"
   source_dir       = var.bundle_config.source_dir
-  output_path      = var.bundle_config.output_path
-  output_file_mode = "0666"
+  output_path      = coalesce(var.bundle_config.output_path, "/tmp/bundle-${var.project_id}-${var.name}.zip")
+  output_file_mode = "0644"
   excludes         = var.bundle_config.excludes
 }
 

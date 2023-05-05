@@ -41,28 +41,30 @@ These modules are used in the examples included in this repository. If you are u
 
 ## Networking modules
 
-- [DNS](./dns)
+- [Address reservation](./net-address)
 - [Cloud Endpoints](./endpoints)
-- [address reservation](./net-address)
-- [NAT](./net-cloudnat)
+- [DNS](./dns)
+- [DNS Response Policy](./dns-response-policy/)
 - [Global Load Balancer (classic)](./net-glb/)
 - [L4 ILB](./net-ilb)
 - [L7 ILB](./net-ilb-l7)
+- [NAT](./net-cloudnat)
+- [Service Directory](./service-directory)
 - [VPC](./net-vpc)
 - [VPC firewall](./net-vpc-firewall)
 - [VPC firewall policy](./net-vpc-firewall-policy)
-- [VPC peering](./net-vpc-peering)
 - [VPN dynamic](./net-vpn-dynamic)
-- [HA VPN](./net-vpn-ha)
+- [VPC peering](./net-vpc-peering)
+- [VPN HA](./net-vpn-ha)
 - [VPN static](./net-vpn-static)
-- [Service Directory](./service-directory)
 
 ## Compute/Container
 
 - [VM/VM group](./compute-vm)
 - [MIG](./compute-mig)
 - [COS container](./cloud-config-container/cos-generic-metadata/) (coredns/mysql/nva/onprem/squid)
-- [GKE cluster](./gke-cluster)
+- [GKE autopilot cluster](./gke-cluster-autopilot)
+- [GKE standard cluster](./gke-cluster-standard)
 - [GKE hub](./gke-hub)
 - [GKE nodepool](./gke-nodepool)
 
@@ -70,6 +72,7 @@ These modules are used in the examples included in this repository. If you are u
 
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
+- [Cloud Dataplex](./cloud-dataplex)
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
 - [Datafusion](./datafusion)

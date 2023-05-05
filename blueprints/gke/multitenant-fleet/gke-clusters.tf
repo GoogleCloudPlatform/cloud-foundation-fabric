@@ -17,13 +17,14 @@
 # tfdoc:file:description GKE clusters.
 
 module "gke-cluster" {
-  source                   = "../../../modules/gke-cluster"
+  source                   = "../../../modules/gke-cluster-standard"
   for_each                 = var.clusters
   name                     = each.key
   project_id               = module.gke-project-0.project_id
   cluster_autoscaling      = each.value.cluster_autoscaling
   description              = each.value.description
   enable_features          = each.value.enable_features
+  enable_addons            = each.value.enable_addons
   issue_client_certificate = each.value.issue_client_certificate
   labels                   = each.value.labels
   location                 = each.value.location
