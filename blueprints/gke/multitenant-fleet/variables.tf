@@ -170,7 +170,7 @@ variable "nodepools" {
     service_account       = optional(any)
     sole_tenant_nodegroup = optional(string)
     tags                  = optional(list(string))
-    taints                = optional(list(object({
+    taints = optional(list(object({
       key    = string
       value  = string
       effect = string
