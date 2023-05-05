@@ -1,6 +1,8 @@
-# Data Platform with Dataproc Serverless
+# Minimal Data Platform
 
-This module implements an opinionated Data Platform Architecture based on Dataproc and Dataproc Serverless resources. It creates and setup projects and related resources that compose an end-to-end data environment.
+This module implements a minimal opinionated Data Platform Architecture based on Dataproc Serverless resources. It creates and setup projects and related resources that compose an end-to-end data environment.
+
+For a complete, more versatile and configurable Data Platform, plese refer to the [Data Platform](../data-platform-foundations/) blueprint.
 
 The code is intentionally simple, as it's intended to provide a generic initial setup and then allow easy customizations to complete the implementation of the intended design.
 
@@ -27,12 +29,10 @@ The code in this blueprint doesn't address Organization-level configurations (Or
 
 The Data Platform is designed to rely on several projects, one project per data stage. The stages identified are:
 
-- drop off
-- load
-- data warehouse
-- orchestration
-- transformation
-- exposure
+- landing
+- processing
+- curated
+- common
 
 This separation into projects allows adhering to the least-privilege principle by using project-level roles.
 
@@ -106,10 +106,10 @@ To configure the use of Cloud KMS on resources, you have to specify the key id o
 
 ```tfvars
 service_encryption_keys = {
-    bq       = "KEY_URL_MULTIREGIONAL"
-    composer = "KEY_URL_REGIONAL"
-    storage  = "KEY_URL_REGIONAL"
-    storage  = "KEY_URL_MULTIREGIONAL"
+    bq       = "KEY_URL"
+    composer = "KEY_URL"
+    compute  = "KEY_URL"
+    storage  = "KEY_URL"
 }
 ```
 
@@ -122,9 +122,9 @@ We suggest using Cloud Data Loss Prevention to identify/mask/tokenize your confi
 While implementing a Data Loss Prevention strategy is out of scope for this blueprint, we enable the service in two different projects so that [Cloud Data Loss Prevention templates](https://cloud.google.com/dlp/docs/concepts-templates) can be configured in one of two ways:
 
 - during the ingestion phase, from Cloud Dataproc
-- during the transformation phase, from [BigQuery](https://cloud.google.com/bigquery/docs/scan-with-dlp) or [Cloud Dataproc](https://cloud.google.com/dataproct)
+- within the curated layer, in [BigQuery](https://cloud.google.com/bigquery/docs/scan-with-dlp) or [Cloud Dataproc](https://cloud.google.com/dataproct)
 
-Cloud Data Loss Prevention resources and templates should be stored in the security project:
+Cloud Data Loss Prevention resources and templates should be stored in the Common project:
 
 ![Centralized Cloud Data Loss Prevention high-level diagram](./images/dlp_diagram.png "Centralized Cloud Data Loss Prevention high-level diagram")
 
@@ -220,6 +220,42 @@ The solution can be deployed by creating projects on a given parent (organizatio
 When you deploy the blueprint on existing projects, the blueprint is designed to rely on different projects configuring IAM binding with an additive approach.
 
 Once you have identified the required project granularity for your use case, we suggest adapting the terraform script accordingly and relying on authoritative IAM binding.
+
+### Shared VPC
+
+To configure the use of a shared VPC, configure the `network_config`, example:
+
+```tfvars
+network_config = {
+  host_project      = "PROJECT_ID"
+  network_self_link = "https://www.googleapis.com/compute/v1/projects/PROJECT_ID/global/networks/NAME"
+  subnet_self_links = {
+    processing_dataproc = "https://www.googleapis.com/compute/v1/projects/PROJECT_ID/regions/REGION/subnetworks/NAME"
+    processing_composer = "https://www.googleapis.com/compute/v1/projects/PROJECT_ID/regions/REGION/subnetworks/NAME"
+  }
+  composer_ip_ranges = {    
+    cloudsql   = "192.168.XXX.XXX/24"
+    gke_master = "192.168.XXX.XXX/28"
+  }
+  composer_secondary_ranges = {
+    pods     = "pods"
+    services = "services"
+  }
+}
+```
+
+### Customer Managed Encryption key
+
+To configure the use of Cloud KMS on resources, configure the `service_encryption_keys` variable. Key locations should match resource locations. Example:
+
+```tfvars
+service_encryption_keys = {
+    bq       = "KEY_URL"
+    composer = "KEY_URL"
+    compute  = "KEY_URL"
+    storage  = "KEY_URL"
+}
+```
 
 ## Demo pipeline
 
