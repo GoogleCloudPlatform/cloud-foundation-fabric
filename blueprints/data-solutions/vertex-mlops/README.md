@@ -74,7 +74,6 @@ module "test" {
 }
 # tftest modules=11 resources=60
 ```
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -101,7 +100,7 @@ module "test" {
 |---|---|:---:|
 | [github](outputs.tf#L30) | Github Configuration. |  |
 | [notebook](outputs.tf#L35) | Vertex AI notebooks ids. |  |
-| [project](outputs.tf#L43) | The project resource as return by the `project` module. |  |
+| [project_id](outputs.tf#L43) | Project ID. |  |
 
 <!-- END TFDOC -->
 ## Test
