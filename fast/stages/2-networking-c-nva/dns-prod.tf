@@ -32,7 +32,12 @@ module "prod-dns-private-zone" {
 
 # root zone peering to landing to centralize configuration; remove if unneeded
 
-module "prod-landing-root-dns-peering" {
+moved {
+  from = module.prod-landing-root-dns-peering
+  to   = module.prod-dns-peer-landing-root
+}
+
+module "prod-dns-peer-landing-root" {
   source          = "../../../modules/dns"
   project_id      = module.prod-spoke-project.project_id
   type            = "peering"
@@ -42,7 +47,12 @@ module "prod-landing-root-dns-peering" {
   peer_network    = module.landing-trusted-vpc.self_link
 }
 
-module "prod-reverse-10-dns-peering" {
+moved {
+  from = module.prod-reverse-10-dns-peering
+  to   = module.prod-dns-peer-landing-rev-10
+}
+
+module "prod-dns-peer-landing-rev-10" {
   source          = "../../../modules/dns"
   project_id      = module.prod-spoke-project.project_id
   type            = "peering"

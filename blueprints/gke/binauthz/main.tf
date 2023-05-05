@@ -83,7 +83,7 @@ module "nat" {
 }
 
 module "cluster" {
-  source     = "../../../modules/gke-cluster"
+  source     = "../../../modules/gke-cluster-standard"
   project_id = module.project.project_id
   name       = "${var.prefix}-cluster"
   location   = var.zone

@@ -63,7 +63,8 @@ These modules are used in the examples included in this repository. If you are u
 - [VM/VM group](./compute-vm)
 - [MIG](./compute-mig)
 - [COS container](./cloud-config-container/cos-generic-metadata/) (coredns/mysql/nva/onprem/squid)
-- [GKE cluster](./gke-cluster)
+- [GKE autopilot cluster](./gke-cluster-autopilot)
+- [GKE standard cluster](./gke-cluster-standard)
 - [GKE hub](./gke-hub)
 - [GKE nodepool](./gke-nodepool)
 

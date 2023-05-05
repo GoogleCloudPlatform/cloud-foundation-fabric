@@ -18,6 +18,7 @@
   service_agent: "service-%s@gcp-sa-adsdatahub.iam.gserviceaccount.com"
 - name: "aiplatform"
   service_agent: "service-%s@gcp-sa-aiplatform.iam.gserviceaccount.com"
+  jit: true
 - name: "aiplatform-cc"
   service_agent: "service-%s@gcp-sa-aiplatform-cc.iam.gserviceaccount.com"
 - name: "alloydb"

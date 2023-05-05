@@ -43,9 +43,7 @@ module "project" {
       module.function_gcs2bq.service_account_iam_email
     ]
     "roles/logging.logWriter" = [
-      module.function_export.service_account_iam_email
-    ]
-    "roles/logging.logWriter" = [
+      module.function_export.service_account_iam_email,
       module.function_gcs2bq.service_account_iam_email
     ]
     "roles/apigee.admin" = [
@@ -182,9 +180,11 @@ module "function_export" {
     DATASTORE    = var.datastore_name
   }
   trigger_config = {
-    event    = "google.pubsub.topic.publish"
-    resource = module.pubsub_export.id
-    retry    = null
+    v1 = {
+      event    = "google.pubsub.topic.publish"
+      resource = module.pubsub_export.id
+      retry    = null
+    }
   }
   service_account_create = true
 }
@@ -218,9 +218,11 @@ module "function_gcs2bq" {
     LOCATION = var.organization.analytics_region
   }
   trigger_config = {
-    event    = "google.pubsub.topic.publish"
-    resource = module.bucket_export.topic
-    retry    = null
+    v1 = {
+      event    = "google.pubsub.topic.publish"
+      resource = module.bucket_export.topic
+      retry    = null
+    }
   }
   service_account_create = true
 }

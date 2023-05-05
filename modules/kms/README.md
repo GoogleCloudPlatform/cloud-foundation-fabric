@@ -56,7 +56,7 @@ module "kms" {
     key-c = { rotation_period = null, labels = { env = "test" } }
   }
 }
-# tftest modules=1 resources=9
+# tftest modules=1 resources=9 inventory=basic.yaml
 ```
 
 ### Crypto key purpose
