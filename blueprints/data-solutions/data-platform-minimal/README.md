@@ -194,7 +194,7 @@ While this blueprint can be used as a standalone deployment, it can also be call
 
 ```hcl
 module "data-platform" {
-  source              = "./fabric/blueprints/data-solutions/data-platform-dataproc"
+  source              = "./fabric/blueprints/data-solutions/data-platform-minimal/"
   organization_domain = "example.com"
   project_config = {
     billing_account_id = "123456-123456-123456"
