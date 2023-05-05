@@ -81,7 +81,7 @@ module "sec-kms" {
   project_id = module.sec-project[0].project_id
   keyring = {
     location = each.key
-    name     = "${each.key}"
+    name     = "sec-${each.key}"
   }
   # rename to `key_iam` to switch to authoritative bindings
   key_iam_additive = {
@@ -96,7 +96,7 @@ module "log-kms" {
   project_id = module.sec-project[0].project_id
   keyring = {
     location = each.key
-    name     = "${each.key}"
+    name     = "log-${each.key}"
   }
   keys = local.kms_log_locations_keys[each.key]
 }
