@@ -59,7 +59,7 @@ def _validate(path: Path, validator) -> ValidationResult:
 @click.argument('dirs', type=click.Path(exists=True, file_okay=False), nargs=-1)
 @click.option('-v', '--verbose', is_flag=True, default=False,
               help='Print additional validation details.')
-def main(dirs: str, verbose: bool) -> int:
+def main(dirs: list[str], verbose: bool) -> int:
   instances = set()
   for dir_name in dirs:
     instances |= set(Path(dir_name).glob("**/metadata.yaml"))
