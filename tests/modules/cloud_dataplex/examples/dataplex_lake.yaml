@@ -1,0 +1,107 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+values:
+  google_dataplex_asset.primary["zone_1-asset_1"]:
+    dataplex_zone: zone_1
+    description: null
+    discovery_spec:
+    - enabled: true
+      exclude_patterns: null
+      include_patterns: null
+      schedule: 15 15 * * *
+    display_name: null
+    labels: null
+    lake: test-terraform-lake
+    location: europe-west2
+    name: asset_1
+    project: myproject
+    resource_spec:
+    - name: projects/myproject/buckets/asset_1
+      type: STORAGE_BUCKET
+    timeouts: null
+  google_dataplex_asset.primary["zone_2-asset_2"]:
+    dataplex_zone: zone_2
+    description: null
+    discovery_spec:
+    - enabled: true
+      exclude_patterns: null
+      include_patterns: null
+      schedule: 15 15 * * *
+    display_name: null
+    labels: null
+    lake: test-terraform-lake
+    location: europe-west2
+    name: asset_2
+    project: myproject
+    resource_spec:
+    - name: projects/myproject/buckets/asset_2
+      type: STORAGE_BUCKET
+    timeouts: null
+  google_dataplex_lake.basic_lake:
+    description: null
+    display_name: null
+    labels: null
+    location: europe-west2
+    metastore: []
+    name: test-terraform-lake
+    project: myproject
+    timeouts: null
+  google_dataplex_zone.basic_zone["zone_1"]:
+    description: null
+    discovery_spec:
+    - enabled: true
+      exclude_patterns: null
+      include_patterns: null
+    display_name: null
+    labels: null
+    lake: test-terraform-lake
+    location: europe-west2
+    name: zone_1
+    project: myproject
+    resource_spec:
+    - location_type: SINGLE_REGION
+    timeouts: null
+    type: RAW
+  google_dataplex_zone.basic_zone["zone_2"]:
+    description: null
+    discovery_spec:
+    - enabled: true
+      exclude_patterns: null
+      include_patterns: null
+    display_name: null
+    labels: null
+    lake: test-terraform-lake
+    location: europe-west2
+    name: zone_2
+    project: myproject
+    resource_spec:
+    - location_type: SINGLE_REGION
+    timeouts: null
+    type: CURATED
+
+counts:
+  google_dataplex_asset: 2
+  google_dataplex_lake: 1
+  google_dataplex_zone: 2
+  modules: 0
+  resources: 5
+
+outputs:
+  assets:
+  - asset_1
+  - asset_2
+  lake: test-terraform-lake
+  zones:
+  - zone_1
+  - zone_2
