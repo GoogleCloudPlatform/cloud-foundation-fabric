@@ -75,3 +75,8 @@ jobs:
             tools/*.py \
             blueprints/cloud-operations/network-dashboard/src/*py \
             blueprints/cloud-operations/network-dashboard/src/plugins/*py
+
+      - name: Check blueprint metadata
+        id: metadata
+        run: |
+          python tools/validate_metadata.py -v blueprints

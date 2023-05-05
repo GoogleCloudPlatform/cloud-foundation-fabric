@@ -6,3 +6,4 @@ marko
 requests
 yamale
 yapf
+jsonschema
