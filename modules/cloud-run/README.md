@@ -121,6 +121,28 @@ module "cloud_run" {
 # tftest modules=1 resources=2 inventory=connector.yaml
 ```
 
+Note that if you are using Shared VPC you need to specify a subnet:
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run"
+  project_id = var.project_id
+  name       = "hello"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
+  vpc_connector_create = {
+    subnet = {
+      name       = "subnet-vpc-access"
+      project_id = "host-project"
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=connector-shared.yaml
+```
+
 ### Traffic split
 
 This deploys a Cloud Run service with traffic split between two revisions.
