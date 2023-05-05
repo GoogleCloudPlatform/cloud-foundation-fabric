@@ -68,22 +68,22 @@ def main(dirs: list[str], verbose: bool) -> int:
     schema = json.load(f)
   validator = jsonschema.validators.Draft202012Validator(schema)
 
-  results = {}
+  failed_files = {}
   for instance in instances:
     result = _validate(instance, validator)
     if result.state == State.OK:
       print(f'[✓] {instance}')
     else:
       print(f'[✗] {instance}')
-      results[instance] = result.errors
+      failed_files[instance] = result.errors
 
   if verbose:
-    for file_path, errors in results.items():
+    for file_path, errors in failed_files.items():
       print(f"\n====== {file_path!s} ======")
       for path, message in errors.items():
         print(f"{path}: {message}")
 
-  return 0 if not errors else 1
+  return 0 if not failed_files else 1
 
 
 if __name__ == '__main__':
