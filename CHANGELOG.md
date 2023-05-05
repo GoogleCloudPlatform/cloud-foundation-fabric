@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1355](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1355)] Fix Shielded Folder - VertexML interoperability ([lcaggio](https://github.com/lcaggio)) <!-- 2023-05-05 07:54:57+00:00 -->
 - [[#1353](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1353)] fix in IAM binding of Apigee BigQuery analytics blueprint ([apichick](https://github.com/apichick)) <!-- 2023-05-03 16:31:57+00:00 -->
 - [[#1346](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1346)] **incompatible change:** FAST: shorten stage 3 prefixes, enforce prefix length in stage 3s ([ludoo](https://github.com/ludoo)) <!-- 2023-05-03 05:39:41+00:00 -->
 - [[#1345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1345)] chore: update metadata schema ([bharathkkb](https://github.com/bharathkkb)) <!-- 2023-04-28 22:14:21+00:00 -->
@@ -32,6 +33,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1357](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1357)] Add module link to README ([prabhaarya](https://github.com/prabhaarya)) <!-- 2023-05-05 08:10:09+00:00 -->
 - [[#1347](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1347)] Fix external documentation links ([bobidle](https://github.com/bobidle)) <!-- 2023-05-02 05:26:58+00:00 -->
 - [[#1330](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1330)] Separating GKE Standard and Autopilot Modules ([avinashkumar1289](https://github.com/avinashkumar1289)) <!-- 2023-04-21 12:08:14+00:00 -->
 - [[#1309](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1309)] [DataPlatform] Fix data-eng role on orchestration project ([lcaggio](https://github.com/lcaggio)) <!-- 2023-04-12 14:23:01+00:00 -->
@@ -56,6 +58,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1329](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1329)] fix: Change net-glb serve_while_stale type to number ([tobbbles](https://github.com/tobbbles)) <!-- 2023-05-05 07:41:13+00:00 -->
+- [[#1308](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1308)] Add cloud dataplex module ([prabhaarya](https://github.com/prabhaarya)) <!-- 2023-05-05 07:26:46+00:00 -->
 - [[#1352](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1352)] **incompatible change:** Switch FAST networking stages to network policies for Google domains ([ludoo](https://github.com/ludoo)) <!-- 2023-05-04 05:38:41+00:00 -->
 - [[#1349](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1349)] Enhance GKE Backup Configuration Support ([tacchino](https://github.com/tacchino)) <!-- 2023-05-02 14:59:12+00:00 -->
 - [[#1348](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1348)] Ignore entire node config in standard cluster ([ludoo](https://github.com/ludoo)) <!-- 2023-05-02 13:23:03+00:00 -->
