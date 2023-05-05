@@ -83,10 +83,7 @@ def main(dirs: list[str], verbose: bool) -> int:
       for path, message in errors.items():
         print(f"{path}: {message}")
 
-  if errors:
-    return 1
-
-  return 0
+  return 0 if not errors else 1
 
 
 if __name__ == '__main__':
