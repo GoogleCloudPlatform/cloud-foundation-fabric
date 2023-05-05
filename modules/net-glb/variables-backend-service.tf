@@ -58,7 +58,7 @@ variable "backend_service_configs" {
       default_ttl                  = optional(number)
       max_ttl                      = optional(number)
       negative_caching             = optional(bool)
-      serve_while_stale            = optional(bool)
+      serve_while_stale            = optional(number)
       signed_url_cache_max_age_sec = optional(number)
       cache_key_policy = optional(object({
         include_host           = optional(bool)
