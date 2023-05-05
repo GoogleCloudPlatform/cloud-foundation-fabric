@@ -79,4 +79,4 @@ jobs:
       - name: Check blueprint metadata
         id: metadata
         run: |
-          pythontools/validate_metadata.py -v blueprints
+          python tools/validate_metadata.py -v blueprints
