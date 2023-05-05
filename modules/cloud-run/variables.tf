@@ -211,8 +211,8 @@ variable "volumes" {
 variable "vpc_connector_create" {
   description = "Populate this to create a VPC connector. You can then refer to it in the template annotations."
   type = object({
-    ip_cidr_range = string
-    vpc_self_link = string
+    ip_cidr_range = optional(string)
+    vpc_self_link = optional(string)
     machine_type  = optional(string)
     name          = optional(string)
     instances = optional(object({
@@ -222,6 +222,10 @@ variable "vpc_connector_create" {
     throughput = optional(object({
       max = optional(number)
       min = optional(number)
+    }), {})
+    subnet = optional(object({
+      name       = optional(string)
+      project_id = optional(string)
     }), {})
   })
   default = null
