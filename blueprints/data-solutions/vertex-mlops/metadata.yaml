@@ -129,7 +129,7 @@ spec:
       type: string
       default: null
       required: false
-    - name: service_encryption_keys	
+    - name: service_encryption_keys
       description: Cloud KMS to use to encrypt different services. Key location should match service region.
       type: |-
         object({
