@@ -145,7 +145,7 @@ variable "project_config" {
   })
   validation {
     condition     = var.project_config.billing_account_id != null || var.project_config.project_ids != null
-    error_message = "At least one attribute should be set."
+    error_message = "At least one of project_config.billing_account_id or var.project_config.project_ids should be set."
   }
 }
 
