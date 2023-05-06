@@ -99,9 +99,10 @@ resource "google_composer_environment" "processing-cmp-0" {
       }
     }
     private_environment_config {
-      enable_private_endpoint   = "true"
-      cloud_sql_ipv4_cidr_block = var.network_config.composer_ip_ranges.cloud_sql
-      master_ipv4_cidr_block    = var.network_config.composer_ip_ranges.gke_master
+      enable_private_endpoint              = "true"
+      cloud_sql_ipv4_cidr_block            = var.network_config.composer_ip_ranges.cloud_sql
+      master_ipv4_cidr_block               = var.network_config.composer_ip_ranges.gke_master
+      cloud_composer_connection_subnetwork = var.network_config.composer_ip_ranges.connection_subnetwork
     }
     dynamic "encryption_config" {
       for_each = (
