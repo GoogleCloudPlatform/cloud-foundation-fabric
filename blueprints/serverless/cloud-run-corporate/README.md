@@ -154,7 +154,7 @@ tf_identity   = "[user or SA account]"
 
 Another possibility is to use an architecture based on Shared VPC that allows direct service-to-service calls while ensuring all traffic stays within your private network. In this case a VPC SC perimeter is not needed.
 
-<p style="left"> <img src="images/use-case-3.4.png" width="800"> </p>
+<p style="left"> <img src="images/use-case-3.4.png" width="600"> </p>
 
 For simplicity, the two Cloud Run services are deployed in the same service project. To test access, VMs are created in the host and service projects. Note that the service project can't have a different DNS entry for the same domain, so it uses the DNS and PSC configuration of the host project. Set the following in `terraform.tfvars`:
 
