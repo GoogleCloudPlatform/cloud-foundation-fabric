@@ -37,16 +37,20 @@ locals {
     ]
     "roles/storage.objectAdmin" = [module.processing-sa-dp-0.iam_email]
   }
-  cur_services = concat(var.project_services, [
+  cur_services = [
+    "iam.googleapis.com",
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
     "bigquerystorage.googleapis.com",
     "cloudkms.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
     "servicenetworking.googleapis.com",
+    "serviceusage.googleapis.com",
+    "stackdriver.googleapis.com",
     "storage.googleapis.com",
     "storage-component.googleapis.com"
-  ])
+  ]
 }
 
 # Project
@@ -57,13 +61,17 @@ module "cur-project" {
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.curated : "${var.project_config.project_ids.curated}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.cur_iam : {}
-  iam_additive    = var.project_config.billing_account_id == null ? local.cur_iam : {}
-  services        = local.cur_services
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.curated
+    : "${var.project_config.project_ids.curated}${local.project_suffix}"
+  )
+  iam          = var.project_config.billing_account_id != null ? local.cur_iam : {}
+  iam_additive = var.project_config.billing_account_id == null ? local.cur_iam : {}
+  services     = local.cur_services
   service_encryption_key_ids = {
-    bq      = [try(local.service_encryption_keys.bq, null)]
-    storage = [try(local.service_encryption_keys.storage, null)]
+    bq      = [var.service_encryption_keys.bq]
+    storage = [var.service_encryption_keys.storage]
   }
 }
 
@@ -74,7 +82,7 @@ module "cur-bq-0" {
   project_id     = module.cur-project.project_id
   id             = "${replace(var.prefix, "-", "_")}_cur_bq_0"
   location       = var.location
-  encryption_key = try(local.service_encryption_keys.bq, null)
+  encryption_key = var.service_encryption_keys.bq
 }
 
 # Cloud storage
@@ -86,6 +94,6 @@ module "cur-cs-0" {
   name           = "cur-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = var.data_force_destroy
 }

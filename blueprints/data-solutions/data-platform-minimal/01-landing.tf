@@ -28,18 +28,25 @@ module "land-project" {
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.landing : "${var.project_config.project_ids.landing}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.iam_lnd : null
-  iam_additive    = var.project_config.billing_account_id == null ? local.iam_lnd : null
-  services = concat(var.project_services, [
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.landing
+    : "${var.project_config.project_ids.landing}${local.project_suffix}"
+  )
+  iam          = var.project_config.billing_account_id != null ? local.iam_lnd : null
+  iam_additive = var.project_config.billing_account_id == null ? local.iam_lnd : null
+  services = [
     "cloudkms.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "iam.googleapis.com",
+    "serviceusage.googleapis.com",
+    "stackdriver.googleapis.com",
     "storage.googleapis.com",
     "storage-component.googleapis.com",
-  ])
+  ]
   service_encryption_key_ids = {
-    bq      = [try(local.service_encryption_keys.bq, null)]
-    pubsub  = [try(local.service_encryption_keys.pubsub, null)]
-    storage = [try(local.service_encryption_keys.storage, null)]
+    bq      = [var.service_encryption_keys.bq]
+    storage = [var.service_encryption_keys.storage]
   }
 }
 
@@ -65,6 +72,6 @@ module "land-cs-0" {
   name           = "lnd-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
   force_destroy  = var.data_force_destroy
 }

@@ -39,7 +39,7 @@ module "processing-cs-dp-history" {
   name           = "prc-cs-dp-history"
   location       = var.region
   storage_class  = "REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
 }
 
 module "processing-sa-dp-0" {
@@ -66,7 +66,7 @@ module "processing-dp-staging-0" {
   name           = "prc-stg-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
 }
 
 module "processing-dp-temp-0" {
@@ -76,7 +76,7 @@ module "processing-dp-temp-0" {
   name           = "prc-tmp-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
 }
 
 module "processing-dp-log-0" {
@@ -86,7 +86,7 @@ module "processing-dp-log-0" {
   name           = "prc-log-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
 }
 
 module "processing-dp-historyserver" {
@@ -114,19 +114,25 @@ module "processing-dp-historyserver" {
       }
       software_config = {
         override_properties = {
-          "dataproc:dataproc.allow.zero.workers"                                   = "true"
-          "dataproc:job.history.to-gcs.enabled"                                    = "true"
-          "spark:spark.history.fs.logDirectory"                                    = "gs://${module.processing-dp-staging-0.name}/*/spark-job-history"
-          "spark:spark.eventLog.dir"                                               = "gs://${module.processing-dp-staging-0.name}/*/spark-job-history"
+          "dataproc:dataproc.allow.zero.workers" = "true"
+          "dataproc:job.history.to-gcs.enabled"  = "true"
+          "spark:spark.history.fs.logDirectory" = (
+            "gs://${module.processing-dp-staging-0.name}/*/spark-job-history"
+          )
+          "spark:spark.eventLog.dir" = (
+            "gs://${module.processing-dp-staging-0.name}/*/spark-job-history"
+          )
           "spark:spark.history.custom.executor.log.url.applyIncompleteApplication" = "false"
-          "spark:spark.history.custom.executor.log.url"                            = "{{YARN_LOG_SERVER_URL}}/{{NM_HOST}}:{{NM_PORT}}/{{CONTAINER_ID}}/{{CONTAINER_ID}}/{{USER}}/{{FILE_NAME}}"
+          "spark:spark.history.custom.executor.log.url" = (
+            "{{YARN_LOG_SERVER_URL}}/{{NM_HOST}}:{{NM_PORT}}/{{CONTAINER_ID}}/{{CONTAINER_ID}}/{{USER}}/{{FILE_NAME}}"
+          )
         }
       }
       endpoint_config = {
         enable_http_port_access = "true"
       }
       encryption_config = {
-        kms_key_name = try(local.service_encryption_keys.compute, null)
+        kms_key_name = var.service_encryption_keys.compute
       }
     }
   }

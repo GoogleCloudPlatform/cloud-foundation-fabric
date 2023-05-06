@@ -1,6 +1,6 @@
 # Minimal Data Platform
 
-This module implements a minimal opinionated Data Platform Architecture based on Dataproc Serverless resources. It creates and setup projects and related resources that compose an end-to-end data environment.
+This module implements a minimal opinionated Data Platform Architecture based on Dataproc Serverless resources. It creates and sets up projects and related resources that compose an end-to-end data environment.
 
 For a complete, more versatile and configurable Data Platform, plese refer to the [Data Platform](../data-platform-foundations/) blueprint.
 

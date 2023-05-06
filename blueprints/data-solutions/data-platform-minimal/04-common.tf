@@ -39,13 +39,21 @@ module "common-project" {
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.common : "${var.project_config.project_ids.common}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.iam_common : null
-  iam_additive    = var.project_config.billing_account_id == null ? local.iam_common : null
-  services = concat(var.project_services, [
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.common
+    : "${var.project_config.project_ids.common}${local.project_suffix}"
+  )
+  iam          = var.project_config.billing_account_id != null ? local.iam_common : null
+  iam_additive = var.project_config.billing_account_id == null ? local.iam_common : null
+  services = [
+    "cloudresourcemanager.googleapis.com",
     "datacatalog.googleapis.com",
     "dlp.googleapis.com",
-  ])
+    "iam.googleapis.com",
+    "serviceusage.googleapis.com",
+    "stackdriver.googleapis.com",
+  ]
 }
 
 # Data Catalog Policy tag

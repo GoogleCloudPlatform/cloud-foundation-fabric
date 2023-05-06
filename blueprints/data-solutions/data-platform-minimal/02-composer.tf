@@ -20,7 +20,7 @@ locals {
     CURATED_BQ_DATASET = module.cur-bq-0.dataset_id
     CURATED_GCS        = module.cur-cs-0.url
     CURATED_PRJ        = module.cur-project.project_id
-    DP_KMS_KEY         = try(var.service_encryption_keys.compute, "")
+    DP_KMS_KEY         = var.service_encryption_keys.compute
     DP_REGION          = var.region
     GCP_REGION         = var.region
     LAND_PRJ           = module.land-project.project_id
@@ -55,30 +55,32 @@ resource "google_composer_environment" "processing-cmp-0" {
     software_config {
       airflow_config_overrides = try(var.composer_config.software_config.airflow_config_overrides, null)
       pypi_packages            = try(var.composer_config.software_config.pypi_packages, null)
-      env_variables            = merge(try(var.composer_config.software_config.env_variables, null), local.env_variables)
-      image_version            = try(var.composer_config.software_config.image_version, null)
+      env_variables = merge(
+        try(var.composer_config.software_config.env_variables, null), local.env_variables
+      )
+      image_version = var.composer_config.software_config.image_version
     }
     dynamic "workloads_config" {
       for_each = (try(var.composer_config.workloads_config, null) != null ? { 1 = 1 } : {})
 
       content {
         scheduler {
-          cpu        = try(var.composer_config.workloads_config.scheduler.cpu, null)
-          memory_gb  = try(var.composer_config.workloads_config.scheduler.memory_gb, null)
-          storage_gb = try(var.composer_config.workloads_config.scheduler.storage_gb, null)
-          count      = try(var.composer_config.workloads_config.scheduler.count, null)
+          cpu        = var.composer_config.workloads_config.scheduler.cpu
+          memory_gb  = var.composer_config.workloads_config.scheduler.memory_gb
+          storage_gb = var.composer_config.workloads_config.scheduler.storage_gb
+          count      = var.composer_config.workloads_config.scheduler.count
         }
         web_server {
-          cpu        = try(var.composer_config.workloads_config.web_server.cpu, null)
-          memory_gb  = try(var.composer_config.workloads_config.web_server.memory_gb, null)
-          storage_gb = try(var.composer_config.workloads_config.web_server.storage_gb, null)
+          cpu        = var.composer_config.workloads_config.web_server.cpu
+          memory_gb  = var.composer_config.workloads_config.web_server.memory_gb
+          storage_gb = var.composer_config.workloads_config.web_server.storage_gb
         }
         worker {
-          cpu        = try(var.composer_config.workloads_config.worker.cpu, null)
-          memory_gb  = try(var.composer_config.workloads_config.worker.memory_gb, null)
-          storage_gb = try(var.composer_config.workloads_config.worker.storage_gb, null)
-          min_count  = try(var.composer_config.workloads_config.worker.min_count, null)
-          max_count  = try(var.composer_config.workloads_config.worker.max_count, null)
+          cpu        = var.composer_config.workloads_config.worker.cpu
+          memory_gb  = var.composer_config.workloads_config.worker.memory_gb
+          storage_gb = var.composer_config.workloads_config.worker.storage_gb
+          min_count  = var.composer_config.workloads_config.worker.min_count
+          max_count  = var.composer_config.workloads_config.worker.max_count
         }
       }
     }
@@ -89,34 +91,26 @@ resource "google_composer_environment" "processing-cmp-0" {
       network              = local.processing_vpc
       subnetwork           = local.processing_subnet
       service_account      = module.processing-sa-cmp-0.email
-      enable_ip_masq_agent = "true"
+      enable_ip_masq_agent = true
       tags                 = ["composer-worker"]
       ip_allocation_policy {
-        cluster_secondary_range_name = try(
-          var.network_config.composer_secondary_ranges.pods, "pods"
-        )
-        services_secondary_range_name = try(
-          var.network_config.composer_secondary_ranges.services, "services"
-        )
+        cluster_secondary_range_name  = var.network_config.composer_ip_ranges.pods_range_name
+        services_secondary_range_name = var.network_config.composer_ip_ranges.services_range_name
       }
     }
     private_environment_config {
-      enable_private_endpoint = "true"
-      cloud_sql_ipv4_cidr_block = try(
-        var.network_config.composer_ip_ranges.cloudsql, "10.20.10.0/24"
-      )
-      master_ipv4_cidr_block = try(
-        var.network_config.composer_ip_ranges.gke_master, "10.20.11.0/28"
-      )
+      enable_private_endpoint   = "true"
+      cloud_sql_ipv4_cidr_block = var.network_config.composer_ip_ranges.cloud_sql
+      master_ipv4_cidr_block    = var.network_config.composer_ip_ranges.gke_master
     }
     dynamic "encryption_config" {
       for_each = (
-        try(var.service_encryption_keys[var.region], null) != null
+        var.service_encryption_keys.composer != null
         ? { 1 = 1 }
         : {}
       )
       content {
-        kms_key_name = try(var.service_encryption_keys[var.region], null)
+        kms_key_name = var.service_encryption_keys.composer
       }
     }
   }

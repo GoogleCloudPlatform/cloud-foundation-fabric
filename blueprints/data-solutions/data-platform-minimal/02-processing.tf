@@ -61,27 +61,35 @@ module "processing-project" {
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.processing : "${var.project_config.project_ids.processing}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.iam_processing : null
-  iam_additive    = var.project_config.billing_account_id == null ? local.iam_processing : null
-  oslogin         = false
-  services = concat(var.project_services, [
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.processing
+    : "${var.project_config.project_ids.processing}${local.project_suffix}"
+  )
+  iam          = var.project_config.billing_account_id != null ? local.iam_processing : null
+  iam_additive = var.project_config.billing_account_id == null ? local.iam_processing : null
+  oslogin      = false
+  services = [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
     "bigquerystorage.googleapis.com",
     "cloudkms.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
     "composer.googleapis.com",
     "compute.googleapis.com",
     "container.googleapis.com",
     "dataproc.googleapis.com",
+    "iam.googleapis.com",
     "servicenetworking.googleapis.com",
+    "serviceusage.googleapis.com",
+    "stackdriver.googleapis.com",
     "storage.googleapis.com",
     "storage-component.googleapis.com"
-  ])
+  ]
   service_encryption_key_ids = {
-    composer = [try(local.service_encryption_keys.composer, null)]
-    compute  = [try(local.service_encryption_keys.compute, null)]
-    storage  = [try(local.service_encryption_keys.storage, null)]
+    composer = [var.service_encryption_keys.composer]
+    compute  = [var.service_encryption_keys.compute]
+    storage  = [var.service_encryption_keys.storage]
   }
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
     attach       = true
@@ -98,7 +106,7 @@ module "processing-cs-0" {
   name           = "prc-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage, null)
+  encryption_key = var.service_encryption_keys.storage
 }
 
 # internal VPC resources

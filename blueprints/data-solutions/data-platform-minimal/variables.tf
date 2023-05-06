@@ -17,84 +17,39 @@
 variable "composer_config" {
   description = "Cloud Composer config."
   type = object({
-    disable_deployment = optional(bool)
+    disable_deployment = optional(bool, false)
     environment_size   = optional(string, "ENVIRONMENT_SIZE_SMALL")
     software_config = optional(object({
-      airflow_config_overrides = optional(any)
-      pypi_packages            = optional(any)
-      env_variables            = optional(map(string))
-      image_version            = string
-      }), {
-      image_version = "composer-2-airflow-2"
-    })
+      airflow_config_overrides = optional(map(string), {})
+      pypi_packages            = optional(map(string), {})
+      env_variables            = optional(map(string), {})
+      image_version            = optional(string, "composer-2-airflow-2")
+    }), {})
     workloads_config = optional(object({
-      scheduler = optional(object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-          count      = number
+      scheduler = optional(object({
+        cpu        = optional(number, 0.5)
+        memory_gb  = optional(number, 1.875)
+        storage_gb = optional(number, 1)
+        count      = optional(number, 1)
         }
-        ), {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-        count      = 1
-      })
-      web_server = optional(object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
+      ), {})
+      web_server = optional(object({
+        cpu        = optional(number, 0.5)
+        memory_gb  = optional(number, 1.875)
+        storage_gb = optional(number, 1)
+      }), {})
+      worker = optional(object({
+        cpu        = optional(number, 0.5)
+        memory_gb  = optional(number, 1.875)
+        storage_gb = optional(number, 1)
+        min_count  = optional(number, 1)
+        max_count  = optional(number, 3)
         }
-        ), {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-      })
-      worker = optional(object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-          min_count  = number
-          max_count  = number
-        }
-        ), {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-        min_count  = 1
-        max_count  = 3
-      })
-    }))
+      ), {})
+    }), {})
   })
-  default = {
-    environment_size = "ENVIRONMENT_SIZE_SMALL"
-    software_config = {
-      image_version = "composer-2-airflow-2"
-    }
-    workloads_config = {
-      scheduler = {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-        count      = 1
-      }
-      web_server = {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-      }
-      worker = {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-        min_count  = 1
-        max_count  = 3
-      }
-    }
-  }
+  nullable = false
+  default  = {}
 }
 
 variable "data_catalog_tags" {
@@ -131,25 +86,29 @@ variable "location" {
 }
 
 variable "network_config" {
-  description = "Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values."
+  description = "Shared VPC network configurations to use. If null networks will be created in projects."
   type = object({
-    host_project      = string
-    network_self_link = string
-    subnet_self_links = object({
+    host_project      = optional(string)
+    network_self_link = optional(string)
+    subnet_self_links = optional(object({
       processing_dataproc = string
       processing_composer = string
-    })
-    composer_ip_ranges = object({
-      cloudsql   = string
-      gke_master = string
-    })
-    composer_secondary_ranges = object({
-      pods     = string
-      services = string
-    })
+    }), null)
+    composer_ip_ranges = optional(object({
+      connection_subnetwork = optional(string)
+      cloud_sql             = optional(string, "10.20.10.0/24")
+      gke_master            = optional(string, "10.20.11.0/28")
+      pods_range_name       = optional(string, "pods")
+      services_range_name   = optional(string, "services")
+    }), {})
     # web_server_network_access_control = list(string)
   })
-  default = null
+  nullable = false
+  default  = {}
+  validation {
+    condition     = (var.network_config.composer_ip_ranges.cloud_sql == null) != (var.network_config.composer_ip_ranges.connection_subnetwork == null)
+    error_message = "One, and only one, of `network_config.composer_ip_ranges.cloud_sql` or `network_config.composer_ip_ranges.connection_subnetwork` must be specified."
+  }
 }
 
 variable "organization_domain" {
@@ -216,10 +175,11 @@ variable "region" {
 variable "service_encryption_keys" {
   description = "Cloud KMS to use to encrypt different services. Key location should match service region."
   type = object({
-    bq       = string
-    composer = string
-    compute  = string
-    storage  = string
+    bq       = optional(string)
+    composer = optional(string)
+    compute  = optional(string)
+    storage  = optional(string)
   })
-  default = null
+  nullable = false
+  default  = {}
 }
