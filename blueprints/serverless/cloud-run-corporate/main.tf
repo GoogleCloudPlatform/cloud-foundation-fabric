@@ -103,11 +103,20 @@ module "project_svc1" {
   parent          = try(var.prj_svc1_create.parent, null)
   shared_vpc_service_config = {
     host_project = module.project_main.project_id
+    service_identity_iam = {
+      "roles/compute.networkUser" = [
+        "vpcaccess"
+      ],
+      "roles/editor" = [
+        "cloudservices"
+      ]
+    }
   }
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",
-    "run.googleapis.com"
+    "run.googleapis.com",
+    "vpcaccess.googleapis.com"
   ]
   skip_delete = true
 }
@@ -133,10 +142,24 @@ module "cloud_run_hello" {
   ingress_settings = var.ingress_settings
 }
 
+# VPC Access connector in the service project.
+# The Shared VPC Ingress feature needs a VPC connector. In the future,
+# this need will be removed.
+resource "google_vpc_access_connector" "connector" {
+  count   = var.prj_svc1_id != null ? 1 : 0
+  name    = "connector"
+  project = module.project_svc1[0].project_id
+  region  = var.region
+  subnet {
+    name       = module.vpc_main.subnets["${var.region}/subnet-vpc-access"].name
+    project_id = module.project_main.project_id
+  }
+}
+
 # Cloud Run service 1 in service project
 module "cloud_run_cart" {
   source     = "../../../modules/cloud-run"
-  count      = var.custom_domain == null ? 0 : 1
+  count      = var.prj_svc1_id != null ? 1 : 0
   project_id = module.project_svc1[0].project_id
   name       = local.service_name_cr1 # "cart"
   region     = var.region
@@ -149,12 +172,15 @@ module "cloud_run_cart" {
     "roles/run.invoker" = ["allUsers"]
   }
   ingress_settings = var.ingress_settings
+  revision_annotations = {
+    vpcaccess_connector = google_vpc_access_connector.connector[0].name
+  }
 }
 
 # Cloud Run service 2 in service project
 module "cloud_run_checkout" {
   source     = "../../../modules/cloud-run"
-  count      = var.custom_domain == null ? 0 : 1
+  count      = var.prj_svc1_id != null ? 1 : 0
   project_id = module.project_svc1[0].project_id
   name       = local.service_name_cr2 # "checkout"
   region     = var.region
@@ -167,6 +193,9 @@ module "cloud_run_checkout" {
     "roles/run.invoker" = ["allUsers"]
   }
   ingress_settings = var.ingress_settings
+  revision_annotations = {
+    vpcaccess_connector = google_vpc_access_connector.connector[0].name
+  }
 }
 
 ###############################################################################
@@ -182,6 +211,11 @@ module "vpc_main" {
     {
       ip_cidr_range = var.ip_ranges["main"].subnet
       name          = "subnet-main"
+      region        = var.region
+    },
+    {
+      ip_cidr_range = var.ip_ranges["main"].subnet_vpc_access
+      name          = "subnet-vpc-access"
       region        = var.region
     }
   ]
