@@ -16,13 +16,13 @@
 
 output "default_URL_cart" {
   description = "Cloud Run service 'cart' default URL."
-  value = (var.custom_domain != null ?
+  value = (var.prj_svc1_id != null ?
   module.cloud_run_cart[0].service.status[0].url : "none")
 }
 
 output "default_URL_checkout" {
   description = "Cloud Run service 'checkout' default URL."
-  value = (var.custom_domain != null ?
+  value = (var.prj_svc1_id != null ?
   module.cloud_run_checkout[0].service.status[0].url : "none")
 }
 

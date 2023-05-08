@@ -52,9 +52,10 @@ variable "ip_ranges" {
   type        = map(map(string))
   default = {
     main = {
-      subnet       = "10.0.1.0/24"
-      subnet_proxy = "10.10.0.0/24"
-      psc_addr     = "10.0.0.100"
+      subnet            = "10.0.1.0/24"
+      subnet_proxy      = "10.10.0.0/24"
+      subnet_vpc_access = "10.10.10.0/28"
+      psc_addr          = "10.0.0.100"
     }
     onprem = {
       subnet = "172.16.1.0/24"
