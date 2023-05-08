@@ -2,6 +2,8 @@
 
 This module implements an opinionated Data Platform Architecture that creates and setup projects and related resources that compose an end-to-end data environment.
 
+For a minimal Data Platform, plese refer to the [Minimal Data Platform](../data-platform-minimal/) blueprint.
+
 The code is intentionally simple, as it's intended to provide a generic initial setup and then allow easy customizations to complete the implementation of the intended design.
 
 The following diagram is a high-level reference of the resources created and managed here:

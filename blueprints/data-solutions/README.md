@@ -29,8 +29,15 @@ This [blueprint](./composer-2/) creates a [Cloud Composer](https://cloud.google.
 
 ### Data Platform Foundations
 
-<a href="./data-platform-foundations/" title="Data Platform Foundations"><img src="./data-platform-foundations/images/overview_diagram.png" align="left" width="280px"></a>
-This [blueprint](./data-platform-foundations/) implements a robust and flexible Data Foundation on GCP that provides opinionated defaults, allowing customers to build and scale out additional data pipelines quickly and reliably.
+<a href="./data-platform-foundations/" title="Data Platform"><img src="./data-platform-foundations/images/overview_diagram.png" align="left" width="280px"></a>
+This [blueprint](./data-platform-foundations/) implements a robust and flexible Data Platform on GCP that provides opinionated defaults, allowing customers to build and scale out additional data pipelines quickly and reliably.
+
+<br clear="left">
+
+### Minimal Data Platform
+
+<a href="./data-platform-minimal/" title="Minimal Data Platform"><img src="./data-platform-minimal/images/diagram.png" align="left" width="280px"></a>
+This [blueprint](./data-platform-minimal/) implements a minimal Data Platform on GCP that provides opinionated defaults, allowing customers to build and scale out additional data pipelines quickly and reliably.
 
 <br clear="left">
 
