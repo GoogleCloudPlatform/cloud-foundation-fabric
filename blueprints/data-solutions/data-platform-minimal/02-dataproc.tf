@@ -14,24 +14,6 @@
 
 # tfdoc:file:description Cloud Dataproc resources.
 
-locals {
-  iam_prc = {
-    "roles/bigquery.jobUser" = [
-      module.processing-sa-dp-0.iam_email, local.groups_iam.data-engineers
-    ]
-  }
-  processing_dp_subnet = (
-    local.use_shared_vpc
-    ? var.network_config.subnet_self_links.orchestration
-    : module.processing-vpc.0.subnet_self_links["${var.region}/${var.prefix}-processing"]
-  )
-  processing_dp_vpc = (
-    local.use_shared_vpc
-    ? var.network_config.network_self_link
-    : module.processing-vpc.0.self_link
-  )
-}
-
 module "processing-cs-dp-history" {
   source         = "../../../modules/gcs"
   project_id     = module.processing-project.project_id

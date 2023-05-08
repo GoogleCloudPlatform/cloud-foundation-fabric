@@ -15,55 +15,12 @@
 # tfdoc:file:description Core locals.
 
 locals {
-  # we cannot reference service accounts directly as they are dynamic
-  _shared_vpc_bindings = {
-    "roles/compute.networkUser" = [
-      "processing-cloudservices", "processing-robot-compute", "orch-robot-gke"
-    ]
-    "roles/composer.sharedVpcAgent" = [
-      "processing-robot-cs"
-    ]
-    "roles/container.hostServiceAgentUser" = [
-      "orch-robot-gke"
-    ]
-  }
   groups = {
     for k, v in var.groups : k => "${v}@${var.organization_domain}"
   }
   groups_iam = {
     for k, v in local.groups : k => "group:${v}"
   }
-  project_suffix     = var.project_suffix == null ? "" : "-${var.project_suffix}"
-  shared_vpc_project = var.network_config.host_project
-  # this is needed so that for_each only uses static values
-  shared_vpc_role_members = {
-    processing-cloudservices = "serviceAccount:${module.processing-project.service_accounts.cloud_services}"
-    orprocessingch-robot-cs  = "serviceAccount:${module.processing-project.service_accounts.robots.composer}"
-    processing-robot-gke     = "serviceAccount:${module.processing-project.service_accounts.robots.container-engine}"
-    processing-robot-compute = "serviceAccount:${module.processing-project.service_accounts.robots.compute}"
-  }
-  # reassemble in a format suitable for for_each
-  shared_vpc_bindings_map = {
-    for binding in flatten([
-      for role, members in local._shared_vpc_bindings : [
-        for member in members : { role = role, member = member }
-      ]
-    ]) : "${binding.role}-${binding.member}" => binding
-  }
+  project_suffix = var.project_suffix == null ? "" : "-${var.project_suffix}"
   use_shared_vpc = var.network_config.host_project != null
-  shared_vpc_service_config = var.network_config.host_project == null ? null : {
-    attach       = true
-    host_project = var.network_config.host_project
-    service_identity_iam = {
-      "roles/compute.networkUser" = [
-        "cloudservices", "compute", "container-engine"
-      ]
-      "roles/composer.sharedVpcAgent" = [
-        "composer"
-      ]
-      "roles/container.hostServiceAgentUser" = [
-        "container-egine"
-      ]
-    }
-  }
 }
