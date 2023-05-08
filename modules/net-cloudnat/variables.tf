@@ -102,3 +102,9 @@ variable "subnetworks" {
   }))
   default = []
 }
+
+variable "enable_endpoint_independent_mapping" {
+  description = "Enables endpoint independent mapping if null"
+  type        = bool
+  default     = null
+}
