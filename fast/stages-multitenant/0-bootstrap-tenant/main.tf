@@ -22,7 +22,7 @@ locals {
   )
   groups = {
     for k, v in var.tenant_config.groups :
-    k => v == null ? null : "${v}@${var.organization.domain}"
+    k => v == null ? null : can(regex(".*@.*", v)) ? v : "${v}@${var.organization.domain}"
   }
   fast_features = {
     for k, v in var.tenant_config.fast_features :

@@ -71,7 +71,7 @@ locals {
   )
   groups = {
     for k, v in var.groups :
-    k => v == null ? null : "${v}@${var.organization.domain}"
+    k => v == null ? null : can(regex(".*@.*", v)) ? v : "${v}@${var.organization.domain}"
   }
   groups_iam = {
     for k, v in local.groups : k => v != null ? "group:${v}" : null
