@@ -2,7 +2,7 @@
 
 This module implements a minimal opinionated Data Platform Architecture based on Dataproc Serverless resources. It creates and sets up projects and related resources that compose an end-to-end data environment.
 
-For a complete, more versatile and configurable Data Platform, plese refer to the [Data Platform](../data-platform-foundations/) blueprint.
+This minimal Data Platform Architecture keep to a minimal set of projects the solution. The approach make the architecture easy to read and operate but limit the ability to scale to handle multiple worklaods. To better handle more complex use cases where workloads need processing role segmentation betwneed transformations or deeper cost attribution are needed, it is suggested to refer to the [Data Platform](../data-platform-foundations/) blueprint.
 
 The code is intentionally simple, as it's intended to provide a generic initial setup and then allow easy customizations to complete the implementation of the intended design.
 
@@ -289,10 +289,9 @@ The application layer is out of scope of this script. As a demo purpuse only, on
 | [groups](variables.tf#L72) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [location](variables.tf#L82) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
 | [network_config](variables.tf#L88) | Shared VPC network configurations to use. If null networks will be created in projects. | <code title="object&#40;&#123;&#10;  host_project      &#61; optional&#40;string&#41;&#10;  network_self_link &#61; optional&#40;string&#41;&#10;  subnet_self_links &#61; optional&#40;object&#40;&#123;&#10;    processing_dataproc &#61; string&#10;    processing_composer &#61; string&#10;  &#125;&#41;, null&#41;&#10;  composer_ip_ranges &#61; optional&#40;object&#40;&#123;&#10;    connection_subnetwork &#61; optional&#40;string&#41;&#10;    cloud_sql             &#61; optional&#40;string, &#34;10.20.10.0&#47;24&#34;&#41;&#10;    gke_master            &#61; optional&#40;string, &#34;10.20.11.0&#47;28&#34;&#41;&#10;    pods_range_name       &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;    services_range_name   &#61; optional&#40;string, &#34;services&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_services](variables.tf#L152) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [project_suffix](variables.tf#L163) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
-| [region](variables.tf#L169) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [service_encryption_keys](variables.tf#L175) | Cloud KMS to use to encrypt different services. Key location should match service region. | <code title="object&#40;&#123;&#10;  bq       &#61; optional&#40;string&#41;&#10;  composer &#61; optional&#40;string&#41;&#10;  compute  &#61; optional&#40;string&#41;&#10;  storage  &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_suffix](variables.tf#L152) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L158) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [service_encryption_keys](variables.tf#L164) | Cloud KMS to use to encrypt different services. Key location should match service region. | <code title="object&#40;&#123;&#10;  bq       &#61; optional&#40;string&#41;&#10;  composer &#61; optional&#40;string&#41;&#10;  compute  &#61; optional&#40;string&#41;&#10;  storage  &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

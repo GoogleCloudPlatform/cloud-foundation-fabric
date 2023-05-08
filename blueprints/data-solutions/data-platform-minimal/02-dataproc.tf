@@ -23,7 +23,7 @@ locals {
   processing_dp_subnet = (
     local.use_shared_vpc
     ? var.network_config.subnet_self_links.orchestration
-    : values(module.processing-vpc.0.subnet_self_links)[0]
+    : module.processing-vpc.0.subnet_self_links["${var.region}/${var.prefix}-processing"]
   )
   processing_dp_vpc = (
     local.use_shared_vpc

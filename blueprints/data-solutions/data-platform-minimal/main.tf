@@ -34,7 +34,7 @@ locals {
     for k, v in local.groups : k => "group:${v}"
   }
   project_suffix     = var.project_suffix == null ? "" : "-${var.project_suffix}"
-  shared_vpc_project = try(var.network_config.host_project, null)
+  shared_vpc_project = var.network_config.host_project
   # this is needed so that for_each only uses static values
   shared_vpc_role_members = {
     processing-cloudservices = "serviceAccount:${module.processing-project.service_accounts.cloud_services}"
@@ -51,11 +51,19 @@ locals {
     ]) : "${binding.role}-${binding.member}" => binding
   }
   use_shared_vpc = var.network_config.host_project != null
-}
-
-resource "google_project_iam_member" "shared_vpc" {
-  for_each = local.use_shared_vpc ? local.shared_vpc_bindings_map : {}
-  project  = var.network_config.host_project
-  role     = each.value.role
-  member   = lookup(local.shared_vpc_role_members, each.value.member)
+  shared_vpc_service_config = var.network_config.host_project == null ? null : {
+    attach       = true
+    host_project = var.network_config.host_project
+    service_identity_iam = {
+      "roles/compute.networkUser" = [
+        "cloudservices", "compute", "container-engine"
+      ]
+      "roles/composer.sharedVpcAgent" = [
+        "composer"
+      ]
+      "roles/container.hostServiceAgentUser" = [
+        "container-egine"
+      ]
+    }
+  }
 }

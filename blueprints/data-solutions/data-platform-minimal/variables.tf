@@ -149,17 +149,6 @@ variable "project_config" {
   }
 }
 
-variable "project_services" {
-  description = "List of core services enabled on all projects."
-  type        = list(string)
-  default = [
-    "cloudresourcemanager.googleapis.com",
-    "iam.googleapis.com",
-    "serviceusage.googleapis.com",
-    "stackdriver.googleapis.com"
-  ]
-}
-
 variable "project_suffix" {
   description = "Suffix used only for project ids."
   type        = string

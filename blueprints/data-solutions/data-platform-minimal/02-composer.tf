@@ -53,35 +53,31 @@ resource "google_composer_environment" "processing-cmp-0" {
   region  = var.region
   config {
     software_config {
-      airflow_config_overrides = try(var.composer_config.software_config.airflow_config_overrides, null)
-      pypi_packages            = try(var.composer_config.software_config.pypi_packages, null)
+      airflow_config_overrides = var.composer_config.software_config.airflow_config_overrides
+      pypi_packages            = var.composer_config.software_config.pypi_packages
       env_variables = merge(
-        try(var.composer_config.software_config.env_variables, null), local.env_variables
+        var.composer_config.software_config.env_variables, local.env_variables
       )
       image_version = var.composer_config.software_config.image_version
     }
-    dynamic "workloads_config" {
-      for_each = (try(var.composer_config.workloads_config, null) != null ? { 1 = 1 } : {})
-
-      content {
-        scheduler {
-          cpu        = var.composer_config.workloads_config.scheduler.cpu
-          memory_gb  = var.composer_config.workloads_config.scheduler.memory_gb
-          storage_gb = var.composer_config.workloads_config.scheduler.storage_gb
-          count      = var.composer_config.workloads_config.scheduler.count
-        }
-        web_server {
-          cpu        = var.composer_config.workloads_config.web_server.cpu
-          memory_gb  = var.composer_config.workloads_config.web_server.memory_gb
-          storage_gb = var.composer_config.workloads_config.web_server.storage_gb
-        }
-        worker {
-          cpu        = var.composer_config.workloads_config.worker.cpu
-          memory_gb  = var.composer_config.workloads_config.worker.memory_gb
-          storage_gb = var.composer_config.workloads_config.worker.storage_gb
-          min_count  = var.composer_config.workloads_config.worker.min_count
-          max_count  = var.composer_config.workloads_config.worker.max_count
-        }
+    workloads_config {
+      scheduler {
+        cpu        = var.composer_config.workloads_config.scheduler.cpu
+        memory_gb  = var.composer_config.workloads_config.scheduler.memory_gb
+        storage_gb = var.composer_config.workloads_config.scheduler.storage_gb
+        count      = var.composer_config.workloads_config.scheduler.count
+      }
+      web_server {
+        cpu        = var.composer_config.workloads_config.web_server.cpu
+        memory_gb  = var.composer_config.workloads_config.web_server.memory_gb
+        storage_gb = var.composer_config.workloads_config.web_server.storage_gb
+      }
+      worker {
+        cpu        = var.composer_config.workloads_config.worker.cpu
+        memory_gb  = var.composer_config.workloads_config.worker.memory_gb
+        storage_gb = var.composer_config.workloads_config.worker.storage_gb
+        min_count  = var.composer_config.workloads_config.worker.min_count
+        max_count  = var.composer_config.workloads_config.worker.max_count
       }
     }
 
@@ -116,7 +112,6 @@ resource "google_composer_environment" "processing-cmp-0" {
     }
   }
   depends_on = [
-    google_project_iam_member.shared_vpc,
     module.processing-project
   ]
 }
