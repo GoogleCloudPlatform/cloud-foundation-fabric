@@ -29,21 +29,29 @@ variable "billing_account" {
   }
 }
 
-variable "data_path" {
-  description = "Relative path for the folder storing project configuration data."
-  type        = string
-  default     = "data/projects"
+variable "factories_config" {
+  description = "Configuration for project and hierarchy factories."
+  type = object({
+    hierarchy_path = optional(string, "data/projects")
+    projects_path  = optional(string, "data/hierarchy")
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "folder_ids" {
+  # tfdoc:variable:source 1-resman
+  description = "Map of folder names to folder ids."
+  type        = map(string)
+  default     = {}
+  nullable    = false
 }
 
 variable "host_project_ids" {
   # tfdoc:variable:source 2-networking
   description = "Shared VPC project ids."
-  type = object({
-    dev-spoke-0  = string
-    prod-landing = string
-    prod-spoke-0 = string
-  })
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 variable "organization" {
@@ -58,7 +66,6 @@ variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
-
   validation {
     condition     = try(length(var.prefix), 0) < 10
     error_message = "Use a maximum of 9 characters for prefix."

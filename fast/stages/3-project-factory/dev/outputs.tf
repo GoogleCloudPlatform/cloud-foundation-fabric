@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "hierarchy" {
+  description = "Created folders in key => id format."
+  value       = local.hierarchy
+}
+
 output "projects" {
   description = "Created projects and service accounts."
   value       = { for k, v in module.projects : k => v.project_id }
