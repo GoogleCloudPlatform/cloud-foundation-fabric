@@ -27,6 +27,7 @@ module "nat" {
 | [config_min_ports_per_vm](variables.tf#L23) | Minimum number of ports allocated to a VM from this NAT config. | <code>number</code> |  | <code>64</code> |
 | [config_source_subnets](variables.tf#L29) | Subnetwork configuration (ALL_SUBNETWORKS_ALL_IP_RANGES, ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, LIST_OF_SUBNETWORKS). | <code>string</code> |  | <code>&#34;ALL_SUBNETWORKS_ALL_IP_RANGES&#34;</code> |
 | [config_timeouts](variables.tf#L35) | Timeout configurations. | <code title="object&#40;&#123;&#10;  icmp            &#61; number&#10;  tcp_established &#61; number&#10;  tcp_transitory  &#61; number&#10;  udp             &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  icmp            &#61; 30&#10;  tcp_established &#61; 1200&#10;  tcp_transitory  &#61; 30&#10;  udp             &#61; 30&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [enable_endpoint_independent_mapping](variables.tf#L106) | Enables endpoint independent mapping if null | <code>bool</code> |  | <code>null</code> |
 | [logging_filter](variables.tf#L51) | Enables logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'. | <code>string</code> |  | <code>null</code> |
 | [router_asn](variables.tf#L72) | Router ASN used for auto-created router. | <code>number</code> |  | <code>64514</code> |
 | [router_create](variables.tf#L78) | Create router. | <code>bool</code> |  | <code>true</code> |
