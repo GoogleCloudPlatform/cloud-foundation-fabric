@@ -152,11 +152,11 @@ tf_identity   = "[user or SA account]"
 
 #### Use case 3.4
 
-Another possibility is for a project to be a Service Project with the Cloud Run service running in the Host Project, since this is also considered `"internal"` traffic. In this case a VPC SC perimeter is not needed.
+Another possibility is to use an architecture based on Shared VPC that allows direct service-to-service calls while ensuring all traffic stays within your private network. In this case a VPC SC perimeter is not needed.
 
-<p style="left"> <img src="images/use-case-3.4.png" width="800"> </p>
+<p style="left"> <img src="images/use-case-3.4.png" width="600"> </p>
 
-Note that the service project can't have a different DNS entry for the same domain, so it uses the DNS and PSC configuration of the host project. Set the following in `terraform.tfvars`:
+For simplicity, the two Cloud Run services are deployed in the same service project. To test access, VMs are created in the host and service projects. Note that the service project can't have a different DNS entry for the same domain, so it uses the DNS and PSC configuration of the host project. Set the following in `terraform.tfvars`:
 
 ```tfvars
 prj_main_id = "[your-main-project-id]" # Used as host project
@@ -165,11 +165,11 @@ prj_svc1_id = "[your-service-project1-id]"
 
 ### Use case 4: Access to Cloud Run with custom domain
 
-You need to use a L7 ILB with Serverless NEGs (in Preview) to set a custom domain for Cloud Run. As a practical example, this blueprint deploys this configuration in a Shared VPC environment with two Cloud Run services running in service projects and the ILB exposing them via a custom domain, pointing to them through a URL map: `/cart` and `/checkout`.
+You need to use a L7 ILB with Serverless NEGs (in Preview) to set a custom domain for Cloud Run. As a practical example, this blueprint deploys this configuration in a Shared VPC environment with two Cloud Run services running in a service project and the ILB exposing them via a custom domain, pointing to them through a URL map: `/cart` and `/checkout`.
 
 <p align="center"> <img src="images/use-case-4.png" width="600"> </p>
 
-For simplicity, both services are deployed in the same service project. Also, the blueprint uses an HTTP connection to the ILB to avoid management of SSL certificates. To test access, VMs are created in the host and service projects. Set the following in `terraform.tfvars`:
+The blueprint uses an HTTP connection to the ILB to avoid management of SSL certificates. To test access, VMs are created in the host and service projects. Set the following in `terraform.tfvars`:
 
 ```tfvars
 prj_main_id   = "[your-main-project-id]" # Used as host project
@@ -180,8 +180,6 @@ custom_domain = "cloud-run-corporate.example.org"
 SSH into a test VM and run `curl` specifying as URL the host, your custom domain, and a path, `/cart` or `/checkout`. You will see each service responding to the request:
 
 <p align="center"> <img src="images/service-running-4.png" width="700"> </p>
-
-Note that the default URLs for both services are also output, and the PSC endpoint for the `*.run.app` domain from previous examples is still created. However, access to these URLs from both VMs in the host or service project is blocked since the requests come from a VPC network in a different project to the service.
 
 ## Cleaning up your environment
 
@@ -196,22 +194,22 @@ The above command will delete the associated resources so there will be no billa
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prj_main_id](variables.tf#L78) | Main Project ID. | <code>string</code> | ✓ |  |
+| [prj_main_id](variables.tf#L79) | Main Project ID. | <code>string</code> | ✓ |  |
 | [access_policy](variables.tf#L17) | VPC SC access policy, if it exists. | <code>string</code> |  | <code>null</code> |
 | [access_policy_create](variables.tf#L23) | Parameters for the creation of a VPC SC access policy. | <code title="object&#40;&#123;&#10;  parent &#61; string&#10;  title  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [custom_domain](variables.tf#L32) | Custom domain for the Load Balancer. | <code>string</code> |  | <code>null</code> |
 | [image](variables.tf#L38) | Container image to deploy. | <code>string</code> |  | <code>&#34;us-docker.pkg.dev&#47;cloudrun&#47;container&#47;hello&#34;</code> |
 | [ingress_settings](variables.tf#L44) | Ingress traffic sources allowed to call the service. | <code>string</code> |  | <code>&#34;internal&#34;</code> |
-| [ip_ranges](variables.tf#L50) | IPs or IP ranges used by VPCs. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  main &#61; &#123;&#10;    subnet       &#61; &#34;10.0.1.0&#47;24&#34;&#10;    subnet_proxy &#61; &#34;10.10.0.0&#47;24&#34;&#10;    psc_addr     &#61; &#34;10.0.0.100&#34;&#10;  &#125;&#10;  onprem &#61; &#123;&#10;    subnet &#61; &#34;172.16.1.0&#47;24&#34;&#10;  &#125;&#10;  prj1 &#61; &#123;&#10;    subnet   &#61; &#34;10.0.2.0&#47;24&#34;&#10;    psc_addr &#61; &#34;10.0.0.200&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [prj_main_create](variables.tf#L69) | Parameters for the creation of the main project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prj_onprem_create](variables.tf#L83) | Parameters for the creation of an 'onprem' project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prj_onprem_id](variables.tf#L92) | Onprem Project ID. | <code>string</code> |  | <code>null</code> |
-| [prj_prj1_create](variables.tf#L98) | Parameters for the creation of project 1. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prj_prj1_id](variables.tf#L107) | Project 1 ID. | <code>string</code> |  | <code>null</code> |
-| [prj_svc1_create](variables.tf#L113) | Parameters for the creation of service project 1. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prj_svc1_id](variables.tf#L122) | Service Project 1 ID. | <code>string</code> |  | <code>null</code> |
-| [region](variables.tf#L128) | Cloud region where resource will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [tf_identity](variables.tf#L134) | Terraform identity to include in VPC SC perimeter. | <code>string</code> |  | <code>null</code> |
+| [ip_ranges](variables.tf#L50) | IPs or IP ranges used by VPCs. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  main &#61; &#123;&#10;    subnet            &#61; &#34;10.0.1.0&#47;24&#34;&#10;    subnet_proxy      &#61; &#34;10.10.0.0&#47;24&#34;&#10;    subnet_vpc_access &#61; &#34;10.10.10.0&#47;28&#34;&#10;    psc_addr          &#61; &#34;10.0.0.100&#34;&#10;  &#125;&#10;  onprem &#61; &#123;&#10;    subnet &#61; &#34;172.16.1.0&#47;24&#34;&#10;  &#125;&#10;  prj1 &#61; &#123;&#10;    subnet   &#61; &#34;10.0.2.0&#47;24&#34;&#10;    psc_addr &#61; &#34;10.0.0.200&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [prj_main_create](variables.tf#L70) | Parameters for the creation of the main project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prj_onprem_create](variables.tf#L84) | Parameters for the creation of an 'onprem' project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prj_onprem_id](variables.tf#L93) | Onprem Project ID. | <code>string</code> |  | <code>null</code> |
+| [prj_prj1_create](variables.tf#L99) | Parameters for the creation of project 1. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prj_prj1_id](variables.tf#L108) | Project 1 ID. | <code>string</code> |  | <code>null</code> |
+| [prj_svc1_create](variables.tf#L114) | Parameters for the creation of service project 1. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prj_svc1_id](variables.tf#L123) | Service Project 1 ID. | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L129) | Cloud region where resource will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [tf_identity](variables.tf#L135) | Terraform identity to include in VPC SC perimeter. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -240,7 +238,7 @@ module "test" {
   prj_onprem_id = "onprem-project-id"
 }
 
-# tftest modules=15 resources=45
+# tftest modules=15 resources=46
 ```
 
 ```hcl
@@ -264,7 +262,7 @@ module "test" {
   tf_identity = "user@example.org"
 }
 
-# tftest modules=15 resources=31
+# tftest modules=15 resources=32
 ```
 
 ```hcl
@@ -283,5 +281,5 @@ module "test" {
   custom_domain = "cloud-run-corporate.example.org"
 }
 
-# tftest modules=14 resources=38
+# tftest modules=14 resources=43
 ```
