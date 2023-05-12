@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,18 @@ resource "google_compute_router_nat" "nat" {
       name                     = subnetwork.value.self_link
       source_ip_ranges_to_nat  = subnetwork.value.config_source_ranges
       secondary_ip_range_names = subnetwork.value.secondary_ranges
+    }
+  }
+
+  dynamic "rules" {
+    for_each = { for i, r in var.rules : i => r }
+    content {
+      rule_number = rules.key
+      description = rules.value.description
+      match       = rules.value.match
+      action {
+        source_nat_active_ips = rules.value.source_ips
+      }
     }
   }
 }
