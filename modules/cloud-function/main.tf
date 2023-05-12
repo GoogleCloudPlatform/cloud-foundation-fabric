@@ -168,6 +168,7 @@ resource "google_cloudfunctions2_function" "function" {
     max_instance_count             = var.function_config.instance_count
     min_instance_count             = 0
     available_memory               = "${var.function_config.memory_mb}M"
+    available_cpu                  = var.function_config.cpu
     timeout_seconds                = var.function_config.timeout_seconds
     environment_variables          = var.environment_variables
     ingress_settings               = var.ingress_settings
