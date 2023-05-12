@@ -79,8 +79,12 @@ module "nat" {
   name                  = "default"
   router_network        = module.vpc.name
   config_source_subnets = "LIST_OF_SUBNETWORKS"
-  # 64512/11 = 5864 . 11 is the number of usable IPs in the proxy subnet
-  config_min_ports_per_vm = 5864
+  config_port_allocation = {
+    enable_endpoint_independent_mapping = false
+    enable_dynamic_port_allocation      = true
+    # 64512/11 = 5864 . 11 is the number of usable IPs in the proxy subnet
+    min_ports_per_vm = 5864
+  }
   subnetworks = [
     {
       self_link            = module.vpc.subnet_self_links["${var.region}/proxy"]

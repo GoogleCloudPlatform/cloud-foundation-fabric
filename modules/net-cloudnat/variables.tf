@@ -20,10 +20,26 @@ variable "addresses" {
   default     = []
 }
 
-variable "config_min_ports_per_vm" {
-  description = "Minimum number of ports allocated to a VM from this NAT config."
-  type        = number
-  default     = 64
+variable "config_port_allocation" {
+  description = "Configuration for how to assign ports to virtual machines. min_ports_per_vm and max_ports_per_vm have no effect unless enable_dynamic_port_allocation is set to 'true'."
+  type = object({
+    enable_endpoint_independent_mapping = optional(bool, true)
+    enable_dynamic_port_allocation      = optional(bool, false)
+    min_ports_per_vm                    = optional(number, 64)
+    max_ports_per_vm                    = optional(number, 65536)
+  })
+
+  default = {
+    enable_endpoint_independent_mapping = true
+    enable_dynamic_port_allocation      = false
+    min_ports_per_vm                    = 64
+    max_ports_per_vm                    = 65536
+  }
+
+  validation {
+    condition     = var.config_port_allocation.enable_dynamic_port_allocation ? var.config_port_allocation.enable_endpoint_independent_mapping == false : true
+    error_message = "You must set enable_endpoint_independent_mapping to false to set enable_dynamic_port_allocation to true."
+  }
 }
 
 variable "config_source_subnets" {
