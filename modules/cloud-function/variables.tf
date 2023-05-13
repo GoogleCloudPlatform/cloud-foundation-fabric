@@ -61,6 +61,7 @@ variable "function_config" {
     entry_point     = optional(string, "main")
     instance_count  = optional(number, 1)
     memory_mb       = optional(number, 256) # Memory in MB
+    cpu             = optional(string, "0.166")
     runtime         = optional(string, "python310")
     timeout_seconds = optional(number, 180)
   })
@@ -68,6 +69,7 @@ variable "function_config" {
     entry_point     = "main"
     instance_count  = 1
     memory_mb       = 256
+    cpu             = "0.166"
     runtime         = "python310"
     timeout_seconds = 180
   }
