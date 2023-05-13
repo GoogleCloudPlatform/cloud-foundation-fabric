@@ -34,18 +34,21 @@ resource "google_compute_router" "router" {
 }
 
 resource "google_compute_router_nat" "nat" {
-  project                            = var.project_id
-  region                             = var.region
-  name                               = var.name
-  router                             = local.router_name
-  nat_ips                            = var.addresses
-  nat_ip_allocate_option             = length(var.addresses) > 0 ? "MANUAL_ONLY" : "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat = var.config_source_subnets
-  min_ports_per_vm                   = var.config_min_ports_per_vm
-  icmp_idle_timeout_sec              = var.config_timeouts.icmp
-  udp_idle_timeout_sec               = var.config_timeouts.udp
-  tcp_established_idle_timeout_sec   = var.config_timeouts.tcp_established
-  tcp_transitory_idle_timeout_sec    = var.config_timeouts.tcp_transitory
+  project                             = var.project_id
+  region                              = var.region
+  name                                = var.name
+  router                              = local.router_name
+  nat_ips                             = var.addresses
+  nat_ip_allocate_option              = length(var.addresses) > 0 ? "MANUAL_ONLY" : "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat  = var.config_source_subnets
+  icmp_idle_timeout_sec               = var.config_timeouts.icmp
+  udp_idle_timeout_sec                = var.config_timeouts.udp
+  tcp_established_idle_timeout_sec    = var.config_timeouts.tcp_established
+  tcp_transitory_idle_timeout_sec     = var.config_timeouts.tcp_transitory
+  enable_endpoint_independent_mapping = var.config_port_allocation.enable_endpoint_independent_mapping
+  enable_dynamic_port_allocation      = var.config_port_allocation.enable_dynamic_port_allocation
+  min_ports_per_vm                    = var.config_port_allocation.min_ports_per_vm
+  max_ports_per_vm                    = var.config_port_allocation.max_ports_per_vm
 
   log_config {
     enable = var.logging_filter == null ? false : true
