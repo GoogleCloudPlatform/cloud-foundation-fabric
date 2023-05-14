@@ -64,7 +64,7 @@ variable "configmanagement_templates" {
 }
 
 variable "features" {
-  description = "Enable and configue fleet features."
+  description = "Enable and configure fleet features."
   type = object({
     appdevexperience             = optional(bool, false)
     configmanagement             = optional(bool, false)

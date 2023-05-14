@@ -51,7 +51,7 @@ variable "project_create" {
 }
 
 variable "project_id" {
-  description = "When referncing existing projects, the id of the project where resources will be created."
+  description = "When referencing existing projects, the id of the project where resources will be created."
   type        = string
 }
 

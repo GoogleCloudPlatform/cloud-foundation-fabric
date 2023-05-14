@@ -23,7 +23,7 @@ variable "migration_target_projects" {
 }
 
 variable "migration_viewer_users" {
-  description = "List of users authorized to retrive information about M4CE in the Google Cloud Console, in IAM format."
+  description = "List of users authorized to retrieve information about M4CE in the Google Cloud Console, in IAM format."
   type        = list(string)
   default     = []
 }

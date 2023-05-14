@@ -48,7 +48,7 @@ case "${PLUTO_VERB}" in
         # Enable loosy source validation, if possible. Otherwise disable validation.
         sudo /sbin/sysctl -w net.ipv4.conf.${VTI_IF}.rp_filter=2 || sysctl -w net.ipv4.conf.${VTI_IF}.rp_filter=0
 
-        # If you would like to use VTI for policy-based you shoud take care of routing by yourselv, e.x.
+        # If you would like to use VTI for policy-based you should take care of routing by yourselv, e.x.
         if [[ "${PLUTO_PEER_CLIENT}" != "0.0.0.0/0" ]]; then
             ${IP} r add "${PLUTO_PEER_CLIENT}" dev "${VTI_IF}"
         fi

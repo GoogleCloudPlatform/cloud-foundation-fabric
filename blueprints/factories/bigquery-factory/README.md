@@ -10,7 +10,7 @@ You can create as many files as you like, the code will loop through it and crea
 
 ### Terraform code
 
-In this section we show how to create tables and views from a file structure simlar to the one shown below.
+In this section we show how to create tables and views from a file structure similar to the one shown below.
 ```bash
 bigquery
 │

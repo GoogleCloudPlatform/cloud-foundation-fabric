@@ -139,7 +139,7 @@ Variable configuration is best done in a `.tfvars` file, but can also be done di
 <dt><code>disk_encryption_key</code></dt>
 <dd>Set to <code>null</code> if you are not using CMEK keys for disk encryption. If you are using it, ensure the GCE robot account has permissions on the key.</dd>
 <dt><code>fs_paths</code></dt>
-<dd>Filesystem paths for the external dependencies. Home path expansion is supported. The <code>config_dir</code> path is where generated ignition files will be created. Ensure it's empty (incuding hidden files) before starting the installation process.</dd>
+<dd>Filesystem paths for the external dependencies. Home path expansion is supported. The <code>config_dir</code> path is where generated ignition files will be created. Ensure it's empty (including hidden files) before starting the installation process.</dd>
 <dt><code>host_project</code></dt>
 <dd>If you don't need installing in different subnets, pass the same subnet names for the default, masters, and workers subnets.</dd>
 <dt><code>install_config_params</code></dt>

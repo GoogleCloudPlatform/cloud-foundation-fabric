@@ -41,7 +41,7 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-// GetConfiguration generates configration by reading ENV variables.
+// GetConfiguration generates configuration by reading ENV variables.
 func GetConfiguration() (*Configuration, error) {
 	timeout, err := time.ParseDuration(getEnv("TIMEOUT", "1000ms"))
 	if err != nil {

@@ -4,7 +4,7 @@ This module simplifies the creation of a Binary Authorization policy, attestors 
 
 ## Example
 
-### Binary Athorization
+### Binary Authorization
 
 ```hcl
 module "binauthz" {

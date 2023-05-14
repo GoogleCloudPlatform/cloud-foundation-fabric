@@ -15,7 +15,7 @@
  */
 
 variable "grpc_config" {
-  description = "The configuration for a gRPC enpoint. Either this or openapi_config must be specified."
+  description = "The configuration for a gRPC endpoint. Either this or openapi_config must be specified."
   type = object({
     yaml_path          = string
     protoc_output_path = string

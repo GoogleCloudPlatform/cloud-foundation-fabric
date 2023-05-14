@@ -17,7 +17,7 @@ import yaml
 
 
 def test_defaults(plan_summary):
-  "Test defalt configuration."
+  "Test default configuration."
   # _, output = apply_runner(mysql_password='foo')
   summary = plan_summary('modules/cloud-config-container/mysql/',
                          mysql_password='foo')

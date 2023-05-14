@@ -43,7 +43,7 @@ Before applying this Terraform
 | [dest_ip_address](variables.tf#L17) | On-prem service destination IP address. | <code>string</code> | ✓ |  |
 | [prefix](variables.tf#L28) | Prefix used for resource names. | <code>string</code> | ✓ |  |
 | [producer](variables.tf#L37) | Producer configuration. | <code title="object&#40;&#123;&#10;  subnet_main     &#61; string      &#35; CIDR&#10;  subnet_proxy    &#61; string      &#35; CIDR&#10;  subnet_psc      &#61; string      &#35; CIDR&#10;  accepted_limits &#61; map&#40;number&#41; &#35; Accepted project ids &#61;&#62; PSC endpoint limit&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L53) | When referncing existing projects, the id of the project where resources will be created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L53) | When referencing existing projects, the id of the project where resources will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L58) | Region where resources will be created. | <code>string</code> | ✓ |  |
 | [subnet_consumer](variables.tf#L63) | Consumer subnet CIDR. | <code>string &#35; CIDR</code> | ✓ |  |
 | [zone](variables.tf#L102) | Zone where resources will be created. | <code>string</code> | ✓ |  |

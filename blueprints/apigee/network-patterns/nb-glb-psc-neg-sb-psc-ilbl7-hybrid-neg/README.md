@@ -6,7 +6,7 @@ The architecture is the one depicted below.
 
 ![Diagram](diagram.png)
 
-To emulate an service deployed on-premise, we have used a managed instance group of instances running Nginx exposed via a regional internalload balancer (L7). The service is accesible through VPN.
+To emulate an service deployed on-premise, we have used a managed instance group of instances running Nginx exposed via a regional internalload balancer (L7). The service is accessible through VPN.
 
 ## Running the blueprint
 

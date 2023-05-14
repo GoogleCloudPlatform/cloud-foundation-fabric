@@ -112,7 +112,7 @@ The Shielded Folder blueprint is meant to be executed by a Service Account (or a
   - `roles/resourcemanager.folderAdmin`
   - `roles/resourcemanager.projectCreator`
 
-The shielded Folfer blueprint assumes [groups described](#user-groups) are created in your GCP organization.
+The shielded Folder blueprint assumes [groups described](#user-groups) are created in your GCP organization.
 
 ### Variable configuration PIPPO
 

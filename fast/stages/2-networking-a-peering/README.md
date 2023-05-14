@@ -276,7 +276,7 @@ terraform apply
 
 ### Post-deployment activities
 
-- On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recomment aggregating routes as much as possible.
+- On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recommend aggregating routes as much as possible.
 - On-prem routers should accept BGP sessions from their cloud peers.
 - On-prem DNS servers should have forward zones for GCP-managed ones.
 

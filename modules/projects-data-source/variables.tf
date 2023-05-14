@@ -39,7 +39,7 @@ variable "ignore_projects" {
 }
 
 variable "include_projects" {
-  description = "A list of project IDs/numbers to include to the output if some of them are excluded by `ignore_projects` wilcard entries."
+  description = "A list of project IDs/numbers to include to the output if some of them are excluded by `ignore_projects` wildcard entries."
   type        = list(string)
   default     = []
   # example excluding all the projects starting with "prf-" except "prd-123457"
