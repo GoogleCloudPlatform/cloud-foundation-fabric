@@ -46,12 +46,13 @@ module "peering-a-c" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [local_network](variables.tf#L30) | Resource link of the network to add a peering to. | <code>string</code> | ✓ |  |
-| [peer_network](variables.tf#L41) | Resource link of the peer network. | <code>string</code> | ✓ |  |
+| [local_network](variables.tf#L36) | Resource link of the network to add a peering to. | <code>string</code> | ✓ |  |
+| [peer_network](variables.tf#L47) | Resource link of the peer network. | <code>string</code> | ✓ |  |
 | [export_local_custom_routes](variables.tf#L18) | Export custom routes to peer network from local network. | <code>bool</code> |  | <code>false</code> |
 | [export_peer_custom_routes](variables.tf#L24) | Export custom routes to local network from peer network. | <code>bool</code> |  | <code>false</code> |
-| [peer_create_peering](variables.tf#L35) | Create the peering on the remote side. If false, only the peering from this network to the remote network is created. | <code>bool</code> |  | <code>true</code> |
-| [prefix](variables.tf#L46) | Optional name prefix for the network peerings. | <code>string</code> |  | <code>null</code> |
+| [export_public_ip_routes](variables.tf#L30) | Export subnet routes with public ip. | <code>bool</code> |  | <code>true</code> |
+| [peer_create_peering](variables.tf#L41) | Create the peering on the remote side. If false, only the peering from this network to the remote network is created. | <code>bool</code> |  | <code>true</code> |
+| [prefix](variables.tf#L52) | Optional name prefix for the network peerings. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
