@@ -67,7 +67,7 @@ variable "network_config" {
 }
 
 variable "notebooks" {
-  description = "Vertex AI workbenchs to be deployed. Service Account runtime/instances deployed."
+  description = "Vertex AI workbenches to be deployed. Service Account runtime/instances deployed."
   type = map(object({
     type             = string
     machine_type     = optional(string, "n1-standard-4")
