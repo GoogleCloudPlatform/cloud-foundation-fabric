@@ -290,7 +290,7 @@ terraform apply
 
 ### Post-deployment activities
 
-- On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recomment aggregating routes as much as possible.
+- On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recommend aggregating routes as much as possible.
 - On-prem routers should accept BGP sessions from their cloud peers.
 - On-prem DNS servers should have forward zones for GCP-managed ones.
 
@@ -386,7 +386,7 @@ Copy `vpn-spoke-dev.tf` to `vpn-spoke-staging.tf` - replace `dev` with `staging`
 VPN configuration also controls BGP advertisements, which requires the following variable changes:
 
 - `router_configs` to configure the new routers (one per region) created for the `staging` VPC
-- `vpn_onprem_configs` to configure the new advertisments to on-premises for the new CIDRs
+- `vpn_onprem_configs` to configure the new advertisements to on-premises for the new CIDRs
 - `vpn_spoke_configs` to configure the new advertisements to `landing` for the new VPC - new keys (one per region) should be added, such as e.g. `staging-ew1` and `staging-ew4`
 
 DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS resolution to Landing through DNS peering, and optionally define a private zone (e.g. `dev.gcp.example.com`) which the landing peers to. To configure DNS for a new environment, copy one of the other environments DNS files [e.g. (dns-dev.tf)](dns-dev.tf) into a new `dns-*.tf` file suffixed with the environment name (e.g. `dns-staging.tf`), and update its content accordingly. Don't forget to add a peering zone from the landing to the newly created environment private zone.

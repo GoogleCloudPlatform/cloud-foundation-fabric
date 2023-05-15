@@ -29,7 +29,7 @@ This sample creates\update several distinct groups of resources:
 | [migration_admin_users](variables.tf#L15) | List of users authorized to create a new M4CE sources and perform all other migration operations, in IAM format. | <code>list&#40;string&#41;</code> | ✓ |  |
 | [migration_target_projects](variables.tf#L20) | List of target projects for m4ce workload migrations. | <code>list&#40;string&#41;</code> | ✓ |  |
 | [sharedvpc_host_projects](variables.tf#L45) | List of host projects that share a VPC with the selected target projects. | <code>list&#40;string&#41;</code> | ✓ |  |
-| [migration_viewer_users](variables.tf#L25) | List of users authorized to retrive information about M4CE in the Google Cloud Console, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [migration_viewer_users](variables.tf#L25) | List of users authorized to retrieve information about M4CE in the Google Cloud Console, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [project_create](variables.tf#L30) | Parameters for the creation of the new project to host the M4CE backend. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [project_name](variables.tf#L39) | Name of an existing project or of the new project assigned as M4CE host project. | <code>string</code> |  | <code>&#34;m4ce-host-project-000&#34;</code> |
 

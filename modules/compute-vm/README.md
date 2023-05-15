@@ -49,7 +49,7 @@ module "simple-vm-example" {
 
 VM service accounts can be managed in three different ways:
 
-- You can let the module create a service account for you by settting `service_account_create = true`
+- You can let the module create a service account for you by setting `service_account_create = true`
 - You can use an existing service account by setting `service_account_create = false` (the default value) and passing the full email address of the service account to the `service_account` variable. This is useful, for example, if you want to reuse the service account from another previously created instance, or if you want to create the service account manually with the `iam-service-account` module. In this case, you probably also want to set `service_account_scopes` to `cloud-platform`.
 - Lastly, you can use the default compute service account by setting `service_account_crate = false`. Please note that using the default compute service account is not recommended.
 
@@ -204,7 +204,7 @@ module "vm-disk-options-example" {
 
 #### Internal and external IPs
 
-By default VNs are create with an automatically assigned IP addresses, but you can change it through the `addreses` and `nat` attributes of the `network_interfaces` variable:
+By default VNs are create with an automatically assigned IP addresses, but you can change it through the `addresses` and `nat` attributes of the `network_interfaces` variable:
 
 ```hcl
 module "vm-internal-ip" {

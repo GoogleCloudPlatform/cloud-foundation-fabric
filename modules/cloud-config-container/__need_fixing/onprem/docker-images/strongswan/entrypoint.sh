@@ -24,7 +24,7 @@ _stop_ipsec() {
 }
 trap _stop_ipsec TERM
 
-# Making the containter to work as a default gateway for LAN_NETWORKS
+# Making the container to work as a default gateway for LAN_NETWORKS
 iptables -t nat -A POSTROUTING -s ${LAN_NETWORKS} -o ${VPN_DEVICE} -m policy --dir out --pol ipsec -j ACCEPT
 iptables -t nat -A POSTROUTING -s ${LAN_NETWORKS} -o ${VPN_DEVICE} -j MASQUERADE
 

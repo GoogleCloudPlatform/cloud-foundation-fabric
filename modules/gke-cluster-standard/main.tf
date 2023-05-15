@@ -266,7 +266,7 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  # dataplane v2 has bult-in network policies
+  # dataplane v2 has built-in network policies
   dynamic "network_policy" {
     for_each = (
       var.enable_addons.network_policy && !var.enable_features.dataplane_v2

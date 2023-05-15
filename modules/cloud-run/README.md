@@ -101,7 +101,7 @@ module "cloud_run" {
 
 ### VPC Access Connector creation
 
-If creation of a [VPC Access Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access) is required, use the `vpc_connector_create` variable which also support optional attribtues for number of instances, machine type, and throughput (not shown here). The annotation to use the connector will be added automatically.
+If creation of a [VPC Access Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access) is required, use the `vpc_connector_create` variable which also support optional attributes for number of instances, machine type, and throughput (not shown here). The annotation to use the connector will be added automatically.
 
 ```hcl
 module "cloud_run" {

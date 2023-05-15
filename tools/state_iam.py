@@ -75,10 +75,10 @@ def get_bindings(resources, prefix=None, folders=None):
         # Handle Cloud Services Service Account
         if member_domain == 'cloudservices.gserviceaccount.com':
           member_id = "PROJECT_CLOUD_SERVICES"
-        # Handle Cloud Service Identity Service Acocunt
+        # Handle Cloud Service Identity Service Account
         if re.match("^service-\d{8}", member_id):
           member_id = "SERVICE_IDENTITY_" + member_domain.split(".", 1)[0]
-        # Handle BQ Cloud Service Identity Service Acocunt
+        # Handle BQ Cloud Service Identity Service Account
         if re.match("^bq-\d{8}", member_id):
           member_id = "IDENTITY_" + member_domain.split(".", 1)[0]
           resource_type_output = "Service Identity - " + resource_type

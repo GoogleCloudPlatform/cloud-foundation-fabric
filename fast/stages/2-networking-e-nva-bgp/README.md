@@ -84,7 +84,7 @@ The "landing zone" is divided into two VPC networks:
 
 ### NCC, NVAs and BGP sessions
 
-The VPCs connect through two sets of sample NVA machines: one per region, each containing two instances. The appliances run [Contrainer-Optimized OS](https://cloud.google.com/container-optimized-os/docs) and a container with [FRRouting](https://frrouting.org/).
+The VPCs connect through two sets of sample NVA machines: one per region, each containing two instances. The appliances run [Container-Optimized OS](https://cloud.google.com/container-optimized-os/docs) and a container with [FRRouting](https://frrouting.org/).
 
 We levarage NCC-RA to allow the NVAs to establish BGP sessions with Cloud Routers in the untrusted and in the trusted VPCs. This allows Cloud Routers to advertise routes to the NVAs, and the NVAs to announce routes to the Cloud Router, so it can program them in the VPC.
 
@@ -92,7 +92,7 @@ Specifically, each NVA establishes two BGP sessions (for redundancy) with the th
 
 **Cloud Routers in the untrusted VPC advertise the default route (0.0.0.0/0) to the NVAs**. The NVAs advertise the route to the Cloud Routers in the trusted VPC. These dynamic routes are then imported through VPC peerings in the spokes.
 
-**Cloud Routers in the trusted hub advertis to the NVAs** all the subnets of the trusted VPCs. This includes the regional subnets and the cross-regional subnets. The NVAs manipulate the route costs (MED) before advertising them to the Cloud Routers in the untrusted VPC. This is done to guarantee symmetric traffic paths (more [here](https://medium.com/google-cloud/gcp-routing-adventures-vol-2-enterprise-multi-regional-deployments-in-google-cloud-3968e9591d59)).
+**Cloud Routers in the trusted hub adverts to the NVAs** all the subnets of the trusted VPCs. This includes the regional subnets and the cross-regional subnets. The NVAs manipulate the route costs (MED) before advertising them to the Cloud Routers in the untrusted VPC. This is done to guarantee symmetric traffic paths (more [here](https://medium.com/google-cloud/gcp-routing-adventures-vol-2-enterprise-multi-regional-deployments-in-google-cloud-3968e9591d59)).
 
 NVAs establish **extra BGP sessions with both cross-regional NVAs**. In this case, the NVAs advertise the regional trusted routes only. This allows cross-spoke (environment) traffic to remain also symmetric (more [here](https://medium.com/google-cloud/gcp-routing-adventures-vol-2-enterprise-multi-regional-deployments-in-google-cloud-3968e9591d59)). We set these routes to be exchanged at a lower cost than the one set for the other routes.
 
@@ -380,7 +380,7 @@ terraform apply
 
 ### Post-deployment activities
 
-- On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recomment aggregating routes as much as possible.
+- On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recommend aggregating routes as much as possible.
 - On-prem routers should accept BGP sessions from their cloud peers.
 - On-prem DNS servers should have forward zones for GCP-managed ones.
 

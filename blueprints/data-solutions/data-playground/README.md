@@ -22,7 +22,7 @@ As is often the case in real-world configurations, this blueprint accepts as inp
 
 If the network_config variable is not provided, one VPC will be created in each project that supports network resources (load, transformation and orchestration).
 
-## Deploy your enviroment
+## Deploy your environment
 
 We assume the identiy running the following steps has the following role:
 
@@ -35,7 +35,7 @@ Run Terraform init:
 terraform init
 ```
 
-Configure the Terraform variable in your terraform.tfvars file. You need to spefify at least the following variables:
+Configure the Terraform variable in your terraform.tfvars file. You need to specify at least the following variables:
 
 ```
 prefix = "prefix"
@@ -48,7 +48,7 @@ You can run now:
 terraform apply
 ```
 
-You can now connect to the Vertex AI notbook to perform your data analysy.
+You can now connect to the Vertex AI notbook to perform your data analysis.
 <!-- BEGIN TFDOC -->
 
 ## Variables

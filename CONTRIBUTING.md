@@ -981,7 +981,7 @@ tests:
   # run a test named `test-plan`, load the specified tfvars files
   # use the default inventory file of `test-plan.yaml`
   test-plan:
-    tfvars: # if ommited, we load test-plan.tfvars by default
+    tfvars: # if omitted, we load test-plan.tfvars by default
       - test-plan.tfvars
       - test-plan-extra.tfvars
     inventory:
@@ -991,7 +991,7 @@ tests:
   # extra_files:  
   #   - ../plugin-x/*.tf
 
-  # You can ommit the tfvars and inventory sections and they will
+  # You can omit the tfvars and inventory sections and they will
   # default to the name of the test. The following two examples are equivalent:
   #
   # test-plan2:

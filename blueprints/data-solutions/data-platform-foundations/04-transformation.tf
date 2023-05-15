@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Trasformation project and VPC.
+# tfdoc:file:description Transformation project and VPC.
 
 locals {
   iam_trf = {

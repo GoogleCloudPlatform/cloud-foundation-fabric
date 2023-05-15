@@ -5,7 +5,7 @@ This set of modules creates specialized [cloud-config](https://cloud.google.com/
 These modules are designed for several use cases:
 
 - to quickly prototype specialized services (eg MySQL access or HTTP serving) for prototyping infrastructure
-- to emulate production services for perfomance testing
+- to emulate production services for performance testing
 - to easily add glue components for services like DNS (eg to work around inbound/outbound forwarding limitations)
 - to implement cloud-native production deployments that leverage cloud-init for configuration management, without the need of a separate tool
 

@@ -15,7 +15,7 @@
  */
 
 variable "allowed_ranges" {
-  description = "Ranges that can SSH to the boostrap VM and API endpoint."
+  description = "Ranges that can SSH to the bootstrap VM and API endpoint."
   type        = list(any)
   default     = ["10.0.0.0/8"]
 }

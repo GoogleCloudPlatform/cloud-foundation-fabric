@@ -12,7 +12,7 @@ In this tutorial we will also see how to make explainable predictions, in order 
 
 # Dataset
 
-This tutorial uses a fictitious e-commerce dataset collecting programmatically generated data from the fictitious e-commerce store called The Look. The dataset is publicy available on BigQuery at this location `bigquery-public-data.thelook_ecommerce`.
+This tutorial uses a fictitious e-commerce dataset collecting programmatically generated data from the fictitious e-commerce store called The Look. The dataset is publicly available on BigQuery at this location `bigquery-public-data.thelook_ecommerce`.
 
 # Goal
 

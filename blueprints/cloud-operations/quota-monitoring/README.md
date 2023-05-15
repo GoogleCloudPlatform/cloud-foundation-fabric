@@ -28,7 +28,7 @@ Labels are set with project id (which may differ from the monitoring workspace p
 
 <img src="explorer.png" width="640px" alt="GCP Metrics Explorer, usage, limit and utilization view sample">
 
-The solution can also create a basic monitoring alert policy, to demonstrate how to raise alerts when quotas utilization goes over a predefined threshold, to enable it, set variable `alert_create` to true and reapply main.tf after main.py has run at least one and quota monitoring metrics have been creaed.
+The solution can also create a basic monitoring alert policy, to demonstrate how to raise alerts when quotas utilization goes over a predefined threshold, to enable it, set variable `alert_create` to true and reapply main.tf after main.py has run at least one and quota monitoring metrics have been created.
 
 ## Running the blueprint
 

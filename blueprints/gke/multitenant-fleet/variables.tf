@@ -110,7 +110,7 @@ variable "fleet_configmanagement_templates" {
 }
 
 variable "fleet_features" {
-  description = "Enable and configue fleet features. Set to null to disable GKE Hub if fleet workload identity is not used."
+  description = "Enable and configure fleet features. Set to null to disable GKE Hub if fleet workload identity is not used."
   type = object({
     appdevexperience             = bool
     configmanagement             = bool

@@ -22,7 +22,7 @@ import argparse
 
 class ParseRow(beam.DoFn):
     """
-    Splits a given csv row by a seperator, validates fields and returns a dict
+    Splits a given csv row by a separator, validates fields and returns a dict
     structure compatible with the BigQuery transform
     """
 

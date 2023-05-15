@@ -97,7 +97,7 @@ module "spokes-untrusted" {
 
     custom_advertise = {
       all_subnets = false
-      ip_ranges   = { "0.0.0.0/0" = "Deafult route." }
+      ip_ranges   = { "0.0.0.0/0" = "Default route." }
     }
   }
 

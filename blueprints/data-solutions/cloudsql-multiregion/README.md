@@ -60,7 +60,7 @@ Once you have the required information, head back to the cloud shell editor. Mak
 
 Configure the Terraform variables in your `terraform.tfvars` file. You need to specify at least the `project_id` and `prefix` variables. See  [`terraform.tfvars.sample`](terraform.tfvars.sample) as starting point.
 
-![Deploy ressources](images/image2.png)
+![Deploy resources](images/image2.png)
 
 Run Terraform init:
 
@@ -71,7 +71,7 @@ terraform apply
 
 The resource creation will take a few minutes, at the end this is the output you should expect for successful completion along with a list of the created resources:
 
-![Ressources installed](images/image3.png)
+![Resources installed](images/image3.png)
 
 ## Move to real use case consideration
 
