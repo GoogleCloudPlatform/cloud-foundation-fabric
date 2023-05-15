@@ -50,7 +50,7 @@ spec:
   interfaces:
     variables:
     - name: notebooks
-      description: Vertex AI workbenches to be deployed. Service Account runtime/instances deployed.
+      description: Vertex AI workbenchs to be deployed. Service Account runtime/instances deployed.
       type: |-
         map(object({
           type             = string

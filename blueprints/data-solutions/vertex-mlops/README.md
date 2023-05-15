@@ -36,7 +36,7 @@ Assign roles relying on User groups is a way to decouple the final set of permis
 
 We use the following groups to control access to resources:
 
-- *Data Scientist* (gcp-ml-ds@<company.org>). They manage notebooks and create ML pipelines.
+- *Data Scientits* (gcp-ml-ds@<company.org>). They manage notebooks and create ML pipelines.
 - *ML Engineers* (gcp-ml-eng@<company.org>). They manage the different Vertex resources.
 - *ML Viewer* (gcp-ml-eng@<company.org>). Group with wiewer permission for the different resources.
 
