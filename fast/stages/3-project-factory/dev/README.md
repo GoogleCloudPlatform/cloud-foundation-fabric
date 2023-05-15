@@ -62,12 +62,12 @@ The commands to link or copy the provider and terraform variable files can be ea
 
 # copy and paste the following commands for '3-project-factory'
 
-ln -s /home/ludomagno/fast-config/providers/3-project-factory-providers.tf ./
-ln -s /home/ludomagno/fast-config/tfvars/globals.auto.tfvars.json ./
-ln -s /home/ludomagno/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
-ln -s /home/ludomagno/fast-config/tfvars/1-resman.auto.tfvars.json ./
-ln -s /home/ludomagno/fast-config/tfvars/2-networking.auto.tfvars.json ./
-ln -s /home/ludomagno/fast-config/tfvars/2-security.auto.tfvars.json ./
+ln -s ~/fast-config/providers/3-project-factory-providers.tf ./
+ln -s ~/fast-config/tfvars/globals.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/2-security.auto.tfvars.json ./
 ```
 
 ```bash
