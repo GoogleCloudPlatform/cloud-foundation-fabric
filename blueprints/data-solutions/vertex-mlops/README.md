@@ -36,7 +36,7 @@ Assign roles relying on User groups is a way to decouple the final set of permis
 
 We use the following groups to control access to resources:
 
-- *Data Scientits* (gcp-ml-ds@<company.org>). They manage notebooks and create ML pipelines.
+- *Data Scientist* (gcp-ml-ds@<company.org>). They manage notebooks and create ML pipelines.
 - *ML Engineers* (gcp-ml-eng@<company.org>). They manage the different Vertex resources.
 - *ML Viewer* (gcp-ml-eng@<company.org>). Group with wiewer permission for the different resources.
 
@@ -80,7 +80,7 @@ module "test" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [notebooks](variables.tf#L69) | Vertex AI workbenchs to be deployed. Service Account runtime/instances deployed. | <code title="map&#40;object&#40;&#123;&#10;  type             &#61; string&#10;  machine_type     &#61; optional&#40;string, &#34;n1-standard-4&#34;&#41;&#10;  internal_ip_only &#61; optional&#40;bool, true&#41;&#10;  idle_shutdown    &#61; optional&#40;bool, false&#41;&#10;  owner            &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [notebooks](variables.tf#L69) | Vertex AI workbenches to be deployed. Service Account runtime/instances deployed. | <code title="map&#40;object&#40;&#123;&#10;  type             &#61; string&#10;  machine_type     &#61; optional&#40;string, &#34;n1-standard-4&#34;&#41;&#10;  internal_ip_only &#61; optional&#40;bool, true&#41;&#10;  idle_shutdown    &#61; optional&#40;bool, false&#41;&#10;  owner            &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [project_config](variables.tf#L96) | Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string&#41;&#10;  parent             &#61; optional&#40;string&#41;&#10;  project_id         &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [bucket_name](variables.tf#L18) | GCS bucket name to store the Vertex AI artifacts. | <code>string</code> |  | <code>null</code> |
 | [dataset_name](variables.tf#L24) | BigQuery Dataset to store the training data. | <code>string</code> |  | <code>null</code> |

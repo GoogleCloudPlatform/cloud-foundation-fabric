@@ -188,7 +188,7 @@ variable "vpc_sc_access_levels" {
 }
 
 variable "vpc_sc_egress_policies" {
-  description = "VPC SC egress policy defnitions."
+  description = "VPC SC egress policy definitions."
   type = map(object({
     from = object({
       identity_type = optional(string, "ANY_IDENTITY")
@@ -208,7 +208,7 @@ variable "vpc_sc_egress_policies" {
 }
 
 variable "vpc_sc_ingress_policies" {
-  description = "VPC SC ingress policy defnitions."
+  description = "VPC SC ingress policy definitions."
   type = map(object({
     from = object({
       access_levels = optional(list(string), [])
