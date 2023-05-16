@@ -62,6 +62,7 @@ module "automation-project" {
     "bigqueryreservation.googleapis.com",
     "bigquerystorage.googleapis.com",
     "billingbudgets.googleapis.com",
+    "cloudasset.googleapis.com",
     "cloudbilling.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudkms.googleapis.com",

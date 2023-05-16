@@ -148,6 +148,16 @@ variable "vpc_sc_access_levels" {
   nullable = false
 }
 
+variable "vpc_sc_bridges" {
+  description = "VPC SC bridges definition, each perimiter be bridged to each perimiter."
+  type = list(object({
+    from = string
+    to   = string
+  }))
+  default  = []
+  nullable = false
+}
+
 variable "vpc_sc_egress_policies" {
   description = "VPC SC egress policy definitions."
   type = map(object({
@@ -161,6 +171,9 @@ variable "vpc_sc_egress_policies" {
         service_name     = string
       })), [])
       resources              = optional(list(string))
+      project_ids            = optional(list(string), [])
+      folder_ids             = optional(list(string), [])
+      folder_ids_recursive   = optional(list(string), [])
       resource_type_external = optional(bool, false)
     })
   }))
@@ -172,17 +185,23 @@ variable "vpc_sc_ingress_policies" {
   description = "VPC SC ingress policy definitions."
   type = map(object({
     from = object({
-      access_levels = optional(list(string), [])
-      identity_type = optional(string)
-      identities    = optional(list(string))
-      resources     = optional(list(string), [])
+      access_levels        = optional(list(string), [])
+      identity_type        = optional(string)
+      identities           = optional(list(string))
+      resources            = optional(list(string), [])
+      project_ids          = optional(list(string), [])
+      folder_ids           = optional(list(string), [])
+      folder_ids_recursive = optional(list(string), [])
     })
     to = object({
       operations = optional(list(object({
         method_selectors = optional(list(string))
         service_name     = string
       })), [])
-      resources = optional(list(string))
+      resources            = optional(list(string))
+      project_ids          = optional(list(string), [])
+      folder_ids           = optional(list(string), [])
+      folder_ids_recursive = optional(list(string), [])
     })
   }))
   default  = {}
@@ -190,27 +209,16 @@ variable "vpc_sc_ingress_policies" {
 }
 
 variable "vpc_sc_perimeters" {
-  description = "VPC SC regular perimeter definitions."
-  type = object({
-    dev = optional(object({
-      access_levels    = optional(list(string), [])
-      egress_policies  = optional(list(string), [])
-      ingress_policies = optional(list(string), [])
-      resources        = optional(list(string), [])
-    }), {})
-    landing = optional(object({
-      access_levels    = optional(list(string), [])
-      egress_policies  = optional(list(string), [])
-      ingress_policies = optional(list(string), [])
-      resources        = optional(list(string), [])
-    }), {})
-    prod = optional(object({
-      access_levels    = optional(list(string), [])
-      egress_policies  = optional(list(string), [])
-      ingress_policies = optional(list(string), [])
-      resources        = optional(list(string), [])
-    }), {})
-  })
+  description = "VPC SC regular perimeter definitions. Key would be the name of the perimeter."
+  type = map(object({
+    access_levels        = optional(list(string), [])
+    egress_policies      = optional(list(string), [])
+    ingress_policies     = optional(list(string), [])
+    resources            = optional(list(string), [])
+    project_ids          = optional(list(string), [])
+    folder_ids           = optional(list(string), [])
+    folder_ids_recursive = optional(list(string), [])
+  }))
   default  = {}
   nullable = false
 }

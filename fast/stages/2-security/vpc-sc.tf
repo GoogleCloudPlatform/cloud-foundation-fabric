@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,139 +15,86 @@
  */
 
 locals {
-  _vpc_sc_vpc_accessible_services = null
-  _vpc_sc_restricted_services = yamldecode(
-    file("${path.module}/vpc-sc-restricted-services.yaml")
-  )
-  # compute the number of projects in each perimeter to detect which to create
-  vpc_sc_counts = {
-    for k, v in var.vpc_sc_perimeters : k => length(v.resources)
-  }
   # define dry run spec at file level for convenience
   vpc_sc_explicit_dry_run_spec = true
-  # compute perimeter bridge resources (projects)
-  vpc_sc_bridge_resources = {
-    landing_to_dev = concat(
-      var.vpc_sc_perimeters.landing.resources,
-      var.vpc_sc_perimeters.dev.resources
-    )
-    landing_to_prod = concat(
-      var.vpc_sc_perimeters.landing.resources,
-      var.vpc_sc_perimeters.prod.resources
-    )
-  }
-  # compute spec/status for each perimeter
   vpc_sc_perimeters_spec_status = {
-    dev = merge(var.vpc_sc_perimeters.dev, {
-      restricted_services     = local._vpc_sc_restricted_services
-      vpc_accessible_services = local._vpc_sc_vpc_accessible_services
-    })
-    landing = merge(var.vpc_sc_perimeters.landing, {
-      restricted_services     = local._vpc_sc_restricted_services
-      vpc_accessible_services = local._vpc_sc_vpc_accessible_services
-    })
-    prod = merge(var.vpc_sc_perimeters.prod, {
-      restricted_services     = local._vpc_sc_restricted_services
-      vpc_accessible_services = local._vpc_sc_vpc_accessible_services
-    })
+    for k, v in var.vpc_sc_perimeters : k => merge([
+      v,
+      {
+        resources               = local._vpc_sc_perimeter_resources[k]
+        restricted_services     = local._vpc_sc_restricted_services
+        vpc_accessible_services = local._vpc_sc_vpc_accessible_services
+        project_ids             = null
+        folder_ids              = null
+      },
+    ]...) if local._vpc_sc_counts[k] > 0
+  }
+  vpc_sc_bridges_spec_status = {
+    for v in var.vpc_sc_bridges : "${v.from}_to_${v.to}" =>
+    sort(toset(flatten([
+      local._vpc_sc_perimeter_resources[v.from],
+      local._vpc_sc_perimeter_resources[v.to],
+    ]))) if local._vpc_sc_counts[v.from] * local._vpc_sc_counts[v.to] > 0
+  }
+  vpc_sc_egress_policies = {
+    for k, v in var.vpc_sc_egress_policies :
+    k => {
+      from = v.from
+      to = merge(
+        v.to,
+        { resources = local._vpc_sc_egress_policies_resources_to[k] }
+      )
+    }
+  }
+  vpc_sc_ingress_policies = {
+    for k, v in var.vpc_sc_ingress_policies :
+    k => {
+      from = merge(
+        v.from,
+        { resources = local._vpc_sc_ingress_policies_resources_from[k] }
+      )
+      to = merge(
+        v.to,
+        { resources = local._vpc_sc_ingress_policies_resources_to[k] }
+      )
+    }
   }
 }
 
 module "vpc-sc" {
   source = "../../../modules/vpc-sc"
   # only enable if we have projects defined for perimeters
-  count         = anytrue([for k, v in local.vpc_sc_counts : v > 0]) ? 1 : 0
+  count         = length(keys(local.vpc_sc_perimeters_spec_status)) > 0 ? 1 : 0
   access_policy = null
   access_policy_create = {
     parent = "organizations/${var.organization.id}"
     title  = "default"
   }
   access_levels    = var.vpc_sc_access_levels
-  egress_policies  = var.vpc_sc_egress_policies
-  ingress_policies = var.vpc_sc_ingress_policies
-  service_perimeters_bridge = merge(
-    # landing to dev, only we have projects in landing and dev perimeters
-    local.vpc_sc_counts.landing * local.vpc_sc_counts.dev == 0 ? {} : {
-      landing_to_dev = {
-        spec_resources = (
-          local.vpc_sc_explicit_dry_run_spec
-          ? local.vpc_sc_bridge_resources.landing_to_dev
-          : null
-        )
-        status_resources = (
-          local.vpc_sc_explicit_dry_run_spec
-          ? null
-          : local.vpc_sc_bridge_resources.landing_to_dev
-        )
-        use_explicit_dry_run_spec = local.vpc_sc_explicit_dry_run_spec
-      }
-    },
-    # landing to prod, only we have projects in landing and prod perimeters
-    local.vpc_sc_counts.landing * local.vpc_sc_counts.prod == 0 ? {} : {
-      landing_to_prod = {
-        spec_resources = (
-          local.vpc_sc_explicit_dry_run_spec
-          ? local.vpc_sc_bridge_resources.landing_to_prod
-          : null
-        )
-        status_resources = (
-          local.vpc_sc_explicit_dry_run_spec
-          ? null
-          : local.vpc_sc_bridge_resources.landing_to_prod
-        )
-        use_explicit_dry_run_spec = local.vpc_sc_explicit_dry_run_spec
-      }
+  egress_policies  = local.vpc_sc_egress_policies
+  ingress_policies = local.vpc_sc_ingress_policies
+  # bridge perimeters
+  service_perimeters_bridge = {
+    for k, v in local.vpc_sc_bridges_spec_status : k => {
+      spec_resources = (
+        local.vpc_sc_explicit_dry_run_spec ? v : null
+      )
+      status_resources = (
+        local.vpc_sc_explicit_dry_run_spec ? null : v
+      )
+      use_explicit_dry_run_spec = local.vpc_sc_explicit_dry_run_spec
     }
-  )
+  }
   # regular type perimeters
-  service_perimeters_regular = merge(
-    # dev if we have projects in var.vpc_sc_perimeter_projects.dev
-    local.vpc_sc_counts.dev == 0 ? {} : {
-      dev = {
-        spec = (
-          local.vpc_sc_explicit_dry_run_spec
-          ? local.vpc_sc_perimeters_spec_status.dev
-          : null
-        )
-        status = (
-          local.vpc_sc_explicit_dry_run_spec
-          ? null
-          : local.vpc_sc_perimeters_spec_status.dev
-        )
-        use_explicit_dry_run_spec = local.vpc_sc_explicit_dry_run_spec
-      }
-    },
-    # landing if we have projects in var.vpc_sc_perimeter_projects.landing
-    local.vpc_sc_counts.landing == 0 ? {} : {
-      landing = {
-        spec = (
-          local.vpc_sc_explicit_dry_run_spec
-          ? local.vpc_sc_perimeters_spec_status.landing
-          : null
-        )
-        status = (
-          local.vpc_sc_explicit_dry_run_spec
-          ? null
-          : local.vpc_sc_perimeters_spec_status.landing
-        )
-        use_explicit_dry_run_spec = local.vpc_sc_explicit_dry_run_spec
-      }
-    },
-    # prod if we have projects in var.vpc_sc_perimeter_projects.prod
-    local.vpc_sc_counts.prod == 0 ? {} : {
-      prod = {
-        spec = (
-          local.vpc_sc_explicit_dry_run_spec
-          ? local.vpc_sc_perimeters_spec_status.prod
-          : null
-        )
-        status = (
-          local.vpc_sc_explicit_dry_run_spec
-          ? null
-          : local.vpc_sc_perimeters_spec_status.prod
-        )
-        use_explicit_dry_run_spec = local.vpc_sc_explicit_dry_run_spec
-      }
-    },
-  )
+  service_perimeters_regular = {
+    for k, v in local.vpc_sc_perimeters_spec_status : k => {
+      spec = (
+        local.vpc_sc_explicit_dry_run_spec ? v : null
+      )
+      status = (
+        local.vpc_sc_explicit_dry_run_spec ? null : v
+      )
+      use_explicit_dry_run_spec = local.vpc_sc_explicit_dry_run_spec
+    }
+  }
 }

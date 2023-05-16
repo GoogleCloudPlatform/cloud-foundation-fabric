@@ -14,21 +14,30 @@ The following diagram illustrates the high-level design of created resources and
 
 ## Table of contents
 
-- [Design overview and choices](#design-overview-and-choices)
-  - [Cloud KMS](#cloud-kms)
-  - [VPC Service Controls](#vpc-service-controls)
-- [How to run this stage](#how-to-run-this-stage)
-  - [Provider and Terraform variables](#provider-and-terraform-variables)
-  - [Impersonating the automation service account](#impersonating-the-automation-service-account)
-  - [Variable configuration](#variable-configuration)
-  - [Running the stage](#running-the-stage)
-- [Customizations](#customizations)
-  - [KMS keys](#kms-keys)
-  - [VPC Service Controls configuration](#vpc-service-controls-configuration)
-    - [Dry-run vs. enforced](#dry-run-vs-enforced)
-    - [Access levels](#access-levels)
-    - [Ingress and Egress policies](#ingress-and-egress-policies)
-    - [Perimeters](#perimeters)
+- [Shared security resources](#shared-security-resources)
+  - [Table of contents](#table-of-contents)
+  - [Design overview and choices](#design-overview-and-choices)
+    - [Cloud KMS](#cloud-kms)
+    - [VPC Service Controls](#vpc-service-controls)
+  - [How to run this stage](#how-to-run-this-stage)
+    - [Provider and Terraform variables](#provider-and-terraform-variables)
+    - [Impersonating the automation service account](#impersonating-the-automation-service-account)
+    - [Variable configuration](#variable-configuration)
+    - [Using delayed billing association for projects](#using-delayed-billing-association-for-projects)
+    - [Running the stage](#running-the-stage)
+  - [Customizations](#customizations)
+    - [KMS keys](#kms-keys)
+    - [VPC Service Controls configuration](#vpc-service-controls-configuration)
+      - [Dry-run vs. enforced](#dry-run-vs-enforced)
+      - [Access levels](#access-levels)
+      - [Lookup variables](#lookup-variables)
+      - [Ingress and Egress policies](#ingress-and-egress-policies)
+      - [Perimeters](#perimeters)
+    - [Bridges](#bridges)
+  - [Notes](#notes)
+  - [Files](#files)
+  - [Variables](#variables)
+  - [Outputs](#outputs)
 
 ## Design overview and choices
 
@@ -185,12 +194,13 @@ The script will create one keyring for each specified location and keys on each 
 
 A set of variables allows configuring the VPC SC perimeters described above:
 
-- `vpc_sc_perimeter_projects` configures project membership in the three regular perimeters
+- `vpc_sc_perimeter_projects` configures project membership in regular perimeters
+- `vpc_sc_bridges` configures bridges between perimeters
 - `vpc_sc_access_levels` configures access levels, which can then be associated to perimeters by key using the `vpc_sc_perimeter_access_levels`
 - `vpc_sc_egress_policies` configures directional egress policies, which can then be associated to perimeters by key using the `vpc_sc_perimeter_egress_policies`
 - `vpc_sc_ingress_policies` configures directional ingress policies, which can then be associated to perimeters by key using the `vpc_sc_perimeter_ingress_policies`
 
-This allows configuring VPC SC in a fairly flexible and concise way, without repeating similar definitions. Bridges perimeters configuration will be computed automatically to allow communication between regular perimeters: `landing <-> prod` and `landing <-> dev`.
+This allows configuring VPC SC in a fairly flexible and concise way, without repeating similar definitions.
 
 #### Dry-run vs. enforced
 
@@ -210,6 +220,16 @@ vpc_sc_access_levels = {
 }
 ```
 
+#### Lookup variables
+
+In `vpc_sc_egress_policies`, `vpc_sc_ingress_policies` and `vpc_sc_perimeters` variables it is possible
+to lookup projects by ids and project parent folders. It uses data resources to populate local lookup tables.
+**NB:** You need to rerun this stage if you are creating, removing or moving projects across folders.
+
+- `project_ids` — list of string project ids (would be resolved via `data.google_projects`)
+- `folder_ids` — list of folder numerical ids. Project under those folders are resolved **non-recursively** (would be resolved via `data.google_projects`)
+- `folder_ids` — list of folder numerical ids. Project under those folders are resolved **recursively** (would be resolved via `data.google_cloud_asset_resources_search_all`)
+
 #### Ingress and Egress policies
 
 Ingress and egress policy are defined via the `vpc_sc_egress_policies` and `vpc_sc_ingress_policies`, and referenced by key in perimeter definitions:
@@ -227,7 +247,10 @@ vpc_sc_egress_policies = {
         method_selectors = ["*"]
         service_name     = "storage.googleapis.com"
       }]
-      resources = ["projects/123456782"]
+      resources            = ["projects/123456782"]
+      project_ids          = ["xxx-project-id-1"]
+      folder_ids           = ["1111111111"]
+      folder_ids_recursive = ["222222222"]
     }
   }
 }
@@ -237,11 +260,18 @@ vpc_sc_ingress_policies = {
       identities = [
         "serviceAccount:xxx-prod-resman-security-0@xxx-prod-iac-core-0.iam.gserviceaccount.com"
       ]
-      access_levels = ["*"]
+      access_levels        = ["*"]
+      resources            = ["*"]
+      project_ids          = ["xxx-project-id-1"]
+      folder_ids           = ["111111111"]
+      folder_ids_recursive = ["222222222"]
     }
     to = {
       operations = [{ method_selectors = [], service_name = "*" }]
       resources  = ["*"]
+      project_ids          = ["xxx-project-id-2"]
+      folder_ids           = ["333333333"]
+      folder_ids_recursive = ["444444444"]
     }
   }
 }
@@ -249,7 +279,7 @@ vpc_sc_ingress_policies = {
 
 #### Perimeters
 
-Regular perimeters are defined via the  the `vpc_sc_perimeters` variable, and bridge perimeters are automatically populated from that variable.
+Regular perimeters are defined via the `vpc_sc_perimeters` variable.
 
 Support for independently adding projects to perimeters outside of this Terraform setup is pending resolution of [this Google Terraform Provider issue](https://github.com/hashicorp/terraform-provider-google/issues/7270), which implements support for dry-run mode in the additive resource.
 
@@ -258,23 +288,54 @@ Access levels and egress/ingress policies are referenced in perimeters via keys.
 ```tfvars
 vpc_sc_perimeters = {
   dev = {
-    egress_policies  = ["iac-gcs"]
-    ingress_policies = ["iac"]
-    resources        = ["projects/1111111111"]
+    egress_policies      = ["iac-gcs"]
+    ingress_policies     = ["iac"]
+    resources            = ["projects/1111111111"]
+    project_ids          = ["xxx-project-id"]
+    folder_ids           = ["1111111111"]
+    folder_ids_recursive = ["222222222"]
   }
   landing = {
-    access_levels    = ["onprem"]
-    egress_policies  = ["iac-gcs"]
-    ingress_policies = ["iac"]
-    resources        = ["projects/2222222222"]
+    access_levels        = ["onprem"]
+    egress_policies      = ["iac-gcs"]
+    ingress_policies     = ["iac"]
+    resources            = ["projects/2222222222"]
+    project_ids          = ["xxx-project-id"]
+    folder_ids           = ["333333333"]
+    folder_ids_recursive = ["444444444"]
   }
   prod = {
-    egress_policies  = ["iac-gcs"]
-    ingress_policies = ["iac"]
-    resources        = ["projects/0000000000"]
+    egress_policies      = ["iac-gcs"]
+    ingress_policies     = ["iac"]
+    resources            = ["projects/0000000000"]
+    resources            = ["projects/2222222222"]
+    project_ids          = ["xxx-project-id"]
+    folder_ids           = ["555555555"]
+    folder_ids_recursive = ["666666666"]
   }
 }
 ```
+
+### Bridges
+
+Bridge perimeters can be configured via the `vpc_sc_bridges` variable referencing perimeter names.
+
+For the above example of perimeters it could be like:
+
+```tfvars
+vpc_sc_bridges = [
+  {
+    from = "landing"
+    to   = "dev"
+  },
+  {
+    from = "landing"
+    to   = "prod"
+  },
+]
+```
+
+Which will allow communication between regular perimeters: `landing <-> prod` and `landing <-> dev`.
 
 ## Notes
 
@@ -294,6 +355,7 @@ Some references that might be useful in setting up this stage:
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
+| [vpc-sc-resources.tf](./vpc-sc-resources.tf) | None |  |  |
 | [vpc-sc.tf](./vpc-sc.tf) | None | <code>vpc-sc</code> |  |
 
 ## Variables
@@ -311,9 +373,10 @@ Some references that might be useful in setting up this stage:
 | [kms_keys](variables.tf#L73) | KMS keys to create, keyed by name. Null attributes will be interpolated with defaults. | <code title="map&#40;object&#40;&#123;&#10;  iam             &#61; map&#40;list&#40;string&#41;&#41;&#10;  labels          &#61; map&#40;string&#41;&#10;  locations       &#61; list&#40;string&#41;&#10;  rotation_period &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [outputs_location](variables.tf#L94) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
 | [vpc_sc_access_levels](variables.tf#L122) | VPC SC access level definitions. | <code title="map&#40;object&#40;&#123;&#10;  combining_function &#61; optional&#40;string&#41;&#10;  conditions &#61; optional&#40;list&#40;object&#40;&#123;&#10;    device_policy &#61; optional&#40;object&#40;&#123;&#10;      allowed_device_management_levels &#61; optional&#40;list&#40;string&#41;&#41;&#10;      allowed_encryption_statuses      &#61; optional&#40;list&#40;string&#41;&#41;&#10;      require_admin_approval           &#61; bool&#10;      require_corp_owned               &#61; bool&#10;      require_screen_lock              &#61; optional&#40;bool&#41;&#10;      os_constraints &#61; optional&#40;list&#40;object&#40;&#123;&#10;        os_type                    &#61; string&#10;        minimum_version            &#61; optional&#40;string&#41;&#10;        require_verified_chrome_os &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    ip_subnetworks         &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    members                &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    negate                 &#61; optional&#40;bool&#41;&#10;    regions                &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    required_access_levels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  description &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [vpc_sc_egress_policies](variables.tf#L151) | VPC SC egress policy definitions. | <code title="map&#40;object&#40;&#123;&#10;  from &#61; object&#40;&#123;&#10;    identity_type &#61; optional&#40;string, &#34;ANY_IDENTITY&#34;&#41;&#10;    identities    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#10;  to &#61; object&#40;&#123;&#10;    operations &#61; optional&#40;list&#40;object&#40;&#123;&#10;      method_selectors &#61; optional&#40;list&#40;string&#41;&#41;&#10;      service_name     &#61; string&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    resources              &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resource_type_external &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [vpc_sc_ingress_policies](variables.tf#L171) | VPC SC ingress policy definitions. | <code title="map&#40;object&#40;&#123;&#10;  from &#61; object&#40;&#123;&#10;    access_levels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    identity_type &#61; optional&#40;string&#41;&#10;    identities    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resources     &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#10;  to &#61; object&#40;&#123;&#10;    operations &#61; optional&#40;list&#40;object&#40;&#123;&#10;      method_selectors &#61; optional&#40;list&#40;string&#41;&#41;&#10;      service_name     &#61; string&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    resources &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [vpc_sc_perimeters](variables.tf#L192) | VPC SC regular perimeter definitions. | <code title="object&#40;&#123;&#10;  dev &#61; optional&#40;object&#40;&#123;&#10;    access_levels    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    egress_policies  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    ingress_policies &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    resources        &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  landing &#61; optional&#40;object&#40;&#123;&#10;    access_levels    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    egress_policies  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    ingress_policies &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    resources        &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  prod &#61; optional&#40;object&#40;&#123;&#10;    access_levels    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    egress_policies  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    ingress_policies &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    resources        &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [vpc_sc_bridges](variables.tf#L151) | VPC SC bridges definition, each perimiter be bridged to each perimiter. | <code title="list&#40;object&#40;&#123;&#10;  from &#61; string&#10;  to   &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |  |
+| [vpc_sc_egress_policies](variables.tf#L161) | VPC SC egress policy definitions. | <code title="map&#40;object&#40;&#123;&#10;  from &#61; object&#40;&#123;&#10;    identity_type &#61; optional&#40;string, &#34;ANY_IDENTITY&#34;&#41;&#10;    identities    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#10;  to &#61; object&#40;&#123;&#10;    operations &#61; optional&#40;list&#40;object&#40;&#123;&#10;      method_selectors &#61; optional&#40;list&#40;string&#41;&#41;&#10;      service_name     &#61; string&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    resources              &#61; optional&#40;list&#40;string&#41;&#41;&#10;    project_ids            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    folder_ids             &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    folder_ids_recursive   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    resource_type_external &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [vpc_sc_ingress_policies](variables.tf#L184) | VPC SC ingress policy definitions. | <code title="map&#40;object&#40;&#123;&#10;  from &#61; object&#40;&#123;&#10;    access_levels        &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    identity_type        &#61; optional&#40;string&#41;&#10;    identities           &#61; optional&#40;list&#40;string&#41;&#41;&#10;    resources            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    project_ids          &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    folder_ids           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    folder_ids_recursive &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#10;  to &#61; object&#40;&#123;&#10;    operations &#61; optional&#40;list&#40;object&#40;&#123;&#10;      method_selectors &#61; optional&#40;list&#40;string&#41;&#41;&#10;      service_name     &#61; string&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;    resources            &#61; optional&#40;list&#40;string&#41;&#41;&#10;    project_ids          &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    folder_ids           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    folder_ids_recursive &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [vpc_sc_perimeters](variables.tf#L211) | VPC SC regular perimeter definitions. Key would be the name of the perimeter. | <code title="map&#40;object&#40;&#123;&#10;  access_levels        &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  egress_policies      &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  ingress_policies     &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  resources            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  project_ids          &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  folder_ids           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  folder_ids_recursive &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 
 ## Outputs
 
