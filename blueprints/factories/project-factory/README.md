@@ -83,7 +83,7 @@ module "projects" {
 
 ```yaml
 # ./data/defaults.yaml
-# The following applies as overrideable defaults for all projects
+# The following applies as overridable defaults for all projects
 # All attributes are required
 
 billing_account_id: 012345-67890A-BCDEF0
