@@ -71,15 +71,15 @@ output "projects" {
 output "vpc_network" {
   description = "VPC network."
   value = {
-    processing_tranformation = local.processing_vpc
-    processing_composer      = local.processing_vpc
+    processing_transformation = local.processing_vpc
+    processing_composer       = local.processing_vpc
   }
 }
 
 output "vpc_subnet" {
   description = "VPC subnetworks."
   value = {
-    processing_tranformation = local.processing_subnet
-    processing_composer      = local.processing_subnet
+    processing_transformation = local.processing_subnet
+    processing_composer       = local.processing_subnet
   }
 }

@@ -99,8 +99,8 @@ variable "network_config" {
     host_project      = optional(string)
     network_self_link = optional(string)
     subnet_self_links = optional(object({
-      processing_tranformation = string
-      processing_composer      = string
+      processing_transformation = string
+      processing_composer       = string
     }), null)
     composer_ip_ranges = optional(object({
       connection_subnetwork = optional(string)
