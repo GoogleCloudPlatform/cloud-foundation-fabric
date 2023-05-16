@@ -28,7 +28,7 @@ locals {
       module.processing-sa-cmp-0.iam_email
     ]
     "roles/dataproc.worker" = [
-      module.processing-sa-dp-0.iam_email
+      module.processing-sa-0.iam_email
     ]
     "roles/iam.serviceAccountUser" = [
       module.processing-sa-cmp-0.iam_email, local.groups_iam.data-engineers

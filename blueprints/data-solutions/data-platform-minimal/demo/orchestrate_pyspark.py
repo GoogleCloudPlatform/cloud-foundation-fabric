@@ -41,9 +41,9 @@ LAND_GCS = os.environ.get("LAND_GCS")
 PHS_CLUSTER_NAME = os.environ.get("PHS_CLUSTER_NAME")
 PROCESSING_GCS = os.environ.get("PROCESSING_GCS")
 PROCESSING_PRJ = os.environ.get("PROCESSING_PRJ")
-PROCESSING_SA_DP = os.environ.get("PROCESSING_SA_DP")
-PROCESSING_SA_SUBNET = os.environ.get("PROCESSING_SUBNET")
-PROCESSING_SA_VPC = os.environ.get("PROCESSING_VPC")
+PROCESSING_SA = os.environ.get("PROCESSING_SA")
+PROCESSING_SUBNET = os.environ.get("PROCESSING_SUBNET")
+PROCESSING_VPC = os.environ.get("PROCESSING_VPC")
 
 PYTHON_FILE_LOCATION = "gs://"+PROCESSING_GCS+"/pyspark_sort.py"
 PHS_CLUSTER_PATH = "projects/"+PROCESSING_PRJ+"/regions/"+DP_REGION+"/clusters/"+PHS_CLUSTER_NAME
@@ -65,8 +65,8 @@ with models.DAG(
         batch={
             "environment_config": {
                 "execution_config": {
-                    "service_account": PROCESSING_SA_DP,
-                    "subnetwork_uri": PROCESSING_SA_SUBNET
+                    "service_account": PROCESSING_SA,
+                    "subnetwork_uri": PROCESSING_SUBNET
                 },
                 "peripherals_config": {
                     "spark_history_server_config":{

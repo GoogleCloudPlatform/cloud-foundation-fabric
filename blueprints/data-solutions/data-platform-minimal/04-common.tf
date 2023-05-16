@@ -20,16 +20,16 @@ locals {
     "roles/dlp.estimatesAdmin" = [local.groups_iam.data-engineers]
     "roles/dlp.reader"         = [local.groups_iam.data-engineers]
     "roles/dlp.user" = [
-      module.processing-sa-dp-0.iam_email,
+      module.processing-sa-0.iam_email,
       local.groups_iam.data-engineers
     ]
     "roles/datacatalog.admin" = [local.groups_iam.data-security]
     "roles/datacatalog.viewer" = [
-      module.processing-sa-dp-0.iam_email,
+      module.processing-sa-0.iam_email,
       local.groups_iam.data-analysts
     ]
     "roles/datacatalog.categoryFineGrainedReader" = [
-      module.processing-sa-dp-0.iam_email
+      module.processing-sa-0.iam_email
     ]
   }
 }
