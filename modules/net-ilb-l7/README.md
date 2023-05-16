@@ -2,7 +2,7 @@
 
 This module allows managing Internal HTTP/HTTPS Load Balancers (L7 ILBs). It's designed to expose the full configuration of the underlying resources, and to facilitate common usage patterns by providing sensible defaults, and optionally managing prerequisite resources like health checks, instance groups, etc.
 
-Due to the complexity of the underlying resources, changes to the configuration that involve recreation of resources are best applied in stages, starting by disabling the configuration in the urlmap that references the resources that neeed recreation, then doing the same for the backend service, etc.
+Due to the complexity of the underlying resources, changes to the configuration that involve recreation of resources are best applied in stages, starting by disabling the configuration in the urlmap that references the resources that need recreation, then doing the same for the backend service, etc.
 
 ## Examples
 
@@ -109,7 +109,7 @@ You can leverage externally defined health checks for backend services, or have 
 
 Health check configuration is controlled via the `health_check_configs` variable, which behaves in a similar way to other LB modules in this repository.
 
-Defining different health checks fromt he default is very easy. You can for example replace the default HTTP health check with a TCP one and reference it in you backend service:
+Defining different health checks from the default is very easy. You can for example replace the default HTTP health check with a TCP one and reference it in you backend service:
 
 ```hcl
 module "ilb-l7" {
