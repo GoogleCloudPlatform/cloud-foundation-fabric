@@ -2,7 +2,7 @@
 
 This stage sets up security resources and configurations which impact the whole organization, or are shared across the hierarchy to other projects and teams.
 
-The design of this stage is fairly general, and provides a reference example for [Cloud KMS](https://cloud.google.com/security-key-management) and a [VPC Service Controls](https://cloud.google.com/vpc-service-controls) configuration that sets up three perimeters (landing, development, production), their related bridge perimeters, and provides variables to configure their resources, access levels, and directional policies.
+The design of this stage is fairly general, and provides a reference example for [Cloud KMS](https://cloud.google.com/security-key-management) and a [VPC Service Controls](https://cloud.google.com/vpc-service-controls) configuration that sets up perimeters, related bridge perimeters, and provides variables to configure their resources, access levels, and directional policies.
 
 Expanding this stage to include other security-related services like Secret Manager, is fairly simple by using the provided implementation for Cloud KMS, and leveraging the broad permissions on the top-level Security folder of the automation service account used.
 
@@ -11,6 +11,8 @@ The following diagram illustrates the high-level design of created resources and
 <p align="center">
   <img src="diagram.svg" alt="Security diagram">
 </p>
+
+You can use [terraform.tfvars.sample](./terraform.tfvars.sample) as a starting point for configuring VPC SC with three perimeters: landing, dev and prod. And connecting them with bridges.
 
 ## Table of contents
 

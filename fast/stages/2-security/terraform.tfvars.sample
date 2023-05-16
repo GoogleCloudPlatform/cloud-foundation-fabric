@@ -1,0 +1,108 @@
+/**
+ * Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+vpc_sc_access_levels = {
+  onprem = {
+    conditions = [{
+      ip_subnetworks = ["101.101.101.0/24"]
+    }]
+  }
+  superadmins = {
+    conditions = [
+      { members = ["user:gcp-superadmin@example.com"] },
+    ]
+  }
+}
+
+vpc_sc_ingress_policies = {
+  allowexternal = {
+    from = {
+      identity_type = "ANY_IDENTITY"
+      access_levels = [
+        "onprem",
+        "superadmins",
+      ]
+    }
+    to = {
+      operations = [{ service_name = "*" }]
+      resources  = ["*"]
+    }
+  }
+}
+
+vpc_sc_egress_policies = {}
+
+vpc_sc_perimeters = {
+  dev = {
+    resources = [
+      "projects/123",
+      "projects/345",
+    ]
+    project_ids = [
+      "xxx-secrets-dev",
+      "xxx-my-project-id-dev",
+      "xxx-dev-net-host",
+    ]
+    folder_ids = [
+      "111"
+    ]
+    folder_ids_recursive = [
+      "222",
+    ]
+    egress_policies = []
+    ingress_policies = [
+      "allowexternal",
+    ]
+  }
+  landing = {
+    resources = [
+      "projects/619287257650"
+    ]
+    project_ids = [
+      "xxx-secrets-common",
+      "xxx-billing-logs",
+    ]
+    folder_ids           = []
+    folder_ids_recursive = []
+    egress_policies      = []
+    ingress_policies = [
+      "allowexternal",
+    ]
+  }
+  prod = {
+    resources       = []
+    egress_policies = []
+    ingress_policies = [
+      "allowexternal",
+    ]
+    project_ids = [
+      "xxx-secrets-dev",
+    ]
+    folder_ids           = []
+    folder_ids_recursive = []
+  }
+}
+
+vpc_sc_bridges = [
+  {
+    from = "landing"
+    to   = "dev"
+  },
+  {
+    from = "landing"
+    to   = "prod"
+  },
+]
