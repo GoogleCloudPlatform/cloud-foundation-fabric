@@ -72,7 +72,7 @@ variable "enable_services" {
   description = "Flag to enable or disable services in the Data Platform."
   type = object({
     composer                = optional(bool, true)
-    dataproc_hystory_server = optional(bool, true)
+    dataproc_history_server = optional(bool, true)
   })
   default = {}
 }

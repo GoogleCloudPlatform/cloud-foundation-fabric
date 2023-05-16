@@ -15,7 +15,7 @@
 # tfdoc:file:description Cloud Dataproc resources.
 
 module "processing-dp-history" {
-  count          = var.enable_services.dataproc_hystory_server == true ? 1 : 0
+  count          = var.enable_services.dataproc_history_server == true ? 1 : 0
   source         = "../../../modules/gcs"
   project_id     = module.processing-project.project_id
   prefix         = var.prefix
@@ -73,10 +73,10 @@ module "processing-log-0" {
 }
 
 module "processing-dp-historyserver" {
-  count      = var.enable_services.dataproc_hystory_server == true ? 1 : 0
+  count      = var.enable_services.dataproc_history_server == true ? 1 : 0
   source     = "../../../modules/dataproc"
   project_id = module.processing-project.project_id
-  name       = "hystory-server"
+  name       = "history-server"
   prefix     = var.prefix
   region     = var.region
   dataproc_config = {

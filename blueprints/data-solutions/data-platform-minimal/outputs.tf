@@ -21,18 +21,9 @@ output "bigquery-datasets" {
   }
 }
 
-output "dataproc-hystory-server" {
+output "dataproc-history-server" {
   description = "List of bucket names which have been assigned to the cluster."
-  value = (
-    var.enable_services.dataproc_hystory_server == true ?
-    {
-      bucket_names   = module.processing-dp-historyserver[0].bucket_names
-      http_ports     = module.processing-dp-historyserver[0].http_ports
-      instance_names = module.processing-dp-historyserver[0].instance_names
-      name           = module.processing-dp-historyserver[0].name
-    }
-    : null
-  )
+  value       = one(module.processing-dp-historyserver)
 }
 
 output "gcs-buckets" {
