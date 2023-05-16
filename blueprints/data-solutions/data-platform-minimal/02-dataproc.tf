@@ -14,7 +14,8 @@
 
 # tfdoc:file:description Cloud Dataproc resources.
 
-module "processing-cs-dp-history" {
+module "processing-dp-history" {
+  count          = var.enable_services.dataproc_history_server == true ? 1 : 0
   source         = "../../../modules/gcs"
   project_id     = module.processing-project.project_id
   prefix         = var.prefix
@@ -24,12 +25,12 @@ module "processing-cs-dp-history" {
   encryption_key = var.service_encryption_keys.storage
 }
 
-module "processing-sa-dp-0" {
+module "processing-sa-0" {
   source       = "../../../modules/iam-service-account"
   project_id   = module.processing-project.project_id
   prefix       = var.prefix
-  name         = "prc-dp-0"
-  display_name = "Dataproc service account"
+  name         = "prc-0"
+  display_name = "Processing service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers,
@@ -41,7 +42,7 @@ module "processing-sa-dp-0" {
   }
 }
 
-module "processing-dp-staging-0" {
+module "processing-staging-0" {
   source         = "../../../modules/gcs"
   project_id     = module.processing-project.project_id
   prefix         = var.prefix
@@ -51,7 +52,7 @@ module "processing-dp-staging-0" {
   encryption_key = var.service_encryption_keys.storage
 }
 
-module "processing-dp-temp-0" {
+module "processing-temp-0" {
   source         = "../../../modules/gcs"
   project_id     = module.processing-project.project_id
   prefix         = var.prefix
@@ -61,7 +62,7 @@ module "processing-dp-temp-0" {
   encryption_key = var.service_encryption_keys.storage
 }
 
-module "processing-dp-log-0" {
+module "processing-log-0" {
   source         = "../../../modules/gcs"
   project_id     = module.processing-project.project_id
   prefix         = var.prefix
@@ -72,19 +73,20 @@ module "processing-dp-log-0" {
 }
 
 module "processing-dp-historyserver" {
+  count      = var.enable_services.dataproc_history_server == true ? 1 : 0
   source     = "../../../modules/dataproc"
   project_id = module.processing-project.project_id
-  name       = "hystory-server"
+  name       = "history-server"
   prefix     = var.prefix
   region     = var.region
   dataproc_config = {
     cluster_config = {
-      staging_bucket = module.processing-dp-staging-0.name
-      temp_bucket    = module.processing-dp-temp-0.name
+      staging_bucket = module.processing-staging-0.name
+      temp_bucket    = module.processing-temp-0.name
       gce_cluster_config = {
         subnetwork             = module.processing-vpc[0].subnets["${var.region}/${var.prefix}-processing"].self_link
         zone                   = "${var.region}-b"
-        service_account        = module.processing-sa-dp-0.email
+        service_account        = module.processing-sa-0.email
         service_account_scopes = ["cloud-platform"]
         internal_ip_only       = true
       }
@@ -99,10 +101,10 @@ module "processing-dp-historyserver" {
           "dataproc:dataproc.allow.zero.workers" = "true"
           "dataproc:job.history.to-gcs.enabled"  = "true"
           "spark:spark.history.fs.logDirectory" = (
-            "gs://${module.processing-dp-staging-0.name}/*/spark-job-history"
+            "gs://${module.processing-staging-0.name}/*/spark-job-history"
           )
           "spark:spark.eventLog.dir" = (
-            "gs://${module.processing-dp-staging-0.name}/*/spark-job-history"
+            "gs://${module.processing-staging-0.name}/*/spark-job-history"
           )
           "spark:spark.history.custom.executor.log.url.applyIncompleteApplication" = "false"
           "spark:spark.history.custom.executor.log.url" = (

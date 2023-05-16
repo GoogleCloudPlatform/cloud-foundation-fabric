@@ -16,13 +16,13 @@
 
 locals {
   cur_iam = {
-    "roles/bigquery.dataOwner" = [module.processing-sa-dp-0.iam_email]
+    "roles/bigquery.dataOwner" = [module.processing-sa-0.iam_email]
     "roles/bigquery.dataViewer" = [
       local.groups_iam.data-analysts,
       local.groups_iam.data-engineers
     ]
     "roles/bigquery.jobUser" = [
-      module.processing-sa-dp-0.iam_email,
+      module.processing-sa-0.iam_email,
       local.groups_iam.data-analysts,
       local.groups_iam.data-engineers
     ]
@@ -35,7 +35,7 @@ locals {
     "roles/storage.objectViewer" = [
       local.groups_iam.data-analysts, local.groups_iam.data-engineers
     ]
-    "roles/storage.objectAdmin" = [module.processing-sa-dp-0.iam_email]
+    "roles/storage.objectAdmin" = [module.processing-sa-0.iam_email]
   }
   cur_services = [
     "iam.googleapis.com",

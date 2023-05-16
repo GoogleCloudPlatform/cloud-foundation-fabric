@@ -21,14 +21,9 @@ output "bigquery-datasets" {
   }
 }
 
-output "dataproc-hystory-server" {
+output "dataproc-history-server" {
   description = "List of bucket names which have been assigned to the cluster."
-  value = {
-    bucket_names   = module.processing-dp-historyserver.bucket_names
-    http_ports     = module.processing-dp-historyserver.http_ports
-    instance_names = module.processing-dp-historyserver.instance_names
-    name           = module.processing-dp-historyserver.name
-  }
+  value       = one(module.processing-dp-historyserver)
 }
 
 output "gcs-buckets" {
@@ -67,15 +62,15 @@ output "projects" {
 output "vpc_network" {
   description = "VPC network."
   value = {
-    processing_dataproc = local.processing_vpc
-    processing_composer = local.processing_vpc
+    processing_transformation = local.processing_vpc
+    processing_composer       = local.processing_vpc
   }
 }
 
 output "vpc_subnet" {
   description = "VPC subnetworks."
   value = {
-    processing_dataproc = local.processing_subnet
-    processing_composer = local.processing_subnet
+    processing_transformation = local.processing_subnet
+    processing_composer       = local.processing_subnet
   }
 }

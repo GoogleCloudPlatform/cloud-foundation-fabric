@@ -18,7 +18,7 @@ locals {
   iam_lnd = {
     "roles/storage.objectCreator" = [module.land-sa-cs-0.iam_email]
     "roles/storage.objectViewer"  = [module.processing-sa-cmp-0.iam_email]
-    "roles/storage.objectAdmin"   = [module.processing-sa-dp-0.iam_email]
+    "roles/storage.objectAdmin"   = [module.processing-sa-0.iam_email]
   }
 }
 

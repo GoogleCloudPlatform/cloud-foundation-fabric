@@ -17,8 +17,7 @@
 variable "composer_config" {
   description = "Cloud Composer config."
   type = object({
-    disable_deployment = optional(bool, false)
-    environment_size   = optional(string, "ENVIRONMENT_SIZE_SMALL")
+    environment_size = optional(string, "ENVIRONMENT_SIZE_SMALL")
     software_config = optional(object({
       airflow_config_overrides = optional(map(string), {})
       pypi_packages            = optional(map(string), {})
@@ -69,6 +68,15 @@ variable "data_force_destroy" {
   default     = false
 }
 
+variable "enable_services" {
+  description = "Flag to enable or disable services in the Data Platform."
+  type = object({
+    composer                = optional(bool, true)
+    dataproc_history_server = optional(bool, true)
+  })
+  default = {}
+}
+
 variable "groups" {
   description = "User groups."
   type        = map(string)
@@ -91,8 +99,8 @@ variable "network_config" {
     host_project      = optional(string)
     network_self_link = optional(string)
     subnet_self_links = optional(object({
-      processing_dataproc = string
-      processing_composer = string
+      processing_transformation = string
+      processing_composer       = string
     }), null)
     composer_ip_ranges = optional(object({
       connection_subnetwork = optional(string)
