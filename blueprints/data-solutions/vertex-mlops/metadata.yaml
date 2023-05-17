@@ -15,7 +15,7 @@
 apiVersion: blueprints.cloud.google.com/v1alpha1
 kind: BlueprintMetadata
 metadata:
-  name: fabric-blueprint-vertex-mlops
+  name: vertex-mlops
 spec:
   info:
     title: MLOps with Vertex AI
@@ -28,7 +28,7 @@ spec:
       type: Terraform
       version: '>=  1.3.0'
     description:
-      tagline: MLOps with Vertex AI
+      tagline: Create a Vertex AI environment needed for MLOps.
       detailed: |-
         This example implements the infrastructure required to deploy an end-to-end MLOps process using Vertex AI platform.
       architecture:
