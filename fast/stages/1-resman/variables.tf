@@ -160,7 +160,7 @@ variable "fast_features" {
 variable "groups" {
   # tfdoc:variable:source 0-bootstrap
   # https://cloud.google.com/docs/enterprise/setup-checklist
-  description = "Group names to grant organization-level permissions."
+  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
   type = object({
     gcp-devops          = optional(string)
     gcp-network-admins  = optional(string)
