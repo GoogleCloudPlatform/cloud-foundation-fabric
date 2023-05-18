@@ -23,7 +23,7 @@ ingress:
   source_tags: list(networktag(), max=30, required=False)
   target_tags: list(networktag(), max=70, required=False)
   source_service_accounts: list(serviceaccount(), max=10, required=False)
-  target_service_account: list(serviceaccount(), max=10, required=False)
+  target_service_accounts: list(serviceaccount(), max=10, required=False)
 ---
 egress:
   disabled: bool(required=False)
@@ -35,7 +35,7 @@ egress:
   source_tags: list(networktag(), max=30, required=False)
   target_tags: list(networktag(), max=70, required=False)
   source_service_accounts: list(serviceaccount(), max=10, required=False)
-  target_service_account: list(serviceaccount(), max=10, required=False)
+  target_service_accounts: list(serviceaccount(), max=10, required=False)
 ---
 trafficSpec:
   ports: list()
