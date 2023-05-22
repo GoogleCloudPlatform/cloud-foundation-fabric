@@ -21,6 +21,13 @@ resource "google_logging_project_bucket_config" "bucket" {
   retention_days = var.retention
   bucket_id      = var.id
   description    = var.description
+
+  dynamic "cmek_settings" {
+    for_each = var.kms_key_name == null ? [] : [""]
+    content {
+      kms_key_name = var.kms_key_name
+    }
+  }
 }
 
 resource "google_logging_folder_bucket_config" "bucket" {
