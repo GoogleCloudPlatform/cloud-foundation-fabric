@@ -64,11 +64,12 @@ module "bucket-billing-account" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [id](variables.tf#L23) | Name of the logging bucket. | <code>string</code> | ✓ |  |
-| [parent](variables.tf#L34) | ID of the parentresource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'. | <code>string</code> | ✓ |  |
-| [parent_type](variables.tf#L39) | Parent object type for the bucket (project, folder, organization, billing_account). | <code>string</code> | ✓ |  |
+| [parent](variables.tf#L40) | ID of the parentresource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'. | <code>string</code> | ✓ |  |
+| [parent_type](variables.tf#L45) | Parent object type for the bucket (project, folder, organization, billing_account). | <code>string</code> | ✓ |  |
 | [description](variables.tf#L17) | Human-readable description for the logging bucket. | <code>string</code> |  | <code>null</code> |
-| [location](variables.tf#L28) | Location of the bucket. | <code>string</code> |  | <code>&#34;global&#34;</code> |
-| [retention](variables.tf#L44) | Retention time in days for the logging bucket. | <code>number</code> |  | <code>30</code> |
+| [kms_key_name](variables.tf#L28) | To enable CMEK for a project logging bucket, set this field to a valid name. The associated service account requires cloudkms.cryptoKeyEncrypterDecrypter roles assigned for the key. | <code>string</code> |  | <code>null</code> |
+| [location](variables.tf#L34) | Location of the bucket. | <code>string</code> |  | <code>&#34;global&#34;</code> |
+| [retention](variables.tf#L50) | Retention time in days for the logging bucket. | <code>number</code> |  | <code>30</code> |
 
 ## Outputs
 
