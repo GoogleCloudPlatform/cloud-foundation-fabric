@@ -26,6 +26,7 @@ locals {
   }
   _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   service_accounts_default = {
+    cloudbuild   = "${local.project.number}@cloudbuild.gserviceaccount.com"
     compute      = "${local.project.number}-compute@developer.gserviceaccount.com"
     gae          = "${local.project.project_id}@appspot.gserviceaccount.com"
     workstations = "service-${local.project.number}@gcp-sa-workstationsvm.iam.gserviceaccount.com"
