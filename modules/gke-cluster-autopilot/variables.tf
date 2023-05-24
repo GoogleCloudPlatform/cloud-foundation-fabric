@@ -206,6 +206,7 @@ variable "vpc_config" {
       services = string
     }), { pods = "pods", services = "services" })
     master_authorized_ranges = optional(map(string))
+    stack_type               = optional(string)
   })
   nullable = false
 }
