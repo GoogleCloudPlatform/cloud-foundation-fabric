@@ -8,9 +8,6 @@ All notable changes to this project will be documented in this file.
 
 ## [22.0.0] - 2023-05-24
 <!-- 2023-05-24 17:31:22+00:00 < 2023-03-24 12:44:02+00:00 -->
-- [[#1393](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1393)] Update README.md ([juliocc](https://github.com/juliocc)) <!-- 2023-05-24 10:59:14+00:00 -->
-- [[#1379](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1379)] Update to multiple README.md ([bluPhy](https://github.com/bluPhy)) <!-- 2023-05-16 06:11:34+00:00 -->
-- [[#1377](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1377)] Fixed home path ([skalolazka](https://github.com/skalolazka)) <!-- 2023-05-15 11:29:02+00:00 -->
 
 ### BLUEPRINTS
 
@@ -50,7 +47,10 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1393](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1393)] Update README.md ([juliocc](https://github.com/juliocc)) <!-- 2023-05-24 10:59:14+00:00 -->
+- [[#1379](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1379)] Update to multiple README.md ([bluPhy](https://github.com/bluPhy)) <!-- 2023-05-16 06:11:34+00:00 -->
 - [[#1375](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1375)] Several updates ([bluPhy](https://github.com/bluPhy)) <!-- 2023-05-15 21:08:19+00:00 -->
+- [[#1377](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1377)] Fixed home path ([skalolazka](https://github.com/skalolazka)) <!-- 2023-05-15 11:29:02+00:00 -->
 - [[#1362](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1362)] Add Minimal Data Platform blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-05-08 08:25:07+00:00 -->
 - [[#1357](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1357)] Add module link to README ([prabhaarya](https://github.com/prabhaarya)) <!-- 2023-05-05 08:10:09+00:00 -->
 - [[#1347](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1347)] Fix external documentation links ([bobidle](https://github.com/bobidle)) <!-- 2023-05-02 05:26:58+00:00 -->
