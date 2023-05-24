@@ -1,13 +1,32 @@
+/**
+ * Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 output "name" {
   description = "The name of the VLAN attachment created."
-  #value       = google_compute_interconnect_attachment.encrypted[0].name
-  value = local.ipsec_enabled ? google_compute_interconnect_attachment.encrypted[0].name : google_compute_interconnect_attachment.unencrypted[0].name
+  value       = local.ipsec_enabled ? google_compute_interconnect_attachment.encrypted[0].name : google_compute_interconnect_attachment.unencrypted[0].name
 }
 
 output "id" {
   description = "The id of the VLAN attachment created."
-  #value       = google_compute_interconnect_attachment.encrypted[0].id
-  value = local.ipsec_enabled ? google_compute_interconnect_attachment.encrypted[0].id : google_compute_interconnect_attachment.unencrypted[0].id
+  value       = local.ipsec_enabled ? google_compute_interconnect_attachment.encrypted[0].id : google_compute_interconnect_attachment.unencrypted[0].id
+}
+
+output "attachment" {
+  description = "VLAN Attachment resource"
+  value       = local.ipsec_enabled ? google_compute_interconnect_attachment.encrypted[0] : google_compute_interconnect_attachment.unencrypted[0]
 }
 
 output "router" {

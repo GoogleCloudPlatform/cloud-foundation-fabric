@@ -70,6 +70,18 @@ resource "google_compute_interconnect_attachment" "unencrypted" {
   type              = "DEDICATED"
 }
 
+resource "google_compute_router" "encrypted" {
+  count                         = var.router_config.create && local.ipsec_enabled ? 1 : 0
+  name                          = "${var.name}-underlay"
+  network                       = var.network
+  project                       = var.project_id
+  region                        = var.region
+  encrypted_interconnect_router = true
+  bgp {
+    asn = var.router_config.asn
+  }
+}
+
 resource "google_compute_router" "unencrypted" {
   count   = var.router_config.create && !local.ipsec_enabled ? 1 : 0
   name    = coalesce(var.router_config.name, "underlay-${var.name}")
@@ -97,18 +109,6 @@ resource "google_compute_router" "unencrypted" {
     }
     keepalive_interval = try(var.router_config.keepalive, null)
     asn                = var.router_config.asn
-  }
-}
-
-resource "google_compute_router" "encrypted" {
-  count                         = var.router_config.create && local.ipsec_enabled ? 1 : 0
-  name                          = "${var.name}-underlay"
-  network                       = var.network
-  project                       = var.project_id
-  region                        = var.region
-  encrypted_interconnect_router = true
-  bgp {
-    asn = var.router_config.asn
   }
 }
 
