@@ -90,7 +90,7 @@ variable "egress_policies" {
     condition = alltrue([
       for k, v in var.egress_policies : contains([
         "IDENTITY_TYPE_UNSPECIFIED", "ANY_IDENTITY",
-        "ANY_USER", "ANY_SERVICE_ACCOUNT"
+        "ANY_USER", "ANY_SERVICE_ACCOUNT", ""
       ], v.from.identity_type)
     ])
     error_message = "Invalid `from.identity_type` value in egress policy."
