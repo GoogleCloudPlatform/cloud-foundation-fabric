@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2023-03-24 12:44:02+00:00 -->
+<!-- None < 2023-05-24 17:31:22+00:00 -->
+
+## [22.0.0] - 2023-05-24
+<!-- 2023-05-24 17:31:22+00:00 < 2023-03-24 12:44:02+00:00 -->
 - [[#1393](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1393)] Update README.md ([juliocc](https://github.com/juliocc)) <!-- 2023-05-24 10:59:14+00:00 -->
 - [[#1379](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1379)] Update to multiple README.md ([bluPhy](https://github.com/bluPhy)) <!-- 2023-05-16 06:11:34+00:00 -->
 - [[#1377](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1377)] Fixed home path ([skalolazka](https://github.com/skalolazka)) <!-- 2023-05-15 11:29:02+00:00 -->
@@ -1225,7 +1228,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v21.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v22.0.0...HEAD
+[22.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v21.0.0...v22.0.0
 [21.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v20.0.0...v21.0.0
 [20.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v19.0.0...v20.0.0
 [19.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v18.0.0...v19.0.0
