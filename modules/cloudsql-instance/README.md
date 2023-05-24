@@ -27,7 +27,6 @@ module "vpc" {
   name       = "my-network"
   psa_config = {
     ranges = { cloud-sql = "10.60.0.0/16" }
-    routes = null
   }
 }
 
