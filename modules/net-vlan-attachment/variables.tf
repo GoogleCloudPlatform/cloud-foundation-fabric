@@ -20,12 +20,6 @@ variable "admin_enabled" {
   default     = true
 }
 
-variable "ipsec_gateway_ip_ranges" {
-  description = "IPSec Gateway IP Ranges."
-  type        = map(string)
-  default     = {}
-}
-
 variable "bandwidth" {
   # Possible values @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_interconnect_attachment#bandwidth
   description = "The bandwidth assigned to the VLAN attachment (e.g. BPS_10G)."
@@ -47,6 +41,12 @@ variable "description" {
 variable "interconnect" {
   description = "The identifier of the interconnect the VLAN attachment binds to."
   type        = string
+}
+
+variable "ipsec_gateway_ip_ranges" {
+  description = "IPSec Gateway IP Ranges."
+  type        = map(string)
+  default     = {}
 }
 
 variable "mtu" {
