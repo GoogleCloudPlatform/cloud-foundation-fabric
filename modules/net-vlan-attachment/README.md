@@ -11,7 +11,7 @@ resource "google_compute_router" "interconnect-router" {
   name    = "interconnect-router"
   network = "mynet"
   project = "myproject"
-  region  = "europe-west1"
+  region  = "europe-west8"
   bgp {
     asn               = 64514
     advertise_mode    = "CUSTOM"
@@ -29,7 +29,7 @@ module "example-va" {
   source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
-  region       = "europe-west1"
+  region       = "europe-west8"
   name         = "vlan-attachment"
   bandwidth    = "BPS_10G"
   bgp_cidr     = "169.254.0.0/30" 
@@ -38,7 +38,7 @@ module "example-va" {
   peer_asn     = "65000"
   router_config = {
     create = false
-    name   = "interconnect-router"
+    name   = google_compute_router.interconnect-router.id
   }
   vlan_tag              = 12345
 }
@@ -52,7 +52,7 @@ resource "google_compute_router" "interconnect-router" {
   name    = "interconnect-router"
   network = "mynet"
   project = "myproject"
-  region  = "europe-west1"
+  region  = "europe-west8"
   bgp {
     asn               = 64514
     advertise_mode    = "CUSTOM"
@@ -70,7 +70,7 @@ module "example-va-a" {
   source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
-  region       = "europe-west1"
+  region       = "europe-west8"
   name         = "vlan-attachment-a"
   bandwidth    = "BPS_10G"
   bgp_cidr     = "169.254.0.0/30" 
@@ -79,16 +79,16 @@ module "example-va-a" {
   peer_asn     = "65000"
   router_config = {
     create = false
-    name   = "interconnect-router"
+    name   = google_compute_router.interconnect-router.id
   }
-  vlan_tag              = 1001
+  vlan_tag = 1001
 }
 
 module "example-va-b" {
   source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
-  region       = "europe-west1"
+  region       = "europe-west8"
   name         = "vlan-attachment-b"
   bandwidth    = "BPS_10G"
   bgp_cidr     = "169.254.0.4/30" 
@@ -97,9 +97,9 @@ module "example-va-b" {
   peer_asn     = "65000"
   router_config = {
     create = false
-    name   = "interconnect-router"
+    name   = google_compute_router.interconnect-router.id
   }
-  vlan_tag              = 1002
+  vlan_tag = 1002
 }
 ```
 
@@ -107,11 +107,11 @@ module "example-va-b" {
 
 ```hcl
 
-resource "google_compute_router" "interconnect-router-ew1" {
-  name    = "interconnect-router-ew1"
+resource "google_compute_router" "interconnect-router-ew8" {
+  name    = "interconnect-router-ew8"
   network = "mynet"
   project = "myproject"
-  region  = "europe-west1"
+  region  = "europe-west8"
   bgp {
     asn               = 64514
     advertise_mode    = "CUSTOM"
@@ -125,11 +125,11 @@ resource "google_compute_router" "interconnect-router-ew1" {
   }
 }
 
-resource "google_compute_router" "interconnect-router-ew3" {
-  name    = "interconnect-router-ew3"
+resource "google_compute_router" "interconnect-router-ew12" {
+  name    = "interconnect-router-ew12"
   network = "mynet"
   project = "myproject"
-  region  = "europe-west3"
+  region  = "europe-west12"
   bgp {
     asn               = 64514
     advertise_mode    = "CUSTOM"
@@ -143,75 +143,75 @@ resource "google_compute_router" "interconnect-router-ew3" {
   }
 }
 
-module "example-va-a-ew1" {
+module "example-va-a-ew8" {
   source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
-  region       = "europe-west1"
-  name         = "vlan-attachment-a-ew1"
+  region       = "europe-west8"
+  name         = "vlan-attachment-a-ew8"
   bandwidth    = "BPS_10G"
   bgp_cidr     = "169.254.0.0/30" 
-  description  = "interconnect-a-ew1 vlan attachment 0"
-  interconnect = "interconnect-a-ew1"
+  description  = "interconnect-a-ew8 vlan attachment 0"
+  interconnect = "interconnect-a-ew8"
   peer_asn     = "65000"
   router_config = {
     create = false
-    name   = "interconnect-router-ew1"
+    name   = google_compute_router.interconnect-router-ew8.id
   }
   vlan_tag              = 1001
 }
 
-module "example-va-b-ew1" {
+module "example-va-b-ew8" {
   source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
-  region       = "europe-west1"
-  name         = "vlan-attachment-b-ew1"
+  region       = "europe-west8"
+  name         = "vlan-attachment-b-ew8"
   bandwidth    = "BPS_10G"
   bgp_cidr     = "169.254.0.4/30" 
-  description  = "interconnect-b-ew1 vlan attachment 0"
-  interconnect = "interconnect-b-ew1"
+  description  = "interconnect-b-ew8 vlan attachment 0"
+  interconnect = "interconnect-b-ew8"
   peer_asn     = "65000"
   router_config = {
     create = false
-    name   = "interconnect-router-ew1"
+    name   = google_compute_router.interconnect-router-ew8.id
   }
   vlan_tag              = 1002
 }
 
 
-module "example-va-a-ew3" {
+module "example-va-a-ew12" {
   source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
-  region       = "europe-west3"
-  name         = "vlan-attachment-a-ew3"
+  region       = "europe-west12"
+  name         = "vlan-attachment-a-ew12"
   bandwidth    = "BPS_10G"
   bgp_cidr     = "169.254.1.0/30" 
-  description  = "interconnect-a-ew3 vlan attachment 0"
-  interconnect = "interconnect-a-ew3"
+  description  = "interconnect-a-ew12 vlan attachment 0"
+  interconnect = "interconnect-a-ew12"
   peer_asn     = "65000"
   router_config = {
     create = false
-    name   = "interconnect-router-ew3"
+    name   = google_compute_router.interconnect-router-ew12.id
   }
   vlan_tag              = 1003
 }
 
-module "example-va-b-ew3" {
+module "example-va-b-ew12" {
   source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
-  region       = "europe-west3"
-  name         = "vlan-attachment-b-ew3"
+  region       = "europe-west12"
+  name         = "vlan-attachment-b-ew12"
   bandwidth    = "BPS_10G"
   bgp_cidr     = "169.254.1.4/30" 
-  description  = "interconnect-b-ew3 vlan attachment 0"
-  interconnect = "interconnect-b-ew3"
+  description  = "interconnect-b-ew12 vlan attachment 0"
+  interconnect = "interconnect-b-ew12"
   peer_asn     = "65000"
   router_config = {
     create = false
-    name   = "interconnect-router-ew3"
+    name   = google_compute_router.interconnect-router-ew12.id
   }
   vlan_tag              = 1004
 }
@@ -219,7 +219,61 @@ module "example-va-b-ew3" {
 
 ### IPSec over Interconnect enabled setup
 
-Refer to the [net-ipsec-over-interconnect](../net-ipsec-over-interconnect/) module docs.
+Refer to the [IoIC Blueprint](TODO) for an all-encompassing example.
+
+```hcl
+resource "google_compute_router" "encrypted-interconnect-underlay-router-ew8" {
+  name                          = "encrypted-interconnect-underlay-router-ew8"
+  project                       = "myproject"
+  network                       = "mynet"
+  region                        = "europe-west8"
+  encrypted_interconnect_router = true
+  bgp {
+    advertise_mode    = "DEFAULT"    
+    asn               = 64514
+  }
+}
+
+module "example-va-a" {
+  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  project_id   = "myproject"
+  network      = "mynet"
+  region       = "europe-west8"
+  name         = "encrypted-vlan-attachment-a"
+  bandwidth    = "BPS_10G"
+  bgp_cidr     = "169.254.0.0/30" 
+  description  = "example-va-a vlan attachment"
+  interconnect = "interconnect-a"
+  peer_asn     = "65001"
+  router_config = {
+    create = false
+    name = google_compute_router.encrypted-interconnect-underlay-router-ew8.id
+  }
+  vlan_tag              = 1001
+  vpn_gateways_ip_range = "10.255.255.0/30" # Allows for up to 4 tunnels
+}
+
+module "example-va-b" {
+  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  project_id   = "myproject"
+  network      = "mynet"
+  region       = "europe-west8"
+  name         = "encrypted-vlan-attachment-b"
+  bandwidth    = "BPS_10G"
+  bgp_cidr     = "169.254.0.4/30" 
+  description  = "example-va-b vlan attachment"
+  interconnect = "interconnect-b"
+  peer_asn     = "65001"
+  router_config = {
+    create = false
+    name = google_compute_router.encrypted-interconnect-underlay-router-ew8.id
+  }
+  vlan_tag              = 1002
+  vpn_gateways_ip_range = "10.255.255.4/30" # Allows for up to 4 tunnels
+}
+
+
+```
 
 <!-- BEGIN TFDOC -->
 
