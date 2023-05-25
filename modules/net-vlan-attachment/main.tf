@@ -46,7 +46,7 @@ resource "google_compute_interconnect_attachment" "encrypted" {
   interconnect             = var.interconnect
   bandwidth                = var.bandwidth
   mtu                      = var.mtu
-  candidate_subnets        = [var.bgp_cidr]
+  candidate_subnets        = [var.bgp_range]
   vlan_tag8021q            = var.vlan_tag
   admin_enabled            = var.admin_enabled
   encryption               = "IPSEC"
@@ -64,7 +64,7 @@ resource "google_compute_interconnect_attachment" "unencrypted" {
   interconnect      = var.interconnect
   bandwidth         = var.bandwidth
   mtu               = var.mtu
-  candidate_subnets = [var.bgp_cidr]
+  candidate_subnets = [var.bgp_range]
   vlan_tag8021q     = var.vlan_tag
   admin_enabled     = var.admin_enabled
   type              = "DEDICATED"
@@ -117,7 +117,7 @@ resource "google_compute_router_interface" "default" {
   region                  = var.region
   name                    = "${var.name}-intf"
   router                  = local.router
-  ip_range                = "${cidrhost(var.bgp_cidr, 1)}/${split("/", var.bgp_cidr)[1]}"
+  ip_range                = "${cidrhost(var.bgp_range, 1)}/${split("/", var.bgp_range)[1]}"
   interconnect_attachment = local.interconnect_attachment.name
 }
 
@@ -126,7 +126,7 @@ resource "google_compute_router_peer" "default" {
   project                   = var.project_id
   router                    = local.router
   region                    = var.region
-  peer_ip_address           = cidrhost(var.bgp_cidr, 2)
+  peer_ip_address           = cidrhost(var.bgp_range, 2)
   peer_asn                  = var.peer_asn
   interface                 = "${var.name}-intf"
   advertised_route_priority = 100

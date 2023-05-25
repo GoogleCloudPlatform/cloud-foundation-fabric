@@ -27,7 +27,7 @@ variable "bandwidth" {
   default     = "BPS_10G"
 }
 
-variable "bgp_cidr" {
+variable "bgp_range" {
   description = "The underlay link-local IP range (in CIDR notation)."
   type        = string
   default     = "169.254.0.0/30"

@@ -32,7 +32,7 @@ module "example-va" {
   region       = "europe-west8"
   name         = "vlan-attachment"
   bandwidth    = "BPS_10G"
-  bgp_cidr     = "169.254.0.0/30" 
+  bgp_range     = "169.254.0.0/30" 
   description  = "Example vlan attachment"
   interconnect = "interconnect-a"
   peer_asn     = "65000"
@@ -73,7 +73,7 @@ module "example-va-a" {
   region       = "europe-west8"
   name         = "vlan-attachment-a"
   bandwidth    = "BPS_10G"
-  bgp_cidr     = "169.254.0.0/30" 
+  bgp_range     = "169.254.0.0/30" 
   description  = "interconnect-a vlan attachment 0"
   interconnect = "interconnect-a"
   peer_asn     = "65000"
@@ -91,7 +91,7 @@ module "example-va-b" {
   region       = "europe-west8"
   name         = "vlan-attachment-b"
   bandwidth    = "BPS_10G"
-  bgp_cidr     = "169.254.0.4/30" 
+  bgp_range     = "169.254.0.4/30" 
   description  = "interconnect-b vlan attachment 0"
   interconnect = "interconnect-b"
   peer_asn     = "65000"
@@ -150,7 +150,7 @@ module "example-va-a-ew8" {
   region       = "europe-west8"
   name         = "vlan-attachment-a-ew8"
   bandwidth    = "BPS_10G"
-  bgp_cidr     = "169.254.0.0/30" 
+  bgp_range     = "169.254.0.0/30" 
   description  = "interconnect-a-ew8 vlan attachment 0"
   interconnect = "interconnect-a-ew8"
   peer_asn     = "65000"
@@ -168,7 +168,7 @@ module "example-va-b-ew8" {
   region       = "europe-west8"
   name         = "vlan-attachment-b-ew8"
   bandwidth    = "BPS_10G"
-  bgp_cidr     = "169.254.0.4/30" 
+  bgp_range     = "169.254.0.4/30" 
   description  = "interconnect-b-ew8 vlan attachment 0"
   interconnect = "interconnect-b-ew8"
   peer_asn     = "65000"
@@ -187,7 +187,7 @@ module "example-va-a-ew12" {
   region       = "europe-west12"
   name         = "vlan-attachment-a-ew12"
   bandwidth    = "BPS_10G"
-  bgp_cidr     = "169.254.1.0/30" 
+  bgp_range     = "169.254.1.0/30" 
   description  = "interconnect-a-ew12 vlan attachment 0"
   interconnect = "interconnect-a-ew12"
   peer_asn     = "65000"
@@ -205,7 +205,7 @@ module "example-va-b-ew12" {
   region       = "europe-west12"
   name         = "vlan-attachment-b-ew12"
   bandwidth    = "BPS_10G"
-  bgp_cidr     = "169.254.1.4/30" 
+  bgp_range     = "169.254.1.4/30" 
   description  = "interconnect-b-ew12 vlan attachment 0"
   interconnect = "interconnect-b-ew12"
   peer_asn     = "65000"
@@ -219,7 +219,7 @@ module "example-va-b-ew12" {
 
 ### IPSec over Interconnect enabled setup
 
-Refer to the [IoIC Blueprint](TODO) for an all-encompassing example.
+Refer to the [IoIC Blueprint](../../blueprints/networking/ha-vpn-over-interconnect/) for an all-encompassing example.
 
 ```hcl
 resource "google_compute_router" "encrypted-interconnect-underlay-router-ew8" {
@@ -241,7 +241,7 @@ module "example-va-a" {
   region       = "europe-west8"
   name         = "encrypted-vlan-attachment-a"
   bandwidth    = "BPS_10G"
-  bgp_cidr     = "169.254.0.0/30" 
+  bgp_range     = "169.254.0.0/30" 
   description  = "example-va-a vlan attachment"
   interconnect = "interconnect-a"
   peer_asn     = "65001"
@@ -260,7 +260,7 @@ module "example-va-b" {
   region       = "europe-west8"
   name         = "encrypted-vlan-attachment-b"
   bandwidth    = "BPS_10G"
-  bgp_cidr     = "169.254.0.4/30" 
+  bgp_range     = "169.254.0.4/30" 
   description  = "example-va-b vlan attachment"
   interconnect = "interconnect-b"
   peer_asn     = "65001"
@@ -291,7 +291,7 @@ module "example-va-b" {
 | [vlan_tag](variables.tf#L98) | The VLAN id to be used for this VLAN attachment. | <code>number</code> | ✓ |  |
 | [admin_enabled](variables.tf#L17) | Whether the VLAN attachment is enabled. | <code>bool</code> |  | <code>true</code> |
 | [bandwidth](variables.tf#L23) | The bandwidth assigned to the VLAN attachment (e.g. BPS_10G). | <code>string</code> |  | <code>&#34;BPS_10G&#34;</code> |
-| [bgp_cidr](variables.tf#L30) | The underlay link-local IP range (in CIDR notation). | <code>string</code> |  | <code>&#34;169.254.0.0&#47;30&#34;</code> |
+| [bgp_range](variables.tf#L30) | The underlay link-local IP range (in CIDR notation). | <code>string</code> |  | <code>&#34;169.254.0.0&#47;30&#34;</code> |
 | [ipsec_gateway_ip_ranges](variables.tf#L46) | IPSec Gateway IP Ranges. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [mtu](variables.tf#L52) | The MTU associated to the VLAN attachemnt (1440 / 1500). | <code>number</code> |  | <code>1500</code> |
 | [vpn_gateways_ip_range](variables.tf#L103) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
