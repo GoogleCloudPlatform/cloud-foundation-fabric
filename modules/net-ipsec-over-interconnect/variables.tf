@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-variable "external_vpn_gateway_create" {
-  description = ""
-  type        = bool
-  default     = false
-}
-
 variable "interconnect_attachments" {
-  description = "VLAN attachments used by the VPN Gateway"
+  description = "VLAN attachments used by the VPN Gateway."
   type = object({
     a = string
     b = string
@@ -29,7 +23,7 @@ variable "interconnect_attachments" {
 }
 
 variable "name" {
-  description = "Common name to identify the VPN Gateway"
+  description = "Common name to identify the VPN Gateway."
   type        = string
 }
 
