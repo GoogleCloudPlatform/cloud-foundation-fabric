@@ -17,7 +17,23 @@
 # tfdoc:file:description Route resources.
 
 locals {
-  _routes = var.routes == null ? {} : var.routes
+  _googleapis_ranges = {
+    private      = "199.36.153.8/30"
+    private-6    = "2600:2d00:0002:2000::/64"
+    restricted   = "199.36.153.4/30"
+    restricted-6 = "2600:2d00:0002:1000::/64"
+  }
+  _googleapis_routes = {
+    for k, v in local._googleapis_ranges : "${k}-googleapis" => {
+      dest_range    = v
+      next_hop      = "default-internet-gateway"
+      next_hop_type = "gateway"
+      priority      = 1000
+      tags          = null
+    }
+    if var.create_default_routes[k]
+  }
+  _routes = merge(local._googleapis_routes, coalesce(var.routes, {}))
   routes = {
     gateway    = { for k, v in local._routes : k => v if v.next_hop_type == "gateway" }
     ilb        = { for k, v in local._routes : k => v if v.next_hop_type == "ilb" }
@@ -87,44 +103,4 @@ resource "google_compute_route" "vpn_tunnel" {
   priority            = each.value.priority
   tags                = each.value.tags
   next_hop_vpn_tunnel = each.value.next_hop
-}
-
-resource "google_compute_route" "private" {
-  count            = var.create_default_routes.private ? 1 : 0
-  project          = var.project_id
-  network          = local.network.name
-  name             = "private-googleapis-default"
-  description      = "Terraform-managed."
-  dest_range       = "199.36.153.8/30"
-  next_hop_gateway = "default-internet-gateway"
-}
-
-resource "google_compute_route" "private6" {
-  count            = var.create_default_routes.private6 ? 1 : 0
-  project          = var.project_id
-  network          = local.network.name
-  name             = "private6-googleapis-default"
-  description      = "Terraform-managed."
-  dest_range       = "2600:2d00:0002:2000::/64"
-  next_hop_gateway = "default-internet-gateway"
-}
-
-resource "google_compute_route" "restricted" {
-  count            = var.create_default_routes.restricted ? 1 : 0
-  project          = var.project_id
-  network          = local.network.name
-  name             = "restricted-googleapis-default"
-  description      = "Terraform-managed."
-  dest_range       = "199.36.153.4/30"
-  next_hop_gateway = "default-internet-gateway"
-}
-
-resource "google_compute_route" "restricted6" {
-  count            = var.create_default_routes.restricted6 ? 1 : 0
-  project          = var.project_id
-  network          = local.network.name
-  name             = "restricted6-googleapis-default"
-  description      = "Terraform-managed."
-  dest_range       = "2600:2d00:0002:1000::/64"
-  next_hop_gateway = "default-internet-gateway"
 }
