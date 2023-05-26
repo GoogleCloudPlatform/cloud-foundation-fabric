@@ -53,7 +53,7 @@ module "dev-spoke-vpc" {
   delete_default_routes_on_create = true
   psa_config                      = try(var.psa_ranges.dev, null)
   # Set explicit routes for googleapis; send everything else to NVAs
-  create_default_routes = {
+  create_googleapis_routes = {
     private    = true
     restricted = true
   }

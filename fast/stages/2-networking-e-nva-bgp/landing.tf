@@ -117,7 +117,7 @@ module "landing-trusted-vpc" {
     inbound = true
   }
   # Set explicit routes for googleapis in case the default route is deleted
-  create_default_routes = {
+  create_googleapis_routes = {
     private    = true
     restricted = true
   }
