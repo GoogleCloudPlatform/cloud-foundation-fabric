@@ -17,6 +17,7 @@ This module allows creation and management of VPC networks including subnetworks
     - [DNS Policies](#dns-policies)
     - [Subnet Factory](#subnet-factory)
     - [Custom Routes](#custom-routes)
+    - [Private Google Access routes](#private-google-access-routes)
     - [Allow Firewall Policy to be evaluated before Firewall Rules](#allow-firewall-policy-to-be-evaluated-before-firewall-rules)
   - [Variables](#variables)
   - [Outputs](#outputs)
@@ -45,7 +46,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3 inventory=simple.yaml
+# tftest modules=1 resources=5 inventory=simple.yaml
 ```
 
 ### Subnet Options
@@ -92,7 +93,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=5 inventory=subnet-options.yaml
+# tftest modules=1 resources=7 inventory=subnet-options.yaml
 ```
 
 ### Subnet IAM
@@ -129,7 +130,7 @@ module "vpc" {
     }
   }
 }
-# tftest modules=1 resources=6 inventory=subnet-iam.yaml
+# tftest modules=1 resources=8 inventory=subnet-iam.yaml
 ```
 
 ### Peering
@@ -164,7 +165,7 @@ module "vpc-spoke-1" {
     import_routes      = true
   }
 }
-# tftest modules=2 resources=6 inventory=peering.yaml
+# tftest modules=2 resources=10 inventory=peering.yaml
 ```
 
 ### Shared VPC
@@ -215,7 +216,7 @@ module "vpc-host" {
     }
   }
 }
-# tftest modules=1 resources=7 inventory=shared-vpc.yaml
+# tftest modules=1 resources=9 inventory=shared-vpc.yaml
 ```
 
 ### Private Service Networking
@@ -236,7 +237,7 @@ module "vpc" {
     ranges = { myrange = "10.0.1.0/24" }
   }
 }
-# tftest modules=1 resources=5 inventory=psc.yaml
+# tftest modules=1 resources=7 inventory=psc.yaml
 ```
 
 ### Private Service Networking with peering routes
@@ -261,7 +262,7 @@ module "vpc" {
     import_routes = true
   }
 }
-# tftest modules=1 resources=5 inventory=psc-routes.yaml
+# tftest modules=1 resources=7 inventory=psc-routes.yaml
 ```
 
 ### Subnets for Private Service Connect, Proxy-only subnets
@@ -293,7 +294,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3 inventory=proxy-only-subnets.yaml
+# tftest modules=1 resources=5 inventory=proxy-only-subnets.yaml
 ```
 
 ### DNS Policies
@@ -318,7 +319,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3 inventory=dns-policies.yaml
+# tftest modules=1 resources=5 inventory=dns-policies.yaml
 ```
 
 ### Subnet Factory
@@ -332,7 +333,7 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=9 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-psc inventory=factory.yaml
+# tftest modules=1 resources=11 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-psc inventory=factory.yaml
 ```
 
 ```yaml
@@ -400,6 +401,7 @@ locals {
     vpn_tunnel = "regions/europe-west1/vpnTunnels/foo"
   }
 }
+
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
   for_each   = local.route_types
@@ -420,9 +422,35 @@ module "vpc" {
       next_hop      = "global/gateways/default-internet-gateway"
     }
   }
+  create_default_routes = {
+    restricted   = false
+    restricted-6 = false
+    private      = false
+    private-6    = false
+  }
 }
 # tftest modules=5 resources=15 inventory=routes.yaml
 ```
+
+###  Private Google Access routes
+
+By default the VPC module creates IPv4 routes for the [Private Google Access ranges](https://cloud.google.com/vpc/docs/configure-private-google-access#config-routing). This behavior can be controlled through the `create_default_routes` variable:
+
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-vpc"
+  create_default_routes = {
+    restricted   = false
+    restricted-6 = true
+    private      = false
+    private-6    = true
+  }
+}
+# tftest modules=1 resources=3 inventory=googleapis.yaml
+```
+
 
 ### Allow Firewall Policy to be evaluated before Firewall Rules
 
@@ -449,7 +477,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3 inventory=firewall_policy_enforcement_order.yaml
+# tftest modules=1 resources=5 inventory=firewall_policy_enforcement_order.yaml
 ```
 <!-- BEGIN TFDOC -->
 

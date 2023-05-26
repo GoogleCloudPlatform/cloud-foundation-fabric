@@ -106,5 +106,5 @@ module "test" {
     europe-west1 = "10.0.0.0/28"
   }
 }
-# tftest modules=10 resources=62
+# tftest modules=10 resources=64
 ```
