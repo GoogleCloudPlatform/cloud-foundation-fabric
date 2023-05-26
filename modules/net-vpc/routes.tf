@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,4 +87,44 @@ resource "google_compute_route" "vpn_tunnel" {
   priority            = each.value.priority
   tags                = each.value.tags
   next_hop_vpn_tunnel = each.value.next_hop
+}
+
+resource "google_compute_route" "private" {
+  count            = var.create_default_routes.private ? 1 : 0
+  project          = var.project_id
+  network          = local.network.name
+  name             = "private-googleapis-default"
+  description      = "Terraform-managed."
+  dest_range       = "199.36.153.8/30"
+  next_hop_gateway = "default-internet-gateway"
+}
+
+resource "google_compute_route" "private6" {
+  count            = var.create_default_routes.private6 ? 1 : 0
+  project          = var.project_id
+  network          = local.network.name
+  name             = "private6-googleapis-default"
+  description      = "Terraform-managed."
+  dest_range       = "2600:2d00:0002:2000::/64"
+  next_hop_gateway = "default-internet-gateway"
+}
+
+resource "google_compute_route" "restricted" {
+  count            = var.create_default_routes.restricted ? 1 : 0
+  project          = var.project_id
+  network          = local.network.name
+  name             = "restricted-googleapis-default"
+  description      = "Terraform-managed."
+  dest_range       = "199.36.153.4/30"
+  next_hop_gateway = "default-internet-gateway"
+}
+
+resource "google_compute_route" "restricted6" {
+  count            = var.create_default_routes.restricted6 ? 1 : 0
+  project          = var.project_id
+  network          = local.network.name
+  name             = "restricted6-googleapis-default"
+  description      = "Terraform-managed."
+  dest_range       = "2600:2d00:0002:1000::/64"
+  next_hop_gateway = "default-internet-gateway"
 }
