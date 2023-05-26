@@ -80,5 +80,5 @@ module "test" {
   project_id = "my-project"
   hostname   = "test.myorg.org"
 }
-# tftest modules=18 resources=59
+# tftest modules=18 resources=61
 ```

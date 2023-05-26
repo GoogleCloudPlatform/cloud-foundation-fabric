@@ -54,5 +54,4 @@ counts:
   google_compute_subnetwork: 2
   google_compute_subnetwork_iam_binding: 1
   google_compute_subnetwork_iam_member: 2
-
-outputs: {}
+  google_compute_route: 2

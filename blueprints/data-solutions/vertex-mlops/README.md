@@ -72,7 +72,7 @@ module "test" {
     project_id         = "test-dev"
   }
 }
-# tftest modules=11 resources=60
+# tftest modules=11 resources=62
 ```
 <!-- BEGIN TFDOC -->
 
@@ -127,5 +127,5 @@ module "test" {
     project_id         = "test-dev"
   }
 }
-# tftest modules=13 resources=65
+# tftest modules=13 resources=67
 ```
