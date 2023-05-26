@@ -180,5 +180,5 @@ module "test" {
   }
   prefix = "prefix"
 }
-# tftest modules=10 resources=50
+# tftest modules=10 resources=52
 ```

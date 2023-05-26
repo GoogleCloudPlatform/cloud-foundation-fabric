@@ -44,7 +44,31 @@ values:
     region: europe-west2
     role: null
     secondary_ip_range: []
+  module.vpc.google_compute_route.gateway["private-googleapis"]:
+    dest_range: 199.36.153.8/30
+    name: my-network-private-googleapis
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: my-network-restricted-googleapis
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+    timeouts: null
 
 counts:
   google_compute_network: 1
   google_compute_subnetwork: 2
+  google_compute_route: 2

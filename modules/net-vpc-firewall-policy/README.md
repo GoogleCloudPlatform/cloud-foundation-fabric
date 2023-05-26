@@ -59,7 +59,7 @@ module "firewall-policy" {
     }
   }
 }
-# tftest modules=2 resources=7
+# tftest modules=2 resources=9
 ```
 <!-- BEGIN TFDOC -->
 

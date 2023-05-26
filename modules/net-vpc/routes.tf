@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,23 @@
 # tfdoc:file:description Route resources.
 
 locals {
-  _routes = var.routes == null ? {} : var.routes
+  _googleapis_ranges = {
+    private      = "199.36.153.8/30"
+    private-6    = "2600:2d00:0002:2000::/64"
+    restricted   = "199.36.153.4/30"
+    restricted-6 = "2600:2d00:0002:1000::/64"
+  }
+  _googleapis_routes = {
+    for k, v in local._googleapis_ranges : "${k}-googleapis" => {
+      dest_range    = v
+      next_hop      = "default-internet-gateway"
+      next_hop_type = "gateway"
+      priority      = 1000
+      tags          = null
+    }
+    if var.create_googleapis_routes[k]
+  }
+  _routes = merge(local._googleapis_routes, coalesce(var.routes, {}))
   routes = {
     gateway    = { for k, v in local._routes : k => v if v.next_hop_type == "gateway" }
     ilb        = { for k, v in local._routes : k => v if v.next_hop_type == "ilb" }

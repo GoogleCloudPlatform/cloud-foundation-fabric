@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,17 +51,9 @@ module "landing-vpc" {
     inbound = true
   }
   # set explicit routes for googleapis in case the default route is deleted
-  routes = {
-    private-googleapis = {
-      dest_range    = "199.36.153.8/30"
-      next_hop_type = "gateway"
-      next_hop      = "default-internet-gateway"
-    }
-    restricted-googleapis = {
-      dest_range    = "199.36.153.4/30"
-      next_hop_type = "gateway"
-      next_hop      = "default-internet-gateway"
-    }
+  create_googleapis_routes = {
+    private    = true
+    restricted = true
   }
   data_folder = "${var.factories_config.data_dir}/subnets/landing"
 }

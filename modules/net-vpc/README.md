@@ -17,6 +17,7 @@ This module allows creation and management of VPC networks including subnetworks
     - [DNS Policies](#dns-policies)
     - [Subnet Factory](#subnet-factory)
     - [Custom Routes](#custom-routes)
+    - [Private Google Access routes](#private-google-access-routes)
     - [Allow Firewall Policy to be evaluated before Firewall Rules](#allow-firewall-policy-to-be-evaluated-before-firewall-rules)
   - [Variables](#variables)
   - [Outputs](#outputs)
@@ -45,7 +46,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3 inventory=simple.yaml
+# tftest modules=1 resources=5 inventory=simple.yaml
 ```
 
 ### Subnet Options
@@ -92,7 +93,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=5 inventory=subnet-options.yaml
+# tftest modules=1 resources=7 inventory=subnet-options.yaml
 ```
 
 ### Subnet IAM
@@ -129,7 +130,7 @@ module "vpc" {
     }
   }
 }
-# tftest modules=1 resources=6 inventory=subnet-iam.yaml
+# tftest modules=1 resources=8 inventory=subnet-iam.yaml
 ```
 
 ### Peering
@@ -164,7 +165,7 @@ module "vpc-spoke-1" {
     import_routes      = true
   }
 }
-# tftest modules=2 resources=6 inventory=peering.yaml
+# tftest modules=2 resources=10 inventory=peering.yaml
 ```
 
 ### Shared VPC
@@ -215,7 +216,7 @@ module "vpc-host" {
     }
   }
 }
-# tftest modules=1 resources=7 inventory=shared-vpc.yaml
+# tftest modules=1 resources=9 inventory=shared-vpc.yaml
 ```
 
 ### Private Service Networking
@@ -236,7 +237,7 @@ module "vpc" {
     ranges = { myrange = "10.0.1.0/24" }
   }
 }
-# tftest modules=1 resources=5 inventory=psc.yaml
+# tftest modules=1 resources=7 inventory=psc.yaml
 ```
 
 ### Private Service Networking with peering routes
@@ -261,7 +262,7 @@ module "vpc" {
     import_routes = true
   }
 }
-# tftest modules=1 resources=5 inventory=psc-routes.yaml
+# tftest modules=1 resources=7 inventory=psc-routes.yaml
 ```
 
 ### Subnets for Private Service Connect, Proxy-only subnets
@@ -293,7 +294,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3 inventory=proxy-only-subnets.yaml
+# tftest modules=1 resources=5 inventory=proxy-only-subnets.yaml
 ```
 
 ### DNS Policies
@@ -318,7 +319,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3 inventory=dns-policies.yaml
+# tftest modules=1 resources=5 inventory=dns-policies.yaml
 ```
 
 ### Subnet Factory
@@ -332,7 +333,7 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=9 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-psc inventory=factory.yaml
+# tftest modules=1 resources=11 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-psc inventory=factory.yaml
 ```
 
 ```yaml
@@ -400,6 +401,7 @@ locals {
     vpn_tunnel = "regions/europe-west1/vpnTunnels/foo"
   }
 }
+
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
   for_each   = local.route_types
@@ -420,9 +422,35 @@ module "vpc" {
       next_hop      = "global/gateways/default-internet-gateway"
     }
   }
+  create_googleapis_routes = {
+    restricted   = false
+    restricted-6 = false
+    private      = false
+    private-6    = false
+  }
 }
 # tftest modules=5 resources=15 inventory=routes.yaml
 ```
+
+###  Private Google Access routes
+
+By default the VPC module creates IPv4 routes for the [Private Google Access ranges](https://cloud.google.com/vpc/docs/configure-private-google-access#config-routing). This behavior can be controlled through the `create_googleapis_routes` variable:
+
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-vpc"
+  create_googleapis_routes = {
+    restricted   = false
+    restricted-6 = true
+    private      = false
+    private-6    = true
+  }
+}
+# tftest modules=1 resources=3 inventory=googleapis.yaml
+```
+
 
 ### Allow Firewall Policy to be evaluated before Firewall Rules
 
@@ -449,7 +477,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=3 inventory=firewall_policy_enforcement_order.yaml
+# tftest modules=1 resources=5 inventory=firewall_policy_enforcement_order.yaml
 ```
 <!-- BEGIN TFDOC -->
 
@@ -457,27 +485,28 @@ module "vpc" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L72) | The name of the network being created. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L88) | The ID of the project where this VPC will be created. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L84) | The name of the network being created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L100) | The ID of the project where this VPC will be created. | <code>string</code> | ✓ |  |
 | [auto_create_subnetworks](variables.tf#L17) | Set to true to create an auto mode subnet, defaults to custom mode. | <code>bool</code> |  | <code>false</code> |
-| [data_folder](variables.tf#L23) | An optional folder containing the subnet configurations in YaML format. | <code>string</code> |  | <code>null</code> |
-| [delete_default_routes_on_create](variables.tf#L29) | Set to true to delete the default routes at creation time. | <code>bool</code> |  | <code>false</code> |
-| [description](variables.tf#L35) | An optional description of this resource (triggers recreation on change). | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
-| [dns_policy](variables.tf#L41) | DNS policy setup for the VPC. | <code title="object&#40;&#123;&#10;  inbound &#61; optional&#40;bool&#41;&#10;  logging &#61; optional&#40;bool&#41;&#10;  outbound &#61; optional&#40;object&#40;&#123;&#10;    private_ns &#61; list&#40;string&#41;&#10;    public_ns  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [firewall_policy_enforcement_order](variables.tf#L54) | Order that Firewall Rules and Firewall Policies are evaluated. Can be either 'BEFORE_CLASSIC_FIREWALL' or 'AFTER_CLASSIC_FIREWALL'. | <code>string</code> |  | <code>&#34;AFTER_CLASSIC_FIREWALL&#34;</code> |
-| [mtu](variables.tf#L66) | Maximum Transmission Unit in bytes. The minimum value for this field is 1460 (the default) and the maximum value is 1500 bytes. | <code>number</code> |  | <code>null</code> |
-| [peering_config](variables.tf#L77) | VPC peering configuration. | <code title="object&#40;&#123;&#10;  peer_vpc_self_link &#61; string&#10;  create_remote_peer &#61; optional&#40;bool, true&#41;&#10;  export_routes      &#61; optional&#40;bool&#41;&#10;  import_routes      &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [psa_config](variables.tf#L93) | The Private Service Access configuration for Service Networking. | <code title="object&#40;&#123;&#10;  ranges        &#61; map&#40;string&#41;&#10;  export_routes &#61; optional&#40;bool, false&#41;&#10;  import_routes &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [routes](variables.tf#L103) | Network routes, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  dest_range    &#61; string&#10;  next_hop_type &#61; string &#35; gateway, instance, ip, vpn_tunnel, ilb&#10;  next_hop      &#61; string&#10;  priority      &#61; optional&#40;number&#41;&#10;  tags          &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [routing_mode](variables.tf#L123) | The network routing mode (default 'GLOBAL'). | <code>string</code> |  | <code>&#34;GLOBAL&#34;</code> |
-| [shared_vpc_host](variables.tf#L133) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |
-| [shared_vpc_service_projects](variables.tf#L139) | Shared VPC service projects to register with this host. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnet_iam](variables.tf#L145) | Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnet_iam_additive](variables.tf#L151) | Subnet IAM additive bindings in {REGION/NAME => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnets](variables.tf#L158) | Subnet configuration. | <code title="list&#40;object&#40;&#123;&#10;  name                  &#61; string&#10;  ip_cidr_range         &#61; string&#10;  region                &#61; string&#10;  description           &#61; optional&#40;string&#41;&#10;  enable_private_access &#61; optional&#40;bool, true&#41;&#10;  flow_logs_config &#61; optional&#40;object&#40;&#123;&#10;    aggregation_interval &#61; optional&#40;string&#41;&#10;    filter_expression    &#61; optional&#40;string&#41;&#10;    flow_sampling        &#61; optional&#40;number&#41;&#10;    metadata             &#61; optional&#40;string&#41;&#10;    metadata_fields &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  ipv6 &#61; optional&#40;object&#40;&#123;&#10;    access_type           &#61; optional&#40;string&#41;&#10;    enable_private_access &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;&#10;  secondary_ip_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_proxy_only](variables.tf#L183) | List of proxy-only subnets for Regional HTTPS  or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active. | <code title="list&#40;object&#40;&#123;&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;  description   &#61; optional&#40;string&#41;&#10;  active        &#61; bool&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_psc](variables.tf#L195) | List of subnets for Private Service Connect service producers. | <code title="list&#40;object&#40;&#123;&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;  description   &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc_create](variables.tf#L206) | Create VPC. When set to false, uses a data source to reference existing VPC. | <code>bool</code> |  | <code>true</code> |
+| [create_googleapis_routes](variables.tf#L23) | Toggle creation of googleapis private/restricted routes. | <code title="object&#40;&#123;&#10;  private      &#61; optional&#40;bool, true&#41;&#10;  private-6    &#61; optional&#40;bool, false&#41;&#10;  restricted   &#61; optional&#40;bool, true&#41;&#10;  restricted-6 &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_folder](variables.tf#L35) | An optional folder containing the subnet configurations in YaML format. | <code>string</code> |  | <code>null</code> |
+| [delete_default_routes_on_create](variables.tf#L41) | Set to true to delete the default routes at creation time. | <code>bool</code> |  | <code>false</code> |
+| [description](variables.tf#L47) | An optional description of this resource (triggers recreation on change). | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
+| [dns_policy](variables.tf#L53) | DNS policy setup for the VPC. | <code title="object&#40;&#123;&#10;  inbound &#61; optional&#40;bool&#41;&#10;  logging &#61; optional&#40;bool&#41;&#10;  outbound &#61; optional&#40;object&#40;&#123;&#10;    private_ns &#61; list&#40;string&#41;&#10;    public_ns  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [firewall_policy_enforcement_order](variables.tf#L66) | Order that Firewall Rules and Firewall Policies are evaluated. Can be either 'BEFORE_CLASSIC_FIREWALL' or 'AFTER_CLASSIC_FIREWALL'. | <code>string</code> |  | <code>&#34;AFTER_CLASSIC_FIREWALL&#34;</code> |
+| [mtu](variables.tf#L78) | Maximum Transmission Unit in bytes. The minimum value for this field is 1460 (the default) and the maximum value is 1500 bytes. | <code>number</code> |  | <code>null</code> |
+| [peering_config](variables.tf#L89) | VPC peering configuration. | <code title="object&#40;&#123;&#10;  peer_vpc_self_link &#61; string&#10;  create_remote_peer &#61; optional&#40;bool, true&#41;&#10;  export_routes      &#61; optional&#40;bool&#41;&#10;  import_routes      &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [psa_config](variables.tf#L105) | The Private Service Access configuration for Service Networking. | <code title="object&#40;&#123;&#10;  ranges        &#61; map&#40;string&#41;&#10;  export_routes &#61; optional&#40;bool, false&#41;&#10;  import_routes &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [routes](variables.tf#L115) | Network routes, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  dest_range    &#61; string&#10;  next_hop_type &#61; string &#35; gateway, instance, ip, vpn_tunnel, ilb&#10;  next_hop      &#61; string&#10;  priority      &#61; optional&#40;number&#41;&#10;  tags          &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [routing_mode](variables.tf#L135) | The network routing mode (default 'GLOBAL'). | <code>string</code> |  | <code>&#34;GLOBAL&#34;</code> |
+| [shared_vpc_host](variables.tf#L145) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |
+| [shared_vpc_service_projects](variables.tf#L151) | Shared VPC service projects to register with this host. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnet_iam](variables.tf#L157) | Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [subnet_iam_additive](variables.tf#L163) | Subnet IAM additive bindings in {REGION/NAME => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [subnets](variables.tf#L170) | Subnet configuration. | <code title="list&#40;object&#40;&#123;&#10;  name                  &#61; string&#10;  ip_cidr_range         &#61; string&#10;  region                &#61; string&#10;  description           &#61; optional&#40;string&#41;&#10;  enable_private_access &#61; optional&#40;bool, true&#41;&#10;  flow_logs_config &#61; optional&#40;object&#40;&#123;&#10;    aggregation_interval &#61; optional&#40;string&#41;&#10;    filter_expression    &#61; optional&#40;string&#41;&#10;    flow_sampling        &#61; optional&#40;number&#41;&#10;    metadata             &#61; optional&#40;string&#41;&#10;    metadata_fields &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  ipv6 &#61; optional&#40;object&#40;&#123;&#10;    access_type           &#61; optional&#40;string&#41;&#10;    enable_private_access &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;&#10;  secondary_ip_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_proxy_only](variables.tf#L195) | List of proxy-only subnets for Regional HTTPS  or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active. | <code title="list&#40;object&#40;&#123;&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;  description   &#61; optional&#40;string&#41;&#10;  active        &#61; bool&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_psc](variables.tf#L207) | List of subnets for Private Service Connect service producers. | <code title="list&#40;object&#40;&#123;&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;  description   &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [vpc_create](variables.tf#L218) | Create VPC. When set to false, uses a data source to reference existing VPC. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
