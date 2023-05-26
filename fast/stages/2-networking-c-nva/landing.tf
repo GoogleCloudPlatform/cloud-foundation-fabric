@@ -53,6 +53,10 @@ module "landing-untrusted-vpc" {
     inbound = false
     logging = false
   }
+  create_googleapis_routes = {
+    private    = false
+    restricted = false
+  }
   data_folder = "${var.factories_config.data_dir}/subnets/landing-untrusted"
 }
 
