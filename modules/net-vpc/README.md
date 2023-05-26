@@ -422,7 +422,7 @@ module "vpc" {
       next_hop      = "global/gateways/default-internet-gateway"
     }
   }
-  create_default_routes = {
+  create_googleapis_routes = {
     restricted   = false
     restricted-6 = false
     private      = false
@@ -434,14 +434,14 @@ module "vpc" {
 
 ###  Private Google Access routes
 
-By default the VPC module creates IPv4 routes for the [Private Google Access ranges](https://cloud.google.com/vpc/docs/configure-private-google-access#config-routing). This behavior can be controlled through the `create_default_routes` variable:
+By default the VPC module creates IPv4 routes for the [Private Google Access ranges](https://cloud.google.com/vpc/docs/configure-private-google-access#config-routing). This behavior can be controlled through the `create_googleapis_routes` variable:
 
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
   project_id = "my-project"
   name       = "my-vpc"
-  create_default_routes = {
+  create_googleapis_routes = {
     restricted   = false
     restricted-6 = true
     private      = false
@@ -488,7 +488,7 @@ module "vpc" {
 | [name](variables.tf#L84) | The name of the network being created. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L100) | The ID of the project where this VPC will be created. | <code>string</code> | ✓ |  |
 | [auto_create_subnetworks](variables.tf#L17) | Set to true to create an auto mode subnet, defaults to custom mode. | <code>bool</code> |  | <code>false</code> |
-| [create_default_routes](variables.tf#L23) | Toggle creation of googleapis private/restricted routes. | <code title="object&#40;&#123;&#10;  private      &#61; optional&#40;bool, true&#41;&#10;  private-6    &#61; optional&#40;bool, false&#41;&#10;  restricted   &#61; optional&#40;bool, true&#41;&#10;  restricted-6 &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [create_googleapis_routes](variables.tf#L23) | Toggle creation of googleapis private/restricted routes. | <code title="object&#40;&#123;&#10;  private      &#61; optional&#40;bool, true&#41;&#10;  private-6    &#61; optional&#40;bool, false&#41;&#10;  restricted   &#61; optional&#40;bool, true&#41;&#10;  restricted-6 &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_folder](variables.tf#L35) | An optional folder containing the subnet configurations in YaML format. | <code>string</code> |  | <code>null</code> |
 | [delete_default_routes_on_create](variables.tf#L41) | Set to true to delete the default routes at creation time. | <code>bool</code> |  | <code>false</code> |
 | [description](variables.tf#L47) | An optional description of this resource (triggers recreation on change). | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |

@@ -20,7 +20,7 @@ variable "auto_create_subnetworks" {
   default     = false
 }
 
-variable "create_default_routes" {
+variable "create_googleapis_routes" {
   description = "Toggle creation of googleapis private/restricted routes."
   type = object({
     private      = optional(bool, true)
