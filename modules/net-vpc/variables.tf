@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,18 @@ variable "auto_create_subnetworks" {
   description = "Set to true to create an auto mode subnet, defaults to custom mode."
   type        = bool
   default     = false
+}
+
+variable "create_default_routes" {
+  description = "Toggle creation of googleapis private/restricted routes."
+  type = object({
+    private     = optional(bool, true)
+    private6    = optional(bool, false)
+    restricted  = optional(bool, true)
+    restricted6 = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "data_folder" {
