@@ -63,7 +63,43 @@ variable "billing_account" {
 variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `automation.federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
+    data_platform_dev = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    data_platform_prod = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    gke_dev = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    gke_prod = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
     networking = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    project_factory_dev = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    project_factory_prod = object({
       branch            = string
       identity_provider = string
       name              = string
