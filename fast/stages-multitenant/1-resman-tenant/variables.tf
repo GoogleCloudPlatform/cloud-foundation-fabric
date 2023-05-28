@@ -26,11 +26,12 @@ variable "automation" {
     project_number           = string
     federated_identity_pools = list(string)
     federated_identity_providers = map(object({
-      issuer           = string
-      issuer_uri       = string
-      name             = string
-      principal_tpl    = string
-      principalset_tpl = string
+      allowed_audiences = list(string)
+      issuer            = string
+      issuer_uri        = string
+      name              = string
+      principal_tpl     = string
+      principalset_tpl  = string
     }))
     service_accounts = object({
       networking = string
@@ -62,43 +63,7 @@ variable "billing_account" {
 variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `automation.federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
-    data_platform_dev = object({
-      branch            = string
-      identity_provider = string
-      name              = string
-      type              = string
-    })
-    data_platform_prod = object({
-      branch            = string
-      identity_provider = string
-      name              = string
-      type              = string
-    })
-    gke_dev = object({
-      branch            = string
-      identity_provider = string
-      name              = string
-      type              = string
-    })
-    gke_prod = object({
-      branch            = string
-      identity_provider = string
-      name              = string
-      type              = string
-    })
     networking = object({
-      branch            = string
-      identity_provider = string
-      name              = string
-      type              = string
-    })
-    project_factory_dev = object({
-      branch            = string
-      identity_provider = string
-      name              = string
-      type              = string
-    })
-    project_factory_prod = object({
       branch            = string
       identity_provider = string
       name              = string

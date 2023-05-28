@@ -20,11 +20,12 @@ locals {
   cicd_providers = {
     for k, v in google_iam_workload_identity_pool_provider.default :
     k => {
-      issuer           = local.identity_providers[k].issuer
-      issuer_uri       = local.identity_providers[k].issuer_uri
-      name             = v.name
-      principal_tpl    = local.identity_providers[k].principal_tpl
-      principalset_tpl = local.identity_providers[k].principalset_tpl
+      allowed_audiences = v.oidc.0.allowed_audiences
+      issuer            = local.identity_providers[k].issuer
+      issuer_uri        = local.identity_providers[k].issuer_uri
+      name              = v.name
+      principal_tpl     = local.identity_providers[k].principal_tpl
+      principalset_tpl  = local.identity_providers[k].principalset_tpl
     }
   }
   cicd_repositories = {

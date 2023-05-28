@@ -62,6 +62,15 @@ locals {
     for k, v in local.cicd_repositories : k => templatefile(
       "${path.module}/templates/workflow-${v.type}.yaml",
       merge(local.cicd_workflow_attrs[k], {
+        allowed_audience = (
+          contains(keys(local.identity_providers), v.identity_provider)
+          ? can(local.identity_providers[v.identity_provider].allowed_audiences)
+          ? length(local.identity_providers[v.identity_provider].allowed_audiences) > 0
+          ? local.identity_providers[v.identity_provider].allowed_audiences[0]
+          : null
+          : null
+          : null
+        )
         identity_provider = try(
           local.identity_providers[v.identity_provider].name, null
         )

@@ -26,11 +26,12 @@ variable "automation" {
     project_number          = string
     federated_identity_pool = string
     federated_identity_providers = map(object({
-      issuer           = string
-      issuer_uri       = string
-      name             = string
-      principal_tpl    = string
-      principalset_tpl = string
+      allowed_audiences = list(string)
+      issuer            = string
+      issuer_uri        = string
+      name              = string
+      principal_tpl     = string
+      principalset_tpl  = string
     }))
   })
 }

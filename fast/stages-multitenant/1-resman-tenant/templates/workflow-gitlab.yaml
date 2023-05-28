@@ -13,8 +13,11 @@
 # limitations under the License.
 
 default:
+  id_tokens:
+    GITLAB_TOKEN:
+      aud: ${allowed_audience}
   before_script:
-    - echo "$${CI_JOB_JWT_V2}" > token.txt
+    - echo "$${GITLAB_TOKEN}" > token.txt
   image:
     name: hashicorp/terraform
     entrypoint:
