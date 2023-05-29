@@ -154,7 +154,7 @@ Once the configuration is done just go through the usual `init/apply` cycle. On 
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables.tf#L20) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket           &#61; string&#10;  project_id               &#61; string&#10;  project_number           &#61; string&#10;  federated_identity_pools &#61; list&#40;string&#41;&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    allowed_audiences &#61; list&#40;string&#41;&#10;    issuer            &#61; string&#10;    issuer_uri        &#61; string&#10;    name              &#61; string&#10;    principal_tpl     &#61; string&#10;    principalset_tpl  &#61; string&#10;  &#125;&#41;&#41;&#10;  service_accounts &#61; object&#40;&#123;&#10;    networking &#61; string&#10;    resman     &#61; string&#10;    security   &#61; string&#10;    dp-dev     &#61; optional&#40;string&#41;&#10;    dp-prod    &#61; optional&#40;string&#41;&#10;    gke-dev    &#61; optional&#40;string&#41;&#10;    gke-prod   &#61; optional&#40;string&#41;&#10;    pf-dev     &#61; optional&#40;string&#41;&#10;    pf-prod    &#61; optional&#40;string&#41;&#10;    sandbox    &#61; optional&#40;string&#41;&#10;    teams      &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [automation](variables.tf#L20) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket           &#61; string&#10;  project_id               &#61; string&#10;  project_number           &#61; string&#10;  federated_identity_pools &#61; list&#40;string&#41;&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    allowed_audiences &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    issuer            &#61; string&#10;    issuer_uri        &#61; string&#10;    name              &#61; string&#10;    principal_tpl     &#61; string&#10;    principalset_tpl  &#61; string&#10;  &#125;&#41;&#41;&#10;  service_accounts &#61; object&#40;&#123;&#10;    networking &#61; string&#10;    resman     &#61; string&#10;    security   &#61; string&#10;    dp-dev     &#61; optional&#40;string&#41;&#10;    dp-prod    &#61; optional&#40;string&#41;&#10;    gke-dev    &#61; optional&#40;string&#41;&#10;    gke-prod   &#61; optional&#40;string&#41;&#10;    pf-dev     &#61; optional&#40;string&#41;&#10;    pf-prod    &#61; optional&#40;string&#41;&#10;    sandbox    &#61; optional&#40;string&#41;&#10;    teams      &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [billing_account](variables.tf#L52) | Billing account id. If billing account is not part of the same org set `is_org_level` to `false`. To disable handling of billing IAM roles set `no_iam` to `true`. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;  no_iam       &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [organization](variables.tf#L205) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [prefix](variables.tf#L227) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
@@ -176,15 +176,15 @@ Once the configuration is done just go through the usual `init/apply` cycle. On 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L198) | WIF configuration for CI/CD repositories. |  |  |
-| [dataplatform](outputs.tf#L212) | Data for the Data Platform stage. |  |  |
-| [gke_multitenant](outputs.tf#L228) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
-| [networking](outputs.tf#L249) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L258) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L273) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L280) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L294) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L304) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L316) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L190) | WIF configuration for CI/CD repositories. |  |  |
+| [dataplatform](outputs.tf#L204) | Data for the Data Platform stage. |  |  |
+| [gke_multitenant](outputs.tf#L220) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
+| [networking](outputs.tf#L241) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L250) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L265) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L272) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L286) | Data for the networking stage. |  | <code>02-security</code> |
+| [teams](outputs.tf#L296) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L308) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

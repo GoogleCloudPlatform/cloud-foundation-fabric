@@ -521,15 +521,15 @@ The remaining configuration is manual, as it regards the repositories themselves
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [automation](outputs.tf#L100) | Automation resources. |  |  |
-| [billing_dataset](outputs.tf#L105) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L110) | CI/CD repository configurations. |  |  |
-| [custom_roles](outputs.tf#L122) | Organization-level custom roles. |  |  |
-| [federated_identity](outputs.tf#L127) | Workload Identity Federation pool and providers. |  |  |
-| [outputs_bucket](outputs.tf#L137) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L142) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L152) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L159) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L168) | Terraform variable files for the following stages. | ✓ |  |
+| [automation](outputs.tf#L94) | Automation resources. |  |  |
+| [billing_dataset](outputs.tf#L99) | BigQuery dataset prepared for billing export. |  |  |
+| [cicd_repositories](outputs.tf#L104) | CI/CD repository configurations. |  |  |
+| [custom_roles](outputs.tf#L116) | Organization-level custom roles. |  |  |
+| [federated_identity](outputs.tf#L121) | Workload Identity Federation pool and providers. |  |  |
+| [outputs_bucket](outputs.tf#L131) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L136) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L146) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L153) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L162) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

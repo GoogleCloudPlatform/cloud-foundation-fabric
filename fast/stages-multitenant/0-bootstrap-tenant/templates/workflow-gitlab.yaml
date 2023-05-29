@@ -15,7 +15,10 @@
 default:
   id_tokens:
     GITLAB_TOKEN:
-      aud: ${allowed_audience}
+      aud:
+%{ for aud in allowed_audiences ~}
+        - ${aud}
+%{ endfor ~}
   before_script:
     - echo "$${GITLAB_TOKEN}" > token.txt
   image:

@@ -197,7 +197,7 @@ This configuration is possible but unsupported and only exists for development p
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables.tf#L20) | Automation resources created by the organization-level bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket          &#61; string&#10;  project_id              &#61; string&#10;  project_number          &#61; string&#10;  federated_identity_pool &#61; string&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    allowed_audiences &#61; list&#40;string&#41;&#10;    issuer            &#61; string&#10;    issuer_uri        &#61; string&#10;    name              &#61; string&#10;    principal_tpl     &#61; string&#10;    principalset_tpl  &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [automation](variables.tf#L20) | Automation resources created by the organization-level bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket          &#61; string&#10;  project_id              &#61; string&#10;  project_number          &#61; string&#10;  federated_identity_pool &#61; string&#10;  federated_identity_providers &#61; map&#40;object&#40;&#123;&#10;    allowed_audiences &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    issuer            &#61; string&#10;    issuer_uri        &#61; string&#10;    name              &#61; string&#10;    principal_tpl     &#61; string&#10;    principalset_tpl  &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [billing_account](variables.tf#L39) | Billing account id. If billing account is not part of the same org set `is_org_level` to `false`. To disable handling of billing IAM roles set `no_iam` to `true`. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;  no_iam       &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [organization](variables.tf#L192) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [prefix](variables.tf#L208) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
@@ -222,10 +222,10 @@ This configuration is possible but unsupported and only exists for development p
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_workflows](outputs.tf#L125) | CI/CD workflows for tenant bootstrap and resource management stages. | ✓ |  |
-| [federated_identity](outputs.tf#L131) | Workload Identity Federation pool and providers. |  |  |
-| [provider](outputs.tf#L141) | Terraform provider file for tenant resource management stage. | ✓ | <code>stage-01</code> |
-| [tenant_resources](outputs.tf#L148) | Tenant-level resources. |  |  |
-| [tfvars](outputs.tf#L159) | Terraform variable files for the following tenant stages. | ✓ |  |
+| [cicd_workflows](outputs.tf#L109) | CI/CD workflows for tenant bootstrap and resource management stages. | ✓ |  |
+| [federated_identity](outputs.tf#L115) | Workload Identity Federation pool and providers. |  |  |
+| [provider](outputs.tf#L125) | Terraform provider file for tenant resource management stage. | ✓ | <code>stage-01</code> |
+| [tenant_resources](outputs.tf#L132) | Tenant-level resources. |  |  |
+| [tfvars](outputs.tf#L143) | Terraform variable files for the following tenant stages. | ✓ |  |
 
 <!-- END TFDOC -->

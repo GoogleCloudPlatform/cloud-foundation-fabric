@@ -26,7 +26,7 @@ variable "automation" {
     project_number           = string
     federated_identity_pools = list(string)
     federated_identity_providers = map(object({
-      allowed_audiences = list(string)
+      allowed_audiences = optional(list(string), [])
       issuer            = string
       issuer_uri        = string
       name              = string
