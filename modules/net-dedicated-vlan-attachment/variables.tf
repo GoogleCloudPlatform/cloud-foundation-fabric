@@ -91,6 +91,12 @@ variable "router_config" {
       all_subnets = bool
       ip_ranges   = map(string)
     }))
+    bfd = optional(object({
+      session_initialization_mode = optional(string, "ACTIVE")
+      min_receive_interval        = optional(number)
+      min_transmit_interval       = optional(number)
+      multiplier                  = optional(number)
+    }))
   })
   nullable = false
 }

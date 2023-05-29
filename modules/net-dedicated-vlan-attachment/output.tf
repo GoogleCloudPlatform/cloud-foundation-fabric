@@ -34,6 +34,11 @@ output "router" {
   value       = local.ipsec_enabled ? one(google_compute_router.encrypted[*]) : one(google_compute_router.unencrypted[*])
 }
 
+output "router_interface" {
+  description = "Router interface created for the VLAN attachment."
+  value       = google_compute_router_interface.default
+}
+
 output "router_name" {
   description = "Router name."
   value       = local.router

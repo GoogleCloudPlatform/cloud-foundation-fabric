@@ -46,7 +46,7 @@ variable "overlay_config" {
       redundancy_type = optional(string, "TWO_IPS_REDUNDANCY")
       interfaces      = list(string)
     })
-    tunnels = map(map(object({
+    gateways = map(map(object({
       bgp_peer = object({
         address        = string
         asn            = number

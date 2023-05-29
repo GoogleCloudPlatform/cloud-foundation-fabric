@@ -17,6 +17,11 @@
 locals {
   peer_gateway = (
     var.peer_gateway_config.create
+    ? try(google_compute_external_vpn_gateway.default[0], null)
+    : var.peer_gateway_config
+  )
+  peer_gateway_id = (
+    var.peer_gateway_config.create
     ? try(google_compute_external_vpn_gateway.default[0].id, null)
     : var.peer_gateway_config.id
   )
@@ -48,7 +53,7 @@ resource "google_compute_external_vpn_gateway" "default" {
   count           = var.peer_gateway_config.create ? 1 : 0
   name            = var.name
   project         = var.project_id
-  description     = "Terraform managed IPSec over Interconnect VPN gateway"
+  description     = var.peer_gateway_config.description
   redundancy_type = var.peer_gateway_config.redundancy_type
   dynamic "interface" {
     for_each = var.peer_gateway_config.interfaces
@@ -120,12 +125,11 @@ resource "google_compute_router_peer" "default" {
 }
 
 resource "google_compute_router_interface" "default" {
-  for_each = var.tunnels
-  project  = var.project_id
-  region   = var.region
-  name     = "${var.name}-${each.key}"
-  router   = local.router
-  # FIXME: can bgp_session_range be null?
+  for_each   = var.tunnels
+  project    = var.project_id
+  region     = var.region
+  name       = "${var.name}-${each.key}"
+  router     = local.router
   ip_range   = each.value.bgp_session_range == "" ? null : each.value.bgp_session_range
   vpn_tunnel = google_compute_vpn_tunnel.default[each.key].name
 }
@@ -136,7 +140,7 @@ resource "google_compute_vpn_tunnel" "default" {
   region                          = var.region
   name                            = "${var.name}-${each.key}"
   vpn_gateway                     = google_compute_ha_vpn_gateway.default.id
-  peer_external_gateway           = local.peer_gateway
+  peer_external_gateway           = local.peer_gateway_id
   shared_secret                   = coalesce(each.value.shared_secret, local.secret)
   router                          = local.router
   vpn_gateway_interface           = each.value.vpn_gateway_interface

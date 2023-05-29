@@ -45,7 +45,6 @@ resource "google_compute_interconnect_attachment" "encrypted" {
   description              = var.description
   interconnect             = var.interconnect
   bandwidth                = var.bandwidth
-  mtu                      = var.mtu
   candidate_subnets        = [var.bgp_range]
   vlan_tag8021q            = var.vlan_tag
   admin_enabled            = var.admin_enabled
@@ -140,11 +139,14 @@ resource "google_compute_router_peer" "default" {
     }
   }
 
-  bfd {
-    min_receive_interval        = 1000
-    min_transmit_interval       = 1000
-    multiplier                  = 5
-    session_initialization_mode = "ACTIVE"
+  dynamic "bfd" {
+    for_each = var.router_config.bfd != null ? toset([var.router_config.bfd]) : []
+    content {
+      session_initialization_mode = bfd.session_initialization_mode
+      min_receive_interval        = bfd.min_receive_interval
+      min_transmit_interval       = bfd.min_transmit_interval
+      multiplier                  = bfd.multiplier
+    }
   }
 
   depends_on = [

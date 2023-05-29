@@ -59,7 +59,7 @@ resource "google_compute_external_vpn_gateway" "default" {
 
 module "vpngw" {
   source     = "../../../modules/net-ipsec-over-interconnect"
-  for_each   = var.overlay_config.tunnels
+  for_each   = var.overlay_config.gateways
   project_id = var.project_id
   network    = var.network
   region     = var.region
@@ -74,7 +74,7 @@ module "vpngw" {
   }
   router_config = {
     create = false
-    name   = google_compute_router.encrypted-interconnect-overlay-router.id
+    name   = google_compute_router.encrypted-interconnect-overlay-router.name
   }
   tunnels = each.value
 }

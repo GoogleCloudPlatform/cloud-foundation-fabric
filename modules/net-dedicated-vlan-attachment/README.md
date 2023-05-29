@@ -26,7 +26,7 @@ resource "google_compute_router" "interconnect-router" {
 }
 
 module "example-va" {
-  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west8"
@@ -67,7 +67,7 @@ resource "google_compute_router" "interconnect-router" {
 }
 
 module "example-va-a" {
-  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west8"
@@ -85,7 +85,7 @@ module "example-va-a" {
 }
 
 module "example-va-b" {
-  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west8"
@@ -144,7 +144,7 @@ resource "google_compute_router" "interconnect-router-ew12" {
 }
 
 module "example-va-a-ew8" {
-  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west8"
@@ -162,7 +162,7 @@ module "example-va-a-ew8" {
 }
 
 module "example-va-b-ew8" {
-  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west8"
@@ -181,7 +181,7 @@ module "example-va-b-ew8" {
 
 
 module "example-va-a-ew12" {
-  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west12"
@@ -199,7 +199,7 @@ module "example-va-a-ew12" {
 }
 
 module "example-va-b-ew12" {
-  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west12"
@@ -235,7 +235,7 @@ resource "google_compute_router" "encrypted-interconnect-underlay-router-ew8" {
 }
 
 module "example-va-a" {
-  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
   project_id   = "myproject"
   network      = "mynet"
   region       = "europe-west8"
@@ -254,7 +254,7 @@ module "example-va-a" {
 }
 
 module "example-va-b" {
-  source       = "../cloud-foundation-fabric/modules/net-vlan-attachment"
+  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
   project_id   = "myproject"
   network      = "mynet"
   region       = "europe-west8"

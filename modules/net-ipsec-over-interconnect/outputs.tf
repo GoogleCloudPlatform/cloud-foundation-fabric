@@ -1,18 +1,18 @@
-/**
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+# /**
+#  * Copyright 2022 Google LLC
+#  *
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *      http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+#  */
 
 
 output "bgp_peers" {
@@ -24,24 +24,17 @@ output "bgp_peers" {
 
 output "external_gateway" {
   description = "External VPN gateway resource."
-  value       = google_compute_external_vpn_gateway.default
+  value       = local.peer_gateway
 }
 
-output "gateway" {
-  description = "VPN gateway resource."
-  value       = google_compute_ha_vpn_gateway.default
+output "gateway_id" {
+  description = "VPN gateway ID."
+  value       = google_compute_ha_vpn_gateway.default.id
 }
 
-output "id" {
-  description = "Static gateway id."
-  value = (
-    "projects/${var.project_id}/regions/${var.region}/vpnGateways/${var.name}"
-  )
-}
-
-output "name" {
-  description = "VPN gateway name."
-  value       = google_compute_ha_vpn_gateway.default
+output "gateway_self_link" {
+  description = "VPN gateway self_link"
+  value       = google_compute_ha_vpn_gateway.default.self_link
 }
 
 output "random_secret" {
@@ -80,10 +73,10 @@ output "tunnel_self_links" {
   }
 }
 
-output "tunnels" {
-  description = "VPN tunnel resources."
-  value = {
-    for name in keys(var.tunnels) :
-    name => try(google_compute_vpn_tunnel.default[name], null)
-  }
-}
+# output "tunnels" {
+#   description = "VPN tunnel resources."
+#   value = {
+#     for name in keys(var.tunnels) :
+#     name => try(google_compute_vpn_tunnel.default[name], null)
+#   }
+# }

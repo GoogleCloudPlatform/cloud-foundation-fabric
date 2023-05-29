@@ -36,6 +36,7 @@ variable "peer_gateway_config" {
   description = "IP addresses for the external peer gateway."
   type = object({
     create          = optional(bool, false)
+    description     = optional(string, "Terraform managed IPSec over Interconnect VPN gateway")
     name            = optional(string, null)
     id              = optional(string, null)
     redundancy_type = optional(string)
@@ -95,7 +96,7 @@ variable "tunnels" {
     bgp_session_range               = string
     ike_version                     = optional(number, 2)
     peer_external_gateway_interface = optional(number)
-    peer_gateway                    = optional(string, "default")
+    peer_gateway_id                 = optional(string, "default")
     router                          = optional(string)
     shared_secret                   = optional(string)
     vpn_gateway_interface           = number

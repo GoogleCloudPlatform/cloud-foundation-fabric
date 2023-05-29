@@ -27,7 +27,7 @@ resource "google_compute_router" "encrypted-interconnect-underlay-router" {
 }
 
 module "va-a" {
-  source       = "../../../modules/net-vlan-attachment"
+  source       = "../../../modules/net-dedicated-vlan-attachment"
   project_id   = var.project_id
   network      = var.network
   region       = var.region
@@ -39,14 +39,14 @@ module "va-a" {
   peer_asn     = var.underlay_config.attachments.a.onprem_asn
   router_config = {
     create = false
-    name   = google_compute_router.encrypted-interconnect-underlay-router.id
+    name   = google_compute_router.encrypted-interconnect-underlay-router.name
   }
   vlan_tag              = var.underlay_config.attachments.a.vlan_tag
   vpn_gateways_ip_range = var.underlay_config.attachments.a.vpn_gateways_ip_range
 }
 
 module "va-b" {
-  source       = "../../../modules/net-vlan-attachment"
+  source       = "../../../modules/net-dedicated-vlan-attachment"
   project_id   = var.project_id
   network      = var.network
   region       = var.region
@@ -58,7 +58,7 @@ module "va-b" {
   peer_asn     = var.underlay_config.attachments.b.onprem_asn
   router_config = {
     create = false
-    name   = google_compute_router.encrypted-interconnect-underlay-router.id
+    name   = google_compute_router.encrypted-interconnect-underlay-router.name
   }
   vlan_tag              = var.underlay_config.attachments.b.vlan_tag
   vpn_gateways_ip_range = var.underlay_config.attachments.b.vpn_gateways_ip_range
