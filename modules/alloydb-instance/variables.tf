@@ -33,14 +33,6 @@ variable "automated_backup_policy" {
   })
   default = null
 }
-variable "cluster_id" {
-  description = "The ID of the alloydb cluster"
-  type        = string
-  validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.cluster_id))
-    error_message = "ERROR: Cluster ID must contain only Letters(lowercase), number, and hyphen"
-  }
-}
 variable "cluster_display_name" {
   description = "Human readable display name for the Alloy DB Cluster"
   type        = string
@@ -51,10 +43,13 @@ variable "cluster_encryption_key_name" {
   type        = string
   default     = null
 }
-variable "cluster_labels" {
-  description = "User-defined labels for the alloydb cluster"
-  type        = map(string)
-  default     = {}
+variable "cluster_id" {
+  description = "The ID of the alloydb cluster"
+  type        = string
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.cluster_id))
+    error_message = "ERROR: Cluster ID must contain only Letters(lowercase), number, and hyphen"
+  }
 }
 variable "cluster_initial_user" {
   description = "Alloy DB Cluster Initial User Credentials"
@@ -64,10 +59,24 @@ variable "cluster_initial_user" {
   })
   default = null
 }
+variable "cluster_labels" {
+  description = "User-defined labels for the alloydb cluster"
+  type        = map(string)
+  default     = {}
+}
 variable "cluster_location" {
   description = "Location where AlloyDb cluster will be deployed."
   type        = string
   # default     = "us-central1"
+}
+variable "network_name" {
+  description = "The network name of the project in which to provision resources."
+  type        = string
+  default     = "multiple-readpool"
+}
+variable "network_self_link" {
+  description = "Network ID where the AlloyDb cluster will be deployed."
+  type        = string
 }
 variable "primary_instance" {
   description = "Primary cluster configuration that supports read and write operations."
@@ -92,15 +101,6 @@ variable "primary_instance" {
 }
 variable "project_id" {
   description = "The ID of the project in which to provision resources."
-  type        = string
-}
-variable "network_name" {
-  description = "The network name of the project in which to provision resources."
-  type        = string
-  default     = "multiple-readpool"
-}
-variable "network_self_link" {
-  description = "Network ID where the AlloyDb cluster will be deployed."
   type        = string
 }
 variable "read_pool_instance" {
