@@ -15,8 +15,7 @@
  */
 
 locals {
-  ipsec_enabled           = var.vpn_gateways_ip_range == null ? false : true
-  interconnect_attachment = local.ipsec_enabled ? google_compute_interconnect_attachment.encrypted[0] : google_compute_interconnect_attachment.unencrypted[0]
+  ipsec_enabled = var.vpn_gateways_ip_range == null ? false : true
   router = (
     var.router_config.create
     ? local.ipsec_enabled ? try(google_compute_router.encrypted[0].name, null) : try(google_compute_router.unencrypted[0].name, null)
@@ -36,8 +35,7 @@ resource "google_compute_address" "default" {
   prefix_length = split("/", var.vpn_gateways_ip_range)[1]
 }
 
-resource "google_compute_interconnect_attachment" "encrypted" {
-  count                    = local.ipsec_enabled ? 1 : 0
+resource "google_compute_interconnect_attachment" "default" {
   project                  = var.project_id
   region                   = var.region
   router                   = local.router
@@ -45,28 +43,13 @@ resource "google_compute_interconnect_attachment" "encrypted" {
   description              = var.description
   interconnect             = var.interconnect
   bandwidth                = var.bandwidth
+  mtu                      = local.ipsec_enabled ? null : var.mtu
   candidate_subnets        = [var.bgp_range]
   vlan_tag8021q            = var.vlan_tag
   admin_enabled            = var.admin_enabled
-  encryption               = "IPSEC"
+  encryption               = local.ipsec_enabled ? "IPSEC" : null
   type                     = "DEDICATED"
-  ipsec_internal_addresses = [google_compute_address.default[0].self_link]
-}
-
-resource "google_compute_interconnect_attachment" "unencrypted" {
-  count             = local.ipsec_enabled ? 0 : 1
-  project           = var.project_id
-  region            = var.region
-  router            = local.router
-  name              = var.name
-  description       = var.description
-  interconnect      = var.interconnect
-  bandwidth         = var.bandwidth
-  mtu               = var.mtu
-  candidate_subnets = [var.bgp_range]
-  vlan_tag8021q     = var.vlan_tag
-  admin_enabled     = var.admin_enabled
-  type              = "DEDICATED"
+  ipsec_internal_addresses = local.ipsec_enabled ? [google_compute_address.default[0].self_link] : null
 }
 
 resource "google_compute_router" "encrypted" {
@@ -117,7 +100,7 @@ resource "google_compute_router_interface" "default" {
   name                    = "${var.name}-intf"
   router                  = local.router
   ip_range                = "${cidrhost(var.bgp_range, 1)}/${split("/", var.bgp_range)[1]}"
-  interconnect_attachment = local.interconnect_attachment.name
+  interconnect_attachment = google_compute_interconnect_attachment.default.name
 }
 
 resource "google_compute_router_peer" "default" {

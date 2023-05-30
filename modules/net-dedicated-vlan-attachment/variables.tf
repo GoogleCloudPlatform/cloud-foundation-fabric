@@ -30,7 +30,7 @@ variable "bandwidth" {
 variable "bgp_range" {
   description = "The underlay link-local IP range (in CIDR notation)."
   type        = string
-  default     = "169.254.0.0/30"
+  default     = "169.254.128.0/29"
 }
 
 variable "description" {
@@ -84,8 +84,8 @@ variable "router_config" {
   description = "Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router."
   type = object({
     create    = optional(bool, true)
-    asn       = optional(number)
-    name      = optional(string)
+    asn       = optional(number, 65001)
+    name      = optional(string, "router")
     keepalive = optional(number)
     custom_advertise = optional(object({
       all_subnets = bool

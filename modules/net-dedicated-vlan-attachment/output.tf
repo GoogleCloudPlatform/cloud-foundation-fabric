@@ -16,17 +16,17 @@
 
 output "name" {
   description = "The name of the VLAN attachment created."
-  value       = local.interconnect_attachment.name
+  value       = google_compute_interconnect_attachment.default.name
 }
 
 output "id" {
   description = "The id of the VLAN attachment created."
-  value       = local.ipsec_enabled ? google_compute_interconnect_attachment.encrypted[0].id : google_compute_interconnect_attachment.unencrypted[0].id
+  value       = google_compute_interconnect_attachment.default.id
 }
 
 output "attachment" {
   description = "VLAN Attachment resource"
-  value       = local.ipsec_enabled ? google_compute_interconnect_attachment.encrypted[0] : google_compute_interconnect_attachment.unencrypted[0]
+  value       = google_compute_interconnect_attachment.default
 }
 
 output "router" {
