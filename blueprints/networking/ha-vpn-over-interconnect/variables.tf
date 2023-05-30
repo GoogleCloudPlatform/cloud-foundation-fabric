@@ -20,18 +20,9 @@ variable "network" {
   type        = string
 }
 
-variable "project_id" {
-  description = "The project id."
-  type        = string
-}
-
-variable "region" {
-  description = "GCP Region."
-  type        = string
-}
 
 variable "overlay_config" {
-  description = "Configuration for the overlay resources"
+  description = "Configuration for the overlay resources."
   type = object({
     gcp_bgp = object({
       asn       = number
@@ -72,8 +63,18 @@ variable "overlay_config" {
   })
 }
 
+variable "project_id" {
+  description = "The project id."
+  type        = string
+}
+
+variable "region" {
+  description = "GCP Region."
+  type        = string
+}
+
 variable "underlay_config" {
-  description = "Configuration for the underlay resources"
+  description = "Configuration for the underlay resources."
   type = object({
     attachments = map(object({
       bandwidth              = optional(string, "BPS_10G")

@@ -287,13 +287,13 @@ module "example-va-b" {
 | [peer_asn](variables.tf#L68) | The on-premises underlay router ASN. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L73) | The project id where resources are created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L78) | The region where resources are created. | <code>string</code> | ✓ |  |
-| [router_config](variables.tf#L83) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code title="object&#40;&#123;&#10;  create    &#61; optional&#40;bool, true&#41;&#10;  asn       &#61; optional&#40;number&#41;&#10;  name      &#61; optional&#40;string&#41;&#10;  keepalive &#61; optional&#40;number&#41;&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [vlan_tag](variables.tf#L98) | The VLAN id to be used for this VLAN attachment. | <code>number</code> | ✓ |  |
+| [router_config](variables.tf#L83) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code title="object&#40;&#123;&#10;  create    &#61; optional&#40;bool, true&#41;&#10;  asn       &#61; optional&#40;number&#41;&#10;  name      &#61; optional&#40;string&#41;&#10;  keepalive &#61; optional&#40;number&#41;&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  bfd &#61; optional&#40;object&#40;&#123;&#10;    session_initialization_mode &#61; optional&#40;string, &#34;ACTIVE&#34;&#41;&#10;    min_receive_interval        &#61; optional&#40;number&#41;&#10;    min_transmit_interval       &#61; optional&#40;number&#41;&#10;    multiplier                  &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vlan_tag](variables.tf#L104) | The VLAN id to be used for this VLAN attachment. | <code>number</code> | ✓ |  |
 | [admin_enabled](variables.tf#L17) | Whether the VLAN attachment is enabled. | <code>bool</code> |  | <code>true</code> |
 | [bandwidth](variables.tf#L23) | The bandwidth assigned to the VLAN attachment (e.g. BPS_10G). | <code>string</code> |  | <code>&#34;BPS_10G&#34;</code> |
 | [bgp_range](variables.tf#L30) | The underlay link-local IP range (in CIDR notation). | <code>string</code> |  | <code>&#34;169.254.0.0&#47;30&#34;</code> |
 | [ipsec_gateway_ip_ranges](variables.tf#L46) | IPSec Gateway IP Ranges. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [mtu](variables.tf#L52) | The MTU associated to the VLAN attachemnt (1440 / 1500). | <code>number</code> |  | <code>1500</code> |
-| [vpn_gateways_ip_range](variables.tf#L103) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
+| [vpn_gateways_ip_range](variables.tf#L109) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
 
 <!-- END TFDOC -->
