@@ -62,7 +62,7 @@ module "branch-sandbox-sa" {
 }
 
 resource "google_organization_iam_member" "org_policy_admin_sandbox" {
-  count  = var.fast_features.project_factory ? 1 : 0
+  count  = var.fast_features.sandbox ? 1 : 0
   org_id = var.organization.id
   role   = "roles/orgpolicy.policyAdmin"
   member = module.branch-sandbox-sa.0.iam_email

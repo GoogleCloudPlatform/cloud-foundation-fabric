@@ -52,5 +52,5 @@ module "test" {
   migration_admin_users  = ["user:admin@example.com"]
   migration_viewer_users = ["user:viewer@example.com"]
 }
-# tftest modules=5 resources=20
+# tftest modules=5 resources=22
 ```

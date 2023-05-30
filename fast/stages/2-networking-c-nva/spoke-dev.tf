@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,19 +53,11 @@ module "dev-spoke-vpc" {
   delete_default_routes_on_create = true
   psa_config                      = try(var.psa_ranges.dev, null)
   # Set explicit routes for googleapis; send everything else to NVAs
+  create_googleapis_routes = {
+    private    = true
+    restricted = true
+  }
   routes = {
-    private-googleapis = {
-      dest_range    = "199.36.153.8/30"
-      priority      = 999
-      next_hop_type = "gateway"
-      next_hop      = "default-internet-gateway"
-    }
-    restricted-googleapis = {
-      dest_range    = "199.36.153.4/30"
-      priority      = 999
-      next_hop_type = "gateway"
-      next_hop      = "default-internet-gateway"
-    }
     nva-primary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000

@@ -27,7 +27,6 @@ module "vpc" {
   name       = "my-network"
   psa_config = {
     ranges = { cloud-sql = "10.60.0.0/16" }
-    routes = null
   }
 }
 
@@ -40,7 +39,7 @@ module "db" {
   database_version = "POSTGRES_13"
   tier             = "db-g1-small"
 }
-# tftest modules=3 resources=9 inventory=simple.yaml
+# tftest modules=3 resources=11 inventory=simple.yaml
 ```
 
 ## Cross-regional read replica

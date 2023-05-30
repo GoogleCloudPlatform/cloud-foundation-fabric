@@ -100,6 +100,7 @@ resource "google_container_cluster" "cluster" {
     content {
       cluster_ipv4_cidr_block  = var.vpc_config.secondary_range_blocks.pods
       services_ipv4_cidr_block = var.vpc_config.secondary_range_blocks.services
+      stack_type               = try(var.vpc_config.stack_type, null)
     }
   }
 
@@ -108,6 +109,7 @@ resource "google_container_cluster" "cluster" {
     content {
       cluster_secondary_range_name  = var.vpc_config.secondary_range_names.pods
       services_secondary_range_name = var.vpc_config.secondary_range_names.services
+      stack_type                    = try(var.vpc_config.stack_type, null)
     }
   }
 

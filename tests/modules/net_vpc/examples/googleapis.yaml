@@ -13,26 +13,27 @@
 # limitations under the License.
 
 values:
-  module.vpc.google_compute_network.network[0]:
-    name: my-network
+  module.vpc.google_compute_route.gateway["private-6-googleapis"]:
+    dest_range: 2600:2d00:0002:2000::/64
+    name: my-vpc-private-6-googleapis
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
     project: my-project
-  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]: {}
-  module.vpc.google_dns_policy.default[0]:
-    alternative_name_server_config:
-    - target_name_servers:
-      - forwarding_path: ''
-        ipv4_address: '8.8.8.8'
-      - forwarding_path: private
-        ipv4_address: '10.0.0.1'
-    description: Managed by Terraform
-    enable_inbound_forwarding: true
-    enable_logging: null
-    name: my-network
-    networks:
-    - {}
+    tags: null
+  module.vpc.google_compute_route.gateway["restricted-6-googleapis"]:
+    dest_range: 2600:2d00:0002:1000::/64
+    name: my-vpc-restricted-6-googleapis
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
     project: my-project
+    tags: null
 
 counts:
   google_compute_network: 1
-  google_compute_subnetwork: 1
-  google_dns_policy: 1
+  google_compute_route: 2
