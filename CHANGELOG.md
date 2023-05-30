@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2023-05-24 17:31:22+00:00 -->
 
+### FAST
+
+- [[#1400](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1400)] Add default googleapi route creation to net-vpc ([juliocc](https://github.com/juliocc)) <!-- 2023-05-26 15:50:00+00:00 -->
+
+### MODULES
+
+- [[#1400](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1400)] Add default googleapi route creation to net-vpc ([juliocc](https://github.com/juliocc)) <!-- 2023-05-26 15:50:00+00:00 -->
+
 ## [22.0.0] - 2023-05-24
 <!-- 2023-05-24 17:31:22+00:00 < 2023-03-24 12:44:02+00:00 -->
 
