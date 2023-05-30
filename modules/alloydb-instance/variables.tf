@@ -31,16 +31,19 @@ variable "automated_backup_policy" {
   })
   default = null
 }
+
 variable "cluster_display_name" {
   description = "Human readable display name for the Alloy DB Cluster."
   type        = string
   default     = null
 }
+
 variable "cluster_encryption_key_name" {
   description = "The fully-qualified resource name of the KMS key for cluster encryption."
   type        = string
   default     = null
 }
+
 variable "cluster_id" {
   description = "The ID of the alloydb cluster."
   type        = string
@@ -49,6 +52,7 @@ variable "cluster_id" {
     error_message = "ERROR: Cluster ID must contain only Letters(lowercase), number, and hyphen."
   }
 }
+
 variable "cluster_initial_user" {
   description = "Alloy DB Cluster Initial User Credentials."
   type = object({
@@ -57,25 +61,30 @@ variable "cluster_initial_user" {
   })
   default = null
 }
+
 variable "cluster_labels" {
   description = "User-defined labels for the alloydb cluster."
   type        = map(string)
   default     = {}
 }
+
 variable "cluster_location" {
   description = "Location where AlloyDb cluster will be deployed."
   type        = string
   # default     = "us-central1"
 }
+
 variable "network_name" {
   description = "The network name of the project in which to provision resources."
   type        = string
   default     = "multiple-readpool"
 }
+
 variable "network_self_link" {
   description = "Network ID where the AlloyDb cluster will be deployed."
   type        = string
 }
+
 variable "primary_instance" {
   description = "Primary cluster configuration that supports read and write operations."
   type = object({
@@ -97,10 +106,12 @@ variable "primary_instance" {
     error_message = "Primary Instance ID should satisfy the following pattern ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$."
   }
 }
+
 variable "project_id" {
   description = "The ID of the project in which to provision resources."
   type        = string
 }
+
 variable "read_pool_instance" {
   description = "List of Read Pool Instances to be created."
   type = list(object({

@@ -19,10 +19,12 @@ output "cluster" {
   value       = resource.google_alloydb_cluster.default.display_name
   sensitive   = true
 }
+
 output "cluster_id" {
   description = "ID of the Alloy DB Cluster created."
   value       = google_alloydb_cluster.default.cluster_id
 }
+
 output "primary_instance" {
   description = "Primary instance created."
   value       = resource.google_alloydb_instance.primary.display_name
