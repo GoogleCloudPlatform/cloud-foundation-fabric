@@ -45,7 +45,7 @@ The two Dedicated Interconnect connections should already exist, either in the s
 
 ```hcl
 module "test" {
-  source = "../cloud-foundation-fabric/blueprints/networking/ha-vpn-over-interconnect"
+  source     = "./fabric/blueprints/networking/ha-vpn-over-interconnect"
   network    = "mynet"
   project_id = "myproject"
   region     = "europe-west8"
@@ -173,4 +173,5 @@ module "test" {
     }
   }
 }
+# tftest modules=5 resources=39
 ```

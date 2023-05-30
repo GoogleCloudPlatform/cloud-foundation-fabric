@@ -13,8 +13,8 @@ resource "google_compute_router" "interconnect-router" {
   project = "myproject"
   region  = "europe-west8"
   bgp {
-    asn               = 64514
     advertise_mode    = "CUSTOM"
+    asn               = 64514
     advertised_groups = ["ALL_SUBNETS"]
     advertised_ip_ranges {
       range = "10.255.255.0/24"
@@ -26,13 +26,13 @@ resource "google_compute_router" "interconnect-router" {
 }
 
 module "example-va" {
-  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
+  source       = "./fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west8"
   name         = "vlan-attachment"
   bandwidth    = "BPS_10G"
-  bgp_range     = "169.254.0.0/30" 
+  bgp_range    = "169.254.0.0/30"
   description  = "Example vlan attachment"
   interconnect = "interconnect-a"
   peer_asn     = "65000"
@@ -40,14 +40,14 @@ module "example-va" {
     create = false
     name   = google_compute_router.interconnect-router.id
   }
-  vlan_tag              = 12345
+  vlan_tag = 12345
 }
+# tftest modules=1 resources=4
 ```
 
 ### Two VLAN Attachments on a single region (99.9% SLA)
 
 ```hcl
-
 resource "google_compute_router" "interconnect-router" {
   name    = "interconnect-router"
   network = "mynet"
@@ -67,13 +67,13 @@ resource "google_compute_router" "interconnect-router" {
 }
 
 module "example-va-a" {
-  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
+  source       = "./fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west8"
   name         = "vlan-attachment-a"
   bandwidth    = "BPS_10G"
-  bgp_range     = "169.254.0.0/30" 
+  bgp_range    = "169.254.0.0/30"
   description  = "interconnect-a vlan attachment 0"
   interconnect = "interconnect-a"
   peer_asn     = "65000"
@@ -85,13 +85,13 @@ module "example-va-a" {
 }
 
 module "example-va-b" {
-  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
+  source       = "./fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west8"
   name         = "vlan-attachment-b"
   bandwidth    = "BPS_10G"
-  bgp_range     = "169.254.0.4/30" 
+  bgp_range    = "169.254.0.4/30"
   description  = "interconnect-b vlan attachment 0"
   interconnect = "interconnect-b"
   peer_asn     = "65000"
@@ -101,6 +101,7 @@ module "example-va-b" {
   }
   vlan_tag = 1002
 }
+# tftest modules=2 resources=7
 ```
 
 ### Four VLAN Attachments on two regions (99.99% SLA)
@@ -144,13 +145,13 @@ resource "google_compute_router" "interconnect-router-ew12" {
 }
 
 module "example-va-a-ew8" {
-  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
+  source       = "./fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west8"
   name         = "vlan-attachment-a-ew8"
   bandwidth    = "BPS_10G"
-  bgp_range     = "169.254.0.0/30" 
+  bgp_range    = "169.254.0.0/30"
   description  = "interconnect-a-ew8 vlan attachment 0"
   interconnect = "interconnect-a-ew8"
   peer_asn     = "65000"
@@ -158,17 +159,17 @@ module "example-va-a-ew8" {
     create = false
     name   = google_compute_router.interconnect-router-ew8.id
   }
-  vlan_tag              = 1001
+  vlan_tag = 1001
 }
 
 module "example-va-b-ew8" {
-  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
+  source       = "./fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west8"
   name         = "vlan-attachment-b-ew8"
   bandwidth    = "BPS_10G"
-  bgp_range     = "169.254.0.4/30" 
+  bgp_range    = "169.254.0.4/30"
   description  = "interconnect-b-ew8 vlan attachment 0"
   interconnect = "interconnect-b-ew8"
   peer_asn     = "65000"
@@ -176,18 +177,17 @@ module "example-va-b-ew8" {
     create = false
     name   = google_compute_router.interconnect-router-ew8.id
   }
-  vlan_tag              = 1002
+  vlan_tag = 1002
 }
 
-
 module "example-va-a-ew12" {
-  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
+  source       = "./fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west12"
   name         = "vlan-attachment-a-ew12"
   bandwidth    = "BPS_10G"
-  bgp_range     = "169.254.1.0/30" 
+  bgp_range    = "169.254.1.0/30"
   description  = "interconnect-a-ew12 vlan attachment 0"
   interconnect = "interconnect-a-ew12"
   peer_asn     = "65000"
@@ -195,17 +195,17 @@ module "example-va-a-ew12" {
     create = false
     name   = google_compute_router.interconnect-router-ew12.id
   }
-  vlan_tag              = 1003
+  vlan_tag = 1003
 }
 
 module "example-va-b-ew12" {
-  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
+  source       = "./fabric/modules/net-dedicated-vlan-attachment"
   network      = "mynet"
   project_id   = "myproject"
   region       = "europe-west12"
   name         = "vlan-attachment-b-ew12"
   bandwidth    = "BPS_10G"
-  bgp_range     = "169.254.1.4/30" 
+  bgp_range    = "169.254.1.4/30"
   description  = "interconnect-b-ew12 vlan attachment 0"
   interconnect = "interconnect-b-ew12"
   peer_asn     = "65000"
@@ -213,8 +213,9 @@ module "example-va-b-ew12" {
     create = false
     name   = google_compute_router.interconnect-router-ew12.id
   }
-  vlan_tag              = 1004
+  vlan_tag = 1004
 }
+# tftest modules=4 resources=14
 ```
 
 ### IPSec over Interconnect enabled setup
@@ -229,50 +230,49 @@ resource "google_compute_router" "encrypted-interconnect-underlay-router-ew8" {
   region                        = "europe-west8"
   encrypted_interconnect_router = true
   bgp {
-    advertise_mode    = "DEFAULT"    
-    asn               = 64514
+    advertise_mode = "DEFAULT"
+    asn            = 64514
   }
 }
 
 module "example-va-a" {
-  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
+  source       = "./fabric/modules/net-dedicated-vlan-attachment"
   project_id   = "myproject"
   network      = "mynet"
   region       = "europe-west8"
   name         = "encrypted-vlan-attachment-a"
   bandwidth    = "BPS_10G"
-  bgp_range     = "169.254.0.0/30" 
+  bgp_range    = "169.254.0.0/30"
   description  = "example-va-a vlan attachment"
   interconnect = "interconnect-a"
   peer_asn     = "65001"
   router_config = {
     create = false
-    name = google_compute_router.encrypted-interconnect-underlay-router-ew8.id
+    name   = google_compute_router.encrypted-interconnect-underlay-router-ew8.id
   }
   vlan_tag              = 1001
   vpn_gateways_ip_range = "10.255.255.0/30" # Allows for up to 4 tunnels
 }
 
 module "example-va-b" {
-  source       = "../cloud-foundation-fabric/modules/net-dedicated-vlan-attachment"
+  source       = "./fabric/modules/net-dedicated-vlan-attachment"
   project_id   = "myproject"
   network      = "mynet"
   region       = "europe-west8"
   name         = "encrypted-vlan-attachment-b"
   bandwidth    = "BPS_10G"
-  bgp_range     = "169.254.0.4/30" 
+  bgp_range    = "169.254.0.4/30"
   description  = "example-va-b vlan attachment"
   interconnect = "interconnect-b"
   peer_asn     = "65001"
   router_config = {
     create = false
-    name = google_compute_router.encrypted-interconnect-underlay-router-ew8.id
+    name   = google_compute_router.encrypted-interconnect-underlay-router-ew8.id
   }
   vlan_tag              = 1002
   vpn_gateways_ip_range = "10.255.255.4/30" # Allows for up to 4 tunnels
 }
-
-
+# tftest modules=2 resources=9
 ```
 <!-- BEGIN TFDOC -->
 

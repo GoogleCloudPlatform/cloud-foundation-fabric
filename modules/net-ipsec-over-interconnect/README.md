@@ -8,6 +8,7 @@ The required pair of encrypted VLAN Attachments can be created leveraging the [n
 
 ### Single region setup
 
+```hcl
 resource "google_compute_router" "encrypted-interconnect-overlay-router" {
   name    = "encrypted-interconnect-overlay-router"
   project = "myproject"
@@ -42,7 +43,7 @@ resource "google_compute_external_vpn_gateway" "default" {
 }
 
 module "vpngw-a" {
-  source     = "../cloud-foundation-fabric/modules/net-ipsec-over-interconnect"
+  source     = "./fabric/modules/net-ipsec-over-interconnect"
   project_id = "myproject"
   network    = "mynet"
   region     = "europe-west8"
@@ -51,7 +52,7 @@ module "vpngw-a" {
     a = "attach-01"
     b = "attach-02"
   }
-  peer_gateway_id_config = {
+  peer_gateway_config = {
     create = false
     id     = google_compute_external_vpn_gateway.default.id
   }
@@ -98,6 +99,8 @@ module "vpngw-a" {
     }
   }
 }
+# tftest modules=1 resources=16
+```
 <!-- BEGIN TFDOC -->
 
 ## Variables
