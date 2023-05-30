@@ -16,7 +16,7 @@
 
 output "name" {
   description = "The name of the VLAN attachment created."
-  value       = local.ipsec_enabled ? google_compute_interconnect_attachment.encrypted[0].name : google_compute_interconnect_attachment.unencrypted[0].name
+  value       = local.interconnect_attachment.name
 }
 
 output "id" {
