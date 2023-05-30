@@ -15,17 +15,15 @@
  */
 
 variable "automated_backup_policy" {
-  description = "The automated backup policy for this cluster. If no policy is provided then the default policy will be used. The default policy takes one backup a day, has a backup window of 1 hour, and retains backups for 14 days"
+  description = "The automated backup policy for this cluster."
   type = object({
     location      = optional(string)
     backup_window = optional(string)
     enabled       = optional(bool)
-
     weekly_schedule = optional(object({
       days_of_week = optional(list(string))
       start_times  = list(string)
     })),
-
     quantity_based_retention_count = optional(number)
     time_based_retention_count     = optional(string)
     labels                         = optional(map(string))
@@ -34,25 +32,25 @@ variable "automated_backup_policy" {
   default = null
 }
 variable "cluster_display_name" {
-  description = "Human readable display name for the Alloy DB Cluster"
+  description = "Human readable display name for the Alloy DB Cluster."
   type        = string
   default     = null
 }
 variable "cluster_encryption_key_name" {
-  description = "The fully-qualified resource name of the KMS key for cluster encryption. Each Cloud KMS key is regionalized and has the following format: projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]"
+  description = "The fully-qualified resource name of the KMS key for cluster encryption."
   type        = string
   default     = null
 }
 variable "cluster_id" {
-  description = "The ID of the alloydb cluster"
+  description = "The ID of the alloydb cluster."
   type        = string
   validation {
     condition     = can(regex("^[a-z0-9-]+$", var.cluster_id))
-    error_message = "ERROR: Cluster ID must contain only Letters(lowercase), number, and hyphen"
+    error_message = "ERROR: Cluster ID must contain only Letters(lowercase), number, and hyphen."
   }
 }
 variable "cluster_initial_user" {
-  description = "Alloy DB Cluster Initial User Credentials"
+  description = "Alloy DB Cluster Initial User Credentials."
   type = object({
     user     = optional(string),
     password = string
@@ -60,7 +58,7 @@ variable "cluster_initial_user" {
   default = null
 }
 variable "cluster_labels" {
-  description = "User-defined labels for the alloydb cluster"
+  description = "User-defined labels for the alloydb cluster."
   type        = map(string)
   default     = {}
 }
@@ -92,11 +90,11 @@ variable "primary_instance" {
   })
   validation {
     condition     = can(regex("^(2|4|8|16|32|64)$", var.primary_instance.machine_cpu_count))
-    error_message = "cpu count must be one of [2 4 8 16 32 64]"
+    error_message = "cpu count must be one of [2 4 8 16 32 64]."
   }
   validation {
     condition     = can(regex("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$", var.primary_instance.instance_id))
-    error_message = "Primary Instance ID should satisfy the following pattern ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"
+    error_message = "Primary Instance ID should satisfy the following pattern ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$."
   }
 }
 variable "project_id" {
@@ -104,7 +102,7 @@ variable "project_id" {
   type        = string
 }
 variable "read_pool_instance" {
-  description = "List of Read Pool Instances to be created"
+  description = "List of Read Pool Instances to be created."
   type = list(object({
     instance_id       = string
     display_name      = string

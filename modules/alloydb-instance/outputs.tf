@@ -15,26 +15,26 @@
  */
 
 output "cluster" {
-  description = "Cluster created"
+  description = "Cluster created."
   value       = resource.google_alloydb_cluster.default.display_name
   sensitive   = true
 }
 output "cluster_id" {
-  description = "ID of the Alloy DB Cluster created"
+  description = "ID of the Alloy DB Cluster created."
   value       = google_alloydb_cluster.default.cluster_id
 }
 output "primary_instance" {
-  description = "Primary instance created"
+  description = "Primary instance created."
   value       = resource.google_alloydb_instance.primary.display_name
 }
 
 output "primary_instance_id" {
-  description = "ID of the primary instance created"
+  description = "ID of the primary instance created."
   value       = google_alloydb_instance.primary.instance_id
 }
 
 output "read_pool_instance_ids" {
-  description = "IDs of the read instances created"
+  description = "IDs of the read instances created."
   value = [
     for rd, details in google_alloydb_instance.read_pool : details.instance_id
   ]
