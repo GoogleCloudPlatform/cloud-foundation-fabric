@@ -4,8 +4,6 @@ This blueprint creates a complete HA VPN over Interconnect setup, which leverage
 
 This blueprint supports Dedicated Interconnect - in case Partner Interconnect is used instead (hence the VLAN Attachments are already created), simply refer to the [net-ipsec-over-interconnect](../../../modules/net-ipsec-over-interconnect/) module documentation.
 
-TODO(sruffilli): add a diagram
-
 ## Managed resources and services
 
 This blueprint creates two distinct sets of resources:
@@ -14,8 +12,8 @@ This blueprint creates two distinct sets of resources:
   - A Cloud Router dedicated to the underlay networking, which exchanges and routes the VPN gateways ranges
   - Two VLAN Attachments, each created from a distinct Dedicated Interconnect connected to two different EADs in the same Metro
 - Overlay
-  - foo
-  - bar
+  - A Cloud Router dedicated to the overlay networking, which exchanges and routes the overlay traffic (i.e. traffic from/to onprem)
+  - VPN gateways and tunnels according to the provided configuration.
 
 ## Prerequisites
 
@@ -46,5 +44,133 @@ The two Dedicated Interconnect connections should already exist, either in the s
 ## Test
 
 ```hcl
-TODO
+module "test" {
+  source = "../cloud-foundation-fabric/blueprints/networking/ha-vpn-over-interconnect"
+  network    = "mynet"
+  project_id = "myproject"
+  region     = "europe-west8"
+
+  overlay_config = {
+    gcp_bgp = {
+      asn = 65102
+      custom_advertise = {
+        all_subnets = true
+        ip_ranges = {
+          "10.0.0.0/8" = "default"
+        }
+      }
+    }
+    onprem_vpn_gateway = {
+      interfaces = ["172.16.0.1", "172.16.0.2"]
+    }
+    gateways = {
+      a = {
+        remote-0 = {
+          bgp_peer = {
+            address = "169.254.1.2"
+            asn     = 64514
+          }
+          bgp_session_range               = "169.254.1.1/30"
+          peer_external_gateway_interface = 0
+          shared_secret                   = "foobar"
+          vpn_gateway_interface           = 0
+        }
+        remote-1 = {
+          bgp_peer = {
+            address = "169.254.1.6"
+            asn     = 64514
+          }
+          bgp_session_range               = "169.254.1.5/30"
+          peer_external_gateway_interface = 0
+          shared_secret                   = "foobar"
+          vpn_gateway_interface           = 1
+        }
+        remote-2 = {
+          bgp_peer = {
+            address = "169.254.1.10"
+            asn     = 64514
+          }
+          bgp_session_range               = "169.254.1.9/30"
+          peer_external_gateway_interface = 1
+          shared_secret                   = "foobar"
+          vpn_gateway_interface           = 0
+        }
+        remote-3 = {
+          bgp_peer = {
+            address = "169.254.1.14"
+            asn     = 64514
+          }
+          bgp_session_range               = "169.254.1.13/30"
+          peer_external_gateway_interface = 1
+          shared_secret                   = "foobar"
+          vpn_gateway_interface           = 1
+        }
+      }
+      b = {
+        remote-0 = {
+          bgp_peer = {
+            address = "169.254.2.2"
+            asn     = 64514
+          }
+          bgp_session_range               = "169.254.2.1/30"
+          peer_external_gateway_interface = 0
+          shared_secret                   = "foobar"
+          vpn_gateway_interface           = 0
+        }
+        remote-1 = {
+          bgp_peer = {
+            address = "169.254.2.6"
+            asn     = 64514
+          }
+          bgp_session_range               = "169.254.2.5/30"
+          peer_external_gateway_interface = 0
+          shared_secret                   = "foobar"
+          vpn_gateway_interface           = 1
+        }
+        remote-2 = {
+          bgp_peer = {
+            address = "169.254.2.10"
+            asn     = 64514
+          }
+          bgp_session_range               = "169.254.2.9/30"
+          peer_external_gateway_interface = 1
+          shared_secret                   = "foobar"
+          vpn_gateway_interface           = 0
+        }
+        remote-3 = {
+          bgp_peer = {
+            address = "169.254.2.14"
+            asn     = 64514
+          }
+          bgp_session_range               = "169.254.2.13/30"
+          peer_external_gateway_interface = 1
+          shared_secret                   = "foobar"
+          vpn_gateway_interface           = 1
+        }
+      }
+    }
+  }
+
+  underlay_config = {
+    attachments = {
+      "a" = {
+        bgp_range              = "169.254.255.0/29"
+        interconnect_self_link = "https://www.googleapis.com/compute/v1/projects/gcpnetworking-hostproject/global/interconnects/interconnect-lab-sea26-zone1"
+        onprem_asn             = 65001
+        vlan_tag               = 1001
+        vpn_gateways_ip_range  = "10.255.255.0/29"
+      }
+      "b" = {
+        bgp_range              = "169.254.255.8/29"
+        interconnect_self_link = "https://www.googleapis.com/compute/v1/projects/gcpnetworking-hostproject/global/interconnects/interconnect-lab-sea26-zone2"
+        onprem_asn             = 65001
+        vlan_tag               = 1002
+        vpn_gateways_ip_range  = "10.255.255.8/29"
+      }
+    }
+    gcp_bgp = {
+      asn = 65002
+    }
+  }
+}
 ```
