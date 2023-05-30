@@ -57,26 +57,14 @@ output "self_link" {
   value       = google_compute_ha_vpn_gateway.default.self_link
 }
 
-output "tunnel_names" {
-  description = "VPN tunnel names."
+output "tunnels" {
+  description = "VPN tunnel resources."
   value = {
     for name in keys(var.tunnels) :
-    name => try(google_compute_vpn_tunnel.default[name].name, null)
+    name => {
+      self_link = google_compute_vpn_tunnel.default[name].self_link
+      name      = google_compute_vpn_tunnel.default[name].name
+      peer_ip   = google_compute_vpn_tunnel.default[name].peer_ip
+    }
   }
 }
-
-output "tunnel_self_links" {
-  description = "VPN tunnel self links."
-  value = {
-    for name in keys(var.tunnels) :
-    name => try(google_compute_vpn_tunnel.default[name].self_link, null)
-  }
-}
-
-# output "tunnels" {
-#   description = "VPN tunnel resources."
-#   value = {
-#     for name in keys(var.tunnels) :
-#     name => try(google_compute_vpn_tunnel.default[name], null)
-#   }
-# }

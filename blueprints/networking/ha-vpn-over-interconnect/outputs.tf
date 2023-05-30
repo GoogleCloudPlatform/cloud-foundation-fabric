@@ -14,34 +14,22 @@
  * limitations under the License.
  */
 
-output "overlay_router" {
-  description = "Underlay router resource."
-  value       = google_compute_router.encrypted-interconnect-overlay-router
-}
-
-output "underlay_router" {
-  description = "Underlay router resource."
-  value       = google_compute_router.encrypted-interconnect-underlay-router
-}
-
-output "vlan_attachments" {
-  description = "Link to the VLAN Attachment resources."
+output "underlay" {
+  description = "Setup for the underlay connection."
   value = {
-    a = module.va-a.attachment
-    b = module.va-a.attachment
-  }
-}
-
-output "vpn" {
-  description = "VPN configuration."
-  value = {
-    gcp_gateways = {
-      a = module.vpngw["a"]
+    a = {
+      vlan_attachment            = module.va-a.attachment.self_link
+      cloud_router_ip_address    = module.va-a.attachment.cloud_router_ip_address
+      cloud_router_asn           = var.underlay_config.gcp_bgp.asn
+      customer_router_ip_address = module.va-a.attachment.customer_router_ip_address
+      customer_router_asn        = var.underlay_config.attachments.a.onprem_asn
     }
-    onprem_gateway = {
-      id        = google_compute_external_vpn_gateway.default.id
-      interface = google_compute_external_vpn_gateway.default.interface
+    b = {
+      vlan_attachment            = module.va-b.attachment.self_link
+      cloud_router_ip_address    = module.va-b.attachment.cloud_router_ip_address
+      cloud_router_asn           = var.underlay_config.gcp_bgp.asn
+      customer_router_ip_address = module.va-b.attachment.customer_router_ip_address
+      customer_router_asn        = var.underlay_config.attachments.b.onprem_asn
     }
   }
 }
-
