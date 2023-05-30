@@ -95,14 +95,14 @@ variable "project_id" {
   type        = string
 }
 variable "network_name" {
-  type    = string
-  default = "multiple-readpool"
+  description = "The network name of the project in which to provision resources."
+  type        = string
+  default     = "multiple-readpool"
 }
 variable "network_self_link" {
   description = "Network ID where the AlloyDb cluster will be deployed."
   type        = string
 }
-
 variable "read_pool_instance" {
   description = "List of Read Pool Instances to be created"
   type = list(object({
