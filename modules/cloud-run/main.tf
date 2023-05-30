@@ -35,6 +35,17 @@ locals {
       "run.googleapis.com/ingress" = var.ingress_settings
     }
   )
+  _iam_run_invoker_members = concat(
+    lookup(var.iam, "roles/run.invoker", []),
+    var.eventarc_triggers.service_account_create ? ["serviceAccount:${local.trigger_service_account_email}"] : []
+  )
+  iam = merge(
+    var.iam,
+    length(local._iam_run_invoker_members) == 0 ? {} :
+    {
+      "roles/run.invoker" : local._iam_run_invoker_members
+    },
+  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   revision_annotations = merge(
     try(var.revision_annotations.autoscaling, null) == null ? {} : {
@@ -73,6 +84,17 @@ locals {
     )
     : var.service_account
   )
+  trigger_service_account_email = (
+    var.eventarc_triggers.service_account_create
+    ? (
+      length(google_service_account.trigger_service_account) > 0
+      ? google_service_account.trigger_service_account[0].email
+      # : google_service_account.trigger_service_account[0].email # : null
+      : null
+    )
+    : var.eventarc_triggers.service_account_email
+  )
+
   vpc_connector_create = var.vpc_connector_create != null
 }
 
@@ -288,7 +310,7 @@ resource "google_cloud_run_service" "service" {
 }
 
 resource "google_cloud_run_service_iam_binding" "binding" {
-  for_each = var.iam
+  for_each = local.iam
   project  = google_cloud_run_service.service.project
   location = google_cloud_run_service.service.location
   service  = google_cloud_run_service.service.name
@@ -326,6 +348,7 @@ resource "google_eventarc_trigger" "audit_log_triggers" {
       region  = google_cloud_run_service.service.location
     }
   }
+  service_account = local.trigger_service_account_email
 }
 
 resource "google_eventarc_trigger" "pubsub_triggers" {
@@ -348,4 +371,12 @@ resource "google_eventarc_trigger" "pubsub_triggers" {
       region  = google_cloud_run_service.service.location
     }
   }
+  service_account = local.trigger_service_account_email
+}
+
+resource "google_service_account" "trigger_service_account" {
+  count        = var.eventarc_triggers.service_account_create ? 1 : 0 # coalesce(try(var.eventarc_triggers.service_account_create, false), false) ? 1 : 0
+  project      = var.project_id
+  account_id   = "tf-cr-trigger-${var.name}"
+  display_name = "Terraform trigger for Cloud Run ${var.name}."
 }

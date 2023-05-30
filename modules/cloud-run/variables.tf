@@ -95,7 +95,9 @@ variable "eventarc_triggers" {
       method  = string
       service = string
     })), {})
-    pubsub = optional(map(string), {})
+    pubsub                 = optional(map(string), {})
+    service_account_email  = optional(string)
+    service_account_create = optional(bool, false)
   })
   default = {}
 }
