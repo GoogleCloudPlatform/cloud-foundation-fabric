@@ -808,8 +808,8 @@ All notable changes to this project will be documented in this file.
 - use `xpnServiceAdmin` (custom role) for stage 3 service accounts that need to attach to a shared VPC
 - simplify and standarize ourputs from each stage
 - standarize names of projects, service accounts and buckets
-- swtich to folder-level `xpnAdmin` and `xpnServiceAdmin`
-- moved networking projects to folder matching their enviroments
+- switch to folder-level `xpnAdmin` and `xpnServiceAdmin`
+- moved networking projects to folder matching their environments
 
 ## [13.0.0] - 2022-01-27
 

@@ -293,7 +293,7 @@ module "example-va-b" {
 | [bandwidth](variables.tf#L23) | The bandwidth assigned to the VLAN attachment (e.g. BPS_10G). | <code>string</code> |  | <code>&#34;BPS_10G&#34;</code> |
 | [bgp_range](variables.tf#L30) | The underlay link-local IP range (in CIDR notation). | <code>string</code> |  | <code>&#34;169.254.128.0&#47;29&#34;</code> |
 | [ipsec_gateway_ip_ranges](variables.tf#L46) | IPSec Gateway IP Ranges. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [mtu](variables.tf#L52) | The MTU associated to the VLAN attachemnt (1440 / 1500). | <code>number</code> |  | <code>1500</code> |
+| [mtu](variables.tf#L52) | The MTU associated to the VLAN attachment (1440 / 1500). | <code>number</code> |  | <code>1500</code> |
 | [vpn_gateways_ip_range](variables.tf#L109) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
 
 <!-- END TFDOC -->
