@@ -220,7 +220,7 @@ module "example-va-b-ew12" {
 
 ### IPSec over Interconnect enabled setup
 
-Refer to the [IoIC Blueprint](../../blueprints/networking/ha-vpn-over-interconnect/) for an all-encompassing example.
+Refer to the [HA VPN over Interconnect Blueprint](../../blueprints/networking/ha-vpn-over-interconnect/) for an all-encompassing example.
 
 ```hcl
 resource "google_compute_router" "encrypted-interconnect-underlay-router-ew8" {
@@ -251,7 +251,7 @@ module "example-va-a" {
     name   = google_compute_router.encrypted-interconnect-underlay-router-ew8.id
   }
   vlan_tag              = 1001
-  vpn_gateways_ip_range = "10.255.255.0/30" # Allows for up to 4 tunnels
+  vpn_gateways_ip_range = "10.255.255.0/29" # Allows for up to 8 tunnels
 }
 
 module "example-va-b" {
@@ -270,7 +270,7 @@ module "example-va-b" {
     name   = google_compute_router.encrypted-interconnect-underlay-router-ew8.id
   }
   vlan_tag              = 1002
-  vpn_gateways_ip_range = "10.255.255.4/30" # Allows for up to 4 tunnels
+  vpn_gateways_ip_range = "10.255.255.8/29" # Allows for up to 8 tunnels
 }
 # tftest modules=2 resources=9
 ```
