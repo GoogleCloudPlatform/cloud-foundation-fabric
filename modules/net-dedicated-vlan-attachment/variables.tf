@@ -50,7 +50,7 @@ variable "ipsec_gateway_ip_ranges" {
 }
 
 variable "mtu" {
-  description = "The MTU associated to the VLAN attachemnt (1440 / 1500)."
+  description = "The MTU associated to the VLAN attachment (1440 / 1500)."
   type        = number
   default     = "1500"
 }
