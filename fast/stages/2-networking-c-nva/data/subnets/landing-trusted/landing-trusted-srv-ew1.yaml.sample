@@ -1,0 +1,5 @@
+# skip boilerplate check
+
+region: europe-west1
+ip_cidr_range: 10.128.65.0/24
+description: Sample subnet in europe-west1 for servers in landing trusted

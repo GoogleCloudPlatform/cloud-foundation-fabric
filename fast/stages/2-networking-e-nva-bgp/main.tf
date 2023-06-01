@@ -19,13 +19,7 @@
 locals {
   custom_roles = coalesce(var.custom_roles, {})
   # combine all regions from variables and subnets
-  regions = distinct(concat(
-    values(var.regions),
-    values(module.dev-spoke-vpc.subnet_regions),
-    values(module.landing-trusted-vpc.subnet_regions),
-    values(module.landing-untrusted-vpc.subnet_regions),
-    values(module.prod-spoke-vpc.subnet_regions),
-  ))
+  regions = distinct(values(var.regions))
   service_accounts = {
     for k, v in coalesce(var.service_accounts, {}) :
     k => "serviceAccount:${v}" if v != null

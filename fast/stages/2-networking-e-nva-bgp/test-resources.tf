@@ -25,7 +25,7 @@
 #   name       = "test-vm-lnd-unt-primary-0"
 #   network_interfaces = [{
 #     network    = module.landing-untrusted-vpc.self_link
-#     subnetwork = module.landing-untrusted-vpc.subnet_self_links["${var.regions.primary}/landing-untrusted-default-${local.region_shortnames[var.regions.primary]}"]
+#     subnetwork = module.landing-untrusted-vpc.subnet_self_links[local.landing_subnet_ids.primary.untrusted]
 #   }]
 #   tags = ["primary", "ssh"]
 #   boot_disk = {
@@ -52,7 +52,7 @@
 #   name       = "test-vm-lnd-unt-secondary-0"
 #   network_interfaces = [{
 #     network    = module.landing-untrusted-vpc.self_link
-#     subnetwork = module.landing-untrusted-vpc.subnet_self_links["${var.regions.secondary}/landing-untrusted-default-${local.region_shortnames[var.regions.secondary]}"]
+#     subnetwork = module.landing-untrusted-vpc.subnet_self_links[local.landing_subnet_ids.secondary.untrusted]
 #   }]
 #   tags = ["secondary", "ssh"]
 #   boot_disk = {
@@ -81,7 +81,7 @@
 #   name       = "test-vm-lnd-tru-primary-0"
 #   network_interfaces = [{
 #     network    = module.landing-trusted-vpc.self_link
-#     subnetwork = module.landing-trusted-vpc.subnet_self_links["${var.regions.primary}/landing-trusted-default-${local.region_shortnames[var.regions.primary]}"]
+#     subnetwork = module.landing-trusted-vpc.subnet_self_links[local.landing_subnet_ids.primary.trusted]
 #   }]
 #   tags = ["primary", "ssh"]
 #   boot_disk = {
@@ -108,7 +108,7 @@
 #   name       = "test-vm-lnd-tru-secondary-0"
 #   network_interfaces = [{
 #     network    = module.landing-trusted-vpc.self_link
-#     subnetwork = module.landing-trusted-vpc.subnet_self_links["${var.regions.secondary}/landing-trusted-default-${local.region_shortnames[var.regions.secondary]}"]
+#     subnetwork = module.landing-trusted-vpc.subnet_self_links[local.landing_subnet_ids.secondary.trusted]
 #   }]
 #   tags = ["secondary", "ssh"]
 #   boot_disk = {

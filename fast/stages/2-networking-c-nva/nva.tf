@@ -41,10 +41,12 @@ locals {
   nva_locality = {
     for v in setproduct(keys(var.regions), local.nva_zones) :
     join("-", v) => {
-      name      = v.0
-      region    = var.regions[v.0]
-      shortname = local.region_shortnames[var.regions[v.0]]
-      zone      = v.1
+      name                    = v.0
+      region                  = var.regions[v.0]
+      shortname               = local.region_shortnames[var.regions[v.0]]
+      zone                    = v.1
+      subnetwork_id_untrusted = local.landing_subnet_ids[v.0].untrusted
+      subnetwork_id_trusted   = local.landing_subnet_ids[v.0].trusted
     }
   }
   nva_zones = ["b", "c"]
@@ -70,13 +72,13 @@ module "nva-template" {
   network_interfaces = [
     {
       network    = module.landing-untrusted-vpc.self_link
-      subnetwork = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${each.value.shortname}"]
+      subnetwork = module.landing-untrusted-vpc.subnet_self_links[each.value.subnetwork_id_untrusted]
       nat        = false
       addresses  = null
     },
     {
       network    = module.landing-trusted-vpc.self_link
-      subnetwork = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${each.value.shortname}"]
+      subnetwork = module.landing-trusted-vpc.subnet_self_links[each.value.subnetwork_id_trusted]
       nat        = false
       addresses  = null
     }
@@ -121,7 +123,7 @@ module "ilb-nva-untrusted" {
     for k, v in var.regions : k => {
       region    = v
       shortname = local.region_shortnames[v]
-      subnet    = "${v}/landing-untrusted-default-${local.region_shortnames[v]}"
+      subnet    = local.landing_subnet_ids[k].untrusted
     }
   }
   source        = "../../../modules/net-ilb"
@@ -152,7 +154,7 @@ module "ilb-nva-trusted" {
     for k, v in var.regions : k => {
       region    = v
       shortname = local.region_shortnames[v]
-      subnet    = "${v}/landing-trusted-default-${local.region_shortnames[v]}"
+      subnet    = local.landing_subnet_ids[k].trusted
     }
   }
   source        = "../../../modules/net-ilb"

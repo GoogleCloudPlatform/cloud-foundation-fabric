@@ -22,8 +22,8 @@ locals {
     southeast = "se"
   }
   _regions_cross = {
-    primary   = var.regions["secondary"]
-    secondary = var.regions["primary"]
+    primary   = "secondary"
+    secondary = "primary"
   }
   # only map when the first character would not work
   _region_geo = {

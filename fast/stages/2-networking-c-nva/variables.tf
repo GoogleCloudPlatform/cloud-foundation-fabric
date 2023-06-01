@@ -98,6 +98,31 @@ variable "gcp_ranges" {
   }
 }
 
+variable "landing_subnets_ip_cidrs" {
+  description = "Landing VPC IP CIDR ranges."
+  type = object({
+    primary = object({
+      untrusted = string
+      trusted   = string
+    })
+    secondary = object({
+      untrusted = string
+      trusted   = string
+    })
+  })
+  default = {
+    primary = {
+      untrusted = "10.128.0.0/24"
+      trusted   = "10.128.64.0/24"
+    }
+    secondary = {
+      untrusted = "10.128.32.0/24"
+      trusted   = "10.128.96.0/24"
+    }
+  }
+}
+
+
 variable "onprem_cidr" {
   description = "Onprem addresses in name => range format."
   type        = map(string)

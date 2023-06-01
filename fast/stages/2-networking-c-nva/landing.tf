@@ -16,6 +16,31 @@
 
 # tfdoc:file:description Landing VPC and related resources.
 
+locals {
+  landing_subnets = {
+    for k, v in var.regions : k => {
+      untrusted = {
+        name          = "landing-untrusted-default-${local.region_shortnames[v]}"
+        region        = v
+        ip_cidr_range = var.landing_subnets_ip_cidrs[k].untrusted
+        description   = "Default ${v} subnet for landing untrusted"
+      }
+      trusted = {
+        name          = "landing-trusted-default-${local.region_shortnames[v]}"
+        region        = v
+        ip_cidr_range = var.landing_subnets_ip_cidrs[k].trusted
+        description   = "Default ${v} subnet for landing trusted"
+      }
+    }
+  }
+  landing_subnet_ids = {
+    for k, v in local.landing_subnets : k => {
+      untrusted = "${v.untrusted.region}/${v.untrusted.name}"
+      trusted   = "${v.trusted.region}/${v.trusted.name}"
+    }
+  }
+}
+
 module "landing-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -57,6 +82,9 @@ module "landing-untrusted-vpc" {
     private    = false
     restricted = false
   }
+  subnets = [
+    for k in local.landing_subnets : k.untrusted
+  ]
   data_folder = "${var.factories_config.data_dir}/subnets/landing-untrusted"
 }
 
@@ -115,7 +143,6 @@ module "landing-trusted-vpc" {
   name                            = "prod-trusted-landing-0"
   delete_default_routes_on_create = true
   mtu                             = 1500
-  data_folder                     = "${var.factories_config.data_dir}/subnets/landing-trusted"
   dns_policy = {
     inbound = true
   }
@@ -124,6 +151,10 @@ module "landing-trusted-vpc" {
     private    = true
     restricted = true
   }
+  subnets = [
+    for k in local.landing_subnets : k.trusted
+  ]
+  data_folder = "${var.factories_config.data_dir}/subnets/landing-trusted"
 }
 
 module "landing-trusted-firewall" {
