@@ -1,6 +1,6 @@
 # HA VPN over Interconnect
 
-This blueprint creates a complete HA VPN over Interconnect setup, which leverages IPSec to encrypt all traffic transiting through purposedly-created VLAN Attachments.
+This blueprint creates a complete HA VPN over Interconnect setup, which leverages IPSec to encrypt all traffic transiting through purposely-created VLAN Attachments.
 
 This blueprint supports Dedicated Interconnect - in case Partner Interconnect is used instead (hence the VLAN Attachments are already created), simply refer to the [net-ipsec-over-interconnect](../../../modules/net-ipsec-over-interconnect/) module documentation.
 
