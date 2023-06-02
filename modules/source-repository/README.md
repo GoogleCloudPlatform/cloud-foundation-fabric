@@ -73,7 +73,7 @@ module "repo" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | Repository id. |  |
+| [id](outputs.tf#L17) | Fully qualified repository id. |  |
 | [name](outputs.tf#L22) | Repository name. |  |
 | [url](outputs.tf#L27) | Repository URL. |  |
 

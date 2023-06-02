@@ -147,7 +147,7 @@ module "vpn_ha" {
 | [bgp_peers](outputs.tf#L18) | BGP peer resources. |  |
 | [external_gateway](outputs.tf#L25) | External VPN gateway resource. |  |
 | [gateway](outputs.tf#L30) | VPN gateway resource (only if auto-created). |  |
-| [id](outputs.tf#L35) | Static gateway id. |  |
+| [id](outputs.tf#L35) | Fully qualified VPN gateway id. |  |
 | [name](outputs.tf#L42) | VPN gateway name (only if auto-created). . |  |
 | [random_secret](outputs.tf#L47) | Generated secret. |  |
 | [router](outputs.tf#L52) | Router resource (only if auto-created). |  |

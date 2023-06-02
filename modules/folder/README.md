@@ -358,7 +358,7 @@ module "folder" {
 | [firewall_policies](outputs.tf#L16) | Map of firewall policy resources created in this folder. |  |
 | [firewall_policy_id](outputs.tf#L21) | Map of firewall policy ids created in this folder. |  |
 | [folder](outputs.tf#L26) | Folder resource. |  |
-| [id](outputs.tf#L31) | Folder id. |  |
+| [id](outputs.tf#L31) | Fully qualified folder id. |  |
 | [name](outputs.tf#L40) | Folder name. |  |
 | [sink_writer_identities](outputs.tf#L45) | Writer identities created for each sink. |  |
 

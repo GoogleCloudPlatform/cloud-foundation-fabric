@@ -27,14 +27,9 @@ output "external_gateway" {
   value       = local.peer_gateway
 }
 
-output "gateway_id" {
-  description = "VPN gateway ID."
+output "id" {
+  description = "Fully qualified VPN gateway id."
   value       = google_compute_ha_vpn_gateway.default.id
-}
-
-output "gateway_self_link" {
-  description = "VPN gateway self_link."
-  value       = google_compute_ha_vpn_gateway.default.self_link
 }
 
 output "random_secret" {

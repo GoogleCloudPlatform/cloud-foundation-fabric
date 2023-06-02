@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,10 @@
  */
 
 output "id" {
-  description = "Fully qualified logging bucket id."
-  value = try(
-    google_logging_project_bucket_config.bucket.0.id,
-    google_logging_folder_bucket_config.bucket.0.id,
-    google_logging_organization_bucket_config.bucket.0.id,
-    google_logging_billing_account_bucket_config.bucket.0.id,
+  description = "Fully qualified firewall policy id."
+  value = (
+    var.region == null
+    ? try(google_compute_network_firewall_policy.default.id, null)
+    : try(google_compute_region_network_firewall_policy.default.id, null)
   )
 }

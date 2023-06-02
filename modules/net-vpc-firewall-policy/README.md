@@ -75,4 +75,10 @@ module "firewall-policy" {
 | [region](variables.tf#L110) | Policy region. Leave null for global policy. | <code>string</code> |  | <code>null</code> |
 | [target_vpcs](variables.tf#L116) | VPC ids to which this policy will be attached, in descriptive name => self link format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [id](outputs.tf#L17) | Fully qualified firewall policy id. |  |
+
 <!-- END TFDOC -->
