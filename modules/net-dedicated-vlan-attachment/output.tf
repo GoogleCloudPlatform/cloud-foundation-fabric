@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-output "name" {
-  description = "The name of the VLAN attachment created."
-  value       = google_compute_interconnect_attachment.default.name
-}
-
-output "id" {
-  description = "The id of the VLAN attachment created."
-  value       = google_compute_interconnect_attachment.default.id
-}
-
 output "attachment" {
   description = "VLAN Attachment resource"
   value       = google_compute_interconnect_attachment.default
+}
+
+output "id" {
+  description = "Fully qualified VLAN attachment id."
+  value       = google_compute_interconnect_attachment.default.id
+}
+
+output "name" {
+  description = "The name of the VLAN attachment created."
+  value       = google_compute_interconnect_attachment.default.name
 }
 
 output "router" {

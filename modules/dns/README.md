@@ -1,6 +1,6 @@
 # Google Cloud DNS Module
 
-This module allows simple management of Google Cloud DNS zones and records. It supports creating public, private, forwarding, peering, service directory and reverse-managed based zones.
+This module allows simple management of Google Cloud DNS zones and records. It supports creating public, private, forwarding, peering, service directory and reverse-managed based zones. To create inbound/outbound server policies, please have a look at the [net-vpc](../net-vpc/README.md) module.
 
 For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dns_managed_zone#dnssec_config).
 
@@ -143,9 +143,10 @@ module "public-dns" {
 |---|---|:---:|
 | [dns_keys](outputs.tf#L17) | DNSKEY and DS records of DNSSEC-signed managed zones. |  |
 | [domain](outputs.tf#L22) | The DNS zone domain. |  |
-| [name](outputs.tf#L27) | The DNS zone name. |  |
-| [name_servers](outputs.tf#L32) | The DNS zone name servers. |  |
-| [type](outputs.tf#L37) | The DNS zone type. |  |
-| [zone](outputs.tf#L42) | DNS zone resource. |  |
+| [id](outputs.tf#L27) | Fully qualified zone id. |  |
+| [name](outputs.tf#L32) | The DNS zone name. |  |
+| [name_servers](outputs.tf#L37) | The DNS zone name servers. |  |
+| [type](outputs.tf#L42) | The DNS zone type. |  |
+| [zone](outputs.tf#L47) | DNS zone resource. |  |
 
 <!-- END TFDOC -->

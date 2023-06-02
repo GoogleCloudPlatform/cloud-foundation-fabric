@@ -64,7 +64,7 @@ module "common-datacatalog" {
   tags       = var.data_catalog_tags
 }
 
-# To create KMS keys in the common projet: uncomment this section and assigne key links accondingly in local.service_encryption_keys variable
+# To create KMS keys in the common project: uncomment this section and assigne key links accondingly in local.service_encryption_keys variable
 
 # module "cmn-kms-0" {
 #   source     = "../../../modules/kms"

@@ -15,7 +15,7 @@
  */
 
 output "ids" {
-  description = "Secret ids keyed by secret_ids (names)."
+  description = "Fully qualified secret ids."
   value = {
     for k, v in google_secret_manager_secret.default : v.secret_id => v.id
   }

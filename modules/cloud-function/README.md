@@ -284,13 +284,14 @@ module "cf-http-two" {
 | [bucket_name](outputs.tf#L24) | Bucket name. |  |
 | [function](outputs.tf#L29) | Cloud function resources. |  |
 | [function_name](outputs.tf#L34) | Cloud function name. |  |
-| [service_account](outputs.tf#L39) | Service account resource. |  |
-| [service_account_email](outputs.tf#L44) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L49) | Service account email. |  |
-| [trigger_service_account](outputs.tf#L57) | Service account resource. |  |
-| [trigger_service_account_email](outputs.tf#L62) | Service account email. |  |
-| [trigger_service_account_iam_email](outputs.tf#L67) | Service account email. |  |
-| [uri](outputs.tf#L75) | Cloud function service uri. |  |
-| [vpc_connector](outputs.tf#L80) | VPC connector resource if created. |  |
+| [id](outputs.tf#L39) | Fully qualified function id. |  |
+| [service_account](outputs.tf#L44) | Service account resource. |  |
+| [service_account_email](outputs.tf#L49) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L54) | Service account email. |  |
+| [trigger_service_account](outputs.tf#L62) | Service account resource. |  |
+| [trigger_service_account_email](outputs.tf#L67) | Service account email. |  |
+| [trigger_service_account_iam_email](outputs.tf#L72) | Service account email. |  |
+| [uri](outputs.tf#L80) | Cloud function service uri. |  |
+| [vpc_connector](outputs.tf#L85) | VPC connector resource if created. |  |
 
 <!-- END TFDOC -->

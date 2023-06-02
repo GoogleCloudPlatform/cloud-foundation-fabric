@@ -20,12 +20,12 @@ output "endpoints" {
 }
 
 output "id" {
-  description = "Namespace id (short name)."
+  description = "Fully qualified namespace id."
   value       = google_service_directory_namespace.default.id
 }
 
 output "name" {
-  description = "Namespace name (long name)."
+  description = "Namespace name."
   value       = google_service_directory_namespace.default.name
 }
 

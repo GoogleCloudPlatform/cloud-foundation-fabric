@@ -15,7 +15,7 @@
  */
 
 output "id" {
-  description = "Keyring self link."
+  description = "Fully qualified keyring id."
   value       = local.keyring.id
   depends_on = [
     google_kms_key_ring_iam_binding.default
@@ -23,7 +23,7 @@ output "id" {
 }
 
 output "key_ids" {
-  description = "Key self links."
+  description = "Fully qualified key ids."
   value = {
     for name, resource in google_kms_crypto_key.default :
     name => resource.id

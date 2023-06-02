@@ -541,15 +541,16 @@ module "instance-group" {
 |---|---|:---:|
 | [external_ip](outputs.tf#L17) | Instance main interface external IP addresses. |  |
 | [group](outputs.tf#L26) | Instance group resource. |  |
-| [instance](outputs.tf#L31) | Instance resource. |  |
-| [internal_ip](outputs.tf#L36) | Instance main interface internal IP address. |  |
-| [internal_ips](outputs.tf#L44) | Instance interfaces internal IP addresses. |  |
-| [self_link](outputs.tf#L52) | Instance self links. |  |
-| [service_account](outputs.tf#L57) | Service account resource. |  |
-| [service_account_email](outputs.tf#L64) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L69) | Service account email. |  |
-| [template](outputs.tf#L77) | Template resource. |  |
-| [template_name](outputs.tf#L82) | Template name. |  |
+| [id](outputs.tf#L31) | Fully qualified instance id. |  |
+| [instance](outputs.tf#L36) | Instance resource. |  |
+| [internal_ip](outputs.tf#L41) | Instance main interface internal IP address. |  |
+| [internal_ips](outputs.tf#L49) | Instance interfaces internal IP addresses. |  |
+| [self_link](outputs.tf#L57) | Instance self links. |  |
+| [service_account](outputs.tf#L62) | Service account resource. |  |
+| [service_account_email](outputs.tf#L69) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L74) | Service account email. |  |
+| [template](outputs.tf#L82) | Template resource. |  |
+| [template_name](outputs.tf#L87) | Template name. |  |
 
 <!-- END TFDOC -->
 ## TODO

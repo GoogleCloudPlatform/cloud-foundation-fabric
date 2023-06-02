@@ -168,7 +168,7 @@ module "pubsub" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | Topic id. |  |
+| [id](outputs.tf#L17) | Fully qualified topic id. |  |
 | [schema](outputs.tf#L26) | Schema resource. |  |
 | [schema_id](outputs.tf#L31) | Schema resource id. |  |
 | [subscription_id](outputs.tf#L36) | Subscription ids. |  |

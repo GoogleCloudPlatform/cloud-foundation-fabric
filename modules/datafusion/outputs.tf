@@ -15,7 +15,7 @@
  */
 
 output "id" {
-  description = "DataFusion instance ID."
+  description = "Fully qualified instance id."
   value       = google_data_fusion_instance.default.id
 }
 

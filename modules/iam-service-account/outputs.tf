@@ -31,7 +31,7 @@ output "iam_email" {
 }
 
 output "id" {
-  description = "Service account id."
+  description = "Fully qualified service account id."
   value       = local.service_account_id_static
   depends_on = [
     data.google_service_account.service_account,

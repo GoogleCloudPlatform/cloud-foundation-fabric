@@ -101,8 +101,8 @@ module "kms" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | Keyring self link. |  |
-| [key_ids](outputs.tf#L25) | Key self links. |  |
+| [id](outputs.tf#L17) | Fully qualified keyring id. |  |
+| [key_ids](outputs.tf#L25) | Fully qualified key ids. |  |
 | [keyring](outputs.tf#L36) | Keyring resource. |  |
 | [keys](outputs.tf#L44) | Key resources. |  |
 | [location](outputs.tf#L52) | Keyring location. |  |

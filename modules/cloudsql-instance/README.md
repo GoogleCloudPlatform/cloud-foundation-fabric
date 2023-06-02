@@ -161,7 +161,6 @@ module "db" {
 }
 # tftest modules=1 resources=2 inventory=public-ip.yaml
 ```
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -198,8 +197,8 @@ module "db" {
 |---|---|:---:|
 | [connection_name](outputs.tf#L24) | Connection name of the primary instance. |  |
 | [connection_names](outputs.tf#L29) | Connection names of all instances. |  |
-| [id](outputs.tf#L37) | ID of the primary instance. |  |
-| [ids](outputs.tf#L42) | IDs of all instances. |  |
+| [id](outputs.tf#L37) | Fully qualified primary instance id. |  |
+| [ids](outputs.tf#L42) | Fully qualified ids of all instances. |  |
 | [instances](outputs.tf#L50) | Cloud SQL instance resources. | ✓ |
 | [ip](outputs.tf#L56) | IP address of the primary instance. |  |
 | [ips](outputs.tf#L61) | IP addresses of all instances. |  |

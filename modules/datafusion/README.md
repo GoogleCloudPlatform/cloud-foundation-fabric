@@ -58,7 +58,7 @@ module "datafusion" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | DataFusion instance ID. |  |
+| [id](outputs.tf#L17) | Fully qualified instance id. |  |
 | [ip_allocation](outputs.tf#L22) | IP range reserved for Data Fusion instance in case of a private instance. |  |
 | [resource](outputs.tf#L27) | DataFusion resource. |  |
 | [service_account](outputs.tf#L32) | DataFusion Service Account. |  |

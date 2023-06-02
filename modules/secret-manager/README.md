@@ -108,7 +108,7 @@ module "secret-manager" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [ids](outputs.tf#L17) | Secret ids keyed by secret_ids (names). |  |
+| [ids](outputs.tf#L17) | Fully qualified secret ids. |  |
 | [secrets](outputs.tf#L24) | Secret resources. |  |
 | [version_ids](outputs.tf#L29) | Version ids keyed by secret name : version name. |  |
 | [versions](outputs.tf#L36) | Secret versions. | ✓ |
