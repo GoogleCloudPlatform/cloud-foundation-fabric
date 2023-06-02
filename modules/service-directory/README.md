@@ -107,8 +107,8 @@ module "dns-sd" {
 | name | description | sensitive |
 |---|---|:---:|
 | [endpoints](outputs.tf#L17) | Endpoint resources. |  |
-| [id](outputs.tf#L22) | Namespace id (short name). |  |
-| [name](outputs.tf#L27) | Namespace name (long name). |  |
+| [id](outputs.tf#L22) | Fully qualified namespace id. |  |
+| [name](outputs.tf#L27) | Namespace name. |  |
 | [namespace](outputs.tf#L32) | Namespace resource. |  |
 | [service_id](outputs.tf#L40) | Service ids (short names). |  |
 | [service_names](outputs.tf#L50) | Service ids (long names). |  |

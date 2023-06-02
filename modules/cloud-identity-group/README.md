@@ -67,7 +67,7 @@ module "group" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | Group ID. |  |
+| [id](outputs.tf#L17) | Fully qualified group id. |  |
 | [name](outputs.tf#L22) | Group name. |  |
 
 <!-- END TFDOC -->

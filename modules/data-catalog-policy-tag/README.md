@@ -59,8 +59,8 @@ module "cmn-dc" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [tags](outputs.tf#L17) | Policy Tags. |  |
-| [taxonomy_id](outputs.tf#L22) | Taxonomy id. |  |
+| [id](outputs.tf#L17) | Fully qualified taxonomy id. |  |
+| [tags](outputs.tf#L22) | Policy Tags. |  |
 
 <!-- END TFDOC -->
 ## TODO

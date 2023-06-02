@@ -15,7 +15,7 @@
  */
 
 output "id" {
-  description = "Repository id."
+  description = "Fully qualified repository id."
   value       = google_sourcerepo_repository.default.id
 }
 

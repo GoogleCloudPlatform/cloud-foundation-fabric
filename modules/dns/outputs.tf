@@ -24,6 +24,11 @@ output "domain" {
   value       = try(local.zone.dns_name, null)
 }
 
+output "id" {
+  description = "Fully qualified zone id."
+  value       = try(local.zone.id, null)
+}
+
 output "name" {
   description = "The DNS zone name."
   value       = try(local.zone.name, null)

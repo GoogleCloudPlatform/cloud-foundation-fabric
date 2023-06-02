@@ -558,10 +558,11 @@ output "compute_robot" {
 | name | description | sensitive |
 |---|---|:---:|
 | [custom_roles](outputs.tf#L17) | Ids of the created custom roles. |  |
-| [name](outputs.tf#L25) | Project name. |  |
-| [number](outputs.tf#L37) | Project number. |  |
-| [project_id](outputs.tf#L54) | Project id. |  |
-| [service_accounts](outputs.tf#L73) | Product robot service accounts in project. |  |
-| [sink_writer_identities](outputs.tf#L89) | Writer identities created for each sink. |  |
+| [id](outputs.tf#L25) | Project id. |  |
+| [name](outputs.tf#L44) | Project name. |  |
+| [number](outputs.tf#L56) | Project number. |  |
+| [project_id](outputs.tf#L75) | Project id. |  |
+| [service_accounts](outputs.tf#L94) | Product robot service accounts in project. |  |
+| [sink_writer_identities](outputs.tf#L110) | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->

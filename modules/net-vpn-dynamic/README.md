@@ -74,13 +74,14 @@ module "vpn-dynamic" {
 |---|---|:---:|
 | [address](outputs.tf#L17) | VPN gateway address. |  |
 | [gateway](outputs.tf#L22) | VPN gateway resource. |  |
-| [name](outputs.tf#L27) | VPN gateway name. |  |
-| [random_secret](outputs.tf#L32) | Generated secret. |  |
-| [router](outputs.tf#L38) | Router resource (only if auto-created). |  |
-| [router_name](outputs.tf#L43) | Router name. |  |
-| [self_link](outputs.tf#L48) | VPN gateway self link. |  |
-| [tunnel_names](outputs.tf#L53) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L61) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L69) | VPN tunnel resources. |  |
+| [id](outputs.tf#L27) | Fully qualified VPN gateway id. |  |
+| [name](outputs.tf#L32) | VPN gateway name. |  |
+| [random_secret](outputs.tf#L37) | Generated secret. |  |
+| [router](outputs.tf#L43) | Router resource (only if auto-created). |  |
+| [router_name](outputs.tf#L48) | Router name. |  |
+| [self_link](outputs.tf#L53) | VPN gateway self link. |  |
+| [tunnel_names](outputs.tf#L58) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L66) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L74) | VPN tunnel resources. |  |
 
 <!-- END TFDOC -->

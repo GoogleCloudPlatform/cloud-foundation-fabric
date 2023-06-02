@@ -15,7 +15,7 @@
  */
 
 output "id" {
-  description = "Group ID."
+  description = "Fully qualified group id."
   value       = google_cloud_identity_group.group.id
 }
 

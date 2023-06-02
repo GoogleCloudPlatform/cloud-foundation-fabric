@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "id" {
+  description = "Fully qualified nodepool id."
+  value       = google_container_node_pool.nodepool.id
+}
+
 output "name" {
   description = "Nodepool name."
   value       = google_container_node_pool.nodepool.name

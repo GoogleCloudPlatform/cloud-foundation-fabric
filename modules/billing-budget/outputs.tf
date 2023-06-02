@@ -20,6 +20,6 @@ output "budget" {
 }
 
 output "id" {
-  description = "Budget ID."
+  description = "Fully qualified budget id."
   value       = google_billing_budget.budget.id
 }

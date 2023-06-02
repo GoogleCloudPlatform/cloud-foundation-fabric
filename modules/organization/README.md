@@ -505,11 +505,12 @@ module "org" {
 | [custom_roles](outputs.tf#L30) | Map of custom roles resources created in the organization. |  |
 | [firewall_policies](outputs.tf#L35) | Map of firewall policy resources created in the organization. |  |
 | [firewall_policy_id](outputs.tf#L40) | Map of firewall policy ids created in the organization. |  |
-| [network_tag_keys](outputs.tf#L45) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L54) | Tag value resources. |  |
-| [organization_id](outputs.tf#L62) | Organization id dependent on module resources. |  |
-| [sink_writer_identities](outputs.tf#L79) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L87) | Tag key resources. |  |
-| [tag_values](outputs.tf#L96) | Tag value resources. |  |
+| [id](outputs.tf#L45) | Fully qualified organization id. |  |
+| [network_tag_keys](outputs.tf#L62) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L71) | Tag value resources. |  |
+| [organization_id](outputs.tf#L81) | Organization id dependent on module resources. |  |
+| [sink_writer_identities](outputs.tf#L98) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L106) | Tag key resources. |  |
+| [tag_values](outputs.tf#L115) | Tag value resources. |  |
 
 <!-- END TFDOC -->

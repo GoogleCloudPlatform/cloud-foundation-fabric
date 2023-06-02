@@ -32,8 +32,15 @@ output "access_policy" {
   value       = try(google_access_context_manager_access_policy.default.0, null)
 }
 
+# TODO: deprecate in favor of id
+
 output "access_policy_name" {
   description = "Access policy name."
+  value       = local.access_policy
+}
+
+output "id" {
+  description = "Fully qualified access policy id."
   value       = local.access_policy
 }
 

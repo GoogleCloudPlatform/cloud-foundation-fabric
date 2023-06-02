@@ -75,6 +75,6 @@ module "bucket-billing-account" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | ID of the created bucket. |  |
+| [id](outputs.tf#L17) | Fully qualified logging bucket id. |  |
 
 <!-- END TFDOC -->
