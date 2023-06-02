@@ -32,13 +32,13 @@ variable "automated_backup_policy" {
   default = null
 }
 
-variable "cluster_display_name" {
+variable "display_name" {
   description = "Human readable display name for the Alloy DB Cluster."
   type        = string
   default     = null
 }
 
-variable "cluster_encryption_key_name" {
+variable "encryption_key_name" {
   description = "The fully-qualified resource name of the KMS key for cluster encryption."
   type        = string
   default     = null
@@ -53,7 +53,7 @@ variable "cluster_id" {
   }
 }
 
-variable "cluster_initial_user" {
+variable "initial_user" {
   description = "Alloy DB Cluster Initial User Credentials."
   type = object({
     user     = optional(string),
@@ -62,16 +62,16 @@ variable "cluster_initial_user" {
   default = null
 }
 
-variable "cluster_labels" {
+variable "labels" {
   description = "User-defined labels for the alloydb cluster."
   type        = map(string)
   default     = {}
 }
 
-variable "cluster_location" {
+variable "location" {
   description = "Location where AlloyDb cluster will be deployed."
   type        = string
-  # default     = "us-central1"
+  default     = "europe-west2"
 }
 
 variable "network_name" {
@@ -85,7 +85,7 @@ variable "network_self_link" {
   type        = string
 }
 
-variable "primary_instance" {
+variable "primary_instance_config" {
   description = "Primary cluster configuration that supports read and write operations."
   type = object({
     instance_id       = string,
@@ -98,11 +98,11 @@ variable "primary_instance" {
     machine_cpu_count = optional(number, 2),
   })
   validation {
-    condition     = can(regex("^(2|4|8|16|32|64)$", var.primary_instance.machine_cpu_count))
+    condition     = can(regex("^(2|4|8|16|32|64)$", var.primary_instance_config.machine_cpu_count))
     error_message = "cpu count must be one of [2 4 8 16 32 64]."
   }
   validation {
-    condition     = can(regex("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$", var.primary_instance.instance_id))
+    condition     = can(regex("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$", var.primary_instance_config.instance_id))
     error_message = "Primary Instance ID should satisfy the following pattern ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$."
   }
 }

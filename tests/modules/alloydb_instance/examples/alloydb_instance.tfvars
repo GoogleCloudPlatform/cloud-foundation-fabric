@@ -1,9 +1,9 @@
-project_id           = "myproject"
-cluster_id           = "alloydb-cluster-all"
-cluster_location     = "europe-west2"
-cluster_labels       = {}
-cluster_display_name = "alloydb-cluster-all"
-cluster_initial_user = {
+project_id   = "myproject"
+cluster_id   = "alloydb-cluster-all"
+location     = "europe-west2"
+labels       = {}
+display_name = "alloydb-cluster-all"
+initial_user = {
   user     = "alloydb-cluster-full",
   password = "alloydb-cluster-password"
 }
@@ -11,7 +11,7 @@ network_self_link = "projects/myproject/global/networks/default"
 
 automated_backup_policy = null
 
-primary_instance = {
+primary_instance_config = {
   instance_id       = "primary-instance-1",
   instance_type     = "PRIMARY",
   machine_cpu_count = 2,
