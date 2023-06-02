@@ -18,7 +18,7 @@ output "id" {
   description = "Fully qualified firewall policy id."
   value = (
     var.region == null
-    ? try(google_compute_network_firewall_policy.default.id, null)
-    : try(google_compute_region_network_firewall_policy.default.id, null)
+    ? try(google_compute_network_firewall_policy.default.0.id, null)
+    : try(google_compute_region_network_firewall_policy.default.0.id, null)
   )
 }
