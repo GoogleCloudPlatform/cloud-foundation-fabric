@@ -513,16 +513,17 @@ module "vpc" {
 | name | description | sensitive |
 |---|---|:---:|
 | [bindings](outputs.tf#L17) | Subnet IAM bindings. |  |
-| [name](outputs.tf#L22) | The name of the VPC being created. |  |
-| [network](outputs.tf#L34) | Network resource. |  |
-| [project_id](outputs.tf#L46) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
-| [self_link](outputs.tf#L59) | The URI of the VPC being created. |  |
-| [subnet_ips](outputs.tf#L71) | Map of subnet address ranges keyed by name. |  |
-| [subnet_regions](outputs.tf#L78) | Map of subnet regions keyed by name. |  |
-| [subnet_secondary_ranges](outputs.tf#L85) | Map of subnet secondary ranges keyed by name. |  |
-| [subnet_self_links](outputs.tf#L96) | Map of subnet self links keyed by name. |  |
-| [subnets](outputs.tf#L102) | Subnet resources. |  |
-| [subnets_proxy_only](outputs.tf#L107) | L7 ILB or L7 Regional LB subnet resources. |  |
-| [subnets_psc](outputs.tf#L112) | Private Service Connect subnet resources. |  |
+| [id](outputs.tf#L22) | Fully qualified network id. |  |
+| [name](outputs.tf#L34) | Network name. |  |
+| [network](outputs.tf#L46) | Network resource. |  |
+| [project_id](outputs.tf#L58) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
+| [self_link](outputs.tf#L71) | Network self link. |  |
+| [subnet_ips](outputs.tf#L83) | Map of subnet address ranges keyed by name. |  |
+| [subnet_regions](outputs.tf#L90) | Map of subnet regions keyed by name. |  |
+| [subnet_secondary_ranges](outputs.tf#L97) | Map of subnet secondary ranges keyed by name. |  |
+| [subnet_self_links](outputs.tf#L108) | Map of subnet self links keyed by name. |  |
+| [subnets](outputs.tf#L113) | Subnet resources. |  |
+| [subnets_proxy_only](outputs.tf#L118) | L7 ILB or L7 Regional LB subnet resources. |  |
+| [subnets_psc](outputs.tf#L123) | Private Service Connect subnet resources. |  |
 
 <!-- END TFDOC -->

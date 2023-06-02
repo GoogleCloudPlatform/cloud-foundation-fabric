@@ -40,3 +40,12 @@ output "health_check" {
     : google_compute_health_check.default.0
   )
 }
+
+output "id" {
+  description = "Fully qualified group manager id."
+  value = try(
+    google_compute_instance_group_manager.default.0.id,
+    google_compute_region_instance_group_manager.default.0.id,
+    null
+  )
+}

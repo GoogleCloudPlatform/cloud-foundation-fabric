@@ -36,6 +36,11 @@ output "function_name" {
   value       = local.function.name
 }
 
+output "id" {
+  description = "Fully qualified function id."
+  value       = local.function.id
+}
+
 output "service_account" {
   description = "Service account resource."
   value       = try(google_service_account.service_account[0], null)

@@ -29,6 +29,6 @@ module "container_registry" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [bucket_id](outputs.tf#L17) | ID of the GCS bucket created. |  |
+| [id](outputs.tf#L17) | Fully qualified id of the registry bucket. |  |
 
 <!-- END TFDOC -->

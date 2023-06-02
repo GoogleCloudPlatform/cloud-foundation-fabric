@@ -132,8 +132,9 @@ module "cluster-1-nodepool-1" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [name](outputs.tf#L17) | Nodepool name. |  |
-| [service_account_email](outputs.tf#L22) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L27) | Service account email. |  |
+| [id](outputs.tf#L17) | Fully qualified nodepool id. |  |
+| [name](outputs.tf#L22) | Nodepool name. |  |
+| [service_account_email](outputs.tf#L27) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L32) | Service account email. |  |
 
 <!-- END TFDOC -->

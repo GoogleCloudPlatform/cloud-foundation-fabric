@@ -24,6 +24,11 @@ output "gateway" {
   value       = google_compute_vpn_gateway.gateway
 }
 
+output "id" {
+  description = "Fully qualified VPN gateway id."
+  value       = google_compute_vpn_gateway.gateway.id
+}
+
 output "name" {
   description = "VPN gateway name."
   value       = google_compute_vpn_gateway.gateway.name

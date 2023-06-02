@@ -26,7 +26,7 @@ output "bucket" {
 # assume any valid log destination has an `id` output).
 
 output "id" {
-  description = "Bucket ID (same as name)."
+  description = "Fully qualified bucket id."
   value       = "${local.prefix}${lower(var.name)}"
   depends_on = [
     google_storage_bucket.bucket,

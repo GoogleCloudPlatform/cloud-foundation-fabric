@@ -15,7 +15,7 @@
  */
 
 output "id" {
-  description = "Topic id."
+  description = "Fully qualified topic id."
   value       = local.topic_id_static
   depends_on = [
     google_pubsub_topic.default,

@@ -26,6 +26,11 @@ output "http_ports" {
   value       = google_dataproc_cluster.cluster.cluster_config.0.endpoint_config.0.http_ports
 }
 
+output "id" {
+  description = "Fully qualified cluster id."
+  value       = google_dataproc_cluster.cluster.id
+}
+
 output "instance_names" {
   description = "List of instance names which have been assigned to the cluster."
   value = {

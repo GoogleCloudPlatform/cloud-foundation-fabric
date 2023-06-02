@@ -52,11 +52,12 @@ module "vpn" {
 |---|---|:---:|
 | [address](outputs.tf#L17) | VPN gateway address. |  |
 | [gateway](outputs.tf#L22) | VPN gateway resource. |  |
-| [name](outputs.tf#L27) | VPN gateway name. |  |
-| [random_secret](outputs.tf#L32) | Generated secret. |  |
-| [self_link](outputs.tf#L37) | VPN gateway self link. |  |
-| [tunnel_names](outputs.tf#L42) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L50) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L58) | VPN tunnel resources. |  |
+| [id](outputs.tf#L27) | Fully qualified VPN gateway id. |  |
+| [name](outputs.tf#L32) | VPN gateway name. |  |
+| [random_secret](outputs.tf#L37) | Generated secret. |  |
+| [self_link](outputs.tf#L42) | VPN gateway self link. |  |
+| [tunnel_names](outputs.tf#L47) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L55) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L63) | VPN tunnel resources. |  |
 
 <!-- END TFDOC -->

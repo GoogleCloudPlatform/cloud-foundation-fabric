@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+output "id" {
+  description = "Fully qualified taxonomy id."
+  value       = google_data_catalog_taxonomy.default.id
+}
+
 output "tags" {
   description = "Policy Tags."
   value       = { for k, v in google_data_catalog_policy_tag.default : k => v.id }
-}
-
-output "taxonomy_id" {
-  description = "Taxonomy id."
-  value       = google_data_catalog_taxonomy.default.id
 }

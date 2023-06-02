@@ -15,7 +15,7 @@
  */
 
 output "id" {
-  description = "ID of the created bucket."
+  description = "Fully qualified logging bucket id."
   value = try(
     google_logging_project_bucket_config.bucket.0.id,
     google_logging_folder_bucket_config.bucket.0.id,

@@ -333,6 +333,6 @@ module "hub" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [cluster_ids](outputs.tf#L17) | Ids of all the clusters created. |  |
+| [cluster_ids](outputs.tf#L17) | Fully qualified ids of all clusters. |  |
 
 <!-- END TFDOC -->
