@@ -1,6 +1,6 @@
 # Google Cloud DNS Module
 
-This module allows simple management of Google Cloud DNS zones and records. It supports creating public, private, forwarding, peering, service directory and reverse-managed based zones.
+This module allows simple management of Google Cloud DNS zones and records. It supports creating public, private, forwarding, peering, service directory and reverse-managed based zones. To create inbound/outbound server policies, please have a look at the [net-vpc](../net-vpc/README.md) module.
 
 For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dns_managed_zone#dnssec_config).
 
