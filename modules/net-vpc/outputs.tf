@@ -20,7 +20,7 @@ output "bindings" {
 }
 
 output "id" {
-  description = "Network resource id."
+  description = "Fully qualified network id."
   value       = local.network.id
   depends_on = [
     google_compute_network_peering.local,

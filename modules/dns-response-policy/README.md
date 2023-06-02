@@ -142,7 +142,7 @@ restricted:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | Policy id. |  |
+| [id](outputs.tf#L17) | Fully qualified policy id. |  |
 | [name](outputs.tf#L22) | Policy name. |  |
 | [policy](outputs.tf#L27) | Policy resource. |  |
 

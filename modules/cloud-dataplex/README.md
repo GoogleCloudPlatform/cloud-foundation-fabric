@@ -68,7 +68,8 @@ module "dataplex" {
 | name | description | sensitive |
 |---|---|:---:|
 | [assets](outputs.tf#L17) | Assets attached to the lake of Dataplex Lake. |  |
-| [lake](outputs.tf#L22) | The lake name of Dataplex Lake. |  |
-| [zones](outputs.tf#L27) | The zone name of Dataplex Lake. |  |
+| [id](outputs.tf#L22) | Fully qualified Dataplex Lake id. |  |
+| [lake](outputs.tf#L27) | The lake name of Dataplex Lake. |  |
+| [zones](outputs.tf#L32) | The zone name of Dataplex Lake. |  |
 
 <!-- END TFDOC -->

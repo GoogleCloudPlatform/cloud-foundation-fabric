@@ -245,7 +245,7 @@ module "bigtable-instance" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | An identifier for the resource with format projects/{{project}}/instances/{{name}}. |  |
+| [id](outputs.tf#L17) | Fully qualified instance id. |  |
 | [instance](outputs.tf#L26) | BigTable intance. |  |
 | [table_ids](outputs.tf#L35) | Map of fully qualified table ids keyed by table name. |  |
 | [tables](outputs.tf#L40) | Table resources. |  |

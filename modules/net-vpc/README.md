@@ -513,7 +513,7 @@ module "vpc" {
 | name | description | sensitive |
 |---|---|:---:|
 | [bindings](outputs.tf#L17) | Subnet IAM bindings. |  |
-| [id](outputs.tf#L22) | Network resource id. |  |
+| [id](outputs.tf#L22) | Fully qualified network id. |  |
 | [name](outputs.tf#L34) | Network name. |  |
 | [network](outputs.tf#L46) | Network resource. |  |
 | [project_id](outputs.tf#L58) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |

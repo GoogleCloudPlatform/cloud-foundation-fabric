@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output "bucket_id" {
-  description = "ID of the GCS bucket created."
+output "id" {
+  description = "Fully qualified id of the registry bucket."
   value       = google_container_registry.registry.id
 }

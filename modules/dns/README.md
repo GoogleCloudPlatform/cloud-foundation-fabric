@@ -143,9 +143,10 @@ module "public-dns" {
 |---|---|:---:|
 | [dns_keys](outputs.tf#L17) | DNSKEY and DS records of DNSSEC-signed managed zones. |  |
 | [domain](outputs.tf#L22) | The DNS zone domain. |  |
-| [name](outputs.tf#L27) | The DNS zone name. |  |
-| [name_servers](outputs.tf#L32) | The DNS zone name servers. |  |
-| [type](outputs.tf#L37) | The DNS zone type. |  |
-| [zone](outputs.tf#L42) | DNS zone resource. |  |
+| [id](outputs.tf#L27) | Fully qualified zone id. |  |
+| [name](outputs.tf#L32) | The DNS zone name. |  |
+| [name_servers](outputs.tf#L37) | The DNS zone name servers. |  |
+| [type](outputs.tf#L42) | The DNS zone type. |  |
+| [zone](outputs.tf#L47) | DNS zone resource. |  |
 
 <!-- END TFDOC -->

@@ -23,7 +23,7 @@ output "attestors" {
 }
 
 output "id" {
-  description = "Binary Authorization policy ID."
+  description = "Fully qualified Binary Authorization policy ID."
   value       = google_binary_authorization_policy.policy.id
 }
 

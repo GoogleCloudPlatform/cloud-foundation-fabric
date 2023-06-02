@@ -15,7 +15,7 @@
  */
 
 output "id" {
-  description = "Policy id."
+  description = "Fully qualified policy id."
   value       = try(google_dns_response_policy.default.0.id, null)
 }
 
