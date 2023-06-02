@@ -62,13 +62,13 @@ module "alloydb" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [cluster_id](variables.tf#L47) | The ID of the alloydb cluster. | <code>string</code> | ✓ |  |
+| [cluster_id](variables.tf#L35) | The ID of the alloydb cluster. | <code>string</code> | ✓ |  |
 | [network_self_link](variables.tf#L83) | Network ID where the AlloyDb cluster will be deployed. | <code>string</code> | ✓ |  |
 | [primary_instance_config](variables.tf#L88) | Primary cluster configuration that supports read and write operations. | <code title="object&#40;&#123;&#10;  instance_id       &#61; string,&#10;  display_name      &#61; optional&#40;string&#41;,&#10;  database_flags    &#61; optional&#40;map&#40;string&#41;&#41;&#10;  labels            &#61; optional&#40;map&#40;string&#41;&#41;&#10;  annotations       &#61; optional&#40;map&#40;string&#41;&#41;&#10;  gce_zone          &#61; optional&#40;string&#41;&#10;  availability_type &#61; optional&#40;string&#41;&#10;  machine_cpu_count &#61; optional&#40;number, 2&#41;,&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L110) | The ID of the project in which to provision resources. | <code>string</code> | ✓ |  |
 | [automated_backup_policy](variables.tf#L17) | The automated backup policy for this cluster. | <code title="object&#40;&#123;&#10;  location      &#61; optional&#40;string&#41;&#10;  backup_window &#61; optional&#40;string&#41;&#10;  enabled       &#61; optional&#40;bool&#41;&#10;  weekly_schedule &#61; optional&#40;object&#40;&#123;&#10;    days_of_week &#61; optional&#40;list&#40;string&#41;&#41;&#10;    start_times  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;,&#10;  quantity_based_retention_count &#61; optional&#40;number&#41;&#10;  time_based_retention_count     &#61; optional&#40;string&#41;&#10;  labels                         &#61; optional&#40;map&#40;string&#41;&#41;&#10;  backup_encryption_key_name     &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [display_name](variables.tf#L35) | Human readable display name for the Alloy DB Cluster. | <code>string</code> |  | <code>null</code> |
-| [encryption_key_name](variables.tf#L41) | The fully-qualified resource name of the KMS key for cluster encryption. | <code>string</code> |  | <code>null</code> |
+| [display_name](variables.tf#L44) | Human readable display name for the Alloy DB Cluster. | <code>string</code> |  | <code>null</code> |
+| [encryption_key_name](variables.tf#L50) | The fully-qualified resource name of the KMS key for cluster encryption. | <code>string</code> |  | <code>null</code> |
 | [initial_user](variables.tf#L56) | Alloy DB Cluster Initial User Credentials. | <code title="object&#40;&#123;&#10;  user     &#61; optional&#40;string&#41;,&#10;  password &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [labels](variables.tf#L65) | User-defined labels for the alloydb cluster. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location](variables.tf#L71) | Location where AlloyDb cluster will be deployed. | <code>string</code> |  | <code>&#34;europe-west2&#34;</code> |

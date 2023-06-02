@@ -32,6 +32,15 @@ variable "automated_backup_policy" {
   default = null
 }
 
+variable "cluster_id" {
+  description = "The ID of the alloydb cluster."
+  type        = string
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.cluster_id))
+    error_message = "ERROR: Cluster ID must contain only Letters(lowercase), number, and hyphen."
+  }
+}
+
 variable "display_name" {
   description = "Human readable display name for the Alloy DB Cluster."
   type        = string
@@ -42,15 +51,6 @@ variable "encryption_key_name" {
   description = "The fully-qualified resource name of the KMS key for cluster encryption."
   type        = string
   default     = null
-}
-
-variable "cluster_id" {
-  description = "The ID of the alloydb cluster."
-  type        = string
-  validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.cluster_id))
-    error_message = "ERROR: Cluster ID must contain only Letters(lowercase), number, and hyphen."
-  }
 }
 
 variable "initial_user" {
