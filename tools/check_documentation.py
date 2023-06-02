@@ -132,7 +132,7 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
           ])
 
         elif nc := [o.name for o in newouts if not o.description.endswith('.')]:
-          state = state.FAIL_VARIABLE_PERIOD
+          state = state.FAIL_OUTPUT_PERIOD
           diff = "\n".join([
               f'----- {mod_name} output descriptions missing ending period -----',
               ', '.join(nc),

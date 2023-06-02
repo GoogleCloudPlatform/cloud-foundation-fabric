@@ -54,7 +54,7 @@ output "health_check_ids" {
 
 output "id" {
   description = "Fully qualified forwarding rule id."
-  google_compute_global_forwarding_rule.default.id
+  value       = google_compute_global_forwarding_rule.default.id
 }
 
 output "neg_ids" {
