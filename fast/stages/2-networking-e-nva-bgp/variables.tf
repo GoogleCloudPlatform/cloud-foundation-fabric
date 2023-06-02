@@ -14,6 +14,31 @@
  * limitations under the License.
  */
 
+variable "alert_config" {
+  description = "Configuration for monitoring alerts."
+  type = object({
+    vpn_tunnel_established = optional(object({
+      auto_close            = optional(string, null)
+      duration              = optional(string, "120s")
+      enabled               = optional(bool, true)
+      notification_channels = optional(list(string), [])
+      user_labels           = optional(map(string), {})
+    }))
+    vpn_tunnel_bandwidth = optional(object({
+      auto_close            = optional(string, null)
+      duration              = optional(string, "120s")
+      enabled               = optional(bool, true)
+      notification_channels = optional(list(string), [])
+      threshold_mbys        = optional(string, "187.5")
+      user_labels           = optional(map(string), {})
+    }))
+  })
+  default = {
+    vpn_tunnel_established = {}
+    vpn_tunnel_bandwidth   = {}
+  }
+}
+
 variable "automation" {
   # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
