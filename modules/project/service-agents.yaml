@@ -276,6 +276,7 @@
   service_agent: "service-%s@gcp-sa-networkmanagement.iam.gserviceaccount.com"
 - name: "networksecurity"
   service_agent: "service-%s@gcp-sa-networksecurity.iam.gserviceaccount.com"
+  jit: true
 - name: "networkservices"
   service_agent: "service-%s@gcp-sa-networkactions.iam.gserviceaccount.com"
 - name: "notebooks"
