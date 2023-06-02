@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 
 output "id" {
-  description = "Fully qualified id of the registry bucket."
-  value       = google_container_registry.registry.id
+  description = "Fully qualified firewall policy id."
+  value = (
+    var.region == null
+    ? try(google_compute_network_firewall_policy.default.0.id, null)
+    : try(google_compute_region_network_firewall_policy.default.0.id, null)
+  )
 }

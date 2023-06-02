@@ -444,5 +444,6 @@ module "nginx-mig" {
 | [autoscaler](outputs.tf#L17) | Auto-created autoscaler resource. |  |
 | [group_manager](outputs.tf#L26) | Instance group resource. |  |
 | [health_check](outputs.tf#L35) | Auto-created health-check resource. |  |
+| [id](outputs.tf#L44) | Fully qualified group manager id. |  |
 
 <!-- END TFDOC -->

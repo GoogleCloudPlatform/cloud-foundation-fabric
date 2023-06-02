@@ -146,7 +146,8 @@ module "spoke-ra" {
 | name | description | sensitive |
 |---|---|:---:|
 | [hub](outputs.tf#L17) | NCC hub resource (only if auto-created). |  |
-| [router](outputs.tf#L22) | Cloud Router resource. |  |
-| [spoke-ra](outputs.tf#L27) | NCC spoke resource. |  |
+| [id](outputs.tf#L22) | Fully qualified hub id. |  |
+| [router](outputs.tf#L27) | Cloud Router resource. |  |
+| [spoke-ra](outputs.tf#L32) | NCC spoke resource. |  |
 
 <!-- END TFDOC -->

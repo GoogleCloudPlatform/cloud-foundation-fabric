@@ -65,7 +65,7 @@ module "myproject-default-service-accounts" {
 |---|---|:---:|
 | [email](outputs.tf#L17) | Service account email. |  |
 | [iam_email](outputs.tf#L25) | IAM-format service account email. |  |
-| [id](outputs.tf#L33) | Service account id. |  |
+| [id](outputs.tf#L33) | Fully qualified service account id. |  |
 | [key](outputs.tf#L42) | Service account key. | ✓ |
 | [name](outputs.tf#L48) | Service account name. |  |
 | [service_account](outputs.tf#L57) | Service account resource. |  |

@@ -33,7 +33,7 @@ output "gateway" {
 }
 
 output "id" {
-  description = "Static gateway id."
+  description = "Fully qualified VPN gateway id."
   value = (
     "projects/${var.project_id}/regions/${var.region}/vpnGateways/${var.name}"
   )

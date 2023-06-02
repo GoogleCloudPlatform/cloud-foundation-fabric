@@ -15,7 +15,7 @@
  */
 
 locals {
-  _all_intances = merge(
+  _all_instances = merge(
     { primary = google_sql_database_instance.primary },
     google_sql_database_instance.replicas
   )
@@ -29,27 +29,27 @@ output "connection_name" {
 output "connection_names" {
   description = "Connection names of all instances."
   value = {
-    for id, instance in local._all_intances :
+    for id, instance in local._all_instances :
     id => instance.connection_name
   }
 }
 
 output "id" {
-  description = "ID of the primary instance."
+  description = "Fully qualified primary instance id."
   value       = google_sql_database_instance.primary.private_ip_address
 }
 
 output "ids" {
-  description = "IDs of all instances."
+  description = "Fully qualified ids of all instances."
   value = {
-    for id, instance in local._all_intances :
+    for id, instance in local._all_instances :
     id => instance.id
   }
 }
 
 output "instances" {
   description = "Cloud SQL instance resources."
-  value       = local._all_intances
+  value       = local._all_instances
   sensitive   = true
 }
 
@@ -61,7 +61,7 @@ output "ip" {
 output "ips" {
   description = "IP addresses of all instances."
   value = {
-    for id, instance in local._all_intances :
+    for id, instance in local._all_instances :
     id => instance.private_ip_address
   }
 }
@@ -74,7 +74,7 @@ output "name" {
 output "names" {
   description = "Names of all instances."
   value = {
-    for id, instance in local._all_intances :
+    for id, instance in local._all_instances :
     id => instance.name
   }
 }
@@ -93,7 +93,7 @@ output "self_link" {
 output "self_links" {
   description = "Self links of all instances."
   value = {
-    for id, instance in local._all_intances :
+    for id, instance in local._all_instances :
     id => instance.self_link
   }
 }

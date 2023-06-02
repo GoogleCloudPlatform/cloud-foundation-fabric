@@ -28,6 +28,11 @@ output "group" {
   value       = try(google_compute_instance_group.unmanaged.0, null)
 }
 
+output "id" {
+  description = "Fully qualified instance id."
+  value       = try(google_compute_instance.default.0.id, null)
+}
+
 output "instance" {
   description = "Instance resource."
   value       = try(google_compute_instance.default.0, null)

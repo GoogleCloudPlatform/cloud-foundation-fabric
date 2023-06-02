@@ -15,7 +15,7 @@
  */
 
 output "id" {
-  description = "An identifier for the resource with format projects/{{project}}/instances/{{name}}."
+  description = "Fully qualified instance id."
   value       = google_bigtable_instance.default.id
   depends_on = [
     google_bigtable_instance_iam_binding.default,

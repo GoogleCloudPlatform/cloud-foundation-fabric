@@ -80,10 +80,11 @@ module "nat" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [name](outputs.tf#L17) | Name of the Cloud NAT. |  |
-| [nat_ip_allocate_option](outputs.tf#L22) | NAT IP allocation mode. |  |
-| [region](outputs.tf#L27) | Cloud NAT region. |  |
-| [router](outputs.tf#L32) | Cloud NAT router resources (if auto created). |  |
-| [router_name](outputs.tf#L41) | Cloud NAT router name. |  |
+| [id](outputs.tf#L17) | Fully qualified NAT (router) id. |  |
+| [name](outputs.tf#L22) | Name of the Cloud NAT. |  |
+| [nat_ip_allocate_option](outputs.tf#L27) | NAT IP allocation mode. |  |
+| [region](outputs.tf#L32) | Cloud NAT region. |  |
+| [router](outputs.tf#L37) | Cloud NAT router resources (if auto created). |  |
+| [router_name](outputs.tf#L46) | Cloud NAT router name. |  |
 
 <!-- END TFDOC -->

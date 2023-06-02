@@ -217,8 +217,9 @@ module "test" {
 | [access_level_names](outputs.tf#L17) | Access level resources. |  |
 | [access_levels](outputs.tf#L25) | Access level resources. |  |
 | [access_policy](outputs.tf#L30) | Access policy resource, if autocreated. |  |
-| [access_policy_name](outputs.tf#L35) | Access policy name. |  |
-| [service_perimeters_bridge](outputs.tf#L40) | Bridge service perimeter resources. |  |
-| [service_perimeters_regular](outputs.tf#L45) | Regular service perimeter resources. |  |
+| [access_policy_name](outputs.tf#L37) | Access policy name. |  |
+| [id](outputs.tf#L42) | Fully qualified access policy id. |  |
+| [service_perimeters_bridge](outputs.tf#L47) | Bridge service perimeter resources. |  |
+| [service_perimeters_regular](outputs.tf#L52) | Regular service perimeter resources. |  |
 
 <!-- END TFDOC -->

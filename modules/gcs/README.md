@@ -119,7 +119,7 @@ module "bucket-gcs-notification" {
 | name | description | sensitive |
 |---|---|:---:|
 | [bucket](outputs.tf#L17) | Bucket resource. |  |
-| [id](outputs.tf#L28) | Bucket ID (same as name). |  |
+| [id](outputs.tf#L28) | Fully qualified bucket id. |  |
 | [name](outputs.tf#L37) | Bucket name. |  |
 | [notification](outputs.tf#L46) | GCS Notification self link. |  |
 | [topic](outputs.tf#L51) | Topic ID used by GCS. |  |

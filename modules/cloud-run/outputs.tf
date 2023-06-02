@@ -15,6 +15,11 @@
  * limitations under the License.
  */
 
+output "id" {
+  description = "Fully qualified service id."
+  value       = google_cloud_run_service.service.id
+}
+
 output "service" {
   description = "Cloud Run service."
   value       = google_cloud_run_service.service

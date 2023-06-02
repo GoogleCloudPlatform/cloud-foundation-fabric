@@ -84,6 +84,6 @@ module "pubsub" {
 | name | description | sensitive |
 |---|---|:---:|
 | [budget](outputs.tf#L17) | Budget resource. |  |
-| [id](outputs.tf#L22) | Budget ID. |  |
+| [id](outputs.tf#L22) | Fully qualified budget id. |  |
 
 <!-- END TFDOC -->

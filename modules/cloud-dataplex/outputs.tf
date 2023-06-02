@@ -19,6 +19,11 @@ output "assets" {
   value       = local.zone_assets[*]["asset_name"]
 }
 
+output "id" {
+  description = "Fully qualified Dataplex Lake id."
+  value       = google_dataplex_lake.basic_lake.id
+}
+
 output "lake" {
   description = "The lake name of Dataplex Lake."
   value       = google_dataplex_lake.basic_lake.name

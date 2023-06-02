@@ -15,7 +15,7 @@
  */
 
 output "cluster_ids" {
-  description = "Ids of all the clusters created."
+  description = "Fully qualified ids of all clusters."
   value = {
     for k, v in google_gke_hub_membership.default : k => v.id
   }

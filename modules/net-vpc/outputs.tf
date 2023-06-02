@@ -19,8 +19,20 @@ output "bindings" {
   value       = { for k, v in google_compute_subnetwork_iam_binding.binding : k => v }
 }
 
+output "id" {
+  description = "Fully qualified network id."
+  value       = local.network.id
+  depends_on = [
+    google_compute_network_peering.local,
+    google_compute_network_peering.remote,
+    google_compute_shared_vpc_host_project.shared_vpc_host,
+    google_compute_shared_vpc_service_project.service_projects,
+    google_service_networking_connection.psa_connection
+  ]
+}
+
 output "name" {
-  description = "The name of the VPC being created."
+  description = "Network name."
   value       = local.network.name
   depends_on = [
     google_compute_network_peering.local,
@@ -57,7 +69,7 @@ output "project_id" {
 }
 
 output "self_link" {
-  description = "The URI of the VPC being created."
+  description = "Network self link."
   value       = local.network.self_link
   depends_on = [
     google_compute_network_peering.local,
@@ -98,7 +110,6 @@ output "subnet_self_links" {
   value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.self_link }
 }
 
-# TODO(ludoo): use input names as keys
 output "subnets" {
   description = "Subnet resources."
   value       = { for k, v in google_compute_subnetwork.subnetwork : k => v }

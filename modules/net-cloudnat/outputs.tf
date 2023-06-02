@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "id" {
+  description = "Fully qualified NAT (router) id."
+  value       = google_compute_router_nat.nat.id
+}
+
 output "name" {
   description = "Name of the Cloud NAT."
   value       = google_compute_router_nat.nat.name

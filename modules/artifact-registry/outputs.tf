@@ -15,7 +15,7 @@
  */
 
 output "id" {
-  description = "Repository id."
+  description = "Fully qualified repository id."
   value       = google_artifact_registry_repository.registry.id
 }
 
