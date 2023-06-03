@@ -1,0 +1,32 @@
+values:
+  module.ilb.google_compute_route.ilb["10.0.1.0/24"]:
+    description: Terraform-managed.
+    dest_range: 10.0.1.0/24
+    name: ilb-test-10-0-1-0-24
+    network: projects/xxx/global/networks/aaa
+    next_hop_gateway: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+  module.ilb.google_compute_route.ilb["10.0.2.0/24"]:
+    description: Terraform-managed.
+    dest_range: 10.0.2.0/24
+    name: ilb-test-10-0-2-0-24
+    network: projects/xxx/global/networks/aaa
+    next_hop_gateway: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+
+counts:
+  google_compute_route: 2
+  modules: 1
+  resources: 6
+
+outputs: {}
