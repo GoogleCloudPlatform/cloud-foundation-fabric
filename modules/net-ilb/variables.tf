@@ -208,6 +208,16 @@ variable "region" {
   type        = string
 }
 
+variable "route_config" {
+  description = "Configuration for the route pointing to this ILB. Leave null to skip creating."
+  type = object({
+    dest_ranges = optional(list(string), [])
+    priority    = optional(number)
+    tags        = optional(list(string))
+  })
+  default = null
+}
+
 variable "service_label" {
   description = "Optional prefix of the fully qualified forwarding rule name."
   type        = string
