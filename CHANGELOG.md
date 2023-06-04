@@ -5,14 +5,35 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 <!-- None < 2023-05-24 17:31:22+00:00 -->
+- [[#1405](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1405)] Added comment in the dns module, saying that inbound/outbound server … ([apichick](https://github.com/apichick)) <!-- 2023-06-02 09:35:26+00:00 -->
+
+### BLUEPRINTS
+
+- [[#1410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1410)] **incompatible change:** Ensure all modules have an `id` output ([ludoo](https://github.com/ludoo)) <!-- 2023-06-02 14:07:23+00:00 -->
+- [[#1390](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1390)] HA VPN over Interconnect modules and blueprint ([sruffilli](https://github.com/sruffilli)) <!-- 2023-05-31 10:53:39+00:00 -->
+
+### DOCUMENTATION
+
+- [[#1407](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1407)] Multiple Updates in READMEs and wording ([bluPhy](https://github.com/bluPhy)) <!-- 2023-05-31 17:53:00+00:00 -->
+- [[#1390](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1390)] HA VPN over Interconnect modules and blueprint ([sruffilli](https://github.com/sruffilli)) <!-- 2023-05-31 10:53:39+00:00 -->
 
 ### FAST
 
+- [[#1414](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1414)] Bump GH TF version to coincide with module requirements ([davideasaf](https://github.com/davideasaf)) <!-- 2023-06-03 06:20:12+00:00 -->
 - [[#1400](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1400)] Add default googleapi route creation to net-vpc ([juliocc](https://github.com/juliocc)) <!-- 2023-05-26 15:50:00+00:00 -->
 
 ### MODULES
 
+- [[#1411](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1411)] Add networksecurity to JIT identity list ([rosmo](https://github.com/rosmo)) <!-- 2023-06-02 16:32:53+00:00 -->
+- [[#1410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1410)] **incompatible change:** Ensure all modules have an `id` output ([ludoo](https://github.com/ludoo)) <!-- 2023-06-02 14:07:23+00:00 -->
+- [[#1407](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1407)] Multiple Updates in READMEs and wording ([bluPhy](https://github.com/bluPhy)) <!-- 2023-05-31 17:53:00+00:00 -->
+- [[#1390](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1390)] HA VPN over Interconnect modules and blueprint ([sruffilli](https://github.com/sruffilli)) <!-- 2023-05-31 10:53:39+00:00 -->
+- [[#1404](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1404)] Add trigger SA for Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2023-05-30 15:08:37+00:00 -->
 - [[#1400](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1400)] Add default googleapi route creation to net-vpc ([juliocc](https://github.com/juliocc)) <!-- 2023-05-26 15:50:00+00:00 -->
+
+### TOOLS
+
+- [[#1410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1410)] **incompatible change:** Ensure all modules have an `id` output ([ludoo](https://github.com/ludoo)) <!-- 2023-06-02 14:07:23+00:00 -->
 
 ## [22.0.0] - 2023-05-24
 <!-- 2023-05-24 17:31:22+00:00 < 2023-03-24 12:44:02+00:00 -->
