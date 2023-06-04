@@ -14,7 +14,6 @@ One other issue is a `Provider produced inconsistent final plan` error which is 
 
 - [Referencing existing MIGs](#referencing-existing-migs)
 - [Externally manages instances](#externally-managed-instances)
-- [Routes](#routes)
 - [End to end example](#end-to-end-example)
 
 ### Referencing existing MIGs
@@ -107,49 +106,6 @@ module "ilb" {
   }
 }
 # tftest modules=1 resources=4
-```
-
-### Routes
-
-When ILBs are used in front appliances there's often the need of creating routes with the ILB as next hop.
-
-This is problematic when using the VPC module in the same Terraform setup, as the VPC module's output depend on routes and the routes need to depend on the forwarding rule, creating a circular dependency.
-
-This module allows creation of routes that use the ILB as next hop, breaking the circular dependency.
-
-```hcl
-module "ilb" {
-  source        = "./fabric/modules/net-ilb"
-  project_id    = var.project_id
-  region        = "europe-west1"
-  name          = "ilb-test"
-  service_label = "ilb-test"
-  vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
-  }
-  group_configs = {
-    my-group = {
-      zone = "europe-west1-b"
-      instances = [
-        "instance-1-self-link",
-        "instance-2-self-link"
-      ]
-    }
-  }
-  backends = [{
-    group = module.ilb.groups.my-group.self_link
-  }]
-  health_check_config = {
-    http = {
-      port = 80
-    }
-  }
-  route_config = {
-    dest_ranges = ["10.0.1.0/24", "10.0.2.0/24"]
-  }
-}
-# tftest modules=1 resources=6 inventory=routes.yaml
 ```
 
 ### End to end example

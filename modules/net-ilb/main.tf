@@ -113,15 +113,3 @@ resource "google_compute_region_backend_service" "default" {
   }
 
 }
-
-resource "google_compute_route" "ilb" {
-  for_each     = local.routes
-  project      = var.project_id
-  network      = var.vpc_config.network
-  name         = "${var.name}-${each.value}"
-  description  = "Terraform-managed."
-  dest_range   = each.key
-  priority     = var.route_config.priority
-  tags         = var.route_config.tags
-  next_hop_ilb = google_compute_forwarding_rule.default.id
-}
