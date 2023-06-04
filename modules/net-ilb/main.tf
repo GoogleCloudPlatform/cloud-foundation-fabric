@@ -23,10 +23,6 @@ locals {
     ? var.health_check
     : google_compute_health_check.default.0.self_link
   )
-  routes = {
-    for r in try(var.route_config.dest_ranges, []) :
-    r => replace(replace(r, "/", "-"), ".", "-")
-  }
 }
 
 resource "google_compute_forwarding_rule" "default" {
