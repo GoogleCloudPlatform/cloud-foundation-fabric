@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-/*
-
-To configure a network load balancer for IP protocols other than TCP or UDP,
-you create a forwarding rule with protocol set to L3_DEFAULT. This forwarding
-rule points to a backend service with protocol set to UNSPECIFIED.
-
-*/
-
 locals {
   bs_conntrack = var.backend_service_config.connection_tracking
   bs_failover  = var.backend_service_config.failover_config
   health_check = (
     var.health_check != null
     ? var.health_check
-    : google_compute_health_check.default.0.self_link
+    : google_compute_region_health_check.default.0.self_link
   )
 }
 
@@ -44,8 +36,6 @@ resource "google_compute_forwarding_rule" "default" {
     google_compute_region_backend_service.default.self_link
   )
   load_balancing_scheme = "EXTERNAL"
-  network               = var.vpc_config.network
-  subnetwork            = var.vpc_config.subnetwork
   ports                 = var.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
   all_ports             = var.ports == null ? true : null
   labels                = var.labels
@@ -60,7 +50,6 @@ resource "google_compute_region_backend_service" "default" {
   description                     = var.description
   load_balancing_scheme           = "EXTERNAL"
   protocol                        = var.backend_service_config.protocol
-  network                         = var.vpc_config.network
   health_checks                   = [local.health_check]
   connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
   locality_lb_policy              = var.backend_service_config.locality_lb_policy

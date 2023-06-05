@@ -47,10 +47,6 @@ module "nlb" {
   project_id = var.project_id
   region     = "europe-west1"
   name       = "nlb-test"
-  vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
-  }
   backends = [{
     group = module.mig.group_manager.instance_group
   }]
@@ -73,10 +69,6 @@ module "nlb" {
   project_id = var.project_id
   region     = "europe-west1"
   name       = "nlb-test"
-  vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
-  }
   group_configs = {
     my-group = {
       zone = "europe-west1-b"
@@ -144,11 +136,7 @@ module "nlb" {
   project_id = var.project_id
   region     = "europe-west1"
   name       = "nlb-test"
-  vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
-  }
-  ports = [80]
+  ports      = [80]
   backends = [
     for z, mod in module.instance-group : {
       group = mod.group.self_link
@@ -171,7 +159,6 @@ module "nlb" {
 | [name](variables.tf#L186) | Name used for all resources. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L197) | Project id where resources will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L213) | GCP region. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L218) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [address](variables.tf#L17) | Optional IP address used for the forwarding rule. | <code>string</code> |  | <code>null</code> |
 | [backend_service_config](variables.tf#L23) | Backend service level configuration. | <code title="object&#40;&#123;&#10;  connection_draining_timeout_sec &#61; optional&#40;number&#41;&#10;  connection_tracking &#61; optional&#40;object&#40;&#123;&#10;    idle_timeout_sec          &#61; optional&#40;number&#41;&#10;    persist_conn_on_unhealthy &#61; optional&#40;string&#41;&#10;    track_per_session         &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  failover_config &#61; optional&#40;object&#40;&#123;&#10;    disable_conn_drain        &#61; optional&#40;bool&#41;&#10;    drop_traffic_if_unhealthy &#61; optional&#40;bool&#41;&#10;    ratio                     &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  locality_lb_policy &#61; optional&#40;string&#41;&#10;  log_sample_rate    &#61; optional&#40;number&#41;&#10;  port_name          &#61; optional&#40;string&#41;&#10;  protocol           &#61; optional&#40;string, &#34;UNSPECIFIED&#34;&#41;&#10;  session_affinity   &#61; optional&#40;string&#41;&#10;  timeout_sec        &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [backends](variables.tf#L72) | Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'. | <code title="list&#40;object&#40;&#123;&#10;  group       &#61; string&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  failover    &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |

@@ -214,12 +214,3 @@ variable "region" {
   description = "GCP region."
   type        = string
 }
-
-variable "vpc_config" {
-  description = "VPC-level configuration."
-  type = object({
-    network    = string
-    subnetwork = string
-  })
-  nullable = false
-}
