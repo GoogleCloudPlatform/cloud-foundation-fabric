@@ -88,6 +88,7 @@ variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via outputs."
   type = map(object({
     zone        = string
+    description = optional(string, "Terraform managed.")
     instances   = optional(list(string), [])
     named_ports = optional(map(number), {})
   }))
