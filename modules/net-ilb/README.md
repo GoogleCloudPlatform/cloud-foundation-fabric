@@ -183,7 +183,7 @@ module "ilb" {
 | [name](variables.tf#L184) | Name used for all resources. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L195) | Project id where resources will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L206) | GCP region. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L227) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vpc_config](variables.tf#L217) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [address](variables.tf#L17) | Optional IP address used for the forwarding rule. | <code>string</code> |  | <code>null</code> |
 | [backend_service_config](variables.tf#L23) | Backend service level configuration. | <code title="object&#40;&#123;&#10;  connection_draining_timeout_sec &#61; optional&#40;number&#41;&#10;  connection_tracking &#61; optional&#40;object&#40;&#123;&#10;    idle_timeout_sec          &#61; optional&#40;number&#41;&#10;    persist_conn_on_unhealthy &#61; optional&#40;string&#41;&#10;    track_per_session         &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  enable_subsetting &#61; optional&#40;bool&#41;&#10;  failover_config &#61; optional&#40;object&#40;&#123;&#10;    disable_conn_drain        &#61; optional&#40;bool&#41;&#10;    drop_traffic_if_unhealthy &#61; optional&#40;bool&#41;&#10;    ratio                     &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  log_sample_rate  &#61; optional&#40;number&#41;&#10;  session_affinity &#61; optional&#40;string&#41;&#10;  timeout_sec      &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [backends](variables.tf#L56) | Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'. | <code title="list&#40;object&#40;&#123;&#10;  group          &#61; string&#10;  balancing_mode &#61; optional&#40;string, &#34;CONNECTION&#34;&#41;&#10;  description    &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  failover       &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
@@ -195,8 +195,7 @@ module "ilb" {
 | [labels](variables.tf#L178) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ports](variables.tf#L189) | Comma-separated ports, leave null to use all ports. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [protocol](variables.tf#L200) | IP protocol used, defaults to TCP. | <code>string</code> |  | <code>&#34;TCP&#34;</code> |
-| [route_config](variables.tf#L211) | Configuration for the route pointing to this ILB. Leave null to skip creating. | <code title="object&#40;&#123;&#10;  dest_ranges &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  priority    &#61; optional&#40;number&#41;&#10;  tags        &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [service_label](variables.tf#L221) | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>null</code> |
+| [service_label](variables.tf#L211) | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
