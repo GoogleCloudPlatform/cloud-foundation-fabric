@@ -44,7 +44,7 @@ variable "prefix" {
 }
 
 variable "project_config" {
-  description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. If project is created, `var.prefix` will be used."
   type = object({
     billing_account_id = optional(string),
     parent             = string,
@@ -53,7 +53,7 @@ variable "project_config" {
   nullable = false
   validation {
     condition     = var.project_config.billing_account_id != null || var.project_config.project_id != null
-    error_message = "At least one of project_config.billing_account_id or var.project_config.project_ids should be set."
+    error_message = "At least one of project_config.billing_account_id or var.project_config.project_id should be set."
   }
 }
 

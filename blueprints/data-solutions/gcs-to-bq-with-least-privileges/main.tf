@@ -17,12 +17,14 @@ locals {
     "roles/iam.serviceAccountUser" = [
       module.service-account-orch.iam_email
     ]
+    "roles/iam.serviceAccountTokenCreator" = var.data_eng_principals
     # GCS roles
     "roles/storage.objectAdmin" = [
       module.service-account-df.iam_email,
       module.service-account-landing.iam_email
-    ],
+    ]
     # BigQuery roles
+    "roles/bigquery.admin" = var.data_eng_principals
     "roles/bigquery.dataOwner" = [
       module.service-account-df.iam_email
     ]
@@ -32,22 +34,16 @@ locals {
     "roles/bigquery.jobUser" = [
       module.service-account-bq.iam_email
     ]
+    # Compute
+    "roles/compute.viewer" = var.data_eng_principals
     # Dataflow roles
-    "roles/dataflow.admin" = [
-      module.service-account-orch.iam_email
-    ]
+    "roles/dataflow.admin" = concat(
+      [ module.service-account-orch.iam_email ],
+      var.data_eng_principals
+    )
+    "roles/dataflow.developer" = var.data_eng_principals
     "roles/dataflow.worker" = [
       module.service-account-df.iam_email,
-    ]
-  }
-  group_iam = {
-    for group in var.data_eng_principals :
-    group => [
-      "roles/bigquery.admin",
-      "roles/compute.viewer",
-      "roles/dataflow.admin",
-      "roles/dataflow.developer",
-      "roles/iam.serviceAccountTokenCreator"
     ]
   }
   network_subnet_selflink = try(
@@ -79,7 +75,6 @@ module "project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  group_iam    = local.group_iam
   iam          = var.project_config.billing_account_id != null ? local.iam : {}
   iam_additive = var.project_config.billing_account_id == null ? local.iam : {}
   shared_vpc_service_config = var.network_config.host_project == null ? null : {
