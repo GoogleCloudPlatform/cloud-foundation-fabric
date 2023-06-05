@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 <!-- None < 2023-05-24 17:31:22+00:00 -->
-- [[#1405](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1405)] Added comment in the dns module, saying that inbound/outbound server … ([apichick](https://github.com/apichick)) <!-- 2023-06-02 09:35:26+00:00 -->
 
 ### BLUEPRINTS
 
@@ -14,6 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1403](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1403)] add alloydb module ([prabhaarya](https://github.com/prabhaarya)) <!-- 2023-06-04 10:12:32+00:00 -->
 - [[#1407](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1407)] Multiple Updates in READMEs and wording ([bluPhy](https://github.com/bluPhy)) <!-- 2023-05-31 17:53:00+00:00 -->
 - [[#1390](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1390)] HA VPN over Interconnect modules and blueprint ([sruffilli](https://github.com/sruffilli)) <!-- 2023-05-31 10:53:39+00:00 -->
 
@@ -24,8 +24,11 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1415](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1415)] Add notice to net-ilb module on routes ([ludoo](https://github.com/ludoo)) <!-- 2023-06-05 07:40:34+00:00 -->
+- [[#1403](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1403)] add alloydb module ([prabhaarya](https://github.com/prabhaarya)) <!-- 2023-06-04 10:12:32+00:00 -->
 - [[#1411](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1411)] Add networksecurity to JIT identity list ([rosmo](https://github.com/rosmo)) <!-- 2023-06-02 16:32:53+00:00 -->
 - [[#1410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1410)] **incompatible change:** Ensure all modules have an `id` output ([ludoo](https://github.com/ludoo)) <!-- 2023-06-02 14:07:23+00:00 -->
+- [[#1405](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1405)] Added comment in the dns module, saying that inbound/outbound server … ([apichick](https://github.com/apichick)) <!-- 2023-06-02 09:35:26+00:00 -->
 - [[#1407](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1407)] Multiple Updates in READMEs and wording ([bluPhy](https://github.com/bluPhy)) <!-- 2023-05-31 17:53:00+00:00 -->
 - [[#1390](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1390)] HA VPN over Interconnect modules and blueprint ([sruffilli](https://github.com/sruffilli)) <!-- 2023-05-31 10:53:39+00:00 -->
 - [[#1404](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1404)] Add trigger SA for Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2023-05-30 15:08:37+00:00 -->
