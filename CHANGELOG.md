@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
+
+## [23.0.0] - 2023-06-05
+
 <!-- None < 2023-05-24 17:31:22+00:00 -->
 
 ### BLUEPRINTS
@@ -44,7 +47,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
-- [[#1389](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1389)] Bump requests from 2.28.1 to 2.31.0 in /blueprints/cloud-operations/network-dashboard/src ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-05-23 05:37:16+00:00 -->
+- [[#1389](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1389)] Bump requests from 2.28.1 to 2.31.0 in /blueprints/cloud-operations/network-dashboard/src ([dependabot[bot]](<https://github.com/dependabot[bot]>)) <!-- 2023-05-23 05:37:16+00:00 -->
 - [[#1388](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1388)] Firewall Validator fix target_service_accounts ref ([afda16](https://github.com/afda16)) <!-- 2023-05-22 14:49:38+00:00 -->
 - [[#1382](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1382)] chore: update mlops blueprint metadata ([bharathkkb](https://github.com/bharathkkb)) <!-- 2023-05-17 07:41:57+00:00 -->
 - [[#1380](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1380)] Minimal Data Platform - Make components optional ([lcaggio](https://github.com/lcaggio)) <!-- 2023-05-16 12:08:04+00:00 -->
@@ -193,8 +196,8 @@ All notable changes to this project will be documented in this file.
 - [[#1189](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1189)] Update healthchecker deps (dependabot alerts) ([averbuks](https://github.com/averbuks)) <!-- 2023-02-27 21:48:49+00:00 -->
 - [[#1184](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1184)] **incompatible change:** Allow multiple peer gateways in VPN HA module ([ludoo](https://github.com/ludoo)) <!-- 2023-02-27 10:19:00+00:00 -->
 - [[#1143](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1143)] Test blueprints from README files ([juliocc](https://github.com/juliocc)) <!-- 2023-02-27 08:57:41+00:00 -->
-- [[#1181](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1181)] Bump golang.org/x/sys from 0.0.0-20220310020820-b874c991c1a5 to 0.1.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-02-25 17:02:08+00:00 -->
-- [[#1180](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1180)] Bump golang.org/x/sys from 0.0.0-20220310020820-b874c991c1a5 to 0.1.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/restarter ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-02-25 16:47:56+00:00 -->
+- [[#1181](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1181)] Bump golang.org/x/sys from 0.0.0-20220310020820-b874c991c1a5 to 0.1.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/healthchecker ([dependabot[bot]](<https://github.com/dependabot[bot]>)) <!-- 2023-02-25 17:02:08+00:00 -->
+- [[#1180](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1180)] Bump golang.org/x/sys from 0.0.0-20220310020820-b874c991c1a5 to 0.1.0 in /blueprints/cloud-operations/unmanaged-instances-healthcheck/function/restarter ([dependabot[bot]](<https://github.com/dependabot[bot]>)) <!-- 2023-02-25 16:47:56+00:00 -->
 - [[#1175](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1175)] Serverless networking program ([juliodiez](https://github.com/juliodiez)) <!-- 2023-02-25 10:15:12+00:00 -->
 - [[#1179](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1179)] Added a PSC GCLB example ([cgrotz](https://github.com/cgrotz)) <!-- 2023-02-24 20:09:31+00:00 -->
 - [[#1165](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1165)] DataPlatform: Support project creation ([lcaggio](https://github.com/lcaggio)) <!-- 2023-02-23 11:10:44+00:00 -->
@@ -340,7 +343,7 @@ All notable changes to this project will be documented in this file.
 - [[#1119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1119)] **incompatible change:** Multi-Cluster Ingress gateway api config ([wiktorn](https://github.com/wiktorn)) <!-- 2023-01-31 13:16:52+00:00 -->
 - [[#1111](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1111)] **incompatible change:** In the apigee module now both the /22 and /28 peering IP ranges are p… ([apichick](https://github.com/apichick)) <!-- 2023-01-31 10:46:38+00:00 -->
 - [[#1106](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1106)] Network Dashboard: PSA support for Filestore and Memorystore ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2023-01-25 15:02:31+00:00 -->
-- [[#1110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1110)] Bump cookiejar from 2.1.3 to 2.1.4 in /blueprints/apigee/bigquery-analytics/functions/export ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-01-24 15:07:12+00:00 -->
+- [[#1110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1110)] Bump cookiejar from 2.1.3 to 2.1.4 in /blueprints/apigee/bigquery-analytics/functions/export ([dependabot[bot]](<https://github.com/dependabot[bot]>)) <!-- 2023-01-24 15:07:12+00:00 -->
 - [[#1097](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1097)] Use terraform resource to activate Anthos Service Mesh ([wiktorn](https://github.com/wiktorn)) <!-- 2023-01-23 08:25:31+00:00 -->
 - [[#1104](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1104)] Updated apigee hybrid for gke README ([apichick](https://github.com/apichick)) <!-- 2023-01-22 10:34:48+00:00 -->
 - [[#1107](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1107)] Check linting for Python dashboard files ([ludoo](https://github.com/ludoo)) <!-- 2023-01-21 16:17:52+00:00 -->
@@ -424,7 +427,7 @@ All notable changes to this project will be documented in this file.
 - [[#1045](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1045)] Assorted module fixes ([ludoo](https://github.com/ludoo)) <!-- 2022-12-10 14:40:15+00:00 -->
 - [[#1044](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1044)] **incompatible change:** Refactor net-glb module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-12-08 16:35:45+00:00 -->
 - [[#982](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/982)] Adding Secondary IP Utilization calculation ([brianhmj](https://github.com/brianhmj)) <!-- 2022-12-07 10:45:21+00:00 -->
-- [[#1037](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1037)] Bump qs and formidable in /blueprints/cloud-operations/apigee/functions/export ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2022-12-06 15:43:35+00:00 -->
+- [[#1037](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1037)] Bump qs and formidable in /blueprints/cloud-operations/apigee/functions/export ([dependabot[bot]](<https://github.com/dependabot[bot]>)) <!-- 2022-12-06 15:43:35+00:00 -->
 - [[#1034](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1034)] feat(blueprints): get audience from tfc environment variable ([Thomgrus](https://github.com/Thomgrus)) <!-- 2022-12-05 20:15:31+00:00 -->
 - [[#1024](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1024)] Fix Apigee PAYG environment node config ([g-greatdevaks](https://github.com/g-greatdevaks)) <!-- 2022-11-29 13:08:12+00:00 -->
 - [[#1019](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1019)] Added endpoint attachments to Apigee module ([apichick](https://github.com/apichick)) <!-- 2022-11-28 16:53:27+00:00 -->
