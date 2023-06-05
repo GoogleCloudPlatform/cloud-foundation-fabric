@@ -136,7 +136,7 @@ module "nlb" {
   project_id = var.project_id
   region     = "europe-west1"
   name       = "nlb-test"
-  ports = [80]
+  ports      = [80]
   backends = [
     for z, mod in module.instance-group : {
       group = mod.group.self_link
