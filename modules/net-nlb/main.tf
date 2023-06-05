@@ -49,7 +49,6 @@ resource "google_compute_forwarding_rule" "default" {
   ports                 = var.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
   all_ports             = var.ports == null ? true : null
   labels                = var.labels
-  service_label         = var.service_label
   # is_mirroring_collector = false
 }
 
@@ -59,18 +58,20 @@ resource "google_compute_region_backend_service" "default" {
   region                          = var.region
   name                            = var.name
   description                     = var.description
-  load_balancing_scheme           = "INTERNAL"
+  load_balancing_scheme           = "EXTERNAL"
   protocol                        = var.backend_service_config.protocol
   network                         = var.vpc_config.network
   health_checks                   = [local.health_check]
   connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
+  locality_lb_policy              = var.backend_service_config.locality_lb_policy
+  port_name                       = var.backend_service_config.port_name
   session_affinity                = var.backend_service_config.session_affinity
   timeout_sec                     = var.backend_service_config.timeout_sec
 
   dynamic "backend" {
     for_each = { for b in var.backends : b.group => b }
     content {
-      balancing_mode = backend.value.balancing_mode
+      balancing_mode = "CONNECTION"
       description    = backend.value.description
       failover       = backend.value.failover
       group          = backend.key
@@ -86,7 +87,11 @@ resource "google_compute_region_backend_service" "default" {
         : null
       )
       idle_timeout_sec = local.bs_conntrack.idle_timeout_sec
-      tracking_mode    = try(local.bs_conntrack.track_per_session ? "PER_SESSION" : "PER_CONNECTION", null)
+      tracking_mode = try(
+        local.bs_conntrack.track_per_session
+        ? "PER_SESSION"
+        : "PER_CONNECTION", null
+      )
     }
   }
 
@@ -106,12 +111,4 @@ resource "google_compute_region_backend_service" "default" {
       sample_rate = var.backend_service_config.log_sample_rate
     }
   }
-
-  dynamic "subsetting" {
-    for_each = var.backend_service_config.enable_subsetting == true ? [""] : []
-    content {
-      policy = "CONSISTENT_HASH_SUBSETTING"
-    }
-  }
-
 }

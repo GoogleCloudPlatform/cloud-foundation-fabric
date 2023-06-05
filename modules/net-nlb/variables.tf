@@ -29,24 +29,33 @@ variable "backend_service_config" {
       persist_conn_on_unhealthy = optional(string)
       track_per_session         = optional(bool)
     }))
-    enable_subsetting = optional(bool)
     failover_config = optional(object({
       disable_conn_drain        = optional(bool)
       drop_traffic_if_unhealthy = optional(bool)
       ratio                     = optional(number)
     }))
-    log_sample_rate  = optional(number)
-    protocol         = optional(string, "UNSPECIFIED")
-    session_affinity = optional(string)
-    timeout_sec      = optional(number)
+    locality_lb_policy = optional(string)
+    log_sample_rate    = optional(number)
+    port_name          = optional(string)
+    protocol           = optional(string, "UNSPECIFIED")
+    session_affinity   = optional(string)
+    timeout_sec        = optional(number)
   })
   default  = {}
   nullable = false
   validation {
     condition = contains(
-      ["TCP", "UDP", "UNSPECIFIED"], var.backend_service_config.protocol
+      ["TCP", "UDP", "UNSPECIFIED"],
+      coalesce(var.backend_service_config.protocol, "TCP")
     )
     error_message = "Protocol can be 'TCP', 'UDP', 'UNSPECIFIED'."
+  }
+  validation {
+    condition = contains(
+      ["MAGLEV", "WEIGHTED_MAGLEV"],
+      coalesce(var.backend_service_config.locality_lb_policy, "MAGLEV")
+    )
+    error_message = "Locality LB policy can be 'MAGLEV', 'WEIGHTED_MAGLEV'."
   }
   validation {
     condition = contains(
@@ -63,20 +72,12 @@ variable "backend_service_config" {
 variable "backends" {
   description = "Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'."
   type = list(object({
-    group          = string
-    balancing_mode = optional(string, "CONNECTION")
-    description    = optional(string, "Terraform managed.")
-    failover       = optional(bool, false)
+    group       = string
+    description = optional(string, "Terraform managed.")
+    failover    = optional(bool, false)
   }))
   default  = []
   nullable = false
-  validation {
-    condition = alltrue([
-      for b in var.backends : contains(
-        ["CONNECTION", "UTILIZATION"], coalesce(b.balancing_mode, "CONNECTION")
-    )])
-    error_message = "When specified balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
-  }
 }
 
 variable "description" {
@@ -212,12 +213,6 @@ variable "protocol" {
 variable "region" {
   description = "GCP region."
   type        = string
-}
-
-variable "service_label" {
-  description = "Optional prefix of the fully qualified forwarding rule name."
-  type        = string
-  default     = null
 }
 
 variable "vpc_config" {
