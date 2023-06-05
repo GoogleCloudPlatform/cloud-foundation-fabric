@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1417](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1417)] Remove hardcoded description from instance groups created under net-ilb ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-06-05 09:35:17+00:00 -->
 - [[#1415](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1415)] Add notice to net-ilb module on routes ([ludoo](https://github.com/ludoo)) <!-- 2023-06-05 07:40:34+00:00 -->
 - [[#1403](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1403)] add alloydb module ([prabhaarya](https://github.com/prabhaarya)) <!-- 2023-06-04 10:12:32+00:00 -->
 - [[#1411](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1411)] Add networksecurity to JIT identity list ([rosmo](https://github.com/rosmo)) <!-- 2023-06-02 16:32:53+00:00 -->
