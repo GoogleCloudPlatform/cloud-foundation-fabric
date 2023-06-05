@@ -21,7 +21,7 @@ resource "google_compute_instance_group" "unmanaged" {
   project     = var.project_id
   zone        = each.value.zone
   name        = each.key
-  description = "Terraform-managed."
+  description = each.value.description
   instances   = each.value.instances
   dynamic "named_port" {
     for_each = each.value.named_ports
