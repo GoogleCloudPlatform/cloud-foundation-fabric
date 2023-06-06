@@ -19,7 +19,7 @@ variable "cmek_encryption" {
 }
 
 variable "data_eng_principals" {
-  description = "Groups with Service Account Token creator role on service accounts, eg 'group@domain.com'."
+  description = "Groups with admin/developer role on enabled services and Service Account Token creator role on service accounts in IAM format, eg 'group:group@domain.com'."
   type        = list(string)
   default     = []
 }
