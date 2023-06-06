@@ -29,10 +29,8 @@ module "bucket" {
   parent      = var.project_id
   id          = "mybucket"
   log_analytics = {
-    enable = true
-    linked_dataset = {
-      link_id = "log"
-    }
+    enable          = true
+    dataset_link_id = "log"
   }
 }
 # tftest modules=1 resources=2 inventory=log_analytics.yaml
