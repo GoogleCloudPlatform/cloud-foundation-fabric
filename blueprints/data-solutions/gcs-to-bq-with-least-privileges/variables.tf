@@ -19,7 +19,7 @@ variable "cmek_encryption" {
 }
 
 variable "data_eng_principals" {
-  description = "Groups with Service Account Token creator role on service accounts in IAM format, eg 'group:group@domain.com'."
+  description = "Groups with admin/developer role on enabled services and Service Account Token creator role on service accounts in IAM format, eg 'group:group@domain.com'."
   type        = list(string)
   default     = []
 }
@@ -27,10 +27,11 @@ variable "data_eng_principals" {
 variable "network_config" {
   description = "Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values."
   type = object({
-    host_project     = string
-    subnet_self_link = string
+    host_project     = optional(string)
+    subnet_self_link = optional(string)
   })
-  default = null
+  nullable = false
+  default  = {}
 }
 
 variable "prefix" {
@@ -42,18 +43,18 @@ variable "prefix" {
   }
 }
 
-variable "project_create" {
-  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+variable "project_config" {
+  description = "Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. If project is created, `var.prefix` will be used."
   type = object({
-    billing_account_id = string
-    parent             = string
+    billing_account_id = optional(string),
+    parent             = string,
+    project_id         = optional(string, "gcs-df-bq")
   })
-  default = null
-}
-
-variable "project_id" {
-  description = "Project id, references existing project if `project_create` is null."
-  type        = string
+  nullable = false
+  validation {
+    condition     = var.project_config.billing_account_id != null || var.project_config.project_id != null
+    error_message = "At least one of project_config.billing_account_id or var.project_config.project_id should be set."
+  }
 }
 
 variable "region" {

@@ -25,12 +25,12 @@ Whether you’re transferring from another Cloud Service Provider or you’re ta
 
 ![GCS to BigQuery High-level diagram](images/diagram.png "GCS to BigQuery High-level diagram")
 
-The main components that we would be setting up are (to learn more about these products, click on the hyperlinks):
+The main components that we would be setting up are:
 
 * [Cloud Storage (GCS) bucket](https://cloud.google.com/storage/): data lake solution to store extracted raw data that must undergo some kind of transformation.
 * [Cloud Dataflow pipeline](https://cloud.google.com/dataflow): to build fully managed batch and streaming pipelines to transform data stored in GCS buckets ready for processing in the Data Warehouse using Apache Beam.
-* [BigQuery datasets and tables](https://cloud.google.com/bigquery): to store the transformed data in and query it using SQL, use it to make reports or begin training [machine learning](https://cloud.google.com/bigquery-ml/docs/introduction) models without having to take your data out.
-* [Service accounts](https://cloud.google.com/iam/docs/service-account-overview) (__created with least privilege on each resource__): one for uploading data into the GCS bucket, one for Orchestration, one for Dataflow instances and one for the BigQuery tables. You can also configure users or groups of users to assign them a viewer role on the created resources and the ability to impersonate service accounts to test the Dataflow pipelines before automating them with a tool like [Cloud Composer](https://cloud.google.com/composer).
+* [BigQuery datasets and tables](https://cloud.google.com/bigquery): to store the transformed data in and query it using SQL, use it to make reports or begin training [machine learning](https://cloud.google.com/bigquery-ml/docs/introduction) models.
+* [Service accounts](https://cloud.google.com/iam/docs/service-account-overview) (__created with least privilege on each resource__): one for uploading data into the GCS bucket, one for Orchestration, one for Dataflow instances and one for reading BigQuery tables. You can also configure groups of users to assign them a viewer role on the created resources and the ability to impersonate service accounts to test the Dataflow pipelines before automating them with a tool like [Cloud Composer](https://cloud.google.com/composer).
 
 For a full list of the resources that will be created, please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/data-solutions/gcs-to-bq-with-least-privileges) for this project. If you're migrating from another Cloud Provider, refer to [this](https://cloud.google.com/free/docs/aws-azure-gcp-service-comparison) documentation to see equivalent services and comparisons in Microsoft Azure and Amazon Web Services
 
@@ -40,7 +40,7 @@ Pricing Estimates - We have created a sample estimate based on some usage we see
 
 ## Setup
 
-This solution assumes you already have a project created and set up where you wish to host these resources. If not, and you would like for the project to create a new project as well,  please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/data-solutions/gcs-to-bq-with-least-privileges) for instructions.
+This solution assumes you already have a project created and set up where you wish to host these resources. If not, and you would like for the project to create a new project as well, please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/data-solutions/gcs-to-bq-with-least-privileges) for instructions.
 
 ### Prerequisites
 
@@ -76,7 +76,7 @@ Before we deploy the architecture, you will need the following information:
 
 * The __service project ID__.
 * A __unique prefix__ that you want all the deployed resources to have (for example: awesomestartup). This must be a string with no spaces or tabs.
-* A __list of Groups or Users__ with Service Account Token creator role on Service Accounts in IAM format, eg 'group:group@domain.com'.
+* A __list of Groups__ with Service Account Token creator role on Service Accounts, eg '<group@domain.com>'.
 
 #### Step 2: Deploying the resources
 
@@ -184,7 +184,7 @@ Once the job completes, you can navigate to BigQuery in the console and under __
 
 The easiest way to remove all the deployed resources is to run the following command in Cloud Shell:
 
-        terraform destroy -var-file=terraform.tfvars.sample -auto-approve
+        terraform destroy
   
 The above command will delete the associated resources so there will be no billable charges made afterwards.
 <!-- BEGIN TFDOC -->
@@ -193,14 +193,13 @@ The above command will delete the associated resources so there will be no billa
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L36) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L54) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L37) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_config](variables.tf#L46) | Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. If project is created, `var.prefix` will be used. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string&#41;,&#10;  parent             &#61; string,&#10;  project_id         &#61; optional&#40;string, &#34;gcs-df-bq&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [cmek_encryption](variables.tf#L15) | Flag to enable CMEK on GCP resources created. | <code>bool</code> |  | <code>false</code> |
-| [data_eng_principals](variables.tf#L21) | Groups with Service Account Token creator role on service accounts in IAM format, eg 'group:group@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [network_config](variables.tf#L27) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project     &#61; string&#10;  subnet_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_create](variables.tf#L45) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L59) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [vpc_subnet_range](variables.tf#L65) | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
+| [data_eng_principals](variables.tf#L21) | Groups with admin/developer role on enabled services and Service Account Token creator role on service accounts in IAM format, eg 'group:group@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [network_config](variables.tf#L27) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project     &#61; optional&#40;string&#41;&#10;  subnet_self_link &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [region](variables.tf#L60) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [vpc_subnet_range](variables.tf#L66) | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
 
 ## Outputs
 
@@ -215,18 +214,17 @@ The above command will delete the associated resources so there will be no billa
 | [service_accounts](outputs.tf#L69) | Service account. |  |
 
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl
 module "test" {
   source = "./fabric/blueprints/data-solutions/gcs-to-bq-with-least-privileges/"
-  project_create = {
+  project_config = {
     billing_account_id = "123456-123456-123456"
     parent             = "folders/12345678"
+    project_id         = "project-1"
   }
-  project_id = "project-1"
-  prefix     = "prefix"
+  prefix = "prefix"
 }
-# tftest modules=12 resources=49
+# tftest modules=12 resources=43
 ```
