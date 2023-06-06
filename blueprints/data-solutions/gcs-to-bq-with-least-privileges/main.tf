@@ -38,7 +38,7 @@ locals {
     "roles/compute.viewer" = var.data_eng_principals
     # Dataflow roles
     "roles/dataflow.admin" = concat(
-      [ module.service-account-orch.iam_email ],
+      [module.service-account-orch.iam_email],
       var.data_eng_principals
     )
     "roles/dataflow.developer" = var.data_eng_principals
