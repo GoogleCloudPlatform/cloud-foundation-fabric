@@ -15,12 +15,13 @@
  */
 
 resource "google_logging_project_bucket_config" "bucket" {
-  count          = var.parent_type == "project" ? 1 : 0
-  project        = var.parent
-  location       = var.location
-  retention_days = var.retention
-  bucket_id      = var.id
-  description    = var.description
+  count            = var.parent_type == "project" ? 1 : 0
+  project          = var.parent
+  location         = var.location
+  retention_days   = var.retention
+  bucket_id        = var.id
+  description      = var.description
+  enable_analytics = var.log_analytics.enable
 
   dynamic "cmek_settings" {
     for_each = var.kms_key_name == null ? [] : [""]
@@ -37,6 +38,15 @@ resource "google_logging_folder_bucket_config" "bucket" {
   retention_days = var.retention
   bucket_id      = var.id
   description    = var.description
+}
+
+resource "google_logging_linked_dataset" "dataset" {
+  count       = var.log_analytics.dataset_link_id != null && var.parent_type == "project" ? 1 : 0
+  link_id     = var.log_analytics.dataset_link_id
+  parent      = "projects/${google_logging_project_bucket_config.bucket[0].project}"
+  bucket      = google_logging_project_bucket_config.bucket[0].id
+  location    = var.location
+  description = "Log Analytics Dataset"
 }
 
 resource "google_logging_organization_bucket_config" "bucket" {
