@@ -24,14 +24,22 @@ values:
     disabled: null
     enable_logging: false
     match:
-    - dest_ip_ranges: null
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
       layer4_configs:
       - ip_protocol: all
         ports: []
+      src_address_groups: null
+      src_fqdns: null
       src_ip_ranges:
       - 10.0.0.0/8
       - 172.16.0.0/12
       - 192.168.0.0/16
+      src_region_codes: null
+      src_threat_intelligences: null
     priority: 1000
     target_resources: null
     target_service_accounts: null
@@ -42,13 +50,21 @@ values:
     disabled: null
     enable_logging: false
     match:
-    - dest_ip_ranges: null
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
       layer4_configs:
       - ip_protocol: tcp
         ports:
         - '22'
+      src_address_groups: null
+      src_fqdns: null
       src_ip_ranges:
       - 35.235.240.0/20
+      src_region_codes: null
+      src_threat_intelligences: null
     priority: 100
     target_resources: null
     target_service_accounts: null

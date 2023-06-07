@@ -37,6 +37,16 @@ variable "location" {
   default     = "global"
 }
 
+variable "log_analytics" {
+  description = "Enable and configure Analytics Log."
+  type = object({
+    enable          = optional(bool, false)
+    dataset_link_id = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "parent" {
   description = "ID of the parentresource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'."
   type        = string

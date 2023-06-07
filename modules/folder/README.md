@@ -215,6 +215,7 @@ module "folder2" {
 }
 # tftest modules=2 resources=7 inventory=hfw.yaml
 ```
+
 ### Firewall policy factory
 
 The in-built factory allows you to define a single policy, using one file for rules, and an optional file for CIDR range substitution variables. Remember that non-absolute paths are relative to the root module (the folder where you run `terraform`).
