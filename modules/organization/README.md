@@ -187,7 +187,6 @@ custom.gkeEnableAutoUpgrade:
   description: All node pools must have node auto-upgrade enabled.
 ```
 
-
 ```yaml
 # tftest-file id=dataproc path=configs/custom-constraints/dataproc.yaml
 custom.dataprocNoMoreThan10Workers:
