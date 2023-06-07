@@ -114,8 +114,8 @@ variable "ingress_settings" {
   default     = null
   validation {
     condition = contains(
-      [null, "all", "internal", "internal-and-cloud-load-balancing"],
-      var.ingress_settings
+      ["all", "internal", "internal-and-cloud-load-balancing"],
+      coalesce(var.ingress_settings, "all")
     )
     error_message = "Ingress settings can be one of 'all', 'internal', 'internal-and-cloud-load-balancing'."
   }
