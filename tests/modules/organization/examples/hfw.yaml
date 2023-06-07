@@ -45,7 +45,6 @@ values:
     priority: 1000
     target_resources: null
     target_service_accounts: null
-    timeouts: null
   module.org.google_compute_firewall_policy_rule.rule["iap-policy-allow-iap-ssh"]:
     action: allow
     description: Always allow ssh from IAP.
@@ -71,7 +70,6 @@ values:
     priority: 100
     target_resources: null
     target_service_accounts: null
-    timeouts: null
 
 counts:
   google_compute_firewall_policy: 1
