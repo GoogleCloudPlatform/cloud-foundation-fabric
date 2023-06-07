@@ -7,6 +7,7 @@ run.allowedIngress:
   - allow:
       values:
       - is:internal
+      - is:internal-and-cloud-load-balancing
 
 # run.allowedVPCEgress:
 #   rules:
