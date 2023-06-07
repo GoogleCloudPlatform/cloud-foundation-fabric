@@ -21,12 +21,28 @@ locals {
     [var.organization.customer_id],
     try(local.policy_configs.allowed_policy_member_domains, [])
   )
-
   policy_configs = (
     var.organization_policy_configs == null
     ? {}
     : var.organization_policy_configs
   )
+  tags = {
+    for k, v in var.tags : k => merge(v, {
+      values = {
+        for vk, vv in v.values : vk => merge(vv, {
+          iam = {
+            for rk, rv in vv.iam : rk => [
+              for rm in rv : (
+                contains(keys(local.service_accounts), rm)
+                ? "serviceAccount:${local.service_accounts[rm]}"
+                : rm
+              )
+            ]
+          }
+        })
+      }
+    })
+  }
 }
 
 module "organization" {
@@ -70,7 +86,19 @@ module "organization" {
   org_policies = {
     "iam.allowedPolicyMemberDomains" = {
       rules = [
-        { allow = { values = local.all_drs_domains } }
+        {
+          allow = { values = local.all_drs_domains }
+          condition = {
+            expression = "!resource.matchTag('${var.organization.id}/${var.tag_names.org-policies}', 'allowed-policy-member-domains-all')"
+          }
+        },
+        {
+          allow = { all = true }
+          condition = {
+            expression = "resource.matchTag('${var.organization.id}/${var.tag_names.org-policies}', 'allowed-policy-member-domains-all')"
+            title      = "allow-all"
+          }
+        },
       ]
     }
 
@@ -91,31 +119,44 @@ module "organization" {
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages
 
-  tags = {
-    (var.tag_names.context) = {
-      description = "Resource management context."
-      iam         = {}
-      values = {
-        data       = null
-        gke        = null
-        networking = null
-        sandbox    = null
-        security   = null
-        teams      = null
+  tags = merge(
+    local.tags,
+    {
+      (var.tag_names.context) = {
+        description = "Resource management context."
+        iam         = {}
+        values = {
+          data       = null
+          gke        = null
+          networking = null
+          sandbox    = null
+          security   = null
+          teams      = null
+        }
+      }
+      (var.tag_names.environment) = {
+        description = "Environment definition."
+        iam         = {}
+        values = {
+          development = null
+          production  = null
+        }
+      }
+      (var.tag_names.org-policies) = {
+        description = "Organization policy conditions."
+        iam         = {}
+        values = {
+          allowed-policy-member-domains-all = merge({}, try(
+            local.tags[var.tag_names.org-policies].values.allowed-policy-member-domains-all,
+            {}
+          ))
+        }
+      }
+      (var.tag_names.tenant) = {
+        description = "Organization tenant."
       }
     }
-    (var.tag_names.environment) = {
-      description = "Environment definition."
-      iam         = {}
-      values = {
-        development = null
-        production  = null
-      }
-    }
-    (var.tag_names.tenant) = {
-      description = "Organization tenant."
-    }
-  }
+  )
 }
 
 # organization policy  conditional roles are in the relevant branch files

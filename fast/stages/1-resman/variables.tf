@@ -226,19 +226,42 @@ variable "prefix" {
 variable "tag_names" {
   description = "Customized names for resource management tags."
   type = object({
-    context     = string
-    environment = string
-    tenant      = string
+    context      = string
+    environment  = string
+    org-policies = string
+    tenant       = string
   })
   default = {
-    context     = "context"
-    environment = "environment"
-    tenant      = "tenant"
+    context      = "context"
+    environment  = "environment"
+    org-policies = "org-policies"
+    tenant       = "tenant"
   }
   nullable = false
   validation {
     condition     = alltrue([for k, v in var.tag_names : v != null])
     error_message = "Tag names cannot be null."
+  }
+}
+
+variable "tags" {
+  description = "Custome secure tags by key name. The `iam` attribute behaves like the similarly named one at module level."
+  type = map(object({
+    description = optional(string, "Managed by the Terraform organization module.")
+    iam         = optional(map(list(string)), {})
+    values = optional(map(object({
+      description = optional(string, "Managed by the Terraform organization module.")
+      iam         = optional(map(list(string)), {})
+      id          = optional(string)
+    })), {})
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.tags : v != null
+    ])
+    error_message = "Use an empty map instead of null as value."
   }
 }
 
