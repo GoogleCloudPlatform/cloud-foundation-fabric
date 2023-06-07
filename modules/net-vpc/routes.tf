@@ -31,7 +31,7 @@ locals {
       priority      = 1000
       tags          = null
     }
-    if var.create_googleapis_routes[k]
+    if lookup(coalesce(var.create_googleapis_routes, {}), k, false)
   }
   _routes = merge(local._googleapis_routes, coalesce(var.routes, {}))
   routes = {
