@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
+<!-- None < 2023-06-05 09:41:28+00:00 -->
+
+### BLUEPRINTS
+
+- [[#1423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1423)] Add support for Log Analytics on logging-bucket module and  bump provider version ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-07 21:23:29+00:00 -->
+- [[#1416](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1416)] Fix and improve GCS2BQ blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-06 07:06:59+00:00 -->
+
+### DOCUMENTATION
+
+- [[#1418](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1418)] Network Load Balancer module ([ludoo](https://github.com/ludoo)) <!-- 2023-06-05 11:21:40+00:00 -->
+
+### FAST
+
+- [[#1426](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1426)] Add custom tag support to FAST ([ludoo](https://github.com/ludoo)) <!-- 2023-06-07 22:10:27+00:00 -->
+- [[#1425](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1425)] Small fixes ([ludoo](https://github.com/ludoo)) <!-- 2023-06-07 17:37:47+00:00 -->
+- [[#1412](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1412)] Add VPN monitoring alerts to 2-networking and VPN usage chart ([afda16](https://github.com/afda16)) <!-- 2023-06-06 13:23:00+00:00 -->
+
+### MODULES
+
+- [[#1426](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1426)] Add custom tag support to FAST ([ludoo](https://github.com/ludoo)) <!-- 2023-06-07 22:10:27+00:00 -->
+- [[#1423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1423)] Add support for Log Analytics on logging-bucket module and  bump provider version ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-07 21:23:29+00:00 -->
+- [[#1425](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1425)] Small fixes ([ludoo](https://github.com/ludoo)) <!-- 2023-06-07 17:37:47+00:00 -->
+- [[#1419](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1419)] Fix NLB module ([ludoo](https://github.com/ludoo)) <!-- 2023-06-05 17:42:33+00:00 -->
+- [[#1418](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1418)] Network Load Balancer module ([ludoo](https://github.com/ludoo)) <!-- 2023-06-05 11:21:40+00:00 -->
 
 ## [23.0.0] - 2023-06-05
 
@@ -1264,7 +1288,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v22.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v23.0.0...HEAD
+[23.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v22.0.0...v23.0.0
 [22.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v21.0.0...v22.0.0
 [21.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v20.0.0...v21.0.0
 [20.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v19.0.0...v20.0.0
