@@ -35,6 +35,6 @@ To enable the plugin, simply copy or link its files in the networking stage.
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [plugin_sc_connectors](local-serverless-connector-outputs.tf#L43) | VPC Access Connectors. |  |  |
+| [plugin_sc_connectors](local-serverless-connector-outputs.tf#L47) | VPC Access Connectors. |  |  |
 
 <!-- END TFDOC -->
