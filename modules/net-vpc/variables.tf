@@ -21,15 +21,14 @@ variable "auto_create_subnetworks" {
 }
 
 variable "create_googleapis_routes" {
-  description = "Toggle creation of googleapis private/restricted routes."
+  description = "Toggle creation of googleapis private/restricted routes. Set to null to disable creation."
   type = object({
     private      = optional(bool, true)
     private-6    = optional(bool, false)
     restricted   = optional(bool, true)
     restricted-6 = optional(bool, false)
   })
-  default  = {}
-  nullable = false
+  default = {}
 }
 
 variable "data_folder" {

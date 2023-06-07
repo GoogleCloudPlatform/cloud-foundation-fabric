@@ -29,13 +29,17 @@ resource "local_file" "plugin_sc_tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
   filename        = "${try(pathexpand(var.outputs_location), "")}/tfvars/2-networking-serverless-connnector.auto.tfvars.json"
-  content         = jsonencode(local.plugin_sc_tfvars)
+  content = jsonencode({
+    vpc_connectors = local.plugin_sc_tfvars
+  })
 }
 
 resource "google_storage_bucket_object" "plugin_sc_tfvars" {
-  bucket  = var.automation.outputs_bucket
-  name    = "tfvars/2-networking-serverless-connnector.auto.tfvars.json"
-  content = jsonencode(local.plugin_sc_tfvars)
+  bucket = var.automation.outputs_bucket
+  name   = "tfvars/2-networking-serverless-connnector.auto.tfvars.json"
+  content = jsonencode({
+    vpc_connectors = local.plugin_sc_tfvars
+  })
 }
 
 # outputs

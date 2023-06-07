@@ -39,12 +39,7 @@ module "dev-spoke-vpc-serverless" {
     region        = var.regions.primary
   }]
   # these should be create from the main VPC
-  create_googleapis_routes = {
-    private      = false
-    private-6    = false
-    restricted   = false
-    restricted-6 = false
-  }
+  create_googleapis_routes = null
 }
 
 module "prod-spoke-vpc-serverless" {
@@ -59,12 +54,7 @@ module "prod-spoke-vpc-serverless" {
     region        = var.regions.primary
   }]
   # these should be create from the main VPC
-  create_googleapis_routes = {
-    private      = false
-    private-6    = false
-    restricted   = false
-    restricted-6 = false
-  }
+  create_googleapis_routes = null
 }
 
 resource "google_vpc_access_connector" "dev-primary" {
