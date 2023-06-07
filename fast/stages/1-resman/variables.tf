@@ -242,6 +242,27 @@ variable "tag_names" {
   }
 }
 
+variable "tags" {
+  description = "Custome secure tags by key name. The `iam` attribute behaves like the similarly named one at module level."
+  type = map(object({
+    description = optional(string, "Managed by the Terraform organization module.")
+    iam         = optional(map(list(string)), {})
+    values = optional(map(object({
+      description = optional(string, "Managed by the Terraform organization module.")
+      iam         = optional(map(list(string)), {})
+      id          = optional(string)
+    })), {})
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.tags : v != null
+    ])
+    error_message = "Use an empty map instead of null as value."
+  }
+}
+
 variable "team_folders" {
   description = "Team folders to be created. Format is described in a code comment."
   type = map(object({
