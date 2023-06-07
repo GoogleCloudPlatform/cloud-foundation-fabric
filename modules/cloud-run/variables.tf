@@ -112,6 +112,13 @@ variable "ingress_settings" {
   description = "Ingress settings."
   type        = string
   default     = null
+  validation {
+    condition = contains(
+      [null, "all", "internal", "internal-and-cloud-load-balancing"],
+      var.ingress_settings
+    )
+    error_message = "Ingress settings can be one of 'all', 'internal', 'internal-and-cloud-load-balancing'."
+  }
 }
 
 variable "labels" {
