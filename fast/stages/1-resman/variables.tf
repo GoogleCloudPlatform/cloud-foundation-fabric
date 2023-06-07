@@ -226,14 +226,16 @@ variable "prefix" {
 variable "tag_names" {
   description = "Customized names for resource management tags."
   type = object({
-    context     = string
-    environment = string
-    tenant      = string
+    context      = string
+    environment  = string
+    org-policies = string
+    tenant       = string
   })
   default = {
-    context     = "context"
-    environment = "environment"
-    tenant      = "tenant"
+    context      = "context"
+    environment  = "environment"
+    org-policies = "org-policies"
+    tenant       = "tenant"
   }
   nullable = false
   validation {
