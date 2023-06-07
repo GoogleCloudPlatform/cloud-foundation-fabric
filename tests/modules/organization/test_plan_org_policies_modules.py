@@ -54,7 +54,7 @@ def test_policy_implementation():
       '-      parent = local.folder.name\n',
       '+      name   = "${var.organization_id}/policies/${k}"\n',
       '+      parent = var.organization_id\n',
-      '@@ -116,0 +117,8 @@\n',
+      '@@ -116,0 +117,10 @@\n',
       '+  depends_on = [\n',
       '+    google_organization_iam_audit_config.config,\n',
       '+    google_organization_iam_binding.authoritative,\n',
@@ -62,5 +62,7 @@ def test_policy_implementation():
       '+    google_organization_iam_member.additive,\n',
       '+    google_organization_iam_policy.authoritative,\n',
       '+    google_org_policy_custom_constraint.constraint,\n',
+      '+    google_tags_tag_key.default,\n',
+      '+    google_tags_tag_value.default,\n',
       '+  ]\n',
   ]
