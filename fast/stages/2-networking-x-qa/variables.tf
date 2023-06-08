@@ -67,47 +67,6 @@ variable "folder_ids" {
   })
 }
 
-variable "region" {
-  description = "Region definitions."
-  type        = string
-  default     = "me-central1"
-}
-
-variable "organization" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Organization details."
-  type = object({
-    domain      = string
-    id          = number
-    customer_id = string
-  })
-}
-
-variable "prefix" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Prefix used for resources that need unique names. Use 9 characters or less."
-  type        = string
-
-  validation {
-    condition     = try(length(var.prefix), 0) < 10
-    error_message = "Use a maximum of 9 characters for prefix."
-  }
-}
-
-variable "service_accounts" {
-  # tfdoc:variable:source 1-resman
-  description = "Automation service accounts in name => email format."
-  type = object({
-    data-platform-dev    = string
-    data-platform-prod   = string
-    gke-dev              = string
-    gke-prod             = string
-    project-factory-dev  = string
-    project-factory-prod = string
-  })
-  default = null
-}
-
 variable "ip_ranges" {
   description = "Structural subnets required for appliances"
   type = object({
@@ -133,3 +92,45 @@ variable "ip_ranges" {
     }
   }
 }
+
+variable "organization" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Organization details."
+  type = object({
+    domain      = string
+    id          = number
+    customer_id = string
+  })
+}
+
+variable "prefix" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Prefix used for resources that need unique names. Use 9 characters or less."
+  type        = string
+
+  validation {
+    condition     = try(length(var.prefix), 0) < 10
+    error_message = "Use a maximum of 9 characters for prefix."
+  }
+}
+
+variable "region" {
+  description = "Region definitions."
+  type        = string
+  default     = "me-central1"
+}
+
+variable "service_accounts" {
+  # tfdoc:variable:source 1-resman
+  description = "Automation service accounts in name => email format."
+  type = object({
+    data-platform-dev    = string
+    data-platform-prod   = string
+    gke-dev              = string
+    gke-prod             = string
+    project-factory-dev  = string
+    project-factory-prod = string
+  })
+  default = null
+}
+

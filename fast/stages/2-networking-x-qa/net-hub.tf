@@ -141,3 +141,28 @@ module "hub-trusted-dev-vpc" {
     ip_cidr_range = var.ip_ranges.subnets["trusted-dev"]
   }]
 }
+
+module "hub-addresses" {
+  source     = "../../../modules/net-address"
+  project_id = module.hub-project.project_id
+  # external_addresses = {
+  #   mtls-ext-nlb = var.region
+  # }
+  internal_addresses = {
+    nva-external-untrusted = {
+      address    = cidrhost(var.ip_ranges.subnets.untrusted, 3)
+      region     = var.region
+      subnetwork = module.hub-untrusted-vpc.subnet_self_links["${var.region}/untrusted"]
+    }
+    nva-external-dmz = {
+      address    = cidrhost(var.ip_ranges.subnets.dmz, 3)
+      region     = var.region
+      subnetwork = module.hub-dmz-vpc.subnet_self_links["${var.region}/dmz"]
+    }
+    # nva-internal-untrusted = {
+    #   address    = cidrhost(var.ip_ranges.core-untrusted, 2)
+    #   region     = var.region
+    #   subnetwork = module.hub-untrusted-vpc.subnet_self_links["${var.region}/untrusted"]
+    # }
+  }
+}
