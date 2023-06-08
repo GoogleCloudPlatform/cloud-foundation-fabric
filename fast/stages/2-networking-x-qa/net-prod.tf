@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# TODO: firewall, delegated grants, subnet factories
+
 module "prod-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -42,3 +44,25 @@ module "prod-project" {
   }
 }
 
+module "prod-vpc" {
+  source     = "../../../modules/net-vpc"
+  project_id = module.prod-project.project_id
+  name       = "prod-spoke-0"
+  mtu        = 1500
+  # data_folder = "${var.factories_config.data_dir}/subnets/prod"
+  # psa_config  = try(var.psa_ranges.prod, null)
+  # set explicit routes for googleapis in case the default route is deleted
+  create_googleapis_routes = {
+    private    = true
+    restricted = true
+  }
+}
+
+module "prod-peering" {
+  source                     = "../../../modules/net-vpc-peering"
+  prefix                     = "prod-peering-0"
+  local_network              = module.hub-trusted-prod-vpc.self_link
+  peer_network               = module.prod-vpc.self_link
+  export_local_custom_routes = true
+  export_peer_custom_routes  = true
+}

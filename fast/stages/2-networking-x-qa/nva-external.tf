@@ -38,6 +38,8 @@ module "hub-nva-external" {
     runcmd:
     - iptables -P FORWARD ACCEPT
     - sysctl -w net.ipv4.ip_forward=1
+    - ip rule add from ${var.ip_ranges.subnets.dmz} to 35.191.0.0/16 lookup 110
+    - ip rule add from ${var.ip_ranges.subnets.dmz} to 130.211.0.0/22 lookup 110
     - ip rule add from ${var.ip_ranges.subnets.dmz} to 10.0.0.0/8 lookup 110
     - ip rule add from ${var.ip_ranges.subnets.dmz} to 172.16.0.0/12 lookup 110
     - ip rule add from ${var.ip_ranges.subnets.dmz} to 192.168.0.0/16 lookup 110

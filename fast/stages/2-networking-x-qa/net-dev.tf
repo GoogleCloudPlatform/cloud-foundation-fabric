@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# TODO: firewall, delegated grants, subnet factories
+
 module "dev-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -57,17 +59,11 @@ module "dev-vpc" {
 }
 
 module "dev-peering" {
-  source        = "../../../modules/net-vpc-peering"
-  prefix        = "dev-peering-0"
-  local_network = module.hub-trusted-dev-vpc.self_link
-  peer_network  = module.dev-vpc.self_link
-  # export_local_custom_routes = try(
-  #   var.peering_configs.dev.export_local_custom_routes, null
-  # )
-  # export_peer_custom_routes = try(
-  #   var.peering_configs.dev.export_peer_custom_routes, null
-  # )
+  source                     = "../../../modules/net-vpc-peering"
+  prefix                     = "dev-peering-0"
+  local_network              = module.hub-trusted-dev-vpc.self_link
+  peer_network               = module.dev-vpc.self_link
+  export_local_custom_routes = true
+  export_peer_custom_routes  = true
 }
 
-
-# TODO: firewall, delegated grants

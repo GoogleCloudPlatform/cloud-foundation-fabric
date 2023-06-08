@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-# locals {
-#   interfaces = {
-#     1 = module.office-vpc-prod.subnet_ips["${var.region}/prod-default"]
-#     2 = module.office-vpc-preprod.subnet_ips["${var.region}/preprod-default"]
-#     3 = module.office-vpc-dev.subnet_ips["${var.region}/dev-default"]
-#     4 = module.office-vpc-test.subnet_ips["${var.region}/test-default"]
-#     5 = module.office-vpc-ss.subnet_ips["${var.region}/ss-default"]
-#     6 = module.core-vpc-f5.subnet_ips["${var.region}/f5-default"]
-#   }
-#   nva_cloud_config = <<-END
-#   #cloud-config
-#   runcmd:
-#   - iptables -P FORWARD ACCEPT
-#   - sysctl -w net.ipv4.ip_forward=1
-#   %{for k, v in local.interfaces}
-#   - ip rule add from ${v} to 35.191.0.0/16 lookup ${k + 110}
-#   - ip rule add from ${v} to 130.211.0.0/22 lookup ${k + 110}
-#   - ip route add default via ${cidrhost(v, 1)} dev eth${k} proto static onlink table ${k + 110}
-#   %{endfor}
-#   - ip rule add from ${var.ip_ranges.office-internal} to ${var.ip_ranges.apigee-runtime} lookup 115
-#   END
-# }
-
 locals {
+  nva_internal_cloud_config = <<-END
+  #cloud-config
+  runcmd:
+  - iptables -P FORWARD ACCEPT
+  - sysctl -w net.ipv4.ip_forward=1
+  %{~for i, k in keys(local.nva_internal_nets)~}
+  %{~if k != "dmz"~}
+  - ip rule add from ${var.ip_ranges.subnets[k]} to 35.191.0.0/16 lookup ${i + 110}
+  - ip rule add from ${var.ip_ranges.subnets[k]} to 130.211.0.0/22 lookup ${i + 110}
+  - ip route add default via ${cidrhost(var.ip_ranges.subnets[k], 1)} dev eth${i} proto static onlink table ${i + 110}
+  %{~endif~}
+  %{~endfor~}
+  %{~for r in var.ip_ranges.routes.onprem~}
+  - ip route add ${r} via ${cidrhost(var.ip_ranges.subnets.inside, 1)} dev eth1 proto static onlink
+  %{~endfor~}
+  %{~for r in var.ip_ranges.routes.dev~}
+  - ip route add ${r} via ${cidrhost(var.ip_ranges.subnets.trusted-dev, 1)} dev eth2 proto static onlink
+  %{~endfor~}
+  %{~for r in var.ip_ranges.routes.prod~}
+  - ip route add ${r} via ${cidrhost(var.ip_ranges.subnets.trusted-prod, 1)} dev eth3 proto static onlink
+  %{~endfor~}
+  END
+  # alphabetical order matters, dmz needs to be first, inside second
   nva_internal_nets = {
     dmz = {
       network    = module.hub-dmz-vpc.self_link
@@ -47,14 +47,14 @@ locals {
       network    = module.hub-inside-vpc.self_link
       subnetwork = module.hub-inside-vpc.subnet_self_links["${var.region}/inside"]
     },
-    trusted-prod = {
-      network    = module.hub-trusted-prod-vpc.self_link
-      subnetwork = module.hub-trusted-prod-vpc.subnet_self_links["${var.region}/trusted-prod"]
-    },
     trusted-dev = {
       network    = module.hub-trusted-dev-vpc.self_link
       subnetwork = module.hub-trusted-dev-vpc.subnet_self_links["${var.region}/trusted-dev"]
     }
+    trusted-prod = {
+      network    = module.hub-trusted-prod-vpc.self_link
+      subnetwork = module.hub-trusted-prod-vpc.subnet_self_links["${var.region}/trusted-prod"]
+    },
   }
 }
 
@@ -75,8 +75,7 @@ module "hub-nva-internal" {
     ]
   )
   metadata = {
-    user-data              = <<-END
-    END
+    user-data              = local.nva_internal_cloud_config
     google-logging-enabled = true
   }
   boot_disk = {

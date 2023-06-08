@@ -70,7 +70,7 @@ variable "folder_ids" {
 variable "ip_ranges" {
   description = "Structural subnets required for appliances"
   type = object({
-    routes = map(string)
+    routes = map(list(string))
     subnets = object({
       dmz          = string
       inside       = string
@@ -81,7 +81,11 @@ variable "ip_ranges" {
     })
   })
   default = {
-    routes = {}
+    routes = {
+      onprem = ["10.0.0.0/8"]
+      dev    = ["10.16.0.0/16"]
+      prod   = ["10.24.0.0/16"]
+    }
     subnets = {
       dmz          = "10.0.0.0/24"
       inside       = "10.1.0.0/24"
