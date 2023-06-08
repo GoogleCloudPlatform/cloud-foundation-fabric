@@ -14,3 +14,25 @@
  * limitations under the License.
  */
 
+# locals {
+#   interfaces = {
+#     1 = module.office-vpc-prod.subnet_ips["${var.region}/prod-default"]
+#     2 = module.office-vpc-preprod.subnet_ips["${var.region}/preprod-default"]
+#     3 = module.office-vpc-dev.subnet_ips["${var.region}/dev-default"]
+#     4 = module.office-vpc-test.subnet_ips["${var.region}/test-default"]
+#     5 = module.office-vpc-ss.subnet_ips["${var.region}/ss-default"]
+#     6 = module.core-vpc-f5.subnet_ips["${var.region}/f5-default"]
+#   }
+#   nva_cloud_config = <<-END
+#   #cloud-config
+#   runcmd:
+#   - iptables -P FORWARD ACCEPT
+#   - sysctl -w net.ipv4.ip_forward=1
+#   %{for k, v in local.interfaces}
+#   - ip rule add from ${v} to 35.191.0.0/16 lookup ${k + 110}
+#   - ip rule add from ${v} to 130.211.0.0/22 lookup ${k + 110}
+#   - ip route add default via ${cidrhost(v, 1)} dev eth${k} proto static onlink table ${k + 110}
+#   %{endfor}
+#   - ip rule add from ${var.ip_ranges.office-internal} to ${var.ip_ranges.apigee-runtime} lookup 115
+#   END
+# }

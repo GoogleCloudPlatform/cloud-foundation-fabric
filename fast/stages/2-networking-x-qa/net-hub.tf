@@ -149,11 +149,6 @@ module "hub-addresses" {
   #   mtls-ext-nlb = var.region
   # }
   internal_addresses = {
-    nva-external-untrusted = {
-      address    = cidrhost(var.ip_ranges.subnets.untrusted, 3)
-      region     = var.region
-      subnetwork = module.hub-untrusted-vpc.subnet_self_links["${var.region}/untrusted"]
-    }
     nva-external-dmz = {
       address    = cidrhost(var.ip_ranges.subnets.dmz, 3)
       region     = var.region

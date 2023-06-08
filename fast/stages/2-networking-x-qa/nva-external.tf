@@ -14,31 +14,7 @@
  * limitations under the License.
  */
 
-locals {
-  #   interfaces = {
-  #     1 = module.office-vpc-prod.subnet_ips["${var.region}/prod-default"]
-  #     2 = module.office-vpc-preprod.subnet_ips["${var.region}/preprod-default"]
-  #     3 = module.office-vpc-dev.subnet_ips["${var.region}/dev-default"]
-  #     4 = module.office-vpc-test.subnet_ips["${var.region}/test-default"]
-  #     5 = module.office-vpc-ss.subnet_ips["${var.region}/ss-default"]
-  #     6 = module.core-vpc-f5.subnet_ips["${var.region}/f5-default"]
-  #   }
-  nva_cloud_config = ""
-  #   nva_cloud_config = <<-END
-  #   #cloud-config
-  #   runcmd:
-  #   - iptables -P FORWARD ACCEPT
-  #   - sysctl -w net.ipv4.ip_forward=1
-  #   %{for k, v in local.interfaces}
-  #   - ip rule add from ${v} to 35.191.0.0/16 lookup ${k + 110}
-  #   - ip rule add from ${v} to 130.211.0.0/22 lookup ${k + 110}
-  #   - ip route add default via ${cidrhost(v, 1)} dev eth${k} proto static onlink table ${k + 110}
-  #   %{endfor}
-  #   - ip rule add from ${var.ip_ranges.office-internal} to ${var.ip_ranges.apigee-runtime} lookup 115
-  #   END
-}
-
-module "nva" {
+module "hub-nva-external" {
   source         = "../../../modules/compute-vm"
   for_each       = toset(["a"]) # , "b"])
   project_id     = module.hub-project.project_id
@@ -50,22 +26,23 @@ module "nva" {
     {
       network    = module.hub-untrusted-vpc.self_link
       subnetwork = module.hub-untrusted-vpc.subnet_self_links["${var.region}/untrusted"]
-      addresses = {
-        internal = module.hub-addresses.internal_addresses["nva-external-untrusted"].address
-        external = null
-      }
     },
     {
       network    = module.hub-dmz-vpc.self_link
       subnetwork = module.hub-dmz-vpc.subnet_self_links["${var.region}/dmz"]
-      addresses = {
-        internal = module.hub-addresses.internal_addresses["nva-external-dmz"].address
-        external = null
-      }
     }
   ]
   metadata = {
-    user-data              = local.nva_cloud_config
+    user-data              = <<-END
+    #cloud-config
+    runcmd:
+    - iptables -P FORWARD ACCEPT
+    - sysctl -w net.ipv4.ip_forward=1
+    - ip rule add from ${var.ip_ranges.subnets.dmz} to 10.0.0.0/8 lookup 110
+    - ip rule add from ${var.ip_ranges.subnets.dmz} to 172.16.0.0/12 lookup 110
+    - ip rule add from ${var.ip_ranges.subnets.dmz} to 192.168.0.0/16 lookup 110
+    - ip route add default via ${cidrhost(var.ip_ranges.subnets.dmz, 1)} dev eth1 proto static onlink table 110
+    END
     google-logging-enabled = true
   }
   boot_disk = {
@@ -80,60 +57,24 @@ module "nva" {
   # depends_on = [module.hub-addresses]
 }
 
-# locals {
-#   ilb_configs = {
-#     dmz = {
-#       network = module.core-vpc-dmz.network.id
-#       subnet  = module.core-vpc-dmz.subnet_self_links["${var.region}/dmz-default"]
-#     }
-#     f5 = {
-#       network = module.core-vpc-f5.network.id
-#       subnet  = module.core-vpc-f5.subnet_self_links["${var.region}/f5-default"]
-#     }
-#     prod = {
-#       network = module.office-vpc-prod.network.id
-#       subnet  = module.office-vpc-prod.subnet_self_links["${var.region}/prod-default"]
-#     }
-#     preprod = {
-#       network = module.office-vpc-preprod.network.id
-#       subnet  = module.office-vpc-preprod.subnet_self_links["${var.region}/preprod-default"]
-#     }
-#     dev = {
-#       network = module.office-vpc-dev.network.id
-#       subnet  = module.office-vpc-dev.subnet_self_links["${var.region}/dev-default"]
-#     }
-#     test = {
-#       network = module.office-vpc-test.network.id
-#       subnet  = module.office-vpc-test.subnet_self_links["${var.region}/test-default"]
-#     }
-#     ss = {
-#       network = module.office-vpc-ss.network.id
-#       subnet  = module.office-vpc-ss.subnet_self_links["${var.region}/ss-default"]
-#     }
-#   }
-# }
-
-# module "core-ilb" {
-#   source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-ilb?ref=v23.0.0&depth=1"
-#   for_each      = local.ilb_configs
-#   project_id    = module.core-project.project_id
-#   region        = var.region
-#   name          = each.key
-#   address       = module.core-addresses.internal_addresses["nva-${each.key}"].address
-#   service_label = var.prefix
-#   global_access = true
-#   vpc_config = {
-#     network    = each.value.network
-#     subnetwork = each.value.subnet
-#   }
-#   backends = [
-#     for k, v in module.nva : {
-#       failover       = false
-#       group          = v.group.id
-#       balancing_mode = "CONNECTION"
-#     }
-#   ]
-#   health_check_config = {
-#     tcp = { port = "22" }
-#   }
-# }
+module "hub-nva-external-dmz" {
+  source     = "../../../modules/net-ilb"
+  project_id = module.hub-project.project_id
+  region     = var.region
+  name       = "nva-external-dmz"
+  address    = module.hub-addresses.internal_addresses["nva-external-dmz"].address
+  vpc_config = {
+    network    = module.hub-dmz-vpc.id
+    subnetwork = module.hub-dmz-vpc.subnets["${var.region}/dmz"].id
+  }
+  backends = [
+    for k, v in module.hub-nva-external : {
+      failover       = false
+      group          = v.group.id
+      balancing_mode = "CONNECTION"
+    }
+  ]
+  health_check_config = {
+    tcp = { port = "22" }
+  }
+}
