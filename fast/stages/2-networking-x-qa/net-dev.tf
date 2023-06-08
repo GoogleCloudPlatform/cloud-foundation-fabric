@@ -41,3 +41,33 @@ module "dev-project" {
     ])
   }
 }
+
+module "dev-vpc" {
+  source     = "../../../modules/net-vpc"
+  project_id = module.dev-project.project_id
+  name       = "dev-spoke-0"
+  mtu        = 1500
+  # data_folder = "${var.factories_config.data_dir}/subnets/dev"
+  # psa_config  = try(var.psa_ranges.dev, null)
+  # set explicit routes for googleapis in case the default route is deleted
+  create_googleapis_routes = {
+    private    = true
+    restricted = true
+  }
+}
+
+module "dev-peering" {
+  source        = "../../../modules/net-vpc-peering"
+  prefix        = "dev-peering-0"
+  local_network = module.hub-trusted-dev-vpc.self_link
+  peer_network  = module.dev-vpc.self_link
+  # export_local_custom_routes = try(
+  #   var.peering_configs.dev.export_local_custom_routes, null
+  # )
+  # export_peer_custom_routes = try(
+  #   var.peering_configs.dev.export_peer_custom_routes, null
+  # )
+}
+
+
+# TODO: firewall, delegated grants

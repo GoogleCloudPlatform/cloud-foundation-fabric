@@ -52,7 +52,7 @@ module "hub-nva-external" {
       size  = 10
     }
   }
-  tags  = ["nva", "ssh"]
+  tags  = ["nva-external", "ssh"]
   group = { named_ports = { ssh = 22 } }
   # depends_on = [module.hub-addresses]
 }

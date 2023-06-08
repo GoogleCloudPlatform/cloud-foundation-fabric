@@ -154,10 +154,25 @@ module "hub-addresses" {
       region     = var.region
       subnetwork = module.hub-dmz-vpc.subnet_self_links["${var.region}/dmz"]
     }
-    # nva-internal-untrusted = {
-    #   address    = cidrhost(var.ip_ranges.core-untrusted, 2)
-    #   region     = var.region
-    #   subnetwork = module.hub-untrusted-vpc.subnet_self_links["${var.region}/untrusted"]
-    # }
+    nva-internal-dmz = {
+      address    = cidrhost(var.ip_ranges.subnets.dmz, 2)
+      region     = var.region
+      subnetwork = module.hub-dmz-vpc.subnet_self_links["${var.region}/dmz"]
+    }
+    nva-internal-inside = {
+      address    = cidrhost(var.ip_ranges.subnets.inside, 2)
+      region     = var.region
+      subnetwork = module.hub-inside-vpc.subnet_self_links["${var.region}/inside"]
+    }
+    nva-internal-trusted-prod = {
+      address    = cidrhost(var.ip_ranges.subnets.trusted-prod, 2)
+      region     = var.region
+      subnetwork = module.hub-trusted-prod-vpc.subnet_self_links["${var.region}/trusted-prod"]
+    }
+    nva-internal-trusted-dev = {
+      address    = cidrhost(var.ip_ranges.subnets.trusted-dev, 2)
+      region     = var.region
+      subnetwork = module.hub-trusted-dev-vpc.subnet_self_links["${var.region}/trusted-dev"]
+    }
   }
 }

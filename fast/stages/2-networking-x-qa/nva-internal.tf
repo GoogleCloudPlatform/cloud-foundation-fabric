@@ -36,3 +36,78 @@
 #   - ip rule add from ${var.ip_ranges.office-internal} to ${var.ip_ranges.apigee-runtime} lookup 115
 #   END
 # }
+
+locals {
+  nva_internal_nets = {
+    dmz = {
+      network    = module.hub-dmz-vpc.self_link
+      subnetwork = module.hub-dmz-vpc.subnet_self_links["${var.region}/dmz"]
+    },
+    inside = {
+      network    = module.hub-inside-vpc.self_link
+      subnetwork = module.hub-inside-vpc.subnet_self_links["${var.region}/inside"]
+    },
+    trusted-prod = {
+      network    = module.hub-trusted-prod-vpc.self_link
+      subnetwork = module.hub-trusted-prod-vpc.subnet_self_links["${var.region}/trusted-prod"]
+    },
+    trusted-dev = {
+      network    = module.hub-trusted-dev-vpc.self_link
+      subnetwork = module.hub-trusted-dev-vpc.subnet_self_links["${var.region}/trusted-dev"]
+    }
+  }
+}
+
+module "hub-nva-internal" {
+  source         = "../../../modules/compute-vm"
+  for_each       = toset(["a"]) # , "b"])
+  project_id     = module.hub-project.project_id
+  zone           = "${var.region}-b"
+  name           = "nva-internal-${each.key}"
+  instance_type  = "custom-6-4"
+  can_ip_forward = true
+  network_interfaces = concat(
+    [for k, v in local.nva_internal_nets : v],
+    [{
+      network    = module.hub-management-vpc.self_link
+      subnetwork = module.hub-management-vpc.subnet_self_links["${var.region}/mgmt"]
+      }
+    ]
+  )
+  metadata = {
+    user-data              = <<-END
+    END
+    google-logging-enabled = true
+  }
+  boot_disk = {
+    initialize_params = {
+      image = "cos-cloud/cos-stable"
+      type  = "pd-balanced"
+      size  = 10
+    }
+  }
+  tags  = ["nva-internal", "ssh"]
+  group = { named_ports = { ssh = 22 } }
+  # depends_on = [module.hub-addresses]
+}
+
+module "hub-nva-internal-ilb" {
+  source     = "../../../modules/net-ilb"
+  for_each   = local.nva_internal_nets
+  project_id = module.hub-project.project_id
+  region     = var.region
+  name       = "nva-internal-dmz"
+  address    = module.hub-addresses.internal_addresses["nva-internal-${each.key}"].address
+  vpc_config = each.value
+  backends = [
+    for k, v in module.hub-nva-internal : {
+      failover       = false
+      group          = v.group.id
+      balancing_mode = "CONNECTION"
+    }
+  ]
+  health_check_config = {
+    tcp = { port = "22" }
+  }
+}
+
