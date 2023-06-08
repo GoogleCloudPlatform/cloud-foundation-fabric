@@ -49,6 +49,10 @@ locals {
       zone       = v.gce != null ? v.gce.zone : v.hybrid.zone
     } if v.gce != null || v.hybrid != null
   }
+  neg_regional_psc = {
+    for k, v in var.neg_configs :
+    k => v if v.psc != null
+  }
   proxy_ssl_certificates = concat(
     coalesce(var.ssl_certificates.certificate_ids, []),
     [for k, v in google_compute_region_ssl_certificate.default : v.id]
@@ -186,4 +190,16 @@ resource "google_compute_region_network_endpoint_group" "default" {
     tag      = try(each.value.target_service.tag, null)
     url_mask = each.value.target_urlmask
   }
+}
+
+resource "google_compute_region_network_endpoint_group" "psc" {
+  for_each = local.neg_regional_psc
+  project  = var.project_id
+  region   = each.value.psc.region
+  name     = "${var.name}-${each.key}"
+  //description           = coalesce(each.value.description, var.description)
+  network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
+  psc_target_service    = each.value.psc.target_service
+  network               = each.value.psc.network
+  subnetwork            = each.value.psc.subnetwork
 }
