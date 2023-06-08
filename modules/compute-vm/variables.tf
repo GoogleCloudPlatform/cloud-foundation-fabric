@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,8 +191,8 @@ variable "network_interfaces" {
     network    = string
     subnetwork = string
     addresses = optional(object({
-      internal = string
-      external = string
+      internal = optional(string)
+      external = optional(string)
     }), null)
     alias_ips = optional(map(string), {})
     nic_type  = optional(string)

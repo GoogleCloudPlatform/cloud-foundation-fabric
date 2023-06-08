@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,7 +68,6 @@ module "nodes" {
     nat        = false
     addresses = {
       internal = module.ip-addresses.internal_addresses[each.value].address
-      external = null
     }
   }]
 
@@ -122,7 +121,6 @@ module "witness" {
     nat        = false
     addresses = {
       internal = module.ip-addresses.internal_addresses[each.value].address
-      external = null
     }
   }]
 
