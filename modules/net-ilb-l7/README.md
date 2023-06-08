@@ -285,11 +285,7 @@ module "ilb-l7" {
   region     = "europe-west1"
   backend_service_configs = {
     default = {
-      backends = [{
-        balancing_mode = "RATE"
-        group          = "my-neg"
-        max_rate       = { per_endpoint = 1 }
-      }]
+      backends = [{ group = "my-neg" }]
     }
   }
   neg_configs = {
