@@ -215,7 +215,7 @@ module "vm-internal-ip" {
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
-    addresses  = { external = null, internal = "10.0.0.2" }
+    addresses  = { internal = "10.0.0.2" }
   }]
 }
 
@@ -228,7 +228,7 @@ module "vm-external-ip" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
     nat        = true
-    addresses  = { external = "8.8.8.8", internal = null }
+    addresses  = { external = "8.8.8.8" }
   }]
 }
 # tftest modules=2 resources=2 inventory=ips.yaml
@@ -507,7 +507,7 @@ module "instance-group" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L182) | Instance name. | <code>string</code> | ✓ |  |
-| [network_interfaces](variables.tf#L187) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;  nat        &#61; optional&#40;bool, false&#41;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;  addresses &#61; optional&#40;object&#40;&#123;&#10;    internal &#61; string&#10;    external &#61; string&#10;  &#125;&#41;, null&#41;&#10;  alias_ips &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  nic_type  &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [network_interfaces](variables.tf#L187) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;  nat        &#61; optional&#40;bool, false&#41;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;  addresses &#61; optional&#40;object&#40;&#123;&#10;    internal &#61; optional&#40;string&#41;&#10;    external &#61; optional&#40;string&#41;&#10;  &#125;&#41;, null&#41;&#10;  alias_ips &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  nic_type  &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L224) | Project id. | <code>string</code> | ✓ |  |
 | [zone](variables.tf#L283) | Compute zone. | <code>string</code> | ✓ |  |
 | [attached_disk_defaults](variables.tf#L17) | Defaults for attached disks options. | <code title="object&#40;&#123;&#10;  auto_delete  &#61; optional&#40;bool, false&#41;&#10;  mode         &#61; string&#10;  replica_zone &#61; string&#10;  type         &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  auto_delete  &#61; true&#10;  mode         &#61; &#34;READ_WRITE&#34;&#10;  replica_zone &#61; null&#10;  type         &#61; &#34;pd-balanced&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |

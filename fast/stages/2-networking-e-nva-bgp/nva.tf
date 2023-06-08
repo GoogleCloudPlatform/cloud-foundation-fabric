@@ -152,7 +152,6 @@ module "nva" {
       subnetwork = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${each.value.shortname}"]
       nat        = false
       addresses = {
-        external = null
         internal = google_compute_address.nva_static_ip_untrusted[each.key].address
       }
     },
@@ -161,7 +160,6 @@ module "nva" {
       subnetwork = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${each.value.shortname}"]
       nat        = false
       addresses = {
-        external = null
         internal = google_compute_address.nva_static_ip_trusted[each.key].address
       }
     }
