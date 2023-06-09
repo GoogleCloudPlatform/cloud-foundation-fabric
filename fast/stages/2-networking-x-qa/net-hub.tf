@@ -126,10 +126,13 @@ module "hub-dmz-vpc" {
   project_id = module.hub-project.project_id
   name       = "core-dmz-0"
   mtu        = 1500
-  # set explicit routes for googleapis in case the default route is deleted
-  create_googleapis_routes = {
-    private    = true
-    restricted = true
+  routes = {
+    untrusted-default = {
+      dest_range    = "0.0.0.0/0"
+      tags          = ["nva-int"]
+      next_hop_type = "ilb"
+      next_hop      = module.hub-nva-ext-ilb-dmz.id
+    }
   }
   subnets = [{
     name          = "dmz"
@@ -143,11 +146,6 @@ module "hub-inside-vpc" {
   project_id = module.hub-project.project_id
   name       = "core-inside-0"
   mtu        = 1500
-  # set explicit routes for googleapis in case the default route is deleted
-  create_googleapis_routes = {
-    private    = true
-    restricted = true
-  }
   subnets = [{
     name          = "inside"
     region        = var.region
@@ -160,11 +158,6 @@ module "hub-trusted-prod-vpc" {
   project_id = module.hub-project.project_id
   name       = "prd-trusted-0"
   mtu        = 1500
-  # set explicit routes for googleapis in case the default route is deleted
-  create_googleapis_routes = {
-    private    = true
-    restricted = true
-  }
   subnets = [{
     name          = "trusted-prod"
     region        = var.region
@@ -177,11 +170,6 @@ module "hub-trusted-dev-vpc" {
   project_id = module.hub-project.project_id
   name       = "dev-trusted-0"
   mtu        = 1500
-  # set explicit routes for googleapis in case the default route is deleted
-  create_googleapis_routes = {
-    private    = true
-    restricted = true
-  }
   subnets = [{
     name          = "trusted-dev"
     region        = var.region

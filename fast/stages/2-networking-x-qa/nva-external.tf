@@ -19,7 +19,7 @@ module "hub-nva-external" {
   for_each       = toset(local.nva_zones)
   project_id     = module.hub-project.project_id
   zone           = "${var.region}-b"
-  name           = "nva-external-${each.key}"
+  name           = "nva-ext-${each.key}"
   instance_type  = "n2-standard-2"
   can_ip_forward = true
   network_interfaces = [
@@ -54,10 +54,9 @@ module "hub-nva-external" {
       size  = 10
     }
   }
-  tags  = ["nva-external", "ssh"]
+  tags  = ["nva-ext", "ssh"]
   group = { named_ports = { ssh = 22 } }
-  # wait until the addresses are fully reserved to avoid this
-  # VM from "stealing" one of those addresses
+  # give the address module a chance to reserve addresses first
   depends_on = [module.hub-addresses]
 }
 

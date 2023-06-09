@@ -51,11 +51,6 @@ module "dev-vpc" {
   mtu         = 1500
   data_folder = "${var.factories_config.data_dir}/subnets/dev"
   # psa_config  = try(var.psa_ranges.dev, null)
-  # set explicit routes for googleapis in case the default route is deleted
-  create_googleapis_routes = {
-    private    = true
-    restricted = true
-  }
 }
 
 module "dev-peering" {

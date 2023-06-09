@@ -88,11 +88,9 @@ module "hub-nva-internal" {
       size  = 10
     }
   }
-  tags  = ["nva-internal", "ssh"]
+  tags  = ["nva-int", "ssh"]
   group = { named_ports = { ssh = 22 } }
-
-  # wait until the addresses are fully reserved to avoid this
-  # VM from "stealing" one of those addresses
+  # give the address module a chance to reserve addresses first
   depends_on = [module.hub-addresses]
 }
 
