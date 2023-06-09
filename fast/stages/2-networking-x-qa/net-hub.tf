@@ -129,9 +129,23 @@ module "hub-dmz-vpc" {
   routes = {
     untrusted-default = {
       dest_range    = "0.0.0.0/0"
-      tags          = ["nva-int"]
       next_hop_type = "ilb"
       next_hop      = module.hub-nva-ext-ilb-dmz.id
+    }
+    trusted-rfc1918-0 = {
+      dest_range    = "10.0.0.0/8"
+      next_hop_type = "ilb"
+      next_hop      = module.hub-nva-internal-ilb["dmz"].id
+    }
+    trusted-rfc1918-1 = {
+      dest_range    = "172.16.0.0/12"
+      next_hop_type = "ilb"
+      next_hop      = module.hub-nva-internal-ilb["dmz"].id
+    }
+    trusted-rfc1918-2 = {
+      dest_range    = "192.168.0.0/16"
+      next_hop_type = "ilb"
+      next_hop      = module.hub-nva-internal-ilb["dmz"].id
     }
   }
   subnets = [{

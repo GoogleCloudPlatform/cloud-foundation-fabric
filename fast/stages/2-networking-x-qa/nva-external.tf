@@ -44,6 +44,7 @@ module "hub-nva-external" {
     - ip rule add from ${var.ip_ranges.subnets.dmz} to 172.16.0.0/12 lookup 110
     - ip rule add from ${var.ip_ranges.subnets.dmz} to 192.168.0.0/16 lookup 110
     - ip route add default via ${cidrhost(var.ip_ranges.subnets.dmz, 1)} dev eth1 proto static onlink table 110
+    - iptables -A POSTROUTING -t nat -o eth0 -j MASQUERADE
     END
     google-logging-enabled = true
   }
