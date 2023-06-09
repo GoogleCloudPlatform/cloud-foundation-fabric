@@ -90,7 +90,7 @@ module "test-vm-prod-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.prod-project.project_id
   zone       = "${var.region}-a"
-  name       = "test-vm-inside-0"
+  name       = "test-vm-prod-0"
   network_interfaces = [{
     network    = module.prod-vpc.self_link
     subnetwork = module.prod-vpc.subnet_self_links["${var.region}/prod-default"]
@@ -110,4 +110,27 @@ module "test-vm-prod-0" {
   }
 }
 
+module "test-vm-dev-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.dev-project.project_id
+  zone       = "${var.region}-a"
+  name       = "test-vm-dev-0"
+  network_interfaces = [{
+    network    = module.dev-vpc.self_link
+    subnetwork = module.dev-vpc.subnet_self_links["${var.region}/dev-default"]
+  }]
+  instance_type          = "e2-micro"
+  tags                   = ["ssh", "http-server"]
+  service_account_create = true
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping 	bind9-dnsutils
+    EOF
+  }
+}
 

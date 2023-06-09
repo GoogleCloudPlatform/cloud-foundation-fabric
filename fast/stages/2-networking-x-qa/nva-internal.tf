@@ -28,12 +28,15 @@ locals {
   %{~endif~}
   %{~endfor~}
   %{~for r in var.ip_ranges.routes.onprem~}
+  # change to rule?
   - ip route add ${r} via ${cidrhost(var.ip_ranges.subnets.inside, 1)} dev eth1 proto static onlink
   %{~endfor~}
   %{~for r in var.ip_ranges.routes.dev~}
+  # change to rule?
   - ip route add ${r} via ${cidrhost(var.ip_ranges.subnets.trusted-dev, 1)} dev eth2 proto static onlink
   %{~endfor~}
   %{~for r in var.ip_ranges.routes.prod~}
+  # change to rule?
   - ip route add ${r} via ${cidrhost(var.ip_ranges.subnets.trusted-prod, 1)} dev eth3 proto static onlink
   %{~endfor~}
   END

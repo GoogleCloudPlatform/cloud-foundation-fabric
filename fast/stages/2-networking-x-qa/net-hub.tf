@@ -177,6 +177,13 @@ module "hub-trusted-prod-vpc" {
     region        = var.region
     ip_cidr_range = var.ip_ranges.subnets["trusted-prod"]
   }]
+  routes = {
+    trusted-prod-default = {
+      dest_range    = "0.0.0.0/0"
+      next_hop_type = "ilb"
+      next_hop      = module.hub-nva-internal-ilb["trusted-prod"].id
+    }
+  }
 }
 
 module "hub-trusted-dev-vpc" {
@@ -189,4 +196,11 @@ module "hub-trusted-dev-vpc" {
     region        = var.region
     ip_cidr_range = var.ip_ranges.subnets["trusted-dev"]
   }]
+  routes = {
+    trusted-dev-default = {
+      dest_range    = "0.0.0.0/0"
+      next_hop_type = "ilb"
+      next_hop      = module.hub-nva-internal-ilb["trusted-dev"].id
+    }
+  }
 }

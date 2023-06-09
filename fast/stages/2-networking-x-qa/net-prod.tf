@@ -51,6 +51,13 @@ module "prod-vpc" {
   mtu         = 1500
   data_folder = "${var.factories_config.data_dir}/subnets/prod"
   # psa_config  = try(var.psa_ranges.prod, null)
+  routes = {
+    default = {
+      dest_range    = "0.0.0.0/0"
+      next_hop_type = "ilb"
+      next_hop      = module.hub-addresses.internal_addresses["nva-int-ilb-trusted-prod"].address
+    }
+  }
 }
 
 module "prod-peering" {

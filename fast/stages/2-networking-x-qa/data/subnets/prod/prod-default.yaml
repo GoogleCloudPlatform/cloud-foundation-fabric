@@ -2,5 +2,5 @@
 
 region: me-central1
 description: Default subnet for dev
-ip_cidr_range: 10.16.1.0/24
+ip_cidr_range: 10.24.0.0/24
 
