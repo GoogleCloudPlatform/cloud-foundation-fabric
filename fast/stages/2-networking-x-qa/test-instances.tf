@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
+module "test-vm-untrusted-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.hub-project.project_id
+  zone       = "${var.region}-a"
+  name       = "test-vm-untrusted-0"
+  network_interfaces = [{
+    network    = module.hub-untrusted-vpc.self_link
+    subnetwork = module.hub-untrusted-vpc.subnet_self_links["${var.region}/untrusted"]
+  }]
+  instance_type          = "e2-micro"
+  tags                   = ["ssh", "http-server"]
+  service_account_create = true
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping 	bind9-dnsutils
+    EOF
+  }
+}
+
 module "test-vm-dmz-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.hub-project.project_id
@@ -62,14 +86,14 @@ module "test-vm-inside-0" {
   }
 }
 
-module "test-vm-mgmt-0" {
+module "test-vm-prod-0" {
   source     = "../../../modules/compute-vm"
-  project_id = module.hub-project.project_id
+  project_id = module.prod-project.project_id
   zone       = "${var.region}-a"
-  name       = "test-vm-mgmt-0"
+  name       = "test-vm-inside-0"
   network_interfaces = [{
-    network    = module.hub-management-vpc.self_link
-    subnetwork = module.hub-management-vpc.subnet_self_links["${var.region}/mgmt"]
+    network    = module.prod-vpc.self_link
+    subnetwork = module.prod-vpc.subnet_self_links["${var.region}/prod-default"]
   }]
   instance_type          = "e2-micro"
   tags                   = ["ssh", "http-server"]
@@ -86,26 +110,3 @@ module "test-vm-mgmt-0" {
   }
 }
 
-module "test-vm-untrusted-0" {
-  source     = "../../../modules/compute-vm"
-  project_id = module.hub-project.project_id
-  zone       = "${var.region}-a"
-  name       = "test-vm-untrusted-0"
-  network_interfaces = [{
-    network    = module.hub-untrusted-vpc.self_link
-    subnetwork = module.hub-untrusted-vpc.subnet_self_links["${var.region}/untrusted"]
-  }]
-  instance_type          = "e2-micro"
-  tags                   = ["ssh", "http-server"]
-  service_account_create = true
-  options = {
-    spot               = true
-    termination_action = "STOP"
-  }
-  metadata = {
-    startup-script = <<EOF
-      apt update
-      apt install iputils-ping 	bind9-dnsutils
-    EOF
-  }
-}

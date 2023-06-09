@@ -113,6 +113,14 @@ module "hub-untrusted-vpc" {
   }]
 }
 
+module "nat-untrusted" {
+  source         = "../../../modules/net-cloudnat"
+  project_id     = module.hub-project.project_id
+  region         = var.region
+  name           = "nat-untrusted"
+  router_network = module.hub-untrusted-vpc.name
+}
+
 module "hub-dmz-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.hub-project.project_id

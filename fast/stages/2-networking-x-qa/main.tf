@@ -50,8 +50,7 @@ module "folder" {
     policy_name = var.factories_config.firewall_policy_name
     rules_file  = "${var.factories_config.data_dir}/hierarchical-policy-rules.yaml"
   }
-  # firewall_policy_association = {
-  #   (var.factories_config.firewall_policy_name) = module.folder.firewall_policy_id[var.factories_config.firewall_policy_name]
-  # }
+  firewall_policy_association = {
+    (var.factories_config.firewall_policy_name) = module.folder.firewall_policy_id[var.factories_config.firewall_policy_name]
+  }
 }
-
