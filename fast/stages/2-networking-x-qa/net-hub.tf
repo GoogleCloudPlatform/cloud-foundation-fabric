@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+locals {
+  nva_zones = ["a"] # ["a", "b"]
+}
+
 module "hub-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
@@ -37,6 +41,41 @@ module "hub-project" {
     (local.custom_roles.service_project_network_admin) = compact([
       try(local.service_accounts.project-factory-prod, null)
     ])
+  }
+}
+
+module "hub-addresses" {
+  source     = "../../../modules/net-address"
+  project_id = module.hub-project.project_id
+  # external_addresses = {
+  #   mtls-ext-nlb = var.region
+  # }
+  internal_addresses = {
+    nva-ext-ilb-dmz = {
+      address    = cidrhost(var.ip_ranges.subnets.dmz, 3)
+      region     = var.region
+      subnetwork = module.hub-dmz-vpc.subnet_self_links["${var.region}/dmz"]
+    }
+    nva-int-ilb-dmz = {
+      address    = cidrhost(var.ip_ranges.subnets.dmz, 2)
+      region     = var.region
+      subnetwork = module.hub-dmz-vpc.subnet_self_links["${var.region}/dmz"]
+    }
+    nva-int-ilb-inside = {
+      address    = cidrhost(var.ip_ranges.subnets.inside, 2)
+      region     = var.region
+      subnetwork = module.hub-inside-vpc.subnet_self_links["${var.region}/inside"]
+    }
+    nva-int-ilb-trusted-prod = {
+      address    = cidrhost(var.ip_ranges.subnets.trusted-prod, 2)
+      region     = var.region
+      subnetwork = module.hub-trusted-prod-vpc.subnet_self_links["${var.region}/trusted-prod"]
+    }
+    nva-int-ilb-trusted-dev = {
+      address    = cidrhost(var.ip_ranges.subnets.trusted-dev, 2)
+      region     = var.region
+      subnetwork = module.hub-trusted-dev-vpc.subnet_self_links["${var.region}/trusted-dev"]
+    }
   }
 }
 
@@ -140,39 +179,4 @@ module "hub-trusted-dev-vpc" {
     region        = var.region
     ip_cidr_range = var.ip_ranges.subnets["trusted-dev"]
   }]
-}
-
-module "hub-addresses" {
-  source     = "../../../modules/net-address"
-  project_id = module.hub-project.project_id
-  # external_addresses = {
-  #   mtls-ext-nlb = var.region
-  # }
-  internal_addresses = {
-    nva-external-dmz = {
-      address    = cidrhost(var.ip_ranges.subnets.dmz, 3)
-      region     = var.region
-      subnetwork = module.hub-dmz-vpc.subnet_self_links["${var.region}/dmz"]
-    }
-    nva-internal-dmz = {
-      address    = cidrhost(var.ip_ranges.subnets.dmz, 2)
-      region     = var.region
-      subnetwork = module.hub-dmz-vpc.subnet_self_links["${var.region}/dmz"]
-    }
-    nva-internal-inside = {
-      address    = cidrhost(var.ip_ranges.subnets.inside, 2)
-      region     = var.region
-      subnetwork = module.hub-inside-vpc.subnet_self_links["${var.region}/inside"]
-    }
-    nva-internal-trusted-prod = {
-      address    = cidrhost(var.ip_ranges.subnets.trusted-prod, 2)
-      region     = var.region
-      subnetwork = module.hub-trusted-prod-vpc.subnet_self_links["${var.region}/trusted-prod"]
-    }
-    nva-internal-trusted-dev = {
-      address    = cidrhost(var.ip_ranges.subnets.trusted-dev, 2)
-      region     = var.region
-      subnetwork = module.hub-trusted-dev-vpc.subnet_self_links["${var.region}/trusted-dev"]
-    }
-  }
 }

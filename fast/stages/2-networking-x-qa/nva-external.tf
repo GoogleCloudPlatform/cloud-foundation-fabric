@@ -16,7 +16,7 @@
 
 module "hub-nva-external" {
   source         = "../../../modules/compute-vm"
-  for_each       = toset(["a"]) # , "b"])
+  for_each       = toset(local.nva_zones)
   project_id     = module.hub-project.project_id
   zone           = "${var.region}-b"
   name           = "nva-external-${each.key}"
@@ -56,15 +56,17 @@ module "hub-nva-external" {
   }
   tags  = ["nva-external", "ssh"]
   group = { named_ports = { ssh = 22 } }
-  # depends_on = [module.hub-addresses]
+  # wait until the addresses are fully reserved to avoid this
+  # VM from "stealing" one of those addresses
+  depends_on = [module.hub-addresses]
 }
 
-module "hub-nva-external-dmz" {
+module "hub-nva-ext-ilb-dmz" {
   source     = "../../../modules/net-ilb"
   project_id = module.hub-project.project_id
   region     = var.region
-  name       = "nva-external-dmz"
-  address    = module.hub-addresses.internal_addresses["nva-external-dmz"].address
+  name       = "nva-ext-ilb-dmz"
+  address    = module.hub-addresses.internal_addresses["nva-ext-ilb-dmz"].address
   vpc_config = {
     network    = module.hub-dmz-vpc.id
     subnetwork = module.hub-dmz-vpc.subnets["${var.region}/dmz"].id

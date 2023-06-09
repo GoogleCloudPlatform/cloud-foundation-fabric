@@ -37,7 +37,6 @@ locals {
   - ip route add ${r} via ${cidrhost(var.ip_ranges.subnets.trusted-prod, 1)} dev eth3 proto static onlink
   %{~endfor~}
   END
-  # alphabetical order matters, dmz needs to be first, inside second
   nva_internal_nets = {
     dmz = {
       network    = module.hub-dmz-vpc.self_link
@@ -60,14 +59,18 @@ locals {
 
 module "hub-nva-internal" {
   source         = "../../../modules/compute-vm"
-  for_each       = toset(["a"]) # , "b"])
+  for_each       = toset(local.nva_zones)
   project_id     = module.hub-project.project_id
   zone           = "${var.region}-b"
   name           = "nva-internal-${each.key}"
-  instance_type  = "custom-6-4"
+  instance_type  = "n2-standard-8"
   can_ip_forward = true
   network_interfaces = concat(
-    [for k, v in local.nva_internal_nets : v],
+    # explicit ordering
+    [
+      for k in ["dmz", "inside", "trusted-dev", "trusted-prod"] :
+      local.nva_internal_nets[k]
+    ],
     [{
       network    = module.hub-management-vpc.self_link
       subnetwork = module.hub-management-vpc.subnet_self_links["${var.region}/mgmt"]
@@ -87,7 +90,10 @@ module "hub-nva-internal" {
   }
   tags  = ["nva-internal", "ssh"]
   group = { named_ports = { ssh = 22 } }
-  # depends_on = [module.hub-addresses]
+
+  # wait until the addresses are fully reserved to avoid this
+  # VM from "stealing" one of those addresses
+  depends_on = [module.hub-addresses]
 }
 
 module "hub-nva-internal-ilb" {
@@ -95,8 +101,8 @@ module "hub-nva-internal-ilb" {
   for_each   = local.nva_internal_nets
   project_id = module.hub-project.project_id
   region     = var.region
-  name       = "nva-internal-dmz"
-  address    = module.hub-addresses.internal_addresses["nva-internal-${each.key}"].address
+  name       = "nva-internal-${each.key}"
+  address    = module.hub-addresses.internal_addresses["nva-int-ilb-${each.key}"].address
   vpc_config = each.value
   backends = [
     for k, v in module.hub-nva-internal : {
