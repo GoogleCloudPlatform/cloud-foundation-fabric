@@ -165,6 +165,14 @@ module "hub-inside-vpc" {
     region        = var.region
     ip_cidr_range = var.ip_ranges.subnets["inside"]
   }]
+  routes = {
+    default = {
+      dest_range    = "0.0.0.0/0"
+      next_hop_type = "ilb"
+      next_hop      = module.hub-nva-internal-ilb["inside"].id
+    }
+  }
+
 }
 
 module "hub-trusted-prod-vpc" {
