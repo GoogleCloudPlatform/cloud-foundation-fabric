@@ -14,3 +14,23 @@
  * limitations under the License.
  */
 
+output "instances" {
+  value = {
+    nva-external = {
+      ilb = module.hub-nva-ext-ilb-dmz.forwarding_rule_address
+      vm  = module.hub-nva-external["a"].internal_ip
+    }
+    nva-external = {
+      ilb = {
+        for k, v in module.hub-nva-internal-ilb :
+        k => v.forwarding_rule_address
+      }
+      vm = module.hub-nva-internal["a"].internal_ip
+    }
+    test-dev-0       = module.test-vm-dev-0.internal_ip
+    test-dmz-0       = module.test-vm-dmz-0.internal_ip
+    test-inside-0    = module.test-vm-inside-0.internal_ip
+    test-prod-0      = module.test-vm-prod-0.internal_ip
+    test-untrusted-0 = module.test-vm-untrusted-0.internal_ip
+  }
+}
