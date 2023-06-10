@@ -20,9 +20,8 @@ locals {
   # combine all regions from variables and subnets
   regions = distinct(concat(
     [var.region],
-    # values(module.dev-spoke-vpc.subnet_regions),
-    # values(module.landing-vpc.subnet_regions),
-    # values(module.prod-spoke-vpc.subnet_regions),
+    values(module.dev-vpc.subnet_regions),
+    values(module.prod-vpc.subnet_regions),
   ))
   custom_roles = coalesce(var.custom_roles, {})
   stage3_sas_delegated_grants = [

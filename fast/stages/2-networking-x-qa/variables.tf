@@ -138,3 +138,45 @@ variable "service_accounts" {
   default = null
 }
 
+variable "vpn_config" {
+  description = "VPN gateway configuration for onprem interconnection."
+  type = object({
+    peer_external_gateways = map(object({
+      redundancy_type = string
+      interfaces      = list(string)
+    }))
+    router_config = object({
+      create    = optional(bool, true)
+      asn       = number
+      name      = optional(string)
+      keepalive = optional(number)
+      custom_advertise = optional(object({
+        all_subnets = bool
+        ip_ranges   = map(string)
+      }))
+    })
+    tunnels = map(object({
+      bgp_peer = object({
+        address        = string
+        asn            = number
+        route_priority = optional(number, 1000)
+        custom_advertise = optional(object({
+          all_subnets          = bool
+          all_vpc_subnets      = bool
+          all_peer_vpc_subnets = bool
+          ip_ranges            = map(string)
+        }))
+      })
+      # each BGP session on the same Cloud Router must use a unique /30 CIDR
+      # from the 169.254.0.0/16 block.
+      bgp_session_range               = string
+      ike_version                     = optional(number, 2)
+      peer_external_gateway_interface = optional(number)
+      peer_gateway                    = optional(string, "default")
+      router                          = optional(string)
+      shared_secret                   = optional(string)
+      vpn_gateway_interface           = number
+    }))
+  })
+  default = null
+}
