@@ -45,15 +45,12 @@ module "hub-nva-external" {
     - ip rule add from ${var.ip_ranges.subnets.dmz} to 192.168.0.0/16 lookup 110
     - ip route add default via ${cidrhost(var.ip_ranges.subnets.dmz, 1)} dev eth1 proto static onlink table 110
     %{~for r in var.ip_ranges.routes.onprem~}
-    # change to rule?
     - ip route add ${r} via ${cidrhost(var.ip_ranges.subnets.dmz, 1)} dev eth1 proto static onlink
     %{~endfor~}
     %{~for r in var.ip_ranges.routes.dev~}
-    # change to rule?
     - ip route add ${r} via ${cidrhost(var.ip_ranges.subnets.dmz, 1)} dev eth1 proto static onlink
     %{~endfor~}
     %{~for r in var.ip_ranges.routes.prod~}
-    # change to rule?
     - ip route add ${r} via ${cidrhost(var.ip_ranges.subnets.dmz, 1)} dev eth1 proto static onlink
     %{~endfor~}
     - iptables -A POSTROUTING -t nat -o eth0 -j MASQUERADE

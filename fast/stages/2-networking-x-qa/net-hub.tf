@@ -15,7 +15,7 @@
  */
 
 locals {
-  nva_zones = ["a"] # ["a", "b"]
+  nva_zones = ["a", "b"]
 }
 
 module "hub-project" {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output "instances" {
+output "test-instances" {
   value = {
     nva-external = {
       ilb = module.hub-nva-ext-ilb-dmz.forwarding_rule_address
