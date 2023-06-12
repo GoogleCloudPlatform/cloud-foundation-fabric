@@ -1,3 +1,5 @@
-delegated grants
-external load balancer
-outputs
+- delegated grants
+- external load balancer
+- outputs
+- test vms in multiple zones
+- separate instance groups for nva

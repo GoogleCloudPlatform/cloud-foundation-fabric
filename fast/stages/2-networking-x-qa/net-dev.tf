@@ -69,3 +69,36 @@ module "dev-peering" {
   export_peer_custom_routes  = true
 }
 
+module "dev-dns-priv-example" {
+  source          = "../../../modules/dns"
+  project_id      = module.dev-project.project_id
+  type            = "private"
+  name            = "dev-gcp-example-com"
+  domain          = "dev.gcp.example.com."
+  client_networks = [module.hub-inside-vpc.self_link]
+  recordsets = {
+    "A localhost" = { records = ["127.0.0.1"] }
+  }
+}
+
+module "dev-dns-peer-inside-root" {
+  source          = "../../../modules/dns"
+  project_id      = module.dev-project.project_id
+  type            = "peering"
+  name            = "dev-root-dns-peering"
+  domain          = "."
+  client_networks = [module.dev-vpc.self_link]
+  peer_network    = module.hub-inside-vpc.self_link
+}
+
+module "dev-dns-peer-inside-rev-10" {
+  source          = "../../../modules/dns"
+  project_id      = module.dev-project.project_id
+  type            = "peering"
+  name            = "dev-reverse-10-dns-peering"
+  domain          = "10.in-addr.arpa."
+  client_networks = [module.dev-vpc.self_link]
+  peer_network    = module.hub-inside-vpc.self_link
+}
+
+
