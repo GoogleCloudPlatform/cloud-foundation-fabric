@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,11 @@ output "self_link" {
     google_compute_shared_vpc_service_project.service_projects,
     google_service_networking_connection.psa_connection
   ]
+}
+
+output "subnet_ids" {
+  description = "Map of subnet IDs keyed by name."
+  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.id }
 }
 
 output "subnet_ips" {
