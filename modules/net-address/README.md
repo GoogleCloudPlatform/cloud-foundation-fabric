@@ -95,9 +95,9 @@ module "addresses" {
 | name | description | sensitive |
 |---|---|:---:|
 | [external_addresses](outputs.tf#L17) | Allocated external addresses. |  |
-| [global_addresses](outputs.tf#L28) | Allocated global external addresses. |  |
-| [internal_addresses](outputs.tf#L39) | Allocated internal addresses. |  |
-| [psa_addresses](outputs.tf#L50) | Allocated internal addresses for PSA endpoints. |  |
-| [psc_addresses](outputs.tf#L62) | Allocated internal addresses for PSC endpoints. |  |
+| [global_addresses](outputs.tf#L25) | Allocated global external addresses. |  |
+| [internal_addresses](outputs.tf#L33) | Allocated internal addresses. |  |
+| [psa_addresses](outputs.tf#L41) | Allocated internal addresses for PSA endpoints. |  |
+| [psc_addresses](outputs.tf#L49) | Allocated internal addresses for PSC endpoints. |  |
 
 <!-- END TFDOC -->
