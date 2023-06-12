@@ -20,7 +20,7 @@ module "dev-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "dev-net-spk-0"
-  parent          = var.folder_ids.networking-prod
+  parent          = var.folder_ids.networking-dev
   prefix          = var.prefix
   services = [
     "container.googleapis.com",
