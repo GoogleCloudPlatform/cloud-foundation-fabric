@@ -113,15 +113,15 @@ You can add additional spoke to the architecture. All of these spokes have netwo
 
 ```hcl
 module "test" {
- source = "./fabric/blueprints/networking/hub-and-spoke-peering"
- prefix = "prefix"
- project_create = {
-   billing_account = "123456-123456-123456"
-   oslogin         = true
-   parent          = "folders/123456789"
- }
- project_id = "project-1"
+  source = "./fabric/blueprints/networking/hub-and-spoke-peering"
+  prefix = "prefix"
+  project_create = {
+    billing_account = "123456-123456-123456"
+    oslogin         = true
+    parent          = "folders/123456789"
+  }
+  project_id = "project-1"
 }
 
-# tftest modules=22 resources=61
+# tftest modules=22 resources=69
 ```
