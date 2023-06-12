@@ -105,11 +105,10 @@ You can add additional spoke to the architecture. All of these spokes have netwo
 
 | name | description | sensitive |
 |---|---|:---:|
-| [project](outputs.tf#L15) | Project ID. |  |
-| [vms](outputs.tf#L20) | Compute Engine VMs. |  |
+| [project](outputs.tf#L15) | Project id. |  |
+| [vms](outputs.tf#L20) | GCE VMs. |  |
 
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl
