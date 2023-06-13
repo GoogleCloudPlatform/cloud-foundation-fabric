@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,10 @@ locals {
 }
 
 module "folder" {
-  source        = "../../../modules/folder"
-  parent        = "organizations/${var.organization.id}"
+  source = "../../../modules/folder"
+  # parent        = "organizations/${var.organization.id}"
   name          = "Networking"
-  folder_create = var.folder_ids.networking == null
+  folder_create = false
   id            = var.folder_ids.networking
   firewall_policy_factory = {
     cidr_file   = "${var.factories_config.data_dir}/cidrs.yaml"

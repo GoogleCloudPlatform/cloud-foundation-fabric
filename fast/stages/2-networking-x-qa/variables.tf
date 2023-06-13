@@ -122,16 +122,6 @@ variable "nva_instance_ids" {
   nullable = false
 }
 
-variable "organization" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Organization details."
-  type = object({
-    domain      = string
-    id          = number
-    customer_id = string
-  })
-}
-
 variable "outputs_location" {
   description = "Path where providers and tfvars files for the following stages are written. Leave empty to disable."
   type        = string
