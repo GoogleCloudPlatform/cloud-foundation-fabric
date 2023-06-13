@@ -132,6 +132,9 @@ variable "groups" {
     # However, we recommend creating gcp-support and updating the
     # value in the following line
     gcp-support = "gcp-devops"
+    data-engineers = "gcp-data-engineers"
+    data-security = "gcp-data-security"
+    data-analysts = "gcp-data-analysts"
   }
 }
 
