@@ -2,7 +2,7 @@
 
 This module allows for the provisioning of [HA VPN over Interconnect](https://cloud.google.com/network-connectivity/docs/interconnect/concepts/ha-vpn-interconnect?hl=it). Specifically, this module creates a VPN gateway, a configurable number of tunnels, and all the resources required to established IPSec and BGP with the peer routers.
 
-The required pair of encrypted VLAN Attachments can be created leveraging the [net-dedicated-vlan-attachment](../net-dedicated-vlan-attachment/) module, as shown in the [IoIC Blueprint](../../blueprints/networking/ha-vpn-over-interconnect/).
+The required pair of encrypted VLAN Attachments can be created leveraging the [net-vlan-attachment](../net-vlan-attachment/) module, as shown in the [IoIC Blueprint](../../blueprints/networking/ha-vpn-over-interconnect/).
 
 ## Examples
 

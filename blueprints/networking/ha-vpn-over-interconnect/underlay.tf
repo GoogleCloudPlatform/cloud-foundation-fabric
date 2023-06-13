@@ -27,39 +27,43 @@ resource "google_compute_router" "encrypted-interconnect-underlay-router" {
 }
 
 module "va-a" {
-  source       = "../../../modules/net-dedicated-vlan-attachment"
-  project_id   = var.project_id
-  network      = var.network
-  region       = var.region
-  name         = "${var.underlay_config.attachments.a.base_name}-a"
-  bandwidth    = var.underlay_config.attachments.a.bandwidth
-  bgp_range    = var.underlay_config.attachments.a.bgp_range
-  description  = "Encrypted VLAN Attachment ${var.underlay_config.attachments.a.base_name}-a"
-  interconnect = var.underlay_config.attachments.a.interconnect_self_link
-  peer_asn     = var.underlay_config.attachments.a.onprem_asn
+  source      = "../../../modules/net-vlan-attachment"
+  project_id  = var.project_id
+  network     = var.network
+  region      = var.region
+  name        = "${var.underlay_config.attachments.a.base_name}-a"
+  description = "Encrypted VLAN Attachment ${var.underlay_config.attachments.a.base_name}-a"
+  peer_asn    = var.underlay_config.attachments.a.onprem_asn
   router_config = {
     create = false
     name   = google_compute_router.encrypted-interconnect-underlay-router.name
   }
-  vlan_tag              = var.underlay_config.attachments.a.vlan_tag
+  dedicated_interconnect_config = {
+    bandwidth    = var.underlay_config.attachments.a.bandwidth
+    bgp_range    = var.underlay_config.attachments.a.bgp_range
+    interconnect = var.underlay_config.attachments.a.interconnect_self_link
+    vlan_tag     = var.underlay_config.attachments.a.vlan_tag
+  }
   vpn_gateways_ip_range = var.underlay_config.attachments.a.vpn_gateways_ip_range
 }
 
 module "va-b" {
-  source       = "../../../modules/net-dedicated-vlan-attachment"
-  project_id   = var.project_id
-  network      = var.network
-  region       = var.region
-  name         = "${var.underlay_config.attachments.a.base_name}-b"
-  bandwidth    = var.underlay_config.attachments.b.bandwidth
-  bgp_range    = var.underlay_config.attachments.b.bgp_range
-  description  = "Encrypted VLAN Attachment ${var.underlay_config.attachments.a.base_name}-b"
-  interconnect = var.underlay_config.attachments.b.interconnect_self_link
-  peer_asn     = var.underlay_config.attachments.b.onprem_asn
+  source      = "../../../modules/net-vlan-attachment"
+  project_id  = var.project_id
+  network     = var.network
+  region      = var.region
+  name        = "${var.underlay_config.attachments.a.base_name}-b"
+  description = "Encrypted VLAN Attachment ${var.underlay_config.attachments.a.base_name}-b"
+  peer_asn    = var.underlay_config.attachments.b.onprem_asn
   router_config = {
     create = false
     name   = google_compute_router.encrypted-interconnect-underlay-router.name
   }
-  vlan_tag              = var.underlay_config.attachments.b.vlan_tag
+  dedicated_interconnect_config = {
+    bandwidth    = var.underlay_config.attachments.b.bandwidth
+    bgp_range    = var.underlay_config.attachments.b.bgp_range
+    interconnect = var.underlay_config.attachments.b.interconnect_self_link
+    vlan_tag     = var.underlay_config.attachments.b.vlan_tag
+  }
   vpn_gateways_ip_range = var.underlay_config.attachments.b.vpn_gateways_ip_range
 }

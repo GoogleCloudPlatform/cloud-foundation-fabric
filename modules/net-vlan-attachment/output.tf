@@ -29,6 +29,11 @@ output "name" {
   value       = google_compute_interconnect_attachment.default.name
 }
 
+output "pairing_key" {
+  description = "Opaque identifier of an PARTNER attachment used to initiate provisioning with a selected partner."
+  value       = google_compute_interconnect_attachment.default.pairing_key
+}
+
 output "router" {
   description = "Router resource (only if auto-created)."
   value       = local.ipsec_enabled ? one(google_compute_router.encrypted[*]) : one(google_compute_router.unencrypted[*])
