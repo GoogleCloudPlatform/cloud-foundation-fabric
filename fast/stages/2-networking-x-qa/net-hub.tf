@@ -130,7 +130,7 @@ module "hub-dmz-vpc" {
     untrusted-default = {
       dest_range    = "0.0.0.0/0"
       next_hop_type = "ilb"
-      next_hop      = module.hub-nva-ext-ilb-dmz.id
+      next_hop      = module.hub-nva-external-ilb-dmz.id
     }
     trusted-rfc1918-0 = {
       dest_range    = "10.0.0.0/8"
@@ -172,6 +172,9 @@ module "hub-inside-vpc" {
       next_hop      = module.hub-nva-internal-ilb["inside"].id
     }
   }
+  dns_policy = {
+    inbound = true
+  }
 }
 
 module "hub-inside-dns-policy-googleapis" {
@@ -184,6 +187,7 @@ module "hub-inside-dns-policy-googleapis" {
   rules_file = var.factories_config.dns_policy_rules_file
 }
 
+# TODO: DNS forwarding zone to onprem would go here
 
 module "hub-trusted-prod-vpc" {
   source     = "../../../modules/net-vpc"

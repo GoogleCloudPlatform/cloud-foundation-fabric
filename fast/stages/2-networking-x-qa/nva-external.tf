@@ -15,10 +15,12 @@
  */
 
 module "hub-nva-external" {
-  source         = "../../../modules/compute-vm"
-  for_each       = toset(local.nva_zones)
+  source = "../../../modules/compute-vm"
+  for_each = toset(
+    var.nva_instance_ids.external != null ? [] : local.nva_zones
+  )
   project_id     = module.hub-project.project_id
-  zone           = "${var.region}-b"
+  zone           = "${var.region}-${each.key}"
   name           = "nva-ext-${each.key}"
   instance_type  = "n2-standard-2"
   can_ip_forward = true
@@ -64,13 +66,25 @@ module "hub-nva-external" {
       size  = 10
     }
   }
-  tags  = ["nva-ext", "ssh"]
-  group = { named_ports = { ssh = 22 } }
+  tags = ["nva-ext", "ssh"]
   # give the address module a chance to reserve addresses first
   depends_on = [module.hub-addresses]
 }
 
-module "hub-nva-ext-ilb-dmz" {
+resource "google_compute_instance_group" "nva-external" {
+  for_each    = toset(local.nva_zones)
+  project     = module.hub-project.project_id
+  zone        = "${var.region}-${each.key}"
+  name        = "nva-ext-${each.key}"
+  description = "Group for external NVA for zone ${each.key}."
+  instances = [
+    var.nva_instance_ids.external != null
+    ? var.nva_instance_ids.external[each.key]
+    : module.hub-nva-external[each.key].id
+  ]
+}
+
+module "hub-nva-external-ilb-dmz" {
   source     = "../../../modules/net-ilb"
   project_id = module.hub-project.project_id
   region     = var.region
@@ -81,9 +95,9 @@ module "hub-nva-ext-ilb-dmz" {
     subnetwork = module.hub-dmz-vpc.subnets["${var.region}/dmz"].id
   }
   backends = [
-    for k, v in module.hub-nva-external : {
+    for k, v in google_compute_instance_group.nva-external : {
       failover       = false
-      group          = v.group.id
+      group          = v.id
       balancing_mode = "CONNECTION"
     }
   ]
@@ -91,3 +105,4 @@ module "hub-nva-ext-ilb-dmz" {
     tcp = { port = "22" }
   }
 }
+

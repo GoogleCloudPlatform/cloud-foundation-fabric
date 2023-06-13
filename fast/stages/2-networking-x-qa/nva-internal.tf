@@ -58,10 +58,12 @@ locals {
 }
 
 module "hub-nva-internal" {
-  source         = "../../../modules/compute-vm"
-  for_each       = toset(local.nva_zones)
+  source = "../../../modules/compute-vm"
+  for_each = toset(
+    var.nva_instance_ids.internal != null ? [] : local.nva_zones
+  )
   project_id     = module.hub-project.project_id
-  zone           = "${var.region}-b"
+  zone           = "${var.region}-${each.key}"
   name           = "nva-int-${each.key}"
   instance_type  = "n2-standard-8"
   can_ip_forward = true
@@ -88,10 +90,22 @@ module "hub-nva-internal" {
       size  = 10
     }
   }
-  tags  = ["nva-int", "ssh"]
-  group = { named_ports = { ssh = 22 } }
+  tags = ["nva-int", "ssh"]
   # give the address module a chance to reserve addresses first
   depends_on = [module.hub-addresses]
+}
+
+resource "google_compute_instance_group" "nva-internal" {
+  for_each    = toset(local.nva_zones)
+  project     = module.hub-project.project_id
+  zone        = "${var.region}-${each.key}"
+  name        = "nva-int-${each.key}"
+  description = "Group for internal NVA for zone ${each.key}."
+  instances = [
+    var.nva_instance_ids.internal != null
+    ? var.nva_instance_ids.internal[each.key]
+    : module.hub-nva-internal[each.key].id
+  ]
 }
 
 module "hub-nva-internal-ilb" {
@@ -103,9 +117,9 @@ module "hub-nva-internal-ilb" {
   address    = module.hub-addresses.internal_addresses["nva-int-ilb-${each.key}"].address
   vpc_config = each.value
   backends = [
-    for k, v in module.hub-nva-internal : {
+    for k, v in google_compute_instance_group.nva-internal : {
       failover       = false
-      group          = v.group.id
+      group          = v.id
       balancing_mode = "CONNECTION"
     }
   ]

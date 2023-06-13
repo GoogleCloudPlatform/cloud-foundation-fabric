@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+variable "automation" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Automation resources created by the bootstrap stage."
+  type = object({
+    outputs_bucket = string
+  })
+  default = null
+}
+
 variable "billing_account" {
   # tfdoc:variable:source 0-bootstrap
   description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
@@ -97,6 +106,22 @@ variable "ip_ranges" {
   }
 }
 
+variable "nva_instance_ids" {
+  description = "Instance ids for existing NVAs managed outside."
+  type = object({
+    external = optional(object({
+      a = string
+      b = string
+    }))
+    internal = optional(object({
+      a = string
+      b = string
+    }))
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
@@ -105,6 +130,12 @@ variable "organization" {
     id          = number
     customer_id = string
   })
+}
+
+variable "outputs_location" {
+  description = "Path where providers and tfvars files for the following stages are written. Leave empty to disable."
+  type        = string
+  default     = null
 }
 
 variable "prefix" {
