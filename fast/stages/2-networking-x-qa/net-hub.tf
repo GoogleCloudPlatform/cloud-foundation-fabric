@@ -77,6 +77,7 @@ module "hub-addresses" {
       subnetwork = module.hub-trusted-dev-vpc.subnet_self_links["${var.region}/trusted-dev"]
     }
   }
+  depends_on = [module.hub-inside-vpc-inbount-policy-hack]
 }
 
 module "hub-management-vpc" {
@@ -172,10 +173,19 @@ module "hub-inside-vpc" {
       next_hop      = module.hub-nva-internal-ilb["inside"].id
     }
   }
+}
+
+module "hub-inside-vpc-inbount-policy-hack" {
+  source     = "../../../modules/net-vpc"
+  project_id = module.hub-project.project_id
+  name       = "core-inside-0"
+  vpc_create = false
   dns_policy = {
     inbound = true
   }
+  create_googleapis_routes = null
 }
+
 
 module "hub-inside-dns-policy-googleapis" {
   source     = "../../../modules/dns-response-policy"
