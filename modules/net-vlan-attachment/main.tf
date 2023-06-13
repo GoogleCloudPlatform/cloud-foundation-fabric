@@ -41,14 +41,15 @@ resource "google_compute_interconnect_attachment" "default" {
   router                   = local.router
   name                     = var.name
   description              = var.description
-  interconnect             = var.interconnect
-  bandwidth                = var.bandwidth
+  interconnect             = try(var.dedicated_interconnect_config.interconnect, null)
+  bandwidth                = try(var.dedicated_interconnect_config.bandwidth, null)
   mtu                      = local.ipsec_enabled ? null : var.mtu
-  candidate_subnets        = [var.bgp_range]
-  vlan_tag8021q            = var.vlan_tag
+  candidate_subnets        = var.dedicated_interconnect_config != null ? [var.dedicated_interconnect_config.bgp_range] : null
+  vlan_tag8021q            = try(var.dedicated_interconnect_config.vlan_tag, null)
   admin_enabled            = var.admin_enabled
   encryption               = local.ipsec_enabled ? "IPSEC" : null
-  type                     = "DEDICATED"
+  type                     = var.dedicated_interconnect_config == null ? "PARTNER" : "DEDICATED"
+  edge_availability_domain = try(var.partner_interconnect_config.edge_availability_domain, null)
   ipsec_internal_addresses = local.ipsec_enabled ? [google_compute_address.default[0].self_link] : null
 }
 
@@ -95,12 +96,13 @@ resource "google_compute_router" "unencrypted" {
 }
 
 resource "google_compute_router_interface" "default" {
+  count                   = var.dedicated_interconnect_config != null ? 1 : 0
   project                 = var.project_id
   region                  = var.region
   name                    = "${var.name}-intf"
   router                  = local.router
-  ip_range                = "${cidrhost(var.bgp_range, 1)}/${split("/", var.bgp_range)[1]}"
-  interconnect_attachment = google_compute_interconnect_attachment.default.name
+  ip_range                = google_compute_interconnect_attachment.default.cloud_router_ip_address
+  interconnect_attachment = google_compute_interconnect_attachment.default.self_link
 }
 
 resource "google_compute_router_peer" "default" {
@@ -108,7 +110,7 @@ resource "google_compute_router_peer" "default" {
   project                   = var.project_id
   router                    = local.router
   region                    = var.region
-  peer_ip_address           = cidrhost(var.bgp_range, 2)
+  peer_ip_address           = split("/", google_compute_interconnect_attachment.default.customer_router_ip_address)[0]
   peer_asn                  = var.peer_asn
   interface                 = "${var.name}-intf"
   advertised_route_priority = 100

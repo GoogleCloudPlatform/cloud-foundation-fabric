@@ -304,7 +304,8 @@ resource "google_cloud_run_service" "service" {
 
   lifecycle {
     ignore_changes = [
-      metadata.0.annotations
+      metadata.0.annotations["run.googleapis.com/operation-id"],
+      template.0.metadata.0.labels["run.googleapis.com/startupProbeType"]
     ]
   }
 }
