@@ -134,6 +134,15 @@ resource "google_composer_environment" "orch-cmp-0" {
         kms_key_name = try(var.service_encryption_keys[var.region], null)
       }
     }
+    web_server_network_access_control {
+      dynamic "allowed_ip_range" {
+       for_each = var.webserver_access_ip_ranges
+        content {
+          value = allowed_ip_range.value["value"]
+          description = allowed_ip_range.value["description"]
+        }
+      }
+    }
   }
   depends_on = [
     google_project_iam_member.shared_vpc,

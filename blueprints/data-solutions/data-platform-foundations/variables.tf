@@ -235,3 +235,8 @@ variable "service_encryption_keys" {
   })
   default = null
 }
+
+variable "webserver_access_ip_ranges" {
+  description = "CIDRs to allow webserver access from"
+  type        = list(map(string))
+}

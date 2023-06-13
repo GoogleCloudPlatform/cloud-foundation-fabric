@@ -51,4 +51,5 @@ module "data-platform" {
   project_suffix          = "0"
   region                  = var.region
   service_encryption_keys = var.service_encryption_keys
+  webserver_access_ip_ranges = var.webserver_access_ip_ranges
 }
