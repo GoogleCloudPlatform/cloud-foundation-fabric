@@ -61,7 +61,7 @@ resource "local_file" "tfvars" {
 }
 
 resource "google_storage_bucket_object" "tfvars" {
-  count   = var.automation.outputs_bucket == null ? 0 : 1
+  count   = try(var.automation.outputs_bucket, null) == null ? 0 : 1
   bucket  = var.automation.outputs_bucket
   name    = "tfvars/2-networking.auto.tfvars.json"
   content = jsonencode(local.tfvars)
