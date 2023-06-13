@@ -20,26 +20,20 @@ variable "admin_enabled" {
   default     = true
 }
 
-variable "bandwidth" {
-  # Possible values @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_interconnect_attachment#bandwidth
-  description = "The bandwidth assigned to the VLAN attachment (e.g. BPS_10G)."
-  type        = string
-  default     = "BPS_10G"
-}
-
-variable "bgp_range" {
-  description = "The underlay link-local IP range (in CIDR notation)."
-  type        = string
-  default     = "169.254.128.0/29"
+variable "dedicated_interconnect_config" {
+  description = "Partner interconnect configuration."
+  type = object({
+    # Possible values @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_interconnect_attachment#bandwidth  
+    bandwidth    = optional(string, "BPS_10G")
+    bgp_range    = optional(string, "169.254.128.0/29")
+    interconnect = string
+    vlan_tag     = string
+  })
+  default = null
 }
 
 variable "description" {
   description = "VLAN attachment description."
-  type        = string
-}
-
-variable "interconnect" {
-  description = "The identifier of the interconnect the VLAN attachment binds to."
   type        = string
 }
 
@@ -63,6 +57,14 @@ variable "name" {
 variable "network" {
   description = "The VPC name to which resources are associated to."
   type        = string
+}
+
+variable "partner_interconnect_config" {
+  description = "Partner interconnect configuration."
+  type = object({
+    edge_availability_domain = optional(string, "AVAILABILITY_DOMAIN_ANY")
+  })
+  default = null
 }
 
 variable "peer_asn" {
@@ -104,6 +106,7 @@ variable "router_config" {
 variable "vlan_tag" {
   description = "The VLAN id to be used for this VLAN attachment."
   type        = number
+  default     = null
 }
 
 variable "vpn_gateways_ip_range" {
