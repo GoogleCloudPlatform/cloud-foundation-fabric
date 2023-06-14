@@ -131,7 +131,9 @@ resource "google_dns_managed_zone" "non-public" {
       }
     }
   }
-
+  cloud_logging_config {
+    enable_logging = var.enable_logging
+  }
 }
 
 data "google_dns_managed_zone" "public" {
@@ -171,7 +173,9 @@ resource "google_dns_managed_zone" "public" {
       }
     }
   }
-
+  cloud_logging_config {
+    enable_logging = var.enable_logging
+  }
 }
 
 data "google_dns_keys" "dns_keys" {
