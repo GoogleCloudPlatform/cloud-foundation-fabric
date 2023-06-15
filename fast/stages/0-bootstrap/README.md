@@ -433,13 +433,13 @@ cicd_repositories = {
   bootstrap = {
     branch            = null
     identity_provider = "github-sample"
-    name              = "my-gh-org/fast-bootstrap"
+    name              = "my-gh-org/fast_bootstrap"
     type              = "github"
   }
   resman = {
     branch            = "main"
     identity_provider = "github-sample"
-    name              = "my-gh-org/fast-resman"
+    name              = "my-gh-org/fast_resman"
     type              = "github"
   }
 }
