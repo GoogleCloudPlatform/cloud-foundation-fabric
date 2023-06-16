@@ -12,7 +12,7 @@ If you are interested in following this guide, take a look to the chapters' blue
 
 ## Architecture
 
-This blueprint creates multiple architectures depending on the use case. Some may have one or two projecs while others may have three or more. Some use [Private Service Connect (PSC)](https://cloud.google.com/vpc/docs/private-service-connect) to access Google APIs, and others a [Layer 7 Internal Load Balancer](https://cloud.google.com/load-balancing/docs/l7-internal). Even security plays a role and [VPC Service Controls (VPC SC)](https://cloud.google.com/vpc-service-controls) is introduced.
+This blueprint creates multiple architectures depending on the use case. Some may have one or two projects while others may have three or more. Some use [Private Service Connect (PSC)](https://cloud.google.com/vpc/docs/private-service-connect) to access Google APIs, and others a [Layer 7 Internal Load Balancer](https://cloud.google.com/load-balancing/docs/l7-internal). Even security plays a role and [VPC Service Controls (VPC SC)](https://cloud.google.com/vpc-service-controls) is introduced.
 
 ## Prerequisites
 
