@@ -39,7 +39,7 @@ This separation into projects allows adhering to the least-privilege principle b
 The script will create the following projects:
 
 - **Landing** Data, stored in relevant formats. Structured data can be stored in BigQuery or in GCS using an appropriate file format such as AVRO or Parquet. Unstructured data stored on Cloud Storage.
-- **Processing** Used to host all resources needed to process and orchestrate data movement. Cloud Composer orchestrates all tasks that move data across layers. Cloud Dataproc Serveless process and move data between layers. Anonymization or tokenization of Personally Identifiable Information (PII) can be implemented here using Cloud DLP or a custom solution, depending on your requirements.
+- **Processing** Used to host all resources needed to process and orchestrate data movement. Cloud Composer orchestrates all tasks that move data across layers. Cloud Dataproc Serverless process and move data between layers. Anonymization or tokenization of Personally Identifiable Information (PII) can be implemented here using Cloud DLP or a custom solution, depending on your requirements.
 - **Curated** Cleansed, aggregated and curated data.
 - **Common** Common services such as [Cloud DLP](https://cloud.google.com/dlp) or [Data Catalog](https://cloud.google.com/data-catalog/docs/concepts/overview).
 

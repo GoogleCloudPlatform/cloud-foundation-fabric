@@ -14,7 +14,7 @@ They are meant to be used as minimal but complete starting points to create actu
 
 ### Calling on-premise services through PSC and hybrid NEGs
 
-<a href="./psc-hybrid/" title="Hybrid connectivity to on-premise services thrugh PSC"><img src="./psc-hybrid/diagram.png" align="left" width="280px"></a> This [blueprint](./psc-hybrid/) shows how to privately connect to on-premise services (IP + port) from GCP, leveraging [Private Service Connect (PSC)](https://cloud.google.com/vpc/docs/private-service-connect) and [Hybrid Network Endpoint Groups](https://cloud.google.com/load-balancing/docs/negs/hybrid-neg-concepts).
+<a href="./psc-hybrid/" title="Hybrid connectivity to on-premise services through PSC"><img src="./psc-hybrid/diagram.png" align="left" width="280px"></a> This [blueprint](./psc-hybrid/) shows how to privately connect to on-premise services (IP + port) from GCP, leveraging [Private Service Connect (PSC)](https://cloud.google.com/vpc/docs/private-service-connect) and [Hybrid Network Endpoint Groups](https://cloud.google.com/load-balancing/docs/negs/hybrid-neg-concepts).
 
 <br clear="left">
 
