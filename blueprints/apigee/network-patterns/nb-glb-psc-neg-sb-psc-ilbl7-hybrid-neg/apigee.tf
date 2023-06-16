@@ -76,12 +76,11 @@ module "apigee" {
   environments = {
     (local.environment) = {
       envgroups = [local.envgroup]
+      regions   = [var.region]
     }
   }
   instances = {
-    instance-1 = {
-      region                        = var.region
-      environments                  = [local.environment]
+    (var.region) = {
       runtime_ip_cidr_range         = var.apigee_runtime_ip_cidr_range
       troubleshooting_ip_cidr_range = var.apigee_troubleshooting_ip_cidr_range
     }

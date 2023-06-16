@@ -13,14 +13,11 @@
 # limitations under the License.
 
 values:
-  google_apigee_instance.instances["instance-test-ew1"]:
+  google_apigee_instance.instances["europe-west1"]:
     ip_range: 10.0.4.0/22,10.1.1.0.0/28
     location: europe-west1
-    name: instance-test-ew1
+    name: "instance-europe-west1"
     org_id: organizations/my-project
-  google_apigee_instance_attachment.instance_attachments["instance-test-ew1-apis-test"]:
-    environment: organizations/my-project/environments/apis-test
 
 counts:
   google_apigee_instance: 1
-  google_apigee_instance_attachment: 1

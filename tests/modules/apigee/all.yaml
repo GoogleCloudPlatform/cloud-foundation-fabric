@@ -47,20 +47,20 @@ values:
     members:
     - group:devops@myorg.com
     role: roles/viewer
-  google_apigee_instance.instances["instance-prod-ew3"]:
+  google_apigee_instance.instances["europe-west3"]:
     description: Terraform-managed
     disk_encryption_key_name: null
     display_name: null
     ip_range: 10.0.6.0/22,10.1.0.16/28
     location: europe-west3
-    name: instance-prod-ew3
-  google_apigee_instance.instances["instance-test-ew1"]:
+    name: instance-europe-west3
+  google_apigee_instance.instances["europe-west1"]:
     description: Terraform-managed
     disk_encryption_key_name: null
     display_name: null
     ip_range: 10.0.4.0/22,10.1.0.0/28
     location: europe-west1
-    name: instance-test-ew1
+    name: instance-europe-west1
   google_apigee_organization.organization[0]:
     analytics_region: europe-west1
     authorized_network: my-vpc
