@@ -16,7 +16,9 @@
 
 locals {
   iam_processing = {
-    "roles/composer.admin"                            = [local.groups_iam.data-engineers]
+    "roles/composer.admin" = [local.groups_iam.data-engineers]
+    "roles/dataflow.admin" = [module.processing-sa-cmp-0.iam_email]
+    "roles/dataflow.worker" = [module.processing-sa-0.iam_email]
     "roles/composer.environmentAndStorageObjectAdmin" = [local.groups_iam.data-engineers]
     "roles/composer.ServiceAgentV2Ext" = [
       "serviceAccount:${module.processing-project.service_accounts.robots.composer}"
@@ -78,6 +80,7 @@ module "processing-project" {
     "composer.googleapis.com",
     "compute.googleapis.com",
     "container.googleapis.com",
+    "dataflow.googleapis.com",
     "dataproc.googleapis.com",
     "iam.googleapis.com",
     "servicenetworking.googleapis.com",

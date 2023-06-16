@@ -1,0 +1,8 @@
+export LND_SA='lc-2313-lnd-cs-0@lc-2313-lnd.iam.gserviceaccount.com'
+export PRC_SA='lc-2313-prc-0@lc-2313-prc.iam.gserviceaccount.com'
+export CMP_SA='lc-2313-prc-cmp-0@lc-2313-prc.iam.gserviceaccount.com'
+export LND_GCS='lc-2313-lnd-cs-0'
+export PRC_GCS='lc-2313-prc-cs-0'
+export LND_GCS='lc-2313-lnd-cs-0'
+export PRC_GCS='lc-2313-prc-cs-0'
+export CMP_GCS='gs://europe-west1-lc-2313-prc-cm-1e1d5fa9-bucket/dags'
