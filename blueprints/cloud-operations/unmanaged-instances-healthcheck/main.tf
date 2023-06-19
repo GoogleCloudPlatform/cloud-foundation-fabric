@@ -108,7 +108,7 @@ module "pubsub" {
 ###############################################################################
 
 module "cf-restarter" {
-  source      = "../../../modules/cloud-function"
+  source      = "../../../modules/cloud-function-v1"
   project_id  = module.project.project_id
   name        = "cf-restarter"
   region      = var.region
@@ -132,16 +132,14 @@ module "cf-restarter" {
   }
 
   trigger_config = {
-    v1 = {
-      event    = "google.pubsub.topic.publish"
-      resource = module.pubsub.topic.id
-    }
+    event    = "google.pubsub.topic.publish"
+    resource = module.pubsub.topic.id
   }
 
 }
 
 module "cf-healthchecker" {
-  source      = "../../../modules/cloud-function"
+  source      = "../../../modules/cloud-function-v1"
   project_id  = module.project.project_id
   name        = "cf-healthchecker"
   region      = var.region
@@ -172,18 +170,14 @@ module "cf-healthchecker" {
     create          = true
     name            = "hc-connector"
     egress_settings = "PRIVATE_RANGES_ONLY"
-
   }
-
   vpc_connector_config = {
     ip_cidr_range = "10.132.0.0/28"
     network       = "vpc"
   }
-
   iam = {
     "roles/cloudfunctions.invoker" = [module.service-account-scheduler.iam_email]
   }
-
   depends_on = [
     module.vpc
   ]

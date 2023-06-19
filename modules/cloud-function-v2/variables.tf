@@ -146,36 +146,19 @@ variable "service_account_create" {
 variable "trigger_config" {
   description = "Function trigger configuration. Leave null for HTTP trigger."
   type = object({
-    v1 = optional(object({
-      event    = string
-      resource = string
-      retry    = optional(bool)
-    })),
-    v2 = optional(object({
-      region       = optional(string)
-      event_type   = optional(string)
-      pubsub_topic = optional(string)
-      event_filters = optional(list(object({
-        attribute = string
-        value     = string
-        operator  = string
-      })))
-      service_account_email  = optional(string)
-      service_account_create = optional(bool)
-      retry_policy           = optional(string)
-    }))
+    event_type   = string
+    pubsub_topic = optional(string)
+    region       = optional(string)
+    event_filters = optional(list(object({
+      attribute = string
+      value     = string
+      operator  = string
+    })), [])
+    service_account_email  = optional(string)
+    service_account_create = optional(bool, false)
+    retry_policy           = optional(string)
   })
-  default = { v1 = null, v2 = null }
-  validation {
-    condition     = !(var.trigger_config.v1 != null && var.trigger_config.v2 != null)
-    error_message = "Provide configuration for only one generation - either v1 or v2"
-  }
-}
-
-variable "v2" {
-  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen."
-  type        = bool
-  default     = false
+  default = null
 }
 
 variable "vpc_connector" {

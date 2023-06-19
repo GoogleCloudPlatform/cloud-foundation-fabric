@@ -152,7 +152,7 @@ module "bucket_export" {
 }
 
 module "function_export" {
-  source           = "../../../modules/cloud-function"
+  source           = "../../../modules/cloud-function-v1"
   project_id       = module.project.project_id
   name             = "export"
   bucket_name      = "${module.project.project_id}-code-export"
@@ -180,17 +180,15 @@ module "function_export" {
     DATASTORE    = var.datastore_name
   }
   trigger_config = {
-    v1 = {
-      event    = "google.pubsub.topic.publish"
-      resource = module.pubsub_export.id
-      retry    = null
-    }
+    event    = "google.pubsub.topic.publish"
+    resource = module.pubsub_export.id
+    retry    = null
   }
   service_account_create = true
 }
 
 module "function_gcs2bq" {
-  source           = "../../../modules/cloud-function"
+  source           = "../../../modules/cloud-function-v1"
   project_id       = module.project.project_id
   name             = "gcs2bq"
   bucket_name      = "${module.project.project_id}-code-gcs2bq"
@@ -218,11 +216,9 @@ module "function_gcs2bq" {
     LOCATION = var.organization.analytics_region
   }
   trigger_config = {
-    v1 = {
-      event    = "google.pubsub.topic.publish"
-      resource = module.bucket_export.topic
-      retry    = null
-    }
+    event    = "google.pubsub.topic.publish"
+    resource = module.bucket_export.topic
+    retry    = null
   }
   service_account_create = true
 }
