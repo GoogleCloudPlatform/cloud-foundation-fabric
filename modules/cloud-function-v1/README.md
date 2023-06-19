@@ -1,4 +1,4 @@
-# Cloud Function Module
+# Cloud Function Module (V1)
 
 Cloud Function management, with support for IAM roles and optional bucket creation.
 
@@ -16,23 +16,7 @@ This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bu
 
 ```hcl
 module "cf-http" {
-  source      = "./fabric/modules/cloud-function"
-  project_id  = "my-project"
-  name        = "test-cf-http"
-  bucket_name = "test-cf-bundles"
-  bundle_config = {
-    source_dir  = "fabric/assets/"
-    output_path = "bundle.zip"
-  }
-}
-# tftest modules=1 resources=2
-```
-
-Analogous example using 2nd generation Cloud Functions
-```hcl
-module "cf-http" {
-  source      = "./fabric/modules/cloud-function"
-  v2          = true
+  source      = "./fabric/modules/cloud-function-v1"
   project_id  = "my-project"
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
@@ -50,7 +34,7 @@ Other trigger types other than HTTP are configured via the `trigger_config` vari
 
 ```hcl
 module "cf-http" {
-  source      = "./fabric/modules/cloud-function"
+  source      = "./fabric/modules/cloud-function-v1"
   project_id  = "my-project"
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
@@ -59,51 +43,12 @@ module "cf-http" {
     output_path = "bundle.zip"
   }
   trigger_config = {
-    v1 = {
-      event    = "google.pubsub.topic.publish"
-      resource = "local.my-topic"
-    }
+    event    = "google.pubsub.topic.publish"
+    resource = "local.my-topic"
   }
 }
 # tftest modules=1 resources=2
 ```
-
-Cloud Functions 2nd gen support only [Eventarc](https://cloud.google.com/eventarc/docs) and uses separate structure
-to configure:
-```hcl
-module "trigger-service-account" {
-  source     = "./fabric/modules/iam-service-account"
-  project_id = "my-project"
-  name       = "sa-cloudfunction"
-  iam_project_roles = {
-    "my-project" = [
-      "roles/run.invoker"
-    ]
-  }
-}
-
-module "cf-http" {
-  source      = "./fabric/modules/cloud-function"
-  project_id  = "my-project"
-  v2          = true
-  name        = "test-cf-http"
-  bucket_name = "test-cf-bundles"
-  bundle_config = {
-    source_dir  = "fabric/assets/"
-    output_path = "bundle.zip"
-  }
-  trigger_config = {
-    v2 = {
-      event_type            = "google.cloud.pubsub.topic.v1.messagePublished"
-      pubsub_topic          = "local.my-topic"
-      service_account_email = module.trigger-service-account.email
-    }
-  }
-}
-# tftest modules=2 resources=4
-```
-Ensure that pubsub robo-account `service-%s@gcp-sa-pubsub.iam.gserviceaccount.com` has `roles/iam.serviceAccountTokenCreatator` 
-as documented [here](https://cloud.google.com/eventarc/docs/roles-permissions#pubsub-topic)
 
 ### Controlling HTTP access
 
@@ -111,7 +56,7 @@ To allow anonymous access to the function, grant the `roles/cloudfunctions.invok
 
 ```hcl
 module "cf-http" {
-  source      = "./fabric/modules/cloud-function"
+  source      = "./fabric/modules/cloud-function-v1"
   project_id  = "my-project"
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
@@ -123,7 +68,7 @@ module "cf-http" {
     "roles/cloudfunctions.invoker" = ["allUsers"]
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=iam.yaml
 ```
 
 ### GCS bucket creation
@@ -132,7 +77,7 @@ You can have the module auto-create the GCS bucket used for deployment via the `
 
 ```hcl
 module "cf-http" {
-  source      = "./fabric/modules/cloud-function"
+  source      = "./fabric/modules/cloud-function-v1"
   project_id  = "my-project"
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
@@ -152,7 +97,7 @@ To use a custom service account managed by the module, set `service_account_crea
 
 ```hcl
 module "cf-http" {
-  source      = "./fabric/modules/cloud-function"
+  source      = "./fabric/modules/cloud-function-v1"
   project_id  = "my-project"
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
@@ -169,7 +114,7 @@ To use an externally managed service account, pass its email in `service_account
 
 ```hcl
 module "cf-http" {
-  source      = "./fabric/modules/cloud-function"
+  source      = "./fabric/modules/cloud-function-v1"
   project_id  = "my-project"
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
@@ -188,7 +133,7 @@ In order to help prevent `archive_zip.output_md5` from changing cross platform (
 
 ```hcl
 module "cf-http" {
-  source      = "./fabric/modules/cloud-function"
+  source      = "./fabric/modules/cloud-function-v1"
   project_id  = "my-project"
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
@@ -203,11 +148,11 @@ module "cf-http" {
 
 ### Private Cloud Build Pool
 
-This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bucket for deployment using a pre existing private Cloud Build worker pool. 
+This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bucket for deployment using a pre existing private Cloud Build worker pool.
 
 ```hcl
 module "cf-http" {
-  source            = "./fabric/modules/cloud-function"
+  source            = "./fabric/modules/cloud-function-v1"
   project_id        = "my-project"
   name              = "test-cf-http"
   bucket_name       = "test-cf-bundles"
@@ -226,7 +171,7 @@ When deploying multiple functions do not reuse `bundle_config.output_path` betwe
 
 ```hcl
 module "cf-http-one" {
-  source      = "./fabric/modules/cloud-function"
+  source      = "./fabric/modules/cloud-function-v1"
   project_id  = "my-project"
   name        = "test-cf-http-one"
   bucket_name = "test-cf-bundles"
@@ -236,7 +181,7 @@ module "cf-http-one" {
 }
 
 module "cf-http-two" {
-  source      = "./fabric/modules/cloud-function"
+  source      = "./fabric/modules/cloud-function-v1"
   project_id  = "my-project"
   name        = "test-cf-http-two"
   bucket_name = "test-cf-bundles"
@@ -245,9 +190,8 @@ module "cf-http-two" {
   }
 }
 # tftest modules=2 resources=4 inventory=multiple_functions.yaml
-
-
 ```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -271,10 +215,9 @@ module "cf-http-two" {
 | [secrets](variables.tf#L122) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; number&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_account](variables.tf#L134) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | [service_account_create](variables.tf#L140) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [trigger_config](variables.tf#L146) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  v1 &#61; optional&#40;object&#40;&#123;&#10;    event    &#61; string&#10;    resource &#61; string&#10;    retry    &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;,&#10;  v2 &#61; optional&#40;object&#40;&#123;&#10;    region       &#61; optional&#40;string&#41;&#10;    event_type   &#61; optional&#40;string&#41;&#10;    pubsub_topic &#61; optional&#40;string&#41;&#10;    event_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;      attribute &#61; string&#10;      value     &#61; string&#10;      operator  &#61; string&#10;    &#125;&#41;&#41;&#41;&#10;    service_account_email  &#61; optional&#40;string&#41;&#10;    service_account_create &#61; optional&#40;bool&#41;&#10;    retry_policy           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; v1 &#61; null, v2 &#61; null &#125;</code> |
-| [v2](variables.tf#L175) | Whether to use Cloud Function version 2nd Gen or 1st Gen. | <code>bool</code> |  | <code>false</code> |
-| [vpc_connector](variables.tf#L181) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector_config](variables.tf#L191) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [trigger_config](variables.tf#L146) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event    &#61; string&#10;  resource &#61; string&#10;  retry    &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector](variables.tf#L156) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector_config](variables.tf#L166) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -288,10 +231,6 @@ module "cf-http-two" {
 | [service_account](outputs.tf#L44) | Service account resource. |  |
 | [service_account_email](outputs.tf#L49) | Service account email. |  |
 | [service_account_iam_email](outputs.tf#L54) | Service account email. |  |
-| [trigger_service_account](outputs.tf#L62) | Service account resource. |  |
-| [trigger_service_account_email](outputs.tf#L67) | Service account email. |  |
-| [trigger_service_account_iam_email](outputs.tf#L72) | Service account email. |  |
-| [uri](outputs.tf#L80) | Cloud function service uri. |  |
-| [vpc_connector](outputs.tf#L85) | VPC connector resource if created. |  |
+| [vpc_connector](outputs.tf#L62) | VPC connector resource if created. |  |
 
 <!-- END TFDOC -->
