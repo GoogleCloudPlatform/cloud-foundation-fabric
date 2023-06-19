@@ -67,7 +67,7 @@ module "projects" {
   folder_id              = each.value.folder_id
   group_iam              = try(each.value.group_iam, {})
   iam                    = try(each.value.iam, {})
-  kms_service_agents     = try(each.value.kms, {})
+  kms_service_agents     = try(each.value.kms_service_agents, {})
   labels                 = try(each.value.labels, {})
   org_policies           = try(each.value.org_policies, {})
   prefix                 = each.value.prefix
