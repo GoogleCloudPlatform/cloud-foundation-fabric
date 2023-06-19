@@ -178,6 +178,16 @@ resource "google_dns_managed_zone" "public" {
   }
 }
 
+resource "google_dns_managed_zone_iam_binding" "iam_bindings" {
+  for_each = coalesce(var.iam, {})
+  project  = var.project_id
+  managed_zone = (var.type == "public"
+    ? google_dns_managed_zone.public[0].name
+  : google_dns_managed_zone.non-public[0].name)
+  role    = each.key
+  members = each.value
+}
+
 data "google_dns_keys" "dns_keys" {
   count        = var.zone_create && (var.dnssec_config == {} || var.type != "public") ? 0 : 1
   managed_zone = local.zone.id
