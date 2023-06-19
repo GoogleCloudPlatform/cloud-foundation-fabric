@@ -63,7 +63,7 @@ resource "google_apigee_environment" "environments" {
 
 resource "google_apigee_envgroup_attachment" "envgroup_attachments" {
   for_each = merge(concat([for k1, v1 in local.environments : {
-    for v2 in v1.envgroups : "${k1}-${v2}" => {
+    for v2 in coalesce(v1.envgroups, []) : "${k1}-${v2}" => {
       environment = k1
       envgroup    = v2
     }
@@ -88,10 +88,10 @@ resource "google_apigee_environment_iam_binding" "binding" {
 
 resource "google_apigee_instance" "instances" {
   for_each                 = local.instances
-  name                     = each.key
+  name                     = "instance-${each.key}"
   display_name             = each.value.display_name
   description              = each.value.description
-  location                 = each.value.region
+  location                 = each.key
   org_id                   = local.org_id
   ip_range                 = "${each.value.runtime_ip_cidr_range},${each.value.troubleshooting_ip_cidr_range}"
   disk_encryption_key_name = each.value.disk_encryption_key
@@ -99,14 +99,14 @@ resource "google_apigee_instance" "instances" {
 }
 
 resource "google_apigee_instance_attachment" "instance_attachments" {
-  for_each = merge(concat([for k1, v1 in local.instances : {
-    for v2 in v1.environments :
+  for_each = merge(concat([for k1, v1 in local.environments : {
+    for v2 in coalesce(v1.regions, []) :
     "${k1}-${v2}" => {
-      instance    = k1
-      environment = v2
+      environment = k1
+      region      = v2
     }
   }])...)
-  instance_id = google_apigee_instance.instances[each.value.instance].id
+  instance_id = google_apigee_instance.instances[each.value.region].id
   environment = try(google_apigee_environment.environments[each.value.environment].name,
   "${local.org_id}/environments/${each.value.environment}")
 }

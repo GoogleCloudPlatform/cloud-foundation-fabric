@@ -41,18 +41,17 @@ variable "environments" {
       max_node_count = optional(number)
     }))
     iam       = optional(map(list(string)))
-    envgroups = list(string)
+    envgroups = optional(list(string))
+    regions   = optional(list(string))
   }))
   default = null
 }
 
 variable "instances" {
-  description = "Instances."
+  description = "Instances ([REGION] => [INSTANCE])."
   type = map(object({
     display_name                  = optional(string)
     description                   = optional(string, "Terraform-managed")
-    region                        = string
-    environments                  = list(string)
     runtime_ip_cidr_range         = string
     troubleshooting_ip_cidr_range = string
     disk_encryption_key           = optional(string)

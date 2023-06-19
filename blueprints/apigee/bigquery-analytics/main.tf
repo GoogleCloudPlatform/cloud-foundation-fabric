@@ -108,11 +108,11 @@ module "glb" {
   neg_configs = {
     for k, v in var.instances : k => {
       psc = {
-        region         = v.region
+        region         = k
         target_service = module.apigee.instances[k].service_attachment
         network        = module.vpc.network.self_link
         subnetwork = (
-          module.vpc.subnets_psc["${v.region}/subnet-psc-${v.region}"].self_link
+          module.vpc.subnets_psc["${k}/subnet-psc-${k}"].self_link
         )
       }
     }
