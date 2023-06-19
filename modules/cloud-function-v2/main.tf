@@ -64,7 +64,7 @@ resource "google_cloudfunctions2_function" "function" {
   build_config {
     worker_pool           = var.build_worker_pool
     runtime               = var.function_config.runtime
-    entry_point           = "${var.function_config.entry_point}_http"
+    entry_point           = var.function_config.entry_point
     environment_variables = var.environment_variables
     source {
       storage_source {
