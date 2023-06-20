@@ -57,7 +57,7 @@ variable "domain" {
 }
 
 variable "enable_logging" {
-  description = "Enable query logging for this zone. Only valid for public zones."
+  description = "Enable query logging for this zone."
   type        = bool
   default     = false
   nullable    = false

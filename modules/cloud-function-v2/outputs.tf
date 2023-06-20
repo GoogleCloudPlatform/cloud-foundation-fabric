@@ -28,17 +28,17 @@ output "bucket_name" {
 
 output "function" {
   description = "Cloud function resources."
-  value       = local.function
+  value       = google_cloudfunctions2_function.function
 }
 
 output "function_name" {
   description = "Cloud function name."
-  value       = local.function.name
+  value       = google_cloudfunctions2_function.function.name
 }
 
 output "id" {
   description = "Fully qualified function id."
-  value       = local.function.id
+  value       = google_cloudfunctions2_function.function.id
 }
 
 output "service_account" {
@@ -79,7 +79,7 @@ output "trigger_service_account_iam_email" {
 
 output "uri" {
   description = "Cloud function service uri."
-  value       = var.v2 ? google_cloudfunctions2_function.function[0].service_config[0].uri : null
+  value       = google_cloudfunctions2_function.function.service_config[0].uri
 }
 
 output "vpc_connector" {

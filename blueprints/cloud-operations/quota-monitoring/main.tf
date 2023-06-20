@@ -47,7 +47,7 @@ module "pubsub" {
 }
 
 module "cf" {
-  source      = "../../../modules/cloud-function"
+  source      = "../../../modules/cloud-function-v1"
   project_id  = module.project.project_id
   name        = var.name
   bucket_name = "${var.name}-${random_pet.random.id}"
@@ -66,10 +66,8 @@ module "cf" {
   }
   service_account_create = true
   trigger_config = {
-    v1 = {
-      event    = "google.pubsub.topic.publish"
-      resource = module.pubsub.topic.id
-    }
+    event    = "google.pubsub.topic.publish"
+    resource = module.pubsub.topic.id
   }
 }
 
