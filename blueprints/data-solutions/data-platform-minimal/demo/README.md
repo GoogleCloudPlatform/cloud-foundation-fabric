@@ -14,6 +14,14 @@ Data are uploaded to the `landing` GCS bucket. File structure:
 
 - `customers.csv`: Comma separate value with customer information in the following format: Customer ID, Name, Surname, Registration Timestamp
 
+## Configuration files
+
+Data relies on the following configuration files:
+
+- `customers_schema.json`: customer BigQuery table schema definition.
+- `customers_udf.js`: dataflow user defined function to transform CSV files into BigQuery schema
+- `customers.json`: customer CSV file schema definition
+
 ## Data processing pipelines
 
 Different data pipelines are provided to highlight different ways import data.
@@ -22,7 +30,7 @@ Below you can find a description of each example:
 
 - `bq_import.py`: Importing data using BigQuery import capability.
 - `dataflow_import.py`: Importing data using Cloud Dataflow.
-- `dataproc_import.py`: Importing data using Dataproc.
+- `dataproc_import.py`: Importing data using Cloud Dataproc.
 
 ## Running the demo
 
@@ -36,7 +44,7 @@ To run demo examples, please follow the following steps:
 
 Below you can find computed commands to perform steps.
 
-```
+```bash
 terraform output -json | jq -r '@sh "export LND_SA=\(.service_accounts.value.landing)\nexport PRC_SA=\(.service_accounts.value.processing)\nexport CMP_SA=\(.service_accounts.value.composer)"' > env.sh
 
 terraform output -json | jq -r '@sh "export LND_GCS=\(.gcs_buckets.value.landing_cs_0)\nexport PRC_GCS=\(.gcs_buckets.value.processing_cs_0)\nexport CMP_GCS=\(.gcs_buckets.value.composer)"' >> env.sh

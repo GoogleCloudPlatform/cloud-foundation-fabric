@@ -45,8 +45,9 @@ PROCESSING_SA = os.environ.get("PROCESSING_SA")
 PROCESSING_SUBNET = os.environ.get("PROCESSING_SUBNET")
 PROCESSING_VPC = os.environ.get("PROCESSING_VPC")
 
-PYTHON_FILE_LOCATION = PROCESSING_GCS+"/pyspark_sort.py"
+PYTHON_FILE_LOCATION = PROCESSING_GCS+"/pyspark_gcs2bq.py"
 PHS_CLUSTER_PATH = "projects/"+PROCESSING_PRJ+"/regions/"+DP_REGION+"/clusters/"+PHS_CLUSTER_NAME
+SPARK_BIGQUERY_JAR_FILE = "gs://spark-lib/bigquery/spark-bigquery-with-dependencies_2.13-0.29.0.jar"
 BATCH_ID = "batch-create-phs-"+str(int(time.time()))
 
 default_args = {
@@ -55,7 +56,7 @@ default_args = {
     "region": DP_REGION,
 }
 with models.DAG(
-    "dataproc_batch_operators",  # The id you will see in the DAG airflow page
+    "dataproc_batch_gcs2bq",  # The id you will see in the DAG airflow page
     default_args=default_args,  # The interval with which to schedule the DAG
     schedule_interval=None,  # Override to match your needs
 ) as dag:
@@ -63,6 +64,7 @@ with models.DAG(
     create_batch = DataprocCreateBatchOperator(
         task_id="batch_create",
         project_id=PROCESSING_PRJ,
+        batch_id=BATCH_ID,
         batch={
             "environment_config": {
                 "execution_config": {
@@ -76,11 +78,15 @@ with models.DAG(
                 }
             },
             "pyspark_batch": {
-                "args": ["pippo"],
+                "args": [
+                    LAND_GCS + "/customers.csv",
+                    CURATED_PRJ + ":" + CURATED_BQ_DATASET + ".customers",
+                    PROCESSING_GCS[5:]
+                ],
                 "main_python_file_uri": PYTHON_FILE_LOCATION,
+                "jar_file_uris": [SPARK_BIGQUERY_JAR_FILE]
             }
-        },
-        batch_id=BATCH_ID,
+        }
     )
 
     list_batches = DataprocListBatchesOperator(
