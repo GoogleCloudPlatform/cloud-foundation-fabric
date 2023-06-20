@@ -69,6 +69,12 @@ variable "forwarders" {
   default     = {}
 }
 
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = null
+}
+
 variable "name" {
   description = "Zone name, must be unique within the project."
   type        = string
