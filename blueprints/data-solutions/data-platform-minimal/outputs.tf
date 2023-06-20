@@ -39,7 +39,7 @@ output "gcs_buckets" {
     landing_cs_0    = module.land-cs-0.name,
     processing_cs_0 = module.processing-cs-0.name,
     cur_cs_0        = module.cur-cs-0.name,
-    composer = try(google_composer_environment.processing-cmp-0[0].config[0].dag_gcs_prefix, null)
+    composer        = try(google_composer_environment.processing-cmp-0[0].config[0].dag_gcs_prefix, null)
   }
 }
 
@@ -69,9 +69,9 @@ output "projects" {
 output "service_accounts" {
   description = "Service account created."
   value = {
-    landing = module.land-sa-cs-0.email
+    landing    = module.land-sa-cs-0.email
     processing = module.processing-sa-0.email
-    composer = module.processing-sa-cmp-0.email
+    composer   = module.processing-sa-cmp-0.email
   }
 }
 
