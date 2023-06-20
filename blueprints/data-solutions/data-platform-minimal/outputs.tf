@@ -21,18 +21,25 @@ output "bigquery-datasets" {
   }
 }
 
+output "composer" {
+  description = "Composer variables."
+  value = {
+    air_flow_uri = try(google_composer_environment.processing-cmp-0[0].config.0.airflow_uri, null)
+  }
+}
+
 output "dataproc-history-server" {
   description = "List of bucket names which have been assigned to the cluster."
   value       = one(module.processing-dp-historyserver)
 }
 
-output "gcs-buckets" {
+output "gcs_buckets" {
   description = "GCS buckets."
-  sensitive   = true
   value = {
-    landing-cs-0    = module.land-sa-cs-0,
-    processing-cs-0 = module.processing-cs-0,
-    cur-cs-0        = module.cur-cs-0,
+    landing_cs_0    = module.land-cs-0.name,
+    processing_cs_0 = module.processing-cs-0.name,
+    cur_cs_0        = module.cur-cs-0.name,
+    composer        = try(google_composer_environment.processing-cmp-0[0].config[0].dag_gcs_prefix, null)
   }
 }
 
@@ -56,6 +63,15 @@ output "projects" {
       curated    = module.cur-project.project_id,
       processing = module.processing-project.project_id,
     }
+  }
+}
+
+output "service_accounts" {
+  description = "Service account created."
+  value = {
+    landing    = module.land-sa-cs-0.email
+    processing = module.processing-sa-0.email
+    composer   = module.processing-sa-cmp-0.email
   }
 }
 

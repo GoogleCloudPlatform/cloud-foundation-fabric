@@ -16,7 +16,13 @@
 
 locals {
   iam_processing = {
+    "roles/bigquery.jobUser" = [
+      module.processing-sa-cmp-0.iam_email,
+      module.processing-sa-0.iam_email
+    ]
     "roles/composer.admin"                            = [local.groups_iam.data-engineers]
+    "roles/dataflow.admin"                            = [module.processing-sa-cmp-0.iam_email]
+    "roles/dataflow.worker"                           = [module.processing-sa-0.iam_email]
     "roles/composer.environmentAndStorageObjectAdmin" = [local.groups_iam.data-engineers]
     "roles/composer.ServiceAgentV2Ext" = [
       "serviceAccount:${module.processing-project.service_accounts.robots.composer}"
@@ -78,6 +84,7 @@ module "processing-project" {
     "composer.googleapis.com",
     "compute.googleapis.com",
     "container.googleapis.com",
+    "dataflow.googleapis.com",
     "dataproc.googleapis.com",
     "iam.googleapis.com",
     "servicenetworking.googleapis.com",
@@ -96,7 +103,7 @@ module "processing-project" {
     host_project = var.network_config.host_project
     service_identity_iam = {
       "roles/compute.networkUser" = [
-        "cloudservices", "compute", "container-engine"
+        "cloudservices", "compute", "container-engine", "dataflow"
       ]
       "roles/composer.sharedVpcAgent" = [
         "composer"

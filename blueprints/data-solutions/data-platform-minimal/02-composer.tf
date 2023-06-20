@@ -22,11 +22,10 @@ locals {
     CURATED_PRJ        = module.cur-project.project_id
     DP_KMS_KEY         = var.service_encryption_keys.compute
     DP_REGION          = var.region
-    GCP_REGION         = var.region
     LAND_PRJ           = module.land-project.project_id
-    LAND_GCS           = module.land-cs-0.name
-    PHS_CLUSTER_NAME   = try(module.processing-dp-historyserver[0].name, null)
-    PROCESSING_GCS     = module.processing-cs-0.name
+    LAND_GCS           = module.land-cs-0.url
+    PHS_CLUSTER_NAME   = try(module.processing-dp-historyserver[0].name, "")
+    PROCESSING_GCS     = module.processing-cs-0.url
     PROCESSING_PRJ     = module.processing-project.project_id
     PROCESSING_SA      = module.processing-sa-0.email
     PROCESSING_SUBNET  = local.processing_subnet
