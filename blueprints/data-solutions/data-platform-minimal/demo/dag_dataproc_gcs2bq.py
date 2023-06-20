@@ -19,6 +19,7 @@ import time
 import os
 
 from airflow import models
+from airflow.operators import dummy
 from airflow.providers.google.cloud.operators.dataproc import (
     DataprocCreateBatchOperator, DataprocDeleteBatchOperator, DataprocGetBatchOperator, DataprocListBatchesOperator
 
@@ -60,6 +61,15 @@ with models.DAG(
     default_args=default_args,  # The interval with which to schedule the DAG
     schedule_interval=None,  # Override to match your needs
 ) as dag:
+    start = dummy.DummyOperator(
+        task_id='start',
+        trigger_rule='all_success'
+    )
+
+    end = dummy.DummyOperator(
+        task_id='end',
+        trigger_rule='all_success'
+    )
 
     create_batch = DataprocCreateBatchOperator(
         task_id="batch_create",
@@ -89,13 +99,4 @@ with models.DAG(
         }
     )
 
-    list_batches = DataprocListBatchesOperator(
-        task_id="list-all-batches",
-    )
-
-    get_batch = DataprocGetBatchOperator(
-        task_id="get_batch",
-        batch_id=BATCH_ID,
-    )
-
-    create_batch >> list_batches >> get_batch
+    start >> create_batch >> end
