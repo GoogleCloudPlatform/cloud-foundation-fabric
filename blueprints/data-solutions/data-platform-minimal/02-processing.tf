@@ -102,7 +102,7 @@ module "processing-project" {
         "composer"
       ]
       "roles/container.hostServiceAgentUser" = [
-        "container-egine"
+        "container-engine"
       ]
     }
   }
