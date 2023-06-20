@@ -22,6 +22,7 @@ resource "google_artifact_registry_repository" "registry" {
   format        = var.format
   labels        = var.labels
   repository_id = var.id
+  kms_key_name  = var.encryption_key
 }
 
 resource "google_artifact_registry_repository_iam_binding" "bindings" {

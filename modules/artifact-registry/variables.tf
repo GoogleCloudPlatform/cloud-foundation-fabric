@@ -20,6 +20,12 @@ variable "description" {
   default     = "Terraform-managed registry"
 }
 
+variable "encryption_key" {
+  description = "The KMS key name to use for encryption at rest."
+  type        = string
+  default     = null
+}
+
 variable "format" {
   description = "Repository format. One of DOCKER or UNSPECIFIED."
   type        = string
