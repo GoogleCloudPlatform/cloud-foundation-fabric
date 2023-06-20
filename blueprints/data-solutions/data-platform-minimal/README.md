@@ -299,11 +299,13 @@ The application layer is out of scope of this script. As a demo purpuse only, on
 | name | description | sensitive |
 |---|---|:---:|
 | [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
-| [dataproc-history-server](outputs.tf#L24) | List of bucket names which have been assigned to the cluster. |  |
-| [gcs-buckets](outputs.tf#L29) | GCS buckets. | ✓ |
-| [kms_keys](outputs.tf#L39) | Cloud MKS keys. |  |
-| [projects](outputs.tf#L44) | GCP Projects informations. |  |
-| [vpc_network](outputs.tf#L62) | VPC network. |  |
-| [vpc_subnet](outputs.tf#L70) | VPC subnetworks. |  |
+| [composer](outputs.tf#L24) | Composer variables. |  |
+| [dataproc-history-server](outputs.tf#L31) | List of bucket names which have been assigned to the cluster. |  |
+| [gcs_buckets](outputs.tf#L36) | GCS buckets. |  |
+| [kms_keys](outputs.tf#L46) | Cloud MKS keys. |  |
+| [projects](outputs.tf#L51) | GCP Projects informations. |  |
+| [service_accounts](outputs.tf#L69) | Service account created. |  |
+| [vpc_network](outputs.tf#L78) | VPC network. |  |
+| [vpc_subnet](outputs.tf#L86) | VPC subnetworks. |  |
 
 <!-- END TFDOC -->
