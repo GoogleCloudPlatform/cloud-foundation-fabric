@@ -53,3 +53,9 @@ variable "project_id" {
   description = "Registry project id."
   type        = string
 }
+
+variable "encryption_key" {
+  description = "The KMS key name to use for encryption at rest."
+  type        = string
+  default     = null
+}
