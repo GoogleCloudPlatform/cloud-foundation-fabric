@@ -103,7 +103,7 @@ module "processing-project" {
     host_project = var.network_config.host_project
     service_identity_iam = {
       "roles/compute.networkUser" = [
-        "cloudservices", "compute", "container-engine"
+        "cloudservices", "compute", "container-engine", "dataflow"
       ]
       "roles/composer.sharedVpcAgent" = [
         "composer"
