@@ -24,6 +24,7 @@ import sys
 
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
+from pyspark.sql.types import StructType,TimestampType, StringType, IntegerType
 
 # Create a Spark session
 spark = SparkSession.builder \
@@ -37,7 +38,15 @@ tmp_gcs = spark.sparkContext.parallelize([sys.argv[3]]).first()
 
 spark.conf.set('temporaryGcsBucket', tmp_gcs)
 
-data = spark.read.csv(csv, header=True)
+schema = StructType() \
+      .add("id",IntegerType(),True) \
+      .add("name",StringType(),True) \
+      .add("surname",StringType(),True) \
+      .add("timestamp",TimestampType(),True)
+
+data = spark.read.format("csv") \
+      .schema(schema) \
+      .load(csv)
 
 # add lineage metadata: input filename and loading ts
 data = data.select('*',
