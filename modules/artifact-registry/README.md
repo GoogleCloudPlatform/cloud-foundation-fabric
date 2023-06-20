@@ -13,7 +13,7 @@ module "docker_artifact_registry" {
   location   = "europe-west1"
   format     = "DOCKER"
   id         = "myregistry"
-  iam        = {
+  iam = {
     "roles/artifactregistry.admin" = ["group:cicd@example.com"]
   }
 }
