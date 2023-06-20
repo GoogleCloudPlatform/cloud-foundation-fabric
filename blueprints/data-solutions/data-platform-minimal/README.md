@@ -10,7 +10,7 @@ The following diagram is a high-level reference of the resources created and man
 
 ![Data Platform architecture overview](./images/diagram.png "Data Platform architecture overview")
 
-A demo [Airflow pipeline](demo/orchestrate_pyspark.py) is also part of this blueprint: it can be built and run on top of the foundational infrastructure to verify or test the setup quickly.
+A set of demo [Airflow pipelines](./demo/) are also part of this blueprint: they can be run on top of the foundational infrastructure to verify and test the setup.
 
 ## Design overview and choices
 

@@ -2,25 +2,25 @@
 
 In this folder, you can find Airflow DAG examples to process data on the `minimal data platform` instantiated [here](../). Examples are focused on importing data from `landing` to `curated` resources.
 
-Examples are not intended to be a production-ready code, but a bollerplate to understand.
+Examples are not intended to be a production-ready code, but a bollerplate to verify and test the setup.
 
 ## Demo use case
 
-The demo imports customer data.
+The demo imports CSV customer data from the `landing` GCS bucket to the `curated` BigQuery dataset.
 
 ## Input files
 
 Data are uploaded to the `landing` GCS bucket. File structure:
 
-- `customers.csv`: Comma separate value with customer information in the following format: Customer ID, Name, Surname, Registration Timestamp
+- [`customers.csv`](./data/customers.csv): Comma separate value with customer information in the following format: Customer ID, Name, Surname, Registration Timestamp
 
 ## Configuration files
 
 Data relies on the following configuration files:
 
-- `customers_schema.json`: customer BigQuery table schema definition.
-- `customers_udf.js`: dataflow user defined function to transform CSV files into BigQuery schema
-- `customers.json`: customer CSV file schema definition
+- [`customers_schema.json`](./data/customers_schema.json): customer BigQuery table schema definition.
+- [`customers_udf.js`](./data/customers_udf.js): dataflow user defined function to transform CSV files into BigQuery schema
+- [`customers.json`](./data/customers.json): customer CSV file schema definition
 
 ## Data processing pipelines
 
