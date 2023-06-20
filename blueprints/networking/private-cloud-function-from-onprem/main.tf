@@ -177,7 +177,7 @@ module "test-vm" {
 ###############################################################################
 
 module "function-hello" {
-  source           = "../../../modules/cloud-function"
+  source           = "../../../modules/cloud-function-v1"
   project_id       = module.project.project_id
   name             = var.name
   bucket_name      = "${var.name}-tf-cf-deploy"

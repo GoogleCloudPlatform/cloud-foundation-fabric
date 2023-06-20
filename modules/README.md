@@ -100,5 +100,6 @@ These modules are used in the examples included in this repository. If you are u
 
 ## Serverless
 
-- [Cloud Functions](./cloud-function)
+- [Cloud Functions v1](./cloud-function-v1)
+- [Cloud Functions v2](./cloud-function-v2)
 - [Cloud Run](./cloud-run)

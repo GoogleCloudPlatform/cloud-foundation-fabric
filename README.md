@@ -35,7 +35,7 @@ Currently available modules:
 - **data** - [AlloyDB instance](./modules/alloydb-instance), [BigQuery dataset](./modules/bigquery-dataset), [Bigtable instance](./modules/bigtable-instance), [Cloud Dataplex](./modules/cloud-dataplex), [Cloud SQL instance](./modules/cloudsql-instance), [Data Catalog Policy Tag](./modules/data-catalog-policy-tag), [Datafusion](./modules/datafusion), [Dataproc](./modules/dataproc), [GCS](./modules/gcs), [Pub/Sub](./modules/pubsub)
 - **development** - [API Gateway](./modules/api-gateway), [Apigee](./modules/apigee), [Artifact Registry](./modules/artifact-registry), [Container Registry](./modules/container-registry), [Cloud Source Repository](./modules/source-repository)
 - **security** - [Binauthz](./modules/binauthz/), [KMS](./modules/kms), [SecretManager](./modules/secret-manager), [VPC Service Control](./modules/vpc-sc)
-- **serverless** - [Cloud Function](./modules/cloud-function), [Cloud Run](./modules/cloud-run)
+- **serverless** - [Cloud Function v1](./modules/cloud-function-v1), [Cloud Function v2](./modules/cloud-function-v2), [Cloud Run](./modules/cloud-run)
 
 For more information and usage examples see each module's README file.
 

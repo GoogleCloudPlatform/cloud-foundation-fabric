@@ -170,6 +170,22 @@ values:
     condition: []
     project: fast-dev-net-spoke-0
     role: roles/compute.securityAdmin
+  module.projects["project"].module.project.google_kms_crypto_key_iam_member.service_identity_cmek["compute.key1"]:
+    condition: []
+    crypto_key_id: key1
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.projects["project"].module.project.google_kms_crypto_key_iam_member.service_identity_cmek["compute.key2"]:
+    condition: []
+    crypto_key_id: key2
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.projects["project"].module.project.google_kms_crypto_key_iam_member.service_identity_cmek["storage.key1"]:
+    condition: []
+    crypto_key_id: key1
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.projects["project"].module.project.google_kms_crypto_key_iam_member.service_identity_cmek["storage.key2"]:
+    condition: []
+    crypto_key_id: key2
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.projects["project"].module.project.google_project_service.project_services["billingbudgets.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -233,3 +249,4 @@ counts:
   google_project_service: 8
   google_service_account: 2
   google_storage_project_service_account: 1
+  google_kms_crypto_key_iam_member: 4

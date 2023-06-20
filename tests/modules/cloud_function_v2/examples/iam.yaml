@@ -13,11 +13,17 @@
 # limitations under the License.
 
 values:
-  google_apigee_instance.instances["europe-west1"]:
-    ip_range: 10.0.4.0/22,10.1.1.0.0/28
+  module.cf-http.google_cloudfunctions2_function_iam_binding.default["roles/cloudfunctions.invoker"]:
+    cloud_function: test-cf-http
+    condition: []
     location: europe-west1
-    name: "instance-europe-west1"
-    org_id: organizations/my-project
+    members:
+    - allUsers
+    project: my-project
+    role: roles/cloudfunctions.invoker
 
 counts:
-  google_apigee_instance: 1
+  google_cloudfunctions2_function: 1
+  google_storage_bucket_object: 1
+  modules: 1
+  resources: 3

@@ -13,11 +13,13 @@
 # limitations under the License.
 
 values:
-  google_apigee_instance.instances["europe-west1"]:
-    ip_range: 10.0.4.0/22,10.1.1.0.0/28
-    location: europe-west1
-    name: "instance-europe-west1"
-    org_id: organizations/my-project
+  module.cf-http-one.google_storage_bucket_object.bundle:
+    source: /tmp/bundle-my-project-test-cf-http-one.zip
+  module.cf-http-two.google_storage_bucket_object.bundle:
+    source: /tmp/bundle-my-project-test-cf-http-two.zip
 
 counts:
-  google_apigee_instance: 1
+  google_cloudfunctions2_function: 2
+  google_storage_bucket_object: 2
+  modules: 2
+  resources: 4

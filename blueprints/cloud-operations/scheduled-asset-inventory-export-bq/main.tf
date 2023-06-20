@@ -85,7 +85,7 @@ module "pubsub_file" {
 ###############################################################################
 
 module "cf" {
-  source      = "../../../modules/cloud-function"
+  source      = "../../../modules/cloud-function-v1"
   project_id  = module.project.project_id
   region      = var.region
   name        = var.name
@@ -99,16 +99,14 @@ module "cf" {
   }
   service_account = module.service-account.email
   trigger_config = {
-    v1 = {
-      event    = "google.pubsub.topic.publish"
-      resource = module.pubsub.topic.id
-    }
+    event    = "google.pubsub.topic.publish"
+    resource = module.pubsub.topic.id
   }
 }
 
 module "cffile" {
   count       = var.cai_gcs_export ? 1 : 0
-  source      = "../../../modules/cloud-function"
+  source      = "../../../modules/cloud-function-v1"
   project_id  = module.project.project_id
   region      = var.region
   name        = var.name_cffile
@@ -124,11 +122,9 @@ module "cffile" {
   }
   service_account = module.service-account.email
   trigger_config = {
-    v1 = {
-      event    = "google.pubsub.topic.publish"
-      resource = module.pubsub_file.topic.id
-      retry    = null
-    }
+    event    = "google.pubsub.topic.publish"
+    resource = module.pubsub_file.topic.id
+    retry    = null
   }
 }
 
