@@ -54,6 +54,7 @@ variable "dataproc_config" {
           boot_disk_size_gb = number
           num_local_ssds    = number
         }))
+        image_uri = string
         accelerators = optional(object({
           accelerator_type  = string
           accelerator_count = number
