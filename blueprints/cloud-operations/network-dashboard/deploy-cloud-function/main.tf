@@ -51,7 +51,7 @@ module "pubsub" {
 }
 
 module "cloud-function" {
-  source     = "../../../../modules/cloud-function"
+  source     = "../../../../modules/cloud-function-v1"
   project_id = module.project.project_id
   name       = var.name
   bucket_name = coalesce(
@@ -76,10 +76,8 @@ module "cloud-function" {
   }
   service_account_create = true
   trigger_config = {
-    v1 = {
-      event    = "google.pubsub.topic.publish"
-      resource = module.pubsub.topic.id
-    }
+    event    = "google.pubsub.topic.publish"
+    resource = module.pubsub.topic.id
   }
   vpc_connector = (
     var.cloud_function_config.vpc_connector == null

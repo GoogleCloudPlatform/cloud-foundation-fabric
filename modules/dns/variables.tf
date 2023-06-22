@@ -57,7 +57,7 @@ variable "domain" {
 }
 
 variable "enable_logging" {
-  description = "Enable query logging for this zone. Only valid for public zones."
+  description = "Enable query logging for this zone."
   type        = bool
   default     = false
   nullable    = false
@@ -67,6 +67,12 @@ variable "forwarders" {
   description = "Map of {IPV4_ADDRESS => FORWARDING_PATH} for 'forwarding' zone types. Path can be 'default', 'private', or null for provider default."
   type        = map(string)
   default     = {}
+}
+
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = null
 }
 
 variable "name" {

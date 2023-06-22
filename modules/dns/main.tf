@@ -131,7 +131,9 @@ resource "google_dns_managed_zone" "non-public" {
       }
     }
   }
-
+  cloud_logging_config {
+    enable_logging = var.enable_logging
+  }
 }
 
 data "google_dns_managed_zone" "public" {
@@ -171,7 +173,19 @@ resource "google_dns_managed_zone" "public" {
       }
     }
   }
+  cloud_logging_config {
+    enable_logging = var.enable_logging
+  }
+}
 
+resource "google_dns_managed_zone_iam_binding" "iam_bindings" {
+  for_each = coalesce(var.iam, {})
+  project  = var.project_id
+  managed_zone = (var.type == "public"
+    ? google_dns_managed_zone.public[0].name
+  : google_dns_managed_zone.non-public[0].name)
+  role    = each.key
+  members = each.value
 }
 
 data "google_dns_keys" "dns_keys" {

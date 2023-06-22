@@ -19,6 +19,7 @@ import time
 import os
 
 from airflow import models
+from airflow.operators import dummy
 from airflow.providers.google.cloud.operators.dataproc import (
     DataprocCreateBatchOperator, DataprocDeleteBatchOperator, DataprocGetBatchOperator, DataprocListBatchesOperator
 
@@ -45,8 +46,9 @@ PROCESSING_SA = os.environ.get("PROCESSING_SA")
 PROCESSING_SUBNET = os.environ.get("PROCESSING_SUBNET")
 PROCESSING_VPC = os.environ.get("PROCESSING_VPC")
 
-PYTHON_FILE_LOCATION = "gs://"+PROCESSING_GCS+"/pyspark_sort.py"
+PYTHON_FILE_LOCATION = PROCESSING_GCS+"/pyspark_sort.py"
 PHS_CLUSTER_PATH = "projects/"+PROCESSING_PRJ+"/regions/"+DP_REGION+"/clusters/"+PHS_CLUSTER_NAME
+BATCH_ID = "batch-create-phs-"+str(int(time.time()))
 
 default_args = {
     # Tell airflow to start one day ago, so that it runs as soon as you upload it
@@ -58,6 +60,15 @@ with models.DAG(
     default_args=default_args,  # The interval with which to schedule the DAG
     schedule_interval=None,  # Override to match your needs
 ) as dag:
+    start = dummy.DummyOperator(
+        task_id='start',
+        trigger_rule='all_success'
+    )
+
+    end = dummy.DummyOperator(
+        task_id='end',
+        trigger_rule='all_success'
+    )    
 
     create_batch = DataprocCreateBatchOperator(
         task_id="batch_create",
@@ -75,19 +86,11 @@ with models.DAG(
                 }
             },
             "pyspark_batch": {
+                "args": ["pippo"],
                 "main_python_file_uri": PYTHON_FILE_LOCATION,
             }
         },
-        batch_id="batch-create-phs-"+str(int(time.time())),
+        batch_id=BATCH_ID,
     )
 
-    list_batches = DataprocListBatchesOperator(
-        task_id="list-all-batches",
-    )
-
-    get_batch = DataprocGetBatchOperator(
-        task_id="get_batch",
-        batch_id="batch-create-phs",
-    )
-
-    create_batch >> list_batches >> get_batch
+    start >> create_batch >> end

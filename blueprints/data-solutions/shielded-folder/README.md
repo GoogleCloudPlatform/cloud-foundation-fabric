@@ -45,8 +45,8 @@ User groups provide a stable frame of reference that allows decoupling the final
 
 We use groups to control access to resources:
 
-- `data-engineers`: They handle and run workloads on the `workload` subfolder. They have editor access to all resources in the `workload` folder in order to troubleshoot possible issues within the workload. This team can also impersonate any service account in the workload folder.
-- `data-security`: They handle security configurations for the shielded folder. They have owner access to the `audit-log` and `sec-core` projects.
+- `gcp-data-engineers`: They handle and run workloads on the `workload` subfolder. They have editor access to all resources in the `workload` folder in order to troubleshoot possible issues within the workload. This team can also impersonate any service account in the workload folder.
+- `gcp-data-security`: They handle security configurations for the shielded folder. They have owner access to the `audit-log` and `sec-core` projects.
 
 ## Encryption
 

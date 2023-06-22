@@ -101,7 +101,7 @@ variable "repositories" {
   validation {
     condition = alltrue([
       for k, v in var.repositories :
-      try(regex("^[a-zA-Z0-9_.]+$", k), null) != null
+      try(regex("^[a-zA-Z0-9-_.]+$", k), null) != null
     ])
     error_message = "Repository names must match '^[a-zA-Z0-9_.]+$'."
   }
