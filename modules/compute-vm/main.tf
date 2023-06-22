@@ -119,16 +119,16 @@ resource "google_compute_region_disk" "disks" {
 # Disks snapshot handler
 data "google_compute_instance" "instance" {
   project = var.project_id
-  zone                      = var.zone
-  name                      = var.name
+  zone    = var.zone
+  name    = var.name
 }
 
 resource "google_compute_disk_resource_policy_attachment" "boot_disk_snapshot" {
-  for_each = var.boot_disk_snapshot_policy != "" ? {data.google_compute_instance.instance.boot_disk} : {}
-  project = var.project_id
-  name    = var.boot_disk_snapshot_policy  
-  disk    = each.value.name
-  zone    = var.zone
+  count      = var.boot_disk_snapshot_policy != "" ? 1 : 0
+  project    = var.project_id
+  name       = var.boot_disk_snapshot_policy
+  disk       = data.google_compute_instance.instance.boot_disk.name
+  zone       = var.zone
   depends_on = [google_compute_instance.default]
 }
 
@@ -137,22 +137,22 @@ resource "google_compute_disk_resource_policy_attachment" "attached_disk_snapsho
     for k, v in local.attached_disks_zonal :
     k => v if v.source_type != "attach" && v.snapshot_policy
   }
-  project = var.project_id
-  name    = each.value.snapshot_policy  
-  disk    = each.value.name
-  zone    = var.zone
+  project    = var.project_id
+  name       = each.value.snapshot_policy
+  disk       = each.value.name
+  zone       = var.zone
   depends_on = [google_compute_disk.disks]
 }
 
 resource "google_compute_region_disk_resource_policy_attachment" "attached_disk_snapshot_regional" {
   for_each = var.create_template ? {} : {
     for k, v in local.attached_disks_regional :
-    k => v if v.source_type != "attach" && v.snapshot_policy 
+    k => v if v.source_type != "attach" && v.snapshot_policy
   }
-  project = var.project_id
-  name = each.value.snapshot_policy
-  disk = google_compute_region_disk.ssd.name
-  region = local.region
+  project    = var.project_id
+  name       = each.value.snapshot_policy
+  disk       = google_compute_region_disk.ssd.name
+  region     = local.region
   depends_on = [google_compute_region_disk.disks]
 }
 

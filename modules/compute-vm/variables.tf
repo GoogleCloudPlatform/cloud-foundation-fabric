@@ -37,18 +37,18 @@ variable "attached_disk_defaults" {
 
 variable "boot_disk_snapshot_policy" {
   description = "Boot Disk snapshot policy, if defined it will be attached to the Boot disk. The value we need is the Snapshot Policy name."
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "attached_disks" {
   description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
-    name        = string
-    device_name = optional(string)
-    size        = string
-    source      = optional(string)
-    source_type = optional(string)
+    name            = string
+    device_name     = optional(string)
+    size            = string
+    source          = optional(string)
+    source_type     = optional(string)
     snapshot_policy = optional(string)
     options = optional(
       object({
