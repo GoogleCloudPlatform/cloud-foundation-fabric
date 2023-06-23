@@ -60,7 +60,7 @@ module "gw" {
 }
 
 module "ilb-left" {
-  source     = "../../../modules/net-ilb"
+  source     = "../../../modules/net-lb-int"
   project_id = module.project.project_id
   region     = var.region
   name       = "${var.prefix}-ilb-left"
@@ -84,7 +84,7 @@ module "ilb-left" {
 }
 
 module "ilb-right" {
-  source     = "../../../modules/net-ilb"
+  source     = "../../../modules/net-lb-int"
   project_id = module.project.project_id
   region     = var.region
   name       = "${var.prefix}-ilb-right"

@@ -15,7 +15,7 @@
  */
 
 module "apigee_ilb_l7" {
-  source     = "../../../../modules/net-ilb-l7"
+  source     = "../../../../modules/net-lb-app-int"
   name       = "apigee-ilb"
   project_id = module.apigee_project.project_id
   region     = var.region

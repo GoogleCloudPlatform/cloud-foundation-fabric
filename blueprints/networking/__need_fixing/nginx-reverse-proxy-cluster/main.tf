@@ -303,7 +303,7 @@ module "proxy-vm" {
 }
 
 module "glb" {
-  source     = "../../../modules/net-glb"
+  source     = "../../../modules/net-lb-app-ext"
   project_id = module.project.project_id
   name       = "${var.prefix}-reverse-proxy-glb"
   health_check_configs = {

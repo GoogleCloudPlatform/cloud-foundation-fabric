@@ -1,4 +1,4 @@
-# Internal Load Balancer Module
+# Internal Passthrough Network Load Balancer Module
 
 This module allows managing a GCE Internal Load Balancer and integrates the forwarding rule, regional backend, and optional health check resources. It's designed to be a simple match for the [`compute-vm`](../compute-vm) module, which can be used to manage instance templates and instance groups.
 
@@ -51,7 +51,7 @@ module "mig" {
 }
 
 module "ilb" {
-  source        = "./fabric/modules/net-ilb"
+  source        = "./fabric/modules/net-lb-int"
   project_id    = var.project_id
   region        = "europe-west1"
   name          = "ilb-test"
@@ -78,7 +78,7 @@ This examples shows how to create an ILB by combining externally managed instanc
 
 ```hcl
 module "ilb" {
-  source        = "./fabric/modules/net-ilb"
+  source        = "./fabric/modules/net-lb-int"
   project_id    = var.project_id
   region        = "europe-west1"
   name          = "ilb-test"
@@ -150,7 +150,7 @@ module "instance-group" {
 }
 
 module "ilb" {
-  source        = "./fabric/modules/net-ilb"
+  source        = "./fabric/modules/net-lb-int"
   project_id    = var.project_id
   region        = "europe-west1"
   name          = "ilb-test"

@@ -201,7 +201,7 @@ module "squid-mig" {
 }
 
 module "squid-ilb" {
-  source        = "../../../modules/net-ilb"
+  source        = "../../../modules/net-lb-int"
   project_id    = module.project.project_id
   region        = var.region
   name          = "squid-ilb"

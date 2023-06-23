@@ -202,7 +202,7 @@ module "squid-mig" {
 
 module "squid-ilb" {
   count         = var.mig ? 1 : 0
-  source        = "../../../modules/net-ilb"
+  source        = "../../../modules/net-lb-int"
   project_id    = module.project-host.project_id
   region        = var.region
   name          = "squid-ilb"

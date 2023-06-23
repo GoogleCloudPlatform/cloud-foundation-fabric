@@ -7,22 +7,22 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
 - [I just found a bug / have a feature request](#i-just-found-a-bug--have-a-feature-request)
 - [Quick developer workflow](#quick-developer-workflow)
 - [Developer's handbook](#developers-handbook)
-  * [The Zen of Fabric](#the-zen-of-fabric)
-  * [Design principles in action](#design-principles-in-action)
-  * [FAST stage design](#fast-stage-design)
-  * [Style guide reference](#style-guide-reference)
-  * [Interacting with checks and tools](#interacting-with-checks-and-tools)
+  - [The Zen of Fabric](#the-zen-of-fabric)
+  - [Design principles in action](#design-principles-in-action)
+  - [FAST stage design](#fast-stage-design)
+  - [Style guide reference](#style-guide-reference)
+  - [Interacting with checks and tools](#interacting-with-checks-and-tools)
 - [Using and writing tests](#using-and-writing-tests)
-  * [Testing via README.md example blocks.](#testing-via-readmemd-example-blocks)
-    + [Testing examples against an inventory YAML](#testing-examples-against-an-inventory-yaml)
-    + [Using external files](#using-external-files)
-    + [Running tests for specific examples](#running-tests-for-specific-examples)
-    + [Generating the inventory automatically](#generating-the-inventory-automatically)
-    + [Building tests for blueprints](#building-tests-for-blueprints)
-  * [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-tfvars-and-yaml-aka-tftest-based-tests)
-    + [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for-tftest-based-tests)
-  * [Writing tests in Python (legacy approach)](#writing-tests-in-python-legacy-approach)
-  * [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
+  - [Testing via README.md example blocks.](#testing-via-readmemd-example-blocks)
+    - [Testing examples against an inventory YAML](#testing-examples-against-an-inventory-yaml)
+    - [Using external files](#using-external-files)
+    - [Running tests for specific examples](#running-tests-for-specific-examples)
+    - [Generating the inventory automatically](#generating-the-inventory-automatically)
+    - [Building tests for blueprints](#building-tests-for-blueprints)
+  - [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-tfvars-and-yaml-aka-tftest-based-tests)
+    - [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for-tftest-based-tests)
+  - [Writing tests in Python (legacy approach)](#writing-tests-in-python-legacy-approach)
+  - [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
 - [Fabric tools](#fabric-tools)
 
 ## I just found a bug / have a feature request
@@ -205,11 +205,11 @@ We have several such interfaces defined for IAM, log sinks, organizational polic
 #### Design interfaces to support actual usage
 
 > “When developing a module, look for opportunities to take a little bit of extra suffering upon yourself in order to reduce the suffering of your users.”
-> 
+>
 > “Providing choice is good, but interfaces should be designed to make the common case as simple as possible”
-> 
+>
 > — John Ousterhout in "A Philosophy of Software Design"
- 
+
 Variables should not simply map to the underlying resource attributes, but their **interfaces should be designed to match common use cases** to reduce friction and offer the highest possible degree of legibility.
 
 This translates into different practical approaches:
@@ -299,7 +299,6 @@ module "project" {
 > "The best modules are those whose interfaces are much simpler than their implementations"
 >
 > — John Ousterhout in "A Philosophy of Software Design"
-
 
 Designing variable spaces is one of the most complex aspects to get right, as they are the main entry point through which users consume modules, examples and FAST stages. We always strive to **design small variable spaces by leveraging objects and implementing defaults** so that users can quickly produce highly readable code.
 
@@ -688,7 +687,7 @@ In the following sections we describe the three testing approaches we currently 
 - [tfvars-based tests](#testing-via-tfvars-and-yaml): allows you to test a module or blueprint by providing variables via tfvar files and an expected plan result in form of an inventory. This type of test is useful, for example, for FAST stages that don't have any examples within their READMEs.
 - [Python-based (legacy) tests](#writing-tests-in-python--legacy-approach-): in some situations you might still want to interact directly with `tftest` via Python, if that's the case, use this method to write custom Python logic to test your module in any way you see fit.
 
-### Testing via README.md example blocks.
+### Testing via README.md example blocks
 
 This is the preferred method to write tests for modules and blueprints. Example-based tests are triggered from [HCL Markdown fenced code blocks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#syntax-highlighting) in any file named README.md, hence there's no need to create any additional files or revert to Python to write a test. Most of our documentation examples are using this method.
 
@@ -795,6 +794,7 @@ module "private-dns" {
 }
 # tftest modules=1 resources=2 files=records
 ```
+
 ```yaml
 # tftest-file id=records path=records/example.yaml
 A localhost:
@@ -814,6 +814,7 @@ As mentioned before, we use `pytest` as our test runner, so you can use any of t
 Example-based test are named based on the section within the README.md that contains them. You can use this name to select specific tests.
 
 Here we show a few commonly used selection commands:
+
 - Run all examples:
   - `pytest tests/examples/`
 - Run all examples for modules:
@@ -919,7 +920,7 @@ The second approach to testing requires you to:
 - define `yaml` "inventory" files with the plan and output results you want to test
 - declare which of these files need to be run as tests in a `tftest.yaml` file
 
-Let's go through each step in succession, assuming you are testing the new `net-glb` module.
+Let's go through each step in succession, assuming you are testing the new `net-lb-app-ext` module.
 
 First create a new folder under `tests/modules` replacing any dash in the module name with underscores. Note that if you were testing a blueprint the folder would go in `tests/blueprints`.
 
@@ -973,7 +974,7 @@ Create as many pairs of `tfvars`/`yaml` files as you need to test every scenario
 
 ```yaml
 # file: tests/modules/net_glb/tftest.yaml
-module: modules/net-glb
+module: modules/net-lb-app-ext
 # if there are variables shared among all tests you can define a common file
 # common_tfvars:
 #   - defaults.tfvars
@@ -1052,12 +1053,13 @@ You can now use this output to create the inventory file for your test. As menti
 Where possible, we recommend using the testing methods described in the previous sections. However, if you need it, you can still write tests using Python directly.
 
 In general, you should try to use the `plan_summary` fixture, which runs a a terraform plan and returns a `PlanSummary` object. The most important arguments to `plan_summary` are:
+
 - the path of the Terraform module you want to test, relative to the root of the repository
 - a list of paths representing the tfvars file to pass in to terraform. These paths are relative to the python file defining the test.
 
 If successful, `plan_summary` will return a `PlanSummary` object with the `values`, `counts` and `outputs` attributes following the same semantics described in the previous section. You can use this fields to write your custom tests.
 
-Like before let's imagine we're writing a (python) test for `net-glb` module. First create a new folder under `tests/modules` replacing any dash in the module name with underscores. You also need to create an empty `__init__.py` file in it, to ensure `pytest` discovers you new tests automatically.
+Like before let's imagine we're writing a (python) test for `net-lb-app-ext` module. First create a new folder under `tests/modules` replacing any dash in the module name with underscores. You also need to create an empty `__init__.py` file in it, to ensure `pytest` discovers you new tests automatically.
 
 ```bash
 mkdir tests/modules/net_glb
@@ -1065,9 +1067,10 @@ touch tests/modules/net_glb/__init__.py
 ```
 
 Now create a file containing your tests, e.g. `test_plan.py`:
+
 ```python
 def test_name(plan_summary, tfvars_to_yaml, tmp_path):
-  s = plan_summary('modules/net-glb', tf_var_files=['test-plan.tfvars'])
+  s = plan_summary('modules/net-lb-app-ext', tf_var_files=['test-plan.tfvars'])
   address = 'google_compute_url_map.default'
   assert s.values[address]['project'] == 'my-project'
 ```
@@ -1081,15 +1084,18 @@ Most of the time you can run tests using the `pytest` command as described in pr
 To enable this option, just define the environment variable `TFTEST_COPY` and any tests using the `plan_summary` fixture will automatically run from a temporary directory.
 
 Running tests from temporary directories is useful if:
+
 - you're running tests in parallel using `pytest-xdist`. In this case, just run you tests as follows:
+
   ```bash
   TFTEST_COPY=1 pytest -n 4
   ```
+
 - you're running tests for the `fast/` directory which contain tfvars and auto.tfvars files (which are read by terraform automatically) making your tests fail. In this case, you can run
+
   ```
   TFTEST_COPY=1 pytest fast/
   ```
-
 
 ## Fabric tools
 

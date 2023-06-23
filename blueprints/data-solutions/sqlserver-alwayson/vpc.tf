@@ -135,7 +135,7 @@ module "ip-addresses" {
 }
 
 module "listener-ilb" {
-  source        = "../../../modules/net-ilb"
+  source        = "../../../modules/net-lb-int"
   for_each      = toset(var.always_on_groups)
   project_id    = var.project_id
   region        = var.region
