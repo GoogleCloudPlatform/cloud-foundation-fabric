@@ -46,7 +46,7 @@ module "va-a" {
     vlan_tag     = var.underlay_config.attachments.a.vlan_tag
   }
   partner_interconnect_config = var.underlay_config.interconnect_type != "PARTNER" ? null : {
-    edge_availability_domain = "zone1"
+    edge_availability_domain = "AVAILABILITY_DOMAIN_1"
   }
 }
 
@@ -70,6 +70,6 @@ module "va-b" {
     vlan_tag     = var.underlay_config.attachments.b.vlan_tag
   }
   partner_interconnect_config = var.underlay_config.interconnect_type != "PARTNER" ? null : {
-    edge_availability_domain = "zone2"
+    edge_availability_domain = "AVAILABILITY_DOMAIN_2"
   }
 }
