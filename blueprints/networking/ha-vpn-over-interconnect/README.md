@@ -2,7 +2,9 @@
 
 This blueprint creates a complete HA VPN over Interconnect setup, which leverages IPSec to encrypt all traffic transiting through purposely-created VLAN Attachments.
 
-This blueprint supports Dedicated Interconnect - in case Partner Interconnect is used instead (hence the VLAN Attachments are already created), simply refer to the [net-ipsec-over-interconnect](../../../modules/net-ipsec-over-interconnect/) module documentation.
+This blueprint supports Dedicated Interconnect and Partner Interconnect.
+
+In case of Partner Interconnect only partial apply is possible at first, which creates the VLAN Attachments. Only once the partner connection is established it is possible to deploy HA VPN Gateway and all dependant resources. 
 
 ## Managed resources and services
 
@@ -22,6 +24,8 @@ A single pre-existing project and a VPC is used in this blueprint to keep variab
 The provided project needs a valid billing account and the Compute APIs enabled.
 
 The two Dedicated Interconnect connections should already exist, either in the same project or in any other project belonging to the same GCP Organization.
+
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
