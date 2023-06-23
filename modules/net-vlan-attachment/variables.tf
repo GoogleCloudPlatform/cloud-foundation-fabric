@@ -62,8 +62,12 @@ variable "network" {
 variable "partner_interconnect_config" {
   description = "Partner interconnect configuration."
   type = object({
-    edge_availability_domain = optional(string, "AVAILABILITY_DOMAIN_ANY")
+    edge_availability_domain = string
   })
+  validation {
+    condition     = var.partner_interconnect_config == null ? true : contains(["AVAILABILITY_DOMAIN_1", "AVAILABILITY_DOMAIN_2", "AVAILABILITY_DOMAIN_ANY"], var.partner_interconnect_config.edge_availability_domain)
+    error_message = "The edge_availability_domain must have one of these values: AVAILABILITY_DOMAIN_1, AVAILABILITY_DOMAIN_2, AVAILABILITY_DOMAIN_ANY."
+  }
   default = null
 }
 
