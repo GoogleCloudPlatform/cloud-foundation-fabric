@@ -43,7 +43,7 @@ module "mig" {
 }
 
 module "nlb" {
-  source     = "./fabric/modules/net-nlb"
+  source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
   region     = "europe-west1"
   name       = "nlb-test"
@@ -65,7 +65,7 @@ This examples shows how to create an NLB by combining externally managed instanc
 
 ```hcl
 module "nlb" {
-  source     = "./fabric/modules/net-nlb"
+  source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
   region     = "europe-west1"
   name       = "nlb-test"
@@ -132,7 +132,7 @@ module "instance-group" {
 }
 
 module "nlb" {
-  source     = "./fabric/modules/net-nlb"
+  source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
   region     = "europe-west1"
   name       = "nlb-test"

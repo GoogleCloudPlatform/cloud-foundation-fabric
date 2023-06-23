@@ -294,7 +294,7 @@ All notable changes to this project will be documented in this file.
 - [[#1269](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1269)] Ignore changes to metadata.0.annotations in Cloud Run module ([juliocc](https://github.com/juliocc)) <!-- 2023-03-21 11:21:59+00:00 -->
 - [[#1267](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1267)] Improvements to NCC-RA spoke module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-03-21 07:07:44+00:00 -->
 - [[#1268](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1268)] simple-nva: add ability to parse BGP configs as strings. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-03-21 06:41:13+00:00 -->
-- [[#1258](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1258)] Add backend service names to outputs for net-glb and net-ilb-l7  ([rosmo](https://github.com/rosmo)) <!-- 2023-03-17 10:40:11+00:00 -->
+- [[#1258](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1258)] Add backend service names to outputs for net-glb and net-lb-app-int  ([rosmo](https://github.com/rosmo)) <!-- 2023-03-17 10:40:11+00:00 -->
 - [[#1259](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1259)] Add support for `iam_additive` and simplify factory interface in net VPC module ([ludoo](https://github.com/ludoo)) <!-- 2023-03-17 10:12:35+00:00 -->
 - [[#1255](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1255)] **incompatible change:** Change `target_vpcs` variable in firewall policy module to support dynamic values ([ludoo](https://github.com/ludoo)) <!-- 2023-03-17 07:14:10+00:00 -->
 - [[#1256](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1256)] **incompatible change:** Pin local provider ([ludoo](https://github.com/ludoo)) <!-- 2023-03-16 10:59:07+00:00 -->
@@ -599,7 +599,7 @@ All notable changes to this project will be documented in this file.
 - [[#978](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/978)] Worker pool support for `cloud-function` ([maunope](https://github.com/maunope)) <!-- 2022-11-15 16:38:42+00:00 -->
 - [[#977](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/977)] Replace Docker's `gcplogs` driver with the GCP COS logging agent ([kunzese](https://github.com/kunzese)) <!-- 2022-11-15 12:19:52+00:00 -->
 - [[#975](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/975)] Add validation for health check port specification to ILB L7 module ([ludoo](https://github.com/ludoo)) <!-- 2022-11-14 15:20:01+00:00 -->
-- [[#974](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/974)] **incompatible change:** Refactor net-ilb-l7 module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-14 13:39:00+00:00 -->
+- [[#974](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/974)] **incompatible change:** Refactor net-lb-app-int module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-14 13:39:00+00:00 -->
 - [[#970](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/970)] Update logging sinks to tf1.3 in resman modules ([juliocc](https://github.com/juliocc)) <!-- 2022-11-12 18:36:59+00:00 -->
 - [[#969](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/969)] Update folder and project org policy tests ([juliocc](https://github.com/juliocc)) <!-- 2022-11-11 17:01:26+00:00 -->
 - [[#964](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/964)] prefix variable consistency across modules ([skalolazka](https://github.com/skalolazka)) <!-- 2022-11-11 13:38:51+00:00 -->
@@ -832,7 +832,7 @@ All notable changes to this project will be documented in this file.
 - optionally turn off gcplogs driver in COS modules
 - fix `tag` output on `data-catalog-policy-tag` module
 - add shared-vpc support on `gcs-to-bq-with-least-privileges`
-- new `net-ilb-l7` module
+- new `net-lb-app-int` module
 - new `02-networking-peering` networking stage
 - **incompatible change** the variable for PSA ranges in networking stages have changed
 

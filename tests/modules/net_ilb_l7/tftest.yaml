@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-ilb-l7
+module: modules/net-lb-app-int
 common_tfvars:
   - common.tfvars
 tests:
