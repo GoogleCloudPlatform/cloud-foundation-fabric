@@ -104,17 +104,20 @@ To deploy this blueprint in your GCP organization, you will need
 - a folder or organization where resources will be created
 - a billing account that will be associated with the new projects
 
-The Shielded Folder blueprint is meant to be executed by a Service Account (or a regular user) having this minimal set of permission:
+The Shielded Folder blueprint is meant to be executed by a Service Account having this minimal set of permission:
 
-- Billing account
+- **Billing account**
   - `roles/billing.user`
-- Folder level
+- **Organization level**:
+  - `roles/logging.configWriter`
   - `roles/resourcemanager.folderAdmin`
+  - `roles/compute.orgFirewallPolicyAdmin`
   - `roles/resourcemanager.projectCreator`
+  - `roles/orgpolicy.policyAdmin`
 
-The shielded Folder blueprint assumes [groups described](#user-groups) are created in your GCP organization.
+The shielded Folder blueprint assumes [groups described](#user-groups) are created in your GCP organization. Please create them from the [https://admin.google.com/][Google Admin] console.
 
-### Variable configuration PIPPO
+### Variable configuration
 
 There are several sets of variables you will need to fill in:
 
