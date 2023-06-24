@@ -157,7 +157,7 @@ Spoke VPCs also define and reserve three "special" CIDR ranges, derived from the
 
   - The third-last /24 range is used for PSA (CloudSQL, MySQL)
 
-- [Internal HTTPs Load Balancers (L7ILB)](https://cloud.google.com/load-balancing/docs/l7-internal):
+- [Internal Application Load Balancers (L7 LBs)](https://cloud.google.com/load-balancing/docs/l7-internal):
 
   - The last /24 range
 

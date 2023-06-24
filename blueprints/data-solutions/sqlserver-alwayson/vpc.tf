@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Creates the VPC and manages the firewall rules and ILB.
+# tfdoc:file:description Creates the VPC and manages the firewall rules and LB.
 
 locals {
   internal_addresses = merge(

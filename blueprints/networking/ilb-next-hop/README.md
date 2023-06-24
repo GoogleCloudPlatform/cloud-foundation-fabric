@@ -1,4 +1,4 @@
-# Internal Load Balancer as Next Hop
+# Internal Network Load Balancer as Next Hop
 
 This blueprint bootstraps a minimal infrastructure for testing [ILB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview),  using simple Linux gateway VMS between two VPCs to emulate virtual appliances.
 
@@ -10,13 +10,13 @@ Two ILBs are configured on the primary and secondary interfaces of gateway VMs w
 
 ## Testing
 
-This setup can be used to test and verify new ILB features like [forwards all protocols on ILB as next hops](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview#all-traffic) and [symmetric hashing](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview#symmetric-hashing), using simple `curl` and `ping` tests on clients. To make this practical, test VMs on both VPCs have `nginx` pre-installed and active on port 80.
+This setup can be used to test and verify new Internal Network LB features like [forwards all protocols on Internal Network LB as next hops](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview#all-traffic) and [symmetric hashing](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview#symmetric-hashing), using simple `curl` and `ping` tests on clients. To make this practical, test VMs on both VPCs have `nginx` pre-installed and active on port 80.
 
 On the gateways, `iftop` and `tcpdump` are installed by default to quickly monitor traffic passing forwarded across VPCs.
 
-Session affinity on the ILB backend services can be changed using `gcloud compute backend-services update` on each of the ILBs, or by setting the `ilb_session_affinity` variable to update both ILBs.
+Session affinity on the Internal Network LB backend services can be changed using `gcloud compute backend-services update` on each of the Internal Network LBs, or by setting the `ilb_session_affinity` variable to update both Internal Network LBs.
 
-Simple `/root/start.sh` and `/root/stop.sh` scripts are pre-installed on both gateways to configure `iptables` so that health check requests are rejected and re-enabled, to quickly simulate removing instances from the ILB backends.
+Simple `/root/start.sh` and `/root/stop.sh` scripts are pre-installed on both gateways to configure `iptables` so that health check requests are rejected and re-enabled, to quickly simulate removing instances from the Internal Network LB backends.
 
 Some scenarios to test:
 

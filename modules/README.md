@@ -47,7 +47,7 @@ These modules are used in the examples included in this repository. If you are u
 - [DNS Response Policy](./dns-response-policy/)
 - [External Application Load Balancer](./net-lb-app-ext/)
 - [External Network Passthrough Load Balancer](./net-lb-ext)
-- [Internal Application ILB](./net-lb-app-int)
+- [Internal Application LB](./net-lb-app-int)
 - [Internal Network Passthrough Load Balancer](./net-lb-int)
 - [NAT](./net-cloudnat)
 - [Service Directory](./service-directory)

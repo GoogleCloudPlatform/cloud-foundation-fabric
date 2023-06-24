@@ -29,7 +29,7 @@ and to `C:\GcpSetupLog.txt` file.
 | [secrets.tf](./secrets.tf) | Creates SQL admin user password secret. | <code>secret-manager</code> |
 | [service-accounts.tf](./service-accounts.tf) | Creates service accounts for the instances. | <code>iam-service-account</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
-| [vpc.tf](./vpc.tf) | Creates the VPC and manages the firewall rules and ILB. | <code>net-address</code> · <code>net-lb-int</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> |
+| [vpc.tf](./vpc.tf) | Creates the VPC and manages the firewall rules and LB. | <code>net-address</code> · <code>net-lb-int</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> |
 
 ## Variables
 
