@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,6 +133,10 @@ resource "google_compute_instance" "default" {
   enable_display            = var.enable_display
   labels                    = var.labels
   metadata                  = var.metadata
+  resource_policies = var.instance_schedule == null ? null : [try(
+    google_compute_resource_policy.schedule.0.id,
+    var.instance_schedule.resource_policy_id
+  )]
 
   dynamic "attached_disk" {
     for_each = local.attached_disks_zonal

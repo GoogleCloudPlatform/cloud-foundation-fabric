@@ -155,6 +155,40 @@ variable "iam" {
   default     = {}
 }
 
+variable "instance_schedule" {
+  description = "Assign or create and assign an instance schedule policy. Either resource policy id or create_config must be specified if not null."
+  type = object({
+    resource_policy_id = optional(string)
+    create_config = optional(object({
+      description     = optional(string)
+      expiration_time = optional(string)
+      start_time      = optional(string)
+      timezone        = optional(string, "UTC")
+      vm_start        = optional(string)
+      vm_stop         = optional(string)
+    }))
+  })
+  default = null
+  validation {
+    condition = (
+      var.instance_schedule == null ||
+      try(var.instance_schedule.resource_policy_id, null) != null ||
+      try(var.instance_schedule.create_config, null) != null
+    )
+    error_message = "A resource policy name or configuration must be specified when not null."
+  }
+  validation {
+    condition = (
+      try(var.instance_schedule.create_config, null) == null ||
+      length(compact([
+        try(var.instance_schedule.create_config.vm_start, null),
+        try(var.instance_schedule.create_config.vm_stop, null)
+      ])) > 0
+    )
+    error_message = "A resource policy configuration must contain at least one schedule."
+  }
+}
+
 variable "instance_type" {
   description = "Instance type."
   type        = string
