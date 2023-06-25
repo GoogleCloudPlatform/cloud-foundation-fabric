@@ -21,9 +21,10 @@ locals {
 }
 
 resource "google_compute_resource_policy" "schedule" {
-  count  = local.schedule_p != null ? 1 : 0
-  name   = var.name
-  region = substr(var.zone, 0, length(var.zone) - 2)
+  count   = local.schedule_p != null ? 1 : 0
+  project = var.project_id
+  region  = substr(var.zone, 0, length(var.zone) - 2)
+  name    = var.name
   description = coalesce(
     local.schedule_p.description, "Schedule policy for ${var.name}."
   )
@@ -48,8 +49,9 @@ resource "google_compute_resource_policy" "schedule" {
 
 resource "google_compute_resource_policy" "snapshot" {
   for_each = var.snapshot_schedules
-  name     = "${var.name}-${each.key}"
+  project  = var.project_id
   region   = substr(var.zone, 0, length(var.zone) - 2)
+  name     = "${var.name}-${each.key}"
   description = coalesce(
     each.value.description, "Schedule policy ${each.key} for ${var.name}."
   )
@@ -83,7 +85,7 @@ resource "google_compute_resource_policy" "snapshot" {
       }
     }
     dynamic "retention_policy" {
-      for_each = each.value.retention_policy != null ? [] : [""]
+      for_each = each.value.retention_policy != null ? [""] : []
       content {
         max_retention_days = each.value.retention_policy.max_retention_days
         on_source_disk_delete = (
@@ -94,7 +96,7 @@ resource "google_compute_resource_policy" "snapshot" {
       }
     }
     dynamic "snapshot_properties" {
-      for_each = each.value.snapshot_properties != null ? [] : [""]
+      for_each = each.value.snapshot_properties != null ? [""] : []
       content {
         labels            = each.value.snapshot_properties.labels
         storage_locations = each.value.snapshot_properties.storage_locations
@@ -102,4 +104,60 @@ resource "google_compute_resource_policy" "snapshot" {
       }
     }
   }
+}
+
+resource "google_compute_disk_resource_policy_attachment" "boot" {
+  count   = var.boot_disk.snapshot_schedule != null ? 1 : 0
+  project = var.project_id
+  zone    = var.zone
+  name = try(
+    google_compute_resource_policy.snapshot["${var.name}-${var.boot_disk.snapshot_schedule}"],
+    var.boot_disk.snapshot_schedule
+  )
+  disk       = var.name
+  depends_on = [google_compute_instance.default]
+}
+
+resource "google_compute_disk_resource_policy_attachment" "attached" {
+  for_each = {
+    for k, v in local.attached_disks_zonal :
+    k => v if v.snapshot_schedule != null
+  }
+  project = var.project_id
+  zone    = var.zone
+  name = try(
+    google_compute_resource_policy.snapshot["${var.name}-${each.value.snapshot_schedule}"],
+    each.value.snapshot_schedule
+  )
+  disk = (
+    each.value.source_type == "attach"
+    ? each.value.source
+    : google_compute_disk.disks[each.key].name
+  )
+  depends_on = [
+    google_compute_instance.default,
+    google_compute_disk.disks
+  ]
+}
+
+resource "google_compute_region_disk_resource_policy_attachment" "attached" {
+  for_each = {
+    for k, v in local.attached_disks_regional :
+    k => v if v.snapshot_schedule != null
+  }
+  project = var.project_id
+  region  = substr(var.zone, 0, length(var.zone) - 2)
+  name = try(
+    google_compute_resource_policy.snapshot["${var.name}-${each.value.snapshot_schedule}"],
+    each.value.snapshot_schedule
+  )
+  disk = (
+    each.value.source_type == "attach"
+    ? each.value.source
+    : google_compute_region_disk.disks[each.key].name
+  )
+  depends_on = [
+    google_compute_instance.default,
+    google_compute_region_disk.disks
+  ]
 }

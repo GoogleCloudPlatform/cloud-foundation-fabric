@@ -38,11 +38,12 @@ variable "attached_disk_defaults" {
 variable "attached_disks" {
   description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
-    name        = string
-    device_name = optional(string)
-    size        = string
-    source      = optional(string)
-    source_type = optional(string)
+    name              = string
+    device_name       = optional(string)
+    size              = string
+    snapshot_schedule = optional(string)
+    source            = optional(string)
+    source_type       = optional(string)
     options = optional(
       object({
         auto_delete  = optional(bool, false)
@@ -82,8 +83,9 @@ variable "attached_disks" {
 variable "boot_disk" {
   description = "Boot disk properties."
   type = object({
-    auto_delete = optional(bool, true)
-    source      = optional(string)
+    auto_delete       = optional(bool, true)
+    snapshot_schedule = optional(string)
+    source            = optional(string)
     initialize_params = optional(object({
       image = optional(string, "projects/debian-cloud/global/images/family/debian-11")
       size  = optional(number, 10)
