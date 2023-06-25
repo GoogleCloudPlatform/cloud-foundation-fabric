@@ -302,6 +302,49 @@ variable "shielded_config" {
   default = null
 }
 
+variable "snapshot_schedules" {
+  description = "Snapshot schedule resource policies that can be attached to disks."
+  type = map(object({
+    schedule = object({
+      daily = optional(object({
+        days_in_cycle = number
+        start_time    = string
+      }))
+      hourly = optional(object({
+        hours_in_cycle = number
+        start_time     = string
+      }))
+      weekly = optional(list(object({
+        day        = string
+        start_time = string
+      })))
+    })
+    description = optional(string)
+    retention_policy = optional(object({
+      max_retention_days         = number
+      on_source_disk_delete_keep = optional(bool)
+    }))
+    snapshot_properties = optional(object({
+      chain_name        = optional(string)
+      guest_flush       = optional(bool)
+      labels            = optional(map(string))
+      storage_locations = optional(list(string))
+    }))
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.snapshot_schedules : (
+        (v.schedule.daily != null ? 1 : 0) +
+        (v.schedule.hourly != null ? 1 : 0) +
+        (v.schedule.weekly != null ? 1 : 0)
+      ) == 1
+    ])
+    error_message = "Schedule must contain exactly one of daily, hourly, or weekly schedule."
+  }
+}
+
 variable "tag_bindings" {
   description = "Tag bindings for this instance, in key => tag value id format."
   type        = map(string)

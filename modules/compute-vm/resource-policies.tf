@@ -25,7 +25,7 @@ resource "google_compute_resource_policy" "schedule" {
   name   = var.name
   region = substr(var.zone, 0, length(var.zone) - 2)
   description = coalesce(
-    local.schedule_p.description, "Schedule policy for ${var.name}"
+    local.schedule_p.description, "Schedule policy for ${var.name}."
   )
   instance_schedule_policy {
     expiration_time = local.schedule_p.expiration_time
@@ -41,6 +41,64 @@ resource "google_compute_resource_policy" "schedule" {
       for_each = local.schedule_p.vm_stop != null ? [""] : []
       content {
         schedule = local.schedule_p.vm_stop
+      }
+    }
+  }
+}
+
+resource "google_compute_resource_policy" "snapshot" {
+  for_each = var.snapshot_schedules
+  name     = "${var.name}-${each.key}"
+  region   = substr(var.zone, 0, length(var.zone) - 2)
+  description = coalesce(
+    each.value.description, "Schedule policy ${each.key} for ${var.name}."
+  )
+  snapshot_schedule_policy {
+    schedule {
+      dynamic "daily_schedule" {
+        for_each = each.value.schedule.daily != null ? [""] : []
+        content {
+          days_in_cycle = each.value.schedule.daily.days_in_cycle
+          start_time    = each.value.schedule.daily.start_time
+        }
+      }
+      dynamic "hourly_schedule" {
+        for_each = each.value.schedule.hourly != null ? [""] : []
+        content {
+          hours_in_cycle = each.value.schedule.hourly.hours_in_cycle
+          start_time     = each.value.schedule.hourly.start_time
+        }
+      }
+      dynamic "weekly_schedule" {
+        for_each = each.value.schedule.weekly != null ? [""] : []
+        content {
+          dynamic "day_of_weeks" {
+            for_each = each.value.schedule.weekly
+            content {
+              day        = day_of_weeks.value.day
+              start_time = day_of_weeks.value.start_time
+            }
+          }
+        }
+      }
+    }
+    dynamic "retention_policy" {
+      for_each = each.value.retention_policy != null ? [] : [""]
+      content {
+        max_retention_days = each.value.retention_policy.max_retention_days
+        on_source_disk_delete = (
+          each.value.retention_policy.on_source_disk_delete_keep == false
+          ? "APPLY_RETENTION_POLICY"
+          : "KEEP_AUTO_SNAPSHOTS"
+        )
+      }
+    }
+    dynamic "snapshot_properties" {
+      for_each = each.value.snapshot_properties != null ? [] : [""]
+      content {
+        labels            = each.value.snapshot_properties.labels
+        storage_locations = each.value.snapshot_properties.storage_locations
+        guest_flush       = each.value.snapshot_properties.guest_flush
       }
     }
   }

@@ -14,7 +14,7 @@
 
 values:
   module.instance.google_compute_resource_policy.schedule[0]:
-    description: Schedule policy for schedule-test
+    description: Schedule policy for schedule-test.
     instance_schedule_policy:
     - expiration_time: null
       start_time: null
