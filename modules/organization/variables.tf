@@ -212,7 +212,7 @@ variable "org_policies_data_path" {
 }
 
 variable "org_policy_custom_constraints" {
-  description = "Organization policiy custom constraints keyed by constraint name."
+  description = "Organization policy custom constraints keyed by constraint name."
   type = map(object({
     display_name   = optional(string)
     description    = optional(string)

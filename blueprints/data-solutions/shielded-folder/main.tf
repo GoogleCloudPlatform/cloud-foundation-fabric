@@ -121,7 +121,7 @@ module "vpc-sc" {
   service_perimeters_regular = {
     shielded = {
       # Move `spec` definition to `status` and comment `use_explicit_dry_run_spec` variable to enforce VPC-SC configuration
-      # Before enforing configuration check logs and create Access Level, Ingress/Egress policy as needed
+      # Before enforcing configuration check logs and create Access Level, Ingress/Egress policy as needed
 
       status = null
       spec = {
