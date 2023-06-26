@@ -96,7 +96,7 @@ module "server" {
 }
 
 module "glb" {
-  source     = "../../../modules/net-glb"
+  source     = "../../../modules/net-lb-app-ext"
   name       = "${var.prefix}-glb"
   project_id = module.project.project_id
   protocol   = "HTTPS"

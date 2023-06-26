@@ -27,7 +27,7 @@ This architecture is ideal, if the external Load Balancer and the application ar
 
 In a real world implementation, the IaC code might be split into two separate repositories, and the application team raises changes to the load balancer using a pull request. Also the service attachment in the producer project is configured to allow all connections via `connection_preference = "ACCEPT_AUTOMATIC"` in a real world setup you would want to use a manual white listing instead.
 
-The Terraform IaC also deploys a VM to the producer VPC network, this VM is only needed for the internal Layer 7 Load Balancer to properly work with Cloud Run, but has no logical function in the setup, no traffic is routed via this machine. 
+The Terraform IaC also deploys a VM to the producer VPC network, this VM is only needed for the internal Layer 7 Load Balancer to properly work with Cloud Run, but has no logical function in the setup, no traffic is routed via this machine.
 
 ## Setup
 
@@ -101,7 +101,7 @@ The above command will delete the associated resources so there will be no billa
 |---|---|:---:|:---:|:---:|
 | [consumer_project_id](variables.tf#L17) | The consumer project, in which the GCLB and Cloud Armor should be created. | <code>string</code> | ✓ |  |
 | [prefix](variables.tf#L22) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [producer_project_id](variables.tf#L31) | The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created. | <code>string</code> | ✓ |  |
+| [producer_project_id](variables.tf#L31) | The producer project, in which the LB, PSC Service Attachment and Cloud Run service should be created. | <code>string</code> | ✓ |  |
 | [project_create](variables.tf#L36) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
 | [region](variables.tf#L42) | The GCP region in which the resources should be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | [zone](variables.tf#L48) | The GCP zone for the VM. | <code>string</code> |  | <code>&#34;europe-west1-b&#34;</code> |

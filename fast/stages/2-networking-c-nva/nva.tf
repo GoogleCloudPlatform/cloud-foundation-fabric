@@ -124,7 +124,7 @@ module "ilb-nva-untrusted" {
       subnet    = "${v}/landing-untrusted-default-${local.region_shortnames[v]}"
     }
   }
-  source        = "../../../modules/net-ilb"
+  source        = "../../../modules/net-lb-int"
   project_id    = module.landing-project.project_id
   region        = each.value.region
   name          = "nva-untrusted-${each.key}"
@@ -155,7 +155,7 @@ module "ilb-nva-trusted" {
       subnet    = "${v}/landing-trusted-default-${local.region_shortnames[v]}"
     }
   }
-  source        = "../../../modules/net-ilb"
+  source        = "../../../modules/net-lb-int"
   project_id    = module.landing-project.project_id
   region        = each.value.region
   name          = "nva-trusted-${each.key}"

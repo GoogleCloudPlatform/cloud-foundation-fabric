@@ -67,7 +67,7 @@ resource "google_compute_global_address" "default" {
 
 # Global L7 HTTPS Load Balancer in front of Cloud Run
 module "glb" {
-  source     = "../../../modules/net-glb"
+  source     = "../../../modules/net-lb-app-ext"
   count      = local.gclb_create ? 1 : 0
   project_id = module.project.project_id
   name       = "glb"

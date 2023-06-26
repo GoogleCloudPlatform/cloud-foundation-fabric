@@ -1,4 +1,4 @@
-# Global HTTP/S Classic Load Balancer Module
+# External Application Load Balancer Module
 
 This module allows managing Global HTTP/HTTPS Classic Load Balancers (GLBs). It's designed to expose the full configuration of the underlying resources, and to facilitate common usage patterns by providing sensible defaults, and optionally managing prerequisite resources like health checks, instance groups, etc.
 
@@ -27,7 +27,7 @@ An HTTP load balancer with a backend service pointing to a GCE instance group:
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -50,7 +50,7 @@ An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. TH
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -80,7 +80,7 @@ For HTTPS backends the backend service protocol needs to be set to `HTTPS`. The 
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -117,7 +117,7 @@ The module uses a classic Global Load Balancer by default. To use the non-classi
 
 ```hcl
 module "glb-0" {
-  source              = "./fabric/modules/net-glb"
+  source              = "./fabric/modules/net-lb-app-ext"
   project_id          = "myprj"
   name                = "glb-test-0"
   use_classic_version = false
@@ -143,7 +143,7 @@ Health checks created by this module are controlled via the `health_check_config
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
@@ -168,7 +168,7 @@ To leverage existing health checks without having the module create them, simply
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
@@ -192,7 +192,7 @@ The module can optionally create unmanaged instance groups, which can then be re
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -263,7 +263,7 @@ module "win-mig" {
 }
 
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -283,7 +283,7 @@ GCS bucket backends can also be managed and used in this module in a similar way
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_buckets_config = {
@@ -303,7 +303,7 @@ Supported Network Endpoint Groups (NEGs) can also be used as backends. Similarly
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -327,7 +327,7 @@ This example shows how to create and manage zonal NEGs using GCE VMs as endpoint
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -367,7 +367,7 @@ This example shows how to create and manage hybrid NEGs:
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -405,7 +405,7 @@ This example shows how to create and manage internet NEGs:
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -441,7 +441,7 @@ The module supports managing PSC NEGs if the non-classic version of the load bal
 
 ```hcl
 module "glb-0" {
-  source              = "./fabric/modules/net-glb"
+  source              = "./fabric/modules/net-lb-app-ext"
   project_id          = "myprj"
   name                = "glb-test-0"
   use_classic_version = false
@@ -473,7 +473,7 @@ The module supports managing Serverless NEGs for Cloud Run and Cloud Function. T
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -504,7 +504,7 @@ Serverless NEGs don't use the port name but it should be set to `http`. An HTTPS
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -548,7 +548,7 @@ The default URL map configuration sets the `default` backend service as the defa
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -611,7 +611,7 @@ resource "tls_self_signed_cert" "default" {
 }
 
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_service_configs = {
@@ -643,7 +643,7 @@ This example mixes group and NEG backends, and shows how to set HTTPS for specif
 
 ```hcl
 module "glb-0" {
-  source     = "./fabric/modules/net-glb"
+  source     = "./fabric/modules/net-lb-app-ext"
   project_id = "myprj"
   name       = "glb-test-0"
   backend_buckets_config = {

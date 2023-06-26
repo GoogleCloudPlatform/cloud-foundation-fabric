@@ -72,7 +72,7 @@ Refer to the [Cloud Function deployment instructions](./deploy-cloud-function/) 
 ## Assumptions and limitations
 
 - The tool assumes all VPCs in peering groups are within the same organization, except for PSA peerings.
-- The tool will only fetch subnet utilization data from the PSA peerings (not the VMs, ILB or routes usage).
+- The tool will only fetch subnet utilization data from the PSA peerings (not the VMs, LB or routes usage).
 - The tool assumes global routing is ON, this impacts dynamic routes usage calculation.
 - The tool assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation.
 - The tool assumes all networks in peering groups have the same global routing and custom routes sharing configuration.
