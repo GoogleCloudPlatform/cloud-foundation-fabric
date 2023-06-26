@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,13 +133,18 @@ resource "google_compute_instance" "default" {
   enable_display            = var.enable_display
   labels                    = var.labels
   metadata                  = var.metadata
+  resource_policies         = local.ischedule_attach
 
   dynamic "attached_disk" {
     for_each = local.attached_disks_zonal
     iterator = config
     content {
-      device_name = config.value.device_name != null ? config.value.device_name : config.value.name
-      mode        = config.value.options.mode
+      device_name = (
+        config.value.device_name != null
+        ? config.value.device_name
+        : config.value.name
+      )
+      mode = config.value.options.mode
       source = (
         config.value.source_type == "attach"
         ? config.value.source
@@ -152,8 +157,12 @@ resource "google_compute_instance" "default" {
     for_each = local.attached_disks_regional
     iterator = config
     content {
-      device_name = config.value.device_name != null ? config.value.device_name : config.value.name
-      mode        = config.value.options.mode
+      device_name = (
+        config.value.device_name != null
+        ? config.value.device_name
+        : config.value.name
+      )
+      mode = config.value.options.mode
       source = (
         config.value.source_type == "attach"
         ? config.value.source
