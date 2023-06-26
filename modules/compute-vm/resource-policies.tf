@@ -17,6 +17,7 @@
 # tfdoc:file:description Resource policies.
 
 locals {
+  ischedule = try(var.instance_schedule.create_config, null)
   ischedule_attach = var.instance_schedule == null ? null : (
     var.instance_schedule.create_config != null
     # created policy with optional attach to allow policy destroy
@@ -28,7 +29,6 @@ locals {
     # externally managed policy
     : [var.instance_schedule.resource_policy_id]
   )
-  ischedule = try(var.instance_schedule.create_config, null)
 }
 
 resource "google_compute_resource_policy" "schedule" {
@@ -122,7 +122,7 @@ resource "google_compute_disk_resource_policy_attachment" "boot" {
   project = var.project_id
   zone    = var.zone
   name = try(
-    google_compute_resource_policy.snapshot["${var.name}-${var.boot_disk.snapshot_schedule}"],
+    google_compute_resource_policy.snapshot[var.boot_disk.snapshot_schedule].name,
     var.boot_disk.snapshot_schedule
   )
   disk       = var.name
