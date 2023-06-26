@@ -38,11 +38,12 @@ variable "attached_disk_defaults" {
 variable "attached_disks" {
   description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
-    name        = string
-    device_name = optional(string)
-    size        = string
-    source      = optional(string)
-    source_type = optional(string)
+    name              = string
+    device_name       = optional(string)
+    size              = string
+    snapshot_schedule = optional(string)
+    source            = optional(string)
+    source_type       = optional(string)
     options = optional(
       object({
         auto_delete  = optional(bool, false)
@@ -82,8 +83,9 @@ variable "attached_disks" {
 variable "boot_disk" {
   description = "Boot disk properties."
   type = object({
-    auto_delete = optional(bool, true)
-    source      = optional(string)
+    auto_delete       = optional(bool, true)
+    snapshot_schedule = optional(string)
+    source            = optional(string)
     initialize_params = optional(object({
       image = optional(string, "projects/debian-cloud/global/images/family/debian-11")
       size  = optional(number, 10)
@@ -153,6 +155,41 @@ variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+}
+
+variable "instance_schedule" {
+  description = "Assign or create and assign an instance schedule policy. Either resource policy id or create_config must be specified if not null. Set active to null to dtach a policy from vm before destroying."
+  type = object({
+    resource_policy_id = optional(string)
+    create_config = optional(object({
+      active          = optional(bool, true)
+      description     = optional(string)
+      expiration_time = optional(string)
+      start_time      = optional(string)
+      timezone        = optional(string, "UTC")
+      vm_start        = optional(string)
+      vm_stop         = optional(string)
+    }))
+  })
+  default = null
+  validation {
+    condition = (
+      var.instance_schedule == null ||
+      try(var.instance_schedule.resource_policy_id, null) != null ||
+      try(var.instance_schedule.create_config, null) != null
+    )
+    error_message = "A resource policy name or configuration must be specified when not null."
+  }
+  validation {
+    condition = (
+      try(var.instance_schedule.create_config, null) == null ||
+      length(compact([
+        try(var.instance_schedule.create_config.vm_start, null),
+        try(var.instance_schedule.create_config.vm_stop, null)
+      ])) > 0
+    )
+    error_message = "A resource policy configuration must contain at least one schedule."
+  }
 }
 
 variable "instance_type" {
@@ -266,6 +303,49 @@ variable "shielded_config" {
     enable_integrity_monitoring = bool
   })
   default = null
+}
+
+variable "snapshot_schedules" {
+  description = "Snapshot schedule resource policies that can be attached to disks."
+  type = map(object({
+    schedule = object({
+      daily = optional(object({
+        days_in_cycle = number
+        start_time    = string
+      }))
+      hourly = optional(object({
+        hours_in_cycle = number
+        start_time     = string
+      }))
+      weekly = optional(list(object({
+        day        = string
+        start_time = string
+      })))
+    })
+    description = optional(string)
+    retention_policy = optional(object({
+      max_retention_days         = number
+      on_source_disk_delete_keep = optional(bool)
+    }))
+    snapshot_properties = optional(object({
+      chain_name        = optional(string)
+      guest_flush       = optional(bool)
+      labels            = optional(map(string))
+      storage_locations = optional(list(string))
+    }))
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.snapshot_schedules : (
+        (v.schedule.daily != null ? 1 : 0) +
+        (v.schedule.hourly != null ? 1 : 0) +
+        (v.schedule.weekly != null ? 1 : 0)
+      ) == 1
+    ])
+    error_message = "Schedule must contain exactly one of daily, hourly, or weekly schedule."
+  }
 }
 
 variable "tag_bindings" {
