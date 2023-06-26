@@ -29,7 +29,7 @@ variable "prefix" {
 }
 
 variable "producer_project_id" {
-  description = "The producer project, in which the ILB, PSC Service Attachment and Cloud Run service should be created."
+  description = "The producer project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
   type        = string
 }
 

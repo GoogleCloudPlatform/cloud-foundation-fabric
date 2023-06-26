@@ -63,7 +63,7 @@ The final number of subnets, and their IP addressing will depend on the user-spe
 
 ### Multi-regional deployment
 
-The stage deploys the the infrastructure in two regions. By default, europe-west1 and europe-west4. Regional resources include NVAs (templates, MIGs, ILBs) and test VMs.
+The stage deploys the the infrastructure in two regions. By default, europe-west1 and europe-west4. Regional resources include NVAs (templates, MIGs, LBs) and test VMs.
 This provides enough redundancy to be resilient to regional failures.
 
 ### VPC design
@@ -135,7 +135,7 @@ Spoke VPCs also define and reserve three "special" CIDR ranges, derived from the
 
   - The third-last /24 range is used for PSA (CloudSQL, MySQL)
 
-- [Internal HTTPs Load Balancers (L7ILB)](https://cloud.google.com/load-balancing/docs/l7-internal):
+- [Internal Application Load Balancers (L7 LBs)](https://cloud.google.com/load-balancing/docs/l7-internal):
 
   - The last /24 range
 

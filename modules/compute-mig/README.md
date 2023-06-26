@@ -2,7 +2,7 @@
 
 This module allows creating a managed instance group supporting one or more application versions via instance templates. Optionally, a health check and an autoscaler can be created, and the managed instance group can be configured to be stateful.
 
-This module can be coupled with the [`compute-vm`](../compute-vm) module which can manage instance templates, and the [`net-ilb`](../net-ilb) module to assign the MIG to a backend wired to an Internal Load Balancer. The first use case is shown in the examples below.
+This module can be coupled with the [`compute-vm`](../compute-vm) module which can manage instance templates, and the [`net-lb-int`](../net-lb-int) module to assign the MIG to a backend wired to an Internal Load Balancer. The first use case is shown in the examples below.
 
 Stateful disks can be created directly, as shown in the last example below.
 

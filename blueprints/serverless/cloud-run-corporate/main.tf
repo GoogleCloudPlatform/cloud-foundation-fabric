@@ -349,7 +349,7 @@ resource "google_compute_global_forwarding_rule" "psc_endpoint_prj1" {
 ###############################################################################
 
 module "ilb-l7" {
-  source     = "../../../modules/net-ilb-l7"
+  source     = "../../../modules/net-lb-app-int"
   count      = var.custom_domain == null ? 0 : 1
   project_id = module.project_main.project_id
   name       = "ilb-l7-cr"

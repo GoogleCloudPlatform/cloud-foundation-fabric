@@ -1,4 +1,4 @@
-# Internal (HTTP/S) Load Balancer Module
+# Internal Application Load Balancer Module
 
 This module allows managing Internal HTTP/HTTPS Load Balancers (L7 ILBs). It's designed to expose the full configuration of the underlying resources, and to facilitate common usage patterns by providing sensible defaults, and optionally managing prerequisite resources like health checks, instance groups, etc.
 
@@ -21,7 +21,7 @@ An HTTP ILB with a backend service pointing to a GCE instance group:
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -44,7 +44,7 @@ An HTTPS ILB needs a few additional fields:
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -75,7 +75,7 @@ When using Shared VPC, this module also allows configuring [cross-project backen
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = "prj-host"
   region     = "europe-west1"
@@ -113,7 +113,7 @@ Defining different health checks from the default is very easy. You can for exam
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -142,7 +142,7 @@ To leverage existing health checks without having the module create them, simply
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -169,7 +169,7 @@ The module can optionally create unmanaged instance groups, which can then be re
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -204,7 +204,7 @@ Network Endpoint Groups (NEGs) can be used as backends, by passing their id as t
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -239,7 +239,7 @@ resource "google_compute_address" "test" {
 }
 
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -279,7 +279,7 @@ module "ilb-l7" {
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -313,7 +313,7 @@ module "ilb-l7" {
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -350,7 +350,7 @@ module "ilb-l7" {
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -387,7 +387,7 @@ The default URL map configuration sets the `default` backend service as the defa
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -454,7 +454,7 @@ resource "tls_self_signed_cert" "default" {
 }
 
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -494,7 +494,7 @@ This example mixes group and NEG backends, and shows how to set HTTPS for specif
 
 ```hcl
 module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
+  source     = "./fabric/modules/net-lb-app-int"
   name       = "ilb-l7-test-0"
   project_id = "prj-gce"
   region     = "europe-west8"

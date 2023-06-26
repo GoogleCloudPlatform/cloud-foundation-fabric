@@ -126,7 +126,7 @@ module "test_vm_migs" {
 
 module "test_vm_ilbs" {
   for_each      = var.ilb_create ? var.regions : {}
-  source        = "../../../modules/net-ilb"
+  source        = "../../../modules/net-lb-int"
   project_id    = module.project_spoke_01.project_id
   region        = each.value
   name          = "test-vm-ilb-${each.value}"

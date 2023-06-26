@@ -116,7 +116,7 @@ module "mig" {
 }
 
 module "onprem_ilb_l7" {
-  source     = "../../../../modules/net-ilb-l7"
+  source     = "../../../../modules/net-lb-app-int"
   name       = "ilb"
   project_id = module.onprem_project.project_id
   region     = var.region

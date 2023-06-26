@@ -192,7 +192,7 @@ module "mig_ue1" {
 }
 
 module "glb" {
-  source     = "../../../modules/net-glb"
+  source     = "../../../modules/net-lb-app-ext"
   name       = "${var.prefix}-http-lb"
   project_id = module.project.project_id
   backend_service_configs = {
