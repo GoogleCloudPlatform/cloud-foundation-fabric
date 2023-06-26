@@ -158,10 +158,11 @@ variable "iam" {
 }
 
 variable "instance_schedule" {
-  description = "Assign or create and assign an instance schedule policy. Either resource policy id or create_config must be specified if not null."
+  description = "Assign or create and assign an instance schedule policy. Either resource policy id or create_config must be specified if not null. Set active to null to dtach a policy from vm before destroying."
   type = object({
     resource_policy_id = optional(string)
     create_config = optional(object({
+      active          = optional(bool, true)
       description     = optional(string)
       expiration_time = optional(string)
       start_time      = optional(string)

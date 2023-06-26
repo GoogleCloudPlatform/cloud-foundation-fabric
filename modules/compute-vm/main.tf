@@ -133,10 +133,7 @@ resource "google_compute_instance" "default" {
   enable_display            = var.enable_display
   labels                    = var.labels
   metadata                  = var.metadata
-  resource_policies = var.instance_schedule == null ? null : [try(
-    google_compute_resource_policy.schedule.0.id,
-    var.instance_schedule.resource_policy_id
-  )]
+  resource_policies         = local.ischedule_attach
 
   dynamic "attached_disk" {
     for_each = local.attached_disks_zonal

@@ -17,31 +17,42 @@
 # tfdoc:file:description Resource policies.
 
 locals {
-  schedule_p = try(var.instance_schedule.create_config, null)
+  ischedule_attach = var.instance_schedule == null ? null : (
+    var.instance_schedule.create_config != null
+    # created policy with optional attach to allow policy destroy
+    ? (
+      var.instance_schedule.create_config.active
+      ? [google_compute_resource_policy.schedule.0.id]
+      : null
+    )
+    # externally managed policy
+    : [var.instance_schedule.resource_policy_id]
+  )
+  ischedule = try(var.instance_schedule.create_config, null)
 }
 
 resource "google_compute_resource_policy" "schedule" {
-  count   = local.schedule_p != null ? 1 : 0
+  count   = local.ischedule != null ? 1 : 0
   project = var.project_id
   region  = substr(var.zone, 0, length(var.zone) - 2)
   name    = var.name
   description = coalesce(
-    local.schedule_p.description, "Schedule policy for ${var.name}."
+    local.ischedule.description, "Schedule policy for ${var.name}."
   )
   instance_schedule_policy {
-    expiration_time = local.schedule_p.expiration_time
-    start_time      = local.schedule_p.start_time
-    time_zone       = local.schedule_p.timezone
+    expiration_time = local.ischedule.expiration_time
+    start_time      = local.ischedule.start_time
+    time_zone       = local.ischedule.timezone
     dynamic "vm_start_schedule" {
-      for_each = local.schedule_p.vm_start != null ? [""] : []
+      for_each = local.ischedule.vm_start != null ? [""] : []
       content {
-        schedule = local.schedule_p.vm_start
+        schedule = local.ischedule.vm_start
       }
     }
     dynamic "vm_stop_schedule" {
-      for_each = local.schedule_p.vm_stop != null ? [""] : []
+      for_each = local.ischedule.vm_stop != null ? [""] : []
       content {
-        schedule = local.schedule_p.vm_stop
+        schedule = local.ischedule.vm_stop
       }
     }
   }
