@@ -137,7 +137,7 @@ resource "google_compute_disk_resource_policy_attachment" "attached" {
   project = var.project_id
   zone    = var.zone
   name = try(
-    google_compute_resource_policy.snapshot["${var.name}-${each.value.snapshot_schedule}"],
+    google_compute_resource_policy.snapshot[each.value.snapshot_schedule].name,
     each.value.snapshot_schedule
   )
   disk = (
@@ -159,7 +159,7 @@ resource "google_compute_region_disk_resource_policy_attachment" "attached" {
   project = var.project_id
   region  = substr(var.zone, 0, length(var.zone) - 2)
   name = try(
-    google_compute_resource_policy.snapshot["${var.name}-${each.value.snapshot_schedule}"],
+    google_compute_resource_policy.snapshot[each.value.snapshot_schedule].name,
     each.value.snapshot_schedule
   )
   disk = (
