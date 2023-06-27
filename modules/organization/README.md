@@ -10,6 +10,20 @@ This module allows managing several organization properties:
 
 To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
 
+## Features
+
+- [IAM](#iam)
+- [Organization Policies](#organization-policies)
+  - [Factory](#organization-policy-factory)
+  - [Custom Constraints](#organization-policy-custom-constraints)
+  - [Custom Constraints Factory](#organization-policy-custom-constraints-factory)
+- [Hierarchical Firewall Policies](#hierarchical-firewall-policies)
+  - [Directly Defined](#directly-defined-firewall-policies)
+  - [Factory](#firewall-policy-factory)
+- [Log Sinks](#log-sinks)
+- [Custom Roles](#custom-roles)
+- [Tags](#tags)
+
 ## Example
 
 ```hcl
@@ -110,11 +124,13 @@ If you set audit policies via the `iam_audit_config_authoritative` variable, be 
 
 Some care must also be taken with the `groups_iam` variable (and in some situations with the additive variables) to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
-### Organization policy factory
+## Organization Policies
+
+### Organization Policy Factory
 
 See the [organization policy factory in the project module](../project#organization-policy-factory).
 
-### Org policy custom constraints
+### Organization Policy Custom Constraints
 
 Refer to the [Creating and managing custom constraints](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-custom-constraints) documentation for details on usage.
 To manage organization policy custom constraints, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
@@ -145,7 +161,7 @@ module "org" {
 # tftest modules=1 resources=2 inventory=custom-constraints.yaml
 ```
 
-### Org policy custom constraints factory
+### Organization Policy Custom Constraints Factory
 
 Org policy custom constraints can be loaded from a directory containing YAML files where each file defines one or more custom constraints. The structure of the YAML files is exactly the same as the `org_policy_custom_constraints` variable.
 
@@ -201,7 +217,7 @@ custom.dataprocNoMoreThan10Workers:
   description: Cluster cannot have more than 10 workers, including primary and secondary workers.
 ```
 
-## Hierarchical firewall policies
+## Hierarchical Firewall Policies
 
 Hierarchical firewall policies can be managed in two ways:
 
@@ -210,7 +226,7 @@ Hierarchical firewall policies can be managed in two ways:
 
 Once you have policies (either created via the module or externally), you can associate them using the `firewall_policy_association` variable.
 
-### Directly defined firewall policies
+### Directly Defined Firewall Policies
 
 ```hcl
 module "org" {
@@ -251,7 +267,7 @@ module "org" {
 # tftest modules=1 resources=4 inventory=hfw.yaml
 ```
 
-### Firewall policy factory
+### Firewall Policy Factory
 
 The in-built factory allows you to define a single policy, using one file for rules, and an optional file for CIDR range substitution variables. Remember that non-absolute paths are relative to the root module (the folder where you run `terraform`).
 
@@ -306,7 +322,7 @@ allow-iap-ssh:
   logging: false
 ```
 
-## Logging Sinks
+## Log Sinks
 
 ```hcl
 module "gcs" {
