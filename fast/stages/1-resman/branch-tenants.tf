@@ -23,7 +23,7 @@ locals {
       module.tenant-self-iac-sa[k].iam_email
     ]
   }
-  tenant_org_iam = flatten(compact([
+  tenant_org_iam = compact(flatten([
     for k, v in var.tenants : [
       "group:${v.admin_group_email}",
       v.organization != null ? "domain:${v.organization.domain}" : null
@@ -72,10 +72,10 @@ module "tenant-top-folder" {
 module "tenant-top-folder-tag" {
   source        = "../../../modules/folder"
   for_each      = var.tenants
-  parent        = module.tenant-top-folder[each.key].id
+  id            = module.tenant-top-folder[each.key].id
   folder_create = false
   tag_bindings = {
-    tenant = module.organization.tag_values["tenants/${each.key}"].id
+    tenant = module.organization.tag_values["${var.tag_names.tenant}/${each.key}"].id
   }
 }
 
@@ -102,13 +102,13 @@ module "tenant-self-folder-iam" {
   id            = module.tenant-self-folder[each.key].id
   folder_create = false
   iam = {
-    "roles/cloudasset.owner"               = values(local.tenant_iam[each.key])
-    "roles/compute.xpnAdmin"               = values(local.tenant_iam[each.key])
-    "roles/logging.admin"                  = values(local.tenant_iam[each.key])
-    "roles/resourcemanager.folderAdmin"    = values(local.tenant_iam[each.key])
-    "roles/resourcemanager.projectCreator" = values(local.tenant_iam[each.key])
-    "roles/resourcemanager.tagUser"        = values(local.tenant_iam[each.key])
-    "roles/owner"                          = values(local.tenant_iam[each.key])
+    "roles/cloudasset.owner"               = local.tenant_iam[each.key]
+    "roles/compute.xpnAdmin"               = local.tenant_iam[each.key]
+    "roles/logging.admin"                  = local.tenant_iam[each.key]
+    "roles/resourcemanager.folderAdmin"    = local.tenant_iam[each.key]
+    "roles/resourcemanager.projectCreator" = local.tenant_iam[each.key]
+    "roles/resourcemanager.tagUser"        = local.tenant_iam[each.key]
+    "roles/owner"                          = local.tenant_iam[each.key]
   }
 }
 

@@ -19,7 +19,8 @@
 locals {
   all_drs_domains = concat(
     [var.organization.customer_id],
-    try(local.policy_configs.allowed_policy_member_domains, [])
+    try(local.policy_configs.allowed_policy_member_domains, []),
+    compact([for k, v in var.tenants : try(v.organization.customer_id, "")])
   )
   policy_configs = (
     var.organization_policy_configs == null
