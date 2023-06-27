@@ -43,6 +43,10 @@ locals {
         sa             = module.tenant-self-iac-sa[k].email
         state_bucket   = module.tenant-self-iac-gcs-state[k].name
       }
+      core = {
+        billing_account = var.billing_account
+        organization    = var.organization
+      }
       folder_ids = {
         core = module.tenant-core-folder[k].id
         self = module.tenant-self-folder[k].id
