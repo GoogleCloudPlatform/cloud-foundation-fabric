@@ -18,6 +18,7 @@ output "bigquery-datasets" {
   description = "BigQuery datasets."
   value = {
     curated = module.cur-bq-0.dataset_id,
+    landing = module.land-bq-0.dataset_id,
   }
 }
 
@@ -69,9 +70,10 @@ output "projects" {
 output "service_accounts" {
   description = "Service account created."
   value = {
-    landing    = module.land-sa-cs-0.email
+    landing    = module.land-sa-0.email
     processing = module.processing-sa-0.email
     composer   = module.processing-sa-cmp-0.email
+    curated    = module.cur-sa-0.email
   }
 }
 

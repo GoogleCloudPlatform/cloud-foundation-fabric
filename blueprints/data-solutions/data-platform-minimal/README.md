@@ -203,7 +203,7 @@ module "data-platform" {
   prefix = "myprefix"
 }
 
-# tftest modules=21 resources=116
+# tftest modules=23 resources=123
 ```
 
 ## Customizations
@@ -299,13 +299,13 @@ The application layer is out of scope of this script. As a demo purpuse only, on
 | name | description | sensitive |
 |---|---|:---:|
 | [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
-| [composer](outputs.tf#L24) | Composer variables. |  |
-| [dataproc-history-server](outputs.tf#L31) | List of bucket names which have been assigned to the cluster. |  |
-| [gcs_buckets](outputs.tf#L36) | GCS buckets. |  |
-| [kms_keys](outputs.tf#L46) | Cloud MKS keys. |  |
-| [projects](outputs.tf#L51) | GCP Projects informations. |  |
-| [service_accounts](outputs.tf#L69) | Service account created. |  |
-| [vpc_network](outputs.tf#L78) | VPC network. |  |
-| [vpc_subnet](outputs.tf#L86) | VPC subnetworks. |  |
+| [composer](outputs.tf#L25) | Composer variables. |  |
+| [dataproc-history-server](outputs.tf#L32) | List of bucket names which have been assigned to the cluster. |  |
+| [gcs_buckets](outputs.tf#L37) | GCS buckets. |  |
+| [kms_keys](outputs.tf#L47) | Cloud MKS keys. |  |
+| [projects](outputs.tf#L52) | GCP Projects informations. |  |
+| [service_accounts](outputs.tf#L70) | Service account created. |  |
+| [vpc_network](outputs.tf#L80) | VPC network. |  |
+| [vpc_subnet](outputs.tf#L88) | VPC subnetworks. |  |
 
 <!-- END TFDOC -->
