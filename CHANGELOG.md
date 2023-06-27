@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1468](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1468)] Dependencies update for API Gateway blueprint ([apichick](https://github.com/apichick)) <!-- 2023-06-27 06:30:35+00:00 -->
 - [[#1469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1469)] Bump semver and @google-cloud/storage in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-06-26 13:03:48+00:00 -->
 - [[#1466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1466)] **incompatible change:** Rename network load balancer modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 07:50:11+00:00 -->
 - [[#1459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1459)] Add preliminary support for partner interconnect ([wiktorn](https://github.com/wiktorn)) <!-- 2023-06-26 07:22:09+00:00 -->
