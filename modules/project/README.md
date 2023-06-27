@@ -2,7 +2,24 @@
 
 This module implements the creation and management of one GCP project including IAM, organization policies, Shared VPC host or service attachment, service API activation, and tag attachment. It also offers a convenient way to refer to managed service identities (aka robot service accounts) for APIs.
 
-# Basic Project Creation
+## Features
+
+- [Basic Project Creation](#basic-project-creation)
+- [IAM](#iam)
+  - [Authoritative](#authoritative-iam)
+  - [Additive](#additive-iam)
+  - [Additive By Member](#additive-iam-by-member)
+  - [Service Identities and Authoritative IAM](#service-identities-and-authoritative-iam)
+  - [Using Shortcodes for Service Identities](#using-shortcodes-for-service-identities-in-additive-iam)
+  - [Service Identities and Manual IAM Grants](#service-identities-requiring-manual-iam-grants)
+- [Shared VPC](#shared-vpc)
+- [Organization Policies](#organization-policies)
+  - [Factory](#organization-policy-factory)
+- [Log Sinks](#log-sinks)
+- [Cloud KMS Encryption Keys](#cloud-kms-encryption-keys)
+- [Tags](#tags)
+
+## Basic Project Creation
 
 ```hcl
 module "project" {
@@ -19,7 +36,7 @@ module "project" {
 # tftest modules=1 resources=3 inventory=basic.yaml
 ```
 
-## IAM Examples
+## IAM
 
 IAM is managed via several variables that implement different levels of control:
 
@@ -101,7 +118,7 @@ module "project" {
 # tftest modules=1 resources=5 inventory=iam-additive.yaml
 ```
 
-### Additive IAM by members
+### Additive IAM by Member
 
 ```hcl
 module "project" {
@@ -116,7 +133,7 @@ module "project" {
 # tftest modules=1 resources=4 inventory=iam-additive-members.yaml
 ```
 
-### Service Identities and authoritative IAM
+### Service Identities and Authoritative IAM
 
 As mentioned above, there are cases where authoritative management of specific IAM roles results in removal of default bindings from service identities. One example is outlined below, with a simple workaround leveraging the `service_accounts` output to identify the service identity. A full list of service identities and their roles can be found [here](https://cloud.google.com/iam/docs/service-agents).
 
@@ -138,7 +155,8 @@ module "project" {
 # tftest modules=1 resources=2
 ```
 
-### Using shortcodes for Service Identities in additive IAM
+### Using Shortcodes for Service Identities in Additive Iam
+
 Most Service Identities contains project number in their e-mail address and this prevents additive IAM to work, as these values are not known at moment of execution of `terraform plan` (its not an issue for authoritative IAM). To refer current project Service Identities you may use shortcodes for Service Identities similarly as for `service_identity_iam` when configuring Shared VPC.
 
 ```hcl
@@ -160,8 +178,7 @@ module "project" {
 # tftest modules=1 resources=6
 ```
 
-
-### Service identities requiring manual IAM grants
+### Service Identities Requiring Manual Iam Grants
 
 The module will create service identities at project creation instead of creating of them at the time of first use. This allows granting these service identities roles in other projects, something which is usually necessary in a Shared VPC context.  
 
@@ -193,7 +210,6 @@ This table lists all affected services and roles that you need to grant to servi
 | multiclusteringress.googleapis.com | multicluster-ingress | roles/multiclusteringress.serviceAgent |
 | pubsub.googleapis.com | pubsub | roles/pubsub.serviceAgent |
 | sqladmin.googleapis.com | sqladmin | roles/cloudsql.serviceAgent |
-
 
 ## Shared VPC
 
@@ -231,7 +247,7 @@ module "service-project" {
 # tftest modules=2 resources=8 inventory=shared-vpc.yaml
 ```
 
-## Organization policies
+## Organization Policies
 
 To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
 
@@ -290,7 +306,7 @@ module "project" {
 # tftest modules=1 resources=8 inventory=org-policies.yaml
 ```
 
-### Organization policy factory
+### Organization Policy Factory
 
 Organization policies can be loaded from a directory containing YAML files where each file defines one or more constraints. The structure of the YAML files is exactly the same as the `org_policies` variable.
 
@@ -351,8 +367,7 @@ iam.allowedPolicyMemberDomains:
       - C0yyyyyyy
 ```
 
-
-## Logging Sinks
+## Log Sinks
 
 ```hcl
 module "gcs" {
@@ -418,7 +433,7 @@ module "project-host" {
 # tftest modules=5 resources=14 inventory=logging.yaml
 ```
 
-## Cloud KMS encryption keys
+## Cloud Kms Encryption Keys
 
 The module offers a simple, centralized way to assign `roles/cloudkms.cryptoKeyEncrypterDecrypter` to service identities.
 
