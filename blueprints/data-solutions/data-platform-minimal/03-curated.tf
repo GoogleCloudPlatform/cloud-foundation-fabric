@@ -18,6 +18,7 @@ locals {
   cur_iam = {
     "roles/bigquery.dataOwner" = [module.processing-sa-0.iam_email]
     "roles/bigquery.dataViewer" = [
+      module.cur-sa-0.iam_email,
       local.groups_iam.data-analysts,
       local.groups_iam.data-engineers
     ]
@@ -28,13 +29,19 @@ locals {
       local.groups_iam.data-engineers
     ]
     "roles/datacatalog.tagTemplateViewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
+      module.cur-sa-0.iam_email,
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
     ]
     "roles/datacatalog.viewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
+      module.cur-sa-0.iam_email,
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
     ]
     "roles/storage.objectViewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
+      module.cur-sa-0.iam_email,
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
     ]
     "roles/storage.objectAdmin" = [module.processing-sa-0.iam_email]
   }

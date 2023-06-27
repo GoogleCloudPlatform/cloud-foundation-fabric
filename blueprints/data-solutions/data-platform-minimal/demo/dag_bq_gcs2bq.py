@@ -88,7 +88,7 @@ with models.DAG(
 
   customers_import = GCSToBigQueryOperator(
       task_id='csv_to_bigquery',
-      bucket=LAND_GCS[5:],
+      bucket=LAND_GCS.removeprefix("gs://"),
       source_objects=['customers.csv'],
       destination_project_dataset_table='{}:{}.{}'.format(CURATED_PRJ, CURATED_BQ_DATASET, 'customers'),
       create_disposition='CREATE_IF_NEEDED',
