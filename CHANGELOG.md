@@ -8,21 +8,64 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1469)] Bump semver and @google-cloud/storage in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-06-26 13:03:48+00:00 -->
+- [[#1466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1466)] **incompatible change:** Rename network load balancer modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 07:50:11+00:00 -->
+- [[#1459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1459)] Add preliminary support for partner interconnect ([wiktorn](https://github.com/wiktorn)) <!-- 2023-06-26 07:22:09+00:00 -->
+- [[#1464](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1464)] Fix Shielded folder README ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-23 16:38:37+00:00 -->
+- [[#1458](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1458)] Fixing typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-06-23 05:12:52+00:00 -->
+- [[#1455](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1455)] Match readme groups with variables file in shielded folder blueprint ([CanburakTumer](https://github.com/CanburakTumer)) <!-- 2023-06-21 09:51:33+00:00 -->
+- [[#1451](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1451)] Improve Minimal Data Platform blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-20 16:47:16+00:00 -->
+- [[#1454](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1454)] data-platform-minimal - 02-processing.tf typo ([kthhrv](https://github.com/kthhrv)) <!-- 2023-06-20 13:26:10+00:00 -->
+- [[#1453](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1453)] data-platform-minimal - correct typo ([kthhrv](https://github.com/kthhrv)) <!-- 2023-06-20 11:12:00+00:00 -->
+- [[#1450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1450)] Split Cloud Function module in separate v1 and v2 modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-19 10:50:36+00:00 -->
+- [[#1447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1447)] **incompatible change:** Refactored apigee module and adjusted the blueprints accordingly ([apichick](https://github.com/apichick)) <!-- 2023-06-19 07:16:00+00:00 -->
+- [[#1409](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1409)] Added module for Secure Web Proxy ([rosmo](https://github.com/rosmo)) <!-- 2023-06-13 07:07:18+00:00 -->
+- [[#1420](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1420)] Move net-dedicated-vlan-attachment module to net-vlan-attachment and … ([apichick](https://github.com/apichick)) <!-- 2023-06-13 06:34:34+00:00 -->
+- [[#1427](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1427)] Updating hub-and-spoke peering blueprint to use HA VPN. ([mark1000](https://github.com/mark1000)) <!-- 2023-06-12 20:07:53+00:00 -->
+- [[#1432](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1432)] Make internal/external addresses optional in compute-vm ([juliocc](https://github.com/juliocc)) <!-- 2023-06-08 12:14:26+00:00 -->
 - [[#1423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1423)] Add support for Log Analytics on logging-bucket module and  bump provider version ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-07 21:23:29+00:00 -->
 - [[#1416](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1416)] Fix and improve GCS2BQ blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-06 07:06:59+00:00 -->
 
 ### DOCUMENTATION
 
+- [[#1466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1466)] **incompatible change:** Rename network load balancer modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 07:50:11+00:00 -->
+- [[#1450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1450)] Split Cloud Function module in separate v1 and v2 modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-19 10:50:36+00:00 -->
+- [[#1444](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1444)] Fixing typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-06-16 06:00:57+00:00 -->
+- [[#1409](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1409)] Added module for Secure Web Proxy ([rosmo](https://github.com/rosmo)) <!-- 2023-06-13 07:07:18+00:00 -->
+- [[#1420](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1420)] Move net-dedicated-vlan-attachment module to net-vlan-attachment and … ([apichick](https://github.com/apichick)) <!-- 2023-06-13 06:34:34+00:00 -->
 - [[#1418](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1418)] Network Load Balancer module ([ludoo](https://github.com/ludoo)) <!-- 2023-06-05 11:21:40+00:00 -->
 
 ### FAST
 
+- [[#1466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1466)] **incompatible change:** Rename network load balancer modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 07:50:11+00:00 -->
+- [[#1446](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1446)] fixup(project-factory): Use the correct KMS Service Agents attribute … ([alloveras](https://github.com/alloveras)) <!-- 2023-06-19 23:53:09+00:00 -->
+- [[#1445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1445)] Bump TF version in all workflow templates to coincide with module requirements ([kthhrv](https://github.com/kthhrv)) <!-- 2023-06-16 07:39:28+00:00 -->
+- [[#1443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1443)] Fix repo names check in extra FAST stage ([ludoo](https://github.com/ludoo)) <!-- 2023-06-15 16:08:57+00:00 -->
+- [[#1432](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1432)] Make internal/external addresses optional in compute-vm ([juliocc](https://github.com/juliocc)) <!-- 2023-06-08 12:14:26+00:00 -->
+- [[#1429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1429)] Use RFC6598 addresses for pods and subnets ([wiktorn](https://github.com/wiktorn)) <!-- 2023-06-08 05:56:31+00:00 -->
 - [[#1426](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1426)] Add custom tag support to FAST ([ludoo](https://github.com/ludoo)) <!-- 2023-06-07 22:10:27+00:00 -->
 - [[#1425](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1425)] Small fixes ([ludoo](https://github.com/ludoo)) <!-- 2023-06-07 17:37:47+00:00 -->
 - [[#1412](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1412)] Add VPN monitoring alerts to 2-networking and VPN usage chart ([afda16](https://github.com/afda16)) <!-- 2023-06-06 13:23:00+00:00 -->
 
 ### MODULES
 
+- [[#1466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1466)] **incompatible change:** Rename network load balancer modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 07:50:11+00:00 -->
+- [[#1467](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1467)] Add support for resource policies to compute vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 06:49:06+00:00 -->
+- [[#1439](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1439)] modules/vpc-sc: google_access_context_manager_service_perimeter add support for method_selectors/permission ([LudovicEmo](https://github.com/LudovicEmo)) <!-- 2023-06-25 06:45:37+00:00 -->
+- [[#1460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1460)] Added validation for edge_availability_domain value ([apichick](https://github.com/apichick)) <!-- 2023-06-23 10:26:14+00:00 -->
+- [[#1458](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1458)] Fixing typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-06-23 05:12:52+00:00 -->
+- [[#1449](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1449)] Added iam for DNS managed zone to dns module ([apichick](https://github.com/apichick)) <!-- 2023-06-20 10:35:20+00:00 -->
+- [[#1452](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1452)] feat(artifact-registry): Add support for CMEK ([alloveras](https://github.com/alloveras)) <!-- 2023-06-20 08:15:40+00:00 -->
+- [[#1450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1450)] Split Cloud Function module in separate v1 and v2 modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-19 10:50:36+00:00 -->
+- [[#1447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1447)] **incompatible change:** Refactored apigee module and adjusted the blueprints accordingly ([apichick](https://github.com/apichick)) <!-- 2023-06-19 07:16:00+00:00 -->
+- [[#1440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1440)] enable_logging variable was not being used ([apichick](https://github.com/apichick)) <!-- 2023-06-15 05:31:14+00:00 -->
+- [[#1436](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1436)] Ignore Cloud Run system annotations/labels ([wiktorn](https://github.com/wiktorn)) <!-- 2023-06-13 08:07:05+00:00 -->
+- [[#1409](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1409)] Added module for Secure Web Proxy ([rosmo](https://github.com/rosmo)) <!-- 2023-06-13 07:07:18+00:00 -->
+- [[#1420](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1420)] Move net-dedicated-vlan-attachment module to net-vlan-attachment and … ([apichick](https://github.com/apichick)) <!-- 2023-06-13 06:34:34+00:00 -->
+- [[#1434](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1434)] Add subnets id output, expand net-address outputs ([juliocc](https://github.com/juliocc)) <!-- 2023-06-12 09:16:10+00:00 -->
+- [[#1432](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1432)] Make internal/external addresses optional in compute-vm ([juliocc](https://github.com/juliocc)) <!-- 2023-06-08 12:14:26+00:00 -->
+- [[#1428](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1428)] Added support for PSC negs in net-ilb-l7 module ([apichick](https://github.com/apichick)) <!-- 2023-06-08 10:50:27+00:00 -->
+- [[#1430](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1430)] Fix serverless neg example in ILB L7 module ([ludoo](https://github.com/ludoo)) <!-- 2023-06-08 10:05:54+00:00 -->
 - [[#1426](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1426)] Add custom tag support to FAST ([ludoo](https://github.com/ludoo)) <!-- 2023-06-07 22:10:27+00:00 -->
 - [[#1423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1423)] Add support for Log Analytics on logging-bucket module and  bump provider version ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-07 21:23:29+00:00 -->
 - [[#1425](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1425)] Small fixes ([ludoo](https://github.com/ludoo)) <!-- 2023-06-07 17:37:47+00:00 -->
