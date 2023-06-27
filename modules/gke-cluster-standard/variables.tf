@@ -203,6 +203,13 @@ variable "node_locations" {
   nullable    = false
 }
 
+variable "logging_service" {
+  description = "The logging service that the cluster should write logs to."
+  type        = list(string)
+  default     = []
+  nullable    = false
+}
+
 variable "private_cluster_config" {
   description = "Private cluster configuration."
   type = object({
