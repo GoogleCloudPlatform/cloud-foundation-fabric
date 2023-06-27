@@ -274,3 +274,20 @@ variable "team_folders" {
   }))
   default = null
 }
+
+variable "tenants" {
+  description = "Lightweight tenant configurations."
+  type = map(object({
+    admin_group_email = string
+    descriptive_name  = string
+    billing_account   = optional(string)
+    organization = optional(object({
+      customer_id = string
+      domain      = string
+      id          = number
+    }))
+  }))
+  default  = {}
+  nullable = false
+}
+

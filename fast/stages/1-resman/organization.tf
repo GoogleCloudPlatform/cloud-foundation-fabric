@@ -81,7 +81,6 @@ module "organization" {
       )
     } : {}
   )
-
   # sample subset of useful organization policies, edit to suit requirements
   org_policies = {
     "iam.allowedPolicyMemberDomains" = {
@@ -101,7 +100,6 @@ module "organization" {
         },
       ]
     }
-
     #"gcp.resourceLocations" = {
     #   allow = { values = local.allowed_regions }
     # }
@@ -115,10 +113,8 @@ module "organization" {
     # }
   }
   org_policies_data_path = "${var.data_dir}/org-policies"
-
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages
-
   tags = merge(
     local.tags,
     {
@@ -132,6 +128,7 @@ module "organization" {
           sandbox    = null
           security   = null
           teams      = null
+          tenant     = null
         }
       }
       (var.tag_names.environment) = {
@@ -154,6 +151,14 @@ module "organization" {
       }
       (var.tag_names.tenant) = {
         description = "Organization tenant."
+        values = {
+          for k, v in var.tenants : k => {
+            description = v.descriptive_name
+            iam = {
+              "roles/resourcemanager.tagViewer" = local.tenant_iam[k]
+            }
+          }
+        }
       }
     }
   )
