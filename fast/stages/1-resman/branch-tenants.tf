@@ -131,7 +131,7 @@ module "tenant-core-gcs" {
   prefix        = var.prefix
   versioning    = true
   location      = var.locations.gcs
-  storage_class = "REGIONAL"
+  storage_class = local.gcs_storage_class
   iam = {
     "roles/storage.objectAdmin" = [module.tenant-core-sa[each.key].iam_email]
   }
@@ -190,7 +190,7 @@ module "tenant-self-iac-gcs-outputs" {
   for_each      = var.tenants
   project_id    = module.tenant-self-iac-project[each.key].project_id
   location      = var.locations.gcs
-  storage_class = "REGIONAL"
+  storage_class = local.gcs_storage_class
   name          = "${each.key}-iac-outputs-0"
   prefix        = var.prefix
   versioning    = true
@@ -201,7 +201,7 @@ module "tenant-self-iac-gcs-state" {
   for_each      = var.tenants
   project_id    = module.tenant-self-iac-project[each.key].project_id
   location      = var.locations.gcs
-  storage_class = "REGIONAL"
+  storage_class = local.gcs_storage_class
   name          = "${each.key}-iac-0"
   prefix        = var.prefix
   versioning    = true
