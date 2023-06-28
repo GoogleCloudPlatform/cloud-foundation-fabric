@@ -111,7 +111,7 @@ resource "google_composer_environment" "processing-cmp-0" {
     }
     web_server_network_access_control {
       dynamic "allowed_ip_range" {
-       for_each = var.webserver_access_ip_ranges
+       for_each = var.composer_config.web_server_network_access_ip_ranges
         content {
           value = allowed_ip_range.value["value"]
           description = allowed_ip_range.value["description"]
