@@ -32,7 +32,7 @@ locals {
     for k, v in var.tenant_config.locations :
     k => v == null || v == [] ? var.locations[k] : v
   }
-  prefix = join("-", compact([var.prefix, var.tenant_config.short_name]))
+  prefix = var.tenant_config.short_name_is_prefix ? var.tenant_config.short_name : join("-", compact([var.prefix, var.tenant_config.short_name]))
   resman_sa = (
     var.test_principal == null
     ? data.google_client_openid_userinfo.resman-sa.0.email
