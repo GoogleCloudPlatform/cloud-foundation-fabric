@@ -38,13 +38,16 @@ module "va-a" {
     create = false
     name   = google_compute_router.encrypted-interconnect-underlay-router.name
   }
-  dedicated_interconnect_config = {
+  vpn_gateways_ip_range = var.underlay_config.attachments.a.vpn_gateways_ip_range
+  dedicated_interconnect_config = var.underlay_config.interconnect_type != "DEDICATED" ? null : {
     bandwidth    = var.underlay_config.attachments.a.bandwidth
     bgp_range    = var.underlay_config.attachments.a.bgp_range
     interconnect = var.underlay_config.attachments.a.interconnect_self_link
     vlan_tag     = var.underlay_config.attachments.a.vlan_tag
   }
-  vpn_gateways_ip_range = var.underlay_config.attachments.a.vpn_gateways_ip_range
+  partner_interconnect_config = var.underlay_config.interconnect_type != "PARTNER" ? null : {
+    edge_availability_domain = "AVAILABILITY_DOMAIN_1"
+  }
 }
 
 module "va-b" {
@@ -59,11 +62,14 @@ module "va-b" {
     create = false
     name   = google_compute_router.encrypted-interconnect-underlay-router.name
   }
-  dedicated_interconnect_config = {
+  vpn_gateways_ip_range = var.underlay_config.attachments.b.vpn_gateways_ip_range
+  dedicated_interconnect_config = var.underlay_config.interconnect_type != "DEDICATED" ? null : {
     bandwidth    = var.underlay_config.attachments.b.bandwidth
     bgp_range    = var.underlay_config.attachments.b.bgp_range
     interconnect = var.underlay_config.attachments.b.interconnect_self_link
     vlan_tag     = var.underlay_config.attachments.b.vlan_tag
   }
-  vpn_gateways_ip_range = var.underlay_config.attachments.b.vpn_gateways_ip_range
+  partner_interconnect_config = var.underlay_config.interconnect_type != "PARTNER" ? null : {
+    edge_availability_domain = "AVAILABILITY_DOMAIN_2"
+  }
 }

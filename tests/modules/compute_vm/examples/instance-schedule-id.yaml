@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-glb
-tests:
-  test-plan:
+values:
+  module.instance.google_compute_instance.default[0]:
+    resource_policies:
+    - projects/my-project/regions/europe-west1/resourcePolicies/test
+
+counts:
+  google_compute_instance: 1

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Creates the VPC and manages the firewall rules and ILB.
+# tfdoc:file:description Creates the VPC and manages the firewall rules and LB.
 
 locals {
   internal_addresses = merge(
@@ -135,7 +135,7 @@ module "ip-addresses" {
 }
 
 module "listener-ilb" {
-  source        = "../../../modules/net-ilb"
+  source        = "../../../modules/net-lb-int"
   for_each      = toset(var.always_on_groups)
   project_id    = var.project_id
   region        = var.region

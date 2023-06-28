@@ -12,15 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-ilb-l7
-common_tfvars:
-  - common.tfvars
-tests:
-  defaults:
-  groups:
-  health-checks-custom:
-  health-checks-external:
-  https:
-  negs:
-  ssl:
-  urlmaps:
+values:
+  module.instance.google_compute_resource_policy.schedule[0]:
+    description: Schedule policy for schedule-test.
+    instance_schedule_policy:
+    - expiration_time: null
+      start_time: null
+      time_zone: UTC
+      vm_start_schedule:
+      - schedule: 0 8 * * *
+      vm_stop_schedule:
+      - schedule: 0 17 * * *
+    name: schedule-test
+    region: europe-west1
+
+counts:
+  google_compute_instance: 1
+  google_compute_resource_policy: 1

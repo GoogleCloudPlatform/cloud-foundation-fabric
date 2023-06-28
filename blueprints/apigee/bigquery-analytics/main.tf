@@ -88,7 +88,7 @@ module "apigee" {
 }
 
 module "glb" {
-  source              = "../../../modules/net-glb"
+  source              = "../../../modules/net-lb-app-ext"
   name                = "glb"
   project_id          = module.project.project_id
   protocol            = "HTTPS"

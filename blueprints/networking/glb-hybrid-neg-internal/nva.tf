@@ -67,7 +67,7 @@ module "nva_migs" {
 
 module "nva_untrusted_ilbs" {
   for_each      = var.regions
-  source        = "../../../modules/net-ilb"
+  source        = "../../../modules/net-lb-int"
   project_id    = module.project_landing.project_id
   region        = each.value
   name          = "nva-ilb-${local.zones[each.key]}"

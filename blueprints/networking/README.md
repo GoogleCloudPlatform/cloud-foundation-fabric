@@ -52,9 +52,9 @@ The sample highlights the lack of transitivity in peering: the absence of connec
 
 <br clear="left">
 
-### ILB as next hop
+### Internal Network LB as next hop
 
-<a href="./ilb-next-hop/" title="ILB as next hop"><img src="./ilb-next-hop/diagram.png" align="left" width="280px"></a> This [blueprint](./ilb-next-hop/) allows testing [ILB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview) using simple Linux gateway VMS between two VPCs, to emulate virtual appliances. An optional additional ILB can be enabled to test multiple load balancer configurations and hashing.
+<a href="./ilb-next-hop/" title="Internal Network LB as next hop"><img src="./ilb-next-hop/diagram.png" align="left" width="280px"></a> This [blueprint](./ilb-next-hop/) allows testing [Internal Network LB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview) using simple Linux gateway VMS between two VPCs, to emulate virtual appliances. An optional additional Internal Network LB can be enabled to test multiple load balancer configurations and hashing.
 
 <br clear="left">
 

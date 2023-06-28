@@ -12,8 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-ilb
-
+module: modules/net-lb-app-int
+common_tfvars:
+  - common.tfvars
 tests:
   defaults:
-  forwarding-rule:
+  groups:
+  health-checks-custom:
+  health-checks-external:
+  https:
+  negs:
+  ssl:
+  urlmaps:

@@ -102,7 +102,7 @@ module "gateways" {
 }
 
 module "glb" {
-  source     = "../../../modules/net-glb"
+  source     = "../../../modules/net-lb-app-ext"
   project_id = module.project.project_id
   name       = "glb"
   backend_service_configs = {

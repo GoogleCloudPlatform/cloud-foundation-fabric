@@ -1,12 +1,12 @@
-# GLB and multi-regional daisy-chaining through hybrid NEGs
+# External Application LB and multi-regional daisy-chaining through hybrid NEGs
 
-The blueprint shows the experimental use of hybrid NEGs behind eXternal Global Load Balancers (GLBs) to connect to GCP instances living in spoke VPCs and behind Network Virtual Appliances (NVAs).
+The blueprint shows the experimental use of hybrid NEGs behind External Application Load Balancers to connect to GCP instances living in spoke VPCs and behind Network Virtual Appliances (NVAs).
 
 <p align="center"> <img src="diagram.png" width="700"> </p>
 
 This allows users to not configure per-destination-VM NAT rules in the NVAs.
 
-The user traffic will enter the GLB, it will go across the NVAs and it will be routed to the destination VMs (or the ILBs behind the VMs) in the spokes.
+The user traffic will enter the External Application LB, it will go across the NVAs and it will be routed to the destination VMs (or the LBs behind the VMs) in the spokes.
 
 ## What the blueprint creates
 
@@ -16,23 +16,23 @@ The ids `primary` and `secondary` are used to identify two regions. By default, 
 - Projects: landing, spoke-01
 
 - VPCs and subnets
-	+ landing-untrusted: primary - 192.168.1.0/24 and secondary - 192.168.2.0/24
-	+ landing-trusted: primary - 192.168.11.0/24 and secondary - 192.168.22.0/24
-	+ spoke-01: primary - 192.168.101.0/24 and secondary - 192.168.102.0/24
+  - landing-untrusted: primary - 192.168.1.0/24 and secondary - 192.168.2.0/24
+  - landing-trusted: primary - 192.168.11.0/24 and secondary - 192.168.22.0/24
+  - spoke-01: primary - 192.168.101.0/24 and secondary - 192.168.102.0/24
 
 - Cloud NAT
-	+ landing-untrusted (both for primary and secondary)
-	+ in spoke-01 (both for primary and secondary) - this is just for test purposes, so you VMs can automatically install nginx, even if NVAs are still not ready
+  - landing-untrusted (both for primary and secondary)
+  - in spoke-01 (both for primary and secondary) - this is just for test purposes, so you VMs can automatically install nginx, even if NVAs are still not ready
 
 - VMs
-	+ NVAs in MIGs in the landing project, both in primary and secondary, with NICs in the untrusted and in the trusted VPCs
-	+ Test VMs, in spoke-01, both in primary and secondary. Optionally, deployed in MIGs
+  - NVAs in MIGs in the landing project, both in primary and secondary, with NICs in the untrusted and in the trusted VPCs
+  - Test VMs, in spoke-01, both in primary and secondary. Optionally, deployed in MIGs
 
-- Hybrid NEGs in the untrusted VPC, both in primary and secondary, either pointing to the test VMs in the spoke or -optionally- to ILBs in the spokes (if test VMs are deployed as MIGs)
+- Hybrid NEGs in the untrusted VPC, both in primary and secondary, either pointing to the test VMs in the spoke or -optionally- to LBs in the spokes (if test VMs are deployed as MIGs)
 
-- Internal Load balancers (L4 ILBs)
-	+ in the untrusted VPC, pointing to NVA MIGs, both in primary and secondary. Their VIPs are used by custom routes in the untrusted VPC, so that all traffic that arrives in the untrusted VPC destined for the test VMs in the spoke is sent through the NVAs
-	+ optionally, in the spokes. They are created if the user decides to deploy the test VMs as MIGs
+- Internal Network Load balancers (L4 LBs)
+  - in the untrusted VPC pointing to NVA MIGs, both in primary and secondary. Their VIPs are used by custom routes in the untrusted VPC, so that all traffic that arrives in the untrusted VPC destined for the test VMs in the spoke is sent through the NVAs
+  - optionally, in the spokes. They are created if the user decides to deploy the test VMs as MIGs
 
 - External Global Load balancer (GLB) in the untrusted VPC, using the hybrid NEGs as its backends
 
@@ -48,7 +48,7 @@ The blueprint configures some custom routes in the untrusted VPC and routing/NAT
 
 Specifically:
 
-- we create two custom routes in the untrusted VPC (one per region) so that traffic for the spoke subnets is sent to the VIP of the L4 ILBs in front of the NVAs
+- we create two custom routes in the untrusted VPC (one per region) so that traffic for the spoke subnets is sent to the VIP of the L4 LBs in front of the NVAs
 
 - we configure the NVAs so they know how to route traffic to the spokes via the trusted VPC gateway
 
@@ -56,7 +56,7 @@ Specifically:
 
 ## Change the ilb_create variable
 
-Through the `ilb_create` variable you can decide whether test VMs in the spoke will be deployed as MIGs with ILBs in front. This will also configure NEGs, so they point to the ILB VIPs, instead of the VM IPs.
+Through the `ilb_create` variable you can decide whether test VMs in the spoke will be deployed as MIGs with LBs in front. This will also configure NEGs, so they point to the LB VIPs, instead of the VM IPs.
 
 At the moment, every time a user changes the configuration of a NEG, the NEG is recreated. When this happens, the provider doesn't check if it is used by other resources, such as GLB backend services. Until this doesn't get fixed, every time you'll need to change the NEG configuration (i.e. when changing the variable `ilb_create`) you'll have to workaround it. Here is how:
 
@@ -86,6 +86,7 @@ At the moment, every time a user changes the configuration of a NEG, the NEG is 
 
 <!-- END TFDOC -->
 ## Test
+
 ```hcl
 module "test" {
   source = "./fabric/blueprints/networking/glb-hybrid-neg-internal"

@@ -17,7 +17,7 @@
 # tfdoc:file:description External Global Load Balancer.
 
 module "hybrid-glb" {
-  source     = "../../../modules/net-glb"
+  source     = "../../../modules/net-lb-app-ext"
   project_id = module.project_landing.project_id
   name       = "hybrid-glb"
   backend_service_configs = {

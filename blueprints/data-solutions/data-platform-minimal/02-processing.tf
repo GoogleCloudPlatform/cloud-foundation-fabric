@@ -49,7 +49,7 @@ locals {
   }
   processing_subnet = (
     local.use_shared_vpc
-    ? var.network_config.subnet_self_links.processing_transformation
+    ? var.network_config.subnet_self_link
     : module.processing-vpc.0.subnet_self_links["${var.region}/${var.prefix}-processing"]
   )
   processing_vpc = (
@@ -57,8 +57,6 @@ locals {
     ? var.network_config.network_self_link
     : module.processing-vpc.0.self_link
   )
-
-
 }
 
 module "processing-project" {

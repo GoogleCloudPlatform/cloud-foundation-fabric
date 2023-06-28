@@ -10,6 +10,20 @@ This module allows managing several organization properties:
 
 To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
 
+## Features
+
+- [IAM](#iam)
+- [Organization Policies](#organization-policies)
+  - [Factory](#organization-policy-factory)
+  - [Custom Constraints](#organization-policy-custom-constraints)
+  - [Custom Constraints Factory](#organization-policy-custom-constraints-factory)
+- [Hierarchical Firewall Policies](#hierarchical-firewall-policies)
+  - [Directly Defined](#directly-defined-firewall-policies)
+  - [Factory](#firewall-policy-factory)
+- [Log Sinks](#log-sinks)
+- [Custom Roles](#custom-roles)
+- [Tags](#tags)
+
 ## Example
 
 ```hcl
@@ -110,11 +124,13 @@ If you set audit policies via the `iam_audit_config_authoritative` variable, be 
 
 Some care must also be taken with the `groups_iam` variable (and in some situations with the additive variables) to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
-### Organization policy factory
+## Organization Policies
+
+### Organization Policy Factory
 
 See the [organization policy factory in the project module](../project#organization-policy-factory).
 
-### Org policy custom constraints
+### Organization Policy Custom Constraints
 
 Refer to the [Creating and managing custom constraints](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-custom-constraints) documentation for details on usage.
 To manage organization policy custom constraints, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
@@ -145,7 +161,7 @@ module "org" {
 # tftest modules=1 resources=2 inventory=custom-constraints.yaml
 ```
 
-### Org policy custom constraints factory
+### Organization Policy Custom Constraints Factory
 
 Org policy custom constraints can be loaded from a directory containing YAML files where each file defines one or more custom constraints. The structure of the YAML files is exactly the same as the `org_policy_custom_constraints` variable.
 
@@ -201,7 +217,7 @@ custom.dataprocNoMoreThan10Workers:
   description: Cluster cannot have more than 10 workers, including primary and secondary workers.
 ```
 
-## Hierarchical firewall policies
+## Hierarchical Firewall Policies
 
 Hierarchical firewall policies can be managed in two ways:
 
@@ -210,7 +226,7 @@ Hierarchical firewall policies can be managed in two ways:
 
 Once you have policies (either created via the module or externally), you can associate them using the `firewall_policy_association` variable.
 
-### Directly defined firewall policies
+### Directly Defined Firewall Policies
 
 ```hcl
 module "org" {
@@ -251,7 +267,7 @@ module "org" {
 # tftest modules=1 resources=4 inventory=hfw.yaml
 ```
 
-### Firewall policy factory
+### Firewall Policy Factory
 
 The in-built factory allows you to define a single policy, using one file for rules, and an optional file for CIDR range substitution variables. Remember that non-absolute paths are relative to the root module (the folder where you run `terraform`).
 
@@ -306,7 +322,7 @@ allow-iap-ssh:
   logging: false
 ```
 
-## Logging Sinks
+## Log Sinks
 
 ```hcl
 module "gcs" {
@@ -491,7 +507,7 @@ module "org" {
 | [network_tags](variables.tf#L159) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  id          &#61; optional&#40;string&#41;&#10;  network     &#61; string &#35; project_id&#47;vpc_name&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies](variables.tf#L181) | Organization policies applied to this organization keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies_data_path](variables.tf#L208) | Path containing org policies in YAML format. | <code>string</code> |  | <code>null</code> |
-| [org_policy_custom_constraints](variables.tf#L214) | Organization policiy custom constraints keyed by constraint name. | <code title="map&#40;object&#40;&#123;&#10;  display_name   &#61; optional&#40;string&#41;&#10;  description    &#61; optional&#40;string&#41;&#10;  action_type    &#61; string&#10;  condition      &#61; string&#10;  method_types   &#61; list&#40;string&#41;&#10;  resource_types &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policy_custom_constraints](variables.tf#L214) | Organization policy custom constraints keyed by constraint name. | <code title="map&#40;object&#40;&#123;&#10;  display_name   &#61; optional&#40;string&#41;&#10;  description    &#61; optional&#40;string&#41;&#10;  action_type    &#61; string&#10;  condition      &#61; string&#10;  method_types   &#61; list&#40;string&#41;&#10;  resource_types &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policy_custom_constraints_data_path](variables.tf#L228) | Path containing org policy custom constraints in YAML format. | <code>string</code> |  | <code>null</code> |
 | [tag_bindings](variables.tf#L243) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [tags](variables.tf#L249) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  id          &#61; optional&#40;string&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    id          &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

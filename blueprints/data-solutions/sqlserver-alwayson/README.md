@@ -1,16 +1,16 @@
 ## SQL Server Always On Groups blueprint
 
-This is an blueprint of building [SQL Server Always On Availability Groups](https://cloud.google.com/compute/docs/instances/sql-server/configure-availability) 
-using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling. 
+This is an blueprint of building [SQL Server Always On Availability Groups](https://cloud.google.com/compute/docs/instances/sql-server/configure-availability)
+using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling.
 
 ![Architecture diagram](https://cloud.google.com/compute/images/sqlserver-ag-architecture.svg)
 
-The actual setup process (apart from Active Directory operations) has been scripted, so that least amount of 
-manual works needs to performed: 
+The actual setup process (apart from Active Directory operations) has been scripted, so that least amount of
+manual works needs to performed:
 
-  - Joining the domain using appropriate credentials 
-  - Running an automatically generated initialization script (`C:\InitializeCluster.ps1`) 
-  - Creating the [Availability Groups using the wizard](https://cloud.google.com/compute/docs/instances/sql-server/configure-availability#creating_an_availability_group)
+- Joining the domain using appropriate credentials
+- Running an automatically generated initialization script (`C:\InitializeCluster.ps1`)
+- Creating the [Availability Groups using the wizard](https://cloud.google.com/compute/docs/instances/sql-server/configure-availability#creating_an_availability_group)
     (please note that healthchecks are automatically configured when the appropriate AGs are created)
 
 To monitor the installation process, the startup scripts log output to Application Log (visible under Windows Logs in Event Viewer)
@@ -29,7 +29,7 @@ and to `C:\GcpSetupLog.txt` file.
 | [secrets.tf](./secrets.tf) | Creates SQL admin user password secret. | <code>secret-manager</code> |
 | [service-accounts.tf](./service-accounts.tf) | Creates service accounts for the instances. | <code>iam-service-account</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
-| [vpc.tf](./vpc.tf) | Creates the VPC and manages the firewall rules and ILB. | <code>net-address</code> · <code>net-ilb</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> |
+| [vpc.tf](./vpc.tf) | Creates the VPC and manages the firewall rules and LB. | <code>net-address</code> · <code>net-lb-int</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> |
 
 ## Variables
 

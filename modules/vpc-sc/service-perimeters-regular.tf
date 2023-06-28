@@ -70,6 +70,12 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                       method = method_selectors.key
                     }
                   }
+                  dynamic "method_selectors" {
+                    for_each = toset(coalesce(o.value.permission_selectors, []))
+                    content {
+                      permission = method_selectors.key
+                    }
+                  }
                 }
               }
             }
@@ -120,6 +126,12 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                     for_each = toset(coalesce(o.value.method_selectors, []))
                     content {
                       method = method_selectors.value
+                    }
+                  }
+                  dynamic "method_selectors" {
+                    for_each = toset(coalesce(o.value.permission_selectors, []))
+                    content {
+                      permission = method_selectors.value
                     }
                   }
                 }
@@ -182,6 +194,12 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                       method = method_selectors.key
                     }
                   }
+                  dynamic "method_selectors" {
+                    for_each = toset(coalesce(o.value.permission_selectors, []))
+                    content {
+                      permission = method_selectors.key
+                    }
+                  }
                 }
               }
             }
@@ -233,6 +251,12 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                     for_each = toset(coalesce(o.value.method_selectors, []))
                     content {
                       method = method_selectors.value
+                    }
+                  }
+                  dynamic "method_selectors" {
+                    for_each = toset(coalesce(o.value.permission_selectors, []))
+                    content {
+                      permission = method_selectors.value
                     }
                   }
                 }

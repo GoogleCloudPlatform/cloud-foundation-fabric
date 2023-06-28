@@ -88,5 +88,10 @@ variable "underlay_config" {
     gcp_bgp = object({
       asn = number
     })
+    interconnect_type = optional(string, "DEDICATED")
   })
+  validation {
+    condition     = var.underlay_config.interconnect_type == "DEDICATED" || var.underlay_config.interconnect_type == "PARTNER"
+    error_message = "var.underlay_config.interconnect_type must by either \"DEDICATED\" or \"PARTNER\""
+  }
 }

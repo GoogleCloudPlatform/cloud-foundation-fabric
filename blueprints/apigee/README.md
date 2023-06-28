@@ -20,5 +20,6 @@ The blueprints in this folder contain a variety of deployment scenarios for Apig
 
 The following blueprints demonstrate a set of networking scenarios that can be implemented for Apigee X deployments.
 
-#### Apigee X - Northbound: GLB with PSC Neg, Southbouth: PSC with ILB (L7) and Hybrid NEG
-<a href="./network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg" title="Apigee X - Northbound: GLB with PSC Neg, Southbouth: PSC with ILB (L7) and Hybrid NEG"><img src="./network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg/diagram.png" align="left" width="280px"></a>This [blueprint](./network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg/) shows how to expose an on-prem target backend to clients in the Internet.
+#### Apigee X - Northbound: External Application LB with PSC Neg, Southbouth: PSC with Internal Application LB and Hybrid NEG
+
+<a href="./network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg" title="Northbound: External Application LB with PSC Neg, Southbouth: PSC with Internal Application LB and Hybrid NEG"><img src="./network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg/diagram.png" align="left" width="280px"></a>This [blueprint](./network-patterns/nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg/) shows how to expose an on-prem target backend to clients in the Internet.

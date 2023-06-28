@@ -2,6 +2,17 @@
 
 This module allows the creation and management of folders, including support for IAM bindings, organization policies, and hierarchical firewall rules.
 
+## Features
+
+- [IAM](#iam)
+- [Organization Policies](#organization-policies)
+  - [Factory](#organization-policy-factory)
+- [Hierarchical Firewall Policies](#hierarchical-firewall-policies)
+  - [Directly Defined](#directly-defined-firewall-policies)
+  - [Factory](#firewall-policy-factory)
+- [Log Sinks](#log-sinks)
+- [Tags](#tags)
+
 ## Basic example with IAM bindings
 
 ```hcl
@@ -30,6 +41,15 @@ module "folder" {
 }
 # tftest modules=1 resources=9 inventory=iam.yaml
 ```
+
+## IAM
+
+There are two mutually exclusive ways at the role level of managing IAM in this module
+
+- non-authoritative via the `iam_additive` and `iam_additive_members` variables, where bindings created outside this module will coexist with those managed here
+- authoritative via the `group_iam` and `iam` variables, where bindings created outside this module (eg in the console) will be removed at each `terraform apply` cycle if the same role is also managed here
+
+Some care must be taken with the `groups_iam` variable (and in some situations with the additive variables) to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
 ## Organization policies
 
@@ -88,76 +108,11 @@ module "folder" {
 # tftest modules=1 resources=8 inventory=org-policies.yaml
 ```
 
-### Organization policy factory
+### Organization Policy Factory
 
 See the [organization policy factory in the project module](../project#organization-policy-factory).
 
-## Logging Sinks
-
-```hcl
-module "gcs" {
-  source        = "./fabric/modules/gcs"
-  project_id    = "my-project"
-  name          = "gcs_sink"
-  force_destroy = true
-}
-
-module "dataset" {
-  source     = "./fabric/modules/bigquery-dataset"
-  project_id = "my-project"
-  id         = "bq_sink"
-}
-
-module "pubsub" {
-  source     = "./fabric/modules/pubsub"
-  project_id = "my-project"
-  name       = "pubsub_sink"
-}
-
-module "bucket" {
-  source      = "./fabric/modules/logging-bucket"
-  parent_type = "project"
-  parent      = "my-project"
-  id          = "bucket"
-}
-
-module "folder-sink" {
-  source = "./fabric/modules/folder"
-  parent = "folders/657104291943"
-  name   = "my-folder"
-  logging_sinks = {
-    warnings = {
-      destination = module.gcs.id
-      filter      = "severity=WARNING"
-      type        = "storage"
-    }
-    info = {
-      destination = module.dataset.id
-      filter      = "severity=INFO"
-      type        = "bigquery"
-    }
-    notice = {
-      destination = module.pubsub.id
-      filter      = "severity=NOTICE"
-      type        = "pubsub"
-    }
-    debug = {
-      destination = module.bucket.id
-      filter      = "severity=DEBUG"
-      exclusions = {
-        no-compute = "logName:compute"
-      }
-      type = "logging"
-    }
-  }
-  logging_exclusions = {
-    no-gce-instances = "resource.type=gce_instance"
-  }
-}
-# tftest modules=5 resources=14 inventory=logging.yaml
-```
-
-## Hierarchical firewall policies
+## Hierarchical Firewall Policies
 
 Hierarchical firewall policies can be managed in two ways:
 
@@ -166,7 +121,7 @@ Hierarchical firewall policies can be managed in two ways:
 
 Once you have policies (either created via the module or externally), you can associate them using the `firewall_policy_association` variable.
 
-### Directly defined firewall policies
+### Directly Defined Firewall Policies
 
 ```hcl
 module "folder1" {
@@ -216,7 +171,7 @@ module "folder2" {
 # tftest modules=2 resources=7 inventory=hfw.yaml
 ```
 
-### Firewall policy factory
+### Firewall Policy Factory
 
 The in-built factory allows you to define a single policy, using one file for rules, and an optional file for CIDR range substitution variables. Remember that non-absolute paths are relative to the root module (the folder where you run `terraform`).
 
@@ -279,6 +234,71 @@ allow-iap-ssh:
     tcp: ["22"]
   target_resources: null
   logging: false
+```
+
+## Log Sinks
+
+```hcl
+module "gcs" {
+  source        = "./fabric/modules/gcs"
+  project_id    = "my-project"
+  name          = "gcs_sink"
+  force_destroy = true
+}
+
+module "dataset" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "my-project"
+  id         = "bq_sink"
+}
+
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = "my-project"
+  name       = "pubsub_sink"
+}
+
+module "bucket" {
+  source      = "./fabric/modules/logging-bucket"
+  parent_type = "project"
+  parent      = "my-project"
+  id          = "bucket"
+}
+
+module "folder-sink" {
+  source = "./fabric/modules/folder"
+  parent = "folders/657104291943"
+  name   = "my-folder"
+  logging_sinks = {
+    warnings = {
+      destination = module.gcs.id
+      filter      = "severity=WARNING"
+      type        = "storage"
+    }
+    info = {
+      destination = module.dataset.id
+      filter      = "severity=INFO"
+      type        = "bigquery"
+    }
+    notice = {
+      destination = module.pubsub.id
+      filter      = "severity=NOTICE"
+      type        = "pubsub"
+    }
+    debug = {
+      destination = module.bucket.id
+      filter      = "severity=DEBUG"
+      exclusions = {
+        no-compute = "logName:compute"
+      }
+      type = "logging"
+    }
+  }
+  logging_exclusions = {
+    no-gce-instances = "resource.type=gce_instance"
+  }
+}
+# tftest modules=5 resources=14 inventory=logging.yaml
 ```
 
 ## Tags

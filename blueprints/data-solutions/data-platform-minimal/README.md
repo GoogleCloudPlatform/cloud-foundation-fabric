@@ -203,7 +203,7 @@ module "data-platform" {
   prefix = "myprefix"
 }
 
-# tftest modules=21 resources=116
+# tftest modules=23 resources=123
 ```
 
 ## Customizations
@@ -229,10 +229,7 @@ To configure the use of a shared VPC, configure the `network_config`, example:
 network_config = {
   host_project      = "PROJECT_ID"
   network_self_link = "https://www.googleapis.com/compute/v1/projects/PROJECT_ID/global/networks/NAME"
-  subnet_self_links = {
-    processing_transformation = "https://www.googleapis.com/compute/v1/projects/PROJECT_ID/regions/REGION/subnetworks/NAME"
-    processing_composer      = "https://www.googleapis.com/compute/v1/projects/PROJECT_ID/regions/REGION/subnetworks/NAME"
-  }
+  subnet_self_link = "https://www.googleapis.com/compute/v1/projects/PROJECT_ID/regions/REGION/subnetworks/NAME"
   composer_ip_ranges = {    
     cloudsql   = "192.168.XXX.XXX/24"
     gke_master = "192.168.XXX.XXX/28"
@@ -280,32 +277,31 @@ The application layer is out of scope of this script. As a demo purpuse only, on
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization_domain](variables.tf#L122) | Organization domain. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L127) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_config](variables.tf#L136) | Provide 'billing_account_id' value if project creation is needed, uses existing 'project_ids' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string, null&#41;&#10;  parent             &#61; string&#10;  project_ids &#61; optional&#40;object&#40;&#123;&#10;    landing    &#61; string&#10;    processing &#61; string&#10;    curated    &#61; string&#10;    common     &#61; string&#10;    &#125;&#41;, &#123;&#10;    landing    &#61; &#34;lnd&#34;&#10;    processing &#61; &#34;prc&#34;&#10;    curated    &#61; &#34;cur&#34;&#10;    common     &#61; &#34;cmn&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [organization_domain](variables.tf#L119) | Organization domain. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L124) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_config](variables.tf#L133) | Provide 'billing_account_id' value if project creation is needed, uses existing 'project_ids' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string, null&#41;&#10;  parent             &#61; string&#10;  project_ids &#61; optional&#40;object&#40;&#123;&#10;    landing    &#61; string&#10;    processing &#61; string&#10;    curated    &#61; string&#10;    common     &#61; string&#10;    &#125;&#41;, &#123;&#10;    landing    &#61; &#34;lnd&#34;&#10;    processing &#61; &#34;prc&#34;&#10;    curated    &#61; &#34;cur&#34;&#10;    common     &#61; &#34;cmn&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [composer_config](variables.tf#L17) | Cloud Composer config. | <code title="object&#40;&#123;&#10;  environment_size &#61; optional&#40;string, &#34;ENVIRONMENT_SIZE_SMALL&#34;&#41;&#10;  software_config &#61; optional&#40;object&#40;&#123;&#10;    airflow_config_overrides &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    pypi_packages            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    env_variables            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    image_version            &#61; optional&#40;string, &#34;composer-2-airflow-2&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  workloads_config &#61; optional&#40;object&#40;&#123;&#10;    scheduler &#61; optional&#40;object&#40;&#123;&#10;      cpu        &#61; optional&#40;number, 0.5&#41;&#10;      memory_gb  &#61; optional&#40;number, 1.875&#41;&#10;      storage_gb &#61; optional&#40;number, 1&#41;&#10;      count      &#61; optional&#40;number, 1&#41;&#10;      &#125;&#10;    &#41;, &#123;&#125;&#41;&#10;    web_server &#61; optional&#40;object&#40;&#123;&#10;      cpu        &#61; optional&#40;number, 0.5&#41;&#10;      memory_gb  &#61; optional&#40;number, 1.875&#41;&#10;      storage_gb &#61; optional&#40;number, 1&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    worker &#61; optional&#40;object&#40;&#123;&#10;      cpu        &#61; optional&#40;number, 0.5&#41;&#10;      memory_gb  &#61; optional&#40;number, 1.875&#41;&#10;      storage_gb &#61; optional&#40;number, 1&#41;&#10;      min_count  &#61; optional&#40;number, 1&#41;&#10;      max_count  &#61; optional&#40;number, 3&#41;&#10;      &#125;&#10;    &#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_catalog_tags](variables.tf#L54) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code title="&#123;&#10;  &#34;3_Confidential&#34; &#61; null&#10;  &#34;2_Private&#34;      &#61; null&#10;  &#34;1_Sensitive&#34;    &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [data_force_destroy](variables.tf#L65) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |
 | [enable_services](variables.tf#L71) | Flag to enable or disable services in the Data Platform. | <code title="object&#40;&#123;&#10;  composer                &#61; optional&#40;bool, true&#41;&#10;  dataproc_history_server &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [groups](variables.tf#L80) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [location](variables.tf#L90) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
-| [network_config](variables.tf#L96) | Shared VPC network configurations to use. If null networks will be created in projects. | <code title="object&#40;&#123;&#10;  host_project      &#61; optional&#40;string&#41;&#10;  network_self_link &#61; optional&#40;string&#41;&#10;  subnet_self_links &#61; optional&#40;object&#40;&#123;&#10;    processing_transformation &#61; string&#10;    processing_composer       &#61; string&#10;  &#125;&#41;, null&#41;&#10;  composer_ip_ranges &#61; optional&#40;object&#40;&#123;&#10;    connection_subnetwork &#61; optional&#40;string&#41;&#10;    cloud_sql             &#61; optional&#40;string, &#34;10.20.10.0&#47;24&#34;&#41;&#10;    gke_master            &#61; optional&#40;string, &#34;10.20.11.0&#47;28&#34;&#41;&#10;    pods_range_name       &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;    services_range_name   &#61; optional&#40;string, &#34;services&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_suffix](variables.tf#L160) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
-| [region](variables.tf#L166) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [service_encryption_keys](variables.tf#L172) | Cloud KMS to use to encrypt different services. Key location should match service region. | <code title="object&#40;&#123;&#10;  bq       &#61; optional&#40;string&#41;&#10;  composer &#61; optional&#40;string&#41;&#10;  compute  &#61; optional&#40;string&#41;&#10;  storage  &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [network_config](variables.tf#L96) | Shared VPC network configurations to use. If null networks will be created in projects. | <code title="object&#40;&#123;&#10;  host_project      &#61; optional&#40;string&#41;&#10;  network_self_link &#61; optional&#40;string&#41;&#10;  subnet_self_link  &#61; optional&#40;string&#41;&#10;  composer_ip_ranges &#61; optional&#40;object&#40;&#123;&#10;    connection_subnetwork &#61; optional&#40;string&#41;&#10;    cloud_sql             &#61; optional&#40;string, &#34;10.20.10.0&#47;24&#34;&#41;&#10;    gke_master            &#61; optional&#40;string, &#34;10.20.11.0&#47;28&#34;&#41;&#10;    pods_range_name       &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;    services_range_name   &#61; optional&#40;string, &#34;services&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_suffix](variables.tf#L157) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L163) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [service_encryption_keys](variables.tf#L169) | Cloud KMS to use to encrypt different services. Key location should match service region. | <code title="object&#40;&#123;&#10;  bq       &#61; optional&#40;string&#41;&#10;  composer &#61; optional&#40;string&#41;&#10;  compute  &#61; optional&#40;string&#41;&#10;  storage  &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
-| [composer](outputs.tf#L24) | Composer variables. |  |
-| [dataproc-history-server](outputs.tf#L31) | List of bucket names which have been assigned to the cluster. |  |
-| [gcs_buckets](outputs.tf#L36) | GCS buckets. |  |
-| [kms_keys](outputs.tf#L46) | Cloud MKS keys. |  |
-| [projects](outputs.tf#L51) | GCP Projects informations. |  |
-| [service_accounts](outputs.tf#L69) | Service account created. |  |
-| [vpc_network](outputs.tf#L78) | VPC network. |  |
-| [vpc_subnet](outputs.tf#L86) | VPC subnetworks. |  |
+| [composer](outputs.tf#L25) | Composer variables. |  |
+| [dataproc-history-server](outputs.tf#L33) | List of bucket names which have been assigned to the cluster. |  |
+| [gcs_buckets](outputs.tf#L38) | GCS buckets. |  |
+| [kms_keys](outputs.tf#L47) | Cloud MKS keys. |  |
+| [network](outputs.tf#L52) | VPC network. |  |
+| [projects](outputs.tf#L60) | GCP Projects informations. |  |
+| [service_accounts](outputs.tf#L78) | Service account created. |  |
 
 <!-- END TFDOC -->
