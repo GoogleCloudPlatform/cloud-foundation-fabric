@@ -94,7 +94,8 @@ with models.DAG(
       create_disposition='CREATE_IF_NEEDED',
       write_disposition='WRITE_APPEND',
       schema_update_options=['ALLOW_FIELD_RELAXATION', 'ALLOW_FIELD_ADDITION'],
-      autodetect=True,
+      schema_object="customers.json",
+      schema_object_bucket=PROCESSING_GCS[5:],
       project_id=PROCESSING_PRJ, # The process will continue to run on the dataset project until the Apache Airflow bug is fixed. https://github.com/apache/airflow/issues/32106
       impersonation_chain=[PROCESSING_SA]
   )  

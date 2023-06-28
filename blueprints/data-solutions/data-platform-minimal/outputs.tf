@@ -38,7 +38,7 @@ output "dataproc-history-server" {
 output "gcs_buckets" {
   description = "GCS buckets."
   value = {
-    cururated  = module.cur-cs-0.name
+    curated    = module.cur-cs-0.name
     landing    = module.land-cs-0.name
     processing = module.processing-cs-0.name
   }
