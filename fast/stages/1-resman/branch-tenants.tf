@@ -77,6 +77,14 @@ module "tenant-top-folder-tag" {
   tag_bindings = {
     tenant = module.organization.tag_values["${var.tag_names.tenant}/${each.key}"].id
   }
+  iam = {
+    "roles/cloudasset.owner"               = [module.tenant-core-sa[each.key].iam_email]
+    "roles/compute.xpnAdmin"               = [module.tenant-core-sa[each.key].iam_email]
+    "roles/logging.admin"                  = [module.tenant-core-sa[each.key].iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.tenant-core-sa[each.key].iam_email]
+    "roles/resourcemanager.projectCreator" = [module.tenant-core-sa[each.key].iam_email]
+    "roles/resourcemanager.tagUser"        = [module.tenant-core-sa[each.key].iam_email]
+  }
 }
 
 module "tenant-core-folder" {
@@ -88,13 +96,7 @@ module "tenant-core-folder" {
     (each.value.admin_group_email) = ["roles/viewer"]
   }
   iam = {
-    "roles/cloudasset.owner"               = [module.tenant-core-sa[each.key].iam_email]
-    "roles/compute.xpnAdmin"               = [module.tenant-core-sa[each.key].iam_email]
-    "roles/logging.admin"                  = [module.tenant-core-sa[each.key].iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.tenant-core-sa[each.key].iam_email]
-    "roles/resourcemanager.projectCreator" = [module.tenant-core-sa[each.key].iam_email]
-    "roles/resourcemanager.tagUser"        = [module.tenant-core-sa[each.key].iam_email]
-    "roles/owner"                          = [module.tenant-core-sa[each.key].iam_email]
+    "roles/owner" = [module.tenant-core-sa[each.key].iam_email]
   }
 }
 
