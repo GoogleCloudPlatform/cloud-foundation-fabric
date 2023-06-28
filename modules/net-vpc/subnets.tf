@@ -93,6 +93,10 @@ locals {
     { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
     { for k, v in local._factory_subnets : k => v if v.purpose == "PRIVATE_SERVICE_CONNECT" }
   )
+  subnets_psc_fw_rules = merge(
+    { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
+    { for k, v in local._factory_subnets : k => v if v.purpose == "PRIVATE_RFC_1918" }
+  )
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
@@ -157,6 +161,21 @@ resource "google_compute_subnetwork" "psc" {
     : each.value.description
   )
   purpose = "PRIVATE_SERVICE_CONNECT"
+}
+
+resource "google_compute_subnetwork" "psc_fw_rules" {
+  for_each      = local.subnets_psc
+  project       = var.project_id
+  network       = local.network.name
+  name          = each.value.name
+  region        = each.value.region
+  ip_cidr_range = each.value.ip_cidr_range
+  description = (
+    each.value.description == null
+    ? "Terraform-managed subnet for Private Service Connect Forwarding Rules."
+    : each.value.description
+  )
+  purpose = "PPRIVATE_RFC_1918"
 }
 
 resource "google_compute_subnetwork_iam_binding" "binding" {
