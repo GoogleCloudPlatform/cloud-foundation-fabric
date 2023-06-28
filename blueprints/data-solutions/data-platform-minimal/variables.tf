@@ -98,10 +98,7 @@ variable "network_config" {
   type = object({
     host_project      = optional(string)
     network_self_link = optional(string)
-    subnet_self_links = optional(object({
-      processing_transformation = string
-      processing_composer       = string
-    }), null)
+    subnet_self_link  = optional(string)
     composer_ip_ranges = optional(object({
       connection_subnetwork = optional(string)
       cloud_sql             = optional(string, "10.20.10.0/24")
