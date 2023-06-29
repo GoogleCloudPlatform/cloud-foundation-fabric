@@ -54,6 +54,41 @@ module "bigquery-dataset" {
 # tftest modules=1 resources=2 inventory=iam.yaml
 ```
 
+### Authorized Views, Datasets, and Routines
+
+You can specify authorized views, datasets, and routines via the `authorized_views`, `authorized_datasets` and `authorized_routines` variables, respectively.
+
+```hcl
+module "bigquery-dataset" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "my-project"
+  id         = "my-dataset"
+  authorized_views = [
+    {
+      project_id = "view_project"
+      dataset_id = "view_dataset"
+      table_id   = "view_id"
+    }
+  ]
+  authorized_datasets = [
+    {
+      project_id = "auth_dataset_project"
+      dataset_id = "auth_dataset"
+    }
+  ]
+  authorized_routines = [
+    {
+      project_id = "auth_routine_project"
+      dataset_id = "auth_routine_dataset"
+      routine_id   = "auth_routine"
+    }
+  ]
+}
+# tftest modules=1 resources=4 inventory=authorized_resources.yaml
+```
+
+Authorized views can be specified both using the standard `access` options and the `authorized_views` blocks. 
+
 ### Dataset options
 
 Dataset options are set via the `options` variable. all options must be specified, but a `null` value can be set to options that need to use defaults.

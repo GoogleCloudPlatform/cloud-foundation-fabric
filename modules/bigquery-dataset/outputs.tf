@@ -27,7 +27,9 @@ output "dataset_id" {
     google_bigquery_dataset_access.group_by_email,
     google_bigquery_dataset_access.special_group,
     google_bigquery_dataset_access.user_by_email,
-    google_bigquery_dataset_access.views
+    google_bigquery_dataset_access.authorized_views,
+    google_bigquery_dataset_access.authorized_datasets,
+    google_bigquery_dataset_access.authorized_routines
   ]
 }
 
@@ -39,7 +41,9 @@ output "id" {
     google_bigquery_dataset_access.group_by_email,
     google_bigquery_dataset_access.special_group,
     google_bigquery_dataset_access.user_by_email,
-    google_bigquery_dataset_access.views
+    google_bigquery_dataset_access.authorized_views,
+    google_bigquery_dataset_access.authorized_datasets,
+    google_bigquery_dataset_access.authorized_routines
   ]
 }
 
@@ -51,7 +55,9 @@ output "self_link" {
     google_bigquery_dataset_access.group_by_email,
     google_bigquery_dataset_access.special_group,
     google_bigquery_dataset_access.user_by_email,
-    google_bigquery_dataset_access.views
+    google_bigquery_dataset_access.authorized_views,
+    google_bigquery_dataset_access.authorized_datasets,
+    google_bigquery_dataset_access.authorized_routines
   ]
 }
 

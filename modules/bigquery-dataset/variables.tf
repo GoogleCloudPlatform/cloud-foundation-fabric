@@ -140,3 +140,32 @@ variable "views" {
   }))
   default = {}
 }
+
+variable "authorized_views" {
+  description = "An array of views to give authorize for the dataset"
+  type = list(object({
+    dataset_id = string,
+    project_id = string,
+    table_id   = string # this is the view id, but we keep table_id to stay consistent as the resource
+  }))
+  default = []
+}
+
+variable "authorized_datasets" {
+  description = "An array of datasets to be authorized on the dataset"
+  type = list(object({
+    dataset_id = string,
+    project_id = string,
+  }))
+  default = []
+}
+
+variable "authorized_routines" {
+  description = "An array of authorized routine to be authorized on the dataset"
+  type = list(object({
+    project_id = string,
+    dataset_id = string,
+    routine_id = string
+  }))
+  default = []
+}

@@ -1,0 +1,38 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.bigquery-dataset.google_bigquery_dataset.default:
+    dataset_id: my-dataset
+    project_id: my-project
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_views["auth_dataset_project_auth_dataset"]:
+    dataset:
+      dataset:
+        dataset_id: view_project
+        project_id: view_dataset
+      target_types: ["VIEWS"]
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_datasets["view_project_view_dataset_view_id"]:
+    view:
+      dataset_id: auth_dataset_project
+      project_id: auth_dataset
+      table_id: view_id
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_routines["auth_routine_project_auth_routine_dataset_auth_routine"]:
+    routine:
+      dataset_id: auth_dataset_project
+      project_id: auth_dataset
+      routine_id: auth_routine
+
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_dataset_access: 3
