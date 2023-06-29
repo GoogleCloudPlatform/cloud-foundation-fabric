@@ -87,7 +87,7 @@ module "bigquery-dataset" {
 # tftest modules=1 resources=4 inventory=authorized_resources.yaml
 ```
 
-Authorized views can be specified both using the standard `access` options and the `authorized_views` blocks. The example configuration below uses both blocks will create a dataset with three authorized views `view_id_1`, `view_id_2`, and `view_id_3`.
+Authorized views can be specified both using the standard `access` options and the `authorized_views` blocks. The example configuration below uses both blocks, and will create a dataset with three authorized views `view_id_1`, `view_id_2`, and `view_id_3`.
 
 ```hcl
 module "bigquery-dataset" {
@@ -107,12 +107,12 @@ module "bigquery-dataset" {
     }
   ]
   access = {
-      view_1         = { role = "READER", type = "view" }
       view_2         = { role = "READER", type = "view" }
+      view_3         = { role = "READER", type = "view" }
   }
   access_identities = {
-      view_1         = "view_project|view_dataset|view_id_2"
-      view_2         = "view_project|view_dataset|view_id_3"
+      view_2         = "view_project|view_dataset|view_id_2"
+      view_3         = "view_project|view_dataset|view_id_3"
   }
 }
 # tftest modules=1 resources=4 inventory=authorized_resources_views.yaml
