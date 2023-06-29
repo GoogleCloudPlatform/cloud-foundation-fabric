@@ -251,6 +251,9 @@ module "bigquery-dataset" {
 | [encryption_key](variables.tf#L51) | Self link of the KMS key that will be used to protect destination table. | <code>string</code> |  | <code>null</code> |
 | [friendly_name](variables.tf#L57) | Dataset friendly name. | <code>string</code> |  | <code>null</code> |
 | [iam](variables.tf#L63) | IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [authorized_views](variables.tf#L144) | An array of views to be authorized for the dataset. | <code>list&#40;object&#40;...&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [authorized_datasets](variables.tf#L154) | An array of datasets to be authorized on the dataset. | <code>list&#40;object&#40;...&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [authorized_routines](variables.tf#L163) | An array of authorized routine to be authorized on the dataset. | <code>list&#40;object&#40;...&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 | [labels](variables.tf#L74) | Dataset labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location](variables.tf#L80) | Dataset location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
 | [options](variables.tf#L86) | Dataset options. | <code title="object&#40;&#123;&#10;  default_collation               &#61; optional&#40;string&#41;&#10;  default_table_expiration_ms     &#61; optional&#40;number&#41;&#10;  default_partition_expiration_ms &#61; optional&#40;number&#41;&#10;  delete_contents_on_destroy      &#61; optional&#40;bool, false&#41;&#10;  is_case_insensitive             &#61; optional&#40;bool&#41;&#10;  max_time_travel_hours           &#61; optional&#40;number, 168&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -263,11 +266,11 @@ module "bigquery-dataset" {
 |---|---|:---:|
 | [dataset](outputs.tf#L17) | Dataset resource. |  |
 | [dataset_id](outputs.tf#L22) | Dataset id. |  |
-| [id](outputs.tf#L34) | Fully qualified dataset id. |  |
-| [self_link](outputs.tf#L46) | Dataset self link. |  |
-| [table_ids](outputs.tf#L58) | Map of fully qualified table ids keyed by table ids. |  |
-| [tables](outputs.tf#L63) | Table resources. |  |
-| [view_ids](outputs.tf#L68) | Map of fully qualified view ids keyed by view ids. |  |
-| [views](outputs.tf#L73) | View resources. |  |
+| [id](outputs.tf#L36) | Fully qualified dataset id. |  |
+| [self_link](outputs.tf#L50) | Dataset self link. |  |
+| [table_ids](outputs.tf#L64) | Map of fully qualified table ids keyed by table ids. |  |
+| [tables](outputs.tf#L69) | Table resources. |  |
+| [view_ids](outputs.tf#L74) | Map of fully qualified view ids keyed by view ids. |  |
+| [views](outputs.tf#L79) | View resources. |  |
 
 <!-- END TFDOC -->

@@ -142,7 +142,7 @@ variable "views" {
 }
 
 variable "authorized_views" {
-  description = "An array of views to give authorize for the dataset"
+  description = "An array of views to be authorized for the dataset"
   type = list(object({
     dataset_id = string,
     project_id = string,
