@@ -16,17 +16,17 @@ values:
   module.bigquery-dataset.google_bigquery_dataset.default:
     dataset_id: my-dataset
     project: my-project
-  module.bigquery-dataset.google_bigquery_dataset_access.authorized_datasets["view_project_view_dataset_view_id_1"]:
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_views["view_project_view_dataset_view_id_1"]:
     view:
       dataset_id: view_dataset
       project_id: view_project
       table_id: view_id_1
-  module.bigquery-dataset.google_bigquery_dataset_access.authorized_datasets["view_project_view_dataset_view_id_2"]:
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_views["view_project_view_dataset_view_id_2"]:
     view:
       dataset_id: view_dataset
       project_id: view_project
       table_id: view_id_2
-  module.bigquery-dataset.google_bigquery_dataset_access.authorized_datasets["view_project_view_dataset_view_id_3"]:
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_views["view_project_view_dataset_view_id_3"]:
     view:
       dataset_id: view_dataset
       project_id: view_project
