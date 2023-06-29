@@ -69,7 +69,7 @@ We use three groups to control access to resources:
 
 ### Virtual Private Cloud (VPC) design
 
-As is often the case in real-world configurations, this blueprint accepts as input an existing [Shared-VPC](https://cloud.google.com/vpc/docs/shared-vpc) via the `network_config` variable. Make sure that the GKE API (`container.googleapis.com`) is enabled in the VPC host project.
+As is often the case in real-world configurations, this blueprint accepts as input an existing [Shared-VPC](https://cloud.google.com/vpc/docs/shared-vpc) via the `network_config` variable. Make sure that the GKE API (`container.googleapis.com`) is enabled in the VPC host project. Remember also to configure firewall rules needed for the different products you are going to use: Composer, Dataflow or Dataproc.
 
 If the `network_config` variable is not provided, one VPC will be created in each project that supports network resources (load, transformation and orchestration).
 

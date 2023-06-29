@@ -84,7 +84,7 @@ module "processing-dp-historyserver" {
       staging_bucket = module.processing-staging-0.name
       temp_bucket    = module.processing-temp-0.name
       gce_cluster_config = {
-        subnetwork             = module.processing-vpc[0].subnets["${var.region}/${var.prefix}-processing"].self_link
+        subnetwork             = local.processing_subnet
         zone                   = "${var.region}-b"
         service_account        = module.processing-sa-0.email
         service_account_scopes = ["cloud-platform"]
