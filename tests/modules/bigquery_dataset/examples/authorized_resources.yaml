@@ -15,7 +15,7 @@
 values:
   module.bigquery-dataset.google_bigquery_dataset.default:
     dataset_id: my-dataset
-    project_id: my-project
+    project: my-project
   module.bigquery-dataset.google_bigquery_dataset_access.authorized_views["auth_dataset_project_auth_dataset"]:
     dataset:
       dataset:
