@@ -24,6 +24,7 @@ variable "composer_config" {
       env_variables            = optional(map(string), {})
       image_version            = optional(string, "composer-2-airflow-2")
     }), {})
+    web_server_access_control = optional(map(string), {})
     workloads_config = optional(object({
       scheduler = optional(object({
         cpu        = optional(number, 0.5)
@@ -106,7 +107,6 @@ variable "network_config" {
       pods_range_name       = optional(string, "pods")
       services_range_name   = optional(string, "services")
     }), {})
-    # web_server_network_access_control = list(string)
   })
   nullable = false
   default  = {}

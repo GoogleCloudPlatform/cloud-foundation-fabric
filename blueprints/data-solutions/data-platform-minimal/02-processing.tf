@@ -50,12 +50,12 @@ locals {
   processing_subnet = (
     local.use_shared_vpc
     ? var.network_config.subnet_self_link
-    : module.processing-vpc.0.subnet_self_links["${var.region}/${var.prefix}-processing"]
+    : try(module.processing-vpc.0.subnet_self_links["${var.region}/${var.prefix}-processing"], null)
   )
   processing_vpc = (
     local.use_shared_vpc
     ? var.network_config.network_self_link
-    : module.processing-vpc.0.self_link
+    : try(module.processing-vpc.0.self_link, null)
   )
 }
 
@@ -101,7 +101,7 @@ module "processing-project" {
     host_project = var.network_config.host_project
     service_identity_iam = {
       "roles/compute.networkUser" = [
-        "cloudservices", "compute", "container-engine", "dataflow"
+        "cloudservices", "compute", "container-engine", "dataflow", "dataproc"
       ]
       "roles/composer.sharedVpcAgent" = [
         "composer"

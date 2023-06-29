@@ -109,6 +109,15 @@ resource "google_composer_environment" "processing-cmp-0" {
         kms_key_name = var.service_encryption_keys.composer
       }
     }
+    web_server_network_access_control {
+      dynamic "allowed_ip_range" {
+        for_each = var.composer_config.web_server_access_control
+        content {
+          value       = allowed_ip_range.key
+          description = allowed_ip_range.value
+        }
+      }
+    }
   }
   depends_on = [
     module.processing-project
