@@ -227,6 +227,9 @@ module "tenant-self-iac-gcs-outputs" {
   name          = "${each.key}-iac-outputs-0"
   prefix        = var.prefix
   versioning    = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.tenant-core-sa[each.key].iam_email]
+  }
 }
 
 module "tenant-self-iac-gcs-state" {
