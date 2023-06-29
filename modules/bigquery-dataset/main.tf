@@ -31,8 +31,8 @@ locals {
     )
   }
 
-  authorized_views    = merge(
-  { for access_key, view in local.identities_view: "${view["project_id"]}_${view["dataset_id"]}_${view["table_id"]}" => view.value },
+  authorized_views = merge(
+    { for access_key, view in local.identities_view : "${view["project_id"]}_${view["dataset_id"]}_${view["table_id"]}" => view.value },
   { for view in var.authorized_views : "${view["project_id"]}_${view["dataset_id"]}_${view["table_id"]}" => view })
   authorized_datasets = { for dataset in var.authorized_datasets : "${dataset["project_id"]}_${dataset["dataset_id"]}" => dataset }
   authorized_routines = { for routine in var.authorized_routines : "${routine["project_id"]}_${routine["dataset_id"]}_${routine["routine_id"]}" => routine }
