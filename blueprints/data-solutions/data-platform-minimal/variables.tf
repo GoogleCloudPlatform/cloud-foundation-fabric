@@ -24,6 +24,7 @@ variable "composer_config" {
       env_variables            = optional(map(string), {})
       image_version            = optional(string, "composer-2-airflow-2")
     }), {})
+    web_server_access_control = optional(map(string), {})
     workloads_config = optional(object({
       scheduler = optional(object({
         cpu        = optional(number, 0.5)
@@ -98,10 +99,7 @@ variable "network_config" {
   type = object({
     host_project      = optional(string)
     network_self_link = optional(string)
-    subnet_self_links = optional(object({
-      processing_transformation = string
-      processing_composer       = string
-    }), null)
+    subnet_self_link  = optional(string)
     composer_ip_ranges = optional(object({
       connection_subnetwork = optional(string)
       cloud_sql             = optional(string, "10.20.10.0/24")
@@ -109,7 +107,6 @@ variable "network_config" {
       pods_range_name       = optional(string, "pods")
       services_range_name   = optional(string, "services")
     }), {})
-    # web_server_network_access_control = list(string)
   })
   nullable = false
   default  = {}

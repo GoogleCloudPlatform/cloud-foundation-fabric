@@ -49,6 +49,7 @@ variable "dataproc_config" {
         num_instances    = number
         machine_type     = string
         min_cpu_platform = string
+        image_uri        = string
         disk_config = optional(object({
           boot_disk_type    = string
           boot_disk_size_gb = number

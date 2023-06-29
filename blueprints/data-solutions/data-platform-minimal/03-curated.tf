@@ -18,33 +18,41 @@ locals {
   cur_iam = {
     "roles/bigquery.dataOwner" = [module.processing-sa-0.iam_email]
     "roles/bigquery.dataViewer" = [
+      module.cur-sa-0.iam_email,
       local.groups_iam.data-analysts,
       local.groups_iam.data-engineers
     ]
     "roles/bigquery.jobUser" = [
-      module.processing-sa-0.iam_email,
+      module.processing-sa-0.iam_email, # Remove once bug is fixed. https://github.com/apache/airflow/issues/32106
+      module.cur-sa-0.iam_email,
       local.groups_iam.data-analysts,
       local.groups_iam.data-engineers
     ]
     "roles/datacatalog.tagTemplateViewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
+      module.cur-sa-0.iam_email,
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
     ]
     "roles/datacatalog.viewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
+      module.cur-sa-0.iam_email,
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
     ]
     "roles/storage.objectViewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
+      module.cur-sa-0.iam_email,
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
     ]
     "roles/storage.objectAdmin" = [module.processing-sa-0.iam_email]
   }
   cur_services = [
-    "iam.googleapis.com",
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
     "bigquerystorage.googleapis.com",
     "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
+    "iam.googleapis.com",
     "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com",
@@ -72,6 +80,19 @@ module "cur-project" {
   service_encryption_key_ids = {
     bq      = [var.service_encryption_keys.bq]
     storage = [var.service_encryption_keys.storage]
+  }
+}
+
+module "cur-sa-0" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.cur-project.project_id
+  prefix       = var.prefix
+  name         = "cur-sa-0"
+  display_name = "Data platform curated zone service account."
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = [
+      local.groups_iam.data-engineers
+    ]
   }
 }
 
