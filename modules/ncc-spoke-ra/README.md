@@ -40,7 +40,7 @@ module "spoke-ra" {
 ```hcl
 module "spoke-ra-a" {
   source     = "./fabric/modules/ncc-spoke-ra"
-  hub        = { name = "ncc-hub" }
+  hub        = { id = "projects/my-project/locations/global/hubs/ncc-hub" }
   name       = "spoke-ra-a"
   project_id = "my-project"
   region     = "europe-west1"
@@ -64,7 +64,7 @@ module "spoke-ra-a" {
 
 module "spoke-ra-b" {
   source     = "./fabric/modules/ncc-spoke-ra"
-  hub        = { name = "ncc-hub" }
+  hub        = { id = "projects/my-project/locations/global/hubs/ncc-hub" }
   name       = "spoke-ra-b"
   project_id = "my-project"
   region     = "europe-west3"
@@ -93,7 +93,7 @@ module "spoke-ra-b" {
 ```hcl
 module "spoke-ra" {
   source     = "./fabric/modules/ncc-spoke-ra"
-  hub        = { name = "ncc-hub" }
+  hub        = { id = "projects/my-project/locations/global/hubs/ncc-hub" }
   name       = "spoke-ra"
   project_id = "my-project"
   region     = "europe-west1"
@@ -132,7 +132,7 @@ module "spoke-ra" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [hub](variables.tf#L23) | The name of the NCC hub to create or use. | <code title="object&#40;&#123;&#10;  create      &#61; optional&#40;bool, false&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  name        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [hub](variables.tf#L23) | The id of the NCC hub to create or use. | <code title="object&#40;&#123;&#10;  create      &#61; optional&#40;bool, false&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  id        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [name](variables.tf#L32) | The name of the NCC spoke. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L37) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L42) | Region where the spoke is located. | <code>string</code> | ✓ |  |
