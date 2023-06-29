@@ -37,7 +37,7 @@ variable "access_identities" {
 }
 
 variable "authorized_datasets" {
-  description = "An array of datasets to be authorized on the dataset"
+  description = "An array of datasets to be authorized on the dataset."
   type = list(object({
     dataset_id = string,
     project_id = string,
@@ -46,7 +46,7 @@ variable "authorized_datasets" {
 }
 
 variable "authorized_routines" {
-  description = "An array of authorized routine to be authorized on the dataset"
+  description = "An array of authorized routine to be authorized on the dataset."
   type = list(object({
     project_id = string,
     dataset_id = string,
@@ -56,7 +56,7 @@ variable "authorized_routines" {
 }
 
 variable "authorized_views" {
-  description = "An array of views to be authorized for the dataset"
+  description = "An array of views to be authorized for the dataset."
   type = list(object({
     dataset_id = string,
     project_id = string,
