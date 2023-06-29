@@ -52,8 +52,9 @@ locals {
         self = module.tenant-self-folder[k].id
         top  = module.tenant-top-folder[k].id
       }
-      shortname = k
-      prefix    = "${var.prefix}-${k}"
+      shortname  = k
+      prefix     = "${var.prefix}-${k}"
+      tag_values = { for k, v in module.organization.tag_values : k => v.id }
     })
   }
 }
