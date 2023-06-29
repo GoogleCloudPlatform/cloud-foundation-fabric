@@ -80,7 +80,7 @@ module "bigquery-dataset" {
     {
       project_id = "auth_routine_project"
       dataset_id = "auth_routine_dataset"
-      routine_id   = "auth_routine"
+      routine_id = "auth_routine"
     }
   ]
 }
@@ -107,12 +107,12 @@ module "bigquery-dataset" {
     }
   ]
   access = {
-      view_2         = { role = "READER", type = "view" }
-      view_3         = { role = "READER", type = "view" }
+    view_2 = { role = "READER", type = "view" }
+    view_3 = { role = "READER", type = "view" }
   }
   access_identities = {
-      view_2         = "view_project|view_dataset|view_id_2"
-      view_3         = "view_project|view_dataset|view_id_3"
+    view_2 = "view_project|view_dataset|view_id_2"
+    view_3 = "view_project|view_dataset|view_id_3"
   }
 }
 # tftest modules=1 resources=4 inventory=authorized_resources_views.yaml
