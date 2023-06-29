@@ -25,6 +25,7 @@ The following diagram is a high level reference of the resources created and man
   - [Running the stage](#running-the-stage)
 - [Customizations](#customizations)
   - [Secure tags](#secure-tags)
+  - [Lightweight multitenancy](#lightweight-multitenancy)
   - [Team folders](#team-folders)
   - [Organization Policies](#organization-policies)
   - [IAM](#iam)
@@ -165,6 +166,93 @@ tags = {
   }
 }
 ```
+
+### Lightweight multitenancy
+
+If the organization needs to support tenants without the full complexity and separation offered by our [full multitenant support](../../stages-multitenant/), this stage offers a simplified setup which is suitable for cases where tenants have less autonomy, and don't need to implement FAST stages inside their reserved partition.
+
+This mode is activated by defining tenants in the `tenants` variable, while IAM configurations that apply to every tenant can be optionally set in the `tenants_config` variable.
+
+The resulting setup provides a new "Tenants" branch in the hierarchy with one second-level folder for each tenant, and additional folders inside it to host tenant resources managed from the central team, and tenant resources managed by the tenant itself. Automation resources are provided for both teams.
+
+This allows subsequent Terraform stages to create network resources for each tenant which are centrally managed and connected to central networking, and tenants themselves to optionally manage their own networking and application projects.
+
+This is a high level diagram of the design described above.
+
+```mermaid
+%%{init: {'theme':'base'}}%%
+classDiagram
+    Organization -- Tenants_root~📁~
+    Organization -- org_iac
+    Tenants_root~📁~ -- Tenant_0_root~📁~
+    Tenants_root~📁~ -- Tenant_1_root~📁~
+    Tenant_0_root~📁~ -- Tenant_0_core~📁~
+    Tenant_0_root~📁~ -- Tenant_0_self~📁~
+    Tenant_0_self~📁~ -- tenant0_iac
+    Tenant_1_root~📁~ -- Tenant_1_core~📁~
+    Tenant_1_root~📁~ -- Tenant_1_self~📁~
+    Tenant_1_self~📁~ -- tenant1_iac
+    class org_iac["org_iac (from stage 0)"] {
+        - GCS buckets
+        - service accounts
+    }
+    class Tenants_root~📁~ {
+        - IAM bindings()
+    }
+    class Tenant_0_root~📁~ {
+        - IAM bindings()
+    }
+    class Tenant_0_core~📁~ {
+        - IAM bindings()
+    }
+    class Tenant_0_self~📁~ {
+        - IAM bindings()
+    }
+    class tenant0_iac {
+        - GCS buckets
+        - service account
+        - IAM bindings()
+    }
+    class Tenant_1_root~📁~ {
+        - IAM bindings()
+    }
+    class Tenant_1_core~📁~ {
+        - IAM bindings()
+    }
+    class Tenant_1_self~📁~ {
+        - IAM bindings()
+    }
+    class tenant1_iac {
+        - GCS buckets
+        - service account
+        - IAM bindings()
+    }
+```
+
+This is an example that shows how to populate the relevant variables.
+
+```hcl
+tenants = {
+  tn0 = {
+    admin_group_email = "tn-0-admins@example.org"
+    descriptive_name  = "Tenant 0"
+    # an optional billing account and org can be specified for the tenant
+  }
+  tnq = {
+    admin_group_email = "tn-1-admins@example.org"
+    descriptive_name  = "Tenant 1"
+  }
+}
+tenants_config = {
+  core_folder_roles = [
+    "roles/compute.instanceAdmin.v1",
+    "organizations/1234567890/roles/tenantLoadBalancerAdmin"
+  ]
+  top_folder_roles = ["roles/logging.admin", "roles/monitoring.admin"]
+}
+```
+
+Providers and tfvars files will be created for each tenant.
 
 ### Team folders
 
