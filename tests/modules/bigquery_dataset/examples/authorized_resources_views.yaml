@@ -16,22 +16,21 @@ values:
   module.bigquery-dataset.google_bigquery_dataset.default:
     dataset_id: my-dataset
     project_id: my-project
-  module.bigquery-dataset.google_bigquery_dataset_access.authorized_views["auth_dataset_project_auth_dataset"]:
-    dataset:
-      dataset:
-        dataset_id: view_project
-        project_id: view_dataset
-      target_types: ["VIEWS"]
-  module.bigquery-dataset.google_bigquery_dataset_access.authorized_routines["auth_routine_project_auth_routine_dataset_auth_routine"]:
-    routine:
-      dataset_id: auth_dataset_project
-      project_id: auth_dataset
-      routine_id: auth_routine
-  module.bigquery-dataset.google_bigquery_dataset_access.authorized_datasets["view_project_view_dataset_view_id"]:
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_datasets["view_project_view_dataset_view_id_1"]:
     view:
       dataset_id: view_dataset
       project_id: view_project
-      table_id: view_id
+      table_id: view_id_1
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_datasets["view_project_view_dataset_view_id_2"]:
+    view:
+      dataset_id: view_dataset
+      project_id: view_project
+      table_id: view_id_2
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_datasets["view_project_view_dataset_view_id_3"]:
+    view:
+      dataset_id: view_dataset
+      project_id: view_project
+      table_id: view_id_3
 
 counts:
   google_bigquery_dataset: 1

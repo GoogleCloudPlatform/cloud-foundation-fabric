@@ -87,7 +87,36 @@ module "bigquery-dataset" {
 # tftest modules=1 resources=4 inventory=authorized_resources.yaml
 ```
 
-Authorized views can be specified both using the standard `access` options and the `authorized_views` blocks. 
+Authorized views can be specified both using the standard `access` options and the `authorized_views` blocks. The example configuration below uses both blocks will create a dataset with three authorized views `view_id_1`, `view_id_2`, and `view_id_3`.
+
+```hcl
+module "bigquery-dataset" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "my-project"
+  id         = "my-dataset"
+  authorized_views = [
+    {
+      project_id = "view_project"
+      dataset_id = "view_dataset"
+      table_id   = "view_id_1"
+    },
+    {
+      project_id = "view_project"
+      dataset_id = "view_dataset"
+      table_id   = "view_id_2"
+    }
+  ]
+  access = {
+      view_1         = { role = "READER", type = "view" }
+      view_2         = { role = "READER", type = "view" }
+  }
+  access_identities = {
+      view_1         = "view_project|view_dataset|view_id_2"
+      view_2         = "view_project|view_dataset|view_id_3"
+  }
+}
+# tftest modules=1 resources=4 inventory=authorized_resources_views.yaml
+```
 
 ### Dataset options
 
