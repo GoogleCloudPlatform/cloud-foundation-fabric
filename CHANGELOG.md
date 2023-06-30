@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1483](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1483)] Updating a few files to fix typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-06-30 05:55:32+00:00 -->
+- [[#1474](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1474)] data-platform-minimal - support web_server_network_access_control ([kthhrv](https://github.com/kthhrv)) <!-- 2023-06-29 16:38:19+00:00 -->
+- [[#1482](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1482)] Add region to quota monitor cloud function ([ludoo](https://github.com/ludoo)) <!-- 2023-06-29 11:02:57+00:00 -->
+- [[#1475](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1475)] Minimal Data Platform - Shared VPC ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-28 19:58:03+00:00 -->
+- [[#1473](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1473)] Improve Minimal Data Platform Blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-28 07:05:49+00:00 -->
 - [[#1468](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1468)] Dependencies update for API Gateway blueprint ([apichick](https://github.com/apichick)) <!-- 2023-06-27 06:30:35+00:00 -->
 - [[#1469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1469)] Bump semver and @google-cloud/storage in /blueprints/gke/binauthz/image ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-06-26 13:03:48+00:00 -->
 - [[#1466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1466)] **incompatible change:** Rename network load balancer modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 07:50:11+00:00 -->
@@ -29,6 +34,8 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1483](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1483)] Updating a few files to fix typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-06-30 05:55:32+00:00 -->
+- [[#1473](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1473)] Improve Minimal Data Platform Blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2023-06-28 07:05:49+00:00 -->
 - [[#1466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1466)] **incompatible change:** Rename network load balancer modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 07:50:11+00:00 -->
 - [[#1450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1450)] Split Cloud Function module in separate v1 and v2 modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-19 10:50:36+00:00 -->
 - [[#1444](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1444)] Fixing typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-06-16 06:00:57+00:00 -->
@@ -38,6 +45,10 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1487](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1487)] Fix primary gke/dp ranges in FAST subnets ([juliocc](https://github.com/juliocc)) <!-- 2023-06-30 18:11:43+00:00 -->
+- [[#1478](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1478)] FAST: short_name_is_prefix for multi-tenant ([drebes](https://github.com/drebes)) <!-- 2023-06-30 07:49:26+00:00 -->
+- [[#1483](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1483)] Updating a few files to fix typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-06-30 05:55:32+00:00 -->
+- [[#1477](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1477)]  Changing the IP range of pods from 100.64.48.0/20 to 100.65.16.0/20 Fixes #1461 ([arvindag07](https://github.com/arvindag07)) <!-- 2023-06-29 16:57:53+00:00 -->
 - [[#1466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1466)] **incompatible change:** Rename network load balancer modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 07:50:11+00:00 -->
 - [[#1446](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1446)] fixup(project-factory): Use the correct KMS Service Agents attribute … ([alloveras](https://github.com/alloveras)) <!-- 2023-06-19 23:53:09+00:00 -->
 - [[#1445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1445)] Bump TF version in all workflow templates to coincide with module requirements ([kthhrv](https://github.com/kthhrv)) <!-- 2023-06-16 07:39:28+00:00 -->
@@ -50,6 +61,11 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1486)] Allow external editing of group instances in lb modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-30 17:34:10+00:00 -->
+- [[#1480](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1480)] Add bigquery authorized resources ([thinhha](https://github.com/thinhha)) <!-- 2023-06-30 16:44:58+00:00 -->
+- [[#1485](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1485)] **incompatible change:** Align group names in lb modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-30 10:18:07+00:00 -->
+- [[#1456](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1456)] add missing variable image_uri ([jose-bermudez-digitalfemsa](https://github.com/jose-bermudez-digitalfemsa)) <!-- 2023-06-28 18:24:44+00:00 -->
+- [[#1471](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1471)] Add ToCs to resource manager modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-27 09:36:29+00:00 -->
 - [[#1466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1466)] **incompatible change:** Rename network load balancer modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 07:50:11+00:00 -->
 - [[#1467](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1467)] Add support for resource policies to compute vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-06-26 06:49:06+00:00 -->
 - [[#1439](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1439)] modules/vpc-sc: google_access_context_manager_service_perimeter add support for method_selectors/permission ([LudovicEmo](https://github.com/LudovicEmo)) <!-- 2023-06-25 06:45:37+00:00 -->
