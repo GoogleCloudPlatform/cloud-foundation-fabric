@@ -58,7 +58,7 @@ output "network" {
 }
 
 output "projects" {
-  description = "GCP Projects informations."
+  description = "GCP Projects information."
   value = {
     project_number = {
       common     = module.common-project.number

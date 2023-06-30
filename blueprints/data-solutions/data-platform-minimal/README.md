@@ -301,7 +301,7 @@ The application layer is out of scope of this script. As a demo purpuse only, on
 | [gcs_buckets](outputs.tf#L38) | GCS buckets. |  |
 | [kms_keys](outputs.tf#L47) | Cloud MKS keys. |  |
 | [network](outputs.tf#L52) | VPC network. |  |
-| [projects](outputs.tf#L60) | GCP Projects informations. |  |
+| [projects](outputs.tf#L60) | GCP Projects information. |  |
 | [service_accounts](outputs.tf#L78) | Service account created. |  |
 
 <!-- END TFDOC -->
