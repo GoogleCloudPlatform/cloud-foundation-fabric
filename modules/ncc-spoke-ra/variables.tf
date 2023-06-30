@@ -29,7 +29,7 @@ variable "hub" {
     name        = optional(string)
   })
   validation {
-    condition     = var.hub.create && var.hub.name != null || !var.hub.create && var.hub.id != null
+    condition     = var.hub.create && var.hub.name != null || var.hub.create == false && var.hub.id != null
     error_message = "Name is required for configuring new ncc hub while referencing existing hub requires id."
   }
 }
