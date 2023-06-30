@@ -74,7 +74,7 @@ output "kms_keys" {
 }
 
 output "projects" {
-  description = "GCP Projects informations."
+  description = "GCP Projects information."
   value = {
     project_number = {
       dwh-landing      = module.dwh-lnd-project.number,

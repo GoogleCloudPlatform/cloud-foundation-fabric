@@ -60,7 +60,7 @@ output "kms_keys" {
 }
 
 output "projects" {
-  description = "GCP Projects informations."
+  description = "GCP Projects information."
   value       = module.data-platform.projects
 }
 
