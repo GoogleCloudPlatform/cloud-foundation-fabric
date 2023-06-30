@@ -47,13 +47,13 @@ output "forwarding_rule_self_link" {
 output "group_self_links" {
   description = "Optional unmanaged instance group self links."
   value = {
-    for k, v in google_compute_instance_group.unmanaged : k => v.self_link
+    for k, v in google_compute_instance_group.default : k => v.self_link
   }
 }
 
 output "groups" {
   description = "Optional unmanaged instance group resources."
-  value       = google_compute_instance_group.unmanaged
+  value       = google_compute_instance_group.default
 }
 
 output "health_check" {
