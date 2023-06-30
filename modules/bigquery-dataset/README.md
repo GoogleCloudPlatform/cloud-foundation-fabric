@@ -56,18 +56,19 @@ module "bigquery-dataset" {
 
 ### Authorized Views, Datasets, and Routines
 
-You can specify authorized views, datasets, and routines via the `authorized_views`, `authorized_datasets` and `authorized_routines` variables, respectively.
+You can specify authorized [views](https://cloud.google.com/bigquery/docs/authorized-views), [datasets](https://cloud.google.com/bigquery/docs/authorized-datasets?hl=en), and [routines](https://cloud.google.com/bigquery/docs/authorized-routines) via the `authorized_views`, `authorized_datasets` and `authorized_routines` variables, respectively.
 
 ```hcl
-module "bigquery-dataset" {
+// Create private BigQuery dataset that will not be publicly accessible, except via the authorized BigQuery resources
+module "bigquery-dataset-private" {
   source     = "./fabric/modules/bigquery-dataset"
-  project_id = "my-project"
-  id         = "my-dataset"
+  project_id = "private_project"
+  id         = "private_dataset"
   authorized_views = [
     {
-      project_id = "view_project"
-      dataset_id = "view_dataset"
-      table_id   = "view_id"
+      project_id = "auth_view_project"
+      dataset_id = "auth_view_dataset"
+      table_id   = "auth_view"
     }
   ]
   authorized_datasets = [
@@ -84,7 +85,58 @@ module "bigquery-dataset" {
     }
   ]
 }
-# tftest modules=1 resources=4 inventory=authorized_resources.yaml
+
+// Create authorized view in a public dataset
+module "bigquery-authorized-views-dataset-public" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "auth_view_project"
+  id         = "auth_view_dataset"
+  views = {
+    auth_view = {
+      friendly_name       = "Public"
+      labels              = {}
+      query               = "SELECT * FROM `private_project.private_dataset.private_table`"
+      use_legacy_sql      = false
+      deletion_protection = true
+    }
+  }
+  depends_on = [module.bigquery-dataset-private]
+}
+
+// Create public authorized dataset
+module "bigquery-authorized-dataset-public" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "auth_dataset_project"
+  id         = "auth_dataset"
+  depends_on = [module.bigquery-dataset-private]
+}
+
+// Create public authorized routine
+module "bigquery-authorized-authorized-routine-dataset-public" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "auth_routine_project"
+  id         = "auth_routine_dataset"
+  depends_on = [module.bigquery-dataset-private]
+}
+
+resource "google_bigquery_routine" "public-routine" {
+  dataset_id      = module.bigquery-authorized-authorized-routine-dataset-public.dataset_id
+  routine_id      = "auth_routine"
+  routine_type    = "TABLE_VALUED_FUNCTION"
+  language        = "SQL"
+  definition_body = <<-EOS
+    SELECT 1 + value AS value
+  EOS
+  arguments {
+    name          = "value"
+    argument_kind = "FIXED_TYPE"
+    data_type     = jsonencode({ "typeKind" = "INT64" })
+  }
+  return_table_type = jsonencode({ "columns" = [
+    { "name" = "value", "type" = { "typeKind" = "INT64" } },
+  ] })
+}
+# tftest modules=4 resources=9 inventory=authorized_resources.yaml
 ```
 
 Authorized views can be specified both using the standard `access` options and the `authorized_views` blocks. The example configuration below uses both blocks, and will create a dataset with three authorized views `view_id_1`, `view_id_2`, and `view_id_3`.
