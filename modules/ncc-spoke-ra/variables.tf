@@ -21,7 +21,7 @@ variable "data_transfer" {
 }
 
 variable "hub" {
-  description = "The name of the NCC hub to create or the id for an existing hub to use."
+  description = "The NCC hub. You should either provide an existing hub id or a hub name if create is true."
   type = object({
     create      = optional(bool, false)
     description = optional(string)

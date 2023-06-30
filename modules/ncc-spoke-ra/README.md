@@ -132,7 +132,7 @@ module "spoke-ra" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [hub](variables.tf#L23) | The name of the NCC hub to create or the id for an existing hub to use. | <code title="object&#40;&#123;&#10;  create      &#61; optional&#40;bool, false&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  id          &#61; optional&#40;string&#41;&#10;  name        &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [hub](variables.tf#L23) | The NCC hub. You should either provide an existing hub id or a hub name if create is true. | <code title="object&#40;&#123;&#10;  create      &#61; optional&#40;bool, false&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  id          &#61; optional&#40;string&#41;&#10;  name        &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [name](variables.tf#L37) | The name of the NCC spoke. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L42) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L47) | Region where the spoke is located. | <code>string</code> | ✓ |  |
