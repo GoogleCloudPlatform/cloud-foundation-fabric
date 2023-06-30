@@ -100,7 +100,6 @@ module "bigquery-authorized-views-dataset-public" {
       deletion_protection = true
     }
   }
-  depends_on = [module.bigquery-dataset-private]
 }
 
 // Create public authorized dataset
@@ -108,7 +107,6 @@ module "bigquery-authorized-dataset-public" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "auth_dataset_project"
   id         = "auth_dataset"
-  depends_on = [module.bigquery-dataset-private]
 }
 
 // Create public authorized routine
@@ -116,7 +114,6 @@ module "bigquery-authorized-authorized-routine-dataset-public" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "auth_routine_project"
   id         = "auth_routine_dataset"
-  depends_on = [module.bigquery-dataset-private]
 }
 
 resource "google_bigquery_routine" "public-routine" {
