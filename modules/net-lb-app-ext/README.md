@@ -776,7 +776,8 @@ module "glb-0" {
 | name | description | resources |
 |---|---|---|
 | [backend-service.tf](./backend-service.tf) | Backend service resources. | <code>google_compute_backend_service</code> |
-| [backends.tf](./backends.tf) | Backend groups and backend buckets resources. | <code>google_compute_backend_bucket</code> · <code>google_compute_instance_group</code> |
+| [backends.tf](./backends.tf) | Backend groups and backend buckets resources. | <code>google_compute_backend_bucket</code> |
+| [groups.tf](./groups.tf) | None | <code>google_compute_instance_group</code> |
 | [health-check.tf](./health-check.tf) | Health check resource. | <code>google_compute_health_check</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_global_forwarding_rule</code> · <code>google_compute_managed_ssl_certificate</code> · <code>google_compute_ssl_certificate</code> · <code>google_compute_target_http_proxy</code> · <code>google_compute_target_https_proxy</code> |
 | [negs.tf](./negs.tf) | NEG resources. | <code>google_compute_global_network_endpoint</code> · <code>google_compute_global_network_endpoint_group</code> · <code>google_compute_network_endpoint</code> · <code>google_compute_network_endpoint_group</code> · <code>google_compute_region_network_endpoint_group</code> |
