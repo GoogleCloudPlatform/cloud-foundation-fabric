@@ -33,7 +33,7 @@ values:
     project: my-project
     role: OWNER
     user_by_email: ludo@ludomagno.net
-  module.bigquery-dataset.google_bigquery_dataset_access.views["view_1"]:
+  module.bigquery-dataset.google_bigquery_dataset_access.authorized_views["my-project_my-dataset_my-table"]:
     dataset_id: my-dataset
     project: my-project
     view:

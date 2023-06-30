@@ -23,11 +23,13 @@ output "dataset_id" {
   description = "Dataset id."
   value       = google_bigquery_dataset.default.dataset_id
   depends_on = [
+    google_bigquery_dataset_access.authorized_datasets,
+    google_bigquery_dataset_access.authorized_routines,
+    google_bigquery_dataset_access.authorized_views,
     google_bigquery_dataset_access.domain,
     google_bigquery_dataset_access.group_by_email,
     google_bigquery_dataset_access.special_group,
-    google_bigquery_dataset_access.user_by_email,
-    google_bigquery_dataset_access.views
+    google_bigquery_dataset_access.user_by_email
   ]
 }
 
@@ -35,11 +37,13 @@ output "id" {
   description = "Fully qualified dataset id."
   value       = google_bigquery_dataset.default.id
   depends_on = [
+    google_bigquery_dataset_access.authorized_datasets,
+    google_bigquery_dataset_access.authorized_routines,
+    google_bigquery_dataset_access.authorized_views,
     google_bigquery_dataset_access.domain,
     google_bigquery_dataset_access.group_by_email,
     google_bigquery_dataset_access.special_group,
-    google_bigquery_dataset_access.user_by_email,
-    google_bigquery_dataset_access.views
+    google_bigquery_dataset_access.user_by_email
   ]
 }
 
@@ -47,11 +51,13 @@ output "self_link" {
   description = "Dataset self link."
   value       = google_bigquery_dataset.default.self_link
   depends_on = [
+    google_bigquery_dataset_access.authorized_datasets,
+    google_bigquery_dataset_access.authorized_routines,
+    google_bigquery_dataset_access.authorized_views,
     google_bigquery_dataset_access.domain,
     google_bigquery_dataset_access.group_by_email,
     google_bigquery_dataset_access.special_group,
-    google_bigquery_dataset_access.user_by_email,
-    google_bigquery_dataset_access.views
+    google_bigquery_dataset_access.user_by_email
   ]
 }
 
