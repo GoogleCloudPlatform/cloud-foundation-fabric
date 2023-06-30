@@ -211,7 +211,7 @@ You can find examples in the `[demo](../../../../blueprints/data-solutions/data-
 | [demo_commands](outputs.tf#L47) | Demo commands. |  |  |
 | [gcs_buckets](outputs.tf#L52) | GCS buckets. |  |  |
 | [kms_keys](outputs.tf#L57) | Cloud MKS keys. |  |  |
-| [projects](outputs.tf#L62) | GCP Projects informations. |  |  |
+| [projects](outputs.tf#L62) | GCP Projects information. |  |  |
 | [vpc_network](outputs.tf#L67) | VPC network. |  |  |
 | [vpc_subnet](outputs.tf#L72) | VPC subnetworks. |  |  |
 
