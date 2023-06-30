@@ -59,12 +59,6 @@ module "cf" {
     source_dir  = "${path.module}/cf"
     output_path = var.bundle_path
   }
-  # https://github.com/hashicorp/terraform-provider-archive/issues/40
-  # https://issuetracker.google.com/issues/155215191
-  environment_variables = {
-    USE_WORKER_V2                         = "true"
-    PYTHON37_DRAIN_LOGS_ON_CRASH_WAIT_SEC = "5"
-  }
   service_account_create = true
   trigger_config = {
     event    = "google.pubsub.topic.publish"
@@ -78,14 +72,14 @@ resource "google_cloud_scheduler_job" "job" {
   name      = var.name
   schedule  = var.schedule_config
   time_zone = "UTC"
-
   pubsub_target {
     attributes = {}
     topic_name = module.pubsub.topic.id
     data = base64encode(jsonencode({
-      gce_project = var.quota_config.projects
-      gce_region  = var.quota_config.regions
-      keywords    = var.quota_config.filters
+      monitoring_project = var.project_id
+      gce_projects       = var.quota_config.projects
+      gce_regions        = var.quota_config.regions
+      keywords           = var.quota_config.filters
     }))
   }
 }

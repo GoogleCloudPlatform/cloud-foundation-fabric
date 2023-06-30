@@ -38,7 +38,6 @@ import googleapiclient.discovery
 import googleapiclient.errors
 
 _BATCH_SIZE = 5
-_METRIC_KIND = ga_metric.MetricDescriptor.MetricKind.GAUGE
 _METRIC_TYPE_STEM = 'custom.googleapis.com/quota/'
 
 _USAGE = "usage"
@@ -63,7 +62,7 @@ def _add_series(project_id, series, client=None):
   try:
     client.create_time_series(name=project_name, time_series=series)
   except GoogleAPIError as e:
-    raise RuntimeError('Error from monitoring API: %s' % e)
+    raise RuntimeError(f'Error from monitoring API: {e.args[0]}')
 
 
 def _configure_logging(verbose=True):
@@ -96,8 +95,8 @@ def _fetch_quotas(project, region='global', compute=None):
     return resp['quotas']
   except (GoogleAPIError, googleapiclient.errors.HttpError) as e:
     logging.debug('API Error: %s', e, exc_info=True)
-    raise RuntimeError('Error fetching quota (project: %s, region: %s)' %
-                       (project, region))
+    raise RuntimeError(
+        f'Error fetching quota ({project}/{region}): {e.args[0]}')
 
 
 def _get_series(metric_labels, value, metric_type, timestamp, dt=None):
@@ -131,7 +130,7 @@ def _get_series(metric_labels, value, metric_type, timestamp, dt=None):
 
 
 def _quota_to_series_triplet(project, region, quota):
-  """Convert API quota objects to three Stackdriver monitoring time series: usage, limit and utilization 
+  """Convert API quota objects to three Stackdriver monitoring time series: usage, limit and utilization
 
   Args:
     project: set in converted time series labels
@@ -173,28 +172,25 @@ def main_cli(monitoring_project=None, gce_project=None, gce_region=None,
   """
   try:
     _main(monitoring_project, gce_project, gce_region, verbose, keywords)
-  except RuntimeError:
-    logging.exception('exception raised')
+  except RuntimeError as e:
+    logging.exception(f'exception raised: {e.args[0]}')
 
 
 def main(event, context):
   """Cloud Function entry point."""
   try:
     data = json.loads(base64.b64decode(event['data']).decode('utf-8'))
-    _main(os.environ.get('GCP_PROJECT'), **data)
-  # uncomment once https://issuetracker.google.com/issues/155215191 is fixed
-  # except RuntimeError:
-  #  raise
-  except Exception:
-    logging.exception('exception in cloud function entry point')
+    _main(**data)
+  except RuntimeError:
+    raise
 
 
-def _main(monitoring_project, gce_project=None, gce_region=None, verbose=False,
-          keywords=None):
+def _main(monitoring_project, gce_projects=None, gce_regions=None,
+          verbose=False, keywords=None):
   """Module entry point used by cli and cloud function wrappers."""
   _configure_logging(verbose=verbose)
-  gce_projects = gce_project or [monitoring_project]
-  gce_regions = gce_region or ['global']
+  gce_projects = gce_projects or [monitoring_project]
+  gce_regions = gce_regions or ['global']
   keywords = set(keywords or [])
   logging.debug('monitoring project %s', monitoring_project)
   logging.debug('projects %s regions %s', gce_projects, gce_regions)
