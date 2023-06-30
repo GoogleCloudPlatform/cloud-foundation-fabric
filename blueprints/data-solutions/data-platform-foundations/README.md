@@ -282,7 +282,7 @@ You can find examples in the `[demo](./demo)` folder.
 | [df_template](outputs.tf#L49) | Dataflow template image and template details. |  |
 | [gcs-buckets](outputs.tf#L58) | GCS buckets. |  |
 | [kms_keys](outputs.tf#L71) | Cloud MKS keys. |  |
-| [projects](outputs.tf#L76) | GCP Projects informations. |  |
+| [projects](outputs.tf#L76) | GCP Projects information. |  |
 | [vpc_network](outputs.tf#L102) | VPC network. |  |
 | [vpc_subnet](outputs.tf#L111) | VPC subnetworks. |  |
 

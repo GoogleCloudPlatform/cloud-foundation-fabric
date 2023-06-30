@@ -630,7 +630,7 @@ All notable changes to this project will be documented in this file.
 - [[#1006](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1006)] Add settings for autoscaling to Bigtable module. ([iht](https://github.com/iht)) <!-- 2022-11-24 15:59:32+00:00 -->
 - [[#999](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/999)] Default nodepool creation fix ([astianseb](https://github.com/astianseb)) <!-- 2022-11-22 18:17:58+00:00 -->
 - [[#1005](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1005)] Only set partitioned table when sink type is bigquery ([juliocc](https://github.com/juliocc)) <!-- 2022-11-22 16:13:53+00:00 -->
-- [[#997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/997)] Add BigQuery subcriptions to Pubsub module. ([iht](https://github.com/iht)) <!-- 2022-11-21 17:26:52+00:00 -->
+- [[#997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/997)] Add BigQuery subscriptions to Pubsub module. ([iht](https://github.com/iht)) <!-- 2022-11-21 17:26:52+00:00 -->
 - [[#995](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/995)] Push container images to GitHub instead of Google Container Registry ([kunzese](https://github.com/kunzese)) <!-- 2022-11-21 14:53:52+00:00 -->
 - [[#994](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/994)] Add schemas to Pubsub topic module. ([iht](https://github.com/iht)) <!-- 2022-11-20 16:56:03+00:00 -->
 - [[#979](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/979)] Add network tags support to the organization module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2022-11-18 14:56:29+00:00 -->
@@ -902,8 +902,8 @@ All notable changes to this project will be documented in this file.
 - added `environment` and `context` resource management tags
 - use resource management tags to restrict scope of roles/orgpolicy.policyAdmin
 - use `xpnServiceAdmin` (custom role) for stage 3 service accounts that need to attach to a shared VPC
-- simplify and standarize ourputs from each stage
-- standarize names of projects, service accounts and buckets
+- simplify and standardize ourputs from each stage
+- standardize names of projects, service accounts and buckets
 - switch to folder-level `xpnAdmin` and `xpnServiceAdmin`
 - moved networking projects to folder matching their environments
 

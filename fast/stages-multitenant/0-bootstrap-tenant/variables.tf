@@ -257,7 +257,7 @@ variable "tag_values" {
 }
 
 variable "tenant_config" {
-  description = "Tenant configuration. Short name must be 4 characters or less."
+  description = "Tenant configuration. Short name must be 4 characters or less. If `short_name_is_prefix` is true, short name must be 9 characters or less, and will be used as the prefix as is."
   type = object({
     descriptive_name = string
     groups = object({
@@ -266,7 +266,8 @@ variable "tenant_config" {
       gcp-network-admins  = optional(string)
       gcp-security-admins = optional(string)
     })
-    short_name = string
+    short_name           = string
+    short_name_is_prefix = optional(bool, false)
     fast_features = optional(object({
       data_platform   = optional(bool)
       gke             = optional(bool)
@@ -290,7 +291,7 @@ variable "tenant_config" {
     error_message = "Non-optional members must not be null."
   }
   validation {
-    condition     = length(var.tenant_config.short_name) < 5
+    condition     = (var.tenant_config.short_name_is_prefix && length(var.tenant_config.short_name) < 10) || length(var.tenant_config.short_name) < 5
     error_message = "Short name must be a string of 4 characters or less."
   }
 }

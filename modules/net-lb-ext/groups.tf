@@ -16,13 +16,14 @@
 
 # tfdoc:file:description Optional instance group resources.
 
-resource "google_compute_instance_group" "unmanaged" {
+resource "google_compute_instance_group" "default" {
   for_each    = var.group_configs
   project     = var.project_id
   zone        = each.value.zone
-  name        = each.key
-  description = "Terraform-managed."
+  name        = "${var.name}-${each.key}"
+  description = var.description
   instances   = each.value.instances
+
   dynamic "named_port" {
     for_each = each.value.named_ports
     content {
