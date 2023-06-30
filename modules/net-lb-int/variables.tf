@@ -89,7 +89,7 @@ variable "group_configs" {
   type = map(object({
     zone        = string
     description = optional(string, "Terraform managed.")
-    instances   = optional(list(string), [])
+    instances   = optional(list(string))
     named_ports = optional(map(number), {})
   }))
   default  = {}
