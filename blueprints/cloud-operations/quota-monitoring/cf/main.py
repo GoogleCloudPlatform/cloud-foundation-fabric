@@ -94,6 +94,7 @@ def _fetch_quotas(project, region='global', compute=None):
     resp = req.execute()
     return resp['quotas']
   except (GoogleAPIError, googleapiclient.errors.HttpError) as e:
+    logging.info(resp)
     logging.debug('API Error: %s', e, exc_info=True)
     raise RuntimeError(
         f'Error fetching quota ({project}/{region}): {e.args[0]}')
