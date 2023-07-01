@@ -46,9 +46,12 @@ variable "project_id" {
 variable "quota_config" {
   description = "Cloud function configuration."
   type = object({
-    filters  = optional(list(string))
+    exclude  = optional(list(string))
+    include  = optional(list(string))
     projects = optional(list(string))
     regions  = optional(list(string))
+    dry_run  = optional(bool, False)
+    verbose  = optional(bool, False)
   })
   nullable = false
   default  = {}

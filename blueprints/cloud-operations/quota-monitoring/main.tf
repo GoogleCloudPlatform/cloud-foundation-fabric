@@ -75,12 +75,10 @@ resource "google_cloud_scheduler_job" "job" {
   pubsub_target {
     attributes = {}
     topic_name = module.pubsub.topic.id
-    data = base64encode(jsonencode({
-      monitoring_project = var.project_id
-      gce_projects       = var.quota_config.projects
-      gce_regions        = var.quota_config.regions
-      keywords           = var.quota_config.filters
-    }))
+    data = base64encode(jsonencode(merge(
+      { monitoring_project = var.project_id },
+      var.quota_config
+    )))
   }
 }
 
@@ -97,7 +95,6 @@ resource "google_project_iam_member" "quota_viewer" {
   role     = "roles/servicemanagement.quotaViewer"
   member   = module.cf.service_account_iam_email
 }
-
 
 resource "google_monitoring_alert_policy" "alert_policy" {
   count        = var.alert_create ? 1 : 0

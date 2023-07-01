@@ -57,14 +57,13 @@ class Quota(_Quota):
         'metric': {
             'type': f'{BASE}/{self.metric.lower()}/{name}',
             'labels': {
-                'location': self.region
+                'location': self.region,
+                'project': self.project
             }
         },
         'resource': {
             'type': 'global',
-            'labels': {
-                'project_id': self.project,
-            }
+            'labels': {}
         },
         'metricKind':
             'GAUGE',
@@ -81,6 +80,8 @@ class Quota(_Quota):
     else:
       d['valueType'] = 'INT64'
       d['points'][0]['value'] = {'int64Value': value}
+    # remove this label if cardinality gets too high
+    d['metric']['labels']['value'] = f'{self.usage}/{self.limit}'
     return d
 
   @property
@@ -91,7 +92,7 @@ class Quota(_Quota):
       ratio = 0
     yield self._api_format('ratio', ratio)
     yield self._api_format('usage', self.usage)
-    yield self._api_format('limit', self.limit)
+    # yield self._api_format('limit', self.limit)
 
 
 def batched(iterable, n):
@@ -170,15 +171,17 @@ def get_quotas(project, region='global'):
 )
 @click.option('--regions', multiple=True,
               help='Regions (multiple). Defaults to "global" if not set.')
-@click.option('--filters', multiple=True,
-              help='Filter by quota name (multiple).')
+@click.option('--include', multiple=True,
+              help='Only include quotas starting with keyword (multiple).')
+@click.option('--exclude', multiple=True,
+              help='Exclude quotas starting with keyword (multiple).')
 @click.option('--dry-run', is_flag=True, help='Do not write metrics.')
 @click.option('--verbose', is_flag=True, help='Verbose output.')
-def main_cli(project_id=None, project_ids=None, regions=None, filters=None,
-             dry_run=False, verbose=False):
+def main_cli(project_id=None, project_ids=None, regions=None, include=None,
+             exclude=None, dry_run=False, verbose=False):
   'Fetch GCE quotas and writes them as custom metrics to Stackdriver.'
   try:
-    _main(project_id, project_ids, regions, filters, dry_run, verbose)
+    _main(project_id, project_ids, regions, include, exclude, dry_run, verbose)
   except RuntimeError as e:
     logging.exception(f'exception raised: {e.args[0]}')
 
@@ -192,37 +195,39 @@ def main(event, context):
     raise
 
 
-def _main(monitoring_project, gce_projects=None, gce_regions=None,
-          keywords=None, dry_run=False, verbose=False):
+def _main(monitoring_project, projects=None, regions=None, include=None,
+          exclude=None, dry_run=False, verbose=False):
   """Module entry point used by cli and cloud function wrappers."""
   configure_logging(verbose=verbose)
-  gce_projects = gce_projects or [monitoring_project]
-  gce_regions = gce_regions or ['global']
-  keywords = set(keywords or [])
-  logging.debug(f'monitoring project {monitoring_project}')
-  logging.debug(f'projects {gce_projects}, regions {gce_regions}')
-  logging.debug(f'keywords {keywords}')
+  projects = projects or [monitoring_project]
+  regions = regions or ['global']
+  include = set(include or [])
+  exclude = set(exclude or [])
+  for k in ('monitoring_project', 'projects', 'regions', 'include', 'exclude'):
+    logging.debug(f'{k} {locals().get(k)}')
   timeseries = []
-  logging.info(
-      f'get quotas ({len(gce_projects)} project {len(gce_regions)} regions)')
-  for project in gce_projects:
-    for region in gce_regions:
+  logging.info(f'get quotas ({len(projects)} project {len(regions)} regions)')
+  for project in projects:
+    for region in regions:
       logging.info(f'get quota for {project} in {region}')
       for quota in get_quotas(project, region):
-        if keywords and not any(k in quota.metric for k in keywords):
+        metric = quota.metric.lower()
+        if include and not any(metric.startswith(k) for k in include):
+          logging.info(f'skipping {project}:{region}:{metric} not included')
           continue
-        logging.debug(f'quota {quota}')
+        if exclude and any(metric.startswith(k) for k in exclude):
+          logging.info(f'skipping {project}:{region}:{metric} excluded')
+          continue
+        logging.debug(f'quota {project}:{region}:{metric}')
         timeseries += list(quota.timeseries)
   logging.info(f'{len(timeseries)} timeseries')
-  if dry_run:
-    from icecream import ic
   for batch in batched(timeseries, 30):
     data = list(batch)
     logging.info(f'sending {len(batch)} timeseries')
     if not dry_run:
-      write_timeseries(project, {'timeSeries': list(data)})
-    else:
-      ic(data)
+      write_timeseries(monitoring_project, {'timeSeries': list(data)})
+    elif verbose:
+      print(data)
   logging.info(f'{len(timeseries)} timeseries done (dry run {dry_run})')
 
 
