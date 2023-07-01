@@ -21,9 +21,10 @@ can be used to set alert policies or create charts.
 
 import base64
 import collections
+import datetime
+import itertools
 import json
 import logging
-import time
 import warnings
 
 import click
@@ -31,47 +32,80 @@ import google.auth
 
 from google.auth.transport.requests import AuthorizedSession
 
-BASE = 'custom.googleapis.com/quota/'
+BASE = 'custom.googleapis.com/quota'
 BATCH_SIZE = 5
 HTTP = AuthorizedSession(google.auth.default()[0])
 HTTP_HEADERS = {'content-type': 'application/json; charset=UTF-8'}
 URL_PROJECT = 'https://compute.googleapis.com/compute/v1/projects/{}'
 URL_REGION = 'https://compute.googleapis.com/compute/v1/projects/{}/regions/{}'
+URL_TS = 'https://monitoring.googleapis.com/v3/projects/{}/timeSeries'
 
+_Quota = collections.namedtuple('_Quota',
+                                'project region tstamp metric limit usage')
 HTTPRequest = collections.namedtuple(
     'HTTPRequest', 'url data headers', defaults=[{}, {
         'content-type': 'application/json; charset=UTF-8'
     }])
-Quota = collections.namedtuple('Quota', 'project region metric limit usage')
 
 
-def add_series(project_id, series):
-  """Write metrics series to Stackdriver.
+class Quota(_Quota):
+  'Compute quota.'
 
-  Args:
-    project_id: series will be written to this project id's account
-    series: the time series to be written, as a list of
-        monitoring_v3.types.TimeSeries instances
-    client: optional monitoring_v3.MetricServiceClient will be used
-        instead of obtaining a new one
-  """
-  logging.info(f'add_series {project_id}')
-  # client = client or monitoring_v3.MetricServiceClient()
-  # project_name = client.common_project_path(project_id)
-  # if isinstance(series, monitoring_v3.types.TimeSeries):
-  #   series = [series]
-  # try:
-  #   client.create_time_series(name=project_name, time_series=series)
-  # except GoogleAPIError as e:
-  #   raise RuntimeError(f'Error from monitoring API: {e.args[0]}')
+  def _api_format(self, name, value):
+    'Return a specific timeseries for this quota in API format.'
+    d = {
+        'metric': {
+            'type': f'{BASE}/{self.metric.lower()}/{name}',
+            'labels': {
+                'location': self.region
+            }
+        },
+        'resource': {
+            'type': 'global',
+            'labels': {
+                'project_id': self.project,
+            }
+        },
+        'metricKind':
+            'GAUGE',
+        'points': [{
+            'interval': {
+                'endTime': f'{self.tstamp.isoformat("T")}Z'
+            },
+            'value': {}
+        }]
+    }
+    if name == 'ratio':
+      d['valueType'] = 'DOUBLE'
+      d['points'][0]['value'] = {'doubleValue': value}
+    else:
+      d['valueType'] = 'INT64'
+      d['points'][0]['value'] = {'int64Value': value}
+    return d
+
+  @property
+  def timeseries(self):
+    try:
+      ratio = self.usage / float(self.limit)
+    except ZeroDivisionError:
+      ratio = 0
+    yield self._api_format('ratio', ratio)
+    yield self._api_format('usage', self.usage)
+    yield self._api_format('limit', self.limit)
+
+
+def batched(iterable, n):
+  'Batches data into lists of length n. The last batch may be shorter.'
+  # batched('ABCDEFG', 3) --> ABC DEF G
+  if n < 1:
+    raise ValueError('n must be at least one')
+  it = iter(iterable)
+  while (batch := list(itertools.islice(it, n))):
+    yield batch
 
 
 def configure_logging(verbose=True):
-  """Basic logging configuration.
-
-  Args:
-    verbose: enable verbose logging
-  """
+  'Basic logging configuration.'
   level = logging.DEBUG if verbose else logging.INFO
   logging.basicConfig(level=level)
   warnings.filterwarnings('ignore', r'.*end user credentials.*', UserWarning)
@@ -99,80 +133,33 @@ def fetch(request, delete=False):
   return json.loads(response.content)
 
 
-def get_quotas(project, region='global'):
-  """Fetch GCE per - project or per - region quotas from the API.
+def write_timeseries(project, data):
+  'Sends timeseries to the API.'
+  # try
+  logging.debug(f'write {len(data["timeSeries"])} timeseries')
+  try:
+    response = HTTP.post(URL_TS.format(project), headers=HTTP_HEADERS,
+                         data=json.dumps(data))
+  except google.auth.exceptions.RefreshError as e:
+    raise SystemExit(e.args[0])
+  if response.status_code != 200:
+    logging.critical(
+        f'response code {response.status_code} for URL {response.request.url}')
+    logging.critical(response.content.decode('utf8'))
+    logging.debug(data)
+    raise SystemExit(1)
+  return json.loads(response.content)
 
-  Args:
-    project: fetch global or regional quotas for this project id
-    region: which quotas to fetch, 'global' or region name
-    compute: optional instance of googleapiclient.discovery.build will be used
-        instead of obtaining a new one
-  """
-  logging.info(f'fetch_quotas {project} {region}')
+
+def get_quotas(project, region='global'):
+  'Fetch GCE per - project or per - region quotas from the API.'
   if region == 'global':
     request = HTTPRequest(URL_PROJECT.format(project))
   else:
     request = HTTPRequest(URL_REGION.format(project, region))
   resp = fetch(request)
   for quota in resp.get('quotas'):
-    yield Quota(project, region, **quota)
-
-
-def get_series(metric_labels, value, metric_type, timestamp):
-  """Create a Stackdriver monitoring time series from value and labels.
-
-  Args:
-    metric_labels: dict with labels that will be used in the time series
-    value: time series value
-    metric_type: which metric is this series for
-    dt: datetime.datetime instance used for the series end time
-  """
-  logging.info(f'get_series')
-  # series = monitoring_v3.types.TimeSeries()
-  # series.metric.type = metric_type
-  # series.resource.type = 'global'
-  # for label in metric_labels:
-  #   series.metric.labels[label] = metric_labels[label]
-  # point = monitoring_v3.types.Point()
-  # point.value.double_value = value
-
-  # seconds = int(timestamp)
-  # nanos = int((timestamp - seconds) * 10**9)
-  # interval = monitoring_v3.TimeInterval(
-  #     {"end_time": {
-  #         "seconds": seconds,
-  #         "nanos": nanos
-  #     }})
-  # point.interval = interval
-
-  # series.points.append(point)
-  # return series
-
-
-def quota_to_series_triplet(project, region, quota):
-  """Convert API quota objects to three Stackdriver monitoring time series: usage, limit and utilization
-
-  Args:
-    project: set in converted time series labels
-    region: set in converted time series labels
-    quota: quota object received from the GCE API
-  """
-  logging.info(f'quota_to_series_triplets {project} {region} {quota}')
-  # labels = dict()
-  # labels['project'] = project
-  # labels['region'] = region
-
-  # try:
-  #   utilization = quota['usage'] / float(quota['limit'])
-  # except ZeroDivisionError:
-  #   utilization = 0
-  # now = time.time()
-  # metric_type_prefix = _METRIC_TYPE_STEM + quota['metric'].lower() + '_'
-  # return [
-  #     _get_series(labels, quota['usage'], metric_type_prefix + _USAGE, now),
-  #     _get_series(labels, quota['limit'], metric_type_prefix + _LIMIT, now),
-  #     _get_series(labels, utilization, metric_type_prefix + _UTILIZATION, now),
-  # ]
+    yield Quota(project, region, datetime.datetime.utcnow(), **quota)
 
 
 @click.command()
@@ -185,16 +172,13 @@ def quota_to_series_triplet(project, region, quota):
               help='Regions (multiple). Defaults to "global" if not set.')
 @click.option('--filters', multiple=True,
               help='Filter by quota name (multiple).')
+@click.option('--dry-run', is_flag=True, help='Do not write metrics.')
 @click.option('--verbose', is_flag=True, help='Verbose output.')
 def main_cli(project_id=None, project_ids=None, regions=None, filters=None,
-             verbose=False):
-  """Fetch GCE quotas and writes them as custom metrics to Stackdriver.
-
-  If filters are specified as arguments, only quotas matching one of the
-  filters will be stored in Stackdriver.
-  """
+             dry_run=False, verbose=False):
+  'Fetch GCE quotas and writes them as custom metrics to Stackdriver.'
   try:
-    _main(project_id, project_ids, regions, filters, verbose)
+    _main(project_id, project_ids, regions, filters, dry_run, verbose)
   except RuntimeError as e:
     logging.exception(f'exception raised: {e.args[0]}')
 
@@ -209,7 +193,7 @@ def main(event, context):
 
 
 def _main(monitoring_project, gce_projects=None, gce_regions=None,
-          keywords=None, verbose=False):
+          keywords=None, dry_run=False, verbose=False):
   """Module entry point used by cli and cloud function wrappers."""
   configure_logging(verbose=verbose)
   gce_projects = gce_projects or [monitoring_project]
@@ -218,14 +202,28 @@ def _main(monitoring_project, gce_projects=None, gce_regions=None,
   logging.debug(f'monitoring project {monitoring_project}')
   logging.debug(f'projects {gce_projects}, regions {gce_regions}')
   logging.debug(f'keywords {keywords}')
-  quotas = []
+  timeseries = []
+  logging.info(
+      f'get quotas ({len(gce_projects)} project {len(gce_regions)} regions)')
   for project in gce_projects:
     for region in gce_regions:
+      logging.info(f'get quota for {project} in {region}')
       for quota in get_quotas(project, region):
-        if keywords and not any(k in quota['metric'] for k in keywords):
+        if keywords and not any(k in quota.metric for k in keywords):
           continue
         logging.debug(f'quota {quota}')
-        quotas.append((project, region, quota))
+        timeseries += list(quota.timeseries)
+  logging.info(f'{len(timeseries)} timeseries')
+  if dry_run:
+    from icecream import ic
+  for batch in batched(timeseries, 30):
+    data = list(batch)
+    logging.info(f'sending {len(batch)} timeseries')
+    if not dry_run:
+      write_timeseries(project, {'timeSeries': list(data)})
+    else:
+      ic(data)
+  logging.info(f'{len(timeseries)} timeseries done (dry run {dry_run})')
 
 
 if __name__ == '__main__':
