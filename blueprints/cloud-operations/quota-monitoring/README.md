@@ -47,9 +47,9 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 | [bundle_path](variables.tf#L23) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
 | [name](variables.tf#L29) | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;quota-monitor&#34;</code> |
 | [project_create](variables.tf#L35) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
-| [quota_config](variables.tf#L46) | Cloud function configuration. | <code title="object&#40;&#123;&#10;  filters  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  projects &#61; optional&#40;list&#40;string&#41;&#41;&#10;  regions  &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [region](variables.tf#L57) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [schedule_config](variables.tf#L63) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
+| [quota_config](variables.tf#L46) | Cloud function configuration. | <code title="object&#40;&#123;&#10;  exclude  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  include  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  projects &#61; optional&#40;list&#40;string&#41;&#41;&#10;  regions  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  dry_run  &#61; optional&#40;bool, false&#41;&#10;  verbose  &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [region](variables.tf#L60) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [schedule_config](variables.tf#L66) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
 
 <!-- END TFDOC -->
 ## Test

@@ -50,8 +50,8 @@ variable "quota_config" {
     include  = optional(list(string))
     projects = optional(list(string))
     regions  = optional(list(string))
-    dry_run  = optional(bool, False)
-    verbose  = optional(bool, False)
+    dry_run  = optional(bool, false)
+    verbose  = optional(bool, false)
   })
   nullable = false
   default  = {}
