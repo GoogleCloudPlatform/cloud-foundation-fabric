@@ -148,14 +148,15 @@ def write_timeseries(project, data):
 
 
 def get_quotas(project, region='global'):
-  'Fetch GCE per - project or per - region quotas from the API.'
+  'Fetch GCE per-project or per-region quotas from the API.'
   if region == 'global':
     request = HTTPRequest(URL_PROJECT.format(project))
   else:
     request = HTTPRequest(URL_REGION.format(project, region))
   resp = fetch(request)
+  ts = datetime.datetime.utcnow()
   for quota in resp.get('quotas'):
-    yield Quota(project, region, datetime.datetime.utcnow(), **quota)
+    yield Quota(project, region, ts, **quota)
 
 
 @click.command()
@@ -201,7 +202,7 @@ def _main(monitoring_project, projects=None, regions=None, include=None,
   for k in ('monitoring_project', 'projects', 'regions', 'include', 'exclude'):
     logging.debug(f'{k} {locals().get(k)}')
   timeseries = []
-  logging.info(f'get quotas ({len(projects)} project {len(regions)} regions)')
+  logging.info(f'get quotas ({len(projects)} projects {len(regions)} regions)')
   for project in projects:
     for region in regions:
       logging.info(f'get quota for {project} in {region}')
