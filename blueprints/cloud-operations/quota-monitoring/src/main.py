@@ -127,8 +127,8 @@ def fetch(request, delete=False):
     raise SystemExit(e.args[0])
   try:
     rdata = json.loads(response.content)
-  except json.JSONDecodeError as e:
-    logging.critical(e)
+  except json.JSONDecodeError as je:
+    logging.critical(je)
     raise SystemExit(f'Error decoding response: {e.args[0]}')
   if response.status_code != 200:
     logging.critical(rdata)
