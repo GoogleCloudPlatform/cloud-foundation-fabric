@@ -33,7 +33,6 @@ import google.auth
 from google.auth.transport.requests import AuthorizedSession
 
 BASE = 'custom.googleapis.com/quota'
-BATCH_SIZE = 5
 HTTP = AuthorizedSession(google.auth.default()[0])
 HTTP_HEADERS = {'content-type': 'application/json; charset=UTF-8'}
 URL_PROJECT = 'https://compute.googleapis.com/compute/v1/projects/{}'
