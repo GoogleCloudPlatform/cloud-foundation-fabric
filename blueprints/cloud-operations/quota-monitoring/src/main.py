@@ -209,22 +209,24 @@ def _main(monitoring_project, projects=None, regions=None, include=None,
       for quota in get_quotas(project, region):
         metric = quota.metric.lower()
         if include and not any(metric.startswith(k) for k in include):
-          logging.info(f'skipping {project}:{region}:{metric} not included')
+          logging.debug(f'skipping {project}:{region}:{metric} not included')
           continue
         if exclude and any(metric.startswith(k) for k in exclude):
-          logging.info(f'skipping {project}:{region}:{metric} excluded')
+          logging.debug(f'skipping {project}:{region}:{metric} excluded')
           continue
         logging.debug(f'quota {project}:{region}:{metric}')
         timeseries += list(quota.timeseries)
   logging.info(f'{len(timeseries)} timeseries')
+  i, l = 0, len(timeseries)
   for batch in batched(timeseries, 30):
     data = list(batch)
-    logging.info(f'sending {len(batch)} timeseries')
+    logging.info(f'sending {len(batch)} timeseries out of {l - i}/{l} left')
+    i += len(batch)
     if not dry_run:
       write_timeseries(monitoring_project, {'timeSeries': list(data)})
     elif verbose:
       print(data)
-  logging.info(f'{len(timeseries)} timeseries done (dry run {dry_run})')
+  logging.info(f'{l} timeseries done (dry run {dry_run})')
 
 
 if __name__ == '__main__':
