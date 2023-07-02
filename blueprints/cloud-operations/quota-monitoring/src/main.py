@@ -81,7 +81,7 @@ class Quota(_Quota):
       d['valueType'] = 'INT64'
       d['points'][0]['value'] = {'int64Value': value}
     # remove this label if cardinality gets too high
-    d['metric']['labels']['value'] = f'{self.usage}/{self.limit}'
+    d['metric']['labels']['quota'] = f'{self.usage}/{self.limit}'
     return d
 
   @property

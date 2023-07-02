@@ -42,10 +42,13 @@ variable "name" {
   default     = "quota-monitor"
 }
 
-variable "project_create" {
+variable "project_create_config" {
   description = "Create project instead of using an existing one."
-  type        = bool
-  default     = false
+  type = object({
+    billing_account = string
+    parent          = string
+  })
+  default = null
 }
 
 variable "project_id" {
