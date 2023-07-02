@@ -30,9 +30,6 @@ module "project" {
     "compute.googleapis.com",
     "cloudfunctions.googleapis.com"
   ]
-  iam = {
-    "roles/monitoring.metricWriter" = [module.cf.service_account_iam_email]
-  }
 }
 
 module "pubsub" {
@@ -56,7 +53,7 @@ module "cf" {
     location = var.region
   }
   bundle_config = {
-    source_dir  = "${path.module}/cf"
+    source_dir  = "${path.module}/src"
     output_path = var.bundle_path
   }
   service_account_create = true
@@ -66,8 +63,8 @@ module "cf" {
   }
 }
 
-resource "google_cloud_scheduler_job" "job" {
-  project   = var.project_id
+resource "google_cloud_scheduler_job" "default" {
+  project   = module.project.project_id
   region    = var.region
   name      = var.name
   schedule  = var.schedule_config
@@ -80,6 +77,12 @@ resource "google_cloud_scheduler_job" "job" {
       var.quota_config
     )))
   }
+}
+
+resource "google_project_iam_member" "metric_writer" {
+  project = module.project.project_id
+  role    = "roles/monitoring.metricWriter"
+  member  = module.cf.service_account_iam_email
 }
 
 resource "google_project_iam_member" "network_viewer" {
@@ -96,16 +99,16 @@ resource "google_project_iam_member" "quota_viewer" {
   member   = module.cf.service_account_iam_email
 }
 
-resource "google_monitoring_alert_policy" "alert_policy" {
-  count        = var.alert_create ? 1 : 0
+resource "google_monitoring_alert_policy" "default" {
+  for_each     = var.alert_configs
   project      = module.project.project_id
-  display_name = "Quota monitor"
+  display_name = "Monitor quota ${each.key}"
   combiner     = "OR"
   conditions {
-    display_name = "simple quota threshold for cpus utilization"
+    display_name = "Threshold ${each.value.threshold} for ${each.key}."
     condition_threshold {
-      filter          = "metric.type=\"custom.googleapis.com/quota/cpus_utilization\" resource.type=\"global\""
-      threshold_value = 0.75
+      filter          = "metric.type=\"custom.googleapis.com/quota/${each.key}\" resource.type=\"global\""
+      threshold_value = each.value.threshold
       comparison      = "COMPARISON_GT"
       duration        = "0s"
       aggregations {
@@ -119,15 +122,16 @@ resource "google_monitoring_alert_policy" "alert_policy" {
       }
     }
   }
-  enabled = false
-  user_labels = {
-    name = var.name
-  }
+  enabled     = each.value.enabled
+  user_labels = each.value.labels
   documentation {
-    content = "GCE cpus quota over threshold."
+    content = (
+      each.value.documentation != null
+      ? each.value.documentation
+      : "Quota over threshold of ${each.value.threshold} for ${each.key}."
+    )
   }
 }
-
 
 resource "random_pet" "random" {
   length = 1

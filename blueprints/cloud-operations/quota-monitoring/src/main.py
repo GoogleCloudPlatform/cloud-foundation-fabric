@@ -115,6 +115,7 @@ def configure_logging(verbose=True):
 def fetch(request, delete=False):
   'Minimal HTTP client interface for API calls.'
   logging.debug(f'fetch {"POST" if request.data else "GET"} {request.url}')
+  logging.debug(request.data)
   try:
     if delete:
       response = HTTP.delete(request.url, headers=request.headers)
@@ -125,12 +126,17 @@ def fetch(request, delete=False):
                            data=json.dumps(request.data))
   except google.auth.exceptions.RefreshError as e:
     raise SystemExit(e.args[0])
+  try:
+    rdata = json.loads(response.content)
+  except json.JSONDecodeError as e:
+    logging.critical(e)
+    raise SystemExit(f'Error decoding response: {e.args[0]}')
   if response.status_code != 200:
-    logging.critical(
-        f'response code {response.status_code} for URL {request.url}')
-    logging.critical(response.content)
-    logging.debug(request.data)
-    raise SystemExit(1)
+    logging.critical(rdata)
+    error = rdata.get('error', {})
+    raise SystemExit('API error: {} (HTTP {})'.format(
+        error.get('message', 'error message cannot be decoded'),
+        error.get('code', 'no code found')))
   return json.loads(response.content)
 
 
@@ -138,18 +144,8 @@ def write_timeseries(project, data):
   'Sends timeseries to the API.'
   # try
   logging.debug(f'write {len(data["timeSeries"])} timeseries')
-  try:
-    response = HTTP.post(URL_TS.format(project), headers=HTTP_HEADERS,
-                         data=json.dumps(data))
-  except google.auth.exceptions.RefreshError as e:
-    raise SystemExit(e.args[0])
-  if response.status_code != 200:
-    logging.critical(
-        f'response code {response.status_code} for URL {response.request.url}')
-    logging.critical(response.content.decode('utf8'))
-    logging.debug(data)
-    raise SystemExit(1)
-  return json.loads(response.content)
+  request = HTTPRequest(URL_TS.format(project), json.dumps(data))
+  return fetch(request)
 
 
 def get_quotas(project, region='global'):

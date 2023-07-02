@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-variable "alert_create" {
-  description = "Enables the creation of a sample monitoring alert, false by default."
-  type        = bool
-  default     = false
+variable "alert_configs" {
+  description = "Configure creation of monitoring alerts for specific quotas. Keys match quota names."
+  type = map(object({
+    documentation = optional(string)
+    enabled       = optional(bool)
+    labels        = optional(map(string))
+    threshold     = optional(number, 0.75)
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition     = alltrue([for k, v in var.alert_configs : v != null])
+    error_message = "Set values as {} instead of null."
+  }
 }
 
 variable "bundle_path" {
@@ -46,7 +56,10 @@ variable "project_id" {
 variable "quota_config" {
   description = "Cloud function configuration."
   type = object({
-    exclude  = optional(list(string))
+    exclude = optional(list(string), [
+      "a2", "c2", "c2d", "committed", "g2", "interconnect", "m1", "m2", "m3",
+      "nvidia", "preemptible"
+    ])
     include  = optional(list(string))
     projects = optional(list(string))
     regions  = optional(list(string))
