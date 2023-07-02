@@ -63,7 +63,7 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 | [alert_configs](variables.tf#L17) | Configure creation of monitoring alerts for specific quotas. Keys match quota names. | <code title="map&#40;object&#40;&#123;&#10;  documentation &#61; optional&#40;string&#41;&#10;  enabled       &#61; optional&#40;bool&#41;&#10;  labels        &#61; optional&#40;map&#40;string&#41;&#41;&#10;  threshold     &#61; optional&#40;number, 0.75&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [bundle_path](variables.tf#L33) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
 | [name](variables.tf#L39) | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;quota-monitor&#34;</code> |
-| [project_create_config](variables.tf#L45) | Create project instead of using an existing one. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_create_config](variables.tf#L45) | Create project instead of using an existing one. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [quota_config](variables.tf#L59) | Cloud function configuration. | <code title="object&#40;&#123;&#10;  exclude &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;a2&#34;, &#34;c2&#34;, &#34;c2d&#34;, &#34;committed&#34;, &#34;g2&#34;, &#34;interconnect&#34;, &#34;m1&#34;, &#34;m2&#34;, &#34;m3&#34;,&#10;    &#34;nvidia&#34;, &#34;preemptible&#34;&#10;  &#93;&#41;&#10;  include  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  projects &#61; optional&#40;list&#40;string&#41;&#41;&#10;  regions  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  dry_run  &#61; optional&#40;bool, false&#41;&#10;  verbose  &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [region](variables.tf#L76) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | [schedule_config](variables.tf#L82) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
@@ -73,10 +73,12 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 ```hcl
 module "test" {
-  source         = "./fabric/blueprints/cloud-operations/quota-monitoring"
-  name           = "name"
-  project_create = true
-  project_id     = "test"
+  source     = "./fabric/blueprints/cloud-operations/quota-monitoring"
+  name       = "name"
+  project_id = "test"
+  project_create_config = {
+    billing_account = "12345-ABCDE-12345"
+  }
 }
 # tftest modules=4 resources=14
 ```

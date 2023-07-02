@@ -46,7 +46,7 @@ variable "project_create_config" {
   description = "Create project instead of using an existing one."
   type = object({
     billing_account = string
-    parent          = string
+    parent          = optional(string)
   })
   default = null
 }
