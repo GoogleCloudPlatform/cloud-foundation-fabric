@@ -144,7 +144,7 @@ def write_timeseries(project, data):
   'Sends timeseries to the API.'
   # try
   logging.debug(f'write {len(data["timeSeries"])} timeseries')
-  request = HTTPRequest(URL_TS.format(project), json.dumps(data))
+  request = HTTPRequest(URL_TS.format(project), data)
   return fetch(request)
 
 
