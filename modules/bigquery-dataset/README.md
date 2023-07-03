@@ -54,6 +54,119 @@ module "bigquery-dataset" {
 # tftest modules=1 resources=2 inventory=iam.yaml
 ```
 
+### Authorized Views, Datasets, and Routines
+
+You can specify authorized [views](https://cloud.google.com/bigquery/docs/authorized-views), [datasets](https://cloud.google.com/bigquery/docs/authorized-datasets?hl=en), and [routines](https://cloud.google.com/bigquery/docs/authorized-routines) via the `authorized_views`, `authorized_datasets` and `authorized_routines` variables, respectively.
+
+```hcl
+// Create private BigQuery dataset that will not be publicly accessible, except via the authorized BigQuery resources
+module "bigquery-dataset-private" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "private_project"
+  id         = "private_dataset"
+  authorized_views = [
+    {
+      project_id = "auth_view_project"
+      dataset_id = "auth_view_dataset"
+      table_id   = "auth_view"
+    }
+  ]
+  authorized_datasets = [
+    {
+      project_id = "auth_dataset_project"
+      dataset_id = "auth_dataset"
+    }
+  ]
+  authorized_routines = [
+    {
+      project_id = "auth_routine_project"
+      dataset_id = "auth_routine_dataset"
+      routine_id = "auth_routine"
+    }
+  ]
+}
+
+// Create authorized view in a public dataset
+module "bigquery-authorized-views-dataset-public" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "auth_view_project"
+  id         = "auth_view_dataset"
+  views = {
+    auth_view = {
+      friendly_name       = "Public"
+      labels              = {}
+      query               = "SELECT * FROM `private_project.private_dataset.private_table`"
+      use_legacy_sql      = false
+      deletion_protection = true
+    }
+  }
+}
+
+// Create public authorized dataset
+module "bigquery-authorized-dataset-public" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "auth_dataset_project"
+  id         = "auth_dataset"
+}
+
+// Create public authorized routine
+module "bigquery-authorized-authorized-routine-dataset-public" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "auth_routine_project"
+  id         = "auth_routine_dataset"
+}
+
+resource "google_bigquery_routine" "public-routine" {
+  dataset_id      = module.bigquery-authorized-authorized-routine-dataset-public.dataset_id
+  routine_id      = "auth_routine"
+  routine_type    = "TABLE_VALUED_FUNCTION"
+  language        = "SQL"
+  definition_body = <<-EOS
+    SELECT 1 + value AS value
+  EOS
+  arguments {
+    name          = "value"
+    argument_kind = "FIXED_TYPE"
+    data_type     = jsonencode({ "typeKind" = "INT64" })
+  }
+  return_table_type = jsonencode({ "columns" = [
+    { "name" = "value", "type" = { "typeKind" = "INT64" } },
+  ] })
+}
+# tftest modules=4 resources=9 inventory=authorized_resources.yaml
+```
+
+Authorized views can be specified both using the standard `access` options and the `authorized_views` blocks. The example configuration below uses both blocks, and will create a dataset with three authorized views `view_id_1`, `view_id_2`, and `view_id_3`.
+
+```hcl
+module "bigquery-dataset" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = "my-project"
+  id         = "my-dataset"
+  authorized_views = [
+    {
+      project_id = "view_project"
+      dataset_id = "view_dataset"
+      table_id   = "view_id_1"
+    },
+    {
+      project_id = "view_project"
+      dataset_id = "view_dataset"
+      table_id   = "view_id_2"
+    }
+  ]
+  access = {
+    view_2 = { role = "READER", type = "view" }
+    view_3 = { role = "READER", type = "view" }
+  }
+  access_identities = {
+    view_2 = "view_project|view_dataset|view_id_2"
+    view_3 = "view_project|view_dataset|view_id_3"
+  }
+}
+# tftest modules=1 resources=4 inventory=authorized_resources_views.yaml
+```
+
 ### Dataset options
 
 Dataset options are set via the `options` variable. all options must be specified, but a `null` value can be set to options that need to use defaults.
@@ -178,20 +291,23 @@ module "bigquery-dataset" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [id](variables.tf#L69) | Dataset id. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L99) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
+| [id](variables.tf#L98) | Dataset id. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L128) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
 | [access](variables.tf#L17) | Map of access rules with role and identity type. Keys are arbitrary and must match those in the `access_identities` variable, types are `domain`, `group`, `special_group`, `user`, `view`. | <code title="map&#40;object&#40;&#123;&#10;  role &#61; string&#10;  type &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [access_identities](variables.tf#L33) | Map of access identities used for basic access roles. View identities have the format 'project_id\|dataset_id\|table_id'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [dataset_access](variables.tf#L39) | Set access in the dataset resource instead of using separate resources. | <code>bool</code> |  | <code>false</code> |
-| [description](variables.tf#L45) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [encryption_key](variables.tf#L51) | Self link of the KMS key that will be used to protect destination table. | <code>string</code> |  | <code>null</code> |
-| [friendly_name](variables.tf#L57) | Dataset friendly name. | <code>string</code> |  | <code>null</code> |
-| [iam](variables.tf#L63) | IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L74) | Dataset labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L80) | Dataset location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
-| [options](variables.tf#L86) | Dataset options. | <code title="object&#40;&#123;&#10;  default_collation               &#61; optional&#40;string&#41;&#10;  default_table_expiration_ms     &#61; optional&#40;number&#41;&#10;  default_partition_expiration_ms &#61; optional&#40;number&#41;&#10;  delete_contents_on_destroy      &#61; optional&#40;bool, false&#41;&#10;  is_case_insensitive             &#61; optional&#40;bool&#41;&#10;  max_time_travel_hours           &#61; optional&#40;number, 168&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tables](variables.tf#L104) | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name &#61; string&#10;  labels        &#61; map&#40;string&#41;&#10;  options &#61; object&#40;&#123;&#10;    clustering      &#61; list&#40;string&#41;&#10;    encryption_key  &#61; string&#10;    expiration_time &#61; number&#10;  &#125;&#41;&#10;  partitioning &#61; object&#40;&#123;&#10;    field &#61; string&#10;    range &#61; object&#40;&#123;&#10;      end      &#61; number&#10;      interval &#61; number&#10;      start    &#61; number&#10;    &#125;&#41;&#10;    time &#61; object&#40;&#123;&#10;      expiration_ms &#61; number&#10;      type          &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  schema              &#61; string&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [views](variables.tf#L132) | View definitions. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name       &#61; string&#10;  labels              &#61; map&#40;string&#41;&#10;  query               &#61; string&#10;  use_legacy_sql      &#61; bool&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [authorized_datasets](variables.tf#L39) | An array of datasets to be authorized on the dataset. | <code title="list&#40;object&#40;&#123;&#10;  dataset_id &#61; string,&#10;  project_id &#61; string,&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [authorized_routines](variables.tf#L48) | An array of authorized routine to be authorized on the dataset. | <code title="list&#40;object&#40;&#123;&#10;  project_id &#61; string,&#10;  dataset_id &#61; string,&#10;  routine_id &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [authorized_views](variables.tf#L58) | An array of views to be authorized on the dataset. | <code title="list&#40;object&#40;&#123;&#10;  dataset_id &#61; string,&#10;  project_id &#61; string,&#10;  table_id   &#61; string &#35; this is the view id, but we keep table_id to stay consistent as the resource&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [dataset_access](variables.tf#L68) | Set access in the dataset resource instead of using separate resources. | <code>bool</code> |  | <code>false</code> |
+| [description](variables.tf#L74) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [encryption_key](variables.tf#L80) | Self link of the KMS key that will be used to protect destination table. | <code>string</code> |  | <code>null</code> |
+| [friendly_name](variables.tf#L86) | Dataset friendly name. | <code>string</code> |  | <code>null</code> |
+| [iam](variables.tf#L92) | IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L103) | Dataset labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L109) | Dataset location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
+| [options](variables.tf#L115) | Dataset options. | <code title="object&#40;&#123;&#10;  default_collation               &#61; optional&#40;string&#41;&#10;  default_table_expiration_ms     &#61; optional&#40;number&#41;&#10;  default_partition_expiration_ms &#61; optional&#40;number&#41;&#10;  delete_contents_on_destroy      &#61; optional&#40;bool, false&#41;&#10;  is_case_insensitive             &#61; optional&#40;bool&#41;&#10;  max_time_travel_hours           &#61; optional&#40;number, 168&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tables](variables.tf#L133) | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name &#61; string&#10;  labels        &#61; map&#40;string&#41;&#10;  options &#61; object&#40;&#123;&#10;    clustering      &#61; list&#40;string&#41;&#10;    encryption_key  &#61; string&#10;    expiration_time &#61; number&#10;  &#125;&#41;&#10;  partitioning &#61; object&#40;&#123;&#10;    field &#61; string&#10;    range &#61; object&#40;&#123;&#10;      end      &#61; number&#10;      interval &#61; number&#10;      start    &#61; number&#10;    &#125;&#41;&#10;    time &#61; object&#40;&#123;&#10;      expiration_ms &#61; number&#10;      type          &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  schema              &#61; string&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [views](variables.tf#L161) | View definitions. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name       &#61; string&#10;  labels              &#61; map&#40;string&#41;&#10;  query               &#61; string&#10;  use_legacy_sql      &#61; bool&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -199,11 +315,11 @@ module "bigquery-dataset" {
 |---|---|:---:|
 | [dataset](outputs.tf#L17) | Dataset resource. |  |
 | [dataset_id](outputs.tf#L22) | Dataset id. |  |
-| [id](outputs.tf#L34) | Fully qualified dataset id. |  |
-| [self_link](outputs.tf#L46) | Dataset self link. |  |
-| [table_ids](outputs.tf#L58) | Map of fully qualified table ids keyed by table ids. |  |
-| [tables](outputs.tf#L63) | Table resources. |  |
-| [view_ids](outputs.tf#L68) | Map of fully qualified view ids keyed by view ids. |  |
-| [views](outputs.tf#L73) | View resources. |  |
+| [id](outputs.tf#L36) | Fully qualified dataset id. |  |
+| [self_link](outputs.tf#L50) | Dataset self link. |  |
+| [table_ids](outputs.tf#L64) | Map of fully qualified table ids keyed by table ids. |  |
+| [tables](outputs.tf#L69) | Table resources. |  |
+| [view_ids](outputs.tf#L74) | Map of fully qualified view ids keyed by view ids. |  |
+| [views](outputs.tf#L79) | View resources. |  |
 
 <!-- END TFDOC -->

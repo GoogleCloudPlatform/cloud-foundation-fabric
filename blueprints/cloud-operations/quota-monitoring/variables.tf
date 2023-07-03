@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-variable "alert_create" {
-  description = "Enables the creation of a sample monitoring alert, false by default."
-  type        = bool
-  default     = false
+variable "alert_configs" {
+  description = "Configure creation of monitoring alerts for specific quotas. Keys match quota names."
+  type = map(object({
+    documentation = optional(string)
+    enabled       = optional(bool)
+    labels        = optional(map(string))
+    threshold     = optional(number, 0.75)
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition     = alltrue([for k, v in var.alert_configs : v != null])
+    error_message = "Set values as {} instead of null."
+  }
 }
 
 variable "bundle_path" {
@@ -32,10 +42,13 @@ variable "name" {
   default     = "quota-monitor"
 }
 
-variable "project_create" {
+variable "project_create_config" {
   description = "Create project instead of using an existing one."
-  type        = bool
-  default     = false
+  type = object({
+    billing_account = string
+    parent          = optional(string)
+  })
+  default = null
 }
 
 variable "project_id" {
@@ -46,15 +59,18 @@ variable "project_id" {
 variable "quota_config" {
   description = "Cloud function configuration."
   type = object({
-    filters  = list(string)
-    projects = list(string)
-    regions  = list(string)
+    exclude = optional(list(string), [
+      "a2", "c2", "c2d", "committed", "g2", "interconnect", "m1", "m2", "m3",
+      "nvidia", "preemptible"
+    ])
+    include  = optional(list(string))
+    projects = optional(list(string))
+    regions  = optional(list(string))
+    dry_run  = optional(bool, false)
+    verbose  = optional(bool, false)
   })
-  default = {
-    filters  = null
-    projects = null
-    regions  = null
-  }
+  nullable = false
+  default  = {}
 }
 
 variable "region" {

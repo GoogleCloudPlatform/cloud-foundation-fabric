@@ -20,15 +20,23 @@ locals {
   access_special = { for k, v in var.access : k => v if v.type == "special_group" }
   access_user    = { for k, v in var.access : k => v if v.type == "user" }
   access_view    = { for k, v in var.access : k => v if v.type == "view" }
+
   identities_view = {
     for k, v in local.access_view : k => try(
       zipmap(
-        ["project", "dataset", "table"],
+        ["project_id", "dataset_id", "table_id"],
         split("|", var.access_identities[k])
       ),
-      { project = null, dataset = null, table = null }
+      { project_id = null, dataset_id = null, table_id = null }
     )
   }
+
+  authorized_views = merge(
+    { for access_key, view in local.identities_view : "${view["project_id"]}_${view["dataset_id"]}_${view["table_id"]}" => view },
+  { for view in var.authorized_views : "${view["project_id"]}_${view["dataset_id"]}_${view["table_id"]}" => view })
+  authorized_datasets = { for dataset in var.authorized_datasets : "${dataset["project_id"]}_${dataset["dataset_id"]}" => dataset }
+  authorized_routines = { for routine in var.authorized_routines : "${routine["project_id"]}_${routine["dataset_id"]}_${routine["routine_id"]}" => routine }
+
 }
 
 resource "google_bigquery_dataset" "default" {
@@ -78,12 +86,36 @@ resource "google_bigquery_dataset" "default" {
   }
 
   dynamic "access" {
-    for_each = var.dataset_access ? local.access_view : {}
+    for_each = var.dataset_access ? local.authorized_views : {}
     content {
       view {
-        project_id = local.identities_view[access.key].project
-        dataset_id = local.identities_view[access.key].dataset
-        table_id   = local.identities_view[access.key].table
+        project_id = each.value.project_id
+        dataset_id = each.value.dataset_id
+        table_id   = each.value.table_id
+      }
+    }
+  }
+
+  dynamic "access" {
+    for_each = var.dataset_access ? local.authorized_datasets : {}
+    content {
+      dataset {
+        dataset {
+          project_id = each.value.project_id
+          dataset_id = each.value.dataset_id
+        }
+        target_types = ["VIEWS"]
+      }
+    }
+  }
+
+  dynamic "access" {
+    for_each = var.dataset_access ? local.authorized_routines : {}
+    content {
+      routine {
+        project_id = each.value.project_id
+        dataset_id = each.value.dataset_id
+        routine_id = each.value.routine_id
       }
     }
   }
@@ -132,15 +164,38 @@ resource "google_bigquery_dataset_access" "user_by_email" {
   user_by_email = try(var.access_identities[each.key])
 }
 
-resource "google_bigquery_dataset_access" "views" {
-  for_each   = var.dataset_access ? {} : local.access_view
-  provider   = google-beta
+resource "google_bigquery_dataset_access" "authorized_views" {
+  for_each   = var.dataset_access ? {} : local.authorized_views
   project    = var.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   view {
-    project_id = local.identities_view[each.key].project
-    dataset_id = local.identities_view[each.key].dataset
-    table_id   = local.identities_view[each.key].table
+    project_id = each.value.project_id
+    dataset_id = each.value.dataset_id
+    table_id   = each.value.table_id
+  }
+}
+
+resource "google_bigquery_dataset_access" "authorized_datasets" {
+  for_each   = var.dataset_access ? {} : local.authorized_datasets
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.default.dataset_id
+  dataset {
+    dataset {
+      project_id = each.value.project_id
+      dataset_id = each.value.dataset_id
+    }
+    target_types = ["VIEWS"]
+  }
+}
+
+resource "google_bigquery_dataset_access" "authorized_routines" {
+  for_each   = var.dataset_access ? {} : local.authorized_routines
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.default.dataset_id
+  routine {
+    project_id = each.value.project_id
+    dataset_id = each.value.dataset_id
+    routine_id = each.value.routine_id
   }
 }
 
