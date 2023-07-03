@@ -177,6 +177,33 @@ The resulting setup provides a new "Tenants" branch in the hierarchy with one se
 
 This allows subsequent Terraform stages to create network resources for each tenant which are centrally managed and connected to central networking, and tenants themselves to optionally manage their own networking and application projects.
 
+The default roles applied on tenant folders are
+
+- on the top-level folder for each tenant
+  - for the core IaC service account
+    - `roles/cloudasset.owner`
+    - `roles/compute.xpnAdmin`
+    - `roles/logging.admin`
+    - `roles/resourcemanager.folderAdmin`
+    - `roles/resourcemanager.projectCreator`
+    - `roles/resourcemanager.tagUser`
+- on the core folder for each tenant
+  - for the core IaC service account
+    - `roles/owner`
+  - for the tenant admin group and IaC service account
+    - `roles/viewer`
+- on the tenant folder for each tenant
+  - for the tenant admin group and IaC service account
+    - `roles/cloudasset.owner`
+    - `roles/compute.xpnAdmin`
+    - `roles/logging.admin`
+    - `roles/resourcemanager.folderAdmin`
+    - `roles/resourcemanager.projectCreator`
+    - `roles/resourcemanager.tagUser`
+    - `roles/owner`
+  
+Further customization is possible via the `tenants_config` variable.
+
 This is a high level diagram of the design described above.
 
 ```mermaid
