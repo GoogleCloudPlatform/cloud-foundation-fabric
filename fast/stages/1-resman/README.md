@@ -264,6 +264,11 @@ tenants = {
     admin_group_email = "tn-0-admins@example.org"
     descriptive_name  = "Tenant 0"
     # an optional billing account and org can be specified for the tenant
+    organization = {
+      customer_id = "CAbCde0123"
+      domain      = "tenant.example.com"
+      id          = 1234567890
+    }
   }
   tnq = {
     admin_group_email = "tn-1-admins@example.org"
