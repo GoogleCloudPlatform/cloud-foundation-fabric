@@ -1,0 +1,4 @@
+click
+functions-framework
+google-api-core
+google-cloud-monitoring
