@@ -91,11 +91,27 @@ variable "boot_disk" {
       size  = optional(number, 10)
       type  = optional(string, "pd-balanced")
     }))
+    use_independent_disk = optional(bool, false)
   })
   default = {
     initialize_params = {}
   }
   nullable = false
+  validation {
+    condition = (
+      (var.boot_disk.source == null ? 0 : 1) +
+      (var.boot_disk.initialize_params == null ? 0 : 1) < 2
+    )
+    error_message = "You can only have one of boot disk source or initialize params."
+  }
+  validation {
+    condition = (
+      var.boot_disk.use_independent_disk != true
+      ||
+      var.boot_disk.initialize_params != null
+    )
+    error_message = "Using an independent disk for boot requires initialize params."
+  }
 }
 
 variable "can_ip_forward" {
