@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2023-06-05 09:41:28+00:00 -->
+<!-- None < 2023-07-07 16:22:14+00:00 -->
 
 ## [24.0.0] - 2023-07-07
 
@@ -1360,7 +1360,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v23.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v24.0.0...HEAD
+[24.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v23.0.0...v24.0.0
 [23.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v22.0.0...v23.0.0
 [22.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v21.0.0...v22.0.0
 [21.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v20.0.0...v21.0.0
