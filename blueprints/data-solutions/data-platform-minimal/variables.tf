@@ -177,3 +177,7 @@ variable "service_encryption_keys" {
   nullable = false
   default  = {}
 }
+
+variable "tag_values" {
+  type = map(string)
+}
