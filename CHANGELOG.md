@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1496](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1496)] Allow using a separate resource for boot disk in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-07 15:40:14+00:00 -->
 - [[#1488](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1488)] **incompatible change:** Fix and improve quota monitor blueprint ([ludoo](https://github.com/ludoo)) <!-- 2023-07-03 07:23:49+00:00 -->
 - [[#1483](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1483)] Updating a few files to fix typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-06-30 05:55:32+00:00 -->
 - [[#1474](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1474)] data-platform-minimal - support web_server_network_access_control ([kthhrv](https://github.com/kthhrv)) <!-- 2023-06-29 16:38:19+00:00 -->
@@ -64,6 +65,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1496](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1496)] Allow using a separate resource for boot disk in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-07 15:40:14+00:00 -->
 - [[#1489](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1489)] **incompatible change:** Disable googleapi routes creation when vpc is not created in net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-03 07:10:12+00:00 -->
 - [[#1486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1486)] Allow external editing of group instances in lb modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-30 17:34:10+00:00 -->
 - [[#1480](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1480)] Add bigquery authorized resources ([thinhha](https://github.com/thinhha)) <!-- 2023-06-30 16:44:58+00:00 -->
@@ -92,6 +94,10 @@ All notable changes to this project will be documented in this file.
 - [[#1425](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1425)] Small fixes ([ludoo](https://github.com/ludoo)) <!-- 2023-06-07 17:37:47+00:00 -->
 - [[#1419](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1419)] Fix NLB module ([ludoo](https://github.com/ludoo)) <!-- 2023-06-05 17:42:33+00:00 -->
 - [[#1418](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1418)] Network Load Balancer module ([ludoo](https://github.com/ludoo)) <!-- 2023-06-05 11:21:40+00:00 -->
+
+### TOOLS
+
+- [[#1496](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1496)] Allow using a separate resource for boot disk in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-07 15:40:14+00:00 -->
 
 ## [23.0.0] - 2023-06-05
 
