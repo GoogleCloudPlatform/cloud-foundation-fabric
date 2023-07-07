@@ -193,7 +193,11 @@ resource "google_compute_instance" "default" {
   }
 
   boot_disk {
-    auto_delete = var.boot_disk.auto_delete
+    auto_delete = (
+      var.boot_disk.use_independent_disk
+      ? false
+      : var.boot_disk.auto_delete
+    )
     source = (
       var.boot_disk.use_independent_disk
       ? google_compute_disk.boot.0.id
