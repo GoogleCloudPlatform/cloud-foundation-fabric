@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1488](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1488)] **incompatible change:** Fix and improve quota monitor blueprint ([ludoo](https://github.com/ludoo)) <!-- 2023-07-03 07:23:49+00:00 -->
 - [[#1483](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1483)] Updating a few files to fix typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-06-30 05:55:32+00:00 -->
 - [[#1474](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1474)] data-platform-minimal - support web_server_network_access_control ([kthhrv](https://github.com/kthhrv)) <!-- 2023-06-29 16:38:19+00:00 -->
 - [[#1482](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1482)] Add region to quota monitor cloud function ([ludoo](https://github.com/ludoo)) <!-- 2023-06-29 11:02:57+00:00 -->
@@ -45,6 +46,8 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1470](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1470)] FAST: initial implementation of lightweight tenants ([ludoo](https://github.com/ludoo)) <!-- 2023-07-07 06:40:38+00:00 -->
+- [[#1492](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1492)] Peering dashboard ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2023-07-05 16:25:32+00:00 -->
 - [[#1487](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1487)] Fix primary gke/dp ranges in FAST subnets ([juliocc](https://github.com/juliocc)) <!-- 2023-06-30 18:11:43+00:00 -->
 - [[#1478](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1478)] FAST: short_name_is_prefix for multi-tenant ([drebes](https://github.com/drebes)) <!-- 2023-06-30 07:49:26+00:00 -->
 - [[#1483](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1483)] Updating a few files to fix typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-06-30 05:55:32+00:00 -->
@@ -61,6 +64,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1489](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1489)] **incompatible change:** Disable googleapi routes creation when vpc is not created in net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-03 07:10:12+00:00 -->
 - [[#1486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1486)] Allow external editing of group instances in lb modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-30 17:34:10+00:00 -->
 - [[#1480](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1480)] Add bigquery authorized resources ([thinhha](https://github.com/thinhha)) <!-- 2023-06-30 16:44:58+00:00 -->
 - [[#1485](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1485)] **incompatible change:** Align group names in lb modules ([ludoo](https://github.com/ludoo)) <!-- 2023-06-30 10:18:07+00:00 -->
