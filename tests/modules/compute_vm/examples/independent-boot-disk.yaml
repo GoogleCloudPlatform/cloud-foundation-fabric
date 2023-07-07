@@ -35,7 +35,7 @@ values:
     allow_stopping_for_update: true
     attached_disk: []
     boot_disk:
-    - auto_delete: true
+    - auto_delete: false
       disk_encryption_key_raw: null
       mode: READ_WRITE
     can_ip_forward: false
