@@ -179,5 +179,6 @@ variable "service_encryption_keys" {
 }
 
 variable "tag_values" {
-  type = map(string)
+  type    = map(string)
+  default = {}
 }
