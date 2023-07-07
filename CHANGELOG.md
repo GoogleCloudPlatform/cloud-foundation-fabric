@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2023-06-05 09:41:28+00:00 -->
 
+## [24.0.0] - 2023-07-07
+
 ### BLUEPRINTS
 
 - [[#1496](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1496)] Allow using a separate resource for boot disk in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-07 15:40:14+00:00 -->
