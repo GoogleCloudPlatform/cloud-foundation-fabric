@@ -33,10 +33,16 @@ locals {
       }
     )
   }
-  custom_roles = {
-    for k, v in var.custom_role_names :
-    k => try(module.organization.custom_role_id[v], null)
-  }
+  custom_roles = merge(
+    {
+      for k, v in var.custom_role_names :
+      k => try(module.organization.custom_role_id[v], "")
+    },
+    {
+      for k, v in var.custom_roles :
+      k => try(module.organization.custom_role_id[k], "")
+    }
+  )
   providers = {
     "0-bootstrap" = templatefile(local._tpl_providers, {
       backend_extra = null

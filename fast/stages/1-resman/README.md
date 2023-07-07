@@ -25,6 +25,7 @@ The following diagram is a high level reference of the resources created and man
   - [Running the stage](#running-the-stage)
 - [Customizations](#customizations)
   - [Secure tags](#secure-tags)
+  - [Lightweight multitenancy](#lightweight-multitenancy)
   - [Team folders](#team-folders)
   - [Organization Policies](#organization-policies)
   - [IAM](#iam)
@@ -166,6 +167,125 @@ tags = {
 }
 ```
 
+### Lightweight multitenancy
+
+If the organization needs to support tenants without the full complexity and separation offered by our [full multitenant support](../../stages-multitenant/), this stage offers a simplified setup which is suitable for cases where tenants have less autonomy, and don't need to implement FAST stages inside their reserved partition.
+
+This mode is activated by defining tenants in the `tenants` variable, while IAM configurations that apply to every tenant can be optionally set in the `tenants_config` variable.
+
+The resulting setup provides a new "Tenants" branch in the hierarchy with one second-level folder for each tenant, and additional folders inside it to host tenant resources managed from the central team, and tenant resources managed by the tenant itself. Automation resources are provided for both teams.
+
+This allows subsequent Terraform stages to create network resources for each tenant which are centrally managed and connected to central networking, and tenants themselves to optionally manage their own networking and application projects.
+
+The default roles applied on tenant folders are
+
+- on the top-level folder for each tenant
+  - for the core IaC service account
+    - `roles/cloudasset.owner`
+    - `roles/compute.xpnAdmin`
+    - `roles/logging.admin`
+    - `roles/resourcemanager.folderAdmin`
+    - `roles/resourcemanager.projectCreator`
+    - `roles/resourcemanager.tagUser`
+- on the core folder for each tenant
+  - for the core IaC service account
+    - `roles/owner`
+  - for the tenant admin group and IaC service account
+    - `roles/viewer`
+- on the tenant folder for each tenant
+  - for the tenant admin group and IaC service account
+    - `roles/cloudasset.owner`
+    - `roles/compute.xpnAdmin`
+    - `roles/logging.admin`
+    - `roles/resourcemanager.folderAdmin`
+    - `roles/resourcemanager.projectCreator`
+    - `roles/resourcemanager.tagUser`
+    - `roles/owner`
+  
+Further customization is possible via the `tenants_config` variable.
+
+This is a high level diagram of the design described above.
+
+```mermaid
+%%{init: {'theme':'base'}}%%
+classDiagram
+    Organization -- Tenants_root~📁~
+    Organization -- org_iac
+    Tenants_root~📁~ -- Tenant_0_root~📁~
+    Tenants_root~📁~ -- Tenant_1_root~📁~
+    Tenant_0_root~📁~ -- Tenant_0_core~📁~
+    Tenant_0_root~📁~ -- Tenant_0_self~📁~
+    Tenant_0_self~📁~ -- tenant0_iac
+    Tenant_1_root~📁~ -- Tenant_1_core~📁~
+    Tenant_1_root~📁~ -- Tenant_1_self~📁~
+    Tenant_1_self~📁~ -- tenant1_iac
+    class org_iac["org_iac (from stage 0)"] {
+        - GCS buckets
+        - service accounts
+    }
+    class Tenants_root~📁~ {
+        - IAM bindings()
+    }
+    class Tenant_0_root~📁~ {
+        - IAM bindings()
+    }
+    class Tenant_0_core~📁~ {
+        - IAM bindings()
+    }
+    class Tenant_0_self~📁~ {
+        - IAM bindings()
+    }
+    class tenant0_iac {
+        - GCS buckets
+        - service account
+        - IAM bindings()
+    }
+    class Tenant_1_root~📁~ {
+        - IAM bindings()
+    }
+    class Tenant_1_core~📁~ {
+        - IAM bindings()
+    }
+    class Tenant_1_self~📁~ {
+        - IAM bindings()
+    }
+    class tenant1_iac {
+        - GCS buckets
+        - service account
+        - IAM bindings()
+    }
+```
+
+This is an example that shows how to populate the relevant variables.
+
+```hcl
+tenants = {
+  tn0 = {
+    admin_group_email = "tn-0-admins@tenant.example.org"
+    descriptive_name  = "Tenant 0"
+    # an optional billing account and org can be specified for the tenant
+    organization = {
+      customer_id = "CAbCde0123"
+      domain      = "tenant.example.com"
+      id          = 1234567890
+    }
+  }
+  tnq = {
+    admin_group_email = "tn-1-admins@example.org"
+    descriptive_name  = "Tenant 1"
+  }
+}
+tenants_config = {
+  core_folder_roles = [
+    "roles/compute.instanceAdmin.v1",
+    "organizations/1234567890/roles/tenantLoadBalancerAdmin"
+  ]
+  top_folder_roles = ["roles/logging.admin", "roles/monitoring.admin"]
+}
+```
+
+Providers and tfvars files will be created for each tenant.
+
 ### Team folders
 
 This stage provides a single built-in customization that offers a minimal (but usable) implementation of the "application" or "business" grouping for resources discussed above. The `team_folders` variable allows you to specify a map of team name and groups, that will result in folders, automation service accounts, and IAM policies applied.
@@ -227,6 +347,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [branch-sandbox.tf](./branch-sandbox.tf) | Sandbox stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> | <code>google_organization_iam_member</code> |
 | [branch-security.tf](./branch-security.tf) | Security stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-teams.tf](./branch-teams.tf) | Team stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [branch-tenants.tf](./branch-tenants.tf) | Lightweight tenant resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> · <code>organization</code> · <code>project</code> |  |
 | [cicd-data-platform.tf](./cicd-data-platform.tf) | CI/CD resources for the data platform branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-gke.tf](./cicd-gke.tf) | CI/CD resources for the data platform branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-networking.tf](./cicd-networking.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
@@ -236,6 +357,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> |  |
 | [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>local_file</code> |
 | [outputs-gcs.tf](./outputs-gcs.tf) | Output files persistence to automation GCS bucket. |  | <code>google_storage_bucket_object</code> |
+| [outputs-tenants.tf](./outputs-tenants.tf) | None |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
@@ -258,6 +380,8 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [tag_names](variables.tf#L226) | Customized names for resource management tags. | <code title="object&#40;&#123;&#10;  context      &#61; string&#10;  environment  &#61; string&#10;  org-policies &#61; string&#10;  tenant       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  context      &#61; &#34;context&#34;&#10;  environment  &#61; &#34;environment&#34;&#10;  org-policies &#61; &#34;org-policies&#34;&#10;  tenant       &#61; &#34;tenant&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [tags](variables.tf#L247) | Custome secure tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    id          &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [team_folders](variables.tf#L268) | Team folders to be created. Format is described in a code comment. | <code title="map&#40;object&#40;&#123;&#10;  descriptive_name     &#61; string&#10;  group_iam            &#61; map&#40;list&#40;string&#41;&#41;&#10;  impersonation_groups &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |  |
+| [tenants](variables.tf#L278) | Lightweight tenant definitions. | <code title="map&#40;object&#40;&#123;&#10;  admin_group_email &#61; string&#10;  descriptive_name  &#61; string&#10;  billing_account   &#61; optional&#40;string&#41;&#10;  organization &#61; optional&#40;object&#40;&#123;&#10;    customer_id &#61; string&#10;    domain      &#61; string&#10;    id          &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [tenants_config](variables.tf#L294) | Lightweight tenants shared configuration. Roles will be assigned to tenant admin group and service accounts. | <code title="object&#40;&#123;&#10;  core_folder_roles   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  tenant_folder_roles &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  top_folder_roles    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 
 ## Outputs
 

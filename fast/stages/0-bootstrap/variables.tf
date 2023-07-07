@@ -90,6 +90,13 @@ variable "custom_role_names" {
   }
 }
 
+variable "custom_roles" {
+  description = "Map of role names => list of permissions to additionally create at the organization level."
+  type        = map(list(string))
+  nullable    = false
+  default     = {}
+}
+
 variable "fast_features" {
   description = "Selective control for top-level FAST features."
   type = object({

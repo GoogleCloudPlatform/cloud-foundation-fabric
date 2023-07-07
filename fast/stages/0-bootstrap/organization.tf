@@ -163,7 +163,7 @@ module "organization" {
   iam = local.iam
   # additive bindings, used for roles co-managed by different stages
   iam_additive = local.iam_additive
-  custom_roles = {
+  custom_roles = merge(var.custom_roles, {
     # this is needed for use in additive IAM bindings, to avoid conflicts
     (var.custom_role_names.organization_iam_admin) = [
       "resourcemanager.organizations.get",
@@ -190,7 +190,7 @@ module "organization" {
     (var.custom_role_names.tenant_network_admin) = [
       "compute.globalOperations.get",
     ]
-  }
+  })
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
