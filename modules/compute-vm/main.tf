@@ -63,6 +63,27 @@ locals {
   termination_action = var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
 }
 
+resource "google_compute_disk" "boot" {
+  count   = !var.create_template && var.boot_disk.use_independent_disk ? 1 : 0
+  project = var.project_id
+  zone    = var.zone
+  name    = "${var.name}-boot"
+  type    = var.boot_disk.initialize_params.type
+  size    = var.boot_disk.initialize_params.size
+  image   = var.boot_disk.initialize_params.image
+  labels = merge(var.labels, {
+    disk_name = "boot"
+    disk_type = var.boot_disk.initialize_params.type
+  })
+  dynamic "disk_encryption_key" {
+    for_each = var.encryption != null ? [""] : []
+    content {
+      raw_key           = var.encryption.disk_encryption_key_raw
+      kms_key_self_link = var.encryption.kms_key_self_link
+    }
+  }
+}
+
 resource "google_compute_disk" "disks" {
   for_each = var.create_template ? {} : {
     for k, v in local.attached_disks_zonal :
@@ -172,12 +193,30 @@ resource "google_compute_instance" "default" {
   }
 
   boot_disk {
-    auto_delete             = var.boot_disk.auto_delete
-    source                  = var.boot_disk.source
-    disk_encryption_key_raw = var.encryption != null ? var.encryption.disk_encryption_key_raw : null
-    kms_key_self_link       = var.encryption != null ? var.encryption.kms_key_self_link : null
+    auto_delete = (
+      var.boot_disk.use_independent_disk
+      ? false
+      : var.boot_disk.auto_delete
+    )
+    source = (
+      var.boot_disk.use_independent_disk
+      ? google_compute_disk.boot.0.id
+      : var.boot_disk.source
+    )
+    disk_encryption_key_raw = (
+      var.encryption != null ? var.encryption.disk_encryption_key_raw : null
+    )
+    kms_key_self_link = (
+      var.encryption != null ? var.encryption.kms_key_self_link : null
+    )
     dynamic "initialize_params" {
-      for_each = var.boot_disk.initialize_params == null ? [] : [""]
+      for_each = (
+        var.boot_disk.initialize_params == null
+        ||
+        var.boot_disk.use_independent_disk
+        ? []
+        : [""]
+      )
       content {
         image = var.boot_disk.initialize_params.image
         size  = var.boot_disk.initialize_params.size

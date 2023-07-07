@@ -13,18 +13,30 @@
 # limitations under the License.
 
 values:
+  module.simple-vm-example.google_compute_disk.boot[0]:
+    description: null
+    disk_encryption_key: []
+    image: projects/debian-cloud/global/images/family/debian-11
+    labels:
+      disk_name: boot
+      disk_type: pd-balanced
+    name: test-boot
+    project: project-id
+    size: 10
+    snapshot: null
+    source_disk: null
+    source_image_encryption_key: []
+    source_snapshot_encryption_key: []
+    timeouts: null
+    type: pd-balanced
+    zone: europe-west1-b
   module.simple-vm-example.google_compute_instance.default[0]:
     advanced_machine_features: []
     allow_stopping_for_update: true
     attached_disk: []
     boot_disk:
-    - auto_delete: true
+    - auto_delete: false
       disk_encryption_key_raw: null
-      initialize_params:
-      - image: projects/debian-cloud/global/images/family/debian-11
-        resource_manager_tags:
-        size: 10
-        type: pd-balanced
       mode: READ_WRITE
     can_ip_forward: false
     deletion_protection: false
@@ -70,5 +82,8 @@ values:
 
 
 counts:
+  google_compute_disk: 1
   google_compute_instance: 1
   google_service_account: 1
+  modules: 1
+  resources: 3
