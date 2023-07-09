@@ -115,7 +115,7 @@ module "org" {
 
 ## IAM
 
-There are several mutually exclusive ways of managing IAM in this module
+There are three mutually exclusive ways of managing IAM in this module
 
 - non-authoritative via the `iam_additive` and `iam_additive_members` variables, where bindings created outside this module will coexist with those managed here
 - authoritative via the `group_iam` and `iam` variables, where bindings created outside this module (eg in the console) will be removed at each `terraform apply` cycle if the same role is also managed here
