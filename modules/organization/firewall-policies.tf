@@ -59,7 +59,6 @@ resource "google_compute_firewall_policy" "policy" {
   short_name = each.key
   parent     = var.organization_id
   depends_on = [
-    google_organization_iam_audit_config.config,
     google_organization_iam_binding.authoritative,
     google_organization_iam_custom_role.roles,
     google_organization_iam_member.additive,
