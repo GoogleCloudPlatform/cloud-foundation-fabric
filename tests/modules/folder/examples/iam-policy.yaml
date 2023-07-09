@@ -12,3 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.folder.google_folder.folder[0]:
+    display_name: my-folder
+    parent: folders/657104291943
+    timeouts: null
+  module.folder.google_folder_iam_policy.authoritative[0]:
+    policy_data: '{"auditConfigs":[{"auditLogConfigs":[{"exemptedMembers":["group:organization-admins@example.org"],"logType":"ADMIN_READ"}],"service":"allServices"},{"auditLogConfigs":[{"logType":"DATA_WRITE"},{"logType":"DATA_READ"}],"service":"storage.googleapis.com"}],"bindings":[{"members":["group:org-admins@example.com"],"role":"roles/owner"},{"members":["group:org-admins@example.com"],"role":"roles/resourcemanager.folderAdmin"},{"members":["group:org-admins@example.com"],"role":"roles/resourcemanager.organizationAdmin"},{"members":["group:org-admins@example.com"],"role":"roles/resourcemanager.projectCreator"}]}'
+
+counts:
+  google_folder: 1
+  google_folder_iam_policy: 1
+  modules: 1
+  resources: 2
