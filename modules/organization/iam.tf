@@ -74,15 +74,15 @@ resource "google_organization_iam_member" "additive" {
 }
 
 resource "google_organization_iam_policy" "authoritative" {
-  count       = var.iam_bindings_authoritative != null ? 1 : 0
+  count       = var.iam_policy != null ? 1 : 0
   org_id      = local.organization_id_numeric
   policy_data = data.google_iam_policy.authoritative.0.policy_data
 }
 
 data "google_iam_policy" "authoritative" {
-  count = var.iam_bindings_authoritative != null ? 1 : 0
+  count = var.iam_policy != null ? 1 : 0
   dynamic "binding" {
-    for_each = try(var.iam_bindings_authoritative, {})
+    for_each = try(var.iam_policy, {})
     content {
       role    = binding.key
       members = binding.value

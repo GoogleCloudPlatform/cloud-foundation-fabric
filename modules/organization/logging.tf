@@ -28,7 +28,7 @@ locals {
 
 resource "google_organization_iam_audit_config" "default" {
   for_each = (
-    var.iam_bindings_authoritative == null ? var.logging_data_access : {}
+    var.iam_policy == null ? var.logging_data_access : {}
   )
   org_id  = local.organization_id_numeric
   service = each.key
