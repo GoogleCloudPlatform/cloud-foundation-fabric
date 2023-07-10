@@ -35,7 +35,7 @@ resource "google_network_connectivity_hub" "hub" {
 
 resource "google_network_connectivity_spoke" "spoke-ra" {
   project  = var.project_id
-  hub      = try(google_network_connectivity_hub.hub[0].name, var.hub.name)
+  hub      = try(google_network_connectivity_hub.hub[0].id, var.hub.id)
   location = var.region
   name     = var.name
   linked_router_appliance_instances {

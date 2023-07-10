@@ -40,7 +40,7 @@ module "spoke-ra" {
 ```hcl
 module "spoke-ra-a" {
   source     = "./fabric/modules/ncc-spoke-ra"
-  hub        = { name = "ncc-hub" }
+  hub        = { id = "projects/my-project/locations/global/hubs/ncc-hub" }
   name       = "spoke-ra-a"
   project_id = "my-project"
   region     = "europe-west1"
@@ -64,7 +64,7 @@ module "spoke-ra-a" {
 
 module "spoke-ra-b" {
   source     = "./fabric/modules/ncc-spoke-ra"
-  hub        = { name = "ncc-hub" }
+  hub        = { id = "projects/my-project/locations/global/hubs/ncc-hub" }
   name       = "spoke-ra-b"
   project_id = "my-project"
   region     = "europe-west3"
@@ -93,7 +93,7 @@ module "spoke-ra-b" {
 ```hcl
 module "spoke-ra" {
   source     = "./fabric/modules/ncc-spoke-ra"
-  hub        = { name = "ncc-hub" }
+  hub        = { id = "projects/my-project/locations/global/hubs/ncc-hub" }
   name       = "spoke-ra"
   project_id = "my-project"
   region     = "europe-west1"
@@ -132,13 +132,13 @@ module "spoke-ra" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [hub](variables.tf#L23) | The name of the NCC hub to create or use. | <code title="object&#40;&#123;&#10;  create      &#61; optional&#40;bool, false&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  name        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L32) | The name of the NCC spoke. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L37) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L42) | Region where the spoke is located. | <code>string</code> | ✓ |  |
-| [router_appliances](variables.tf#L47) | List of router appliances this spoke is associated with. | <code title="list&#40;object&#40;&#123;&#10;  internal_ip  &#61; string&#10;  vm_self_link &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [router_config](variables.tf#L55) | Configuration of the Cloud Router. | <code title="object&#40;&#123;&#10;  asn &#61; number&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ip_interface0   &#61; string&#10;  ip_interface1   &#61; string&#10;  keepalive       &#61; optional&#40;number&#41;&#10;  peer_asn        &#61; number&#10;  routes_priority &#61; optional&#40;number, 100&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [vpc_config](variables.tf#L71) | Network and subnetwork for the CR interfaces. | <code title="object&#40;&#123;&#10;  network_name     &#61; string&#10;  subnet_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [hub](variables.tf#L23) | The NCC hub. You should either provide an existing hub id or a hub name if create is true. | <code title="object&#40;&#123;&#10;  create      &#61; optional&#40;bool, false&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  id          &#61; optional&#40;string&#41;&#10;  name        &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L37) | The name of the NCC spoke. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L42) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L47) | Region where the spoke is located. | <code>string</code> | ✓ |  |
+| [router_appliances](variables.tf#L52) | List of router appliances this spoke is associated with. | <code title="list&#40;object&#40;&#123;&#10;  internal_ip  &#61; string&#10;  vm_self_link &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [router_config](variables.tf#L60) | Configuration of the Cloud Router. | <code title="object&#40;&#123;&#10;  asn &#61; number&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ip_interface0   &#61; string&#10;  ip_interface1   &#61; string&#10;  keepalive       &#61; optional&#40;number&#41;&#10;  peer_asn        &#61; number&#10;  routes_priority &#61; optional&#40;number, 100&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vpc_config](variables.tf#L76) | Network and subnetwork for the CR interfaces. | <code title="object&#40;&#123;&#10;  network_name     &#61; string&#10;  subnet_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [data_transfer](variables.tf#L17) | Site-to-site data transfer feature, available only in some regions. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs
