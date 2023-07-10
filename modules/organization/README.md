@@ -121,6 +121,8 @@ There are three mutually exclusive ways of managing IAM in this module
 - authoritative via the `group_iam` and `iam` variables, where bindings created outside this module (eg in the console) will be removed at each `terraform apply` cycle if the same role is also managed here
 - authoritative policy via the `iam_policy` variable, where any binding created outside this module (eg in the console) will be removed at each `terraform apply` cycle regardless of the role
 
+The authoritative and additive approaches can be used together, provided different roles are managed by each. The IAM policy is incompatible with the other approaches, and must be used with extreme care.
+
 Some care must also be taken with the `group_iam` variable (and in some situations with the additive variables) to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
 ## Organization Policies
@@ -401,6 +403,7 @@ module "org" {
   organization_id = var.organization_id
   logging_data_access = {
     allServices = {
+      # logs for principals listed here will be excluded
       ADMIN_READ = ["group:organization-admins@example.org"]
     }
     "storage.googleapis.com" = {
