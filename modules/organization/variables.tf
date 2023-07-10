@@ -90,33 +90,25 @@ variable "iam_additive_members" {
   nullable    = false
 }
 
-variable "iam_audit_config" {
-  description = "Service audit logging configuration. Service as key, map of log permission (eg DATA_READ) and excluded members as value for each service."
-  type        = map(map(list(string)))
-  default     = {}
-  nullable    = false
-  # default = {
-  #   allServices = {
-  #     DATA_READ = ["user:me@example.org"]
-  #   }
-  # }
-}
-
-variable "iam_audit_config_authoritative" {
-  description = "IAM Authoritative service audit logging configuration. Service as key, map of log permission (eg DATA_READ) and excluded members as value for each service. Audit config should also be authoritative when using authoritative bindings. Use with caution."
-  type        = map(map(list(string)))
-  default     = null
-  # default = {
-  #   allServices = {
-  #     DATA_READ = ["user:me@example.org"]
-  #   }
-  # }
-}
-
-variable "iam_bindings_authoritative" {
-  description = "IAM authoritative bindings, in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared. Bindings should also be authoritative when using authoritative audit config. Use with caution."
+variable "iam_policy" {
+  description = "IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution."
   type        = map(list(string))
   default     = null
+}
+
+variable "logging_data_access" {
+  description = "Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services."
+  type        = map(map(list(string)))
+  nullable    = false
+  default     = {}
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.logging_data_access : [
+        for kk, vv in v : contains(["DATA_READ", "DATA_WRITE", "ADMIN_READ"], kk)
+      ]
+    ]))
+    error_message = "Log type keys for each service can only be one of 'DATA_READ', 'DATA_WRITE', 'ADMIN_READ'."
+  }
 }
 
 variable "logging_exclusions" {

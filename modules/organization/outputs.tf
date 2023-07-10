@@ -46,7 +46,6 @@ output "id" {
   description = "Fully qualified organization id."
   value       = var.organization_id
   depends_on = [
-    google_organization_iam_audit_config.config,
     google_organization_iam_binding.authoritative,
     google_organization_iam_custom_role.roles,
     google_organization_iam_member.additive,
@@ -82,7 +81,6 @@ output "organization_id" {
   description = "Organization id dependent on module resources."
   value       = var.organization_id
   depends_on = [
-    google_organization_iam_audit_config.config,
     google_organization_iam_binding.authoritative,
     google_organization_iam_custom_role.roles,
     google_organization_iam_member.additive,

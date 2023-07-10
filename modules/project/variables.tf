@@ -79,6 +79,12 @@ variable "iam_additive_members" {
   default     = {}
 }
 
+variable "iam_policy" {
+  description = "IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution."
+  type        = map(list(string))
+  default     = null
+}
+
 variable "labels" {
   description = "Resource labels."
   type        = map(string)
@@ -90,6 +96,21 @@ variable "lien_reason" {
   description = "If non-empty, creates a project lien with this description."
   type        = string
   default     = ""
+}
+
+variable "logging_data_access" {
+  description = "Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services."
+  type        = map(map(list(string)))
+  nullable    = false
+  default     = {}
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.logging_data_access : [
+        for kk, vv in v : contains(["DATA_READ", "DATA_WRITE", "ADMIN_READ"], kk)
+      ]
+    ]))
+    error_message = "Log type keys for each service can only be one of 'DATA_READ', 'DATA_WRITE', 'ADMIN_READ'."
+  }
 }
 
 variable "logging_exclusions" {

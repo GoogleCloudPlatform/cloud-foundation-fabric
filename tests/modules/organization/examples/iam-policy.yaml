@@ -1,0 +1,23 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.org.google_organization_iam_policy.authoritative[0]:
+    org_id: '1122334455'
+    policy_data: '{"auditConfigs":[{"auditLogConfigs":[{"exemptedMembers":["group:organization-admins@example.org"],"logType":"ADMIN_READ"}],"service":"allServices"},{"auditLogConfigs":[{"logType":"DATA_WRITE"},{"logType":"DATA_READ"}],"service":"storage.googleapis.com"}],"bindings":[{"members":["group:org-admins@example.com"],"role":"roles/owner"},{"members":["group:org-admins@example.com"],"role":"roles/resourcemanager.folderAdmin"},{"members":["group:org-admins@example.com"],"role":"roles/resourcemanager.organizationAdmin"},{"members":["group:org-admins@example.com"],"role":"roles/resourcemanager.projectCreator"}]}'
+
+counts:
+  google_organization_iam_policy: 1
+  modules: 1
+  resources: 1

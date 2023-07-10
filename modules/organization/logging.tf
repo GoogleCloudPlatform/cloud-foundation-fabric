@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Log sinks and supporting resources.
+# tfdoc:file:description Log sinks and data access logs.
 
 locals {
   sink_bindings = {
@@ -22,6 +22,22 @@ locals {
     type => {
       for name, sink in var.logging_sinks :
       name => sink if sink.type == type
+    }
+  }
+}
+
+resource "google_organization_iam_audit_config" "default" {
+  for_each = (
+    var.iam_policy == null ? var.logging_data_access : {}
+  )
+  org_id  = local.organization_id_numeric
+  service = each.key
+  dynamic "audit_log_config" {
+    for_each = each.value
+    iterator = config
+    content {
+      log_type         = config.key
+      exempted_members = config.value
     }
   }
 }
