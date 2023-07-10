@@ -26,7 +26,7 @@ output "composer" {
   description = "Composer variables."
   value = {
     air_flow_uri = try(google_composer_environment.processing-cmp-0[0].config.0.airflow_uri, null)
-    dag_bucket   = try(google_composer_environment.processing-cmp-0[0].config[0].dag_gcs_prefix, null)
+    dag_bucket   = try(regex("^gs://([^/]*)/dags$", google_composer_environment.processing-cmp-0[0].config[0].dag_gcs_prefix)[0], null)
   }
 }
 
