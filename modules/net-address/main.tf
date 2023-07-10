@@ -35,7 +35,7 @@ resource "google_compute_address" "internal" {
   for_each     = var.internal_addresses
   project      = var.project_id
   name         = each.key
-  description  = "Terraform managed."
+  description  = each.value.description
   address_type = "INTERNAL"
   region       = each.value.region
   subnetwork   = each.value.subnetwork
@@ -49,7 +49,7 @@ resource "google_compute_global_address" "psc" {
   for_each     = var.psc_addresses
   project      = var.project_id
   name         = each.key
-  description  = "Terraform managed."
+  description  = each.value.description
   address      = try(each.value.address, null)
   address_type = "INTERNAL"
   network      = each.value.network
@@ -61,7 +61,7 @@ resource "google_compute_global_address" "psa" {
   for_each      = var.psa_addresses
   project       = var.project_id
   name          = each.key
-  description   = "Terraform managed."
+  description   = each.value.description
   address       = each.value.address
   address_type  = "INTERNAL"
   network       = each.value.network

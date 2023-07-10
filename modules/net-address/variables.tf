@@ -35,12 +35,13 @@ variable "global_addresses" {
 variable "internal_addresses" {
   description = "Map of internal addresses to create, keyed by name."
   type = map(object({
-    region     = string
-    subnetwork = string
-    address    = optional(string)
-    labels     = optional(map(string))
-    purpose    = optional(string)
-    tier       = optional(string)
+    region      = string
+    subnetwork  = string
+    address     = optional(string)
+    description = optional(string, "Terraform managed.")
+    labels      = optional(map(string))
+    purpose     = optional(string)
+    tier        = optional(string)
   }))
   default = {}
 }
@@ -61,6 +62,7 @@ variable "psa_addresses" {
   type = map(object({
     address       = string
     network       = string
+    description   = optional(string, "Terraform managed.")
     prefix_length = number
   }))
   default = {}
@@ -69,8 +71,9 @@ variable "psa_addresses" {
 variable "psc_addresses" {
   description = "Map of internal addresses used for Private Service Connect."
   type = map(object({
-    address = string
-    network = string
+    address     = string
+    network     = string
+    description = optional(string, "Terraform managed.")
   }))
   default = {}
 }
