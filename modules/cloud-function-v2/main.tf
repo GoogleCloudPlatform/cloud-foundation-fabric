@@ -24,6 +24,18 @@ locals {
       : null
     )
   )
+  _iam_run_invoker_members = concat(
+    lookup(var.iam, "roles/run.invoker", []),
+    var.trigger_config == null ? [] :
+    var.trigger_config.service_account_create ? ["serviceAccount:${local.trigger_service_account_email}"] : []
+  )
+  iam = merge(
+    var.iam,
+    length(local._iam_run_invoker_members) == 0 ? {} :
+    {
+      "roles/run.invoker" : local._iam_run_invoker_members
+    },
+  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   service_account_email = (
     var.service_account_create
@@ -210,13 +222,4 @@ resource "google_service_account" "trigger_service_account" {
   project      = var.project_id
   account_id   = "tf-cf-trigger-${var.name}"
   display_name = "Terraform trigger for Cloud Function ${var.name}."
-}
-
-resource "google_project_iam_member" "trigger_iam" {
-  count = (
-    try(var.trigger_config.service_account_create, false) == true ? 1 : 0
-  )
-  project = var.project_id
-  member  = "serviceAccount:${google_service_account.trigger_service_account[0].email}"
-  role    = "roles/run.invoker"
 }
