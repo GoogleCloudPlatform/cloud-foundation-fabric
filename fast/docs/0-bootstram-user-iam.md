@@ -1,5 +1,8 @@
 # Remove initial gcloud commands needed to bootstrap
 
+**authors:** [Ludo](https://github.com/ludoo)\
+**date:** July 13, 2023
+
 ## Status
 
 Rejected.
