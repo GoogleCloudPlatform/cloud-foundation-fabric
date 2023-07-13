@@ -162,22 +162,35 @@ variable "trigger_config" {
 }
 
 variable "vpc_connector" {
-  description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created."
+  description = "Populate this to create a VPC connector."
   type = object({
-    create          = bool
-    name            = string
-    egress_settings = string
+    ip_cidr_range = optional(string)
+    vpc_self_link = optional(string)
+    machine_type  = optional(string)
+    name          = optional(string)
+    id            = optional(string)
+    instances = optional(object({
+      max = optional(number)
+      min = optional(number)
+    }), {})
+    throughput = optional(object({
+      max = optional(number)
+      min = optional(number)
+    }), {})
+    subnet = optional(object({
+      name       = optional(string)
+      project_id = optional(string)
+    }), {})
+    egress_settings = optional(string, "private-ranges-only")
+    create          = optional(bool, false)
   })
   default = null
+  validation {
+    condition     = var.vpc_connector == null ? true : !var.vpc_connector.create || (var.vpc_connector.create && var.vpc_connector.name != null && var.vpc_connector.id == null)
+    error_message = "When creating VPC connector you need to provide its name and do not provide the id"
+  }
+  validation {
+    condition     = var.vpc_connector == null ? true : var.vpc_connector.create || (!var.vpc_connector.create && (var.vpc_connector.name != null || var.vpc_connector.id != null))
+    error_message = "When using existing VPC connector either provide its name (when deployed in the same project and region) or provide its id"
+  }
 }
-
-variable "vpc_connector_config" {
-  description = "VPC connector network configuration. Must be provided if new VPC connector is being created."
-  type = object({
-    ip_cidr_range = string
-    network       = string
-  })
-  default = null
-}
-
-

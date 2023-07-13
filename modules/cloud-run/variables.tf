@@ -160,9 +160,7 @@ variable "revision_annotations" {
       max_scale = number
       min_scale = number
     }))
-    cloudsql_instances  = optional(list(string), [])
-    vpcaccess_connector = optional(string)
-    vpcaccess_egress    = optional(string)
+    cloudsql_instances = optional(list(string), [])
   })
   default  = {}
   nullable = false
@@ -217,13 +215,14 @@ variable "volumes" {
   nullable = false
 }
 
-variable "vpc_connector_create" {
-  description = "Populate this to create a VPC connector. You can then refer to it in the template annotations."
+variable "vpc_connector" {
+  description = "Populate this to create a VPC connector."
   type = object({
     ip_cidr_range = optional(string)
     vpc_self_link = optional(string)
     machine_type  = optional(string)
     name          = optional(string)
+    id            = optional(string)
     instances = optional(object({
       max = optional(number)
       min = optional(number)
@@ -236,6 +235,16 @@ variable "vpc_connector_create" {
       name       = optional(string)
       project_id = optional(string)
     }), {})
+    egress_settings = optional(string, "private-ranges-only")
+    create          = optional(bool, false)
   })
   default = null
+  validation {
+    condition     = var.vpc_connector == null ? true : !var.vpc_connector.create || (var.vpc_connector.create && var.vpc_connector.name != null && var.vpc_connector.id == null)
+    error_message = "When creating VPC connector you need to provide its name and do not provide the id"
+  }
+  validation {
+    condition     = var.vpc_connector == null ? true : var.vpc_connector.create || (!var.vpc_connector.create && (var.vpc_connector.name != null || var.vpc_connector.id != null))
+    error_message = "When using existing VPC connector either provide its name (when deployed in the same project and region) or provide its id"
+  }
 }

@@ -15,21 +15,6 @@
  */
 
 locals {
-  _vpcaccess_annotation = (
-    local.vpc_connector_create
-    ? {
-      "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.0.id
-    }
-    : (
-      var.revision_annotations.vpcaccess_connector == null
-      ? {}
-      : {
-        "run.googleapis.com/vpc-access-connector" = (
-          var.revision_annotations.vpcaccess_connector
-        )
-      }
-    )
-  )
   annotations = merge(
     var.ingress_settings == null ? {} : {
       "run.googleapis.com/ingress" = var.ingress_settings
@@ -63,10 +48,12 @@ locals {
         join(",", var.revision_annotations.cloudsql_instances)
       )
     },
-    local._vpcaccess_annotation,
-    var.revision_annotations.vpcaccess_egress == null ? {} : {
+    var.vpc_connector == null ? {} : {
+      "run.googleapis.com/vpc-access-connector" = local.vpc_connector
+    },
+    var.vpc_connector.egress_settings == null ? {} : {
       "run.googleapis.com/vpc-access-egress" = (
-        var.revision_annotations.vpcaccess_egress
+        var.vpc_connector.egress_settings
       )
     },
   )
@@ -95,28 +82,47 @@ locals {
     : var.eventarc_triggers.service_account_email
   )
 
-  vpc_connector_create = var.vpc_connector_create != null
+  vpc_connector = (
+    var.vpc_connector == null
+    ? null
+    : (
+      var.vpc_connector.create
+      ? google_vpc_access_connector.connector.0.id
+      : coalesce(var.vpc_connector.id, data.google_vpc_access_connector.connector[0].id)
+    )
+  )
+  vpc_connector_create = var.vpc_connector != null
+}
+
+data "google_vpc_access_connector" "connector" {
+  count   = !local.vpc_connector_create && var.vpc_connector.id == null ? 1 : 0
+  name    = var.vpc_connector.name
+  project = var.project_id
+  region  = var.region
 }
 
 resource "google_vpc_access_connector" "connector" {
   count   = local.vpc_connector_create ? 1 : 0
   project = var.project_id
   name = (
-    var.vpc_connector_create.name != null
-    ? var.vpc_connector_create.name
+    var.vpc_connector.name != null
+    ? var.vpc_connector.name
     : var.name
   )
   region         = var.region
-  ip_cidr_range  = var.vpc_connector_create.ip_cidr_range
-  network        = var.vpc_connector_create.vpc_self_link
-  machine_type   = var.vpc_connector_create.machine_type
-  max_instances  = var.vpc_connector_create.instances.max
-  max_throughput = var.vpc_connector_create.throughput.max
-  min_instances  = var.vpc_connector_create.instances.min
-  min_throughput = var.vpc_connector_create.throughput.min
-  subnet {
-    name       = var.vpc_connector_create.subnet.name
-    project_id = var.vpc_connector_create.subnet.project_id
+  ip_cidr_range  = var.vpc_connector.ip_cidr_range
+  network        = var.vpc_connector.vpc_self_link
+  machine_type   = var.vpc_connector.machine_type
+  max_instances  = var.vpc_connector.instances.max
+  max_throughput = var.vpc_connector.throughput.max
+  min_instances  = var.vpc_connector.instances.min
+  min_throughput = var.vpc_connector.throughput.min
+  dynamic "subnet" {
+    for_each = var.vpc_connector.subnet.name == null ? [] : [""]
+    content {
+      name       = var.vpc_connector.subnet.name
+      project_id = var.vpc_connector.subnet.project_id
+    }
   }
 }
 

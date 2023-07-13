@@ -39,20 +39,44 @@ locals {
     var.vpc_connector == null
     ? null
     : (
-      try(var.vpc_connector.create, false) == false
-      ? var.vpc_connector.name
-      : google_vpc_access_connector.connector.0.id
+      var.vpc_connector.create
+      ? google_vpc_access_connector.connector.0.id
+      : coalesce(var.vpc_connector.id, data.google_vpc_access_connector.connector[0].id)
     )
   )
+  vpc_connector_create = var.vpc_connector != null
+}
+
+data "google_vpc_access_connector" "connector" {
+  count   = !local.vpc_connector_create && var.vpc_connector.id == null ? 1 : 0
+  name    = var.vpc_connector.name
+  project = var.project_id
+  region  = var.region
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count         = try(var.vpc_connector.create, false) == true ? 1 : 0
-  project       = var.project_id
-  name          = var.vpc_connector.name
-  region        = var.region
-  ip_cidr_range = var.vpc_connector_config.ip_cidr_range
-  network       = var.vpc_connector_config.network
+  count   = local.vpc_connector_create ? 1 : 0
+  project = var.project_id
+  name = (
+    var.vpc_connector.name != null
+    ? var.vpc_connector.name
+    : var.name
+  )
+  region         = var.region
+  ip_cidr_range  = var.vpc_connector.ip_cidr_range
+  network        = var.vpc_connector.vpc_self_link
+  machine_type   = var.vpc_connector.machine_type
+  max_instances  = var.vpc_connector.instances.max
+  max_throughput = var.vpc_connector.throughput.max
+  min_instances  = var.vpc_connector.instances.min
+  min_throughput = var.vpc_connector.throughput.min
+  dynamic "subnet" {
+    for_each = var.vpc_connector.subnet.name == null ? [] : [""]
+    content {
+      name       = var.vpc_connector.subnet.name
+      project_id = var.vpc_connector.subnet.project_id
+    }
+  }
 }
 
 resource "google_cloudfunctions2_function" "function" {
@@ -107,8 +131,9 @@ resource "google_cloudfunctions2_function" "function" {
     all_traffic_on_latest_revision = true
     service_account_email          = local.service_account_email
     vpc_connector                  = local.vpc_connector
-    vpc_connector_egress_settings = try(
-    var.vpc_connector.egress_settings, null)
+    vpc_connector_egress_settings = (var.vpc_connector == null ? null
+      : var.vpc_connector.egress_settings
+    )
 
     dynamic "secret_environment_variables" {
       for_each = { for k, v in var.secrets : k => v if !v.is_volume }

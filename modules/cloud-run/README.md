@@ -101,7 +101,7 @@ module "cloud_run" {
 
 ### VPC Access Connector creation
 
-If creation of a [VPC Access Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access) is required, use the `vpc_connector_create` variable which also support optional attributes for number of instances, machine type, and throughput (not shown here). The annotation to use the connector will be added automatically.
+If creation of a [VPC Access Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access) is required, use the `vpc_connector` variable which also support optional attributes for number of instances, machine type, and throughput (not shown here). The annotation to use the connector will be added automatically.
 
 ```hcl
 module "cloud_run" {
@@ -113,8 +113,10 @@ module "cloud_run" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
-  vpc_connector_create = {
-    ip_cidr_range = "10.10.10.0/24"
+  vpc_connector = {
+    create        = true
+    name          = "vpc-connector"
+    ip_cidr_range = "10.10.10.0/28"
     vpc_self_link = "projects/example/host/global/networks/host"
   }
 }
@@ -133,7 +135,9 @@ module "cloud_run" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
-  vpc_connector_create = {
+  vpc_connector = {
+    create        = true
+    name          = "vpc-connector"
     subnet = {
       name       = "subnet-vpc-access"
       project_id = "host-project"
@@ -320,14 +324,14 @@ module "cloud_run" {
 | [labels](variables.tf#L124) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L135) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
 | [region](variables.tf#L150) | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [revision_annotations](variables.tf#L156) | Configure revision template annotations. | <code title="object&#40;&#123;&#10;  autoscaling &#61; optional&#40;object&#40;&#123;&#10;    max_scale &#61; number&#10;    min_scale &#61; number&#10;  &#125;&#41;&#41;&#10;  cloudsql_instances  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  vpcaccess_connector &#61; optional&#40;string&#41;&#10;  vpcaccess_egress    &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [revision_name](variables.tf#L171) | Revision name. | <code>string</code> |  | <code>null</code> |
-| [service_account](variables.tf#L177) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L183) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [timeout_seconds](variables.tf#L189) | Maximum duration the instance is allowed for responding to a request. | <code>number</code> |  | <code>null</code> |
-| [traffic](variables.tf#L195) | Traffic steering configuration. If revision name is null the latest revision will be used. | <code title="map&#40;object&#40;&#123;&#10;  percent &#61; number&#10;  latest  &#61; optional&#40;bool&#41;&#10;  tag     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [volumes](variables.tf#L206) | Named volumes in containers in name => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  secret_name  &#61; string&#10;  default_mode &#61; optional&#40;string&#41;&#10;  items &#61; optional&#40;map&#40;object&#40;&#123;&#10;    path &#61; string&#10;    mode &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vpc_connector_create](variables.tf#L220) | Populate this to create a VPC connector. You can then refer to it in the template annotations. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; optional&#40;string&#41;&#10;  vpc_self_link &#61; optional&#40;string&#41;&#10;  machine_type  &#61; optional&#40;string&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  subnet &#61; optional&#40;object&#40;&#123;&#10;    name       &#61; optional&#40;string&#41;&#10;    project_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [revision_annotations](variables.tf#L156) | Configure revision template annotations. | <code title="object&#40;&#123;&#10;  autoscaling &#61; optional&#40;object&#40;&#123;&#10;    max_scale &#61; number&#10;    min_scale &#61; number&#10;  &#125;&#41;&#41;&#10;  cloudsql_instances &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [revision_name](variables.tf#L169) | Revision name. | <code>string</code> |  | <code>null</code> |
+| [service_account](variables.tf#L175) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L181) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| [timeout_seconds](variables.tf#L187) | Maximum duration the instance is allowed for responding to a request. | <code>number</code> |  | <code>null</code> |
+| [traffic](variables.tf#L193) | Traffic steering configuration. If revision name is null the latest revision will be used. | <code title="map&#40;object&#40;&#123;&#10;  percent &#61; number&#10;  latest  &#61; optional&#40;bool&#41;&#10;  tag     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [volumes](variables.tf#L204) | Named volumes in containers in name => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  secret_name  &#61; string&#10;  default_mode &#61; optional&#40;string&#41;&#10;  items &#61; optional&#40;map&#40;object&#40;&#123;&#10;    path &#61; string&#10;    mode &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpc_connector](variables.tf#L218) | Populate this to create a VPC connector. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; optional&#40;string&#41;&#10;  vpc_self_link &#61; optional&#40;string&#41;&#10;  machine_type  &#61; optional&#40;string&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  id            &#61; optional&#40;string&#41;&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  subnet &#61; optional&#40;object&#40;&#123;&#10;    name       &#61; optional&#40;string&#41;&#10;    project_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  egress_settings &#61; optional&#40;string, &#34;private-ranges-only&#34;&#41;&#10;  create          &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
