@@ -9,7 +9,7 @@ Rejected.
 
 ## Context
 
-The initial `gcloud` commands that grant IAM roles to the user running `apply` for the first time, are sometimes seen an extra hurdle and an unnecessary complication.
+The initial `gcloud` commands that grant IAM roles to the user running `apply` for the first time, are sometimes seen as an extra hurdle and an unnecessary complication.
 
 These are the roles in question
 
