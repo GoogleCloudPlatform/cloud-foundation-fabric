@@ -29,7 +29,7 @@ Working around this issue would require a substantial amount of hoops and a lot 
 
 ## Decision
 
-What the decided is to leave those external commands in place, as the hurdle is minimal and not worth the expense and risks of removing it.
+What we decided is to leave those external commands in place, as the hurdle is minimal and not worth the expense and risks of removing it.
 
 ## Consequences
 
