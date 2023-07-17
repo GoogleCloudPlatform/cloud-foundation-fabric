@@ -110,6 +110,10 @@ resource "google_compute_instance_group_manager" "default" {
       }
     }
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "google_compute_region_instance_group_manager" "default" {
@@ -200,5 +204,9 @@ resource "google_compute_region_instance_group_manager" "default" {
         }
       }
     }
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
