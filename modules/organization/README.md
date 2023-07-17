@@ -162,6 +162,8 @@ module "org" {
 # tftest modules=1 resources=2 inventory=custom-constraints.yaml
 ```
 
+You can use the `id` or `custom_constraint_ids` outputs to prevent race conditions between the creation of a custom constraint and an organization policy using that constraint. Both of these outputs depend on the actual constraint, which would make any resource referring to them to wait for the creation of the constraint.
+
 ### Organization Policy Custom Constraints Factory
 
 Org policy custom constraints can be loaded from a directory containing YAML files where each file defines one or more custom constraints. The structure of the YAML files is exactly the same as the `org_policy_custom_constraints` variable.
@@ -569,16 +571,17 @@ module "org" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [custom_role_id](outputs.tf#L17) | Map of custom role IDs created in the organization. |  |
-| [custom_roles](outputs.tf#L30) | Map of custom roles resources created in the organization. |  |
-| [firewall_policies](outputs.tf#L35) | Map of firewall policy resources created in the organization. |  |
-| [firewall_policy_id](outputs.tf#L40) | Map of firewall policy ids created in the organization. |  |
-| [id](outputs.tf#L45) | Fully qualified organization id. |  |
-| [network_tag_keys](outputs.tf#L61) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L70) | Tag value resources. |  |
-| [organization_id](outputs.tf#L80) | Organization id dependent on module resources. |  |
-| [sink_writer_identities](outputs.tf#L96) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L104) | Tag key resources. |  |
-| [tag_values](outputs.tf#L113) | Tag value resources. |  |
+| [custom_constraint_ids](outputs.tf#L17) | Map of CUSTOM_CONSTRAINTS => ID in the organization. |  |
+| [custom_role_id](outputs.tf#L22) | Map of custom role IDs created in the organization. |  |
+| [custom_roles](outputs.tf#L35) | Map of custom roles resources created in the organization. |  |
+| [firewall_policies](outputs.tf#L40) | Map of firewall policy resources created in the organization. |  |
+| [firewall_policy_id](outputs.tf#L45) | Map of firewall policy ids created in the organization. |  |
+| [id](outputs.tf#L50) | Fully qualified organization id. |  |
+| [network_tag_keys](outputs.tf#L67) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L76) | Tag value resources. |  |
+| [organization_id](outputs.tf#L86) | Organization id dependent on module resources. |  |
+| [sink_writer_identities](outputs.tf#L103) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L111) | Tag key resources. |  |
+| [tag_values](outputs.tf#L120) | Tag value resources. |  |
 
 <!-- END TFDOC -->
