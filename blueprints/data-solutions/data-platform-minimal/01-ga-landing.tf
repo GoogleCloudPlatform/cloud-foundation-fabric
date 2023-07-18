@@ -15,14 +15,14 @@
 # tfdoc:file:description Landing project and resources.
 
 locals {
-  iam_lnd = {
+  iam_ga_lnd = {
     "roles/storage.objectCreator" = [module.land-sa-0.iam_email]
     "roles/storage.objectViewer"  = [module.processing-sa-cmp-0.iam_email]
     "roles/storage.objectAdmin"   = [module.processing-sa-0.iam_email]
   }
 }
 
-module "land-project" {
+module "ga-land-project" {
   source          = "../../../modules/project"
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
