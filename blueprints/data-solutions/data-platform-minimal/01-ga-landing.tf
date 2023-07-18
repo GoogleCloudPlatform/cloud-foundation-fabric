@@ -74,7 +74,7 @@ module "ga-land-sa-0" {
 module "ga-land-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.ga-land-project.project_id
-  id             = "138490033"
+  id             = var.google_analytics_property_id
   location       = var.location
   encryption_key = var.service_encryption_keys.bq
 }
