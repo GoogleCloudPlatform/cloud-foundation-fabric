@@ -16,7 +16,7 @@
 
 locals {
   iam_ga_lnd = {
-    "roles/storage.objectCreator" = [module.land-sa-0.iam_email]
+    "roles/storage.objectCreator" = [module.ga-land-sa-0.iam_email]
     "roles/storage.objectViewer"  = [module.processing-sa-cmp-0.iam_email]
     "roles/storage.objectAdmin"   = [module.processing-sa-0.iam_email]
   }
@@ -33,8 +33,8 @@ module "ga-land-project" {
     ? var.project_config.project_ids.ga_landing
     : "${var.project_config.project_ids.ga_landing}${local.project_suffix}"
   )
-  iam          = var.project_config.billing_account_id != null ? local.iam_lnd : null
-  iam_additive = var.project_config.billing_account_id == null ? local.iam_lnd : null
+  iam          = var.project_config.billing_account_id != null ? local.iam_ga_lnd : null
+  iam_additive = var.project_config.billing_account_id == null ? local.iam_ga_lnd : null
   services = [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -71,13 +71,10 @@ module "ga-land-sa-0" {
   }
 }
 
-module "ga-land-cs-0" {
-  source         = "../../../modules/gcs"
-  project_id     = module.ga-land-project.project_id
-  prefix         = var.prefix
-  name           = "ga-lnd-cs-0"
+module "ga-land-bq-0" {
+  source         = "../../../modules/bigquery-dataset"
+  project_id     = module.land-project.project_id
+  id             = "138490033"
   location       = var.location
-  storage_class  = "MULTI_REGIONAL"
-  encryption_key = var.service_encryption_keys.storage
-  force_destroy  = var.data_force_destroy
+  encryption_key = var.service_encryption_keys.bq
 }
