@@ -73,7 +73,7 @@ module "ga-land-sa-0" {
 
 module "ga-land-bq-0" {
   source         = "../../../modules/bigquery-dataset"
-  project_id     = module.land-project.project_id
+  project_id     = module.ga-land-project.project_id
   id             = "138490033"
   location       = var.location
   encryption_key = var.service_encryption_keys.bq
