@@ -18,55 +18,10 @@
 #                                zone variables                               #
 ###############################################################################
 
-variable "client_networks" {
-  description = "List of VPC self links that can see this zone."
-  type        = list(string)
-  default     = []
-  nullable    = false
-}
-
 variable "description" {
   description = "Domain description."
   type        = string
   default     = "Terraform managed."
-}
-
-variable "dnssec_config" {
-  description = "DNSSEC configuration for this zone."
-  type = object({
-    non_existence = optional(string, "nsec3")
-    state         = string
-    key_signing_key = optional(object(
-      { algorithm = string, key_length = number }),
-      { algorithm = "rsasha256", key_length = 2048 }
-    )
-    zone_signing_key = optional(object(
-      { algorithm = string, key_length = number }),
-      { algorithm = "rsasha256", key_length = 1024 }
-    )
-  })
-  default = {
-    state = "off"
-  }
-  nullable = false
-}
-
-variable "domain" {
-  description = "Zone domain, must end with a period."
-  type        = string
-}
-
-variable "enable_logging" {
-  description = "Enable query logging for this zone."
-  type        = bool
-  default     = false
-  nullable    = false
-}
-
-variable "forwarders" {
-  description = "Map of {IPV4_ADDRESS => FORWARDING_PATH} for 'forwarding' zone types. Path can be 'default', 'private', or null for provider default."
-  type        = map(string)
-  default     = {}
 }
 
 variable "iam" {
@@ -78,12 +33,6 @@ variable "iam" {
 variable "name" {
   description = "Zone name, must be unique within the project."
   type        = string
-}
-
-variable "peer_network" {
-  description = "Peering network self link, only valid for 'peering' zone types."
-  type        = string
-  default     = null
 }
 
 variable "project_id" {
@@ -126,27 +75,48 @@ variable "recordsets" {
   }
 }
 
-variable "service_directory_namespace" {
-  description = "Service directory namespace id (URL), only valid for 'service-directory' zone types."
-  type        = string
-  default     = null
-}
-
-variable "type" {
-  description = "Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory','reverse-managed'."
-  type        = string
-  default     = "private"
+variable "zone_config" {
+  description = "DNS zone configuration."
+  type = object({
+    domain         = string
+    enable_logging = optional(bool, false)
+    forwarding = optional(object({
+      forwarders      = optional(map(string))
+      client_networks = list(string)
+    }))
+    peering = optional(object({
+      client_networks = list(string)
+      peer_network    = string
+    }))
+    public = optional(object({
+      dnssec_config = optional(object({
+        non_existence = optional(string, "nsec3")
+        state         = string
+        key_signing_key = optional(object(
+          { algorithm = string, key_length = number }),
+          { algorithm = "rsasha256", key_length = 2048 }
+        )
+        zone_signing_key = optional(object(
+          { algorithm = string, key_length = number }),
+          { algorithm = "rsasha256", key_length = 1024 }
+        )
+      }))
+    }))
+    private = optional(object({
+      client_networks             = list(string)
+      service_directory_namespace = optional(string)
+    }))
+  })
   validation {
-    condition     = contains(["public", "private", "forwarding", "peering", "service-directory", "reverse-managed"], var.type)
-    error_message = "Zone must be one of 'public', 'private', 'forwarding', 'peering', 'service-directory','reverse-managed'."
+    condition = (
+      (try(var.zone_config.forwarding, null) == null ? 0 : 1) +
+      (try(var.zone_config.peering, null) == null ? 0 : 1) +
+      (try(var.zone_config.public, null) == null ? 0 : 1) +
+      (try(var.zone_config.private, null) == null ? 0 : 1) <= 1
+    )
+    error_message = "Only one type of zone can be configured at a time."
   }
+  default = null
 }
-
-variable "zone_create" {
-  description = "Create zone. When set to false, uses a data source to reference existing zone."
-  type        = bool
-  default     = true
-}
-
 
 

@@ -13,12 +13,12 @@
 # limitations under the License.
 
 values:
-  module.public-dns.google_dns_managed_zone.public[0]:
+  module.public-dns.google_dns_managed_zone.dns_managed_zone[0]:
     dns_name: example.com.
     name: example
     project: myproject
     visibility: public
-  module.public-dns.google_dns_record_set.cloud-static-records["A myhost"]:
+  module.public-dns.google_dns_record_set.dns_record_set["A myhost"]:
     managed_zone: example
     name: myhost.example.com.
     project: myproject

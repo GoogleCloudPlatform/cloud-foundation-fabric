@@ -24,13 +24,16 @@ moved {
 }
 
 module "landing-dns-fwd-onprem-example" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "forwarding"
-  name            = "example-com"
-  domain          = "onprem.example.com."
-  client_networks = [module.landing-vpc.self_link]
-  forwarders      = { for ip in var.dns.onprem : ip => null }
+  source     = "../../../modules/dns"
+  project_id = module.landing-project.project_id
+  name       = "example-com"
+  zone_config = {
+    domain = "onprem.example.com."
+    forwarding = {
+      client_networks = [module.landing-vpc.self_link]
+      forwarders      = { for ip in var.dns.onprem : ip => null }
+    }
+  }
 }
 
 moved {
@@ -39,13 +42,16 @@ moved {
 }
 
 module "landing-dns-fwd-onprem-rev-10" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "forwarding"
-  name            = "root-reverse-10"
-  domain          = "10.in-addr.arpa."
-  client_networks = [module.landing-vpc.self_link]
-  forwarders      = { for ip in var.dns.onprem : ip => null }
+  source     = "../../../modules/dns"
+  project_id = module.landing-project.project_id
+  name       = "root-reverse-10"
+  zone_config = {
+    domain = "10.in-addr.arpa."
+    forwarding = {
+      client_networks = [module.landing-vpc.self_link]
+      forwarders      = { for ip in var.dns.onprem : ip => null }
+    }
+  }
 }
 
 moved {
@@ -54,12 +60,15 @@ moved {
 }
 
 module "landing-dns-priv-gcp" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "private"
-  name            = "gcp-example-com"
-  domain          = "gcp.example.com."
-  client_networks = [module.landing-vpc.self_link]
+  source     = "../../../modules/dns"
+  project_id = module.landing-project.project_id
+  name       = "gcp-example-com"
+  zone_config = {
+    domain = "gcp.example.com."
+    private = {
+      client_networks = [module.landing-vpc.self_link]
+    }
+  }
   recordsets = {
     "A localhost" = { records = ["127.0.0.1"] }
   }

@@ -77,24 +77,30 @@ module "vpc-dev" {
 ###############################################################################
 
 module "dns-api-prod" {
-  source          = "../../../modules/dns"
-  project_id      = module.project-host-prod.project_id
-  type            = "private"
-  name            = "googleapis"
-  domain          = "googleapis.com."
-  client_networks = [module.vpc-prod.self_link]
+  source     = "../../../modules/dns"
+  project_id = module.project-host-prod.project_id
+  name       = "googleapis"
+  zone_config = {
+    domain = "googleapis.com."
+    private = {
+      client_networks = [module.vpc-prod.self_link]
+    }
+  }
   recordsets = {
     "CNAME *" = { records = ["private.googleapis.com."] }
   }
 }
 
 module "dns-api-dev" {
-  source          = "../../../modules/dns"
-  project_id      = module.project-host-dev.project_id
-  type            = "private"
-  name            = "googleapis"
-  domain          = "googleapis.com."
-  client_networks = [module.vpc-dev.self_link]
+  source     = "../../../modules/dns"
+  project_id = module.project-host-dev.project_id
+  name       = "googleapis"
+  zone_config = {
+    domain = "googleapis.com."
+    private = {
+      client_networks = [module.vpc-dev.self_link]
+    }
+  }
   recordsets = {
     "CNAME *" = { records = ["private.googleapis.com."] }
   }

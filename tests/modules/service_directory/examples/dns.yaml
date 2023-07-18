@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.dns-sd.google_dns_managed_zone.non-public[0]:
+  module.dns-sd.google_dns_managed_zone.dns_managed_zone[0]:
     dns_name: apps.example.org.
     visibility: private
   module.service-directory.google_service_directory_endpoint.default["app1/one"]:

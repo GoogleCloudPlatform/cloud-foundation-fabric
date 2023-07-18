@@ -19,12 +19,15 @@
 # GCP-specific environment zone
 
 module "prod-dns-private-zone" {
-  source          = "../../../modules/dns"
-  project_id      = module.prod-spoke-project.project_id
-  type            = "private"
-  name            = "prod-gcp-example-com"
-  domain          = "prod.gcp.example.com."
-  client_networks = [module.landing-trusted-vpc.self_link, module.landing-untrusted-vpc.self_link]
+  source     = "../../../modules/dns"
+  project_id = module.prod-spoke-project.project_id
+  name       = "prod-gcp-example-com"
+  zone_config = {
+    domain = "prod.gcp.example.com."
+    private = {
+      client_networks = [module.landing-trusted-vpc.self_link, module.landing-untrusted-vpc.self_link]
+    }
+  }
   recordsets = {
     "A localhost" = { records = ["127.0.0.1"] }
   }
@@ -38,13 +41,16 @@ moved {
 }
 
 module "prod-dns-peer-landing-root" {
-  source          = "../../../modules/dns"
-  project_id      = module.prod-spoke-project.project_id
-  type            = "peering"
-  name            = "prod-root-dns-peering"
-  domain          = "."
-  client_networks = [module.prod-spoke-vpc.self_link]
-  peer_network    = module.landing-trusted-vpc.self_link
+  source     = "../../../modules/dns"
+  project_id = module.prod-spoke-project.project_id
+  name       = "prod-root-dns-peering"
+  zone_config = {
+    domain = "."
+    peering = {
+      client_networks = [module.prod-spoke-vpc.self_link]
+      peer_network    = module.landing-trusted-vpc.self_link
+    }
+  }
 }
 
 moved {
@@ -53,11 +59,14 @@ moved {
 }
 
 module "prod-dns-peer-landing-rev-10" {
-  source          = "../../../modules/dns"
-  project_id      = module.prod-spoke-project.project_id
-  type            = "peering"
-  name            = "prod-reverse-10-dns-peering"
-  domain          = "10.in-addr.arpa."
-  client_networks = [module.prod-spoke-vpc.self_link]
-  peer_network    = module.landing-trusted-vpc.self_link
+  source     = "../../../modules/dns"
+  project_id = module.prod-spoke-project.project_id
+  name       = "prod-reverse-10-dns-peering"
+  zone_config = {
+    domain = "10.in-addr.arpa."
+    peering = {
+      client_networks = [module.prod-spoke-vpc.self_link]
+      peer_network    = module.landing-trusted-vpc.self_link
+    }
+  }
 }

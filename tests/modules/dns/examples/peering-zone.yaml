@@ -13,8 +13,8 @@
 # limitations under the License.
 
 values:
-  module.private-dns.google_dns_managed_zone.non-public[0]:
-    description: Forwarding zone for .
+  module.private-dns.google_dns_managed_zone.dns_managed_zone[0]:
+    description: Terraform managed.
     dns_name: .
     forwarding_config: []
     name: test-example
