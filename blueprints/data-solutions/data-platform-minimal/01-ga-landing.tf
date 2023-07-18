@@ -30,8 +30,8 @@ module "ga-land-project" {
   prefix          = var.project_config.billing_account_id == null ? null : var.prefix
   name = (
     var.project_config.billing_account_id == null
-    ? var.project_config.project_ids.landing
-    : "${var.project_config.project_ids.landing}${local.project_suffix}"
+    ? var.project_config.project_ids.ga_landing
+    : "${var.project_config.project_ids.ga_landing}${local.project_suffix}"
   )
   iam          = var.project_config.billing_account_id != null ? local.iam_lnd : null
   iam_additive = var.project_config.billing_account_id == null ? local.iam_lnd : null

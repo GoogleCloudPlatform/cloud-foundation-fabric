@@ -137,14 +137,16 @@ variable "project_config" {
     parent             = string
     project_ids = optional(object({
       landing    = string
+      ga-landing    = string
       processing = string
       curated    = string
       common     = string
       }), {
-      landing    = "lnd"
-      processing = "prc"
-      curated    = "cur"
-      common     = "cmn"
+      landing       = "lnd"
+      ga_landing    = "ga-lnd"
+      processing    = "prc"
+      curated       = "cur"
+      common        = "cmn"
       }
     )
   })
