@@ -74,8 +74,15 @@ variable "enable_services" {
   type = object({
     composer                = optional(bool, true)
     dataproc_history_server = optional(bool, true)
+    ga_project              = optional(bool, false)
   })
   default = {}
+}
+
+variable "google_analytics_property_id" {
+  description = "ID of the GA property that will be pushing to BQ"
+  type = string
+  default = null
 }
 
 variable "groups" {
