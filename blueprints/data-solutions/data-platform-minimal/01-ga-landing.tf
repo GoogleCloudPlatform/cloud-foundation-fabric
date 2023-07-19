@@ -60,7 +60,6 @@ module "ga-land-project" {
 # Cloud Storage
 
 module "ga-land-sa-0" {
-  count           = var.enable_services.ga_project == true ? 1 : 0
   source       = "../../../modules/iam-service-account"
   project_id   = module.ga-land-project.project_id
   prefix       = var.prefix
@@ -71,9 +70,6 @@ module "ga-land-sa-0" {
       local.groups_iam.data-engineers
     ]
   }
-  depends_on = [
-    module.ga-land-project
-  ]
 }
 
 module "ga-land-bq-0" {
