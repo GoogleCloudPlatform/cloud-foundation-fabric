@@ -11,3 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import sys
+if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 10):
+  raise RuntimeError("Tests require at least version 3.10 of Python. Current version is: {}".format(sys.version))
+
