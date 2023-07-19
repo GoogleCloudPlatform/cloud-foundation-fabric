@@ -39,24 +39,30 @@ module "vpc" {
 }
 
 module "dns-private" {
-  source          = "../../../modules/dns"
-  for_each        = local.projects
-  project_id      = each.value
-  type            = "private"
-  name            = each.key
-  domain          = "${each.key}.${var.dns_domain}."
-  description     = "DNS zone for ${each.key}"
-  client_networks = [module.vpc[each.key].self_link]
+  source      = "../../../modules/dns"
+  for_each    = local.projects
+  project_id  = each.value
+  name        = each.key
+  description = "DNS zone for ${each.key}"
+  zone_config = {
+    domain = "${each.key}.${var.dns_domain}."
+    private = {
+      client_networks = [module.vpc[each.key].self_link]
+    }
+  }
 }
 
 module "dns-peering" {
-  source          = "../../../modules/dns"
-  for_each        = local.projects
-  project_id      = local.svpc_project_id
-  name            = "peering-${each.key}"
-  domain          = "${each.key}.${var.dns_domain}."
-  description     = "DNS peering for ${each.key}"
-  type            = "peering"
-  peer_network    = module.vpc[each.key].self_link
-  client_networks = [var.shared_vpc_link]
+  source      = "../../../modules/dns"
+  for_each    = local.projects
+  project_id  = local.svpc_project_id
+  name        = "peering-${each.key}"
+  description = "DNS peering for ${each.key}"
+  zone_config = {
+    domain = "${each.key}.${var.dns_domain}."
+    peering = {
+      peer_network    = module.vpc[each.key].self_link
+      client_networks = [var.shared_vpc_link]
+    }
+  }
 }

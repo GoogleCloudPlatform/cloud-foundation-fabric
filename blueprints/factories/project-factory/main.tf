@@ -167,13 +167,16 @@ module "billing-alert" {
 }
 
 module "dns" {
-  source          = "../../../modules/dns"
-  for_each        = toset(var.dns_zones)
-  project_id      = coalesce(local.vpc.host_project, module.project.project_id)
-  type            = "private"
-  name            = each.value
-  domain          = "${each.value}.${var.defaults.environment_dns_zone}"
-  client_networks = [var.defaults.shared_vpc_self_link]
+  source     = "../../../modules/dns"
+  for_each   = toset(var.dns_zones)
+  project_id = coalesce(local.vpc.host_project, module.project.project_id)
+  name       = each.value
+  zone_config = {
+    domain = "${each.value}.${var.defaults.environment_dns_zone}"
+    private = {
+      client_networks = [var.defaults.shared_vpc_self_link]
+    }
+  }
 }
 
 module "project" {

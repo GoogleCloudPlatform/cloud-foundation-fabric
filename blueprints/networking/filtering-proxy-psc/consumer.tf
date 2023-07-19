@@ -81,12 +81,15 @@ resource "google_compute_forwarding_rule" "psc_ilb_consumer" {
 ###############################################################################
 
 module "private-dns" {
-  source          = "../../../modules/dns"
-  project_id      = module.project.project_id
-  type            = "private"
-  name            = "${var.prefix}-internal"
-  domain          = "internal."
-  client_networks = [module.vpc-consumer.self_link]
+  source     = "../../../modules/dns"
+  project_id = module.project.project_id
+  name       = "${var.prefix}-internal"
+  zone_config = {
+    domain = "internal."
+    private = {
+      client_networks = [module.vpc-consumer.self_link]
+    }
+  }
   recordsets = {
     "A squid"     = { ttl = 60, records = [google_compute_address.psc_endpoint_address.address] }
     "CNAME proxy" = { ttl = 3600, records = ["squid.internal."] }

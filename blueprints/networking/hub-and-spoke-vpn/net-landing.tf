@@ -48,12 +48,15 @@ module "landing-firewall" {
 }
 
 module "landing-dns-zone" {
-  source          = "../../../modules/dns"
-  project_id      = var.project_id
-  type            = "private"
-  name            = "${var.prefix}-example-com"
-  domain          = "example.com."
-  client_networks = [module.landing-vpc.self_link]
+  source     = "../../../modules/dns"
+  project_id = var.project_id
+  name       = "${var.prefix}-example-com"
+  zone_config = {
+    domain = "example.com."
+    private = {
+      client_networks = [module.landing-vpc.self_link]
+    }
+  }
   recordsets = {
     "A localhost" = { records = ["127.0.0.1"] }
     "A test-r1"   = { records = [module.landing-r1-vm.internal_ip] }

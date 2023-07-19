@@ -152,12 +152,15 @@ module "nat" {
 ################################################################################
 
 module "host-dns" {
-  source          = "../../../modules/dns"
-  project_id      = module.project-host.project_id
-  type            = "private"
-  name            = "example"
-  domain          = "example.com."
-  client_networks = [module.vpc-shared.self_link]
+  source     = "../../../modules/dns"
+  project_id = module.project-host.project_id
+  name       = "example"
+  zone_config = {
+    domain = "example.com."
+    private = {
+      client_networks = [module.vpc-shared.self_link]
+    }
+  }
   recordsets = {
     "A localhost" = { records = ["127.0.0.1"] }
     "A bastion"   = { records = [module.vm-bastion.internal_ip] }

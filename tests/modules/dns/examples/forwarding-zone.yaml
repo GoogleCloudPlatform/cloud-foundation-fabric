@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.private-dns.google_dns_managed_zone.non-public[0]:
+  module.private-dns.google_dns_managed_zone.dns_managed_zone[0]:
     dns_name: test.example.
     forwarding_config:
     - target_name_servers:

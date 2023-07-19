@@ -58,13 +58,16 @@ module "nat-a" {
 }
 
 module "dns-service-zone" {
-  source                      = "../../../modules/dns"
-  project_id                  = module.project.project_id
-  type                        = "service-directory"
-  name                        = var.name
-  domain                      = var.zone_domain
-  client_networks             = [module.vpc.self_link]
-  service_directory_namespace = module.service-directory.id
+  source     = "../../../modules/dns"
+  project_id = module.project.project_id
+  name       = var.name
+  zone_config = {
+    domain = var.zone_domain
+    private = {
+      client_networks             = [module.vpc.self_link]
+      service_directory_namespace = module.service-directory.id
+    }
+  }
 }
 
 module "service-directory" {

@@ -199,12 +199,15 @@ module "function-hello" {
 ###############################################################################
 
 module "private-dns-onprem" {
-  source          = "../../../modules/dns"
-  project_id      = module.project.project_id
-  type            = "private"
-  name            = var.name
-  domain          = "${var.region}-${module.project.project_id}.cloudfunctions.net."
-  client_networks = [module.vpc-onprem.self_link]
+  source     = "../../../modules/dns"
+  project_id = module.project.project_id
+  name       = var.name
+  zone_config = {
+    domain = "${var.region}-${module.project.project_id}.cloudfunctions.net."
+    private = {
+      client_networks = [module.vpc-onprem.self_link]
+    }
+  }
   recordsets = {
     "A " = { records = [module.addresses.psc_addresses[local.psc_name].address] }
   }

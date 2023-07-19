@@ -65,7 +65,7 @@ values:
     project: test1-project
     sensitive_labels: []
     type: email
-  module.projects["project"].module.dns["ipsum"].google_dns_managed_zone.non-public[0]:
+  module.projects["project"].module.dns["ipsum"].google_dns_managed_zone.dns_managed_zone[0]:
     dns_name: ipsum.dev.example.org
     name: ipsum
     private_visibility_config:
@@ -74,7 +74,7 @@ values:
       - network_url: projects/foo/networks/bar
     project: fast-dev-net-spoke-0
     visibility: private
-  module.projects["project"].module.dns["lorem"].google_dns_managed_zone.non-public[0]:
+  module.projects["project"].module.dns["lorem"].google_dns_managed_zone.dns_managed_zone[0]:
     dns_name: lorem.dev.example.org
     name: lorem
     private_visibility_config:

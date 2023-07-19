@@ -24,12 +24,15 @@ moved {
 }
 
 module "dev-dns-priv-example" {
-  source          = "../../../modules/dns"
-  project_id      = module.dev-spoke-project.project_id
-  type            = "private"
-  name            = "dev-gcp-example-com"
-  domain          = "dev.gcp.example.com."
-  client_networks = [module.landing-vpc.self_link]
+  source     = "../../../modules/dns"
+  project_id = module.dev-spoke-project.project_id
+  name       = "dev-gcp-example-com"
+  zone_config = {
+    domain = "dev.gcp.example.com."
+    private = {
+      client_networks = [module.landing-vpc.self_link]
+    }
+  }
   recordsets = {
     "A localhost" = { records = ["127.0.0.1"] }
   }
@@ -43,13 +46,16 @@ moved {
 }
 
 module "dev-dns-peer-landing-root" {
-  source          = "../../../modules/dns"
-  project_id      = module.dev-spoke-project.project_id
-  type            = "peering"
-  name            = "dev-root-dns-peering"
-  domain          = "."
-  client_networks = [module.dev-spoke-vpc.self_link]
-  peer_network    = module.landing-vpc.self_link
+  source     = "../../../modules/dns"
+  project_id = module.dev-spoke-project.project_id
+  name       = "dev-root-dns-peering"
+  zone_config = {
+    domain = "."
+    peering = {
+      client_networks = [module.dev-spoke-vpc.self_link]
+      peer_network    = module.landing-vpc.self_link
+    }
+  }
 }
 
 moved {
@@ -58,11 +64,14 @@ moved {
 }
 
 module "dev-dns-peer-landing-rev-10" {
-  source          = "../../../modules/dns"
-  project_id      = module.dev-spoke-project.project_id
-  type            = "peering"
-  name            = "dev-reverse-10-dns-peering"
-  domain          = "10.in-addr.arpa."
-  client_networks = [module.dev-spoke-vpc.self_link]
-  peer_network    = module.landing-vpc.self_link
+  source     = "../../../modules/dns"
+  project_id = module.dev-spoke-project.project_id
+  name       = "dev-reverse-10-dns-peering"
+  zone_config = {
+    domain = "10.in-addr.arpa."
+    peering = {
+      client_networks = [module.dev-spoke-vpc.self_link]
+      peer_network    = module.landing-vpc.self_link
+    }
+  }
 }

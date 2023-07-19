@@ -77,15 +77,18 @@ module "service-directory" {
 }
 
 module "dns-sd" {
-  source                      = "./fabric/modules/dns"
-  project_id                  = "my-project"
-  type                        = "service-directory"
-  name                        = "apps"
-  domain                      = "apps.example.org."
-  client_networks             = [var.vpc.self_link]
-  service_directory_namespace = module.service-directory.id
+  source     = "./fabric/modules/dns"
+  project_id = "my-project"
+  name       = "apps"
+  zone_config = {
+    domain = "apps.example.org."
+    private = {
+      client_networks             = [var.vpc.self_link]
+      service_directory_namespace = module.service-directory.id
+    }
+  }
 }
-# tftest modules=2 resources=5 inventory=dns.yaml
+# tftest modules=2 resources=6 inventory=dns.yaml
 ```
 <!-- BEGIN TFDOC -->
 
