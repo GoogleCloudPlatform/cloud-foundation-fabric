@@ -139,7 +139,7 @@ resource "google_dns_managed_zone" "dns_managed_zone" {
     }
   }
   cloud_logging_config {
-    enable_logging = try(var.zone_config.enable_logging, false)
+    enable_logging = try(var.zone_config.public.enable_logging, false)
   }
 }
 
