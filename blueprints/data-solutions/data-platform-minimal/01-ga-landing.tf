@@ -20,7 +20,7 @@ locals {
     "roles/storage.objectViewer"  = [module.processing-sa-cmp-0.iam_email]
     "roles/storage.objectAdmin"   = [module.processing-sa-0.iam_email]
   }
-  project_id = module.ga-land-project.project_id
+  project_id = var.google_analytics_property_id != null ? module.ga-land-project.project_id) : null
 }
 
 module "ga-land-project" {
