@@ -48,22 +48,28 @@ module "dev-firewall" {
 }
 
 module "dev-dns-peering" {
-  source          = "../../../modules/dns"
-  project_id      = var.project_id
-  type            = "peering"
-  name            = "${var.prefix}-example-com-dev-peering"
-  domain          = "example.com."
-  client_networks = [module.dev-vpc.self_link]
-  peer_network    = module.landing-vpc.self_link
+  source     = "../../../modules/dns"
+  project_id = var.project_id
+  name       = "${var.prefix}-example-com-dev-peering"
+  zone_config = {
+    domain = "example.com."
+    peering = {
+      client_networks = [module.dev-vpc.self_link]
+      peer_network    = module.landing-vpc.self_link
+    }
+  }
 }
 
 module "dev-dns-zone" {
-  source          = "../../../modules/dns"
-  project_id      = var.project_id
-  type            = "private"
-  name            = "${var.prefix}-dev-example-com"
-  domain          = "dev.example.com."
-  client_networks = [module.landing-vpc.self_link]
+  source     = "../../../modules/dns"
+  project_id = var.project_id
+  name       = "${var.prefix}-dev-example-com"
+  zone_config = {
+    domain = "dev.example.com."
+    private = {
+      client_networks = [module.landing-vpc.self_link]
+    }
+  }
   recordsets = {
     "A localhost" = { records = ["127.0.0.1"] }
     "A test-r2"   = { records = [module.dev-r2-vm.internal_ip] }

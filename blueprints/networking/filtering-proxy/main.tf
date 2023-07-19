@@ -114,12 +114,15 @@ module "nat" {
 }
 
 module "private-dns" {
-  source          = "../../../modules/dns"
-  project_id      = module.project-host.project_id
-  type            = "private"
-  name            = "internal"
-  domain          = "internal."
-  client_networks = [module.vpc.self_link]
+  source     = "../../../modules/dns"
+  project_id = module.project-host.project_id
+  name       = "internal"
+  zone_config = {
+    domain = "internal."
+    private = {
+      client_networks = [module.vpc.self_link]
+    }
+  }
   recordsets = {
     "A squid"     = { ttl = 60, records = [local.squid_address] }
     "CNAME proxy" = { ttl = 3600, records = ["squid.internal."] }

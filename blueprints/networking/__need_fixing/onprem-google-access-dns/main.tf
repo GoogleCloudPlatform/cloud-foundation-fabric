@@ -157,12 +157,15 @@ module "nat2" {
 ################################################################################
 
 module "dns-gcp" {
-  source          = "../../../modules/dns"
-  project_id      = var.project_id
-  type            = "private"
-  name            = "gcp-example"
-  domain          = "gcp.example.org."
-  client_networks = [module.vpc.self_link]
+  source     = "../../../modules/dns"
+  project_id = var.project_id
+  name       = "gcp-example"
+  zone_config = {
+    domain = "gcp.example.org."
+    private = {
+      client_networks = [module.vpc.self_link]
+    }
+  }
   recordsets = {
     "A localhost" = { records = ["127.0.0.1"] }
     "A test-1"    = { records = [module.vm-test1.internal_ip] }
@@ -171,12 +174,15 @@ module "dns-gcp" {
 }
 
 module "dns-api" {
-  source          = "../../../modules/dns"
-  project_id      = var.project_id
-  type            = "private"
-  name            = "googleapis"
-  domain          = "googleapis.com."
-  client_networks = [module.vpc.self_link]
+  source     = "../../../modules/dns"
+  project_id = var.project_id
+  name       = "googleapis"
+  zone_config = {
+    domain = "googleapis.com."
+    private = {
+      client_networks = [module.vpc.self_link]
+    }
+  }
   recordsets = {
     "CNAME *"      = { records = ["private.googleapis.com."] }
     "A private"    = { records = local.vips.private }
@@ -185,14 +191,17 @@ module "dns-api" {
 }
 
 module "dns-onprem" {
-  source          = "../../../modules/dns"
-  project_id      = var.project_id
-  type            = "forwarding"
-  name            = "onprem-example"
-  domain          = "onprem.example.org."
-  client_networks = [module.vpc.self_link]
-  forwarders = {
-    "${cidrhost(var.ip_ranges.onprem, 3)}" = null
+  source     = "../../../modules/dns"
+  project_id = var.project_id
+  name       = "onprem-example"
+  zone_config = {
+    domain = "onprem.example.org."
+    forwarding = {
+      client_networks = [module.vpc.self_link]
+      forwarders = {
+        "${cidrhost(var.ip_ranges.onprem, 3)}" = null
+      }
+    }
   }
 }
 
