@@ -72,7 +72,7 @@ module "ga-land-sa-0" {
 }
 
 module "ga-land-bq-0" {
-  count   = var.enable_services.composer != null ? 1 : 0
+  count   = var.google_analytics_property_id != null ? 1 : 0
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.ga-land-project.project_id
   id             = var.google_analytics_property_id
