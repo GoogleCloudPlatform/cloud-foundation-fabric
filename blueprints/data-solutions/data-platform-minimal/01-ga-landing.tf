@@ -60,9 +60,9 @@ module "ga-land-project" {
 # Cloud Storage
 
 module "ga-land-sa-0" {
-  count          = var.enable_services.ga_project == true ? 1 : 0
+  count        = var.enable_services.ga_project == true ? 1 : 0
   source       = "../../../modules/iam-service-account"
-  project_id   = optional(string, module.ga-land-project.project_id)
+  project_id   = module.ga-land-project.project_id
   prefix       = var.prefix
   name         = "ga-lnd-sa-0"
   display_name = "Data platform GA landing zone service account."
