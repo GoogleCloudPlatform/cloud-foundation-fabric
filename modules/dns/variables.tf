@@ -78,8 +78,7 @@ variable "recordsets" {
 variable "zone_config" {
   description = "DNS zone configuration."
   type = object({
-    domain         = string
-    enable_logging = optional(bool, false)
+    domain = string
     forwarding = optional(object({
       forwarders      = optional(map(string))
       client_networks = list(string)
@@ -101,6 +100,7 @@ variable "zone_config" {
           { algorithm = "rsasha256", key_length = 1024 }
         )
       }))
+      enable_logging = optional(bool, false)
     }))
     private = optional(object({
       client_networks             = list(string)
