@@ -71,9 +71,6 @@ module "ga-land-sa-0" {
       local.groups_iam.data-engineers
     ]
   }
-  depends_on = [
-    module.ga-land-project
-  ]
 }
 
 module "ga-land-bq-0" {
