@@ -132,7 +132,7 @@ locals {
   )
   services = distinct(concat(var.services, local._services))
   vpc = coalesce(var.vpc, {
-    host_project = null, gke_setup = null, subnets_iam = null
+    host_project = null, gke_setup = null, subnets_iam = null, serverless_connector_iam = null
   })
   vpc_cloudservices = (
     local.vpc_gke_service_agent ||
@@ -148,6 +148,15 @@ locals {
     for binding in local._vpc_subnet_bindings :
     "${binding.subnet}:${binding.member}" => binding
   }
+  vpc_cloud_run_agent = coalesce(
+    try(local.vpc.serverless_connector_iam.enable_cloud_run_agent, null), false
+  )
+  vpc_cloud_functions_agent = coalesce(
+    try(local.vpc.serverless_connector_iam.enable_cloud_functions_agent, null), false
+  )
+  vpc_app_engine_standard_agent = coalesce(
+    try(local.vpc.serverless_connector_iam.enable_app_engine_standard_agent, null), false
+  )
 }
 
 module "billing-alert" {
@@ -206,6 +215,11 @@ module "project" {
       ])
       "roles/container.hostServiceAgentUser" = compact([
         local.vpc_gke_service_agent ? "container-engine" : null
+      ])
+      "roles/vpcaccess.user" = compact([
+        local.vpc_cloud_run_agent ? "cloudrun" : null,
+        local.vpc_cloud_functions_agent ? "cloudfunctions" : null,
+        local.vpc_app_engine_standard_agent ? "appenginestandard" : null,
       ])
     }
   }

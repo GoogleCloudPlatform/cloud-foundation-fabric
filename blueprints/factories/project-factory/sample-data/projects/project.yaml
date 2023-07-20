@@ -105,3 +105,9 @@ vpc:
     europe-west1/dev-default-ew1:
       - user:foobar@example.com
       - serviceAccount:my-service-account
+
+  # [opt] Grants "roles/vpcaccess.user" to the enabled service agents
+  serverless_connector_iam:
+    enable_cloud_run_agent: true
+    enable_cloud_functions_agent: false
+    enable_app_engine_standard_agent: true

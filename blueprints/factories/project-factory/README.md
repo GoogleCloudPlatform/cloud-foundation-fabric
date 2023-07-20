@@ -76,7 +76,7 @@ module "projects" {
   service_identities_iam = try(each.value.service_identities_iam, {})
   vpc                    = try(each.value.vpc, null)
 }
-# tftest modules=7 resources=36 inventory=example.yaml
+# tftest modules=7 resources=38 inventory=example.yaml
 ```
 
 ### Projects configuration
@@ -218,6 +218,12 @@ vpc:
     europe-west1/prod-default-ew1:
       - user:foobar@example.com
       - serviceAccount:service-account1@my-project.iam.gserviceaccount.com
+
+  # [opt] Grants "roles/vpcaccess.user" to the enabled service agents
+  serverless_connector_iam:
+    enable_cloud_run_agent: true
+    enable_cloud_functions_agent: false
+    enable_app_engine_standard_agent: false
 ```
 <!-- BEGIN TFDOC -->
 
@@ -248,7 +254,7 @@ vpc:
 | [service_identities_iam](variables.tf#L184) | Custom IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_identities_iam_additive](variables.tf#L191) | Custom additive IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [services](variables.tf#L198) | Services to be enabled for the project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc](variables.tf#L205) | VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; object&#40;&#123;&#10;    enable_security_admin     &#61; bool&#10;    enable_host_service_agent &#61; bool&#10;  &#125;&#41;&#10;  subnets_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc](variables.tf#L205) | VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; object&#40;&#123;&#10;    enable_security_admin     &#61; bool&#10;    enable_host_service_agent &#61; bool&#10;  &#125;&#41;&#10;  subnets_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;  serverless_connector_iam &#61; object&#40;&#123;&#10;    enable_cloud_run_agent           &#61; bool&#10;    enable_cloud_functions_agent     &#61; bool&#10;    enable_app_engine_standard_agent &#61; bool&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

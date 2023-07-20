@@ -211,6 +211,11 @@ variable "vpc" {
       enable_host_service_agent = bool
     })
     subnets_iam = map(list(string))
+    serverless_connector_iam = object({
+      enable_cloud_run_agent           = bool
+      enable_cloud_functions_agent     = bool
+      enable_app_engine_standard_agent = bool
+    })
   })
   default = null
 }
