@@ -82,7 +82,7 @@ variable "google_analytics_project" {
   description = "Optional landing project for Google Analytics data"
   type        = object({
     property_ids   = list(string)
-    dataset_region = string
+    datasets_region = string
   })
   default     = null
 }
