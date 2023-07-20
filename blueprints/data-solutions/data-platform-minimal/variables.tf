@@ -150,7 +150,7 @@ variable "project_config" {
       common     = string
       }), {
       landing    = "lnd"
-      ga_landing = "ga-lnd"
+      ga_landing = "ga-land"
       processing = "prc"
       curated    = "cur"
       common     = "cmn"

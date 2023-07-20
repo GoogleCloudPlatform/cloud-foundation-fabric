@@ -63,7 +63,7 @@ module "ga-land-sa-0" {
   source       = "../../../modules/iam-service-account"
   project_id   = module.ga-land-project[0].project_id
   prefix       = var.prefix
-  name         = "ga-lnd-sa-0"
+  name         = "ga-land-sa-0"
   display_name = "Data platform GA landing zone service account."
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
