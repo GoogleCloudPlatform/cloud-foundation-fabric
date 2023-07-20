@@ -22,6 +22,7 @@ locals {
 }
 
 module "ga-land-project" {
+  count   = var.google_analytics_property_id != null ? 1 : 0
   source          = "../../../modules/project"
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
@@ -60,7 +61,7 @@ module "ga-land-project" {
 module "ga-land-sa-0" {
   count   = var.google_analytics_property_id != null ? 1 : 0
   source       = "../../../modules/iam-service-account"
-  project_id   = module.ga-land-project.project_id
+  project_id   = module.ga-land-project[0].project_id
   prefix       = var.prefix
   name         = "ga-lnd-sa-0"
   display_name = "Data platform GA landing zone service account."
@@ -74,7 +75,7 @@ module "ga-land-sa-0" {
 module "ga-land-bq-0" {
   count   = var.google_analytics_property_id != null ? 1 : 0
   source         = "../../../modules/bigquery-dataset"
-  project_id     = module.ga-land-project.project_id
+  project_id     = module.ga-land-project[0].project_id
   id             = var.google_analytics_property_id
   location       = var.location
   encryption_key = var.service_encryption_keys.bq
