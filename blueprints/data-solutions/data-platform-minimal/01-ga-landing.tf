@@ -85,7 +85,4 @@ module "ga-land-bq-0" {
   depends_on = [
     module.ga-land-project
   ]
-  depends_on = [
-    module.ga-land-project
-  ]
 }
