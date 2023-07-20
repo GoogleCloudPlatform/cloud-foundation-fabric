@@ -80,7 +80,7 @@ variable "enable_services" {
 }
 
 variable "google_analytics_property_id" {
-  description = "ID of the GA property that will be pushing to BQ"
+  description = "ID of the GA property that will be pushing to BQ, if provided a project and dataset will be created in EU"
   type = string
   default = null
 }

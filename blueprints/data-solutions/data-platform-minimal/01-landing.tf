@@ -51,9 +51,6 @@ module "land-project" {
     bq      = [var.service_encryption_keys.bq]
     storage = [var.service_encryption_keys.storage]
   }
-  tag_bindings = {
-    drs-allow-all = var.tag_values["org-policies/allowed-policy-member-domains-all"]
-  }
 }
 
 # Cloud Storage
