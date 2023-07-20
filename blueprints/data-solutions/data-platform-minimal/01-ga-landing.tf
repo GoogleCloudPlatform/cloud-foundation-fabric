@@ -70,9 +70,6 @@ module "ga-land-sa-0" {
       local.groups_iam.data-engineers
     ]
   }
-  depends_on = [
-    module.ga-land-project
-  ]
 }
 
 module "ga-land-bq-0" {
@@ -82,7 +79,4 @@ module "ga-land-bq-0" {
   id             = var.google_analytics_property_id
   location       = var.location
   encryption_key = var.service_encryption_keys.bq
-  depends_on = [
-    module.ga-land-project
-  ]
 }
