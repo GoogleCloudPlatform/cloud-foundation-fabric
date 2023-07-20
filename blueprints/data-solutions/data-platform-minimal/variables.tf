@@ -80,8 +80,8 @@ variable "enable_services" {
 
 variable "google_analytics_property_id" {
   description = "ID of the GA property that will be pushing to BQ, if provided a project and dataset will be created in EU"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "groups" {
@@ -187,5 +187,5 @@ variable "service_encryption_keys" {
 }
 
 variable "tag_values" {
-  type    = map(string)
+  type = map(string)
 }
