@@ -74,7 +74,6 @@ variable "enable_services" {
   type = object({
     composer                = optional(bool, true)
     dataproc_history_server = optional(bool, true)
-    ga_project              = optional(bool, false)
   })
   default = {}
 }
