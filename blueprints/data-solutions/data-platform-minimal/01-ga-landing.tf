@@ -22,7 +22,6 @@ locals {
 }
 
 module "ga-land-project" {
-  count   = var.google_analytics_property_id != null ? 1 : 0
   source          = "../../../modules/project"
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
