@@ -35,6 +35,12 @@ variable "delete_swg_autogen_router_on_destroy" {
   default     = true
 }
 
+variable "description" {
+  description = "Optional description to add to created resources."
+  type        = string
+  default     = "Managed by Terraform."
+}
+
 variable "labels" {
   description = "Resource labels."
   type        = map(string)
