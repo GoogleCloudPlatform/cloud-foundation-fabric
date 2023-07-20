@@ -73,7 +73,7 @@ module "ga-land-sa-0" {
 }
 
 module "ga-land-bq-0" {
-  for_each       = var.google_analytics_project.property_ids
+  for_each       = to_set( var.google_analytics_project.property_ids )
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.ga-land-project[0].project_id
   id             = each.key

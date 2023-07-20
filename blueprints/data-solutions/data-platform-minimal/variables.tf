@@ -80,11 +80,11 @@ variable "enable_services" {
 
 variable "google_analytics_project" {
   description = "Optional landing project for Google Analytics data"
-  type        = object({
-    property_ids   = list(string)
+  type = object({
+    property_ids    = list(string)
     datasets_region = string
   })
-  default     = null
+  default = null
 }
 
 variable "groups" {
