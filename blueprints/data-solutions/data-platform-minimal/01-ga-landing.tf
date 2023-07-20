@@ -22,7 +22,7 @@ locals {
 }
 
 module "ga-land-project" {
-  count           = var.google_analytics_property_id != null ? 1 : 0
+  count           = var.google_analytics_project != null ? 1 : 0
   source          = "../../../modules/project"
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
@@ -59,7 +59,7 @@ module "ga-land-project" {
 # Cloud Storage
 
 module "ga-land-sa-0" {
-  count        = var.google_analytics_property_id != null ? 1 : 0
+  count        = var.google_analytics_project != null ? 1 : 0
   source       = "../../../modules/iam-service-account"
   project_id   = module.ga-land-project[0].project_id
   prefix       = var.prefix
@@ -73,10 +73,10 @@ module "ga-land-sa-0" {
 }
 
 module "ga-land-bq-0" {
-  count          = var.google_analytics_property_id != null ? 1 : 0
+  for_each       = var.google_analytics_project.property_ids
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.ga-land-project[0].project_id
-  id             = var.google_analytics_property_id
-  location       = var.location
+  id             = each.key
+  location       = var.google_analytics_project.datasets_region
   encryption_key = var.service_encryption_keys.bq
 }

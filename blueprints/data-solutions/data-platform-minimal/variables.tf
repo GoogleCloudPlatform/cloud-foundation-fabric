@@ -78,9 +78,12 @@ variable "enable_services" {
   default = {}
 }
 
-variable "google_analytics_property_id" {
-  description = "ID of the GA property that will be pushing to BQ, if provided a project and dataset will be created in EU"
-  type        = string
+variable "google_analytics_project" {
+  description = "Optional landing project for Google Analytics data"
+  type        = object({
+    property_ids   = list(string)
+    dataset_region = string
+  })
   default     = null
 }
 
@@ -187,5 +190,6 @@ variable "service_encryption_keys" {
 }
 
 variable "tag_values" {
+  description = "from 1-resman"
   type = map(string)
 }
