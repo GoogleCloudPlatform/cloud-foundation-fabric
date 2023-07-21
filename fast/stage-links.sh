@@ -104,6 +104,11 @@ case $STAGE_NAME in
   echo "no stage found, trying for parent stage 3..."
   STAGE_NAME=$(basename $(dirname "$(pwd)"))
   if [[ "$STAGE_NAME" == "3-"* ]]; then
+    if [[ "$STAGE_NAME" == "3-gke-multitenant"* ]]; then
+      STAGE_NAME="3-gke"
+    fi
+    SUFFIX=$(basename "$(pwd)")
+    STAGE_NAME="${STAGE_NAME}-$SUFFIX"
     PROVIDER="providers/${STAGE_NAME}-providers.tf"
     TFVARS="tfvars/0-bootstrap.auto.tfvars.json
     tfvars/1-resman.auto.tfvars.json
