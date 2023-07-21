@@ -1,0 +1,54 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.db.google_sql_database_instance.primary:
+    database_version: POSTGRES_13
+    name: db
+    project: project-id
+    region: europe-west1
+    settings:
+    - activation_policy: ALWAYS
+      active_directory_config: []
+      advanced_machine_features: []
+      availability_type: ZONAL
+      collation: null
+      database_flags: []
+      deletion_protection_enabled: null
+      deny_maintenance_period: []
+      disk_autoresize: true
+      disk_autoresize_limit: 0
+      disk_type: PD_SSD
+      insights_config:
+      - query_insights_enabled: true
+        query_plans_per_minute: 5
+        query_string_length: 2048
+        record_application_tags: false
+        record_client_address: false
+      ip_configuration:
+      - allocated_ip_range: null
+        authorized_networks: []
+        enable_private_path_for_google_cloud_services: null
+        ipv4_enabled: false
+        private_network: projects/xxx/global/networks/aaa
+        require_ssl: null
+      maintenance_window: []
+      password_validation_policy: []
+      pricing_plan: PER_USE
+      sql_server_audit_config: []
+      tier: db-g1-small
+      time_zone: null
+
+counts:
+  google_sql_database_instance: 1
