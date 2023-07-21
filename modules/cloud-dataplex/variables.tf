@@ -62,4 +62,12 @@ variable "zones" {
       resource_spec_type     = optional(string, "STORAGE_BUCKET")
     }))
   }))
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.zones : [
+        for kk, vv in v.assets : contains(["BIGQUERY_DATASET", "STORAGE_BUCKET"], vv.resource_spec_type)
+      ]
+    ]))
+    error_message = "Asset spect type must be one of 'BIGQUERY_DATASET' or 'STORAGE_BUCKET'."
+  }
 }
