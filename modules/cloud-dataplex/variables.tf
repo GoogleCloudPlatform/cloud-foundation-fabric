@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+variable "iam" {
+  description = "Dataplex lake IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "location_type" {
   description = "The location type of the Dataplax Lake."
   type        = string
@@ -28,6 +35,7 @@ variable "name" {
 variable "prefix" {
   description = "Optional prefix used to generate Dataplex Lake."
   type        = string
+  default     = null
 }
 
 variable "project_id" {
@@ -45,8 +53,10 @@ variable "zones" {
   type = map(object({
     type      = string
     discovery = optional(bool, true)
+    iam       = optional(map(list(string)), null)
     assets = map(object({
-      bucket_name            = string
+      resource_name          = string
+      resource_project       = optional(string)
       cron_schedule          = optional(string, "15 15 * * *")
       discovery_spec_enabled = optional(bool, true)
       resource_spec_type     = optional(string, "STORAGE_BUCKET")
