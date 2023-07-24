@@ -40,10 +40,6 @@ locals {
     ] if zone_details.iam != null
   ])
 
-  zone_resources = {
-    for zone in google_dataplex_zone.zone :
-    zone.name => zone
-  }
   resource_type_mapping = {
     "STORAGE_BUCKET" : "buckets",
     "BIGQUERY_DATASET" : "datasets"
@@ -90,8 +86,8 @@ resource "google_dataplex_zone_iam_binding" "binding" {
   }
   project       = var.project_id
   location      = var.region
-  lake          = local.zone_resources[each.value.zone].lake
-  dataplex_zone = local.zone_resources[each.value.zone].name
+  lake          = google_dataplex_lake.lake.name
+  dataplex_zone = google_dataplex_zone.zone[each.value.zone].name
   role          = each.value.role
   members       = each.value.members
 }
