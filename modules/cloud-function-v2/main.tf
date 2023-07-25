@@ -99,9 +99,9 @@ resource "google_cloudfunctions2_function" "function" {
         for_each = var.trigger_config.event_filters
         iterator = event_filter
         content {
-          attribute = event_filter.attribute
-          value     = event_filter.value
-          operator  = event_filter.operator
+          attribute = event_filter.value.attribute
+          value     = event_filter.value.value
+          operator  = event_filter.value.operator
         }
       }
       service_account_email = var.trigger_config.service_account_email
