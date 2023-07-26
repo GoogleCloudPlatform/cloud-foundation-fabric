@@ -533,4 +533,19 @@ The remaining configuration is manual, as it regards the repositories themselves
 | [service_accounts](outputs.tf#L156) | Automation service accounts created by this stage. |  |  |
 | [tfvars](outputs.tf#L165) | Terraform variable files for the following stages. | ✓ |  |
 
+## IMPORTING
+If you are redeploying FAST in an org that previously had FAST deployed, you may receive an error it cannot create some organization resources which were previously created in your org. 
+
+Importing Custom Roles
+`terraform import 'module.organization.google_organization_iam_custom_role.roles["serviceProjectNetworkAdmin"]' organizations/$FAST_ORG_ID/roles/serviceProjectNetworkAdmin`
+
+`terraform import 'module.organization.google_organization_iam_custom_role.roles["tenantNetworkAdmin"]' organizations/$FAST_ORG_ID/roles/tenantNetworkAdmin`
+
+`terraform import 'module.organization.google_organization_iam_custom_role.roles["organizationIamAdmin"]' organizations/$FAST_ORG_ID/roles/organizationIamAdmin`
+
+Importing Organization level Log Sinks
+`terraform import 'module.organization.google_logging_organization_sink.sink["vpc-sc"]' organizations/$FAST_ORG_ID/sinks/vpc-sc`
+
+`terraform import 'module.organization.google_logging_organization_sink.sink["audit-logs"]' organizations/$FAST_ORG_ID/sinks/audit-logs`
+
 <!-- END TFDOC -->
