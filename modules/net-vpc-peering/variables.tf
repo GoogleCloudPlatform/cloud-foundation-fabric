@@ -30,7 +30,7 @@ variable "export_peer_custom_routes" {
 variable "export_public_ip_routes" {
   description = "Export subnet routes with public ip."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "local_network" {
