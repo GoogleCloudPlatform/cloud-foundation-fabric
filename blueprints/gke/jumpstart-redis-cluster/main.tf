@@ -14,3 +14,88 @@
  * limitations under the License.
  */
 
+locals {
+  create_vpc     = !local.use_shared_vpc && var.create_config.vpc != null
+  use_shared_vpc = try(var.create_config.project.shared_vpc_host, null) != null
+}
+
+module "project" {
+  source          = "../../../modules/project"
+  parent          = try(var.create_config.project.parent, null)
+  billing_account = try(var.create_config.project.billing_account, null)
+  name            = var.project_id
+  project_create  = var.create_config.project != null
+  services = [
+    "anthos.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "connectgateway.googleapis.com",
+    "container.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
+  shared_vpc_service_config = (
+    local.use_shared_vpc
+    ? null
+    : {
+      attach       = true
+      host_project = var.create_config.project.shared_vpc_host
+      service_identity_iam = {
+        "roles/compute.networkUser" = [
+          "cloudservices", "container-engine"
+        ]
+        "roles/container.hostServiceAgentUser" = [
+          "container-engine"
+        ]
+      }
+    }
+  )
+  iam = {
+    "roles/gkehub.serviceAgent" = [
+      var.fleet_config.project_id == null
+      ? "serviceAccount:${module.project-svc-gke.service_accounts.robots.gkehub}"
+      : "serviceAccount:service-${module.fleet-project.0.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
+    ]
+  }
+}
+
+module "vpc" {
+  source     = "../../../modules/net-vpc"
+  count      = local.create_vpc ? 1 : 0
+  project_id = module.project.project_id
+  name       = var.prefix
+  subnets = [
+    {
+      ip_cidr_range = var.vpc_config.primary_range_nodes
+      name          = "${var.prefix}-default"
+      region        = var.region
+      secondary_ip_ranges = {
+        pods     = var.vpc_config.pods
+        services = var.vpc_config.services
+      }
+    }
+  ]
+}
+
+module "fleet-project" {
+  source         = "../../../modules/project"
+  count          = var.fleet_config.project_id == null ? 0 : 1
+  name           = var.fleet_config.project_id
+  project_create = false
+}
+
+module "fleet" {
+  source = "../../../modules/gke-hub"
+  project_id = try(
+    var.fleet_config.project_id == null
+    ? module.project.project_id
+    : var.fleet_config.project_id
+  )
+  clusters = {
+    var.prefix = (
+      var.create_config.cluster != null
+      ? module.cluster.0.id
+      : "projects/${var.project_id}/locations/${var.region}/clusters/${var.cluster_name}"
+    )
+  }
+}

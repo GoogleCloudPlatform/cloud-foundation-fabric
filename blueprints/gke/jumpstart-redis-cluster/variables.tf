@@ -14,52 +14,66 @@
  * limitations under the License.
  */
 
-variable "cluster_create_config" {
-  description = "Cluster-level configuration."
-  type = object({
-    master_authorized_ranges = optional(map(string), {
-      "10/8" = "10.0.0.0/8"
-    })
-    master_ipv4_cidr_block = optional(string, "172.16.20.0/28")
-    private_cluster = optional(object({
-      enable_private_endpoint = optional(bool, true)
-      master_global_access    = optional(bool, true)
-    }), {})
-  })
-  # null do not creates cluster
-  default = null
-}
-
-variable "enable_fleet" {
-  description = "Enable fleet management for the cluster in the same project."
-  type        = bool
-  default     = true
+variable "cluster_name" {
+  description = "Name of new or existing cluster."
 }
 
 variable "create_config" {
-  description = "Create prerequisite resources, fill if project creation is needed."
+  description = "Create prerequisite resources, fill if project, vpc, or cluster creation is needed."
   type = object({
-    billing_account = optional(string)
-    project_parent  = optional(string)
-    vpc = object({
+    cluster = optional(object({
+      labels = optional(map(string))
+      master_authorized_ranges = optional(map(string), {
+        rfc-1918-10-8 = "10.0.0.0/8"
+      })
+      master_ipv4_cidr_block = optional(string, "172.16.20.0/28")
+      vpc = optional(object({
+        id        = string
+        subnet_id = string
+        secondary_range_names = optional(object({
+          pods     = optional(string, "pods")
+          services = optional(string, "services")
+        }), {})
+      }))
+    }))
+    project = optional(object({
+      billing_account = string
+      parent          = optional(string)
+      shared_vpc_host = optional(string)
+    }))
+    vpc = optional(object({
       primary_range_nodes      = string
       secondary_range_pods     = string
       secondary_range_services = string
-    })
+    }))
   })
-  default = null
+  nullable = false
+  default  = {}
+  # TODO(ludo): validate that only one of cluster.vpc and vpc is not null
 }
 
-variable "kubeconfig_path" {
-  type    = string
-  default = null
+# https://cloud.google.com/anthos/fleet-management/docs/before-you-begin/gke#gke-cross-project
+
+variable "fleet_config" {
+  description = "GKE Fleet configuration."
+  type = object({
+    project_id = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  nullable    = false
+  default     = "jump-0"
 }
 
 variable "project_id" {
   description = "Project id of existing or created project."
   type        = string
   default     = null
-  # use an existing cluster we don't care about GCP resources
 }
 
 variable "region" {
@@ -67,11 +81,3 @@ variable "region" {
   type        = string
   default     = "europe-west8"
 }
-
-# assumptions
-# - user provides a cluster
-# - user provides everything (project, svpc or vpc, etc.)
-#   - enable services
-#   - IAM on host / local for robots
-# - we create everything
-
