@@ -33,6 +33,19 @@ module "dmz-vpc" {
   ]
 }
 
+module "dmz-firewall" {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.net-project.project_id
+  network    = module.dmz-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dmz"
+  }
+}
+
 module "dmz-nat-primary" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.net-project.project_id

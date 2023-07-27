@@ -28,6 +28,20 @@ module "transit-primary-vpc" {
   ]
 }
 
+module "transit-primary-firewall" {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.net-project.project_id
+  network    = module.transit-primary-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/transit-primary"
+  }
+}
+
+
 module "transit-primary-addresses" {
   source     = "../../../modules/net-address"
   project_id = module.net-project.project_id
@@ -79,6 +93,19 @@ module "transit-secondary-vpc" {
       region        = "europe-west12"
     }
   ]
+}
+
+module "transit-secondary-firewall" {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.net-project.project_id
+  network    = module.transit-secondary-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/transit-secondary"
+  }
 }
 
 module "transit-secondary-addresses" {

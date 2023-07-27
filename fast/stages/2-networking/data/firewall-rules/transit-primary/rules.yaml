@@ -1,7 +1,7 @@
 # skip boilerplate check
 
 ingress:
-  allow-hc-nva-ssh-external:
+  allow-hc-nva-ssh-transit-primary:
     description: "Allow traffic from Google healthchecks to NVA appliances"
     source_ranges:
       - healthchecks

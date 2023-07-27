@@ -1,7 +1,7 @@
 # skip boilerplate check
 
 ingress:
-  allow-hc-nva-ssh-trusted:
+  allow-hc-nva-ssh-shared:
     description: "Allow traffic from Google healthchecks to NVA appliances"
     source_ranges:
       - healthchecks
@@ -9,11 +9,3 @@ ingress:
       - protocol: tcp
         ports:
           - 22
-  allow-onprem-probes-trusted-example:
-    description: "Allow traffic from onprem probes"
-    source_ranges:
-      - onprem_probes
-    rules:
-      - protocol: tcp
-        ports:
-          - 12345
