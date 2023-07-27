@@ -1,0 +1,11 @@
+# skip boilerplate check
+
+ingress:
+  allow-hc-nva-ssh-untrusted:
+    description: "Allow traffic from Google healthchecks to NVA appliances"
+    source_ranges:
+      - healthchecks
+    rules:
+      - protocol: tcp
+        ports:
+          - 22
