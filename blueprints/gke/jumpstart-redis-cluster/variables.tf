@@ -42,9 +42,9 @@ variable "create_config" {
       shared_vpc_host = optional(string)
     }))
     vpc = optional(object({
-      primary_range_nodes      = string
-      secondary_range_pods     = string
-      secondary_range_services = string
+      primary_range_nodes      = optional(string, "10.0.0.0/24")
+      secondary_range_pods     = optional(string, "10.16.0.0/20")
+      secondary_range_services = optional(string, "10.32.0.0/24")
     }))
   })
   nullable = false

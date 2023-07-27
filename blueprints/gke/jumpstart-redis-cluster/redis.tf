@@ -29,4 +29,5 @@ resource "kubernetes_namespace" "redis" {
   metadata {
     name = "redis"
   }
+  depends_on = [module.fleet]
 }
