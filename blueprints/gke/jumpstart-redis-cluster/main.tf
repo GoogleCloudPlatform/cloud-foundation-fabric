@@ -104,3 +104,18 @@ module "fleet" {
     )
   }
 }
+
+# resource "google_artifact_registry_repository" "docker" {
+#   location      = "LOCATION"
+#   repository_id = "REPOSITORY_ID"
+#   description   = "DESCRIPTION"
+#   format        = "docker"
+#   kms_key_name = "KEY"
+#   mode          = "REMOTE_REPOSITORY"
+#   remote_repository_config {
+#     description = "CONFIG_DESCRIPTION"
+#     docker_repository {
+#       public_repository = "DOCKER_HUB"
+#     }
+#   }
+# }
