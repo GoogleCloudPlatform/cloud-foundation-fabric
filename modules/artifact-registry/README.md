@@ -4,7 +4,7 @@ This module simplifies the creation of repositories using Google Cloud Artifact 
 
 Note: Artifact Registry is still in beta, hence this module currently uses the beta provider.
 
-## Example
+## Standard Repository
 
 ```hcl
 module "docker_artifact_registry" {
@@ -19,6 +19,22 @@ module "docker_artifact_registry" {
 }
 # tftest modules=1 resources=2
 ```
+
+
+## Remote Docker Repository
+
+```hcl
+module "docker_artifact_registry" {
+  source     = "./fabric/modules/artifact-registry"
+  project_id = var.project_id
+  location   = "europe-west1"
+  id         = "repo"
+  format     = { docker = {} }
+  mode       = { remote = true }
+}
+# tftest modules=1 resources=2
+```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

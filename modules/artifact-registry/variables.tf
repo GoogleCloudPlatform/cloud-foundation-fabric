@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,43 @@ variable "description" {
   default     = "Terraform-managed registry"
 }
 
+variable "format" {
+  description = "Repository format."
+  type = object({
+    docker = optional(object({
+      immutable_tags = optional(bool)
+    }))
+    maven = optional(object({
+      allow_snapshot_overrides = bool
+      version_policy           = string
+    }))
+    python = optional(object({}))
+    go     = optional(object({}))
+    npm    = optional(object({}))
+    apt    = optional(object({}))
+    yum    = optional(object({}))
+    kfp    = optional(object({}))
+  })
+  # todo(jccb) validate only one of these is set
+  #
+}
+
+variable "mode" {
+  type = object({
+    standard = optional(bool)
+    remote   = optional(bool)
+    virtual  = optional(map(object({})))
+  })
+  default  = { standard = true }
+  nullable = false
+  # todo(jccb) validate only remote or virtual is set
+  # todo(jccb) validate format in (docker, mave, npm, python) if remote  is set
+}
+
 variable "encryption_key" {
   description = "The KMS key name to use for encryption at rest."
   type        = string
   default     = null
-}
-
-variable "format" {
-  description = "Repository format. One of DOCKER or UNSPECIFIED."
-  type        = string
-  default     = "DOCKER"
 }
 
 variable "iam" {
@@ -52,7 +79,6 @@ variable "labels" {
 variable "location" {
   description = "Registry location. Use `gcloud beta artifacts locations list' to get valid values."
   type        = string
-  default     = null
 }
 
 variable "project_id" {
