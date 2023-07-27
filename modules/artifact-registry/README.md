@@ -26,7 +26,7 @@ module "docker_artifact_registry" {
 ```hcl
 
 module "registry-local" {
-  source     = "../modules/artifact-registry"
+  source     = "./fabric/modules/artifact-registry"
   project_id = var.project_id
   location   = "europe-west1"
   id         = "local"
@@ -34,7 +34,7 @@ module "registry-local" {
 }
 
 module "registry-remote" {
-  source     = "../modules/artifact-registry"
+  source     = "./fabric/modules/artifact-registry"
   project_id = var.project_id
   location   = "europe-west1"
   id         = "remote"
@@ -43,7 +43,7 @@ module "registry-remote" {
 }
 
 module "registry-virtual" {
-  source     = "../modules/artifact-registry"
+  source     = "./fabric/modules/artifact-registry"
   project_id = var.project_id
   location   = "europe-west1"
   id         = "virtual"
@@ -65,22 +65,51 @@ module "registry-virtual" {
 # tftest modules=1 resources=2
 ```
 
+## Additional Docker and Maven Options
 
+```hcl
 
+module "registry-docker" {
+  source     = "./fabric/modules/artifact-registry"
+  project_id = var.project_id
+  location   = "europe-west1"
+  id         = "docker"
+  format = {
+    docker = {
+      immutable_tags = true
+    }
+  }
+}
+
+module "registry-maven" {
+  source     = "./fabric/modules/artifact-registry"
+  project_id = var.project_id
+  location   = "europe-west1"
+  id         = "maven"
+  format = {
+    maven = {
+      allow_snapshot_overwrites = true
+      version_policy            = "RELEASE"
+    }
+  }
+}
+
+# tftest modules=1 resources=2
+```
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [id](variables.tf#L41) | Repository id. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L58) | Registry project id. | <code>string</code> | ✓ |  |
+| [id](variables.tf#L56) | Repository id. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L67) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L88) | Registry project id. | <code>string</code> | ✓ |  |
 | [description](variables.tf#L17) | An optional description for the repository. | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
-| [encryption_key](variables.tf#L23) | The KMS key name to use for encryption at rest. | <code>string</code> |  | <code>null</code> |
-| [format](variables.tf#L29) | Repository format. One of DOCKER or UNSPECIFIED. | <code>string</code> |  | <code>&#34;DOCKER&#34;</code> |
-| [iam](variables.tf#L35) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L46) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L52) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> |  | <code>null</code> |
+| [encryption_key](variables.tf#L44) | The KMS key name to use for encryption at rest. | <code>string</code> |  | <code>null</code> |
+| [iam](variables.tf#L50) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L61) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [mode](variables.tf#L72) | Repository mode. | <code title="object&#40;&#123;&#10;  standard &#61; optional&#40;bool, false&#41;&#10;  remote   &#61; optional&#40;bool, false&#41;&#10;  virtual &#61; optional&#40;map&#40;object&#40;&#123;&#10;    repository &#61; string&#10;    priority   &#61; number&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; standard &#61; true &#125;</code> |
 
 ## Outputs
 

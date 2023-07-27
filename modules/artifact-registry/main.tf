@@ -30,6 +30,21 @@ resource "google_artifact_registry_repository" "registry" {
   mode          = "${upper(local.mode_string)}_REPOSITORY"
   kms_key_name  = var.encryption_key
 
+  dynamic "docker_config" {
+    for_each = var.format.docker != null ? [1] : []
+    content {
+      immutable_tags = var.format.docker.immutable_tags
+    }
+  }
+
+  dynamic "maven_config" {
+    for_each = var.format.maven != null ? [1] : []
+    content {
+      allow_snapshot_overwrites = var.format.maven.allow_snapshot_overwrites
+      version_policy            = var.format.maven.version_policy
+    }
+  }
+
   dynamic "remote_repository_config" {
     for_each = var.mode.remote ? [1] : []
     content {

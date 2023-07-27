@@ -27,8 +27,8 @@ variable "format" {
       immutable_tags = optional(bool)
     }))
     maven = optional(object({
-      allow_snapshot_overrides = bool
-      version_policy           = string
+      allow_snapshot_overwrites = optional(bool)
+      version_policy            = optional(string)
     }))
     python = optional(object({}))
     go     = optional(object({}))
@@ -39,21 +39,6 @@ variable "format" {
   })
   # todo(jccb) validate only one of these is set
   #
-}
-
-variable "mode" {
-  type = object({
-    standard = optional(bool, false)
-    remote   = optional(bool, false)
-    virtual = optional(map(object({
-      repository = string
-      priority   = number
-    })))
-  })
-  default  = { standard = true }
-  nullable = false
-  # todo(jccb) validate only remote or virtual is set
-  # todo(jccb) validate format in (docker, mave, npm, python) if remote  is set
 }
 
 variable "encryption_key" {
@@ -82,6 +67,22 @@ variable "labels" {
 variable "location" {
   description = "Registry location. Use `gcloud beta artifacts locations list' to get valid values."
   type        = string
+}
+
+variable "mode" {
+  description = "Repository mode."
+  type = object({
+    standard = optional(bool, false)
+    remote   = optional(bool, false)
+    virtual = optional(map(object({
+      repository = string
+      priority   = number
+    })))
+  })
+  default  = { standard = true }
+  nullable = false
+  # todo(jccb) validate only remote or virtual is set
+  # todo(jccb) validate format in (docker, mave, npm, python) if remote  is set
 }
 
 variable "project_id" {
