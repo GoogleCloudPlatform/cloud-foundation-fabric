@@ -40,7 +40,7 @@ module "cluster" {
   location   = var.region
   vpc_config = {
     network                  = local.cluster_vpc.network
-    subnetwork               = local.cluster_vpc.subnetwork
+    subnetwork               = local.cluster_vpc.subnet
     secondary_range_names    = local.cluster_vpc.secondary_range_names
     master_authorized_ranges = var.create_config.cluster.master_authorized_ranges
     master_ipv4_cidr_block   = var.create_config.cluster.master_ipv4_cidr_block

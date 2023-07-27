@@ -19,8 +19,14 @@ data "google_client_config" "identity" {}
 provider "kubernetes" {
   host = join("", [
     "https://connectgateway.googleapis.com/v1/",
-    "projects/${module.fleet.project_id}/",
-    "locations/global/gkeMemberships/${var.prefix}"
+    "projects/${local.fleet_project.number}/",
+    "locations/global/gkeMemberships/${var.cluster_name}"
   ])
   token = data.google_client_config.identity.access_token
+}
+
+resource "kubernetes_namespace" "redis" {
+  metadata {
+    name = "redis"
+  }
 }

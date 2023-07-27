@@ -15,8 +15,21 @@
  */
 
 locals {
-  create_vpc     = !local.use_shared_vpc && var.create_config.vpc != null
-  use_shared_vpc = try(var.create_config.project.shared_vpc_host, null) != null
+  create_vpc = !local.use_shared_vpc && var.create_config.vpc != null
+  fleet_project = (
+    var.fleet_config.project_id == null
+    ? {
+      project_id = var.project_id
+      number     = module.project.number
+    }
+    : {
+      project_id = var.fleet_config.project_id
+      number     = module.fleet-project.0.number
+    }
+  )
+  use_shared_vpc = (
+    try(var.create_config.project.shared_vpc_host, null) != null
+  )
 }
 
 module "project" {
@@ -34,26 +47,22 @@ module "project" {
     "gkehub.googleapis.com",
     "stackdriver.googleapis.com"
   ]
-  shared_vpc_service_config = (
-    local.use_shared_vpc
-    ? null
-    : {
-      attach       = true
-      host_project = var.create_config.project.shared_vpc_host
-      service_identity_iam = {
-        "roles/compute.networkUser" = [
-          "cloudservices", "container-engine"
-        ]
-        "roles/container.hostServiceAgentUser" = [
-          "container-engine"
-        ]
-      }
+  shared_vpc_service_config = !local.use_shared_vpc ? null : {
+    attach       = true
+    host_project = var.create_config.project.shared_vpc_host
+    service_identity_iam = {
+      "roles/compute.networkUser" = [
+        "cloudservices", "container-engine"
+      ]
+      "roles/container.hostServiceAgentUser" = [
+        "container-engine"
+      ]
     }
-  )
+  }
   iam = {
     "roles/gkehub.serviceAgent" = [
       var.fleet_config.project_id == null
-      ? "serviceAccount:${module.project-svc-gke.service_accounts.robots.gkehub}"
+      ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
       : "serviceAccount:service-${module.fleet-project.0.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
     ]
   }
@@ -66,12 +75,12 @@ module "vpc" {
   name       = var.prefix
   subnets = [
     {
-      ip_cidr_range = var.vpc_config.primary_range_nodes
+      ip_cidr_range = var.create_config.vpc.primary_range_nodes
       name          = "${var.prefix}-default"
       region        = var.region
       secondary_ip_ranges = {
-        pods     = var.vpc_config.pods
-        services = var.vpc_config.services
+        pods     = var.create_config.vpc.secondary_range_pods
+        services = var.create_config.vpc.secondary_range_services
       }
     }
   ]
@@ -85,14 +94,10 @@ module "fleet-project" {
 }
 
 module "fleet" {
-  source = "../../../modules/gke-hub"
-  project_id = try(
-    var.fleet_config.project_id == null
-    ? module.project.project_id
-    : var.fleet_config.project_id
-  )
+  source     = "../../../modules/gke-hub"
+  project_id = local.fleet_project.project_id
   clusters = {
-    var.prefix = (
+    (var.cluster_name) = (
       var.create_config.cluster != null
       ? module.cluster.0.id
       : "projects/${var.project_id}/locations/${var.region}/clusters/${var.cluster_name}"
