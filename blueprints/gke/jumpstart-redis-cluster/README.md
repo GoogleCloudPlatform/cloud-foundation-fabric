@@ -13,6 +13,9 @@
 
 ## Test scenarios
 
+project creation with own vpc
+project creation in different project with svpc attachment
+
 ### Existing cluster
 
 ```hcl
