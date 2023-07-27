@@ -138,6 +138,9 @@ locals {
     local.vpc_gke_service_agent ||
     contains(var.services, "compute.googleapis.com")
   )
+  vpc_dataflow_agent = (
+    contains(var.services, "dataflow.googleapis.com")
+  )
   vpc_gke_security_admin = coalesce(
     try(local.vpc.gke_setup.enable_security_admin, null), false
   )
@@ -199,7 +202,8 @@ module "project" {
     service_identity_iam = {
       "roles/compute.networkUser" = compact([
         local.vpc_gke_service_agent ? "container-engine" : null,
-        local.vpc_cloudservices ? "cloudservices" : null
+        local.vpc_cloudservices ? "cloudservices" : null,
+        local.vpc_dataflow_agent ? "dataflow" : null
       ])
       "roles/compute.securityAdmin" = compact([
         local.vpc_gke_security_admin ? "container-engine" : null,
