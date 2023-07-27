@@ -17,8 +17,8 @@
 # tfdoc:file:description Route resources.
 
 locals {
-  _default_route = var.vpc_create && var.delete_default_routes_on_create ? {} : {
-    "${var.name}-default" = {
+  _default_route = !var.vpc_create || var.delete_default_routes_on_create ? {} : {
+    default = {
       dest_range    = "0.0.0.0/0"
       next_hop      = "default-internet-gateway"
       next_hop_type = "gateway"
