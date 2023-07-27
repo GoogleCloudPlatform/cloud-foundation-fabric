@@ -152,7 +152,7 @@ variable "trigger_config" {
     event_filters = optional(list(object({
       attribute = string
       value     = string
-      operator  = string
+      operator  = optional(string)
     })), [])
     service_account_email  = optional(string)
     service_account_create = optional(bool, false)

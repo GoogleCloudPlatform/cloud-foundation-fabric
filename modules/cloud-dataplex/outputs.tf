@@ -16,21 +16,21 @@
 
 output "assets" {
   description = "Assets attached to the lake of Dataplex Lake."
-  value       = local.zone_assets[*]["asset_name"]
+  value       = local.zone_assets[*]
 }
 
 output "id" {
   description = "Fully qualified Dataplex Lake id."
-  value       = google_dataplex_lake.basic_lake.id
+  value       = google_dataplex_lake.lake.id
 }
 
 output "lake" {
   description = "The lake name of Dataplex Lake."
-  value       = google_dataplex_lake.basic_lake.name
+  value       = google_dataplex_lake.lake.name
 }
 
 output "zones" {
   description = "The zone name of Dataplex Lake."
-  value       = local.zone_assets[*]["zone_name"]
+  value       = distinct(local.zone_assets[*]["zone_name"])
 }
 

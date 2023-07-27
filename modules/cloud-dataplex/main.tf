@@ -21,28 +21,54 @@ locals {
       for asset, asset_data in zones_info.assets : {
         zone_name              = zone
         asset_name             = asset
-        bucket_name            = asset_data.bucket_name
-        cron_schedule          = asset_data.cron_schedule
+        resource_name          = asset_data.resource_name
+        resource_project       = coalesce(asset_data.resource_project, var.project_id)
+        cron_schedule          = asset_data.discovery_spec_enabled ? asset_data.cron_schedule : null
         discovery_spec_enabled = asset_data.discovery_spec_enabled
         resource_spec_type     = asset_data.resource_spec_type
       }
     ]
   ])
+
+  zone_iam = flatten([
+    for zone, zone_details in var.zones : [
+      for role, members in zone_details.iam : {
+        "zone"    = zone
+        "role"    = role
+        "members" = members
+      }
+    ] if zone_details.iam != null
+  ])
+
+  resource_type_mapping = {
+    "STORAGE_BUCKET" : "buckets",
+    "BIGQUERY_DATASET" : "datasets"
+  }
 }
 
-resource "google_dataplex_lake" "basic_lake" {
+resource "google_dataplex_lake" "lake" {
   name     = "${local.prefix}${var.name}"
   location = var.region
   provider = google-beta
   project  = var.project_id
 }
 
-resource "google_dataplex_zone" "basic_zone" {
+resource "google_dataplex_lake_iam_binding" "binding" {
+  for_each = var.iam
+  project  = var.project_id
+  location = var.region
+  lake     = google_dataplex_lake.lake.name
+  role     = each.key
+  members  = each.value
+}
+
+resource "google_dataplex_zone" "zone" {
   for_each = var.zones
+  provider = google-beta
+  project  = var.project_id
   name     = each.key
   location = var.region
-  provider = google-beta
-  lake     = google_dataplex_lake.basic_lake.name
+  lake     = google_dataplex_lake.lake.name
   type     = each.value.type
 
   discovery_spec {
@@ -52,11 +78,21 @@ resource "google_dataplex_zone" "basic_zone" {
   resource_spec {
     location_type = var.location_type
   }
-
-  project = var.project_id
 }
 
-resource "google_dataplex_asset" "primary" {
+resource "google_dataplex_zone_iam_binding" "binding" {
+  for_each = {
+    for zone_role in local.zone_iam : "${zone_role.zone}-${zone_role.role}" => zone_role
+  }
+  project       = var.project_id
+  location      = var.region
+  lake          = google_dataplex_lake.lake.name
+  dataplex_zone = google_dataplex_zone.zone[each.value.zone].name
+  role          = each.value.role
+  members       = each.value.members
+}
+
+resource "google_dataplex_asset" "asset" {
   for_each = {
     for tm in local.zone_assets : "${tm.zone_name}-${tm.asset_name}" => tm
   }
@@ -64,8 +100,8 @@ resource "google_dataplex_asset" "primary" {
   location = var.region
   provider = google-beta
 
-  lake          = google_dataplex_lake.basic_lake.name
-  dataplex_zone = google_dataplex_zone.basic_zone[each.value.zone_name].name
+  lake          = google_dataplex_lake.lake.name
+  dataplex_zone = google_dataplex_zone.zone[each.value.zone_name].name
 
   discovery_spec {
     enabled  = each.value.discovery_spec_enabled
@@ -73,7 +109,11 @@ resource "google_dataplex_asset" "primary" {
   }
 
   resource_spec {
-    name = "projects/${var.project_id}/buckets/${each.value.bucket_name}"
+    name = format("projects/%s/%s/%s",
+      each.value.resource_project,
+      local.resource_type_mapping[each.value.resource_spec_type],
+      each.value.resource_name
+    )
     type = each.value.resource_spec_type
   }
   project = var.project_id
