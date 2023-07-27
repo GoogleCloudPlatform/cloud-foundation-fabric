@@ -534,7 +534,7 @@ The remaining configuration is manual, as it regards the repositories themselves
 | [tfvars](outputs.tf#L165) | Terraform variable files for the following stages. | ✓ |  |
 
 ## IMPORTING
-If you are redeploying FAST in an org that previously had FAST deployed, you may receive an error it cannot create some organization resources which were previously created in your org. 
+If you are redeploying FAST in an org that previously had FAST deployed, you may receive an error it cannot create some organizational resources which were previously created in your org. 
 
 Importing Custom Roles
 `terraform import 'module.organization.google_organization_iam_custom_role.roles["serviceProjectNetworkAdmin"]' organizations/$FAST_ORG_ID/roles/serviceProjectNetworkAdmin`
