@@ -17,6 +17,15 @@
 # tfdoc:file:description Route resources.
 
 locals {
+  _default_route = var.vpc_create && var.delete_default_routes_on_create ? {} : {
+    "${var.name}-default" = {
+      dest_range    = "0.0.0.0/0"
+      next_hop      = "default-internet-gateway"
+      next_hop_type = "gateway"
+      priority      = 1000
+      tags          = null
+    }
+  }
   _googleapis_ranges = {
     private      = "199.36.153.8/30"
     private-6    = "2600:2d00:0002:2000::/64"
@@ -36,7 +45,7 @@ locals {
       lookup(coalesce(var.create_googleapis_routes, {}), k, false)
     )
   }
-  _routes = merge(local._googleapis_routes, coalesce(var.routes, {}))
+  _routes = merge(local._default_route, local._googleapis_routes, coalesce(var.routes, {}))
   routes = {
     gateway    = { for k, v in local._routes : k => v if v.next_hop_type == "gateway" }
     ilb        = { for k, v in local._routes : k => v if v.next_hop_type == "ilb" }

@@ -39,7 +39,7 @@ resource "google_compute_network" "network" {
   name                                      = var.name
   description                               = var.description
   auto_create_subnetworks                   = var.auto_create_subnetworks
-  delete_default_routes_on_create           = var.delete_default_routes_on_create
+  delete_default_routes_on_create           = true
   mtu                                       = var.mtu
   routing_mode                              = var.routing_mode
   network_firewall_policy_enforcement_order = var.firewall_policy_enforcement_order
