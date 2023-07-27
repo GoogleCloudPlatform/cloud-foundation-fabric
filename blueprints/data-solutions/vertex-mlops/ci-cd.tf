@@ -43,7 +43,6 @@ module "artifact_registry" {
   id         = "docker-repo"
   project_id = module.project.project_id
   location   = var.region
-  format     = "DOCKER"
 }
 
 module "service-account-github" {

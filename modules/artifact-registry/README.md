@@ -11,7 +11,6 @@ module "docker_artifact_registry" {
   source     = "./fabric/modules/artifact-registry"
   project_id = "myproject"
   location   = "europe-west1"
-  format     = "DOCKER"
   id         = "myregistry"
   iam = {
     "roles/artifactregistry.admin" = ["group:cicd@example.com"]
@@ -19,7 +18,6 @@ module "docker_artifact_registry" {
 }
 # tftest modules=1 resources=2
 ```
-
 
 ## Remote and Virtual Repositories
 
@@ -62,7 +60,7 @@ module "registry-virtual" {
   }
 }
 
-# tftest modules=1 resources=2
+# tftest modules=3 resources=3
 ```
 
 ## Additional Docker and Maven Options
@@ -94,7 +92,7 @@ module "registry-maven" {
   }
 }
 
-# tftest modules=1 resources=2
+# tftest modules=2 resources=2
 ```
 <!-- BEGIN TFDOC -->
 
@@ -102,14 +100,15 @@ module "registry-maven" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [id](variables.tf#L56) | Repository id. | <code>string</code> | ✓ |  |
-| [location](variables.tf#L67) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L88) | Registry project id. | <code>string</code> | ✓ |  |
+| [id](variables.tf#L62) | Repository id. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L73) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L98) | Registry project id. | <code>string</code> | ✓ |  |
 | [description](variables.tf#L17) | An optional description for the repository. | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
-| [encryption_key](variables.tf#L44) | The KMS key name to use for encryption at rest. | <code>string</code> |  | <code>null</code> |
-| [iam](variables.tf#L50) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L61) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [mode](variables.tf#L72) | Repository mode. | <code title="object&#40;&#123;&#10;  standard &#61; optional&#40;bool, false&#41;&#10;  remote   &#61; optional&#40;bool, false&#41;&#10;  virtual &#61; optional&#40;map&#40;object&#40;&#123;&#10;    repository &#61; string&#10;    priority   &#61; number&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; standard &#61; true &#125;</code> |
+| [encryption_key](variables.tf#L50) | The KMS key name to use for encryption at rest. | <code>string</code> |  | <code>null</code> |
+| [format](variables.tf#L23) | Repository format. | <code title="object&#40;&#123;&#10;  apt &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  docker &#61; optional&#40;object&#40;&#123;&#10;    immutable_tags &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  kfp &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  go  &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  maven &#61; optional&#40;object&#40;&#123;&#10;    allow_snapshot_overwrites &#61; optional&#40;bool&#41;&#10;    version_policy            &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  npm    &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  python &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  yum    &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; docker &#61; &#123;&#125; &#125;</code> |
+| [iam](variables.tf#L56) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L67) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [mode](variables.tf#L78) | Repository mode. | <code title="object&#40;&#123;&#10;  standard &#61; optional&#40;bool&#41;&#10;  remote   &#61; optional&#40;bool&#41;&#10;  virtual &#61; optional&#40;map&#40;object&#40;&#123;&#10;    repository &#61; string&#10;    priority   &#61; number&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; standard &#61; true &#125;</code> |
 
 ## Outputs
 

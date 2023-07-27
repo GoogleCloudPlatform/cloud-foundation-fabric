@@ -58,7 +58,6 @@ module "docker_artifact_registry" {
   source     = "../../../modules/artifact-registry"
   project_id = module.project.project_id
   location   = var.region
-  format     = "DOCKER"
   id         = "registry"
   iam = {
     "roles/artifactregistry.reader" = [module.node_sa.iam_email]

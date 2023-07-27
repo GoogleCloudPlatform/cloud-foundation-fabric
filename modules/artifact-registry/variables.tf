@@ -23,22 +23,28 @@ variable "description" {
 variable "format" {
   description = "Repository format."
   type = object({
+    apt = optional(object({}))
     docker = optional(object({
       immutable_tags = optional(bool)
     }))
+    kfp = optional(object({}))
+    go  = optional(object({}))
     maven = optional(object({
       allow_snapshot_overwrites = optional(bool)
       version_policy            = optional(string)
     }))
-    python = optional(object({}))
-    go     = optional(object({}))
     npm    = optional(object({}))
-    apt    = optional(object({}))
+    python = optional(object({}))
     yum    = optional(object({}))
-    kfp    = optional(object({}))
   })
-  # todo(jccb) validate only one of these is set
-  #
+  nullable = false
+  default  = { docker = {} }
+  validation {
+    condition = (
+      length([for k, v in var.format : k if v != null]) == 1
+    )
+    error_message = "Multiple or zero formats are not supported."
+  }
 }
 
 variable "encryption_key" {
@@ -72,17 +78,21 @@ variable "location" {
 variable "mode" {
   description = "Repository mode."
   type = object({
-    standard = optional(bool, false)
-    remote   = optional(bool, false)
+    standard = optional(bool)
+    remote   = optional(bool)
     virtual = optional(map(object({
       repository = string
       priority   = number
     })))
   })
-  default  = { standard = true }
   nullable = false
-  # todo(jccb) validate only remote or virtual is set
-  # todo(jccb) validate format in (docker, mave, npm, python) if remote  is set
+  default  = { standard = true }
+  validation {
+    condition = (
+      length([for k, v in var.mode : k if v != null && v != false]) == 1
+    )
+    error_message = "Multiple or zero modes are not supported."
+  }
 }
 
 variable "project_id" {

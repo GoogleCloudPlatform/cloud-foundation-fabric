@@ -31,14 +31,14 @@ resource "google_artifact_registry_repository" "registry" {
   kms_key_name  = var.encryption_key
 
   dynamic "docker_config" {
-    for_each = var.format.docker != null ? [1] : []
+    for_each = local.format_string == "docker" ? [""] : []
     content {
       immutable_tags = var.format.docker.immutable_tags
     }
   }
 
   dynamic "maven_config" {
-    for_each = var.format.maven != null ? [1] : []
+    for_each = local.format_string == "maven" ? [""] : []
     content {
       allow_snapshot_overwrites = var.format.maven.allow_snapshot_overwrites
       version_policy            = var.format.maven.version_policy
@@ -46,31 +46,28 @@ resource "google_artifact_registry_repository" "registry" {
   }
 
   dynamic "remote_repository_config" {
-    for_each = var.mode.remote ? [1] : []
+    for_each = local.mode_string == "remote" ? [""] : []
     content {
       dynamic "docker_repository" {
-        for_each = var.format.docker != null ? [1] : []
+        for_each = local.format_string == "docker" ? [""] : []
         content {
           public_repository = "DOCKER_HUB"
         }
       }
-
       dynamic "maven_repository" {
-        for_each = var.format.maven != null ? [1] : []
+        for_each = local.format_string == "maven" ? [""] : []
         content {
           public_repository = "MAVEN_CENTRAL"
         }
       }
-
       dynamic "npm_repository" {
-        for_each = var.format.npm != null ? [1] : []
+        for_each = local.format_string == "npm" ? [""] : []
         content {
           public_repository = "NPMJS"
         }
       }
-
       dynamic "python_repository" {
-        for_each = var.format.python != null ? [1] : []
+        for_each = local.format_string == "python" ? [""] : []
         content {
           public_repository = "PYPI"
         }
@@ -79,7 +76,7 @@ resource "google_artifact_registry_repository" "registry" {
   }
 
   dynamic "virtual_repository_config" {
-    for_each = var.mode.virtual != null ? [1] : []
+    for_each = local.mode_string == "virtual" ? [""] : []
     content {
       dynamic "upstream_policies" {
         for_each = var.mode.virtual
@@ -89,6 +86,15 @@ resource "google_artifact_registry_repository" "registry" {
           priority   = upstream_policies.value.priority
         }
       }
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition = local.mode_string != "remote" || contains(
+        ["docker", "maven", "npm", "python"], local.format_string
+      )
+      error_message = "Invalid format for remote repository."
     }
   }
 

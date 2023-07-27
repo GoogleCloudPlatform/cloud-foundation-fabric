@@ -168,7 +168,6 @@ module "orch-artifact-reg" {
   project_id  = module.orch-project.project_id
   id          = "${var.prefix}-app-images"
   location    = var.region
-  format      = "DOCKER"
   description = "Docker repository storing application images e.g. Dataflow, Cloud Run etc..."
 }
 
