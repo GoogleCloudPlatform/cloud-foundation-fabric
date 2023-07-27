@@ -414,7 +414,7 @@ with models.DAG('data_pipeline_dc_tags_dag_flex',
                     'tableId': 'customer_purchase'
                 },
                 'writeDisposition':
-                'WRITE_TRUNCATE',
+                'WRITE_APPEND',
                 "useLegacySql":
                 False
             }
@@ -449,7 +449,7 @@ with models.DAG('data_pipeline_dc_tags_dag_flex',
                     'tableId': 'customer_purchase'
                 },
                 'writeDisposition':
-                'WRITE_TRUNCATE',
+                'WRITE_APPEND',
                 "useLegacySql":
                 False
             }
