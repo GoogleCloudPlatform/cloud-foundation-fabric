@@ -43,9 +43,12 @@ variable "format" {
 
 variable "mode" {
   type = object({
-    standard = optional(bool)
-    remote   = optional(bool)
-    virtual  = optional(map(object({})))
+    standard = optional(bool, false)
+    remote   = optional(bool, false)
+    virtual = optional(map(object({
+      repository = string
+      priority   = number
+    })))
   })
   default  = { standard = true }
   nullable = false

@@ -16,7 +16,7 @@
 
 locals {
   format_string = one([for k, v in var.format : k if v != null])
-  mode_string   = one([for k, v in var.mode : k if v != null])
+  mode_string   = one([for k, v in var.mode : k if v != null && v != false])
 }
 
 resource "google_artifact_registry_repository" "registry" {
@@ -62,6 +62,21 @@ resource "google_artifact_registry_repository" "registry" {
       }
     }
   }
+
+  dynamic "virtual_repository_config" {
+    for_each = var.mode.virtual != null ? [1] : []
+    content {
+      dynamic "upstream_policies" {
+        for_each = var.mode.virtual
+        content {
+          id         = upstream_policies.key
+          repository = upstream_policies.value.repository
+          priority   = upstream_policies.value.priority
+        }
+      }
+    }
+  }
+
 }
 
 resource "google_artifact_registry_repository_iam_binding" "bindings" {

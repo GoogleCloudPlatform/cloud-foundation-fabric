@@ -21,19 +21,51 @@ module "docker_artifact_registry" {
 ```
 
 
-## Remote Docker Repository
+## Remote and Virtual Repositories
 
 ```hcl
-module "docker_artifact_registry" {
-  source     = "./fabric/modules/artifact-registry"
+
+module "registry-local" {
+  source     = "../modules/artifact-registry"
   project_id = var.project_id
   location   = "europe-west1"
-  id         = "repo"
-  format     = { docker = {} }
+  id         = "local"
+  format     = { python = {} }
+}
+
+module "registry-remote" {
+  source     = "../modules/artifact-registry"
+  project_id = var.project_id
+  location   = "europe-west1"
+  id         = "remote"
+  format     = { python = {} }
   mode       = { remote = true }
 }
+
+module "registry-virtual" {
+  source     = "../modules/artifact-registry"
+  project_id = var.project_id
+  location   = "europe-west1"
+  id         = "virtual"
+  format     = { python = {} }
+  mode = {
+    virtual = {
+      remote = {
+        repository = module.registry-remote.id
+        priority   = 1
+      }
+      local = {
+        repository = module.registry-local.id
+        priority   = 10
+      }
+    }
+  }
+}
+
 # tftest modules=1 resources=2
 ```
+
+
 
 <!-- BEGIN TFDOC -->
 
