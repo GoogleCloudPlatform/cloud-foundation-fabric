@@ -530,6 +530,8 @@ module "org" {
 ```
 
 <!-- TFDOC OPTS files:1 -->
+
+
 <!-- BEGIN TFDOC -->
 
 ## Files
@@ -589,5 +591,4 @@ module "org" {
 | [sink_writer_identities](outputs.tf#L103) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L111) | Tag key resources. |  |
 | [tag_values](outputs.tf#L120) | Tag value resources. |  |
-
 <!-- END TFDOC -->
