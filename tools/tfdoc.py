@@ -402,16 +402,13 @@ def render_doc(readme, doc):
   result = get_doc(readme)
   if not result or doc == result['doc']:
     return readme
-  try:
-    return '\n'.join([
-        readme[:result['start']].rstrip(),
-        MARK_BEGIN,
-        doc,
-        MARK_END,
-        readme[result['end']:].lstrip(),
-    ])
-  except (IOError, OSError) as e:
-    raise SystemExit(f'Error replacing README {readme_path}: {e}')
+  return '\n'.join([
+      readme[:result['start']].rstrip(),
+      MARK_BEGIN,
+      doc,
+      MARK_END,
+      readme[result['end']:].lstrip(),
+  ])
 
 
 def render_toc(readme, toc):
@@ -419,18 +416,15 @@ def render_toc(readme, toc):
   result = get_toc(readme)
   if not result or toc == result['toc']:
     return readme
-  try:
-    return '\n'.join([
-        readme[:result['start']].rstrip(),
-        '',
-        TOC_BEGIN,
-        toc,
-        TOC_END,
-        '',
-        readme[result['end']:].lstrip(),
-    ])
-  except (IOError, OSError) as e:
-    raise SystemExit(f'Error replacing README {readme_path}: {e}')
+  return '\n'.join([
+      readme[:result['start']].rstrip(),
+      '',
+      TOC_BEGIN,
+      toc,
+      TOC_END,
+      '',
+      readme[result['end']:].lstrip(),
+  ])
 
 
 @click.command()
@@ -449,8 +443,11 @@ def main(module_path=None, exclude_file=None, files=False, replace=True,
   tmp = render_doc(readme, doc.content)
   final = render_toc(tmp, toc)
   if replace:
-    with open(readme_path, 'w') as f:
-      f.write(final)
+    try:
+      with open(readme_path, 'w') as f:
+        f.write(final)
+    except (IOError, OSError) as e:
+      raise SystemExit(f'Error replacing README {readme_path}: {e}')
   else:
     print(final)
 
