@@ -15,7 +15,7 @@
  */
 
 output "attachment" {
-  description = "VLAN Attachment resource"
+  description = "VLAN Attachment resource."
   value       = google_compute_interconnect_attachment.default
 }
 
