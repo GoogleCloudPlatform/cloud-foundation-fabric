@@ -152,7 +152,7 @@ module "test-vm-shared-primary-0" {
     network    = module.shared-vpc.self_link
     subnetwork = module.shared-vpc.subnet_self_links["${var.regions.primary}/prod-core-shared-0-nva-primary"]
   }]
-  tags                   = ["primary", "ssh"]
+  tags                   = [var.regions.primary, "ssh"]
   service_account_create = true
   instance_type          = "e2-micro"
   boot_disk = {
@@ -183,7 +183,7 @@ module "test-vm-shared-secondary-0" {
     network    = module.shared-vpc.self_link
     subnetwork = module.shared-vpc.subnet_self_links["${var.regions.secondary}/prod-core-shared-0-nva-secondary"]
   }]
-  tags                   = ["secondary", "ssh"]
+  tags                   = [var.regions.secondary, "ssh"]
   service_account_create = true
   instance_type          = "e2-micro"
   boot_disk = {

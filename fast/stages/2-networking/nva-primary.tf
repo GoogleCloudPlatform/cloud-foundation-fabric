@@ -21,14 +21,13 @@ locals {
     {
       name                = "dmz"
       enable_masquerading = true
-      routes = [
-        var.gcp_ranges.gcp_dmz_primary,
-        var.gcp_ranges.gcp_dmz_secondary,
-      ]
+      routes              = []
     },
     {
       name = "external"
       routes = [
+        var.gcp_ranges.gcp_all_primary,
+        var.gcp_ranges.gcp_all_secondary,
         var.gcp_ranges.gcp_external_primary,
         var.gcp_ranges.gcp_external_secondary,
         var.gcp_ranges.onprem_range_10
