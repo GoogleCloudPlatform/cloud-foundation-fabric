@@ -31,9 +31,7 @@ group_iam = {
     "role/dataplex.dataScanEditor"
   ]
 }
-execution_trigger = {
-  schedule = { cron = "TZ=America/New_York 1 1 * * *" }
-}
+execution_schedule = "TZ=America/New_York 1 1 * * *"
 data = {
   resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
 }

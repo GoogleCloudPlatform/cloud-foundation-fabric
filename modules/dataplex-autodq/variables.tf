@@ -15,7 +15,7 @@
  */
 
 variable "data" {
-  description = "The data source for DataScan. The input variable 'data' should be an object containing a single key-value pair that can be one of: * `entity`: The Dataplex entity that represents the data source (e.g. BigQuery table) for DataScan, of the form: `projects/{project_number}/locations/{locationId}/lakes/{lakeId}/zones/{zoneId}/entities/{entityId}`. * `resource`: The service-qualified full resource name of the cloud resource for a DataScan job to scan against. The field could be: BigQuery table of type 'TABLE' for DataProfileScan/DataQualityScan format, e.g: `//bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID`."
+  description = "The data source for DataScan. The source can be either a Dataplex `entity` or a BigQuery `resource`."
   type = object({
     entity   = optional(string)
     resource = optional(string)
@@ -26,21 +26,10 @@ variable "data" {
   }
 }
 
-variable "execution_trigger" {
-  description = "The input variable 'execution_trigger' specifies when a scan should be triggered. If not specified, the default is `on_demand`, which means the scan will not run until the user calls `dataScans.run` API. Alternatively, you can set `execution_trigger` to `scheduled` scheduled to run periodically based on a cron schedule expression."
-  type = object({
-    on_demand = optional(object({}))
-    schedule = optional(object({
-      cron = string
-    }))
-  })
-  default = {
-    on_demand = {}
-  }
-  validation {
-    condition     = length([for k, v in var.execution_trigger : v if contains(["on_demand", "schedule"], k) && v != null]) == 1
-    error_message = "Datascan execution_spec_trigger field must contain only one of 'on_demand' containing an empty object, or 'schedule' containing the field 'cron'."
-  }
+variable "execution_schedule" {
+  description = "Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API."
+  type        = string
+  default     = null
 }
 
 variable "group_iam" {
@@ -101,7 +90,7 @@ variable "prefix" {
 }
 
 variable "project_id" {
-  description = "Required.The ID of the project where the Dataplex AutoDQ Scans will be created."
+  description = "The ID of the project where the Dataplex AutoDQ Scans will be created."
   type        = string
 }
 
@@ -111,13 +100,13 @@ variable "region" {
 }
 
 variable "row_filter" {
-  description = "A filter applied to all rows in a single DataScan job. The filter needs to be a valid SQL expression for a WHERE clause in BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10"
+  description = "A filter applied to all rows in a single DataScan job. The filter needs to be a valid SQL expression for a WHERE clause in BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10."
   type        = string
   default     = null
 }
 
 variable "rules" {
-  description = "Data Quality validation rules. If not provided, the DataScan will be created as a Data Profiling scan."
+  description = "Data Quality validation rules. If not provided, the DataScan will be created as a Data Profiling scan instead of a Data Quality scan."
   nullable    = true
   default     = null
   type = list(object({

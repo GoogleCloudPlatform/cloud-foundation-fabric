@@ -16,39 +16,7 @@
 
 locals {
   prefix = var.prefix == null ? "" : "${var.prefix}-"
-
-  _group_iam_roles = distinct(flatten(values(var.group_iam)))
-  _group_iam = {
-    for r in local._group_iam_roles : r => [
-      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
-    ]
-  }
-  _iam_additive_pairs = flatten([
-    for role, members in var.iam_additive : [
-      for member in members : { role = role, member = member }
-    ]
-  ])
-  _iam_additive_member_pairs = flatten([
-    for member, roles in var.iam_additive_members : [
-      for role in roles : { role = role, member = member }
-    ]
-  ])
-  iam = {
-    for role in distinct(concat(keys(var.iam), keys(local._group_iam))) :
-    role => concat(
-      try(var.iam[role], []),
-      try(local._group_iam[role], [])
-    )
-  }
-  iam_additive = {
-    for pair in concat(local._iam_additive_pairs, local._iam_additive_member_pairs) :
-    "${pair.role}-${pair.member}" => {
-      role   = pair.role
-      member = pair.member
-    }
-  }
 }
-
 
 resource "google_dataplex_datascan" "datascan" {
   project      = var.project_id
@@ -67,21 +35,21 @@ resource "google_dataplex_datascan" "datascan" {
     field = var.incremental_field
     trigger {
       dynamic "on_demand" {
-        for_each = try(var.execution_trigger.on_demand, null) != null ? [""] : []
+        for_each = try(var.execution_schedule) == null ? [""] : []
         content {
         }
       }
       dynamic "schedule" {
-        for_each = try(var.execution_trigger.schedule, null) != null ? [""] : []
+        for_each = try(var.execution_schedule) != null ? [""] : []
         content {
-          cron = var.execution_trigger.schedule.cron
+          cron = var.execution_schedule
         }
       }
     }
   }
 
   dynamic "data_profile_spec" {
-    for_each = try(var.rules) != null ? [] : [""]
+    for_each = try(var.rules) == null ? [""] : []
     content {
       sampling_percent = var.sampling_percent
       row_filter       = var.row_filter
@@ -166,45 +134,3 @@ resource "google_dataplex_datascan" "datascan" {
     }
   }
 }
-
-resource "google_dataplex_datascan_iam_binding" "authoritative_for_role" {
-  for_each     = local.iam
-  project      = google_dataplex_datascan.datascan.project
-  location     = google_dataplex_datascan.datascan.location
-  data_scan_id = google_dataplex_datascan.datascan.data_scan_id
-  role         = each.key
-  members      = each.value
-}
-
-resource "google_dataplex_datascan_iam_member" "additive" {
-  for_each = (
-    length(var.iam_additive) + length(var.iam_additive_members) > 0
-    ? local.iam_additive
-    : {}
-  )
-  project      = google_dataplex_datascan.datascan.project
-  location     = google_dataplex_datascan.datascan.location
-  data_scan_id = google_dataplex_datascan.datascan.data_scan_id
-  role         = each.value.role
-  member       = each.value.member
-}
-
-resource "google_dataplex_datascan_iam_policy" "authoritative_for_resource" {
-  count        = var.iam_policy != null ? 1 : 0
-  project      = google_dataplex_datascan.datascan.project
-  location     = google_dataplex_datascan.datascan.location
-  data_scan_id = google_dataplex_datascan.datascan.data_scan_id
-  policy_data  = data.google_iam_policy.authoritative.0.policy_data
-}
-
-data "google_iam_policy" "authoritative" {
-  count = var.iam_policy != null ? 1 : 0
-  dynamic "binding" {
-    for_each = try(var.iam_policy, {})
-    content {
-      role    = binding.key
-      members = binding.value
-    }
-  }
-}
-
