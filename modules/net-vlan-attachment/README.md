@@ -519,7 +519,7 @@ module "example-va-b" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [attachment](outputs.tf#L17) | VLAN Attachment resource |  |
+| [attachment](outputs.tf#L17) | VLAN Attachment resource. |  |
 | [id](outputs.tf#L22) | Fully qualified VLAN attachment id. |  |
 | [name](outputs.tf#L27) | The name of the VLAN attachment created. |  |
 | [pairing_key](outputs.tf#L32) | Opaque identifier of an PARTNER attachment used to initiate provisioning with a selected partner. |  |
