@@ -2,23 +2,30 @@
 
 This module implements the creation and management of one GCP project including IAM, organization policies, Shared VPC host or service attachment, service API activation, and tag attachment. It also offers a convenient way to refer to managed service identities (aka robot service accounts) for APIs.
 
-## Features
+## TOC
 
+<!-- BEGIN TOC -->
+- [TOC](#toc)
 - [Basic Project Creation](#basic-project-creation)
 - [IAM](#iam)
-  - [Authoritative](#authoritative-iam)
-  - [Additive](#additive-iam)
-  - [Additive By Member](#additive-iam-by-member)
+  - [Authoritative IAM](#authoritative-iam)
+  - [Additive IAM](#additive-iam)
+  - [Additive IAM by Member](#additive-iam-by-member)
   - [Service Identities and Authoritative IAM](#service-identities-and-authoritative-iam)
-  - [Using Shortcodes for Service Identities](#using-shortcodes-for-service-identities-in-additive-iam)
-  - [Service Identities and Manual IAM Grants](#service-identities-requiring-manual-iam-grants)
+  - [Using Shortcodes for Service Identities in Additive Iam](#using-shortcodes-for-service-identities-in-additive-iam)
+  - [Service Identities Requiring Manual Iam Grants](#service-identities-requiring-manual-iam-grants)
 - [Shared VPC](#shared-vpc)
 - [Organization Policies](#organization-policies)
-  - [Factory](#organization-policy-factory)
+  - [Organization Policy Factory](#organization-policy-factory)
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
-- [Cloud KMS Encryption Keys](#cloud-kms-encryption-keys)
+- [Cloud Kms Encryption Keys](#cloud-kms-encryption-keys)
 - [Tags](#tags)
+- [Outputs](#outputs)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Basic Project Creation
 
@@ -570,8 +577,8 @@ output "compute_robot" {
 ```
 
 <!-- TFDOC OPTS files:1 -->
-<!-- BEGIN TFDOC -->
 
+<!-- BEGIN TFDOC -->
 ## Files
 
 | name | description | resources |
@@ -639,5 +646,5 @@ output "compute_robot" {
 | [project_id](outputs.tf#L75) | Project id. |  |
 | [service_accounts](outputs.tf#L94) | Product robot service accounts in project. |  |
 | [sink_writer_identities](outputs.tf#L110) | Writer identities created for each sink. |  |
-
 <!-- END TFDOC -->
+
