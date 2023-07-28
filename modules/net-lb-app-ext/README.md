@@ -6,20 +6,32 @@ Due to the complexity of the underlying resources, changes to the configuration 
 
 ## Examples
 
-- [Minimal HTTP Example](#minimal-http-example)
-- [Minimal HTTPS Examples](#minimal-https-examples)
-- [Health Checks](#health-checks)
-- [Backend Types and Management](#backend-types-and-management)
-  - [Instance Groups](#instance-groups)
-  - [Storage Buckets](#storage-buckets)
-  - [Network Endpoint Groups](#network-endpoint-groups-negs)
-  - [Zonal NEGs](#zonal-neg-creation)
-  - [Hybrid NEGs](#hybrid-neg-creation)
-  - [Internet NEGs](#internet-neg-creation)
-  - [Serverless NEGs](#serverless-neg-creation)
-- [URL Map](#url-map)
-- [SSL Certificates](#ssl-certificates)
-- [Complex Example](#complex-example)
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Minimal HTTP Example](#minimal-http-example)
+  - [Minimal HTTPS examples](#minimal-https-examples)
+    - [HTTP backends](#http-backends)
+    - [HTTPS backends](#https-backends)
+  - [Classic vs Non-classic](#classic-vs-non-classic)
+  - [Health Checks](#health-checks)
+  - [Backend Types and Management](#backend-types-and-management)
+    - [Instance Groups](#instance-groups)
+    - [Managed Instance Groups](#managed-instance-groups)
+    - [Storage Buckets](#storage-buckets)
+    - [Network Endpoint Groups (NEGs)](#network-endpoint-groups-negs)
+    - [Zonal NEG creation](#zonal-neg-creation)
+    - [Hybrid NEG creation](#hybrid-neg-creation)
+    - [Internet NEG creation](#internet-neg-creation)
+    - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
+    - [Serverless NEG creation](#serverless-neg-creation)
+  - [URL Map](#url-map)
+  - [SSL Certificates](#ssl-certificates)
+  - [Complex example](#complex-example)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 
 ### Minimal HTTP Example
 

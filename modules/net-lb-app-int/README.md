@@ -6,14 +6,24 @@ Due to the complexity of the underlying resources, changes to the configuration 
 
 ## Examples
 
-- [Minimal Example](#minimal-example)
-- [Cross-project Backend Services](#cross-project-backend-services)
-- [Health Checks](#health-checks)
-- [Instance Groups](#instance-groups)
-- [Network Endpoint Groups](#network-endpoint-groups-negs)
-- [URL Map](#url-map)
-- [SSL Certificates](#ssl-certificates)
-- [Complex Example](#complex-example)
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Minimal Example](#minimal-example)
+  - [Cross-project backend services](#cross-project-backend-services)
+  - [Health Checks](#health-checks)
+  - [Instance Groups](#instance-groups)
+  - [Network Endpoint Groups (NEGs)](#network-endpoint-groups-negs)
+    - [Zonal NEG creation](#zonal-neg-creation)
+    - [Hybrid NEG creation](#hybrid-neg-creation)
+    - [Serverless NEG creation](#serverless-neg-creation)
+    - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
+  - [URL Map](#url-map)
+  - [SSL Certificates](#ssl-certificates)
+  - [Complex example](#complex-example)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ### Minimal Example
 
