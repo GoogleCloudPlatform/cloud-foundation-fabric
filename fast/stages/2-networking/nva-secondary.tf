@@ -43,14 +43,14 @@ module "nva-secondary" {
   can_ip_forward = true
   network_interfaces = [
     {
-      network    = module.external-vpc.self_link
-      subnetwork = module.external-vpc.subnet_self_links["${var.regions.secondary}/prod-core-external-0-nva-secondary"]
+      network    = module.dmz-vpc.self_link
+      subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.secondary}/prod-core-dmz-0-nva-secondary"]
       nat        = false
       addresses  = null
     },
     {
-      network    = module.dmz-vpc.self_link
-      subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.secondary}/prod-core-dmz-0-nva-secondary"]
+      network    = module.external-vpc.self_link
+      subnetwork = module.external-vpc.subnet_self_links["${var.regions.secondary}/prod-core-external-0-nva-secondary"]
       nat        = false
       addresses  = null
     },
@@ -95,7 +95,7 @@ resource "google_compute_instance_group" "nva-secondary" {
   description = "NVA instance group for the secondary region, zone ${each.key}."
   zone        = "${var.regions.secondary}-${each.key}"
   project     = module.net-project.project_id
-  network     = module.external-vpc.self_link
+  network     = module.dmz-vpc.self_link
   instances   = toset([module.nva-secondary[each.key].self_link])
 }
 

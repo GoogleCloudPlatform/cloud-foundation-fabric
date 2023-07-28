@@ -15,11 +15,10 @@
  */
 
 module "dmz-vpc" {
-  source                          = "../../../modules/net-vpc"
-  project_id                      = module.net-project.project_id
-  name                            = "prod-core-dmz-0"
-  mtu                             = 1500
-  delete_default_routes_on_create = true
+  source     = "../../../modules/net-vpc"
+  project_id = module.net-project.project_id
+  name       = "prod-core-dmz-0"
+  mtu        = 1500
   create_googleapis_routes = {
     restricted   = false
     restricted-6 = false
@@ -38,26 +37,6 @@ module "dmz-vpc" {
       region        = "europe-west12"
     }
   ]
-}
-
-resource "google_compute_route" "dmz-primary" {
-  project      = module.net-project.project_id
-  network      = module.dmz-vpc.name
-  name         = "dmz-primary"
-  description  = "Terraform-managed."
-  dest_range   = "100.101.0.0/16"
-  priority     = 1000
-  next_hop_ilb = module.dmz-ilb-primary.forwarding_rule_self_link
-}
-
-resource "google_compute_route" "dmz-secondary" {
-  project      = module.net-project.project_id
-  network      = module.dmz-vpc.name
-  name         = "dmz-secondary"
-  description  = "Terraform-managed."
-  dest_range   = "100.102.0.0/16"
-  priority     = 1000
-  next_hop_ilb = module.dmz-ilb-secondary.forwarding_rule_self_link
 }
 
 module "dmz-firewall" {

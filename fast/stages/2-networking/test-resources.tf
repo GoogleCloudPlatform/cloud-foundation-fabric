@@ -16,240 +16,254 @@
 
 # tfdoc:file:description temporary instances for testing
 
-# # Untrusted (Landing)
+# External
+module "test-vm-external-primary-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.net-project.project_id
+  zone       = "${var.regions.primary}-b"
+  name       = "test-vm-ext-pri-0"
+  network_interfaces = [{
+    network    = module.external-vpc.self_link
+    subnetwork = module.external-vpc.subnet_self_links["${var.regions.primary}/prod-core-external-0-nva-primary"]
+  }]
+  tags                   = ["primary", "ssh"]
+  service_account_create = true
+  instance_type          = "e2-micro"
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-11"
+      type  = "pd-balanced"
+      size  = 10
+    }
+  }
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping bind9-dnsutils
+    EOF
+  }
+}
 
-# module "test-vm-external-primary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.net-project.project_id
-#   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-lnd-unt-pri-0"
-#   network_interfaces = [{
-#     network    = module.external-vpc.self_link
-#     subnetwork = module.external-vpc.subnet_self_links["${var.regions.primary}/external-default-${local.region_shortnames[var.regions.primary]}"]
-#   }]
-#   tags                   = ["primary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
+module "test-vm-external-secondary-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.net-project.project_id
+  zone       = "${var.regions.secondary}-b"
+  name       = "test-vm-ext-sec-0"
+  network_interfaces = [{
+    network    = module.external-vpc.self_link
+    subnetwork = module.external-vpc.subnet_self_links["${var.regions.secondary}/prod-core-external-0-nva-secondary"]
+  }]
+  tags                   = ["secondary", "ssh"]
+  service_account_create = true
+  instance_type          = "e2-micro"
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-11"
+      type  = "pd-balanced"
+      size  = 10
+    }
+  }
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping bind9-dnsutils
+    EOF
+  }
+}
 
-# module "test-vm-external-secondary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.net-project.project_id
-#   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-lnd-unt-sec-0"
-#   network_interfaces = [{
-#     network    = module.external-vpc.self_link
-#     subnetwork = module.external-vpc.subnet_self_links["${var.regions.secondary}/external-default-${local.region_shortnames[var.regions.secondary]}"]
-#   }]
-#   tags                   = ["secondary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
+# DMZ
+module "test-vm-dmz-primary-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.net-project.project_id
+  zone       = "${var.regions.primary}-b"
+  name       = "test-vm-dmz-pri-0"
+  network_interfaces = [{
+    network    = module.dmz-vpc.self_link
+    subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.primary}/prod-core-dmz-0-nva-primary"]
+  }]
+  tags                   = ["primary", "ssh"]
+  service_account_create = true
+  instance_type          = "e2-micro"
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-11"
+      type  = "pd-balanced"
+      size  = 10
+    }
+  }
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping bind9-dnsutils
+    EOF
+  }
+}
 
-# # Trusted (hub)
+module "test-vm-dmz-secondary-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.net-project.project_id
+  zone       = "${var.regions.secondary}-b"
+  name       = "test-vm-dmz-sec-0"
+  network_interfaces = [{
+    network    = module.dmz-vpc.self_link
+    subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.secondary}/prod-core-dmz-0-nva-secondary"]
+  }]
+  tags                   = ["secondary", "ssh"]
+  service_account_create = true
+  instance_type          = "e2-micro"
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-11"
+      type  = "pd-balanced"
+      size  = 10
+    }
+  }
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping bind9-dnsutils
+    EOF
+  }
+}
 
-# module "test-vm-landing-trusted-primary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.net-project.project_id
-#   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-lnd-tru-pri-0"
-#   network_interfaces = [{
-#     network    = module.landing-trusted-vpc.self_link
-#     subnetwork = module.landing-trusted-vpc.subnet_self_links["${var.regions.primary}/landing-trusted-default-${local.region_shortnames[var.regions.primary]}"]
-#   }]
-#   tags                   = ["primary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
+# Shared
+module "test-vm-shared-primary-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.net-project.project_id
+  zone       = "${var.regions.primary}-b"
+  name       = "test-vm-shared-pri-0"
+  network_interfaces = [{
+    network    = module.shared-vpc.self_link
+    subnetwork = module.shared-vpc.subnet_self_links["${var.regions.primary}/prod-core-shared-0-nva-primary"]
+  }]
+  tags                   = ["primary", "ssh"]
+  service_account_create = true
+  instance_type          = "e2-micro"
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-11"
+      type  = "pd-balanced"
+      size  = 10
+    }
+  }
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping bind9-dnsutils
+    EOF
+  }
+}
 
-# module "test-vm-landing-trusted-secondary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.net-project.project_id
-#   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-lnd-tru-sec-0"
-#   network_interfaces = [{
-#     network    = module.landing-trusted-vpc.self_link
-#     subnetwork = module.landing-trusted-vpc.subnet_self_links["${var.regions.secondary}/landing-trusted-default-${local.region_shortnames[var.regions.secondary]}"]
-#   }]
-#   tags                   = ["secondary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
+module "test-vm-shared-secondary-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.net-project.project_id
+  zone       = "${var.regions.secondary}-b"
+  name       = "test-vm-shared-sec-0"
+  network_interfaces = [{
+    network    = module.shared-vpc.self_link
+    subnetwork = module.shared-vpc.subnet_self_links["${var.regions.secondary}/prod-core-shared-0-nva-secondary"]
+  }]
+  tags                   = ["secondary", "ssh"]
+  service_account_create = true
+  instance_type          = "e2-micro"
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-11"
+      type  = "pd-balanced"
+      size  = 10
+    }
+  }
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping bind9-dnsutils
+    EOF
+  }
+}
 
-# # Dev spoke
+# Transit
+module "test-vm-transit-primary-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.net-project.project_id
+  zone       = "${var.regions.primary}-b"
+  name       = "test-vm-transit-pri-0"
+  network_interfaces = [{
+    network    = module.transit-primary-vpc.self_link
+    subnetwork = module.transit-primary-vpc.subnet_self_links["${var.regions.primary}/prod-core-transit-primary-0-nva"]
+  }]
+  tags                   = ["primary", "ssh"]
+  service_account_create = true
+  instance_type          = "e2-micro"
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-11"
+      type  = "pd-balanced"
+      size  = 10
+    }
+  }
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping bind9-dnsutils
+    EOF
+  }
+}
 
-# module "test-vm-dev-primary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.dev-spoke-project.project_id
-#   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-dev-pri-0"
-#   network_interfaces = [{
-#     network = module.dev-spoke-vpc.self_link
-#     # change the subnet name to match the values you are actually using
-#     subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default-${local.region_shortnames[var.regions.primary]}"]
-#   }]
-#   tags                   = ["primary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
-
-# module "test-vm-dev-secondary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.dev-spoke-project.project_id
-#   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-dev-sec-0"
-#   network_interfaces = [{
-#     network = module.dev-spoke-vpc.self_link
-#     # change the subnet name to match the values you are actually using
-#     subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.secondary}/dev-default-${local.region_shortnames[var.regions.secondary]}"]
-#   }]
-#   tags                   = ["secondary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
-
-# # Prod spoke
-
-# module "test-vm-prod-primary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.prod-spoke-project.project_id
-#   zone       = "${var.regions.primary}-b"
-#   name       = "test-vm-prod-pri-0"
-#   network_interfaces = [{
-#     network = module.prod-spoke-vpc.self_link
-#     # change the subnet name to match the values you are actually using
-#     subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.primary}/prod-default-${local.region_shortnames[var.regions.primary]}"]
-#   }]
-#   tags                   = ["primary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#         type  = "pd-balanced"
-#         size  = 10
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
-
-# module "test-vm-prod-secondary-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.prod-spoke-project.project_id
-#   zone       = "${var.regions.secondary}-a"
-#   name       = "test-vm-prod-sec-0"
-#   network_interfaces = [{
-#     network = module.prod-spoke-vpc.self_link
-#     # change the subnet name to match the values you are actually using
-#     subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.secondary}/prod-default-${local.region_shortnames[var.regions.secondary]}"]
-#   }]
-#   tags                   = ["secondary", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     initialize_params = {
-#         image = "projects/debian-cloud/global/images/family/debian-10"
-#     }
-#   }
-#   options = {
-#     spot               = true
-#     termination_action = "STOP"
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
+module "test-vm-transit-secondary-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.net-project.project_id
+  zone       = "${var.regions.secondary}-b"
+  name       = "test-vm-transit-sec-0"
+  network_interfaces = [{
+    network    = module.transit-secondary-vpc.self_link
+    subnetwork = module.transit-secondary-vpc.subnet_self_links["${var.regions.secondary}/prod-core-transit-secondary-0-nva"]
+  }]
+  tags                   = ["secondary", "ssh"]
+  service_account_create = true
+  instance_type          = "e2-micro"
+  boot_disk = {
+    initialize_params = {
+      image = "projects/debian-cloud/global/images/family/debian-11"
+      type  = "pd-balanced"
+      size  = 10
+    }
+  }
+  options = {
+    spot               = true
+    termination_action = "STOP"
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping bind9-dnsutils
+    EOF
+  }
+}

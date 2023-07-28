@@ -43,16 +43,6 @@ module "shared-vpc" {
   ]
 }
 
-# resource "google_compute_route" "shared-primary-default" {
-#   project      = module.net-project.project_id
-#   network      = module.shared-vpc.name
-#   name         = "shared-primary-default"
-#   description  = "Terraform-managed."
-#   dest_range   = "0.0.0.0/0"
-#   priority     = 2000
-#   next_hop_ilb = module.shared-ilb-primary.forwarding_rule_self_link
-# }
-
 resource "google_compute_route" "shared-primary-tagged" {
   project      = module.net-project.project_id
   network      = module.shared-vpc.name
