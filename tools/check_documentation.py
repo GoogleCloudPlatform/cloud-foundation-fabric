@@ -35,6 +35,7 @@ class State(enum.IntEnum):
   SKIP = enum.auto()
   OK = enum.auto()
   FAIL_STALE_README = enum.auto()
+  FAIL_STALE_TOC = enum.auto()
   FAIL_UNSORTED_VARS = enum.auto()
   FAIL_UNSORTED_OUTPUTS = enum.auto()
   FAIL_VARIABLE_PERIOD = enum.auto()
@@ -52,6 +53,7 @@ class State(enum.IntEnum):
         State.SKIP: '  ',
         State.OK: '✓ ',
         State.FAIL_STALE_README: '✗R',
+        State.FAIL_STALE_TOC: '✗T',
         State.FAIL_UNSORTED_VARS: 'SV',
         State.FAIL_UNSORTED_OUTPUTS: 'SO',
         State.FAIL_VARIABLE_PERIOD: '.V',
@@ -71,8 +73,9 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
     diff = None
     readme = readme_path.read_text()
     mod_name = str(readme_path.relative_to(dir_path).parent)
-    result = tfdoc.get_doc(readme)
-    if not result:
+    doc_result = tfdoc.get_doc(readme)
+    toc_result = tfdoc.get_toc(readme)
+    if not doc_result:
       state = State.SKIP
     else:
       try:
@@ -82,16 +85,28 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
         newouts = new_doc.outputs
         variables = [v.name for v in newvars if v.file.endswith('variables.tf')]
         outputs = [o.name for o in newouts if o.file.endswith('outputs.tf')]
+
+        new_toc = tfdoc.create_toc(readme)
+
       except SystemExit:
         state = state.SKIP
       else:
         state = State.OK
 
-        if new_doc.content != result['doc']:
+        if new_doc.content.strip() != doc_result['doc'].strip():
           state = State.FAIL_STALE_README
           header = f'----- {mod_name} diff -----\n'
-          ndiff = difflib.ndiff(result['doc'].split('\n'),
+          ndiff = difflib.ndiff(doc_result['doc'].split('\n'),
                                 new_doc.content.split('\n'))
+          diff = '\n'.join([header] + list(ndiff))
+
+        if new_toc.strip() != toc_result['toc'].strip():
+          print(f"=====new\n{new_toc}")
+          print(f"=====result\n{toc_result['toc']}")
+          state = State.FAIL_STALE_TOC
+          header = f'----- {mod_name} diff -----\n'
+          ndiff = difflib.ndiff(toc_result['toc'].split('\n'),
+                                new_toc.split('\n'))
           diff = '\n'.join([header] + list(ndiff))
 
         elif empty := [v.name for v in newvars if not v.description]:
