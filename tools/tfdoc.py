@@ -324,6 +324,7 @@ def format_variables(items, show_extra=True):
 
 
 def create_toc(readme):
+  'Create a Markdown table of contents a Markdown table of contents.'
   doc = marko.parse(readme)
   lines = []
   headings = [x for x in doc.children if x.get_type() == 'Heading']
@@ -350,7 +351,7 @@ def get_doc(readme):
 
 
 def get_toc(readme):
-  'Check if README file is marked, and return current doc.'
+  'Check if README file is marked, and return current toc.'
   t = re.search("(?sm)%s(.*)%s" % (TOC_BEGIN, TOC_END), readme)
   if not t:
     return
@@ -412,7 +413,7 @@ def render_doc(readme, doc):
 
 
 def render_toc(readme, toc):
-  'Replace document in module\'s README.md file.'
+  'Replace toc in module\'s README.md file.'
   result = get_toc(readme)
   if not result or toc == result['toc']:
     return readme
