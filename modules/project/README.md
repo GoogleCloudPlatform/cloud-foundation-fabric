@@ -4,7 +4,6 @@ This module implements the creation and management of one GCP project including 
 
 ## TOC
 
-
 <!-- BEGIN TOC -->
 - [TOC](#toc)
 - [Basic Project Creation](#basic-project-creation)
@@ -27,7 +26,6 @@ This module implements the creation and management of one GCP project including 
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
-
 
 ## Basic Project Creation
 
@@ -579,8 +577,8 @@ output "compute_robot" {
 ```
 
 <!-- TFDOC OPTS files:1 -->
-<!-- BEGIN TFDOC -->
 
+<!-- BEGIN TFDOC -->
 ## Files
 
 | name | description | resources |
@@ -648,5 +646,5 @@ output "compute_robot" {
 | [project_id](outputs.tf#L75) | Project id. |  |
 | [service_accounts](outputs.tf#L94) | Product robot service accounts in project. |  |
 | [sink_writer_identities](outputs.tf#L110) | Writer identities created for each sink. |  |
-
 <!-- END TFDOC -->
+

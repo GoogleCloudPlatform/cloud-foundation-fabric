@@ -400,17 +400,15 @@ def get_readme(readme_path):
 def render_doc(readme, doc):
   'Replace document in module\'s README.md file.'
   result = get_doc(readme)
-  if not result:
-    raise SystemExit(f'Mark not found in README {readme}')
-  if doc == result['doc']:
+  if not result or doc == result['doc']:
     return readme
   try:
     return '\n'.join([
-        readme[:result['start']],
+        readme[:result['start']].rstrip(),
         MARK_BEGIN,
         doc,
         MARK_END,
-        readme[result['end']:],
+        readme[result['end']:].lstrip(),
     ])
   except (IOError, OSError) as e:
     raise SystemExit(f'Error replacing README {readme_path}: {e}')
@@ -419,17 +417,17 @@ def render_doc(readme, doc):
 def render_toc(readme, toc):
   'Replace document in module\'s README.md file.'
   result = get_toc(readme)
-  if not result:
-    raise SystemExit(f'TOC not found in README {readme}')
-  if toc == result['toc']:
+  if not result or toc == result['toc']:
     return readme
   try:
     return '\n'.join([
-        readme[:result['start']],
+        readme[:result['start']].rstrip(),
+        '',
         TOC_BEGIN,
         toc,
         TOC_END,
-        readme[result['end']:],
+        '',
+        readme[result['end']:].lstrip(),
     ])
   except (IOError, OSError) as e:
     raise SystemExit(f'Error replacing README {readme_path}: {e}')

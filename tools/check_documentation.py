@@ -85,23 +85,20 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
       outputs = [o.name for o in newouts if o.file.endswith('outputs.tf')]
 
       state = State.OK
-      d = difflib.Differ()
 
       if current_doc and new_doc.content != current_doc['doc']:
         state = State.FAIL_STALE_README
         header = f'----- {mod_name} diff -----\n'
-        ndiff = d.compare(current_doc['doc'].splitlines(keepends=True),
-                          new_doc.content.splitlines(keepends=True))
-        diff = ''.join([header] + list(ndiff))
-        diff += f"\n\ncurrent\n''{current_doc['doc'].splitlines(keepends=True)}''"
-        diff += f"\n\nnew\n''{new_doc.content.splitlines(keepends=True)}''"
+        ndiff = difflib.ndiff(current_doc['doc'].splitlines(keepends=True),
+                              new_doc.content.splitlines(keepends=True))
+        diff = ''.join([header] + [x for x in ndiff if x[0] != ' '])
 
       elif current_toc and new_toc != current_toc['toc']:
         state = State.FAIL_STALE_TOC
         header = f'----- {mod_name} diff -----\n'
-        ndiff = d.compare(current_toc['toc'].splitlines(keepends=True),
-                          new_toc.splitlines(keepends=True))
-        diff = ''.join([header] + list(ndiff))
+        ndiff = difflib.ndiff(current_toc['toc'].splitlines(keepends=True),
+                              new_toc.splitlines(keepends=True))
+        diff = ''.join([header] + [x for x in ndiff if x[0] != ' '])
 
       elif empty := [v.name for v in newvars if not v.description]:
         state = state.FAIL_VARIABLE_DESCRIPTION
