@@ -515,4 +515,16 @@ module "example-va-b" {
 | [vlan_tag](variables.tf#L110) | The VLAN id to be used for this VLAN attachment. | <code>number</code> |  | <code>null</code> |
 | [vpn_gateways_ip_range](variables.tf#L116) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
 
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [attachment](outputs.tf#L17) | VLAN Attachment resource. |  |
+| [id](outputs.tf#L22) | Fully qualified VLAN attachment id. |  |
+| [name](outputs.tf#L27) | The name of the VLAN attachment created. |  |
+| [pairing_key](outputs.tf#L32) | Opaque identifier of an PARTNER attachment used to initiate provisioning with a selected partner. |  |
+| [router](outputs.tf#L37) | Router resource (only if auto-created). |  |
+| [router_interface](outputs.tf#L42) | Router interface created for the VLAN attachment. |  |
+| [router_name](outputs.tf#L47) | Router name. |  |
+
 <!-- END TFDOC -->
