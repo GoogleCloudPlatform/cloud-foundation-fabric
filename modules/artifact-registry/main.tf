@@ -20,13 +20,12 @@ locals {
 }
 
 resource "google_artifact_registry_repository" "registry" {
-  provider      = google-beta
   project       = var.project_id
   location      = var.location
   description   = var.description
   format        = upper(local.format_string)
   labels        = var.labels
-  repository_id = var.id
+  repository_id = var.name
   mode          = "${upper(local.mode_string)}_REPOSITORY"
   kms_key_name  = var.encryption_key
 

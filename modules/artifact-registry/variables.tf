@@ -59,11 +59,6 @@ variable "iam" {
   default     = {}
 }
 
-variable "id" {
-  description = "Repository id."
-  type        = string
-}
-
 variable "labels" {
   description = "Labels to be attached to the registry."
   type        = map(string)
@@ -93,6 +88,11 @@ variable "mode" {
     )
     error_message = "Multiple or zero modes are not supported."
   }
+}
+
+variable "name" {
+  description = "Registry name."
+  type        = string
 }
 
 variable "project_id" {

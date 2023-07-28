@@ -40,7 +40,7 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
 
 module "artifact_registry" {
   source     = "../../../modules/artifact-registry"
-  id         = "docker-repo"
+  name       = "docker-repo"
   project_id = module.project.project_id
   location   = var.region
 }
