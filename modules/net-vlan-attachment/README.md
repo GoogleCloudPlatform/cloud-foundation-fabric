@@ -352,7 +352,7 @@ resource "google_compute_router" "interconnect-router-ew12" {
   project = "myproject"
   region  = "europe-west12"
   bgp {
-    asn               = 64514
+    asn               = 16550
     advertise_mode    = "CUSTOM"
     advertised_groups = ["ALL_SUBNETS"]
     advertised_ip_ranges {
