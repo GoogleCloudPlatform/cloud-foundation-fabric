@@ -10,20 +10,26 @@ This module allows managing several organization properties:
 
 To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
 
-## Features
-
+## TOC
+<!-- BEGIN TOC -->
+- [TOC](#toc)
+- [Example](#example)
 - [IAM](#iam)
 - [Organization Policies](#organization-policies)
-  - [Factory](#organization-policy-factory)
-  - [Custom Constraints](#organization-policy-custom-constraints)
-  - [Custom Constraints Factory](#organization-policy-custom-constraints-factory)
+  - [Organization Policy Factory](#organization-policy-factory)
+  - [Organization Policy Custom Constraints](#organization-policy-custom-constraints)
+  - [Organization Policy Custom Constraints Factory](#organization-policy-custom-constraints-factory)
 - [Hierarchical Firewall Policies](#hierarchical-firewall-policies)
-  - [Directly Defined](#directly-defined-firewall-policies)
-  - [Factory](#firewall-policy-factory)
+  - [Directly Defined Firewall Policies](#directly-defined-firewall-policies)
+  - [Firewall Policy Factory](#firewall-policy-factory)
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
 - [Custom Roles](#custom-roles)
 - [Tags](#tags)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Example
 

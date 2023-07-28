@@ -2,6 +2,14 @@
 
 This module simplifies the creation of repositories using Google Cloud Artifact Registry.
 
+<!-- BEGIN TOC -->
+- [Standard Repository](#standard-repository)
+- [Remote and Virtual Repositories](#remote-and-virtual-repositories)
+- [itional Docker and Maven Options](#itional-docker-and-maven-options)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Standard Repository
 
 ```hcl
@@ -58,12 +66,12 @@ module "registry-virtual" {
   }
 }
 
-# tftest modules=3 resources=3 inventory=remote-virtual.yaml
+# tst modules=3 resources=3 inventory=remote-virtual.yaml
 ```
 
-## Additional Docker and Maven Options
+## itional Docker and Maven Options
 
-```hcl
+```
 
 module "registry-docker" {
   source     = "./fabric/modules/artifact-registry"
