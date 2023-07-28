@@ -283,7 +283,7 @@ with models.DAG(
           'datasetId': DWH_CURATED_BQ_DATASET,
           'tableId': 'customer_purchase'
         },
-        'writeDisposition':'WRITE_APPEND',
+        'writeDisposition':'WRITE_TRUNCATE',
         "useLegacySql": False
       }
     },
@@ -313,7 +313,7 @@ with models.DAG(
           'datasetId': DWH_CONFIDENTIAL_BQ_DATASET,
           'tableId': 'customer_purchase'
         },
-        'writeDisposition':'WRITE_APPEND',
+        'writeDisposition':'WRITE_TRUNCATE',
         "useLegacySql": False
       }
     },
