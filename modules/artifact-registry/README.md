@@ -58,7 +58,7 @@ module "registry-virtual" {
   }
 }
 
-# tftest modules=3 resources=3
+# tftest modules=3 resources=3 inventory=remote-virtual.yaml
 ```
 
 ## Additional Docker and Maven Options
