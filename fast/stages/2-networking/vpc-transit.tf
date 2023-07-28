@@ -15,17 +15,34 @@
  */
 
 module "transit-primary-vpc" {
-  source     = "../../../modules/net-vpc"
-  project_id = module.net-project.project_id
-  name       = "prod-core-transit-primary-0"
-  mtu        = 1500
+  source                          = "../../../modules/net-vpc"
+  project_id                      = module.net-project.project_id
+  name                            = "prod-core-transit-primary-0"
+  mtu                             = 1500
+  delete_default_routes_on_create = true
+  create_googleapis_routes = {
+    restricted   = true
+    restricted-6 = false
+    private      = true
+    private-6    = false
+  }
   subnets = [
     {
-      ip_cidr_range = "100.100.128.0/28"
+      ip_cidr_range = "100.101.128.0/28"
       name          = "prod-core-transit-primary-0-nva"
       region        = "europe-west8"
     }
   ]
+}
+
+resource "google_compute_route" "transit-primary" {
+  project      = module.net-project.project_id
+  network      = module.transit-primary-vpc.name
+  name         = "transit-primary"
+  description  = "Terraform-managed."
+  dest_range   = "0.0.0.0/0"
+  priority     = 1000
+  next_hop_ilb = module.transit-primary-ilb.forwarding_rule_self_link
 }
 
 module "transit-primary-firewall" {
@@ -54,11 +71,11 @@ module "transit-primary-addresses" {
   }
 }
 
-module "transit-primary-ilb-primary" {
+module "transit-primary-ilb" {
   source     = "../../../modules/net-lb-int"
   project_id = module.net-project.project_id
   region     = var.regions.primary
-  name       = "transit-primary-lb-primary"
+  name       = "transit-primary-lb"
   vpc_config = {
     network    = module.transit-primary-vpc.name
     subnetwork = module.transit-primary-vpc.subnet_self_links["${var.regions.primary}/prod-core-transit-primary-0-nva"]
@@ -82,17 +99,34 @@ module "transit-primary-ilb-primary" {
 
 
 module "transit-secondary-vpc" {
-  source     = "../../../modules/net-vpc"
-  project_id = module.net-project.project_id
-  name       = "prod-core-transit-secondary-0"
-  mtu        = 1500
+  source                          = "../../../modules/net-vpc"
+  project_id                      = module.net-project.project_id
+  name                            = "prod-core-transit-secondary-0"
+  mtu                             = 1500
+  delete_default_routes_on_create = true
+  create_googleapis_routes = {
+    restricted   = true
+    restricted-6 = false
+    private      = true
+    private-6    = false
+  }
   subnets = [
     {
-      ip_cidr_range = "100.100.132.0/28"
+      ip_cidr_range = "100.102.128.0/28"
       name          = "prod-core-transit-secondary-0-nva"
       region        = "europe-west12"
     }
   ]
+}
+
+resource "google_compute_route" "transit-secondary" {
+  project      = module.net-project.project_id
+  network      = module.transit-secondary-vpc.name
+  name         = "transit-secondary"
+  description  = "Terraform-managed."
+  dest_range   = "0.0.0.0/0"
+  priority     = 1000
+  next_hop_ilb = module.transit-secondary-ilb.forwarding_rule_self_link
 }
 
 module "transit-secondary-firewall" {
@@ -120,11 +154,11 @@ module "transit-secondary-addresses" {
   }
 }
 
-module "transit-secondary-ilb-secondary" {
+module "transit-secondary-ilb" {
   source     = "../../../modules/net-lb-int"
   project_id = module.net-project.project_id
   region     = var.regions.secondary
-  name       = "transit-secondary-lb-secondary"
+  name       = "transit-secondary-lb"
   vpc_config = {
     network    = module.transit-secondary-vpc.name
     subnetwork = module.transit-secondary-vpc.subnet_self_links["${var.regions.secondary}/prod-core-transit-secondary-0-nva"]

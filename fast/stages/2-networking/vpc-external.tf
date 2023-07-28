@@ -26,21 +26,47 @@ module "external-vpc" {
   name       = "prod-core-external-0"
   mtu        = 1500
   dns_policy = {
-    inbound = false
-    logging = false
+    inbound = true
+  }
+  delete_default_routes_on_create = true
+  create_googleapis_routes = {
+    restricted   = false
+    restricted-6 = false
+    private      = false
+    private-6    = false
   }
   subnets = [
     {
-      ip_cidr_range = "100.100.1.0/28"
+      ip_cidr_range = "100.101.1.0/28"
       name          = "prod-core-external-0-nva-primary"
       region        = "europe-west8"
     },
     {
-      ip_cidr_range = "100.100.1.128/28"
+      ip_cidr_range = "100.102.1.128/28"
       name          = "prod-core-external-0-nva-secondary"
       region        = "europe-west12"
     }
   ]
+}
+
+resource "google_compute_route" "external-primary" {
+  project      = module.net-project.project_id
+  network      = module.external-vpc.name
+  name         = "external-primary"
+  description  = "Terraform-managed."
+  dest_range   = "100.101.0.0/16"
+  priority     = 1000
+  next_hop_ilb = module.external-ilb-primary.forwarding_rule_self_link
+}
+
+resource "google_compute_route" "external-secondary" {
+  project      = module.net-project.project_id
+  network      = module.external-vpc.name
+  name         = "external-secondary"
+  description  = "Terraform-managed."
+  dest_range   = "100.102.0.0/16"
+  priority     = 1000
+  next_hop_ilb = module.external-ilb-secondary.forwarding_rule_self_link
 }
 
 module "external-firewall" {

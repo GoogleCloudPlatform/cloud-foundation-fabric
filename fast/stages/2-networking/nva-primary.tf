@@ -22,28 +22,30 @@ locals {
       name                = "dmz"
       enable_masquerading = true
       routes = [
-        var.gcp_ranges.gcp_dmz
+        var.gcp_ranges.gcp_dmz_primary,
+        var.gcp_ranges.gcp_dmz_secondary,
       ]
     },
     {
       name = "external"
-      routes = flatten(concat(
-        [
-          var.gcp_ranges.gcp_external,
-        ],
-        var.gcp_ranges.onprem_ranges)
-      )
+      routes = [
+        var.gcp_ranges.gcp_external_primary,
+        var.gcp_ranges.gcp_external_secondary,
+        var.gcp_ranges.onprem_range_10
+      ]
     },
     {
       name = "mgmt"
       routes = [
-        var.gcp_ranges.gcp_mgmt
+        var.gcp_ranges.gcp_mgmt_primary,
+        var.gcp_ranges.gcp_mgmt_secondary,
       ]
     },
     {
       name = "shared"
       routes = [
-        var.gcp_ranges.gcp_shared
+        var.gcp_ranges.gcp_shared_primary,
+        var.gcp_ranges.gcp_shared_secondary
       ]
     },
   ]

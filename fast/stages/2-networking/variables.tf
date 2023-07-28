@@ -84,23 +84,21 @@ variable "folder_ids" {
 variable "gcp_ranges" {
   description = "GCP address ranges in name => range format."
   # TODO: these might all become lists
-  type = object({
-    gcp_external          = string
-    gcp_dmz               = string
-    gcp_mgmt              = string
-    gcp_shared            = string
-    gcp_transit_primary   = string
-    gcp_transit_secondary = string
-    onprem_ranges         = list(string)
-  })
+  type = map(string)
   default = {
-    gcp_external          = "100.100.1.0/24"
-    gcp_dmz               = "100.100.2.0/24"
-    gcp_mgmt              = "100.100.3.0/24"
-    gcp_shared            = "100.100.4.0/24"
-    gcp_transit_primary   = "100.100.128.0/22"
-    gcp_transit_secondary = "100.100.132.0/22"
-    onprem_ranges         = ["10.0.0.0/8"]
+    gcp_all_primary        = "100.101.0.0/16"
+    gcp_all_secondary      = "100.102.0.0/16"
+    gcp_external_primary   = "100.101.1.0/24"
+    gcp_external_secondary = "100.102.1.0/24"
+    gcp_dmz_primary        = "100.101.2.0/24"
+    gcp_dmz_secondary      = "100.102.2.0/24"
+    gcp_mgmt_primary       = "100.101.3.0/24"
+    gcp_mgmt_secondary     = "100.102.3.0/24"
+    gcp_shared_primary     = "100.101.4.0/24"
+    gcp_shared_secondary   = "100.102.4.0/24"
+    gcp_transit_primary    = "100.101.128.0/22"
+    gcp_transit_secondary  = "100.102.128.0/22"
+    onprem_range_10        = "10.0.0.0/8"
   }
 }
 

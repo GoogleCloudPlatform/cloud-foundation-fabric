@@ -19,18 +19,60 @@ module "shared-vpc" {
   project_id = module.net-project.project_id
   name       = "prod-core-shared-0"
   mtu        = 1500
+  dns_policy = {
+    inbound = true
+  }
+  delete_default_routes_on_create = true
+  create_googleapis_routes = {
+    restricted   = true
+    restricted-6 = false
+    private      = true
+    private-6    = false
+  }
   subnets = [
     {
-      ip_cidr_range = "100.100.4.0/28"
+      ip_cidr_range = "100.101.4.0/28"
       name          = "prod-core-shared-0-nva-primary"
       region        = "europe-west8"
     },
     {
-      ip_cidr_range = "100.100.4.128/28"
+      ip_cidr_range = "100.102.4.128/28"
       name          = "prod-core-shared-0-nva-secondary"
       region        = "europe-west12"
     }
   ]
+}
+
+# resource "google_compute_route" "shared-primary-default" {
+#   project      = module.net-project.project_id
+#   network      = module.shared-vpc.name
+#   name         = "shared-primary-default"
+#   description  = "Terraform-managed."
+#   dest_range   = "0.0.0.0/0"
+#   priority     = 2000
+#   next_hop_ilb = module.shared-ilb-primary.forwarding_rule_self_link
+# }
+
+resource "google_compute_route" "shared-primary-tagged" {
+  project      = module.net-project.project_id
+  network      = module.shared-vpc.name
+  name         = "shared-primary-tagged"
+  description  = "Terraform-managed."
+  dest_range   = "0.0.0.0/0"
+  priority     = 1000
+  tags         = [var.regions.primary]
+  next_hop_ilb = module.shared-ilb-primary.forwarding_rule_self_link
+}
+
+resource "google_compute_route" "shared-secondary-tagged" {
+  project      = module.net-project.project_id
+  network      = module.shared-vpc.name
+  name         = "shared-secondary-tagged"
+  description  = "Terraform-managed."
+  dest_range   = "0.0.0.0/0"
+  priority     = 1000
+  tags         = [var.regions.secondary]
+  next_hop_ilb = module.shared-ilb-secondary.forwarding_rule_self_link
 }
 
 module "shared-firewall" {

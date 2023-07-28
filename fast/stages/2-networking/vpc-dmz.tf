@@ -15,22 +15,49 @@
  */
 
 module "dmz-vpc" {
-  source     = "../../../modules/net-vpc"
-  project_id = module.net-project.project_id
-  name       = "prod-core-dmz-0"
-  mtu        = 1500
+  source                          = "../../../modules/net-vpc"
+  project_id                      = module.net-project.project_id
+  name                            = "prod-core-dmz-0"
+  mtu                             = 1500
+  delete_default_routes_on_create = true
+  create_googleapis_routes = {
+    restricted   = false
+    restricted-6 = false
+    private      = false
+    private-6    = false
+  }
   subnets = [
     {
-      ip_cidr_range = "100.100.2.0/28"
+      ip_cidr_range = "100.101.2.0/28"
       name          = "prod-core-dmz-0-nva-primary"
       region        = "europe-west8"
     },
     {
-      ip_cidr_range = "100.100.2.128/28"
+      ip_cidr_range = "100.102.2.128/28"
       name          = "prod-core-dmz-0-nva-secondary"
       region        = "europe-west12"
     }
   ]
+}
+
+resource "google_compute_route" "dmz-primary" {
+  project      = module.net-project.project_id
+  network      = module.dmz-vpc.name
+  name         = "dmz-primary"
+  description  = "Terraform-managed."
+  dest_range   = "100.101.0.0/16"
+  priority     = 1000
+  next_hop_ilb = module.dmz-ilb-primary.forwarding_rule_self_link
+}
+
+resource "google_compute_route" "dmz-secondary" {
+  project      = module.net-project.project_id
+  network      = module.dmz-vpc.name
+  name         = "dmz-secondary"
+  description  = "Terraform-managed."
+  dest_range   = "100.102.0.0/16"
+  priority     = 1000
+  next_hop_ilb = module.dmz-ilb-secondary.forwarding_rule_self_link
 }
 
 module "dmz-firewall" {

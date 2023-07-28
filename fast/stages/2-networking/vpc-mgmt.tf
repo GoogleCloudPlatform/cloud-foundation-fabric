@@ -29,14 +29,21 @@ module "mgmt-vpc" {
     inbound = false
     logging = false
   }
+  delete_default_routes_on_create = true
+  create_googleapis_routes = {
+    restricted   = false
+    restricted-6 = false
+    private      = false
+    private-6    = false
+  }
   subnets = [
     {
-      ip_cidr_range = "100.100.3.0/28"
+      ip_cidr_range = "100.101.3.0/28"
       name          = "prod-core-mgmt-0-nva-primary"
       region        = "europe-west8"
     },
     {
-      ip_cidr_range = "100.100.3.128/28"
+      ip_cidr_range = "100.102.3.128/28"
       name          = "prod-core-mgmt-0-nva-secondary"
       region        = "europe-west12"
     }

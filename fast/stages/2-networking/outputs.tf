@@ -73,3 +73,13 @@ output "tfvars" {
   sensitive   = true
   value       = local.tfvars
 }
+
+output "vlan_attachments_pairing_keys" {
+  description = "Pairing keys generated for VLAN Attachments"
+  value = {
+    primary-a   = module.primary-a-vlan-attachment.pairing_key
+    primary-b   = module.primary-b-vlan-attachment.pairing_key
+    secondary-a = module.secondary-a-vlan-attachment.pairing_key
+    secondary-b = module.secondary-b-vlan-attachment.pairing_key
+  }
+}
