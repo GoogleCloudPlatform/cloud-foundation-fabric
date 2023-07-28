@@ -20,6 +20,12 @@ variable "description" {
   default     = "Terraform-managed registry"
 }
 
+variable "encryption_key" {
+  description = "The KMS key name to use for encryption at rest."
+  type        = string
+  default     = null
+}
+
 variable "format" {
   description = "Repository format."
   type = object({
@@ -45,12 +51,6 @@ variable "format" {
     )
     error_message = "Multiple or zero formats are not supported."
   }
-}
-
-variable "encryption_key" {
-  description = "The KMS key name to use for encryption at rest."
-  type        = string
-  default     = null
 }
 
 variable "iam" {
