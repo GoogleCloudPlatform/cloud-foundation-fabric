@@ -252,6 +252,29 @@ module "service-project" {
 # tftest modules=2 resources=8 inventory=shared-vpc.yaml
 ```
 
+The module allows also granting necessary permissions in host project to service identities by specifying which services will be used in service project in `grant_iam_for_services`.
+```hcl
+module "host-project" {
+  source = "./fabric/modules/project"
+  name   = "my-host-project"
+  shared_vpc_host_config = {
+    enabled = true
+  }
+}
+
+module "service-project" {
+  source = "./fabric/modules/project"
+  name   = "my-service-project"
+  shared_vpc_service_config = {
+    host_project = module.host-project.project_id
+    grant_iam_for_services = [
+      "container.googleapis.com",
+    ]
+  }
+}
+# tftest modules=2 resources=8 inventory=shared-vpc-auto-grants.yaml
+```
+
 ## Organization Policies
 
 To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
@@ -624,9 +647,9 @@ output "compute_robot" {
 | [service_perimeter_standard](variables.tf#L272) | Name of VPC-SC Standard perimeter to add project into. See comment in the variables file for format. | <code>string</code> |  | <code>null</code> |
 | [services](variables.tf#L278) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [shared_vpc_host_config](variables.tf#L284) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code title="object&#40;&#123;&#10;  enabled          &#61; bool&#10;  service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [shared_vpc_service_config](variables.tf#L293) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project         &#61; string&#10;  service_identity_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [skip_delete](variables.tf#L303) | Allows the underlying resources to be destroyed without destroying the project itself. | <code>bool</code> |  | <code>false</code> |
-| [tag_bindings](variables.tf#L309) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [shared_vpc_service_config](variables.tf#L293) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project           &#61; string&#10;  service_identity_iam   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  grant_iam_for_services &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [skip_delete](variables.tf#L315) | Allows the underlying resources to be destroyed without destroying the project itself. | <code>bool</code> |  | <code>false</code> |
+| [tag_bindings](variables.tf#L321) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
