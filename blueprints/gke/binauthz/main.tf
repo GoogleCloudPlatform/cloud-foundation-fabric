@@ -172,8 +172,7 @@ module "docker_artifact_registry" {
   source     = "../../../modules/artifact-registry"
   project_id = module.project.project_id
   location   = var.region
-  format     = "DOCKER"
-  id         = "${var.prefix}-registry"
+  name       = "${var.prefix}-registry"
   iam = {
     "roles/artifactregistry.writer" = [module.image_cb_sa.iam_email]
     "roles/artifactregistry.reader" = [module.cluster_nodepool.service_account_iam_email]
