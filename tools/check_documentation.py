@@ -73,87 +73,81 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
     diff = None
     readme = readme_path.read_text()
     mod_name = str(readme_path.relative_to(dir_path).parent)
-    doc_result = tfdoc.get_doc(readme)
-    toc_result = tfdoc.get_toc(readme)
-    if not doc_result:
-      state = State.SKIP
-    else:
-      try:
-        new_doc = tfdoc.create_doc(readme_path.parent, files, show_extra,
-                                   exclude_files, readme)
-        newvars = new_doc.variables
-        newouts = new_doc.outputs
-        variables = [v.name for v in newvars if v.file.endswith('variables.tf')]
-        outputs = [o.name for o in newouts if o.file.endswith('outputs.tf')]
+    current_doc = tfdoc.get_doc(readme)
+    current_toc = tfdoc.get_toc(readme)
+    if current_doc or current_toc:
+      new_doc = tfdoc.create_doc(readme_path.parent, files, show_extra,
+                                 exclude_files, readme)
+      new_toc = tfdoc.create_toc(readme)
+      newvars = new_doc.variables
+      newouts = new_doc.outputs
+      variables = [v.name for v in newvars if v.file.endswith('variables.tf')]
+      outputs = [o.name for o in newouts if o.file.endswith('outputs.tf')]
 
-        new_toc = tfdoc.create_toc(readme)
+      state = State.OK
+      d = difflib.Differ()
 
-      except SystemExit:
-        state = state.SKIP
-      else:
-        state = State.OK
+      if current_doc and new_doc.content != current_doc['doc']:
+        state = State.FAIL_STALE_README
+        header = f'----- {mod_name} diff -----\n'
+        ndiff = d.compare(current_doc['doc'].splitlines(keepends=True),
+                          new_doc.content.splitlines(keepends=True))
+        diff = ''.join([header] + list(ndiff))
+        diff += f"\n\ncurrent\n''{current_doc['doc'].splitlines(keepends=True)}''"
+        diff += f"\n\nnew\n''{new_doc.content.splitlines(keepends=True)}''"
 
-        if new_doc.content.strip() != doc_result['doc'].strip():
-          state = State.FAIL_STALE_README
-          header = f'----- {mod_name} diff -----\n'
-          ndiff = difflib.ndiff(doc_result['doc'].split('\n'),
-                                new_doc.content.split('\n'))
-          diff = '\n'.join([header] + list(ndiff))
+      elif current_toc and new_toc != current_toc['toc']:
+        state = State.FAIL_STALE_TOC
+        header = f'----- {mod_name} diff -----\n'
+        ndiff = d.compare(current_toc['toc'].splitlines(keepends=True),
+                          new_toc.splitlines(keepends=True))
+        diff = ''.join([header] + list(ndiff))
 
-        if new_toc.strip() != toc_result['toc'].strip():
-          print(f"=====new\n{new_toc}")
-          print(f"=====result\n{toc_result['toc']}")
-          state = State.FAIL_STALE_TOC
-          header = f'----- {mod_name} diff -----\n'
-          ndiff = difflib.ndiff(toc_result['toc'].split('\n'),
-                                new_toc.split('\n'))
-          diff = '\n'.join([header] + list(ndiff))
+      elif empty := [v.name for v in newvars if not v.description]:
+        state = state.FAIL_VARIABLE_DESCRIPTION
+        diff = "\n".join([
+            f'----- {mod_name} variables missing description -----',
+            ', '.join(empty),
+        ])
 
-        elif empty := [v.name for v in newvars if not v.description]:
-          state = state.FAIL_VARIABLE_DESCRIPTION
-          diff = "\n".join([
-              f'----- {mod_name} variables missing description -----',
-              ', '.join(empty),
-          ])
+      elif empty := [o.name for o in newouts if not o.description]:
+        state = state.FAIL_VARIABLE_DESCRIPTION
+        diff = "\n".join([
+            f'----- {mod_name} outputs missing description -----',
+            ', '.join(empty),
+        ])
 
-        elif empty := [o.name for o in newouts if not o.description]:
-          state = state.FAIL_VARIABLE_DESCRIPTION
-          diff = "\n".join([
-              f'----- {mod_name} outputs missing description -----',
-              ', '.join(empty),
-          ])
+      elif variables != sorted(variables):
+        state = state.FAIL_UNSORTED_VARS
+        diff = "\n".join([
+            f'----- {mod_name} variables -----',
+            f'variables should be in this order: ',
+            ', '.join(sorted(variables)),
+        ])
 
-        elif variables != sorted(variables):
-          state = state.FAIL_UNSORTED_VARS
-          diff = "\n".join([
-              f'----- {mod_name} variables -----',
-              f'variables should be in this order: ',
-              ', '.join(sorted(variables)),
-          ])
+      elif outputs != sorted(outputs):
+        state = state.FAIL_UNSORTED_OUTPUTS
+        diff = "\n".join([
+            f'----- {mod_name} outputs -----',
+            f'outputs should be in this order: ',
+            ', '.join(sorted(outputs)),
+        ])
 
-        elif outputs != sorted(outputs):
-          state = state.FAIL_UNSORTED_OUTPUTS
-          diff = "\n".join([
-              f'----- {mod_name} outputs -----',
-              f'outputs should be in this order: ',
-              ', '.join(sorted(outputs)),
-          ])
+      elif nc := [v.name for v in newvars if not v.description.endswith('.')]:
+        state = state.FAIL_VARIABLE_PERIOD
+        diff = "\n".join([
+            f'----- {mod_name} variable descriptions missing ending period -----',
+            ', '.join(nc),
+        ])
 
-        elif nc := [v.name for v in newvars if not v.description.endswith('.')]:
-          state = state.FAIL_VARIABLE_PERIOD
-          diff = "\n".join([
-              f'----- {mod_name} variable descriptions missing ending period -----',
-              ', '.join(nc),
-          ])
+      elif nc := [o.name for o in newouts if not o.description.endswith('.')]:
+        state = state.FAIL_OUTPUT_PERIOD
+        diff = "\n".join([
+            f'----- {mod_name} output descriptions missing ending period -----',
+            ', '.join(nc),
+        ])
 
-        elif nc := [o.name for o in newouts if not o.description.endswith('.')]:
-          state = state.FAIL_OUTPUT_PERIOD
-          diff = "\n".join([
-              f'----- {mod_name} output descriptions missing ending period -----',
-              ', '.join(nc),
-          ])
-
-    yield mod_name, state, diff
+      yield mod_name, state, diff
 
 
 @click.command()

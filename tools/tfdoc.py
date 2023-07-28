@@ -247,9 +247,7 @@ def format_doc(outputs, variables, files, show_extra=False):
   if outputs:
     buffer += ['', '## Outputs', '']
     buffer += list(format_outputs(outputs, show_extra))
-  if buffer:
-    buffer.append('')
-  return '\n'.join(buffer)
+  return '\n'.join(buffer).strip()
 
 
 def format_files(items):
@@ -348,7 +346,7 @@ def get_doc(readme):
   m = re.search("(?sm)%s(.*)%s" % (MARK_BEGIN, MARK_END), readme)
   if not m:
     return
-  return {'doc': m.group(1), 'start': m.start(), 'end': m.end()}
+  return {'doc': m.group(1).strip(), 'start': m.start(), 'end': m.end()}
 
 
 def get_toc(readme):
@@ -356,7 +354,7 @@ def get_toc(readme):
   t = re.search("(?sm)%s(.*)%s" % (TOC_BEGIN, TOC_END), readme)
   if not t:
     return
-  return {'toc': t.group(1), 'start': t.start(), 'end': t.end()}
+  return {'toc': t.group(1).strip(), 'start': t.start(), 'end': t.end()}
 
 
 def get_doc_opts(readme):
@@ -408,11 +406,11 @@ def render_doc(readme, doc):
     return readme
   try:
     return '\n'.join([
-        readme[:result['start']].rstrip(),
+        readme[:result['start']],
         MARK_BEGIN,
         doc,
         MARK_END,
-        readme[result['end']:].lstrip(),
+        readme[result['end']:],
     ])
   except (IOError, OSError) as e:
     raise SystemExit(f'Error replacing README {readme_path}: {e}')
@@ -427,12 +425,11 @@ def render_toc(readme, toc):
     return readme
   try:
     return '\n'.join([
-        readme[:result['start']].rstrip(),
+        readme[:result['start']],
         TOC_BEGIN,
         toc,
         TOC_END,
-        "",
-        readme[result['end']:].lstrip(),
+        readme[result['end']:],
     ])
   except (IOError, OSError) as e:
     raise SystemExit(f'Error replacing README {readme_path}: {e}')
