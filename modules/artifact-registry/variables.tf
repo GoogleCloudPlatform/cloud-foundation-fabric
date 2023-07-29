@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,20 +27,36 @@ variable "encryption_key" {
 }
 
 variable "format" {
-  description = "Repository format. One of DOCKER or UNSPECIFIED."
-  type        = string
-  default     = "DOCKER"
+  description = "Repository format."
+  type = object({
+    apt = optional(object({}))
+    docker = optional(object({
+      immutable_tags = optional(bool)
+    }))
+    kfp = optional(object({}))
+    go  = optional(object({}))
+    maven = optional(object({
+      allow_snapshot_overwrites = optional(bool)
+      version_policy            = optional(string)
+    }))
+    npm    = optional(object({}))
+    python = optional(object({}))
+    yum    = optional(object({}))
+  })
+  nullable = false
+  default  = { docker = {} }
+  validation {
+    condition = (
+      length([for k, v in var.format : k if v != null]) == 1
+    )
+    error_message = "Multiple or zero formats are not supported."
+  }
 }
 
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
-}
-
-variable "id" {
-  description = "Repository id."
-  type        = string
 }
 
 variable "labels" {
@@ -52,7 +68,31 @@ variable "labels" {
 variable "location" {
   description = "Registry location. Use `gcloud beta artifacts locations list' to get valid values."
   type        = string
-  default     = null
+}
+
+variable "mode" {
+  description = "Repository mode."
+  type = object({
+    standard = optional(bool)
+    remote   = optional(bool)
+    virtual = optional(map(object({
+      repository = string
+      priority   = number
+    })))
+  })
+  nullable = false
+  default  = { standard = true }
+  validation {
+    condition = (
+      length([for k, v in var.mode : k if v != null && v != false]) == 1
+    )
+    error_message = "Multiple or zero modes are not supported."
+  }
+}
+
+variable "name" {
+  description = "Registry name."
+  type        = string
 }
 
 variable "project_id" {

@@ -166,9 +166,8 @@ module "orch-nat" {
 module "orch-artifact-reg" {
   source      = "../../../modules/artifact-registry"
   project_id  = module.orch-project.project_id
-  id          = "${var.prefix}-app-images"
+  name        = "${var.prefix}-app-images"
   location    = var.region
-  format      = "DOCKER"
   description = "Docker repository storing application images e.g. Dataflow, Cloud Run etc..."
 }
 

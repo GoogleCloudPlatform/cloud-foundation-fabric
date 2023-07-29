@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import string
 import urllib.parse
 
 import click
+import marko
 
 __version__ = '2.1.0'
 
@@ -80,6 +81,8 @@ OUT_RE = re.compile(r'''(?smx)
 ''')
 OUT_TEMPLATE = ('description', 'value', 'sensitive')
 TAG_RE = re.compile(r'(?sm)^\s*#\stfdoc:([^:]+:\S+)\s+(.*?)\s*$')
+TOC_BEGIN = '<!-- BEGIN TOC -->'
+TOC_END = '<!-- END TOC -->'
 UNESCAPED = string.digits + string.ascii_letters + ' .,;:_-'
 VAR_ENUM = enum.Enum('V', 'OPEN ATTR ATTR_DATA SKIP CLOSE COMMENT TXT')
 VAR_RE = re.compile(r'''(?smx)
@@ -244,9 +247,7 @@ def format_doc(outputs, variables, files, show_extra=False):
   if outputs:
     buffer += ['', '## Outputs', '']
     buffer += list(format_outputs(outputs, show_extra))
-  if buffer:
-    buffer.append('')
-  return '\n'.join(buffer)
+  return '\n'.join(buffer).strip()
 
 
 def format_files(items):
@@ -322,15 +323,39 @@ def format_variables(items, show_extra=True):
     yield format
 
 
+def create_toc(readme):
+  'Create a Markdown table of contents a for README.'
+  doc = marko.parse(readme)
+  lines = []
+  headings = [x for x in doc.children if x.get_type() == 'Heading']
+  for h in headings[1:]:
+    title = h.children[0].children
+    slug = title.lower().strip()
+    slug = re.sub('[^\w\s-]', '', slug)
+    slug = re.sub('[-\s]+', '-', slug)
+    link = f'- [{title}](#{slug})'
+    indent = '  ' * (h.level - 2)
+    lines.append(f'{indent}{link}')
+  return "\n".join(lines)
+
+
 # replace functions
 
 
 def get_doc(readme):
   'Check if README file is marked, and return current doc.'
-  m = re.search('(?sm)%s\n(.*)\n%s' % (MARK_BEGIN, MARK_END), readme)
+  m = re.search('(?sm)%s(.*)%s' % (MARK_BEGIN, MARK_END), readme)
   if not m:
     return
-  return {'doc': m.group(1), 'start': m.start(), 'end': m.end()}
+  return {'doc': m.group(1).strip(), 'start': m.start(), 'end': m.end()}
+
+
+def get_toc(readme):
+  'Check if README file is marked, and return current toc.'
+  t = re.search('(?sm)%s(.*)%s' % (TOC_BEGIN, TOC_END), readme)
+  if not t:
+    return
+  return {'toc': t.group(1).strip(), 'start': t.start(), 'end': t.end()}
 
 
 def get_doc_opts(readme):
@@ -373,24 +398,34 @@ def get_readme(readme_path):
     raise SystemExit(f'Error opening README {readme_path}: {e}')
 
 
-def replace_doc(readme_path, doc, readme=None):
+def render_doc(readme, doc):
   'Replace document in module\'s README.md file.'
-  readme = readme or get_readme(readme_path)
   result = get_doc(readme)
-  if not result:
-    raise SystemExit(f'Mark not found in README {readme_path}')
-  if doc == result['doc']:
-    return
-  try:
-    open(readme_path, 'w').write('\n'.join([
-        readme[:result['start']].rstrip(),
-        MARK_BEGIN,
-        doc,
-        MARK_END,
-        readme[result['end']:].lstrip(),
-    ]))
-  except (IOError, OSError) as e:
-    raise SystemExit(f'Error replacing README {readme_path}: {e}')
+  if not result or doc == result['doc']:
+    return readme
+  return '\n'.join([
+      readme[:result['start']].rstrip(),
+      MARK_BEGIN,
+      doc,
+      MARK_END,
+      readme[result['end']:].lstrip(),
+  ])
+
+
+def render_toc(readme, toc):
+  'Replace toc in module\'s README.md file.'
+  result = get_toc(readme)
+  if not result or toc == result['toc']:
+    return readme
+  return '\n'.join([
+      readme[:result['start']].rstrip(),
+      '',
+      TOC_BEGIN,
+      toc,
+      TOC_END,
+      '',
+      readme[result['end']:].lstrip(),
+  ])
 
 
 @click.command()
@@ -405,10 +440,17 @@ def main(module_path=None, exclude_file=None, files=False, replace=True,
   readme_path = os.path.join(module_path, 'README.md')
   readme = get_readme(readme_path)
   doc = create_doc(module_path, files, show_extra, exclude_file, readme)
+  toc = create_toc(readme)
+  tmp = render_doc(readme, doc.content)
+  final = render_toc(tmp, toc)
   if replace:
-    replace_doc(readme_path, doc.content, readme)
+    try:
+      with open(readme_path, 'w') as f:
+        f.write(final)
+    except (IOError, OSError) as e:
+      raise SystemExit(f'Error replacing README {readme_path}: {e}')
   else:
-    print(doc)
+    print(final)
 
 
 if __name__ == '__main__':

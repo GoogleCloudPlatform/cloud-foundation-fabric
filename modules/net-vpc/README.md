@@ -4,23 +4,24 @@ This module allows creation and management of VPC networks including subnetworks
 
 ## Examples
 
-- [VPC module](#vpc-module)
-  - [Examples](#examples)
-    - [Simple VPC](#simple-vpc)
-    - [Subnet Options](#subnet-options)
-    - [Subnet IAM](#subnet-iam)
-    - [Peering](#peering)
-    - [Shared VPC](#shared-vpc)
-    - [Private Service Networking](#private-service-networking)
-    - [Private Service Networking with peering routes](#private-service-networking-with-peering-routes)
-    - [Subnets for Private Service Connect, Proxy-only subnets](#subnets-for-private-service-connect-proxy-only-subnets)
-    - [DNS Policies](#dns-policies)
-    - [Subnet Factory](#subnet-factory)
-    - [Custom Routes](#custom-routes)
-    - [Private Google Access routes](#private-google-access-routes)
-    - [Allow Firewall Policy to be evaluated before Firewall Rules](#allow-firewall-policy-to-be-evaluated-before-firewall-rules)
-  - [Variables](#variables)
-  - [Outputs](#outputs)
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Simple VPC](#simple-vpc)
+  - [Subnet Options](#subnet-options)
+  - [Subnet IAM](#subnet-iam)
+  - [Peering](#peering)
+  - [Shared VPC](#shared-vpc)
+  - [Private Service Networking](#private-service-networking)
+  - [Private Service Networking with peering routes](#private-service-networking-with-peering-routes)
+  - [Subnets for Private Service Connect, Proxy-only subnets](#subnets-for-private-service-connect-proxy-only-subnets)
+  - [DNS Policies](#dns-policies)
+  - [Subnet Factory](#subnet-factory)
+  - [Custom Routes](#custom-routes)
+  - [Private Google Access routes](#private-google-access-routes)
+  - [Allow Firewall Policy to be evaluated before Firewall Rules](#allow-firewall-policy-to-be-evaluated-before-firewall-rules)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ### Simple VPC
 
