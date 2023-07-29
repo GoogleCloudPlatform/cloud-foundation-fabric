@@ -15,6 +15,19 @@
  */
 
 locals {
+  _gke_config_service_identity_iam = {
+    "roles/compute.networkUser" = compact([
+      var.vpc.gke_setup.enable_host_service_agent ? "container-engine" : null,
+      local.vpc_cloudservices ? "cloudservices" : null
+    ])
+    "roles/compute.securityAdmin" = compact([
+      var.vpc.gke_setup.enable_security_admin ? "container-engine" : null,
+    ])
+    "roles/container.hostServiceAgentUser" = compact([
+      var.vpc.gke_setup.enable_host_service_agent ? "container-engine" : null
+    ])
+  }
+
   _group_iam = {
     for r in local._group_iam_bindings : r => [
       for k, v in var.group_iam :
@@ -76,10 +89,10 @@ locals {
     ]
   }
   _vpc_subnet_bindings = (
-    local.vpc.subnets_iam == null || local.vpc.host_project == null
+    var.vpc.subnets_iam == null || var.vpc.host_project == null
     ? []
     : flatten([
-      for subnet, members in local.vpc.subnets_iam : [
+      for subnet, members in var.vpc.subnets_iam : [
         for member in members : {
           region = split("/", subnet)[0]
           subnet = split("/", subnet)[1]
@@ -131,19 +144,18 @@ locals {
     coalesce(var.labels, {}), coalesce(try(var.defaults.labels, {}), {})
   )
   services = distinct(concat(var.services, local._services))
-  vpc = coalesce(var.vpc, {
-    host_project = null, gke_setup = null, subnets_iam = null
-  })
   vpc_cloudservices = (
-    local.vpc_gke_service_agent ||
+    var.vpc.gke_setup.enable_host_service_agent ||
     contains(var.services, "compute.googleapis.com")
   )
-  vpc_gke_security_admin = coalesce(
-    try(local.vpc.gke_setup.enable_security_admin, null), false
-  )
-  vpc_gke_service_agent = coalesce(
-    try(local.vpc.gke_setup.enable_host_service_agent, null), false
-  )
+
+  vpc_service_identity_iam = {
+    for role in setunion(keys(local._gke_config_service_identity_iam), keys(var.vpc.service_identity_iam)) :
+    role => setunion(
+      lookup(local._gke_config_service_identity_iam, role, []),
+      lookup(var.vpc.service_identity_iam, role, []),
+    )
+  }
   vpc_subnet_bindings = {
     for binding in local._vpc_subnet_bindings :
     "${binding.subnet}:${binding.member}" => binding
@@ -169,7 +181,7 @@ module "billing-alert" {
 module "dns" {
   source     = "../../../modules/dns"
   for_each   = toset(var.dns_zones)
-  project_id = coalesce(local.vpc.host_project, module.project.project_id)
+  project_id = coalesce(var.vpc.host_project, module.project.project_id)
   name       = each.value
   zone_config = {
     domain = "${each.value}.${var.defaults.environment_dns_zone}"
@@ -194,20 +206,10 @@ module "project" {
   service_encryption_key_ids = var.kms_service_agents
   services                   = local.services
   shared_vpc_service_config = var.vpc == null ? null : {
-    host_project = local.vpc.host_project
+    host_project = var.vpc.host_project
     # these are non-authoritative
-    service_identity_iam = {
-      "roles/compute.networkUser" = compact([
-        local.vpc_gke_service_agent ? "container-engine" : null,
-        local.vpc_cloudservices ? "cloudservices" : null
-      ])
-      "roles/compute.securityAdmin" = compact([
-        local.vpc_gke_security_admin ? "container-engine" : null,
-      ])
-      "roles/container.hostServiceAgentUser" = compact([
-        local.vpc_gke_service_agent ? "container-engine" : null
-      ])
-    }
+    service_identity_iam = local.vpc_service_identity_iam
+    service_iam_grants   = var.vpc.service_iam_grants
   }
 }
 
@@ -221,8 +223,8 @@ module "service-accounts" {
 
 resource "google_compute_subnetwork_iam_member" "default" {
   for_each   = local.vpc_subnet_bindings
-  project    = local.vpc.host_project
-  subnetwork = "projects/${local.vpc.host_project}/regions/${each.value.region}/subnetworks/${each.value.subnet}"
+  project    = var.vpc.host_project
+  subnetwork = "projects/${var.vpc.host_project}/regions/${each.value.region}/subnetworks/${each.value.subnet}"
   region     = each.value.region
   role       = "roles/compute.networkUser"
   member = (
