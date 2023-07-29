@@ -235,22 +235,22 @@ def _escape(s):
   return ''.join(c if c in UNESCAPED else ('&#%s;' % ord(c)) for c in s)
 
 
-def format_doc(outputs, variables, files, show_extra=False):
+def format_tfref(outputs, variables, files, show_extra=False):
   'Return formatted document.'
   buffer = []
   if files:
     buffer += ['', '## Files', '']
-    buffer += list(format_files(files))
+    buffer += list(format_tfref_files(files))
   if variables:
     buffer += ['', '## Variables', '']
-    buffer += list(format_variables(variables, show_extra))
+    buffer += list(format_tfref_variables(variables, show_extra))
   if outputs:
     buffer += ['', '## Outputs', '']
-    buffer += list(format_outputs(outputs, show_extra))
+    buffer += list(format_tfref_outputs(outputs, show_extra))
   return '\n'.join(buffer).strip()
 
 
-def format_files(items):
+def format_tfref_files(items):
   'Format files table.'
   items = sorted(items, key=lambda i: i.name)
   num_modules = sum(len(i.modules) for i in items)
@@ -272,7 +272,7 @@ def format_files(items):
         f' {resources} |' if num_resources else '')
 
 
-def format_outputs(items, show_extra=True):
+def format_tfref_outputs(items, show_extra=True):
   'Format outputs table.'
   if not items:
     return
@@ -290,7 +290,7 @@ def format_outputs(items, show_extra=True):
     yield format
 
 
-def format_variables(items, show_extra=True):
+def format_tfref_variables(items, show_extra=True):
   'Format variables table.'
   if not items:
     return
@@ -342,7 +342,7 @@ def create_toc(readme):
 # replace functions
 
 
-def get_doc(readme):
+def get_tfref_parts(readme):
   'Check if README file is marked, and return current doc.'
   m = re.search('(?sm)%s(.*)%s' % (MARK_BEGIN, MARK_END), readme)
   if not m:
@@ -350,7 +350,7 @@ def get_doc(readme):
   return {'doc': m.group(1).strip(), 'start': m.start(), 'end': m.end()}
 
 
-def get_toc(readme):
+def get_toc_parts(readme):
   'Check if README file is marked, and return current toc.'
   t = re.search('(?sm)%s(.*)%s' % (TOC_BEGIN, TOC_END), readme)
   if not t:
@@ -358,7 +358,7 @@ def get_toc(readme):
   return {'toc': t.group(1).strip(), 'start': t.start(), 'end': t.end()}
 
 
-def get_doc_opts(readme):
+def get_tfref_opts(readme):
   'Check if README file is setting options via a mark, and return options.'
   m = MARK_OPTS_RE.search(readme)
   opts = {}
@@ -373,11 +373,11 @@ def get_doc_opts(readme):
   return opts
 
 
-def create_doc(module_path, files=False, show_extra=False, exclude_files=None,
-               readme=None):
+def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
+                 readme=None):
   if readme:
     # check for overrides in doc
-    opts = get_doc_opts(readme)
+    opts = get_tfref_opts(readme)
     files = opts.get('files', files)
     show_extra = opts.get('show_extra', show_extra)
   try:
@@ -386,7 +386,7 @@ def create_doc(module_path, files=False, show_extra=False, exclude_files=None,
     mod_outputs = list(parse_outputs(module_path, exclude_files))
   except (IOError, OSError) as e:
     raise SystemExit(e)
-  doc = format_doc(mod_outputs, mod_variables, mod_files, show_extra)
+  doc = format_tfref(mod_outputs, mod_variables, mod_files, show_extra)
   return Document(doc, mod_files, mod_variables, mod_outputs)
 
 
@@ -398,10 +398,12 @@ def get_readme(readme_path):
     raise SystemExit(f'Error opening README {readme_path}: {e}')
 
 
-def render_doc(readme, doc):
+def render_tfref(readme, doc):
   'Replace document in module\'s README.md file.'
-  result = get_doc(readme)
-  if not result or doc == result['doc']:
+  result = get_tfref_parts(readme)
+  if not result:
+    raise SystemExit(f'Mark not found in README')
+  if doc == result['doc']:
     return readme
   return '\n'.join([
       readme[:result['start']].rstrip(),
@@ -414,7 +416,7 @@ def render_doc(readme, doc):
 
 def render_toc(readme, toc):
   'Replace toc in module\'s README.md file.'
-  result = get_toc(readme)
+  result = get_toc_parts(readme)
   if not result or toc == result['toc']:
     return readme
   return '\n'.join([
@@ -434,23 +436,25 @@ def render_toc(readme, toc):
 @click.option('--files/--no-files', default=False)
 @click.option('--replace/--no-replace', default=True)
 @click.option('--show-extra/--no-show-extra', default=False)
+@click.option('--toc-only', is_flag=True, default=False)
 def main(module_path=None, exclude_file=None, files=False, replace=True,
-         show_extra=True):
+         show_extra=True, toc_only=False):
   'Program entry point.'
   readme_path = os.path.join(module_path, 'README.md')
   readme = get_readme(readme_path)
-  doc = create_doc(module_path, files, show_extra, exclude_file, readme)
+  if not toc_only:
+    doc = create_tfref(module_path, files, show_extra, exclude_file, readme)
+    readme = render_tfref(readme, doc.content)
   toc = create_toc(readme)
-  tmp = render_doc(readme, doc.content)
-  final = render_toc(tmp, toc)
+  readme = render_toc(readme, toc)
   if replace:
     try:
       with open(readme_path, 'w') as f:
-        f.write(final)
+        f.write(readme)
     except (IOError, OSError) as e:
       raise SystemExit(f'Error replacing README {readme_path}: {e}')
   else:
-    print(final)
+    print(readme)
 
 
 if __name__ == '__main__':
