@@ -1,0 +1,29 @@
+values:
+  module.peering.google_compute_network_peering.local_network_peering:
+    export_custom_routes: true
+    export_subnet_routes_with_public_ip: true
+    import_custom_routes: false
+    import_subnet_routes_with_public_ip: null
+    name: name-prefix-vpc-1-vpc-2
+    network: projects/project-1/global/networks/vpc-1
+    peer_network: projects/project-1/global/networks/vpc-2
+    stack_type: IPV4_ONLY
+    timeouts: null
+  module.peering.google_compute_network_peering.peer_network_peering[0]:
+    export_custom_routes: true
+    export_subnet_routes_with_public_ip: true
+    import_custom_routes: true
+    import_subnet_routes_with_public_ip: null
+    name: name-prefix-vpc-2-vpc-1
+    network: projects/project-1/global/networks/vpc-2
+    peer_network: projects/project-1/global/networks/vpc-1
+    stack_type: IPV4_ONLY
+    timeouts: null
+
+counts:
+  google_compute_network_peering: 2
+  modules: 1
+  resources: 2
+
+outputs: {}
+
