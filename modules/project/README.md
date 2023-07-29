@@ -272,14 +272,15 @@ module "host-project" {
 module "service-project" {
   source = "./fabric/modules/project"
   name   = "my-service-project"
+  services = [
+    "container.googleapis.com",
+  ]
   shared_vpc_service_config = {
-    host_project = module.host-project.project_id
-    service_iam_grants = [
-      "container.googleapis.com",
-    ]
+    host_project       = module.host-project.project_id
+    service_iam_grants = module.service-project.services
   }
 }
-# tftest modules=2 resources=8 inventory=shared-vpc-auto-grants.yaml
+# tftest modules=2 resources=9 inventory=shared-vpc-auto-grants.yaml
 ```
 
 ## Organization Policies

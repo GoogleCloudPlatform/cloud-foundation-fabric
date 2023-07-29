@@ -20,6 +20,13 @@
       - roles/compute.networkUser
       - roles/composer.sharedVpcAgent
 
+# Compute Engine
+# TODO: identify docs
+- service: compute.googleapis.com
+  agents:
+    cloudservices:
+      - roles/compute.networkUser
+
 # Google Kubernetes Engine
 # https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-shared-vpc#enabling_and_granting_roles
 - service: container.googleapis.com
