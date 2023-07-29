@@ -112,11 +112,13 @@ module "nat-spoke-1" {
 }
 
 module "hub-to-spoke-1-peering" {
-  source                     = "../../../modules/net-vpc-peering"
-  local_network              = module.vpc-hub.self_link
-  peer_network               = module.vpc-spoke-1.self_link
-  export_local_custom_routes = true
-  export_peer_custom_routes  = false
+  source        = "../../../modules/net-vpc-peering"
+  local_network = module.vpc-hub.self_link
+  peer_network  = module.vpc-spoke-1.self_link
+  routes_config = {
+    local = { export = true, import = false }
+    peer  = { export = false, import = true }
+  }
 }
 
 ################################################################################
@@ -159,12 +161,14 @@ module "nat-spoke-2" {
 }
 
 module "hub-to-spoke-2-peering" {
-  source                     = "../../../modules/net-vpc-peering"
-  local_network              = module.vpc-hub.self_link
-  peer_network               = module.vpc-spoke-2.self_link
-  export_local_custom_routes = true
-  export_peer_custom_routes  = false
-  depends_on                 = [module.hub-to-spoke-1-peering]
+  source        = "../../../modules/net-vpc-peering"
+  local_network = module.vpc-hub.self_link
+  peer_network  = module.vpc-spoke-2.self_link
+  routes_config = {
+    local = { export = true, import = false }
+    peer  = { export = false, import = true }
+  }
+  depends_on = [module.hub-to-spoke-1-peering]
 }
 
 ################################################################################
