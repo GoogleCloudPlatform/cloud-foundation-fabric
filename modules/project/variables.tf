@@ -296,7 +296,7 @@ variable "shared_vpc_service_config" {
   type = object({
     host_project           = string
     service_identity_iam   = optional(map(list(string)), {})
-    grant_iam_for_services = optional(list(string), [])
+    service_iam_grants = optional(list(string), [])
   })
   default = {
     host_project = null
@@ -305,10 +305,10 @@ variable "shared_vpc_service_config" {
   validation {
     condition = var.shared_vpc_service_config.host_project != null || (
       var.shared_vpc_service_config.host_project == null &&
-      length(var.shared_vpc_service_config.grant_iam_for_services) == 0 &&
-      length(var.shared_vpc_service_config.grant_iam_for_services) == 0
+      length(var.shared_vpc_service_config.service_iam_grants) == 0 &&
+      length(var.shared_vpc_service_config.service_iam_grants) == 0
     )
-    error_message = "You need to provide host_project when providing service_identity_iam or grant_iam_for_services"
+    error_message = "You need to provide host_project when providing service_identity_iam or service_iam_grants"
   }
 }
 

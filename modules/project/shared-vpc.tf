@@ -20,7 +20,7 @@ locals {
   _shared_vpc_agent_config = yamldecode(file("${path.module}/sharedvpc-agent-iam.yaml"))
   _shared_vpc_agent_config_filtered = [
     for config in local._shared_vpc_agent_config : config
-    if contains(var.shared_vpc_service_config.grant_iam_for_services, config.service)
+    if contains(var.shared_vpc_service_config.service_iam_grants, config.service)
   ]
   _shared_vpc_agent_grants = flatten(flatten([
     for api in local._shared_vpc_agent_config_filtered : [
@@ -46,7 +46,7 @@ locals {
   }
 
   svpc_service_iam = {
-    for b in distinct(concat(local._svpc_service_iam, local._shared_vpc_agent_grants)) : "${b.role}:${b.service}" => b
+    for b in setunion(local._svpc_service_iam, local._shared_vpc_agent_grants) : "${b.role}:${b.service}" => b
   }
 }
 
