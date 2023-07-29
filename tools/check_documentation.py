@@ -73,11 +73,11 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
     diff = None
     readme = readme_path.read_text()
     mod_name = str(readme_path.relative_to(dir_path).parent)
-    current_doc = tfdoc.get_doc(readme)
-    current_toc = tfdoc.get_toc(readme)
+    current_doc = tfdoc.get_tfref_parts(readme)
+    current_toc = tfdoc.get_toc_parts(readme)
     if current_doc or current_toc:
-      new_doc = tfdoc.create_doc(readme_path.parent, files, show_extra,
-                                 exclude_files, readme)
+      new_doc = tfdoc.create_tfref(readme_path.parent, files, show_extra,
+                                   exclude_files, readme)
       new_toc = tfdoc.create_toc(readme)
       newvars = new_doc.variables
       newouts = new_doc.outputs
