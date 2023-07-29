@@ -274,7 +274,7 @@ module "service-project" {
   name   = "my-service-project"
   shared_vpc_service_config = {
     host_project = module.host-project.project_id
-    grant_iam_for_services = [
+    service_iam_grants = [
       "container.googleapis.com",
     ]
   }
