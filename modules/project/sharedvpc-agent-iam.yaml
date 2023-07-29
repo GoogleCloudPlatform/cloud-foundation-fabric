@@ -1,0 +1,97 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Cloud Composer
+# https://cloud.google.com/composer/docs/how-to/managing/configuring-shared-vpc#edit_permissions_for_the_composer_agent_service_account
+- service: composer.googleapis.com
+  agents:
+    composer:
+      - roles/compute.networkUser
+      - roles/composer.sharedVpcAgent
+
+# Compute Engine
+# TODO: identify docs
+- service: compute.googleapis.com
+  agents:
+    cloudservices:
+      - roles/compute.networkUser
+
+# Google Kubernetes Engine
+# https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-shared-vpc#enabling_and_granting_roles
+- service: container.googleapis.com
+  agents:
+    container:
+      - roles/compute.networkUser
+      - roles/container.hostServiceAgentUser
+      - roles/compute.securityAdmin # to manage firewall rules
+    cloudservices:
+      - roles/compute.networkUser
+
+# Dataflow
+# https://cloud.google.com/dataflow/docs/guides/specifying-networks#shared
+- service: dataflow.googleapis.com
+  agents:
+    dataflow:
+      - roles/compute.networkUser
+
+# Cloud Data Fusion
+# https://cloud.google.com/data-fusion/docs/how-to/create-private-ip#shared-vpc-network_1
+- service: datafusion.googleapis.com
+  agents:
+    datafusion:
+      - roles/compute.networkUser
+    dataproc:
+      - roles/compute.networkUser
+
+# Dataproc
+# https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/network#create_a_cluster_that_uses_a_network_in_another_project
+- service: dataproc.googleapis.com
+  agents:
+    dataproc:
+      - roles/compute.networkUser
+    cloudservices:
+      - roles/compute.networkUser
+
+# Change Data Capture | Datastream
+# https://cloud.google.com/datastream/docs/create-a-private-connectivity-configuration
+- service: datastream.googleapis.com
+  agents:
+    datastream:
+      - roles/compute.networkAdmin
+
+# Cloud Functions
+# For shared connectors in host project
+# https://cloud.google.com/functions/docs/networking/shared-vpc-host-project
+- service: cloudfunctions.googleapis.com
+  agents:
+    cloudfunctions:
+      - roles/vpcaccess.user
+
+# Cloud Run
+# For shared connectors in host project
+# https://cloud.google.com/run/docs/configuring/shared-vpc-host-project
+- service: run.googleapis.com
+  agents:
+    run:
+      - roles/vpcaccess.user
+
+# Cloud Run / Cloud Functions
+# For connectors in service project
+# https://cloud.google.com/functions/docs/networking/shared-vpc-service-projects#grant-permissions
+- service: vpcaccess.googleapis.com
+  agents:
+    vpcaccess:
+      - roles/compute.networkUser
+    cloudservices:
+      - roles/compute.networkUser

@@ -292,12 +292,24 @@ variable "shared_vpc_host_config" {
 
 variable "shared_vpc_service_config" {
   description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
-  # the list of valid service identities is in service-accounts.tf
+  # the list of valid service identities is in service-agents.yaml
   type = object({
     host_project         = string
-    service_identity_iam = optional(map(list(string)))
+    service_identity_iam = optional(map(list(string)), {})
+    service_iam_grants   = optional(list(string), [])
   })
-  default = null
+  default = {
+    host_project = null
+  }
+  nullable = false
+  validation {
+    condition = var.shared_vpc_service_config.host_project != null || (
+      var.shared_vpc_service_config.host_project == null &&
+      length(var.shared_vpc_service_config.service_iam_grants) == 0 &&
+      length(var.shared_vpc_service_config.service_iam_grants) == 0
+    )
+    error_message = "You need to provide host_project when providing service_identity_iam or service_iam_grants"
+  }
 }
 
 variable "skip_delete" {

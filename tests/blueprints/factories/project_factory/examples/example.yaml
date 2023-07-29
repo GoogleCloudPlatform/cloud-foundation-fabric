@@ -170,6 +170,9 @@ values:
     condition: []
     project: fast-dev-net-spoke-0
     role: roles/compute.securityAdmin
+  module.projects["project"].module.project.google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:dataproc"]:
+    project: fast-dev-net-spoke-0
+    role: roles/compute.networkUser
   module.projects["project"].module.project.google_kms_crypto_key_iam_member.service_identity_cmek["compute.key1"]:
     condition: []
     crypto_key_id: key1
@@ -245,7 +248,7 @@ counts:
   google_org_policy_policy: 3
   google_project: 1
   google_project_iam_binding: 3
-  google_project_iam_member: 2
+  google_project_iam_member: 4
   google_project_service: 8
   google_service_account: 2
   google_storage_project_service_account: 1
