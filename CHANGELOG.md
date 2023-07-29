@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 - [[#1536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1536)] **incompatible change:** Update and refactor artifact registry module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-28 09:54:37+00:00 -->
 - [[#1533](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1533)] Make demo pipeline append into BQ tables ([danieldeleo](https://github.com/danieldeleo)) <!-- 2023-07-27 15:38:01+00:00 -->
-- [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
+- [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] **incompatible change:** Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
 - [[#1504](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1504)] Bump semver from 5.7.1 to 5.7.2 in /blueprints/serverless/api-gateway/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-07-13 06:05:52+00:00 -->
 - [[#1501](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1501)] Fix in nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg blueprint ([apichick](https://github.com/apichick)) <!-- 2023-07-11 10:01:54+00:00 -->
 - [[#1498](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1498)] Return only bucket name of composer, not full url to dags folder ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-10 09:20:51+00:00 -->
@@ -24,7 +24,7 @@ All notable changes to this project will be documented in this file.
 ### FAST
 
 - [[#1514](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1514)] Fix FAST stage links script for GKE stage ([ludoo](https://github.com/ludoo)) <!-- 2023-07-20 10:48:45+00:00 -->
-- [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
+- [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] **incompatible change:** Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
 
 ### MODULES
 
@@ -37,7 +37,7 @@ All notable changes to this project will be documented in this file.
 - [[#1519](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1519)] Improve Dataplex ([lcaggio](https://github.com/lcaggio)) <!-- 2023-07-24 08:52:08+00:00 -->
 - [[#1520](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1520)] feat(cloudsql-instance): Add query insights config ([LiuVII](https://github.com/LiuVII)) <!-- 2023-07-21 18:14:35+00:00 -->
 - [[#1512](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1512)] enable-logging flag can only be true for public zones ([apichick](https://github.com/apichick)) <!-- 2023-07-19 15:09:47+00:00 -->
-- [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
+- [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] **incompatible change:** Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
 - [[#1509](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1509)] Add output to org module with custom constraint details and depends_on ([juliocc](https://github.com/juliocc)) <!-- 2023-07-18 08:24:39+00:00 -->
 - [[#1503](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1503)] Move IAM grant to function level for trigger SA ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-12 14:19:35+00:00 -->
 - [[#1479](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1479)] Update ncc-spoke-ra module to explicity request ncc hub id when referencing existing hubs ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-07-10 14:18:43+00:00 -->
