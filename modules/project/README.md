@@ -668,6 +668,8 @@ output "compute_robot" {
 | [number](outputs.tf#L56) | Project number. |  |
 | [project_id](outputs.tf#L75) | Project id. |  |
 | [service_accounts](outputs.tf#L94) | Product robot service accounts in project. |  |
-| [sink_writer_identities](outputs.tf#L110) | Writer identities created for each sink. |  |
+| [services](outputs.tf#L110) | Service APIs to enabled in the project. |  |
+| [sink_writer_identities](outputs.tf#L119) | Writer identities created for each sink. |  |
+
 <!-- END TFDOC -->
 
