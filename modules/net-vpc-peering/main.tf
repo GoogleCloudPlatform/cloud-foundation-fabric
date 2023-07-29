@@ -21,22 +21,39 @@ locals {
 }
 
 resource "google_compute_network_peering" "local_network_peering" {
-  name                                = "${local.prefix}${local.local_network_name}-${local.peer_network_name}"
-  network                             = var.local_network
-  peer_network                        = var.peer_network
-  export_custom_routes                = var.export_local_custom_routes
-  import_custom_routes                = var.export_peer_custom_routes
-  export_subnet_routes_with_public_ip = var.export_public_ip_routes
+  name         = "${local.prefix}${local.local_network_name}-${local.peer_network_name}"
+  network      = var.local_network
+  peer_network = var.peer_network
+  export_custom_routes = try(
+    var.routes_config.local.export, null
+  )
+  import_custom_routes = try(
+    var.routes_config.local.import, null
+  )
+  export_subnet_routes_with_public_ip = try(
+    var.routes_config.local.public_export, null
+  )
+  import_subnet_routes_with_public_ip = try(
+    var.routes_config.local.public_import, null
+  )
 }
 
 resource "google_compute_network_peering" "peer_network_peering" {
-  count                               = var.peer_create_peering ? 1 : 0
-  name                                = "${local.prefix}${local.peer_network_name}-${local.local_network_name}"
-  network                             = var.peer_network
-  peer_network                        = var.local_network
-  export_custom_routes                = var.export_peer_custom_routes
-  import_custom_routes                = var.export_local_custom_routes
-  export_subnet_routes_with_public_ip = var.export_public_ip_routes
-
+  count        = var.peer_create_peering ? 1 : 0
+  name         = "${local.prefix}${local.peer_network_name}-${local.local_network_name}"
+  network      = var.peer_network
+  peer_network = var.local_network
+  export_custom_routes = try(
+    var.routes_config.peer.export, null
+  )
+  import_custom_routes = try(
+    var.routes_config.peer.import, null
+  )
+  export_subnet_routes_with_public_ip = try(
+    var.routes_config.peer.public_export, null
+  )
+  import_subnet_routes_with_public_ip = try(
+    var.routes_config.peer.public_import, null
+  )
   depends_on = [google_compute_network_peering.local_network_peering]
 }
