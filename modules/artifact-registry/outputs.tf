@@ -19,6 +19,16 @@ output "id" {
   value       = google_artifact_registry_repository.registry.id
 }
 
+output "image_path" {
+  description = "Repository path for images."
+  value = join("/", [
+    "${var.location}-docker.pkg.dev",
+    var.project_id,
+    var.name
+  ])
+  depends_on = [google_artifact_registry_repository.registry]
+}
+
 output "name" {
   description = "Repository name."
   value       = google_artifact_registry_repository.registry.name
