@@ -99,6 +99,16 @@ vpc:
   # Host project the project will be service project of
   host_project: fast-dev-net-spoke-0
 
+  # [opt] Services for which set up the IAM in the host project
+  service_iam_grants:
+    - dataproc.googleapis.com
+
+  # [opt] Roles to rant service project service identities in host project
+  service_identity_iam:
+    "roles/compute.networkUser":
+      - cloudservices
+      - container-engine
+
   # [opt] Subnets in the host project where principals will be granted networkUser
   # in region/subnet-name => [principals]
   subnets_iam:

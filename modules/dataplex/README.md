@@ -1,15 +1,15 @@
-# Cloud Dataplex instance with lake, zone & assests
+# Dataplex instance with lake, zone & assests
 
-This module manages the creation of Cloud Dataplex instance along with lake, zone & assets in single regions.
+This module manages the creation of Dataplex instance along with lake, zone & assets in single regions.
 
 ## Simple example
 
-This example shows how to setup a Cloud Dataplex instance, lake, zone & asset creation in GCP project.
+This example shows how to setup a Dataplex instance, lake, zone & asset creation in GCP project.
 
 ```hcl
 
 module "dataplex" {
-  source     = "./fabric/modules/cloud-dataplex"
+  source     = "./fabric/modules/dataplex"
   name       = "terraform-lake"
   prefix     = "test"
   project_id = "myproject"
@@ -47,12 +47,12 @@ module "dataplex" {
 
 ## IAM
 
-This example shows how to setup a Cloud Dataplex instance, lake, zone & asset creation in GCP project assigning IAM roles at lake and zone level.
+This example shows how to setup a Dataplex instance, lake, zone & asset creation in GCP project assigning IAM roles at lake and zone level.
 
 ```hcl
 
 module "dataplex" {
-  source     = "./fabric/modules/cloud-dataplex"
+  source     = "./fabric/modules/dataplex"
   name       = "lake"
   prefix     = "test"
   project_id = "myproject"

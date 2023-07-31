@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-
-variable "export_local_custom_routes" {
-  description = "Export custom routes to peer network from local network."
-  type        = bool
-  default     = false
-}
-
-variable "export_peer_custom_routes" {
-  description = "Export custom routes to local network from peer network."
-  type        = bool
-  default     = false
-}
-
-variable "export_public_ip_routes" {
-  description = "Export subnet routes with public ip."
-  type        = bool
-  default     = true
-}
-
 variable "local_network" {
   description = "Resource link of the network to add a peering to."
   type        = string
@@ -57,4 +38,24 @@ variable "prefix" {
     condition     = var.prefix != ""
     error_message = "Prefix cannot be empty, please use null instead."
   }
+}
+
+variable "routes_config" {
+  description = "Control import/export for local and remote peer. Remote configuration is only used when creating remote peering."
+  type = object({
+    local = optional(object({
+      export        = optional(bool, true)
+      import        = optional(bool, true)
+      public_export = optional(bool)
+      public_import = optional(bool)
+    }), {})
+    peer = optional(object({
+      export        = optional(bool, true)
+      import        = optional(bool, true)
+      public_export = optional(bool)
+      public_import = optional(bool)
+    }), {})
+  })
+  nullable = false
+  default  = {}
 }

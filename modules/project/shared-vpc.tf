@@ -17,15 +17,25 @@
 # tfdoc:file:description Shared VPC project-level configuration.
 
 locals {
+  _shared_vpc_agent_config = yamldecode(file("${path.module}/sharedvpc-agent-iam.yaml"))
+  _shared_vpc_agent_config_filtered = [
+    for config in local._shared_vpc_agent_config : config
+    if contains(var.shared_vpc_service_config.service_iam_grants, config.service)
+  ]
+  _shared_vpc_agent_grants = flatten(flatten([
+    for api in local._shared_vpc_agent_config_filtered : [
+      for service, roles in api.agents : [
+        for role in roles : { role = role, service = service }
+      ]
+    ]
+  ]))
+
   # compute the host project IAM bindings for this project's service identities
   _svpc_service_iam = flatten([
-    for role, services in local._svpc_service_identity_iam : [
+    for role, services in var.shared_vpc_service_config.service_identity_iam : [
       for service in services : { role = role, service = service }
     ]
   ])
-  _svpc_service_identity_iam = coalesce(
-    local.svpc_service_config.service_identity_iam, {}
-  )
   svpc_host_config = {
     enabled = coalesce(
       try(var.shared_vpc_host_config.enabled, null), false
@@ -34,11 +44,9 @@ locals {
       try(var.shared_vpc_host_config.service_projects, null), []
     )
   }
-  svpc_service_config = coalesce(var.shared_vpc_service_config, {
-    host_project = null, service_identity_iam = {}
-  })
+
   svpc_service_iam = {
-    for b in local._svpc_service_iam : "${b.role}:${b.service}" => b
+    for b in setunion(local._svpc_service_iam, local._shared_vpc_agent_grants) : "${b.role}:${b.service}" => b
   }
 }
 
@@ -59,7 +67,7 @@ resource "google_compute_shared_vpc_service_project" "service_projects" {
 
 resource "google_compute_shared_vpc_service_project" "shared_vpc_service" {
   provider        = google-beta
-  count           = local.svpc_service_config.host_project != null ? 1 : 0
+  count           = var.shared_vpc_service_config.host_project != null ? 1 : 0
   host_project    = var.shared_vpc_service_config.host_project
   service_project = local.project.project_id
 }

@@ -7,7 +7,18 @@ The resources created/managed by this module are:
 - one network peering from `local network` to `peer network`
 - one network peering from `peer network` to `local network`
 
-## Usage
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Basic Usage](#basic-usage)
+  - [Multiple Peerings](#multiple-peerings)
+  - [Route Configuration](#route-configuration)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
+## Examples
+
+### Basic Usage
 
 Basic usage of this module is as follows:
 
@@ -20,6 +31,8 @@ module "peering" {
 }
 # tftest modules=1 resources=2
 ```
+
+### Multiple Peerings
 
 If you need to create more than one peering for the same VPC Network `(A -> B, A -> C)` you use a `depends_on` for second one to keep order of peering creation (It is not currently possible to create more than one peering connection for a VPC Network at the same time).
 
@@ -40,19 +53,35 @@ module "peering-a-c" {
 }
 # tftest modules=2 resources=4
 ```
-<!-- BEGIN TFDOC -->
 
+### Route Configuration
+
+You can control export/import of routes in both the local and peer via the `routes_config` variable. Defaults are to import and export from both sides, when the peer side only configured if the peering is managed by the module via `peer_create_peering`.
+
+```hcl
+module "peering" {
+  source        = "./fabric/modules/net-vpc-peering"
+  prefix        = "name-prefix"
+  local_network = "projects/project-1/global/networks/vpc-1"
+  peer_network  = "projects/project-1/global/networks/vpc-2"
+  routes_config = {
+    local = {
+      import = false
+    }
+  }
+}
+# tftest modules=1 resources=2  inventory=route-config.yaml
+```
+<!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [local_network](variables.tf#L36) | Resource link of the network to add a peering to. | <code>string</code> | ✓ |  |
-| [peer_network](variables.tf#L47) | Resource link of the peer network. | <code>string</code> | ✓ |  |
-| [export_local_custom_routes](variables.tf#L18) | Export custom routes to peer network from local network. | <code>bool</code> |  | <code>false</code> |
-| [export_peer_custom_routes](variables.tf#L24) | Export custom routes to local network from peer network. | <code>bool</code> |  | <code>false</code> |
-| [export_public_ip_routes](variables.tf#L30) | Export subnet routes with public ip. | <code>bool</code> |  | <code>true</code> |
-| [peer_create_peering](variables.tf#L41) | Create the peering on the remote side. If false, only the peering from this network to the remote network is created. | <code>bool</code> |  | <code>true</code> |
-| [prefix](variables.tf#L52) | Optional name prefix for the network peerings. | <code>string</code> |  | <code>null</code> |
+| [local_network](variables.tf#L17) | Resource link of the network to add a peering to. | <code>string</code> | ✓ |  |
+| [peer_network](variables.tf#L28) | Resource link of the peer network. | <code>string</code> | ✓ |  |
+| [peer_create_peering](variables.tf#L22) | Create the peering on the remote side. If false, only the peering from this network to the remote network is created. | <code>bool</code> |  | <code>true</code> |
+| [prefix](variables.tf#L33) | Optional name prefix for the network peerings. | <code>string</code> |  | <code>null</code> |
+| [routes_config](variables.tf#L43) | Control import/export for local and remote peer. Remote configuration is only used when creating remote peering. | <code title="object&#40;&#123;&#10;  local &#61; optional&#40;object&#40;&#123;&#10;    export        &#61; optional&#40;bool, true&#41;&#10;    import        &#61; optional&#40;bool, true&#41;&#10;    public_export &#61; optional&#40;bool&#41;&#10;    public_import &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  peer &#61; optional&#40;object&#40;&#123;&#10;    export        &#61; optional&#40;bool, true&#41;&#10;    import        &#61; optional&#40;bool, true&#41;&#10;    public_export &#61; optional&#40;bool&#41;&#10;    public_import &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -60,5 +89,4 @@ module "peering-a-c" {
 |---|---|:---:|
 | [local_network_peering](outputs.tf#L17) | Network peering resource. |  |
 | [peer_network_peering](outputs.tf#L22) | Peer network peering resource. |  |
-
 <!-- END TFDOC -->
