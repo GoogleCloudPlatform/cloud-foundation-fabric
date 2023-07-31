@@ -26,6 +26,72 @@ variable "data" {
   }
 }
 
+variable "data_profile_spec" {
+  description = "DataProfileScan related setting. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec."
+  default     = null
+  type = object({
+    sampling_percent = optional(number)
+    row_filter       = optional(string)
+  })
+}
+
+variable "data_quality_spec" {
+  description = "DataQualityScan related setting. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec."
+  default     = null
+  type = object({
+    sampling_percent = optional(number)
+    row_filter       = optional(string)
+    rules = list(object({
+      column               = optional(string)
+      ignore_null          = optional(bool, null)
+      dimension            = string
+      threshold            = optional(number)
+      non_null_expectation = optional(object({}))
+      range_expectation = optional(object({
+        min_value          = optional(number)
+        max_value          = optional(number)
+        strict_min_enabled = optional(bool)
+        strict_max_enabled = optional(bool)
+      }))
+      regex_expectation = optional(object({
+        regex = string
+      }))
+      set_expectation = optional(object({
+        values = list(string)
+      }))
+      uniqueness_expectation = optional(object({}))
+      statistic_range_expectation = optional(object({
+        statistic          = string
+        min_value          = optional(number)
+        max_value          = optional(number)
+        strict_min_enabled = optional(bool)
+        strict_max_enabled = optional(bool)
+      }))
+      row_condition_expectation = optional(object({
+        sql_expression = string
+      }))
+      table_condition_expectation = optional(object({
+        sql_expression = string
+      }))
+    }))
+  })
+  validation {
+    condition = alltrue([
+      for rule in coalesce(var.data_quality_spec.rules, []) :
+    contains(["COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS", "INTEGRITY"], rule.dimension)])
+    error_message = "Datascan 'dimension' field in 'data_quality_spec' must be one of ['COMPLETENESS', 'ACCURACY', 'CONSISTENCY', 'VALIDITY', 'UNIQUENESS', 'INTEGRITY']."
+  }
+  validation {
+    condition = alltrue([
+      for rule in coalesce(var.data_quality_spec.rules, []) :
+      length([
+        for k, v in rule :
+        v if contains(["non_null_expectation", "range_expectation", "regex_expectation", "set_expectation", "uniqueness_expectation", "statistic_range_expectation", "row_condition_expectation", "table_condition_expectation"], k) && v != null
+    ]) == 1])
+    error_message = "Datascan rule must contain a key that is one of ['non_null_expectation', 'range_expectation', 'regex_expectation', 'set_expectation', 'uniqueness_expectation', 'statistic_range_expectation', 'row_condition_expectation', 'table_condition_expectation]."
+  }
+}
+
 variable "execution_schedule" {
   description = "Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API."
   type        = string
@@ -97,69 +163,4 @@ variable "project_id" {
 variable "region" {
   description = "Region for the Dataplex AutoDQ Scan."
   type        = string
-}
-
-variable "row_filter" {
-  description = "A filter applied to all rows in a single DataScan job. The filter needs to be a valid SQL expression for a WHERE clause in BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10."
-  type        = string
-  default     = null
-}
-
-variable "rules" {
-  description = "Data Quality validation rules. If not provided, the DataScan will be created as a Data Profiling scan instead of a Data Quality scan."
-  default     = null
-  type = list(object({
-    column               = optional(string)
-    ignore_null          = optional(bool, null)
-    dimension            = string
-    threshold            = optional(number)
-    non_null_expectation = optional(object({}))
-    range_expectation = optional(object({
-      min_value          = optional(number)
-      max_value          = optional(number)
-      strict_min_enabled = optional(bool)
-      strict_max_enabled = optional(bool)
-    }))
-    regex_expectation = optional(object({
-      regex = string
-    }))
-    set_expectation = optional(object({
-      values = list(string)
-    }))
-    uniqueness_expectation = optional(object({}))
-    statistic_range_expectation = optional(object({
-      statistic          = string
-      min_value          = optional(number)
-      max_value          = optional(number)
-      strict_min_enabled = optional(bool)
-      strict_max_enabled = optional(bool)
-    }))
-    row_condition_expectation = optional(object({
-      sql_expression = string
-    }))
-    table_condition_expectation = optional(object({
-      sql_expression = string
-    }))
-  }))
-  validation {
-    condition = alltrue([
-      for rule in coalesce(var.rules, []) :
-    contains(["COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS", "INTEGRITY"], rule.dimension)])
-    error_message = "Datascan 'dimension' field in 'data_quality_spec' must be one of ['COMPLETENESS', 'ACCURACY', 'CONSISTENCY', 'VALIDITY', 'UNIQUENESS', 'INTEGRITY']."
-  }
-  validation {
-    condition = alltrue([
-      for rule in coalesce(var.rules, []) :
-      length([
-        for k, v in rule :
-        v if contains(["non_null_expectation", "range_expectation", "regex_expectation", "set_expectation", "uniqueness_expectation", "statistic_range_expectation", "row_condition_expectation", "table_condition_expectation"], k) && v != null
-    ]) == 1])
-    error_message = "Datascan rule must contain a key that is one of ['non_null_expectation', 'range_expectation', 'regex_expectation', 'set_expectation', 'uniqueness_expectation', 'statistic_range_expectation', 'row_condition_expectation', 'table_condition_expectation]."
-  }
-}
-
-variable "sampling_percent" {
-  description = "The percentage of the records to be selected from the dataset for DataScan. Value can range between 0.0 and 100.0 with up to 3 significant decimal digits. Sampling is not applied if samplingPercent is not specified, 0 or 100."
-  type        = number
-  default     = null
 }

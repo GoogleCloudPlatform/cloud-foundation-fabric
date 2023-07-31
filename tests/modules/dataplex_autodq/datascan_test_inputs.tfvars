@@ -36,78 +36,80 @@ data = {
   resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
 }
 sampling_percent  = 100
-row_filter        = "station_id > 1000"
-incremental_field = "modified_date"
-rules = [
-  {
-    dimension            = "VALIDITY"
-    non_null_expectation = {}
-    column               = "address"
-    threshold            = 0.99
-  },
-  {
-    column      = "council_district"
-    dimension   = "VALIDITY"
-    ignore_null = true
-    threshold   = 0.9
-    range_expectation = {
-      min_value          = 1
-      max_value          = 10
-      strict_min_enabled = true
-      strict_max_enabled = false
+data_quality_spec = {
+  sampling_percent = 100
+  row_filter       = "station_id > 1000"
+  rules = [
+    {
+      dimension            = "VALIDITY"
+      non_null_expectation = {}
+      column               = "address"
+      threshold            = 0.99
+    },
+    {
+      column      = "council_district"
+      dimension   = "VALIDITY"
+      ignore_null = true
+      threshold   = 0.9
+      range_expectation = {
+        min_value          = 1
+        max_value          = 10
+        strict_min_enabled = true
+        strict_max_enabled = false
+      }
+    },
+    {
+      column    = "council_district"
+      dimension = "VALIDITY"
+      threshold = 0.8
+      range_expectation = {
+        min_value = 3
+      }
+    },
+    {
+      column      = "power_type"
+      dimension   = "VALIDITY"
+      ignore_null = false
+      regex_expectation = {
+        regex = ".*solar.*"
+      }
+    },
+    {
+      column      = "property_type"
+      dimension   = "VALIDITY"
+      ignore_null = false
+      set_expectation = {
+        values = ["sidewalk", "parkland"]
+      }
+    },
+    {
+      column                 = "address"
+      dimension              = "UNIQUENESS"
+      uniqueness_expectation = {}
+    },
+    {
+      column    = "number_of_docks"
+      dimension = "VALIDITY"
+      statistic_range_expectation = {
+        statistic          = "MEAN"
+        min_value          = 5
+        max_value          = 15
+        strict_min_enabled = true
+        strict_max_enabled = true
+      }
+    },
+    {
+      column    = "footprint_length"
+      dimension = "VALIDITY"
+      row_condition_expectation = {
+        sql_expression = "footprint_length > 0 AND footprint_length <= 10"
+      }
+    },
+    {
+      dimension = "VALIDITY"
+      table_condition_expectation = {
+        sql_expression = "COUNT(*) > 0"
+      }
     }
-  },
-  {
-    column    = "council_district"
-    dimension = "VALIDITY"
-    threshold = 0.8
-    range_expectation = {
-      min_value = 3
-    }
-  },
-  {
-    column      = "power_type"
-    dimension   = "VALIDITY"
-    ignore_null = false
-    regex_expectation = {
-      regex = ".*solar.*"
-    }
-  },
-  {
-    column      = "property_type"
-    dimension   = "VALIDITY"
-    ignore_null = false
-    set_expectation = {
-      values = ["sidewalk", "parkland"]
-    }
-  },
-  {
-    column                 = "address"
-    dimension              = "UNIQUENESS"
-    uniqueness_expectation = {}
-  },
-  {
-    column    = "number_of_docks"
-    dimension = "VALIDITY"
-    statistic_range_expectation = {
-      statistic          = "MEAN"
-      min_value          = 5
-      max_value          = 15
-      strict_min_enabled = true
-      strict_max_enabled = true
-    }
-  },
-  {
-    column    = "footprint_length"
-    dimension = "VALIDITY"
-    row_condition_expectation = {
-      sql_expression = "footprint_length > 0 AND footprint_length <= 10"
-    }
-  },
-  {
-    dimension = "VALIDITY"
-    table_condition_expectation = {
-      sql_expression = "COUNT(*) > 0"
-    }
-  }
-]
+  ]
+}

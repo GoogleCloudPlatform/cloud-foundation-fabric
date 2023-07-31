@@ -49,20 +49,20 @@ resource "google_dataplex_datascan" "datascan" {
   }
 
   dynamic "data_profile_spec" {
-    for_each = var.rules == null ? [""] : []
+    for_each = var.data_profile_spec != null ? [""] : []
     content {
-      sampling_percent = var.sampling_percent
-      row_filter       = var.row_filter
+      sampling_percent = try(var.data_profile_spec.sampling_percent, null)
+      row_filter       = try(var.data_profile_spec.row_filter, null)
     }
   }
 
   dynamic "data_quality_spec" {
-    for_each = var.rules != null ? [""] : []
+    for_each = var.data_quality_spec != null ? [""] : []
     content {
-      sampling_percent = var.sampling_percent
-      row_filter       = var.row_filter
+      sampling_percent = try(data_quality_spec.sampling_percent, null)
+      row_filter       = try(data_quality_spec.row_filter, null)
       dynamic "rules" {
-        for_each = var.rules
+        for_each = var.data_quality_spec.rules
         content {
           column      = try(rules.value.column, null)
           ignore_null = try(rules.value.ignore_null, rules.value.ignoreNull, null)
@@ -132,6 +132,13 @@ resource "google_dataplex_datascan" "datascan" {
 
         }
       }
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = length([for spec in [var.data_profile_spec, var.data_quality_spec] : spec if spec != null]) == 1
+      error_message = "DataScan can only contain either 'data_profile_spec' or 'data_quality_spec', but not both."
     }
   }
 }

@@ -4,7 +4,7 @@ This module manages the creation of Dataplex AutoDQ DataScan resources.
 
 ## Data Profiling
 
-This example shows how to create a Data Profiling scan using AutoDQ. To create an AutoDQ Data Profiling scan, do not provide any input to the `rules` variable.
+This example shows how to create a Data Profiling scan using AutoDQ. To create an AutoDQ Data Profiling scan, provide the `data_profile_spec` input arguments as documented in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec.
 
 ```hcl
 module "dataplex-autodq" {
@@ -19,8 +19,10 @@ module "dataplex-autodq" {
   data = {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
-  sampling_percent  = 100
-  row_filter        = "station_id > 1000"
+  data_profile_spec = {
+    sampling_percent = 100
+    row_filter       = "station_id > 1000"
+  }
   incremental_field = "modified_date"
 }
 # tftest modules=1 resources=1 inventory=datascan_profiling.yaml
@@ -28,7 +30,11 @@ module "dataplex-autodq" {
 
 ## Data Quality
 
-This example shows how to create a Data Quality scan using AutoDQ. Please refer to [this page](https://cloud.example.com/dataplex/docs/reference/rest/v1/DataQualityRule) for the rule types and specifications. You need to convert any variable names in the linked page from `CamelCase` to `snake_case`.
+To create an AutoDQ Data Quality scan, provide the `data_quality_spec` input arguments as documented in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec.
+
+Please refer to [this page](https://cloud.example.com/dataplex/docs/reference/rest/v1/DataQualityRule) for the rule types and specifications. You need to convert any variable names in the linked page from `CamelCase` to `snake_case`.
+
+This example shows how to create a Data Quality scan using AutoDQ.
 
 ```hcl
 module "dataplex-autodq" {
@@ -44,83 +50,85 @@ module "dataplex-autodq" {
   data = {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
-  sampling_percent  = 100
-  row_filter        = "station_id > 1000"
   incremental_field = "modified_date"
-  rules = [
-    {
-      dimension            = "VALIDITY"
-      non_null_expectation = {}
-      column               = "address"
-      threshold            = 0.99
-    },
-    {
-      column      = "council_district"
-      dimension   = "VALIDITY"
-      ignore_null = true
-      threshold   = 0.9
-      range_expectation = {
-        min_value          = 1
-        max_value          = 10
-        strict_min_enabled = true
-        strict_max_enabled = false
+  data_quality_spec = {
+    sampling_percent = 100
+    row_filter       = "station_id > 1000"
+    rules            = [
+      {
+        dimension            = "VALIDITY"
+        non_null_expectation = {}
+        column               = "address"
+        threshold            = 0.99
+      },
+      {
+        column      = "council_district"
+        dimension   = "VALIDITY"
+        ignore_null = true
+        threshold   = 0.9
+        range_expectation = {
+          min_value          = 1
+          max_value          = 10
+          strict_min_enabled = true
+          strict_max_enabled = false
+        }
+      },
+      {
+        column    = "council_district"
+        dimension = "VALIDITY"
+        threshold = 0.8
+        range_expectation = {
+          min_value = 3
+          max_value = 9
+        }
+      },
+      {
+        column      = "power_type"
+        dimension   = "VALIDITY"
+        ignore_null = false
+        regex_expectation = {
+          regex = ".*solar.*"
+        }
+      },
+      {
+        column      = "property_type"
+        dimension   = "VALIDITY"
+        ignore_null = false
+        set_expectation = {
+          values = ["sidewalk", "parkland"]
+        }
+      },
+      {
+        column                 = "address"
+        dimension              = "UNIQUENESS"
+        uniqueness_expectation = {}
+      },
+      {
+        column    = "number_of_docks"
+        dimension = "VALIDITY"
+        statistic_range_expectation = {
+          statistic          = "MEAN"
+          min_value          = 5
+          max_value          = 15
+          strict_min_enabled = true
+          strict_max_enabled = true
+        }
+      },
+      {
+        column    = "footprint_length"
+        dimension = "VALIDITY"
+        row_condition_expectation = {
+          sql_expression = "footprint_length > 0 AND footprint_length <= 10"
+        }
+      },
+      {
+        dimension = "VALIDITY"
+        table_condition_expectation = {
+          sql_expression = "COUNT(*) > 0"
+        }
       }
-    },
-    {
-      column    = "council_district"
-      dimension = "VALIDITY"
-      threshold = 0.8
-      range_expectation = {
-        min_value = 3
-        max_value = 9
-      }
-    },
-    {
-      column      = "power_type"
-      dimension   = "VALIDITY"
-      ignore_null = false
-      regex_expectation = {
-        regex = ".*solar.*"
-      }
-    },
-    {
-      column      = "property_type"
-      dimension   = "VALIDITY"
-      ignore_null = false
-      set_expectation = {
-        values = ["sidewalk", "parkland"]
-      }
-    },
-    {
-      column                 = "address"
-      dimension              = "UNIQUENESS"
-      uniqueness_expectation = {}
-    },
-    {
-      column    = "number_of_docks"
-      dimension = "VALIDITY"
-      statistic_range_expectation = {
-        statistic          = "MEAN"
-        min_value          = 5
-        max_value          = 15
-        strict_min_enabled = true
-        strict_max_enabled = true
-      }
-    },
-    {
-      column    = "footprint_length"
-      dimension = "VALIDITY"
-      row_condition_expectation = {
-        sql_expression = "footprint_length > 0 AND footprint_length <= 10"
-      }
-    },
-    {
-      dimension = "VALIDITY"
-      table_condition_expectation = {
-        sql_expression = "COUNT(*) > 0"
-      }
-    }
-  ]
+    ]
+  }
 }
 # tftest modules=1 resources=1 inventory=datascan_dq.yaml
 ```
@@ -144,7 +152,11 @@ module "dataplex-autodq" {
   sampling_percent  = 100
   row_filter        = "station_id > 1000"
   incremental_field = "modified_date"
-  rules             = yamldecode(file("config/rules.yaml"))
+  data_quality_spec = {
+    sampling_percent = 100
+    row_filter       = "station_id > 1000"
+    rules            = yamldecode(file("config/rules.yaml"))
+  }
 }
 # tftest modules=1 resources=1 files=rules inventory=datascan_dq.yaml
 ```
@@ -221,10 +233,12 @@ module "dataplex-autodq" {
   data = {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
-  sampling_percent  = 100
-  row_filter        = "station_id > 1000"
   incremental_field = "modified_date"
-  rules             = [for rule in yamldecode(file("config/rules_camel_case.yaml")) : { for k, v in rule : join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(k))) : lower(word)]) => try({ for kk, vv in v : join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(kk))) : lower(word)]) => vv }, v) }]
+  data_quality_spec = {
+    sampling_percent = 100
+    row_filter       = "station_id > 1000"
+    rules            = [for rule in yamldecode(file("config/rules_camel_case.yaml")) : { for k, v in rule : join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(k))) : lower(word)]) => try({ for kk, vv in v : join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(kk))) : lower(word)]) => vv }, v) }]
+  }
 }
 # tftest modules=1 resources=1 files=rules_camel_case inventory=datascan_dq.yaml
 ```
@@ -305,6 +319,7 @@ module "dataplex-autodq" {
   data = {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
+  data_profile_spec = {}
 }
 # tftest modules=1 resources=1
 ```
@@ -321,6 +336,7 @@ module "dataplex-autodq" {
   data = {
     entity = "projects/<project_number>/locations/<locationId>/lakes/<lakeId>/zones/<zoneId>/entities/<entityId>"
   }
+  data_profile_spec = {}
 }
 # tftest modules=1 resources=1 inventory=datascan_entity.yaml
 ```
@@ -344,6 +360,7 @@ module "dataplex-autodq" {
   data = {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
+  data_profile_spec = {}
 }
 
 # tftest modules=1 resources=1 inventory=datascan_cron.yaml
@@ -374,6 +391,7 @@ module "dataplex-autodq" {
   data = {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
+  data_profile_spec = {}
   iam = {
     "roles/dataplex.dataScanAdmin" = [
       "serviceAccount:svc-1@project-id.iam.gserviceaccount.com"
@@ -394,7 +412,6 @@ module "dataplex-autodq" {
 ## TODO
 
 - [ ] enable custom descriptions
-- [ ] enable yaml rules input
 <!-- BEGIN TFDOC -->
 ## Variables
 
