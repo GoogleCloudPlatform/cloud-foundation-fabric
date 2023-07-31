@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
+- [[#1542](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1542)] Grant IAM rights to service identities in host project ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-29 18:07:21+00:00 -->
 - [[#1536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1536)] **incompatible change:** Update and refactor artifact registry module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-28 09:54:37+00:00 -->
 - [[#1533](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1533)] Make demo pipeline append into BQ tables ([danieldeleo](https://github.com/danieldeleo)) <!-- 2023-07-27 15:38:01+00:00 -->
 - [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] **incompatible change:** Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
@@ -23,11 +25,15 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
 - [[#1514](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1514)] Fix FAST stage links script for GKE stage ([ludoo](https://github.com/ludoo)) <!-- 2023-07-20 10:48:45+00:00 -->
 - [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] **incompatible change:** Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
 
 ### MODULES
 
+- [[#1550](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1550)] Fix in validation of healthchecks variable ([apichick](https://github.com/apichick)) <!-- 2023-07-31 08:16:52+00:00 -->
+- [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
+- [[#1542](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1542)] Grant IAM rights to service identities in host project ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-29 18:07:21+00:00 -->
 - [[#1546](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1546)] **incompatible change:** rename cloud-dataplex to dataplex ([thinhha](https://github.com/thinhha)) <!-- 2023-07-29 12:31:18+00:00 -->
 - [[#1540](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1540)] Fixes in cloud function v2 module for trigger service account ([apichick](https://github.com/apichick)) <!-- 2023-07-28 15:21:18+00:00 -->
 - [[#1536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1536)] **incompatible change:** Update and refactor artifact registry module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-28 09:54:37+00:00 -->
