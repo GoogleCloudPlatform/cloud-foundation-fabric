@@ -151,7 +151,7 @@ values:
         uniqueness_expectation: []
       sampling_percent: 100
     data_scan_id: test-autodq
-    description: Terraform Managed.
+    description: Terraform Managed. Custom description.
     display_name: test-autodq
     execution_spec:
     - field: modified_date

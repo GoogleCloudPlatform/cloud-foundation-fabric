@@ -86,6 +86,12 @@ variable "data_quality_spec_file" {
   })
 }
 
+variable "description" {
+  description = "Custom description for DataScan."
+  default     = null
+  type        = string
+}
+
 variable "execution_schedule" {
   description = "Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API."
   type        = string

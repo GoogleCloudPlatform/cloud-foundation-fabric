@@ -51,7 +51,7 @@ resource "google_dataplex_datascan" "datascan" {
   location     = var.region
   data_scan_id = "${local.prefix}${var.name}"
   display_name = "${local.prefix}${var.name}"
-  description  = "Terraform Managed." # todo: parametrize
+  description  = var.description == null ? "Terraform Managed." : "Terraform Managed. ${var.description}"
   labels       = var.labels
 
   data {
@@ -166,7 +166,7 @@ resource "google_dataplex_datascan" "datascan" {
   lifecycle {
     precondition {
       condition     = length([for spec in [var.data_profile_spec, var.data_quality_spec, var.data_quality_spec_file] : spec if spec != null]) == 1
-      error_message = "DataScan can only contain one of 'data_profile_spec', 'data_quality_spec', '_data_quality_spec_file'."
+      error_message = "DataScan can only contain one of 'data_profile_spec', 'data_quality_spec', 'data_quality_spec_file'."
     }
     precondition {
       condition = alltrue([

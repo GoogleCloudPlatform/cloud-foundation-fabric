@@ -302,7 +302,7 @@ rules:
 
 ## Data Source
 
-The input variable 'data' is required to create a DataScan. This value is immutable. Once it is set, you cannot change the DataScan to another sources.
+The input variable 'data' is required to create a DataScan. This value is immutable. Once it is set, you cannot change the DataScan to another source.
 
 The input variable 'data' should be an object containing a single key-value pair that can be one of:
 * `entity`: The Dataplex entity that represents the data source (e.g. BigQuery table) for DataScan, of the form: `projects/{project_number}/locations/{locationId}/lakes/{lakeId}/zones/{zoneId}/entities/{entityId}`.
@@ -411,29 +411,28 @@ module "dataplex-autodq" {
 ```
 
 ## TODO
-
-- [ ] enable custom descriptions
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [data](variables.tf#L17) | The data source for DataScan. The source can be either a Dataplex `entity` or a BigQuery `resource`. | <code title="object&#40;&#123;&#10;  entity   &#61; optional&#40;string&#41;&#10;  resource &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L141) | Name of Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L152) | The ID of the project where the Dataplex AutoDQ Scans will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L157) | Region for the Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L147) | Name of Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L158) | The ID of the project where the Dataplex AutoDQ Scans will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L163) | Region for the Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
 | [data_profile_spec](variables.tf#L29) | DataProfileScan related setting. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [data_quality_spec](variables.tf#L38) | DataQualityScan related setting. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;  rules &#61; list&#40;object&#40;&#123;&#10;    column               &#61; optional&#40;string&#41;&#10;    ignore_null          &#61; optional&#40;bool, null&#41;&#10;    dimension            &#61; string&#10;    threshold            &#61; optional&#40;number&#41;&#10;    non_null_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    range_expectation &#61; optional&#40;object&#40;&#123;&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    regex_expectation &#61; optional&#40;object&#40;&#123;&#10;      regex &#61; string&#10;    &#125;&#41;&#41;&#10;    set_expectation &#61; optional&#40;object&#40;&#123;&#10;      values &#61; list&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    uniqueness_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    statistic_range_expectation &#61; optional&#40;object&#40;&#123;&#10;      statistic          &#61; string&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    row_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;    table_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [data_quality_spec_file](variables.tf#L80) | Path to a YAML file containing DataQualityScan related setting. Set `convert_camel_case` to true if your YAML file uses camelCase instead of snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  path               &#61; string&#10;  convert_camel_case &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [execution_schedule](variables.tf#L89) | Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API. | <code>string</code> |  | <code>null</code> |
-| [group_iam](variables.tf#L95) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam](variables.tf#L102) | Dataplex AutoDQ  IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive](variables.tf#L109) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive_members](variables.tf#L116) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_policy](variables.tf#L122) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
-| [incremental_field](variables.tf#L128) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L134) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L146) | Optional prefix used to generate Dataplex AutoDQ DataScan ID. | <code>string</code> |  | <code>null</code> |
+| [description](variables.tf#L89) | Custom description for DataScan. | <code>string</code> |  | <code>null</code> |
+| [execution_schedule](variables.tf#L95) | Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API. | <code>string</code> |  | <code>null</code> |
+| [group_iam](variables.tf#L101) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables.tf#L108) | Dataplex AutoDQ  IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_additive](variables.tf#L115) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_additive_members](variables.tf#L122) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_policy](variables.tf#L128) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
+| [incremental_field](variables.tf#L134) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L140) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L152) | Optional prefix used to generate Dataplex AutoDQ DataScan ID. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
