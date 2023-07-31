@@ -30,7 +30,12 @@ resource "google_artifact_registry_repository" "registry" {
   kms_key_name  = var.encryption_key
 
   dynamic "docker_config" {
-    for_each = local.format_string == "docker" ? [""] : []
+    # TODO: open a bug on the provider for this permadiff
+    for_each = (
+      local.format_string == "docker" && var.format.docker.immutable_tags == true
+      ? [""]
+      : []
+    )
     content {
       immutable_tags = var.format.docker.immutable_tags
     }
