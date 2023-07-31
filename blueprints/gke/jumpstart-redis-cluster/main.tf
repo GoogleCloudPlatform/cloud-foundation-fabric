@@ -38,15 +38,18 @@ module "project" {
   billing_account = try(var.create_config.project.billing_account, null)
   name            = var.project_id
   project_create  = var.create_config.project != null
-  services = [
-    "anthos.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "connectgateway.googleapis.com",
-    "container.googleapis.com",
-    "gkeconnect.googleapis.com",
-    "gkehub.googleapis.com",
-    "stackdriver.googleapis.com"
-  ]
+  services = concat(
+    [
+      "anthos.googleapis.com",
+      "cloudresourcemanager.googleapis.com",
+      "connectgateway.googleapis.com",
+      "container.googleapis.com",
+      "gkeconnect.googleapis.com",
+      "gkehub.googleapis.com",
+      "stackdriver.googleapis.com"
+    ],
+    var.create_config.remote_registry ? ["artifactregistry.googleapis.com"] : []
+  )
   shared_vpc_service_config = !local.use_shared_vpc ? null : {
     attach       = true
     host_project = var.create_config.project.shared_vpc_host
@@ -105,17 +108,12 @@ module "fleet" {
   }
 }
 
-# resource "google_artifact_registry_repository" "docker" {
-#   location      = "LOCATION"
-#   repository_id = "REPOSITORY_ID"
-#   description   = "DESCRIPTION"
-#   format        = "docker"
-#   kms_key_name = "KEY"
-#   mode          = "REMOTE_REPOSITORY"
-#   remote_repository_config {
-#     description = "CONFIG_DESCRIPTION"
-#     docker_repository {
-#       public_repository = "DOCKER_HUB"
-#     }
-#   }
-# }
+module "registry" {
+  source     = "../../../modules/artifact-registry"
+  count      = var.create_config.remote_registry ? 1 : 0
+  project_id = module.project.project_id
+  location   = var.region
+  name       = var.prefix
+  format     = { docker = {} }
+  mode       = { remote = true }
+}

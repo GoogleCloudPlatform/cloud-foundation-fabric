@@ -41,16 +41,7 @@ variable "create_config" {
       parent          = optional(string)
       shared_vpc_host = optional(string)
     }))
-    registry = optional(object({
-      remote_config = optional(object({
-        repository  = string
-        description = optional(string)
-      }))
-      virtual_upstream_policies = optional(map(object({
-        repository = string
-        priority   = optional(number)
-      })))
-    }))
+    remote_registry = optional(bool, true)
     vpc = optional(object({
       primary_range_nodes      = optional(string, "10.0.0.0/24")
       secondary_range_pods     = optional(string, "10.16.0.0/20")
@@ -60,7 +51,6 @@ variable "create_config" {
   nullable = false
   default  = {}
   # TODO(ludo): validate that only one of cluster.vpc and vpc is not null
-  # TODO(ludo): validate that sum(registry.virtual + registry.remote) <= 1
 }
 
 # https://cloud.google.com/anthos/fleet-management/docs/before-you-begin/gke#gke-cross-project
@@ -97,7 +87,8 @@ variable "workload_config" {
   description = "Workload configuration."
   type = object({
     image = optional(object({
-      name     = optional(string, "redis")
+      name = optional(string, "redis")
+      # null registry will use the internally created registry if available
       registry = optional(string)
     }), {})
   })

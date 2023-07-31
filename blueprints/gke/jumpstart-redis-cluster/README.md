@@ -7,9 +7,10 @@
 - [ ] optionally support external kubeconfig via variable, and skip fleet resources if a kubeconfig is specified
 - [ ] try using the fleet membership project id instead of number in the kubernetes provider configuration, if that works we can use the fleet membership `id` directly
 - [ ] Use Gateway to expose the service? it's a cluster with a headles service so maybe not?
-- [ ] for Docker pull access
-  - [ ] optionally create Cloud NAT for local VPCs
-  - [ ] optionally specify and [configure a proxy](https://samos-it.com/posts/gke-docker-registry-http-proxy.html) for Shared VPC scenarios (Shared VPC might already have Cloud NAT or similar egress)
+
+## Prerequisites
+
+- if an external fleet project is used and the remote artifact registry is being created, the fleet project needs the AR service enabled
 
 ## Test scenarios
 
