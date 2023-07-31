@@ -206,11 +206,23 @@ variable "vpc" {
   description = "VPC configuration for the project."
   type = object({
     host_project = string
-    gke_setup = object({
-      enable_security_admin     = bool
-      enable_host_service_agent = bool
-    })
-    subnets_iam = map(list(string))
+    gke_setup = optional(object({
+      enable_security_admin     = optional(bool, false)
+      enable_host_service_agent = optional(bool, false)
+    }), {})
+    service_iam_grants   = optional(list(string), [])
+    service_identity_iam = optional(map(list(string)), {})
+    subnets_iam          = optional(map(list(string)), {})
   })
-  default = null
+  default = {
+    host_project = null
+  }
+  nullable = false
+  validation {
+    condition = var.vpc.host_project != null || (
+      var.vpc.host_project == null && length(var.vpc.gke_setup) == 0 && length(var.vpc.service_iam_grants) == 0 &&
+      length(var.vpc.service_identity_iam) == 0 && length(var.vpc.subnets_iam) == 0
+    )
+    error_message = "host_project is required if providing any additional configuration for vpc"
+  }
 }

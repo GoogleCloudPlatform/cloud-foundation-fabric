@@ -18,19 +18,20 @@
 
 variable "peering_configs" {
   description = "Peering configurations."
-  type = map(object({
-    export_local_custom_routes = bool
-    export_peer_custom_routes  = bool
-  }))
-  default = {
-    dev = {
-      export_local_custom_routes = true
-      export_peer_custom_routes  = true
-    }
-    prod = {
-      export_local_custom_routes = true
-      export_peer_custom_routes  = true
-    }
-  }
+  type = object({
+    dev = optional(object({
+      export        = optional(bool, true)
+      import        = optional(bool, true)
+      public_export = optional(bool)
+      public_import = optional(bool)
+    }), {})
+    prod = optional(object({
+      export        = optional(bool, true)
+      import        = optional(bool, true)
+      public_export = optional(bool)
+      public_import = optional(bool)
+    }), {})
+  })
+  default  = {}
   nullable = false
 }

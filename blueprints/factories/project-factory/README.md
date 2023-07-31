@@ -76,7 +76,7 @@ module "projects" {
   service_identities_iam = try(each.value.service_identities_iam, {})
   vpc                    = try(each.value.vpc, null)
 }
-# tftest modules=7 resources=36 inventory=example.yaml
+# tftest modules=7 resources=38 inventory=example.yaml
 ```
 
 ### Projects configuration
@@ -212,6 +212,16 @@ vpc:
   # Host project the project will be service project of
   host_project: fast-prod-net-spoke-0
 
+  # [opt] Services for which set up the IAM in the host project
+  service_iam_grants:
+    - dataproc.googleapis.com
+
+  # [opt] Roles to rant service project service identities in host project
+  service_identity_iam:
+    "roles/compute.networkUser":
+      - cloudservices
+      - container-engine
+
   # [opt] Subnets in the host project where principals will be granted networkUser
   # in region/subnet-name => [principals]
   subnets_iam:
@@ -248,7 +258,7 @@ vpc:
 | [service_identities_iam](variables.tf#L184) | Custom IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_identities_iam_additive](variables.tf#L191) | Custom additive IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [services](variables.tf#L198) | Services to be enabled for the project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc](variables.tf#L205) | VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; object&#40;&#123;&#10;    enable_security_admin     &#61; bool&#10;    enable_host_service_agent &#61; bool&#10;  &#125;&#41;&#10;  subnets_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc](variables.tf#L205) | VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; optional&#40;object&#40;&#123;&#10;    enable_security_admin     &#61; optional&#40;bool, false&#41;&#10;    enable_host_service_agent &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_identity_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  subnets_iam          &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 

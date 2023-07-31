@@ -2,6 +2,14 @@
 
 This module simplifies the creation of repositories using Google Cloud Artifact Registry.
 
+<!-- BEGIN TOC -->
+- [Standard Repository](#standard-repository)
+- [Remote and Virtual Repositories](#remote-and-virtual-repositories)
+- [Additional Docker and Maven Options](#additional-docker-and-maven-options)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Standard Repository
 
 ```hcl

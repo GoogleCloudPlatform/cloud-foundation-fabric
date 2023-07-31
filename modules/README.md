@@ -74,7 +74,7 @@ These modules are used in the examples included in this repository. If you are u
 - [AlloyDB instance](./alloydb-instance)
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
-- [Cloud Dataplex](./cloud-dataplex)
+- [Dataplex](./dataplex)
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
 - [Datafusion](./datafusion)
