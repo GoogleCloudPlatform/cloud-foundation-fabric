@@ -205,6 +205,86 @@ The content of the `config/rules.yaml` files is as follows:
     sql_expression: COUNT(*) > 0
 ```
 
+If your input YAML uses CamelCase instead of snake_case which is expected by the module, you can use the following code to convert the input YAML into the expected format.
+
+```hcl
+module "dataplex-autodq" {
+  source     = "./fabric/modules/dataplex-autodq"
+  name       = "autodq"
+  prefix     = "test"
+  project_id = "my-project-name"
+  region     = "us-central1"
+  labels = {
+    billing_id = "a"
+  }
+  execution_schedule = "TZ=America/New_York 0 1 * * *"
+  data = {
+    resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
+  }
+  sampling_percent  = 100
+  row_filter        = "station_id > 1000"
+  incremental_field = "modified_date"
+  rules             = [for rule in yamldecode(file("config/rules_camel_case.yaml")) : { for k, v in rule : join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(k))) : lower(word)]) => try({ for kk, vv in v : join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(kk))) : lower(word)]) => vv }, v) }]
+}
+# tftest modules=1 resources=1 files=rules_camel_case inventory=datascan_dq.yaml
+```
+
+The content of the `config/rules_camel_case.yaml` files is as follows:
+
+```yaml
+# tftest-file id=rules_camel_case path=config/rules_camel_case.yaml
+- column: address
+  dimension: VALIDITY
+  ignoreNull: null
+  nonNullExpectation: {}
+  threshold: 0.99
+- column: council_district
+  dimension: VALIDITY
+  ignoreNull: true
+  threshold: 0.9
+  rangeExpectation:
+    maxValue: '10'
+    minValue: '1'
+    strictMaxEnabled: false
+    strictMinEnabled: true
+- column: council_district
+  dimension: VALIDITY
+  rangeExpectation:
+    maxValue: '9'
+    minValue: '3'
+  threshold: 0.8
+- column: power_type
+  dimension: VALIDITY
+  ignoreNull: false
+  regexExpectation:
+    regex: .*solar.*
+- column: property_type
+  dimension: VALIDITY
+  ignoreNull: false
+  setExpectation:
+    values:
+    - sidewalk
+    - parkland
+- column: address
+  dimension: UNIQUENESS
+  uniquenessExpectation: {}
+- column: number_of_docks
+  dimension: VALIDITY
+  statisticRangeExpectation:
+    maxValue: '15'
+    minValue: '5'
+    statistic: MEAN
+    strictMaxEnabled: true
+    strictMinEnabled: true
+- column: footprint_length
+  dimension: VALIDITY
+  rowConditionExpectation:
+    sqlExpression: footprint_length > 0 AND footprint_length <= 10
+- dimension: VALIDITY
+  tableConditionExpectation:
+    sqlExpression: COUNT(*) > 0
+```
+
 ## Data Source
 
 The input variable 'data' is required to create a DataScan. This value is immutable. Once it is set, you cannot change the DataScan to another sources.
