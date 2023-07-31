@@ -30,6 +30,11 @@ module "transit-primary-vpc" {
     private      = true
     private-6    = false
   }
+  psa_config = {
+    ranges        = { gcve-transit-primary = "100.101.129.0/24" }
+    export_routes = true
+    import_routes = true
+  }
   subnets = [
     {
       ip_cidr_range = "100.101.128.0/28"
@@ -116,6 +121,11 @@ module "transit-secondary-vpc" {
     restricted-6 = false
     private      = true
     private-6    = false
+  }
+  psa_config = {
+    ranges        = { gcve-transit-secondary = "100.102.129.0/24" }
+    export_routes = true
+    import_routes = true
   }
   subnets = [
     {

@@ -48,7 +48,8 @@ module "net-project" {
     "dns.googleapis.com",
     "iap.googleapis.com",
     "networkmanagement.googleapis.com",
-    "stackdriver.googleapis.com"
+    "servicenetworking.googleapis.com",
+    "stackdriver.googleapis.com",
   ]
   shared_vpc_host_config = {
     enabled = true

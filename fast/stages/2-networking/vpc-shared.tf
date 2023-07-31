@@ -33,6 +33,14 @@ module "shared-vpc" {
     private      = true
     private-6    = false
   }
+  psa_config = {
+    ranges = {
+      gcve-shared-primary   = "100.101.5.0/24"
+      gcve-shared-secondary = "100.102.5.0/24"
+    }
+    export_routes = false
+    import_routes = true
+  }
   subnets = [
     {
       ip_cidr_range = "100.101.4.0/28"
