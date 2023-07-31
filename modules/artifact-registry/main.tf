@@ -32,7 +32,7 @@ resource "google_artifact_registry_repository" "registry" {
   dynamic "docker_config" {
     # TODO: open a bug on the provider for this permadiff
     for_each = (
-      local.format_string == "docker" && var.format.docker.immutable_tags == true
+      local.format_string == "docker" && try(var.format.docker.immutable_tags, null) == true
       ? [""]
       : []
     )
