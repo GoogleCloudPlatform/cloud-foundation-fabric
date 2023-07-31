@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1548](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1548)] Minor fixes in Vertex Ai MLOPs blueprint ([javiergp](https://github.com/javiergp)) <!-- 2023-07-31 10:52:37+00:00 -->
 - [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
 - [[#1542](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1542)] Grant IAM rights to service identities in host project ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-29 18:07:21+00:00 -->
 - [[#1536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1536)] **incompatible change:** Update and refactor artifact registry module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-28 09:54:37+00:00 -->
@@ -31,6 +32,9 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1554](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1554)] Fix in IAM bindings of cloud function v2 module ([apichick](https://github.com/apichick)) <!-- 2023-07-31 11:22:07+00:00 -->
+- [[#1551](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1551)] Fix in validation of healthchecks variable ([apichick](https://github.com/apichick)) <!-- 2023-07-31 10:13:19+00:00 -->
+- [[#1552](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1552)] Add image path output to ar module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-31 09:34:02+00:00 -->
 - [[#1550](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1550)] Fix in validation of healthchecks variable ([apichick](https://github.com/apichick)) <!-- 2023-07-31 08:16:52+00:00 -->
 - [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
 - [[#1542](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1542)] Grant IAM rights to service identities in host project ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-29 18:07:21+00:00 -->
