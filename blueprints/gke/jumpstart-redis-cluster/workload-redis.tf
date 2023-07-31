@@ -17,10 +17,9 @@
 locals {
   # TODO: prefix when creating
   wl_image = (
-    var.workload_config.image.prefix_registry &&
-    var.create_config.remote_registry != null
-    ? "${module.registry.0.image_path}/${var.workload_config.image.name}"
-    : var.workload_config.image.name
+    var.create_config.remote_registry == true
+    ? "${module.registry.0.image_path}/${var.workload_config.image}"
+    : var.workload_config.image
   )
   wl_templates = [
     for f in fileset(local.wl_templates_path, "*yaml") :
@@ -55,3 +54,19 @@ resource "kubernetes_manifest" "workload" {
   }))
   depends_on = [kubernetes_namespace.workload]
 }
+
+
+data "kubernetes_resources" "example" {
+  api_version    = "v1"
+  kind           = "Pod"
+  label_selector = "app=hello"
+  namespace      = var.workload_config.namespace
+  depends_on     = [kubernetes_manifest.workload]
+}
+
+# output "foo" {
+#   value = [
+#     for k in data.kubernetes_resources.example.objects :
+#     k.status.podIP
+#   ]
+# }

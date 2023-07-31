@@ -37,7 +37,6 @@ locals {
   )
 }
 
-
 data "google_container_cluster" "cluster" {
   count    = var.create_config.cluster == null ? 1 : 0
   project  = var.project_id

@@ -1,0 +1,818 @@
+foo = {
+  "api_version" = "v1""field_selector" = tostring(null)
+  "kind" = "Pod""label_selector" = "app=hello""limit" = tonumber(null)
+  "namespace" = "test""objects" = [
+    {
+      "apiVersion" = "v1""kind" = "Pod""metadata" = {
+        "annotations" = tomap(null) /* of string */
+        "creationTimestamp" = "2023-07-31T15:24:55Z""deletionGracePeriodSeconds" = tonumber(null)
+        "deletionTimestamp" = tostring(null)
+        "finalizers" = tolist(null) /* of string */
+        "generateName" = "hello-6d5cf4dc77-""generation" = tonumber(null)
+        "labels" = tomap({
+          "app" = "hello""pod-template-hash" = "6d5cf4dc77"
+        })
+        "managedFields" = [
+          {
+            "apiVersion" = "v1""fieldsType" = "FieldsV1""fieldsV1" = {
+              "f:metadata" = {
+                "f:generateName" = {}
+                "f:labels" = {
+                  "." = {}
+                  "f:app" = {}
+                  "f:pod-template-hash" = {}
+                }
+                "f:ownerReferences" = {
+                  "." = {}
+                  "k:{\"uid\":\"aaef4717-8026-4569-88e6-94b76f57a366\"}" = {}
+                }
+              }
+              "f:spec" = {
+                "f:containers" = {
+                  "k:{\"name\":\"hello\"}" = {
+                    "." = {}
+                    "f:image" = {}
+                    "f:imagePullPolicy" = {}
+                    "f:name" = {}
+                    "f:ports" = {
+                      "." = {}
+                      "k:{\"containerPort\":80,\"protocol\":\"TCP\"}" = {
+                        "." = {}
+                        "f:containerPort" = {}
+                        "f:name" = {}
+                        "f:protocol" = {}
+                      }
+                    }
+                    "f:resources" = {
+                      "." = {}
+                      "f:limits" = {
+                        "." = {}
+                        "f:cpu" = {}
+                        "f:ephemeral-storage" = {}
+                        "f:memory" = {}
+                      }
+                      "f:requests" = {
+                        "." = {}
+                        "f:cpu" = {}
+                        "f:ephemeral-storage" = {}
+                        "f:memory" = {}
+                      }
+                    }
+                    "f:securityContext" = {
+                      "." = {}
+                      "f:capabilities" = {
+                        "." = {}
+                        "f:drop" = {}
+                      }
+                    }
+                    "f:terminationMessagePath" = {}
+                    "f:terminationMessagePolicy" = {}
+                  }
+                }
+                "f:dnsPolicy" = {}
+                "f:enableServiceLinks" = {}
+                "f:restartPolicy" = {}
+                "f:schedulerName" = {}
+                "f:securityContext" = {
+                  "." = {}
+                  "f:seccompProfile" = {
+                    "." = {}
+                    "f:type" = {}
+                  }
+                }
+                "f:terminationGracePeriodSeconds" = {}
+                "f:tolerations" = {}
+              }
+            }
+            "manager" = "kube-controller-manager""operation" = "Update""subresource" = tostring(null)
+            "time" = "2023-07-31T15:24:55Z"
+          },
+          {
+            "apiVersion" = "v1""fieldsType" = "FieldsV1""fieldsV1" = {
+              "f:status" = {
+                "f:conditions" = {
+                  "k:{\"type\":\"ContainersReady\"}" = {
+                    "." = {}
+                    "f:lastProbeTime" = {}
+                    "f:lastTransitionTime" = {}
+                    "f:status" = {}
+                    "f:type" = {}
+                  }
+                  "k:{\"type\":\"Initialized\"}" = {
+                    "." = {}
+                    "f:lastProbeTime" = {}
+                    "f:lastTransitionTime" = {}
+                    "f:status" = {}
+                    "f:type" = {}
+                  }
+                  "k:{\"type\":\"Ready\"}" = {
+                    "." = {}
+                    "f:lastProbeTime" = {}
+                    "f:lastTransitionTime" = {}
+                    "f:status" = {}
+                    "f:type" = {}
+                  }
+                }
+                "f:containerStatuses" = {}
+                "f:hostIP" = {}
+                "f:phase" = {}
+                "f:podIP" = {}
+                "f:podIPs" = {
+                  "." = {}
+                  "k:{\"ip\":\"100.64.0.20\"}" = {
+                    "." = {}
+                    "f:ip" = {}
+                  }
+                }
+                "f:startTime" = {}
+              }
+            }
+            "manager" = "kubelet""operation" = "Update""subresource" = "status""time" = "2023-07-31T15:25:02Z"
+          },
+        ]
+        "name" = "hello-6d5cf4dc77-wvpwb""namespace" = "test""ownerReferences" = tolist([
+          {
+            "apiVersion" = "apps/v1""blockOwnerDeletion" = true
+            "controller" = true
+            "kind" = "ReplicaSet""name" = "hello-6d5cf4dc77""uid" = "aaef4717-8026-4569-88e6-94b76f57a366"
+          },
+        ])
+        "resourceVersion" = "10706409""selfLink" = tostring(null)
+        "uid" = "6e5ce128-0aa2-4454-826a-52cac6415a58"
+      }
+      "spec" = {
+        "activeDeadlineSeconds" = tonumber(null)
+        "affinity" = {
+          "nodeAffinity" = {
+            "preferredDuringSchedulingIgnoredDuringExecution" = tolist(null) /* of object */
+            "requiredDuringSchedulingIgnoredDuringExecution" = {
+              "nodeSelectorTerms" = tolist(null) /* of object */
+            }
+          }
+          "podAffinity" = {
+            "preferredDuringSchedulingIgnoredDuringExecution" = tolist(null) /* of object */
+            "requiredDuringSchedulingIgnoredDuringExecution" = tolist(null) /* of object */
+          }
+          "podAntiAffinity" = {
+            "preferredDuringSchedulingIgnoredDuringExecution" = tolist(null) /* of object */
+            "requiredDuringSchedulingIgnoredDuringExecution" = tolist(null) /* of object */
+          }
+        }
+        "automountServiceAccountToken" = tobool(null)
+        "containers" = tolist([
+          {
+            "args" = tolist(null) /* of string */
+            "command" = tolist(null) /* of string */
+            "env" = tolist(null) /* of object */
+            "envFrom" = tolist(null) /* of object */
+            "image" = "europe-west8-docker.pkg.dev/tf-playground-svpc-gke-fleet/jump-0/nginxdemos/hello""imagePullPolicy" = "Always""lifecycle" = {
+              "postStart" = {
+                "exec" = {
+                  "command" = tolist(null) /* of string */
+                }
+                "httpGet" = {
+                  "host" = tostring(null)
+                  "httpHeaders" = tolist(null) /* of object */
+                  "path" = tostring(null)
+                  "port" = tostring(null)
+                  "scheme" = tostring(null)
+                }
+                "tcpSocket" = {
+                  "host" = tostring(null)
+                  "port" = tostring(null)
+                }
+              }
+              "preStop" = {
+                "exec" = {
+                  "command" = tolist(null) /* of string */
+                }
+                "httpGet" = {
+                  "host" = tostring(null)
+                  "httpHeaders" = tolist(null) /* of object */
+                  "path" = tostring(null)
+                  "port" = tostring(null)
+                  "scheme" = tostring(null)
+                }
+                "tcpSocket" = {
+                  "host" = tostring(null)
+                  "port" = tostring(null)
+                }
+              }
+            }
+            "livenessProbe" = {
+              "exec" = {
+                "command" = tolist(null) /* of string */
+              }
+              "failureThreshold" = tonumber(null)
+              "grpc" = {
+                "port" = tonumber(null)
+                "service" = tostring(null)
+              }
+              "httpGet" = {
+                "host" = tostring(null)
+                "httpHeaders" = tolist(null) /* of object */
+                "path" = tostring(null)
+                "port" = tostring(null)
+                "scheme" = tostring(null)
+              }
+              "initialDelaySeconds" = tonumber(null)
+              "periodSeconds" = tonumber(null)
+              "successThreshold" = tonumber(null)
+              "tcpSocket" = {
+                "host" = tostring(null)
+                "port" = tostring(null)
+              }
+              "terminationGracePeriodSeconds" = tonumber(null)
+              "timeoutSeconds" = tonumber(null)
+            }
+            "name" = "hello""ports" = tolist([
+              {
+                "containerPort" = 80
+                "hostIP" = tostring(null)
+                "hostPort" = tonumber(null)
+                "name" = "web""protocol" = "TCP"
+              },
+            ])
+            "readinessProbe" = {
+              "exec" = {
+                "command" = tolist(null) /* of string */
+              }
+              "failureThreshold" = tonumber(null)
+              "grpc" = {
+                "port" = tonumber(null)
+                "service" = tostring(null)
+              }
+              "httpGet" = {
+                "host" = tostring(null)
+                "httpHeaders" = tolist(null) /* of object */
+                "path" = tostring(null)
+                "port" = tostring(null)
+                "scheme" = tostring(null)
+              }
+              "initialDelaySeconds" = tonumber(null)
+              "periodSeconds" = tonumber(null)
+              "successThreshold" = tonumber(null)
+              "tcpSocket" = {
+                "host" = tostring(null)
+                "port" = tostring(null)
+              }
+              "terminationGracePeriodSeconds" = tonumber(null)
+              "timeoutSeconds" = tonumber(null)
+            }
+            "resources" = {
+              "claims" = tolist(null) /* of object */
+              "limits" = tomap({
+                "cpu" = "500m""ephemeral-storage" = "1Gi""memory" = "2Gi"
+              })
+              "requests" = tomap({
+                "cpu" = "500m""ephemeral-storage" = "1Gi""memory" = "2Gi"
+              })
+            }
+            "securityContext" = {
+              "allowPrivilegeEscalation" = tobool(null)
+              "capabilities" = {
+                "add" = tolist(null) /* of string */
+                "drop" = tolist([
+                  "NET_RAW",
+                ])
+              }
+              "privileged" = tobool(null)
+              "procMount" = tostring(null)
+              "readOnlyRootFilesystem" = tobool(null)
+              "runAsGroup" = tonumber(null)
+              "runAsNonRoot" = tobool(null)
+              "runAsUser" = tonumber(null)
+              "seLinuxOptions" = {
+                "level" = tostring(null)
+                "role" = tostring(null)
+                "type" = tostring(null)
+                "user" = tostring(null)
+              }
+              "seccompProfile" = {
+                "localhostProfile" = tostring(null)
+                "type" = tostring(null)
+              }
+              "windowsOptions" = {
+                "gmsaCredentialSpec" = tostring(null)
+                "gmsaCredentialSpecName" = tostring(null)
+                "hostProcess" = tobool(null)
+                "runAsUserName" = tostring(null)
+              }
+            }
+            "startupProbe" = {
+              "exec" = {
+                "command" = tolist(null) /* of string */
+              }
+              "failureThreshold" = tonumber(null)
+              "grpc" = {
+                "port" = tonumber(null)
+                "service" = tostring(null)
+              }
+              "httpGet" = {
+                "host" = tostring(null)
+                "httpHeaders" = tolist(null) /* of object */
+                "path" = tostring(null)
+                "port" = tostring(null)
+                "scheme" = tostring(null)
+              }
+              "initialDelaySeconds" = tonumber(null)
+              "periodSeconds" = tonumber(null)
+              "successThreshold" = tonumber(null)
+              "tcpSocket" = {
+                "host" = tostring(null)
+                "port" = tostring(null)
+              }
+              "terminationGracePeriodSeconds" = tonumber(null)
+              "timeoutSeconds" = tonumber(null)
+            }
+            "stdin" = tobool(null)
+            "stdinOnce" = tobool(null)
+            "terminationMessagePath" = "/dev/termination-log""terminationMessagePolicy" = "File""tty" = tobool(null)
+            "volumeDevices" = tolist(null) /* of object */
+            "volumeMounts" = tolist([
+              {
+                "mountPath" = "/var/run/secrets/kubernetes.io/serviceaccount""mountPropagation" = tostring(null)
+                "name" = "kube-api-access-jbzf6""readOnly" = true
+                "subPath" = tostring(null)
+                "subPathExpr" = tostring(null)
+              },
+            ])
+            "workingDir" = tostring(null)
+          },
+        ])
+        "dnsConfig" = {
+          "nameservers" = tolist(null) /* of string */
+          "options" = tolist(null) /* of object */
+          "searches" = tolist(null) /* of string */
+        }
+        "dnsPolicy" = "ClusterFirst""enableServiceLinks" = true
+        "ephemeralContainers" = tolist(null) /* of object */
+        "hostAliases" = tolist(null) /* of object */
+        "hostIPC" = tobool(null)
+        "hostNetwork" = tobool(null)
+        "hostPID" = tobool(null)
+        "hostUsers" = tobool(null)
+        "hostname" = tostring(null)
+        "imagePullSecrets" = tolist(null) /* of object */
+        "initContainers" = tolist(null) /* of object */
+        "nodeName" = "gk3-test-00-pool-1-7078c717-s68q""nodeSelector" = tomap(null) /* of string */
+        "os" = {
+          "name" = tostring(null)
+        }
+        "overhead" = tomap(null) /* of string */
+        "preemptionPolicy" = "PreemptLowerPriority""priority" = 0
+        "priorityClassName" = tostring(null)
+        "readinessGates" = tolist(null) /* of object */
+        "resourceClaims" = tolist(null) /* of object */
+        "restartPolicy" = "Always""runtimeClassName" = tostring(null)
+        "schedulerName" = "gke.io/optimize-utilization-scheduler""schedulingGates" = tolist(null) /* of object */
+        "securityContext" = {
+          "fsGroup" = tonumber(null)
+          "fsGroupChangePolicy" = tostring(null)
+          "runAsGroup" = tonumber(null)
+          "runAsNonRoot" = tobool(null)
+          "runAsUser" = tonumber(null)
+          "seLinuxOptions" = {
+            "level" = tostring(null)
+            "role" = tostring(null)
+            "type" = tostring(null)
+            "user" = tostring(null)
+          }
+          "seccompProfile" = {
+            "localhostProfile" = tostring(null)
+            "type" = "RuntimeDefault"
+          }
+          "supplementalGroups" = tolist(null) /* of number */
+          "sysctls" = tolist(null) /* of object */
+          "windowsOptions" = {
+            "gmsaCredentialSpec" = tostring(null)
+            "gmsaCredentialSpecName" = tostring(null)
+            "hostProcess" = tobool(null)
+            "runAsUserName" = tostring(null)
+          }
+        }
+        "serviceAccount" = "default""serviceAccountName" = "default""setHostnameAsFQDN" = tobool(null)
+        "shareProcessNamespace" = tobool(null)
+        "subdomain" = tostring(null)
+        "terminationGracePeriodSeconds" = 30
+        "tolerations" = tolist([
+          {
+            "effect" = "NoSchedule""key" = "kubernetes.io/arch""operator" = "Equal""tolerationSeconds" = tonumber(null)
+            "value" = "amd64"
+          },
+          {
+            "effect" = "NoExecute""key" = "node.kubernetes.io/not-ready""operator" = "Exists""tolerationSeconds" = 300
+            "value" = tostring(null)
+          },
+          {
+            "effect" = "NoExecute""key" = "node.kubernetes.io/unreachable""operator" = "Exists""tolerationSeconds" = 300
+            "value" = tostring(null)
+          },
+        ])
+        "topologySpreadConstraints" = tolist(null) /* of object */
+        "volumes" = [
+          {
+            "awsElasticBlockStore" = {
+              "fsType" = tostring(null)
+              "partition" = tonumber(null)
+              "readOnly" = tobool(null)
+              "volumeID" = tostring(null)
+            }
+            "azureDisk" = {
+              "cachingMode" = tostring(null)
+              "diskName" = tostring(null)
+              "diskURI" = tostring(null)
+              "fsType" = tostring(null)
+              "kind" = tostring(null)
+              "readOnly" = tobool(null)
+            }
+            "azureFile" = {
+              "readOnly" = tobool(null)
+              "secretName" = tostring(null)
+              "shareName" = tostring(null)
+            }
+            "cephfs" = {
+              "monitors" = tolist(null) /* of string */
+              "path" = tostring(null)
+              "readOnly" = tobool(null)
+              "secretFile" = tostring(null)
+              "secretRef" = {
+                "name" = tostring(null)
+              }
+              "user" = tostring(null)
+            }
+            "cinder" = {
+              "fsType" = tostring(null)
+              "readOnly" = tobool(null)
+              "secretRef" = {
+                "name" = tostring(null)
+              }
+              "volumeID" = tostring(null)
+            }
+            "configMap" = {
+              "defaultMode" = tonumber(null)
+              "items" = tolist(null) /* of object */
+              "name" = tostring(null)
+              "optional" = tobool(null)
+            }
+            "csi" = {
+              "driver" = tostring(null)
+              "fsType" = tostring(null)
+              "nodePublishSecretRef" = {
+                "name" = tostring(null)
+              }
+              "readOnly" = tobool(null)
+              "volumeAttributes" = tomap(null) /* of string */
+            }
+            "downwardAPI" = {
+              "defaultMode" = tonumber(null)
+              "items" = tolist(null) /* of object */
+            }
+            "emptyDir" = {
+              "medium" = tostring(null)
+              "sizeLimit" = tostring(null)
+            }
+            "ephemeral" = {
+              "volumeClaimTemplate" = {
+                "metadata" = {
+                  "annotations" = tomap(null) /* of string */
+                  "creationTimestamp" = tostring(null)
+                  "deletionGracePeriodSeconds" = tonumber(null)
+                  "deletionTimestamp" = tostring(null)
+                  "finalizers" = tolist(null) /* of string */
+                  "generateName" = tostring(null)
+                  "generation" = tonumber(null)
+                  "labels" = tomap(null) /* of string */
+                  "managedFields" = null /* tuple */
+                  "name" = tostring(null)
+                  "namespace" = tostring(null)
+                  "ownerReferences" = tolist(null) /* of object */
+                  "resourceVersion" = tostring(null)
+                  "selfLink" = tostring(null)
+                  "uid" = tostring(null)
+                }
+                "spec" = {
+                  "accessModes" = tolist(null) /* of string */
+                  "dataSource" = {
+                    "apiGroup" = tostring(null)
+                    "kind" = tostring(null)
+                    "name" = tostring(null)
+                  }
+                  "dataSourceRef" = {
+                    "apiGroup" = tostring(null)
+                    "kind" = tostring(null)
+                    "name" = tostring(null)
+                    "namespace" = tostring(null)
+                  }
+                  "resources" = {
+                    "claims" = tolist(null) /* of object */
+                    "limits" = tomap(null) /* of string */
+                    "requests" = tomap(null) /* of string */
+                  }
+                  "selector" = {
+                    "matchExpressions" = tolist(null) /* of object */
+                    "matchLabels" = tomap(null) /* of string */
+                  }
+                  "storageClassName" = tostring(null)
+                  "volumeMode" = tostring(null)
+                  "volumeName" = tostring(null)
+                }
+              }
+            }
+            "fc" = {
+              "fsType" = tostring(null)
+              "lun" = tonumber(null)
+              "readOnly" = tobool(null)
+              "targetWWNs" = tolist(null) /* of string */
+              "wwids" = tolist(null) /* of string */
+            }
+            "flexVolume" = {
+              "driver" = tostring(null)
+              "fsType" = tostring(null)
+              "options" = tomap(null) /* of string */
+              "readOnly" = tobool(null)
+              "secretRef" = {
+                "name" = tostring(null)
+              }
+            }
+            "flocker" = {
+              "datasetName" = tostring(null)
+              "datasetUUID" = tostring(null)
+            }
+            "gcePersistentDisk" = {
+              "fsType" = tostring(null)
+              "partition" = tonumber(null)
+              "pdName" = tostring(null)
+              "readOnly" = tobool(null)
+            }
+            "gitRepo" = {
+              "directory" = tostring(null)
+              "repository" = tostring(null)
+              "revision" = tostring(null)
+            }
+            "glusterfs" = {
+              "endpoints" = tostring(null)
+              "path" = tostring(null)
+              "readOnly" = tobool(null)
+            }
+            "hostPath" = {
+              "path" = tostring(null)
+              "type" = tostring(null)
+            }
+            "iscsi" = {
+              "chapAuthDiscovery" = tobool(null)
+              "chapAuthSession" = tobool(null)
+              "fsType" = tostring(null)
+              "initiatorName" = tostring(null)
+              "iqn" = tostring(null)
+              "iscsiInterface" = tostring(null)
+              "lun" = tonumber(null)
+              "portals" = tolist(null) /* of string */
+              "readOnly" = tobool(null)
+              "secretRef" = {
+                "name" = tostring(null)
+              }
+              "targetPortal" = tostring(null)
+            }
+            "name" = "kube-api-access-jbzf6""nfs" = {
+              "path" = tostring(null)
+              "readOnly" = tobool(null)
+              "server" = tostring(null)
+            }
+            "persistentVolumeClaim" = {
+              "claimName" = tostring(null)
+              "readOnly" = tobool(null)
+            }
+            "photonPersistentDisk" = {
+              "fsType" = tostring(null)
+              "pdID" = tostring(null)
+            }
+            "portworxVolume" = {
+              "fsType" = tostring(null)
+              "readOnly" = tobool(null)
+              "volumeID" = tostring(null)
+            }
+            "projected" = {
+              "defaultMode" = 420
+              "sources" = tolist([
+                {
+                  "configMap" = {
+                    "items" = tolist(null) /* of object */
+                    "name" = tostring(null)
+                    "optional" = tobool(null)
+                  }
+                  "downwardAPI" = {
+                    "items" = tolist(null) /* of object */
+                  }
+                  "secret" = {
+                    "items" = tolist(null) /* of object */
+                    "name" = tostring(null)
+                    "optional" = tobool(null)
+                  }
+                  "serviceAccountToken" = {
+                    "audience" = tostring(null)
+                    "expirationSeconds" = 3607
+                    "path" = "token"
+                  }
+                },
+                {
+                  "configMap" = {
+                    "items" = tolist([
+                      {
+                        "key" = "ca.crt""mode" = tonumber(null)
+                        "path" = "ca.crt"
+                      },
+                    ])
+                    "name" = "kube-root-ca.crt""optional" = tobool(null)
+                  }
+                  "downwardAPI" = {
+                    "items" = tolist(null) /* of object */
+                  }
+                  "secret" = {
+                    "items" = tolist(null) /* of object */
+                    "name" = tostring(null)
+                    "optional" = tobool(null)
+                  }
+                  "serviceAccountToken" = {
+                    "audience" = tostring(null)
+                    "expirationSeconds" = tonumber(null)
+                    "path" = tostring(null)
+                  }
+                },
+                {
+                  "configMap" = {
+                    "items" = tolist(null) /* of object */
+                    "name" = tostring(null)
+                    "optional" = tobool(null)
+                  }
+                  "downwardAPI" = {
+                    "items" = tolist([
+                      {
+                        "fieldRef" = {
+                          "apiVersion" = "v1""fieldPath" = "metadata.namespace"
+                        }
+                        "mode" = tonumber(null)
+                        "path" = "namespace""resourceFieldRef" = {
+                          "containerName" = tostring(null)
+                          "divisor" = tostring(null)
+                          "resource" = tostring(null)
+                        }
+                      },
+                    ])
+                  }
+                  "secret" = {
+                    "items" = tolist(null) /* of object */
+                    "name" = tostring(null)
+                    "optional" = tobool(null)
+                  }
+                  "serviceAccountToken" = {
+                    "audience" = tostring(null)
+                    "expirationSeconds" = tonumber(null)
+                    "path" = tostring(null)
+                  }
+                },
+              ])
+            }
+            "quobyte" = {
+              "group" = tostring(null)
+              "readOnly" = tobool(null)
+              "registry" = tostring(null)
+              "tenant" = tostring(null)
+              "user" = tostring(null)
+              "volume" = tostring(null)
+            }
+            "rbd" = {
+              "fsType" = tostring(null)
+              "image" = tostring(null)
+              "keyring" = tostring(null)
+              "monitors" = tolist(null) /* of string */
+              "pool" = tostring(null)
+              "readOnly" = tobool(null)
+              "secretRef" = {
+                "name" = tostring(null)
+              }
+              "user" = tostring(null)
+            }
+            "scaleIO" = {
+              "fsType" = tostring(null)
+              "gateway" = tostring(null)
+              "protectionDomain" = tostring(null)
+              "readOnly" = tobool(null)
+              "secretRef" = {
+                "name" = tostring(null)
+              }
+              "sslEnabled" = tobool(null)
+              "storageMode" = tostring(null)
+              "storagePool" = tostring(null)
+              "system" = tostring(null)
+              "volumeName" = tostring(null)
+            }
+            "secret" = {
+              "defaultMode" = tonumber(null)
+              "items" = tolist(null) /* of object */
+              "optional" = tobool(null)
+              "secretName" = tostring(null)
+            }
+            "storageos" = {
+              "fsType" = tostring(null)
+              "readOnly" = tobool(null)
+              "secretRef" = {
+                "name" = tostring(null)
+              }
+              "volumeName" = tostring(null)
+              "volumeNamespace" = tostring(null)
+            }
+            "vsphereVolume" = {
+              "fsType" = tostring(null)
+              "storagePolicyID" = tostring(null)
+              "storagePolicyName" = tostring(null)
+              "volumePath" = tostring(null)
+            }
+          },
+        ]
+      }
+      "status" = {
+        "conditions" = tolist([
+          {
+            "lastProbeTime" = tostring(null)
+            "lastTransitionTime" = "2023-07-31T15:24:55Z""message" = tostring(null)
+            "reason" = tostring(null)
+            "status" = "True""type" = "Initialized"
+          },
+          {
+            "lastProbeTime" = tostring(null)
+            "lastTransitionTime" = "2023-07-31T15:25:02Z""message" = tostring(null)
+            "reason" = tostring(null)
+            "status" = "True""type" = "Ready"
+          },
+          {
+            "lastProbeTime" = tostring(null)
+            "lastTransitionTime" = "2023-07-31T15:25:02Z""message" = tostring(null)
+            "reason" = tostring(null)
+            "status" = "True""type" = "ContainersReady"
+          },
+          {
+            "lastProbeTime" = tostring(null)
+            "lastTransitionTime" = "2023-07-31T15:24:55Z""message" = tostring(null)
+            "reason" = tostring(null)
+            "status" = "True""type" = "PodScheduled"
+          },
+        ])
+        "containerStatuses" = tolist([
+          {
+            "containerID" = "containerd://80732fe89ac74f4116222dfcf547499d3fa1949f027c722b62181fc035f6d31a""image" = "europe-west8-docker.pkg.dev/tf-playground-svpc-gke-fleet/jump-0/nginxdemos/hello:latest""imageID" = "europe-west8-docker.pkg.dev/tf-playground-svpc-gke-fleet/jump-0/nginxdemos/hello@sha256:7f4b6bdc7a39dcaad8a99f8b26b9716b38d96e577383d09408d79d0655ecce7c""lastState" = {
+              "running" = {
+                "startedAt" = tostring(null)
+              }
+              "terminated" = {
+                "containerID" = tostring(null)
+                "exitCode" = tonumber(null)
+                "finishedAt" = tostring(null)
+                "message" = tostring(null)
+                "reason" = tostring(null)
+                "signal" = tonumber(null)
+                "startedAt" = tostring(null)
+              }
+              "waiting" = {
+                "message" = tostring(null)
+                "reason" = tostring(null)
+              }
+            }
+            "name" = "hello""ready" = true
+            "restartCount" = 0
+            "started" = true
+            "state" = {
+              "running" = {
+                "startedAt" = "2023-07-31T15:25:02Z"
+              }
+              "terminated" = {
+                "containerID" = tostring(null)
+                "exitCode" = tonumber(null)
+                "finishedAt" = tostring(null)
+                "message" = tostring(null)
+                "reason" = tostring(null)
+                "signal" = tonumber(null)
+                "startedAt" = tostring(null)
+              }
+              "waiting" = {
+                "message" = tostring(null)
+                "reason" = tostring(null)
+              }
+            }
+          },
+        ])
+        "ephemeralContainerStatuses" = tolist(null) /* of object */
+        "hostIP" = "10.9.8.12""initContainerStatuses" = tolist(null) /* of object */
+        "message" = tostring(null)
+        "nominatedNodeName" = tostring(null)
+        "phase" = "Running""podIP" = "100.64.0.20""podIPs" = tolist([
+          {
+            "ip" = "100.64.0.20"
+          },
+        ])
+        "qosClass" = "Guaranteed""reason" = tostring(null)
+        "startTime" = "2023-07-31T15:24:55Z"
+      }
+    },
+  ]
+}
