@@ -155,7 +155,7 @@ resource "google_cloudfunctions2_function" "function" {
 }
 
 resource "google_cloudfunctions2_function_iam_binding" "default" {
-  for_each       = var.iam
+  for_each       = local.iam
   project        = var.project_id
   location       = google_cloudfunctions2_function.function.location
   cloud_function = google_cloudfunctions2_function.function.name
