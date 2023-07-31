@@ -19,9 +19,9 @@ locals {
   _parsed_data_quality_spec = try(yamldecode(file(var.data_quality_spec_file.path)), null)
   _parsed_data_quality_spec_convert_camel_case = (
     try(var.data_quality_spec_file.convert_camel_case, false) ?
-    try({
-      sampling_percent = local._parsed_data_quality_spec.samplingPercent
-      row_filter       = local._parsed_data_quality_spec.rowFilter
+    {
+      sampling_percent = try(local._parsed_data_quality_spec.samplingPercent, null)
+      row_filter       = try(local._parsed_data_quality_spec.rowFilter, null)
       rules = [
         for rule in local._parsed_data_quality_spec.rules : {
           for k, v in rule :
@@ -33,7 +33,7 @@ locals {
           }, v)
         }
       ]
-    }, null) :
+    } :
   null)
   _data_quality_spec_string = (
     var.data_quality_spec != null ?
