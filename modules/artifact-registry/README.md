@@ -101,7 +101,6 @@ module "registry-maven" {
 # tftest modules=2 resources=2
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -121,6 +120,6 @@ module "registry-maven" {
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L17) | Fully qualified repository id. |  |
-| [name](outputs.tf#L22) | Repository name. |  |
-
+| [image_path](outputs.tf#L22) | Repository path for images. |  |
+| [name](outputs.tf#L32) | Repository name. |  |
 <!-- END TFDOC -->
