@@ -15,6 +15,11 @@
  */
 
 locals {
+  cluster_service_account = (
+    var.create_config.cluster == null
+    ? data.google_container_cluster.cluster.0.node_config.0.service_account
+    : module.cluster-service-account.email
+  )
   cluster_vpc = (
     local.use_shared_vpc || !local.create_vpc
     ? {
@@ -30,6 +35,24 @@ locals {
       subnet                = module.vpc.0.subnet_ids["${var.region}/${var.prefix}-default"]
     }
   )
+}
+
+
+data "google_container_cluster" "cluster" {
+  count    = var.create_config.cluster == null ? 1 : 0
+  project  = var.project_id
+  location = var.region
+  name     = var.cluster_name
+}
+
+module "cluster-service-account" {
+  source     = "../../../modules/iam-service-account"
+  count      = var.create_config.cluster != null ? 1 : 0
+  project_id = module.project.project_id
+  name       = var.prefix
+  iam_project_roles = {
+    (module.project.project_id) = local.cluster_sa_roles
+  }
 }
 
 module "cluster" {
@@ -49,5 +72,6 @@ module "cluster" {
     enable_private_endpoint = true
     master_global_access    = true
   }
-  labels = var.create_config.cluster.labels
+  service_account = module.cluster-service-account.0.email
+  labels          = var.create_config.cluster.labels
 }

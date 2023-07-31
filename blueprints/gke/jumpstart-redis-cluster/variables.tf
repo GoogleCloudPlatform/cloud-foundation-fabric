@@ -84,13 +84,14 @@ variable "region" {
 }
 
 variable "workload_config" {
-  description = "Workload configuration."
+  description = "Workload configuration. Registry prefix will only work if registry is created by this module."
   type = object({
     image = optional(object({
-      name = optional(string, "redis")
-      # null registry will use the internally created registry if available
-      registry = optional(string)
+      name            = optional(string, "redis")
+      prefix_registry = optional(bool, true)
     }), {})
+    namespace      = optional(string, "redis")
+    templates_path = optional(string, "manifest-templates")
   })
   nullable = false
   default  = {}

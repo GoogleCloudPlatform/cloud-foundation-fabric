@@ -27,6 +27,14 @@ locals {
       number     = module.fleet-project.0.number
     }
   )
+  cluster_sa_roles = [
+    "roles/artifactregistry.reader",
+    "roles/gkehub.serviceAgent",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+    "roles/monitoring.viewer",
+    "roles/stackdriver.resourceMetadata.writer"
+  ]
   use_shared_vpc = (
     try(var.create_config.project.shared_vpc_host, null) != null
   )
@@ -68,6 +76,21 @@ module "project" {
       ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
       : "serviceAccount:service-${module.fleet-project.0.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
     ]
+  }
+  iam_additive = var.create_config.cluster != null ? {} : {
+    for k in local.cluster_sa_roles : k => [
+      local.cluster_service_account == "default"
+      ? "serviceAccount:${module.project.service_accounts.default.compute}"
+      : "serviceAccount:${local.cluster_service_account}"
+    ]
+  }
+  logging_data_access = {
+    "artifactregistry.googleapis.com" = {
+      DATA_READ = []
+    }
+    "storage.googleapis.com" = {
+      DATA_READ = []
+    }
   }
 }
 

@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+locals {
+  # TODO: prefix when creating
+  wl_image = (
+    var.workload_config.image.prefix_registry &&
+    var.create_config.remote_registry != null
+    ? "${module.registry.0.image_path}/${var.workload_config.image.name}"
+    : var.workload_config.image.name
+  )
+  wl_templates = [
+    for f in fileset(local.wl_templates_path, "*yaml") :
+    "${local.wl_templates_path}/${f}"
+  ]
+  wl_templates_path = pathexpand(var.workload_config.templates_path)
+}
+
 data "google_client_config" "identity" {}
 
 provider "kubernetes" {
@@ -25,9 +40,18 @@ provider "kubernetes" {
   token = data.google_client_config.identity.access_token
 }
 
-resource "kubernetes_namespace" "redis" {
+resource "kubernetes_namespace" "workload" {
   metadata {
-    name = "redis"
+    name = var.workload_config.namespace
   }
   depends_on = [module.fleet]
+}
+
+resource "kubernetes_manifest" "workload" {
+  for_each = toset(local.wl_templates)
+  manifest = yamldecode(templatefile(each.value, {
+    image     = local.wl_image
+    namespace = var.workload_config.namespace
+  }))
+  depends_on = [kubernetes_namespace.workload]
 }
