@@ -16,9 +16,9 @@
 
 # tfdoc:file:description Landing VPC and related resources.
 
-
-
-# external VPC
+################################################################################
+#                                   External                                   #
+################################################################################
 
 module "external-vpc" {
   source     = "../../../modules/net-vpc"

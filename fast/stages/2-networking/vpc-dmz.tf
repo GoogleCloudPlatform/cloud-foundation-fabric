@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+################################################################################
+#                                     DMZ                                      #
+################################################################################
+
 module "dmz-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.net-project.project_id
@@ -56,9 +60,9 @@ module "dmz-nat-primary" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.net-project.project_id
   region         = var.regions.primary
-  name           = local.region_shortnames[var.regions.primary]
+  name           = var.regions.primary
   router_create  = true
-  router_name    = "prod-nat-${local.region_shortnames[var.regions.primary]}"
+  router_name    = "prod-nat-${var.regions.primary}"
   router_network = module.dmz-vpc.name
   router_asn     = 4200001024
 }
@@ -67,9 +71,9 @@ module "dmz-nat-secondary" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.net-project.project_id
   region         = var.regions.secondary
-  name           = local.region_shortnames[var.regions.secondary]
+  name           = var.regions.secondary
   router_create  = true
-  router_name    = "prod-nat-${local.region_shortnames[var.regions.secondary]}"
+  router_name    = "prod-nat-${var.regions.secondary}"
   router_network = module.dmz-vpc.name
   router_asn     = 4200001024
 }

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+################################################################################
+#                                    Shared                                    #
+################################################################################
+
 module "shared-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.net-project.project_id

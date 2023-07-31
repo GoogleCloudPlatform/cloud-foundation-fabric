@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description temporary instances for testing
+# tfdoc:file:description temporary instances for testing, one per VPC per region.
 
-# External
+################################################################################
+#                                Test instances                                #
+################################################################################
+
+########################################
+#               External               #
+########################################
+
 module "test-vm-external-primary-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.net-project.project_id
@@ -79,7 +86,10 @@ module "test-vm-external-secondary-0" {
   }
 }
 
-# DMZ
+########################################
+#                 DMZ                  #
+########################################
+
 module "test-vm-dmz-primary-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.net-project.project_id
@@ -142,7 +152,10 @@ module "test-vm-dmz-secondary-0" {
   }
 }
 
-# Shared
+########################################
+#                Shared                #
+########################################
+
 module "test-vm-shared-primary-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.net-project.project_id
@@ -205,7 +218,10 @@ module "test-vm-shared-secondary-0" {
   }
 }
 
-# Transit
+########################################
+#           Transit primary            #
+########################################
+
 module "test-vm-transit-primary-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.net-project.project_id
@@ -236,6 +252,10 @@ module "test-vm-transit-primary-0" {
     EOF
   }
 }
+
+########################################
+#           Transit secondary          #
+########################################
 
 module "test-vm-transit-secondary-0" {
   source     = "../../../modules/compute-vm"

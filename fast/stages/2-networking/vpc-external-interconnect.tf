@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+################################################################################
+#                            External Interconnect                             #
+################################################################################
+
 resource "google_compute_router" "interconnect-router-primary" {
   name    = "interconnect-router-primary"
   project = module.net-project.project_id

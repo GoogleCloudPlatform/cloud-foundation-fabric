@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+################################################################################
+#                               Transit primary                                #
+################################################################################
+
 module "transit-primary-vpc" {
   source                          = "../../../modules/net-vpc"
   project_id                      = module.net-project.project_id
@@ -97,6 +101,9 @@ module "transit-primary-ilb" {
   }
 }
 
+################################################################################
+#                              Transit secondary                               #
+################################################################################
 
 module "transit-secondary-vpc" {
   source                          = "../../../modules/net-vpc"

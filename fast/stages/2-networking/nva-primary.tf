@@ -132,35 +132,3 @@ resource "google_compute_instance_group" "nva-primary" {
   network     = module.dmz-vpc.self_link
   instances   = toset([module.nva-primary[each.key].self_link])
 }
-
-
-# # module "ilb-nva-untrusted" {
-# #   for_each = {
-# #     for k, v in var.regions : k => {
-# #       region    = v
-# #       shortname = local.region_shortnames[v]
-# #       subnet    = "${v}/external-default-${local.region_shortnames[v]}"
-# #     }
-# #   }
-# #   source        = "../../../modules/net-lb-int"
-# #   project_id    = module.net-project.project_id
-# #   region        = each.value.region
-# #   name          = "nva-untrusted-${each.key}"
-# #   service_label = var.prefix
-# #   global_access = true
-# #   vpc_config = {
-# #     network    = module.external-vpc.self_link
-# #     subnetwork = module.external-vpc.subnet_self_links[each.value.subnet]
-# #   }
-# #   backends = [
-# #     for k, v in module.nva-mig :
-# #     { group = v.group_manager.instance_group }
-# #     if startswith(k, each.key)
-# #   ]
-# #   health_check_config = {
-# #     enable_logging = true
-# #     tcp = {
-# #       port = 22
-# #     }
-# #   }
-# # }

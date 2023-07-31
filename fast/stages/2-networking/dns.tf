@@ -23,29 +23,24 @@ module "dns-fwd-onprem" {
   zone_config = {
     domain = "onprem.example.com."
     forwarding = {
-      client_networks = [
-        module.external-vpc.self_link,
-        module.shared-vpc.self_link
-      ]
-      forwarders = { for ip in var.dns.onprem : ip => null }
+      client_networks = [module.shared-vpc.self_link]
+      forwarders      = { for ip in var.dns.onprem : ip => null }
     }
   }
 }
 
-# module "dns-fwd-onprem-rev-10" {
-#   source     = "../../../modules/dns"
-#   project_id = module.net-project.project_id
-#   name       = "root-reverse-10"
-#   zone_config = {
-#     domain = "10.in-addr.arpa."
-#     forwarding = {
-#       client_networks = [
-#         module.external-vpc.self_link,
-#       ]
-#       forwarders = { for ip in var.dns.onprem : ip => null }
-#     }
-#   }
-# }
+module "dns-fwd-onprem-rev-10" {
+  source     = "../../../modules/dns"
+  project_id = module.net-project.project_id
+  name       = "root-reverse-10"
+  zone_config = {
+    domain = "10.in-addr.arpa."
+    forwarding = {
+      client_networks = [module.shared-vpc.self_link]
+      forwarders      = { for ip in var.dns.onprem : ip => null }
+    }
+  }
+}
 
 module "dns-priv-gcp" {
   source     = "../../../modules/dns"
@@ -54,10 +49,7 @@ module "dns-priv-gcp" {
   zone_config = {
     domain = "gcp.example.com."
     private = {
-      client_networks = [
-        module.external-vpc.self_link,
-        module.shared-vpc.self_link
-      ]
+      client_networks = [module.shared-vpc.self_link]
     }
   }
   recordsets = {
@@ -74,4 +66,42 @@ module "dns-policy-googleapis" {
     external = module.external-vpc.self_link
   }
   rules_file = var.factories_config.dns_policy_rules_file
+}
+
+module "dns-root-peering-to-shared" {
+  source     = "../../../modules/dns"
+  project_id = module.net-project.project_id
+  name       = "prod-root-dns-peering"
+  zone_config = {
+    domain = "."
+    peering = {
+      client_networks = [
+        module.transit-primary-vpc.self_link,
+        module.transit-secondary-vpc.self_link,
+        module.external-vpc.self_link,
+        # module.dmz-vpc.self_link,
+        # module.mgmt-vpc.self_link,
+      ]
+      peer_network = module.shared-vpc.self_link
+    }
+  }
+}
+
+module "dns-ptr10-peering-to-shared" {
+  source     = "../../../modules/dns"
+  project_id = module.net-project.project_id
+  name       = "prod-ptr10-dns-peering"
+  zone_config = {
+    domain = "10.in-addr.arpa."
+    peering = {
+      client_networks = [
+        module.transit-primary-vpc.self_link,
+        module.transit-secondary-vpc.self_link,
+        module.external-vpc.self_link,
+        # module.dmz-vpc.self_link,
+        # module.mgmt-vpc.self_link,
+      ]
+      peer_network = module.shared-vpc.self_link
+    }
+  }
 }
