@@ -88,7 +88,10 @@ variable "health_check_configs" {
       for k, v in var.health_check_configs : (
         (try(v.grpc, null) == null ? 0 : 1) +
         (try(v.http, null) == null ? 0 : 1) +
-        (try(v.tcp, null) == null ? 0 : 1) <= 1
+        (try(v.http2, null) == null ? 0 : 1) +
+        (try(v.https, null) == null ? 0 : 1) +
+        (try(v.tcp, null) == null ? 0 : 1) +
+        (try(v.ssl, null) == null ? 0 : 1) <= 1
       )
     ])
     error_message = "Only one health check type can be configured at a time."
