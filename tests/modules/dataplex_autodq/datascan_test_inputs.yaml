@@ -35,7 +35,7 @@ values:
         uniqueness_expectation: []
       - column: council_district
         dimension: VALIDITY
-        ignore_null: null
+        ignore_null: true
         non_null_expectation: []
         range_expectation:
         - max_value: '10'
@@ -49,9 +49,25 @@ values:
         table_condition_expectation: []
         threshold: 0.9
         uniqueness_expectation: []
-      - column: power_type
+      - column: council_district
         dimension: VALIDITY
         ignore_null: null
+        non_null_expectation: []
+        range_expectation:
+        - max_value: null
+          min_value: '3'
+          strict_max_enabled: false
+          strict_min_enabled: false
+        regex_expectation: []
+        row_condition_expectation: []
+        set_expectation: []
+        statistic_range_expectation: []
+        table_condition_expectation: []
+        threshold: 0.8
+        uniqueness_expectation: []
+      - column: power_type
+        dimension: VALIDITY
+        ignore_null: false
         non_null_expectation: []
         range_expectation: []
         regex_expectation:
@@ -64,7 +80,7 @@ values:
         uniqueness_expectation: []
       - column: property_type
         dimension: VALIDITY
-        ignore_null: null
+        ignore_null: false
         non_null_expectation: []
         range_expectation: []
         regex_expectation: []
@@ -148,7 +164,7 @@ values:
     location: us-central1
     project: test-project
     timeouts: null
-  google_dataplex_datascan_iam_binding.authoritative_for_role["role/dataplex.dataScanEditor"]:
+  google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanEditor"]:
     condition: []
     data_scan_id: test-autodq
     location: us-central1
@@ -156,15 +172,15 @@ values:
     - group:user-group@example.com
     - user:user@example.com
     project: test-project
-    role: role/dataplex.dataScanEditor
-  google_dataplex_datascan_iam_binding.authoritative_for_role["role/dataplex.dataScanViewer"]:
+    role: roles/dataplex.dataScanEditor
+  google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanViewer"]:
     condition: []
     data_scan_id: test-autodq
     location: us-central1
     members:
     - user:user@example.com
     project: test-project
-    role: role/dataplex.dataScanViewer
+    role: roles/dataplex.dataScanViewer
 
 counts:
   google_dataplex_datascan: 1

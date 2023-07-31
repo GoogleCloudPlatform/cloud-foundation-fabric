@@ -35,12 +35,12 @@ resource "google_dataplex_datascan" "datascan" {
     field = var.incremental_field
     trigger {
       dynamic "on_demand" {
-        for_each = try(var.execution_schedule) == null ? [""] : []
+        for_each = var.execution_schedule == null ? [""] : []
         content {
         }
       }
       dynamic "schedule" {
-        for_each = try(var.execution_schedule) != null ? [""] : []
+        for_each = var.execution_schedule != null ? [""] : []
         content {
           cron = var.execution_schedule
         }
@@ -49,7 +49,7 @@ resource "google_dataplex_datascan" "datascan" {
   }
 
   dynamic "data_profile_spec" {
-    for_each = try(var.rules) == null ? [""] : []
+    for_each = var.rules == null ? [""] : []
     content {
       sampling_percent = var.sampling_percent
       row_filter       = var.row_filter
@@ -57,16 +57,17 @@ resource "google_dataplex_datascan" "datascan" {
   }
 
   dynamic "data_quality_spec" {
-    for_each = try(var.rules) != null ? [""] : []
+    for_each = var.rules != null ? [""] : []
     content {
       sampling_percent = var.sampling_percent
       row_filter       = var.row_filter
       dynamic "rules" {
         for_each = var.rules
         content {
-          column    = try(rules.value.column, null)
-          dimension = rules.value.dimension
-          threshold = try(rules.value.threshold, null)
+          column      = try(rules.value.column, null)
+          ignore_null = try(rules.value.ignore_null, rules.value.ignoreNull, null)
+          dimension   = rules.value.dimension
+          threshold   = try(rules.value.threshold, null)
 
           dynamic "non_null_expectation" {
             for_each = try(rules.value.non_null_expectation, null) != null ? [""] : []

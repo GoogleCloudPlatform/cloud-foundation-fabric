@@ -67,6 +67,15 @@ module "dataplex-autodq" {
       }
     },
     {
+      column    = "council_district"
+      dimension = "VALIDITY"
+      threshold = 0.8
+      range_expectation = {
+        min_value = 3
+        max_value = 9
+      }
+    },
+    {
       column      = "power_type"
       dimension   = "VALIDITY"
       ignore_null = false
@@ -114,6 +123,86 @@ module "dataplex-autodq" {
   ]
 }
 # tftest modules=1 resources=1 inventory=datascan_dq.yaml
+```
+
+This example shows how you can pass the rules configurations as a separate YAML file into the module.
+
+```hcl
+module "dataplex-autodq" {
+  source     = "./fabric/modules/dataplex-autodq"
+  name       = "autodq"
+  prefix     = "test"
+  project_id = "my-project-name"
+  region     = "us-central1"
+  labels = {
+    billing_id = "a"
+  }
+  execution_schedule = "TZ=America/New_York 0 1 * * *"
+  data = {
+    resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
+  }
+  sampling_percent  = 100
+  row_filter        = "station_id > 1000"
+  incremental_field = "modified_date"
+  rules             = yamldecode(file("config/rules.yaml"))
+}
+# tftest modules=1 resources=1 files=rules inventory=datascan_dq.yaml
+```
+
+The content of the `config/rules.yaml` files is as follows:
+
+```yaml
+# tftest-file id=rules path=config/rules.yaml
+- column: address
+  dimension: VALIDITY
+  ignore_null: null
+  non_null_expectation: {}
+  threshold: 0.99
+- column: council_district
+  dimension: VALIDITY
+  ignore_null: true
+  threshold: 0.9
+  range_expectation:
+    max_value: '10'
+    min_value: '1'
+    strict_max_enabled: false
+    strict_min_enabled: true
+- column: council_district
+  dimension: VALIDITY
+  range_expectation:
+    max_value: '9'
+    min_value: '3'
+  threshold: 0.8
+- column: power_type
+  dimension: VALIDITY
+  ignore_null: false
+  regex_expectation:
+    regex: .*solar.*
+- column: property_type
+  dimension: VALIDITY
+  ignore_null: false
+  set_expectation:
+    values:
+    - sidewalk
+    - parkland
+- column: address
+  dimension: UNIQUENESS
+  uniqueness_expectation: {}
+- column: number_of_docks
+  dimension: VALIDITY
+  statistic_range_expectation:
+    max_value: '15'
+    min_value: '5'
+    statistic: MEAN
+    strict_max_enabled: true
+    strict_min_enabled: true
+- column: footprint_length
+  dimension: VALIDITY
+  row_condition_expectation:
+    sql_expression: footprint_length > 0 AND footprint_length <= 10
+- dimension: VALIDITY
+  table_condition_expectation:
+    sql_expression: COUNT(*) > 0
 ```
 
 ## Data Source
@@ -245,8 +334,8 @@ module "dataplex-autodq" {
 | [labels](variables.tf#L74) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L86) | Optional prefix used to generate Dataplex AutoDQ DataScan ID. | <code>string</code> |  | <code>null</code> |
 | [row_filter](variables.tf#L102) | A filter applied to all rows in a single DataScan job. The filter needs to be a valid SQL expression for a WHERE clause in BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10. | <code>string</code> |  | <code>null</code> |
-| [rules](variables.tf#L108) | Data Quality validation rules. If not provided, the DataScan will be created as a Data Profiling scan instead of a Data Quality scan. | <code title="list&#40;object&#40;&#123;&#10;  column               &#61; optional&#40;string&#41;&#10;  ignore_null          &#61; optional&#40;bool&#41;&#10;  dimension            &#61; string&#10;  threshold            &#61; optional&#40;number&#41;&#10;  non_null_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  range_expectation &#61; optional&#40;object&#40;&#123;&#10;    min_value          &#61; optional&#40;number&#41;&#10;    max_value          &#61; optional&#40;number&#41;&#10;    strict_min_enabled &#61; optional&#40;bool&#41;&#10;    strict_max_enabled &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  regex_expectation &#61; optional&#40;object&#40;&#123;&#10;    regex &#61; string&#10;  &#125;&#41;&#41;&#10;  set_expectation &#61; optional&#40;object&#40;&#123;&#10;    values &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  uniqueness_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  statistic_range_expectation &#61; optional&#40;object&#40;&#123;&#10;    statistic          &#61; string&#10;    min_value          &#61; optional&#40;number&#41;&#10;    max_value          &#61; optional&#40;number&#41;&#10;    strict_min_enabled &#61; optional&#40;bool&#41;&#10;    strict_max_enabled &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  row_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;    sql_expression &#61; string&#10;  &#125;&#41;&#41;&#10;  table_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;    sql_expression &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [sampling_percent](variables.tf#L162) | The percentage of the records to be selected from the dataset for DataScan. Value can range between 0.0 and 100.0 with up to 3 significant decimal digits. Sampling is not applied if samplingPercent is not specified, 0 or 100. | <code>number</code> |  | <code>null</code> |
+| [rules](variables.tf#L108) | Data Quality validation rules. If not provided, the DataScan will be created as a Data Profiling scan instead of a Data Quality scan. | <code title="list&#40;object&#40;&#123;&#10;  column               &#61; optional&#40;string&#41;&#10;  ignore_null          &#61; optional&#40;bool, null&#41;&#10;  dimension            &#61; string&#10;  threshold            &#61; optional&#40;number&#41;&#10;  non_null_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  range_expectation &#61; optional&#40;object&#40;&#123;&#10;    min_value          &#61; optional&#40;number&#41;&#10;    max_value          &#61; optional&#40;number&#41;&#10;    strict_min_enabled &#61; optional&#40;bool&#41;&#10;    strict_max_enabled &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  regex_expectation &#61; optional&#40;object&#40;&#123;&#10;    regex &#61; string&#10;  &#125;&#41;&#41;&#10;  set_expectation &#61; optional&#40;object&#40;&#123;&#10;    values &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  uniqueness_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  statistic_range_expectation &#61; optional&#40;object&#40;&#123;&#10;    statistic          &#61; string&#10;    min_value          &#61; optional&#40;number&#41;&#10;    max_value          &#61; optional&#40;number&#41;&#10;    strict_min_enabled &#61; optional&#40;bool&#41;&#10;    strict_max_enabled &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  row_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;    sql_expression &#61; string&#10;  &#125;&#41;&#41;&#10;  table_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;    sql_expression &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [sampling_percent](variables.tf#L161) | The percentage of the records to be selected from the dataset for DataScan. Value can range between 0.0 and 100.0 with up to 3 significant decimal digits. Sampling is not applied if samplingPercent is not specified, 0 or 100. | <code>number</code> |  | <code>null</code> |
 
 ## Outputs
 

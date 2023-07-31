@@ -19,16 +19,16 @@ labels = {
   billing_id = "a"
 }
 iam = {
-  "role/dataplex.dataScanViewer" = [
+  "roles/dataplex.dataScanViewer" = [
     "user:user@example.com"
   ],
-  "role/dataplex.dataScanEditor" = [
+  "roles/dataplex.dataScanEditor" = [
     "user:user@example.com",
   ]
 }
 group_iam = {
   "user-group@example.com" = [
-    "role/dataplex.dataScanEditor"
+    "roles/dataplex.dataScanEditor"
   ]
 }
 execution_schedule = "TZ=America/New_York 1 1 * * *"
@@ -40,10 +40,10 @@ row_filter        = "station_id > 1000"
 incremental_field = "modified_date"
 rules = [
   {
-    column               = "address"
     dimension            = "VALIDITY"
-    threshold            = 0.99
     non_null_expectation = {}
+    column               = "address"
+    threshold            = 0.99
   },
   {
     column      = "council_district"
@@ -55,6 +55,14 @@ rules = [
       max_value          = 10
       strict_min_enabled = true
       strict_max_enabled = false
+    }
+  },
+  {
+    column    = "council_district"
+    dimension = "VALIDITY"
+    threshold = 0.8
+    range_expectation = {
+      min_value = 3
     }
   },
   {

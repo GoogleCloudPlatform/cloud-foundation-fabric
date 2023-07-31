@@ -107,11 +107,10 @@ variable "row_filter" {
 
 variable "rules" {
   description = "Data Quality validation rules. If not provided, the DataScan will be created as a Data Profiling scan instead of a Data Quality scan."
-  nullable    = true
   default     = null
   type = list(object({
     column               = optional(string)
-    ignore_null          = optional(bool)
+    ignore_null          = optional(bool, null)
     dimension            = string
     threshold            = optional(number)
     non_null_expectation = optional(object({}))

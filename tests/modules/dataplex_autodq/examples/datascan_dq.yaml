@@ -35,7 +35,7 @@ values:
         uniqueness_expectation: []
       - column: council_district
         dimension: VALIDITY
-        ignore_null: null
+        ignore_null: true
         non_null_expectation: []
         range_expectation:
         - max_value: '10'
@@ -49,9 +49,25 @@ values:
         table_condition_expectation: []
         threshold: 0.9
         uniqueness_expectation: []
-      - column: power_type
+      - column: council_district
         dimension: VALIDITY
         ignore_null: null
+        non_null_expectation: []
+        range_expectation:
+        - max_value: '9'
+          min_value: '3'
+          strict_max_enabled: False
+          strict_min_enabled: False
+        regex_expectation: []
+        row_condition_expectation: []
+        set_expectation: []
+        statistic_range_expectation: []
+        table_condition_expectation: []
+        threshold: 0.8
+        uniqueness_expectation: []
+      - column: power_type
+        dimension: VALIDITY
+        ignore_null: false
         non_null_expectation: []
         range_expectation: []
         regex_expectation:
@@ -64,7 +80,7 @@ values:
         uniqueness_expectation: []
       - column: property_type
         dimension: VALIDITY
-        ignore_null: null
+        ignore_null: false
         non_null_expectation: []
         range_expectation: []
         regex_expectation: []
