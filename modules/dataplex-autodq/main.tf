@@ -15,7 +15,35 @@
  */
 
 locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
+  prefix                    = var.prefix == null ? "" : "${var.prefix}-"
+  _parsed_data_quality_spec = try(yamldecode(file(var.data_quality_spec_file.path)), null)
+  _parsed_data_quality_spec_convert_camel_case = (
+    try(var.data_quality_spec_file.convert_camel_case, false) ?
+    try({
+      sampling_percent = local._parsed_data_quality_spec.samplingPercent
+      row_filter       = local._parsed_data_quality_spec.rowFilter
+      rules = [
+        for rule in local._parsed_data_quality_spec.rules : {
+          for k, v in rule :
+          join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(k))) : lower(word)])
+          => try({
+            for kk, vv in v :
+            join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(kk))) : lower(word)])
+            => vv
+          }, v)
+        }
+      ]
+    }, null) :
+  null)
+  _data_quality_spec_string = (
+    var.data_quality_spec != null ?
+    jsonencode(var.data_quality_spec) : (
+      try(var.data_quality_spec_file.convert_camel_case, false) == true ?
+      jsonencode(local._parsed_data_quality_spec_convert_camel_case) :
+      jsonencode(local._parsed_data_quality_spec)
+    )
+  ) # using jsonencode as workaround for "Inconsistent conditional result types" error due to mismatching attributes case
+  data_quality_spec = jsondecode(local._data_quality_spec_string)
 }
 
 resource "google_dataplex_datascan" "datascan" {
@@ -57,12 +85,12 @@ resource "google_dataplex_datascan" "datascan" {
   }
 
   dynamic "data_quality_spec" {
-    for_each = var.data_quality_spec != null ? [""] : []
+    for_each = local.data_quality_spec != null ? [""] : []
     content {
-      sampling_percent = try(data_quality_spec.sampling_percent, null)
-      row_filter       = try(data_quality_spec.row_filter, null)
+      sampling_percent = try(local.data_quality_spec.sampling_percent, null)
+      row_filter       = try(local.data_quality_spec.row_filter, null)
       dynamic "rules" {
-        for_each = var.data_quality_spec.rules
+        for_each = local.data_quality_spec.rules
         content {
           column      = try(rules.value.column, null)
           ignore_null = try(rules.value.ignore_null, rules.value.ignoreNull, null)
@@ -137,8 +165,23 @@ resource "google_dataplex_datascan" "datascan" {
 
   lifecycle {
     precondition {
-      condition     = length([for spec in [var.data_profile_spec, var.data_quality_spec] : spec if spec != null]) == 1
-      error_message = "DataScan can only contain either 'data_profile_spec' or 'data_quality_spec', but not both."
+      condition     = length([for spec in [var.data_profile_spec, var.data_quality_spec, var.data_quality_spec_file] : spec if spec != null]) == 1
+      error_message = "DataScan can only contain one of 'data_profile_spec', 'data_quality_spec', '_data_quality_spec_file'."
+    }
+    precondition {
+      condition = alltrue([
+        for rule in try(local.data_quality_spec.rules, []) :
+      contains(["COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS", "INTEGRITY"], rule.dimension)])
+      error_message = "Datascan 'dimension' field in 'data_quality_spec' must be one of ['COMPLETENESS', 'ACCURACY', 'CONSISTENCY', 'VALIDITY', 'UNIQUENESS', 'INTEGRITY']."
+    }
+    precondition {
+      condition = alltrue([
+        for rule in try(local.data_quality_spec.rules, []) :
+        length([
+          for k, v in rule :
+          v if contains(["non_null_expectation", "range_expectation", "regex_expectation", "set_expectation", "uniqueness_expectation", "statistic_range_expectation", "row_condition_expectation", "table_condition_expectation"], k) && v != null
+      ]) == 1])
+      error_message = "Datascan rule must contain a key that is one of ['non_null_expectation', 'range_expectation', 'regex_expectation', 'set_expectation', 'uniqueness_expectation', 'statistic_range_expectation', 'row_condition_expectation', 'table_condition_expectation]."
     }
   }
 }

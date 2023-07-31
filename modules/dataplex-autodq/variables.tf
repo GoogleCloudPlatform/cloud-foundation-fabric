@@ -75,21 +75,15 @@ variable "data_quality_spec" {
       }))
     }))
   })
-  validation {
-    condition = alltrue([
-      for rule in coalesce(var.data_quality_spec.rules, []) :
-    contains(["COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS", "INTEGRITY"], rule.dimension)])
-    error_message = "Datascan 'dimension' field in 'data_quality_spec' must be one of ['COMPLETENESS', 'ACCURACY', 'CONSISTENCY', 'VALIDITY', 'UNIQUENESS', 'INTEGRITY']."
-  }
-  validation {
-    condition = alltrue([
-      for rule in coalesce(var.data_quality_spec.rules, []) :
-      length([
-        for k, v in rule :
-        v if contains(["non_null_expectation", "range_expectation", "regex_expectation", "set_expectation", "uniqueness_expectation", "statistic_range_expectation", "row_condition_expectation", "table_condition_expectation"], k) && v != null
-    ]) == 1])
-    error_message = "Datascan rule must contain a key that is one of ['non_null_expectation', 'range_expectation', 'regex_expectation', 'set_expectation', 'uniqueness_expectation', 'statistic_range_expectation', 'row_condition_expectation', 'table_condition_expectation]."
-  }
+}
+
+variable "data_quality_spec_file" {
+  description = "Path to a YAML file containing DataQualityScan related setting. Set `convert_camel_case` to true if your YAML file uses camelCase instead of snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec."
+  default     = null
+  type = object({
+    path               = string
+    convert_camel_case = optional(bool, false)
+  })
 }
 
 variable "execution_schedule" {

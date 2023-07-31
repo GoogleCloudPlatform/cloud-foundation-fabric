@@ -54,7 +54,7 @@ module "dataplex-autodq" {
   data_quality_spec = {
     sampling_percent = 100
     row_filter       = "station_id > 1000"
-    rules            = [
+    rules = [
       {
         dimension            = "VALIDITY"
         non_null_expectation = {}
@@ -133,91 +133,7 @@ module "dataplex-autodq" {
 # tftest modules=1 resources=1 inventory=datascan_dq.yaml
 ```
 
-This example shows how you can pass the rules configurations as a separate YAML file into the module.
-
-```hcl
-module "dataplex-autodq" {
-  source     = "./fabric/modules/dataplex-autodq"
-  name       = "autodq"
-  prefix     = "test"
-  project_id = "my-project-name"
-  region     = "us-central1"
-  labels = {
-    billing_id = "a"
-  }
-  execution_schedule = "TZ=America/New_York 0 1 * * *"
-  data = {
-    resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
-  }
-  sampling_percent  = 100
-  row_filter        = "station_id > 1000"
-  incremental_field = "modified_date"
-  data_quality_spec = {
-    sampling_percent = 100
-    row_filter       = "station_id > 1000"
-    rules            = yamldecode(file("config/rules.yaml"))
-  }
-}
-# tftest modules=1 resources=1 files=rules inventory=datascan_dq.yaml
-```
-
-The content of the `config/rules.yaml` files is as follows:
-
-```yaml
-# tftest-file id=rules path=config/rules.yaml
-- column: address
-  dimension: VALIDITY
-  ignore_null: null
-  non_null_expectation: {}
-  threshold: 0.99
-- column: council_district
-  dimension: VALIDITY
-  ignore_null: true
-  threshold: 0.9
-  range_expectation:
-    max_value: '10'
-    min_value: '1'
-    strict_max_enabled: false
-    strict_min_enabled: true
-- column: council_district
-  dimension: VALIDITY
-  range_expectation:
-    max_value: '9'
-    min_value: '3'
-  threshold: 0.8
-- column: power_type
-  dimension: VALIDITY
-  ignore_null: false
-  regex_expectation:
-    regex: .*solar.*
-- column: property_type
-  dimension: VALIDITY
-  ignore_null: false
-  set_expectation:
-    values:
-    - sidewalk
-    - parkland
-- column: address
-  dimension: UNIQUENESS
-  uniqueness_expectation: {}
-- column: number_of_docks
-  dimension: VALIDITY
-  statistic_range_expectation:
-    max_value: '15'
-    min_value: '5'
-    statistic: MEAN
-    strict_max_enabled: true
-    strict_min_enabled: true
-- column: footprint_length
-  dimension: VALIDITY
-  row_condition_expectation:
-    sql_expression: footprint_length > 0 AND footprint_length <= 10
-- dimension: VALIDITY
-  table_condition_expectation:
-    sql_expression: COUNT(*) > 0
-```
-
-If your input YAML uses CamelCase instead of snake_case which is expected by the module, you can use the following code to convert the input YAML into the expected format.
+This example shows how you can pass the rules configurations as a separate YAML file into the module. This should produce the same DataScan configuration as the previous example.
 
 ```hcl
 module "dataplex-autodq" {
@@ -234,69 +150,154 @@ module "dataplex-autodq" {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
   incremental_field = "modified_date"
-  data_quality_spec = {
-    sampling_percent = 100
-    row_filter       = "station_id > 1000"
-    rules            = [for rule in yamldecode(file("config/rules_camel_case.yaml")) : { for k, v in rule : join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(k))) : lower(word)]) => try({ for kk, vv in v : join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(kk))) : lower(word)]) => vv }, v) }]
+  data_quality_spec_file = {
+    path = "config/data_quality_spec.yaml"
   }
 }
-# tftest modules=1 resources=1 files=rules_camel_case inventory=datascan_dq.yaml
+# tftest modules=1 resources=1 files=data_quality_spec inventory=datascan_dq.yaml
 ```
 
-The content of the `config/rules_camel_case.yaml` files is as follows:
+The content of the `config/data_quality_spec.yaml` files is as follows:
 
 ```yaml
-# tftest-file id=rules_camel_case path=config/rules_camel_case.yaml
-- column: address
-  dimension: VALIDITY
-  ignoreNull: null
-  nonNullExpectation: {}
-  threshold: 0.99
-- column: council_district
-  dimension: VALIDITY
-  ignoreNull: true
-  threshold: 0.9
-  rangeExpectation:
-    maxValue: '10'
-    minValue: '1'
-    strictMaxEnabled: false
-    strictMinEnabled: true
-- column: council_district
-  dimension: VALIDITY
-  rangeExpectation:
-    maxValue: '9'
-    minValue: '3'
-  threshold: 0.8
-- column: power_type
-  dimension: VALIDITY
-  ignoreNull: false
-  regexExpectation:
-    regex: .*solar.*
-- column: property_type
-  dimension: VALIDITY
-  ignoreNull: false
-  setExpectation:
-    values:
-    - sidewalk
-    - parkland
-- column: address
-  dimension: UNIQUENESS
-  uniquenessExpectation: {}
-- column: number_of_docks
-  dimension: VALIDITY
-  statisticRangeExpectation:
-    maxValue: '15'
-    minValue: '5'
-    statistic: MEAN
-    strictMaxEnabled: true
-    strictMinEnabled: true
-- column: footprint_length
-  dimension: VALIDITY
-  rowConditionExpectation:
-    sqlExpression: footprint_length > 0 AND footprint_length <= 10
-- dimension: VALIDITY
-  tableConditionExpectation:
-    sqlExpression: COUNT(*) > 0
+# tftest-file id=data_quality_spec path=config/data_quality_spec.yaml
+sampling_percent: 100
+row_filter: "station_id > 1000"
+rules:
+  - column: address
+    dimension: VALIDITY
+    ignore_null: null
+    non_null_expectation: {}
+    threshold: 0.99
+  - column: council_district
+    dimension: VALIDITY
+    ignore_null: true
+    threshold: 0.9
+    range_expectation:
+      max_value: '10'
+      min_value: '1'
+      strict_max_enabled: false
+      strict_min_enabled: true
+  - column: council_district
+    dimension: VALIDITY
+    range_expectation:
+      max_value: '9'
+      min_value: '3'
+    threshold: 0.8
+  - column: power_type
+    dimension: VALIDITY
+    ignore_null: false
+    regex_expectation:
+      regex: .*solar.*
+  - column: property_type
+    dimension: VALIDITY
+    ignore_null: false
+    set_expectation:
+      values:
+      - sidewalk
+      - parkland
+  - column: address
+    dimension: UNIQUENESS
+    uniqueness_expectation: {}
+  - column: number_of_docks
+    dimension: VALIDITY
+    statistic_range_expectation:
+      max_value: '15'
+      min_value: '5'
+      statistic: MEAN
+      strict_max_enabled: true
+      strict_min_enabled: true
+  - column: footprint_length
+    dimension: VALIDITY
+    row_condition_expectation:
+      sql_expression: footprint_length > 0 AND footprint_length <= 10
+  - dimension: VALIDITY
+    table_condition_expectation:
+      sql_expression: COUNT(*) > 0
+```
+
+If your input YAML uses camelCase instead of snake_case which is expected by the module, you can use the following code to convert the input YAML into the expected format. This should also produce the same DataScan configuration as the previous examples.
+
+```hcl
+module "dataplex-autodq" {
+  source     = "./fabric/modules/dataplex-autodq"
+  name       = "autodq"
+  prefix     = "test"
+  project_id = "my-project-name"
+  region     = "us-central1"
+  labels = {
+    billing_id = "a"
+  }
+  execution_schedule = "TZ=America/New_York 0 1 * * *"
+  data = {
+    resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
+  }
+  incremental_field = "modified_date"
+  data_quality_spec_file = {
+    path               = "config/data_quality_spec_camel_case.yaml"
+    convert_camel_case = true
+  }
+}
+# tftest modules=1 resources=1 files=data_quality_spec_camel_case inventory=datascan_dq.yaml
+```
+
+The content of the `config/data_quality_spec_camel_case.yaml` files is as follows:
+
+```yaml
+# tftest-file id=data_quality_spec_camel_case path=config/data_quality_spec_camel_case.yaml
+samplingPercent: 100
+rowFilter: "station_id > 1000"
+rules:
+  - column: address
+    dimension: VALIDITY
+    ignoreNull: null
+    nonNullExpectation: {}
+    threshold: 0.99
+  - column: council_district
+    dimension: VALIDITY
+    ignoreNull: true
+    threshold: 0.9
+    rangeExpectation:
+      maxValue: '10'
+      minValue: '1'
+      strictMaxEnabled: false
+      strictMinEnabled: true
+  - column: council_district
+    dimension: VALIDITY
+    rangeExpectation:
+      maxValue: '9'
+      minValue: '3'
+    threshold: 0.8
+  - column: power_type
+    dimension: VALIDITY
+    ignoreNull: false
+    regexExpectation:
+      regex: .*solar.*
+  - column: property_type
+    dimension: VALIDITY
+    ignoreNull: false
+    setExpectation:
+      values:
+      - sidewalk
+      - parkland
+  - column: address
+    dimension: UNIQUENESS
+    uniquenessExpectation: {}
+  - column: number_of_docks
+    dimension: VALIDITY
+    statisticRangeExpectation:
+      maxValue: '15'
+      minValue: '5'
+      statistic: MEAN
+      strictMaxEnabled: true
+      strictMinEnabled: true
+  - column: footprint_length
+    dimension: VALIDITY
+    rowConditionExpectation:
+      sqlExpression: footprint_length > 0 AND footprint_length <= 10
+  - dimension: VALIDITY
+    tableConditionExpectation:
+      sqlExpression: COUNT(*) > 0
 ```
 
 ## Data Source
@@ -418,21 +419,21 @@ module "dataplex-autodq" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [data](variables.tf#L17) | The data source for DataScan. The source can be either a Dataplex `entity` or a BigQuery `resource`. | <code title="object&#40;&#123;&#10;  entity   &#61; optional&#40;string&#41;&#10;  resource &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L81) | Name of Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L92) | The ID of the project where the Dataplex AutoDQ Scans will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L97) | Region for the Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
-| [execution_schedule](variables.tf#L29) | Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API. | <code>string</code> |  | <code>null</code> |
-| [group_iam](variables.tf#L35) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam](variables.tf#L42) | Dataplex AutoDQ  IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive](variables.tf#L49) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive_members](variables.tf#L56) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_policy](variables.tf#L62) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
-| [incremental_field](variables.tf#L68) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L74) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L86) | Optional prefix used to generate Dataplex AutoDQ DataScan ID. | <code>string</code> |  | <code>null</code> |
-| [row_filter](variables.tf#L102) | A filter applied to all rows in a single DataScan job. The filter needs to be a valid SQL expression for a WHERE clause in BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10. | <code>string</code> |  | <code>null</code> |
-| [rules](variables.tf#L108) | Data Quality validation rules. If not provided, the DataScan will be created as a Data Profiling scan instead of a Data Quality scan. | <code title="list&#40;object&#40;&#123;&#10;  column               &#61; optional&#40;string&#41;&#10;  ignore_null          &#61; optional&#40;bool, null&#41;&#10;  dimension            &#61; string&#10;  threshold            &#61; optional&#40;number&#41;&#10;  non_null_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  range_expectation &#61; optional&#40;object&#40;&#123;&#10;    min_value          &#61; optional&#40;number&#41;&#10;    max_value          &#61; optional&#40;number&#41;&#10;    strict_min_enabled &#61; optional&#40;bool&#41;&#10;    strict_max_enabled &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  regex_expectation &#61; optional&#40;object&#40;&#123;&#10;    regex &#61; string&#10;  &#125;&#41;&#41;&#10;  set_expectation &#61; optional&#40;object&#40;&#123;&#10;    values &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  uniqueness_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;  statistic_range_expectation &#61; optional&#40;object&#40;&#123;&#10;    statistic          &#61; string&#10;    min_value          &#61; optional&#40;number&#41;&#10;    max_value          &#61; optional&#40;number&#41;&#10;    strict_min_enabled &#61; optional&#40;bool&#41;&#10;    strict_max_enabled &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  row_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;    sql_expression &#61; string&#10;  &#125;&#41;&#41;&#10;  table_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;    sql_expression &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [sampling_percent](variables.tf#L161) | The percentage of the records to be selected from the dataset for DataScan. Value can range between 0.0 and 100.0 with up to 3 significant decimal digits. Sampling is not applied if samplingPercent is not specified, 0 or 100. | <code>number</code> |  | <code>null</code> |
+| [name](variables.tf#L141) | Name of Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L152) | The ID of the project where the Dataplex AutoDQ Scans will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L157) | Region for the Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
+| [data_profile_spec](variables.tf#L29) | DataProfileScan related setting. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [data_quality_spec](variables.tf#L38) | DataQualityScan related setting. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;  rules &#61; list&#40;object&#40;&#123;&#10;    column               &#61; optional&#40;string&#41;&#10;    ignore_null          &#61; optional&#40;bool, null&#41;&#10;    dimension            &#61; string&#10;    threshold            &#61; optional&#40;number&#41;&#10;    non_null_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    range_expectation &#61; optional&#40;object&#40;&#123;&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    regex_expectation &#61; optional&#40;object&#40;&#123;&#10;      regex &#61; string&#10;    &#125;&#41;&#41;&#10;    set_expectation &#61; optional&#40;object&#40;&#123;&#10;      values &#61; list&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    uniqueness_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    statistic_range_expectation &#61; optional&#40;object&#40;&#123;&#10;      statistic          &#61; string&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    row_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;    table_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [data_quality_spec_file](variables.tf#L80) | Path to a YAML file containing DataQualityScan related setting. Set `convert_camel_case` to true if your YAML file uses camelCase instead of snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  path               &#61; string&#10;  convert_camel_case &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [execution_schedule](variables.tf#L89) | Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API. | <code>string</code> |  | <code>null</code> |
+| [group_iam](variables.tf#L95) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables.tf#L102) | Dataplex AutoDQ  IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_additive](variables.tf#L109) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_additive_members](variables.tf#L116) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_policy](variables.tf#L122) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
+| [incremental_field](variables.tf#L128) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L134) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L146) | Optional prefix used to generate Dataplex AutoDQ DataScan ID. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
