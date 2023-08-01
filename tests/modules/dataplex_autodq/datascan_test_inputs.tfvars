@@ -35,7 +35,7 @@ execution_schedule = "TZ=America/New_York 1 1 * * *"
 data = {
   resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
 }
-description = "Custom description."
+description       = "Custom description."
 incremental_field = "modified_date"
 data_quality_spec = {
   sampling_percent = 100

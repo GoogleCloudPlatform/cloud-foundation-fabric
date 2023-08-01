@@ -17,33 +17,69 @@
 locals {
   prefix                    = var.prefix == null ? "" : "${var.prefix}-"
   _parsed_data_quality_spec = try(yamldecode(file(var.data_quality_spec_file.path)), null)
-  _parsed_data_quality_spec_convert_camel_case = (
-    try(var.data_quality_spec_file.convert_camel_case, false) ?
-    {
-      sampling_percent = try(local._parsed_data_quality_spec.samplingPercent, null)
-      row_filter       = try(local._parsed_data_quality_spec.rowFilter, null)
-      rules = [
-        for rule in local._parsed_data_quality_spec.rules : {
-          for k, v in rule :
-          join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(k))) : lower(word)])
-          => try({
-            for kk, vv in v :
-            join("_", [for word in flatten(regexall("((?:[A-Z]|[0-9]+)[a-z]*)", title(kk))) : lower(word)])
-            => vv
-          }, v)
-        }
-      ]
-    } :
-  null)
-  _data_quality_spec_string = (
-    var.data_quality_spec != null ?
-    jsonencode(var.data_quality_spec) : (
-      try(var.data_quality_spec_file.convert_camel_case, false) == true ?
-      jsonencode(local._parsed_data_quality_spec_convert_camel_case) :
-      jsonencode(local._parsed_data_quality_spec)
-    )
-  ) # using jsonencode as workaround for "Inconsistent conditional result types" error due to mismatching attributes case
-  data_quality_spec = jsondecode(local._data_quality_spec_string)
+  _convert_camel_case       = local._parsed_data_quality_spec == null ? null : try(var.data_quality_spec_file.convert_camel_case, false)
+  _converted_data_quality_spec = local._parsed_data_quality_spec == null ? null : {
+    sampling_percent = try(local._convert_camel_case ? local._parsed_data_quality_spec.samplingPercent : local._parsed_data_quality_spec.sampling_percent, null)
+    row_filter       = try(local._convert_camel_case ? local._parsed_data_quality_spec.rowFilter : local._parsed_data_quality_spec.row_filter, null)
+    rules = [
+      for rule in try(local._parsed_data_quality_spec.rules, []) : {
+        column               = try(rule.column, null)
+        ignore_null          = try(local._convert_camel_case ? rule.ignoreNull : rule.ignore_null, null)
+        dimension            = rule.dimension
+        threshold            = try(rule.threshold, null)
+        non_null_expectation = try(local._convert_camel_case ? rule.nonNullExpectation : rule.non_null_expectation, null)
+        range_expectation = local._convert_camel_case ? (
+          can(rule.rangeExpectation) ?
+          {
+            min_value          = try(rule.rangeExpectation.minValue, null)
+            max_value          = try(rule.rangeExpectation.maxValue, null)
+            strict_min_enabled = try(rule.rangeExpectation.strictMinEnabled, null)
+            strict_max_enabled = try(rule.rangeExpectation.strictMaxEnabled, null)
+          } : null
+        ) : try(rule.range_expectation, null)
+        regex_expectation = local._convert_camel_case ? (
+          can(rule.regexExpectation) ?
+          {
+            regex = try(rule.regexExpectation.regex, null)
+          } : null
+        ) : try(rule.regex_expectation, null)
+        set_expectation = local._convert_camel_case ? (
+          can(rule.setExpectation) ?
+          {
+            values = try(rule.setExpectation.values, null)
+          } : null
+        ) : try(rule.set_expectation, null)
+        uniqueness_expectation = try(local._convert_camel_case ? rule.uniquenessExpectation : rule.uniqueness_expectation, null)
+        statistic_range_expectation = local._convert_camel_case ? (
+          can(rule.statisticRangeExpectation) ?
+          {
+            statistic          = rule.statisticRangeExpectation.statistic
+            min_value          = try(rule.statisticRangeExpectation.minValue, null)
+            max_value          = try(rule.statisticRangeExpectation.maxValue, null)
+            strict_min_enabled = try(rule.statisticRangeExpectation.strictMinEnabled, null)
+            strict_max_enabled = try(rule.statisticRangeExpectation.strictMaxEnabled, null)
+          } : null
+        ) : try(rule.statistic_range_expectation, null)
+        row_condition_expectation = local._convert_camel_case ? (
+          can(rule.rowConditionExpectation) ?
+          {
+            sql_expression = try(rule.rowConditionExpectation.sqlExpression, null)
+          } : null
+        ) : try(rule.row_condition_expectation, null)
+        table_condition_expectation = local._convert_camel_case ? (
+          can(rule.tableConditionExpectation) ?
+          {
+            sql_expression = try(rule.tableConditionExpectation.sqlExpression, null)
+          } : null
+        ) : try(rule.table_condition_expectation, null)
+      }
+    ]
+  }
+  data_quality_spec = (
+    var.data_quality_spec != null || var.data_quality_spec_file != null ?
+    merge(var.data_quality_spec, local._converted_data_quality_spec) :
+    null
+  )
 }
 
 resource "google_dataplex_datascan" "datascan" {
