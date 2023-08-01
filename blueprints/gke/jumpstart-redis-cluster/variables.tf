@@ -89,6 +89,7 @@ variable "workload_config" {
     image     = optional(string, "redis:6.2")
     namespace = optional(string, "redis")
     statefulset_config = optional(object({
+      replicas = optional(number, 3)
       resource_requests = optional(object({
         cpu    = optional(string, "1")
         memory = optional(string, "1Gi")

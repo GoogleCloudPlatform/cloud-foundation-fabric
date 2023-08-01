@@ -56,17 +56,43 @@ resource "kubernetes_manifest" "workload" {
 }
 
 
-data "kubernetes_resources" "example" {
-  api_version    = "v1"
-  kind           = "Pod"
-  label_selector = "app=hello"
-  namespace      = var.workload_config.namespace
-  depends_on     = [kubernetes_manifest.workload]
-}
-
-# output "foo" {
-#   value = [
-#     for k in data.kubernetes_resources.example.objects :
-#     k.status.podIP
-#   ]
+# data "kubernetes_resources" "cluster-pods" {
+#   api_version    = "v1"
+#   kind           = "Pod"
+#   label_selector = "app=redis"
+#   namespace      = var.workload_config.namespace
+#   depends_on     = [kubernetes_manifest.workload]
 # }
+
+resource "kubernetes_job" "cluster-start-job" {
+  metadata {
+    name      = "redis-cluster-start"
+    namespace = var.workload_config.namespace
+  }
+  spec {
+    template {
+      metadata {}
+      spec {
+        container {
+          name  = "redis-cluster-start"
+          image = local.wl_image
+          command = concat(
+            ["redis-cli", "--cluster", "create"],
+            [
+              for i in range(var.workload_config.statefulset_config.replicas) :
+              "redis-${i}:6379"
+            ],
+            ["--cluster-replicas", "1"]
+          )
+        }
+        restart_policy = "Never"
+      }
+    }
+    backoff_limit = 4
+  }
+  wait_for_completion = true
+  timeouts {
+    create = "2m"
+    update = "2m"
+  }
+}
