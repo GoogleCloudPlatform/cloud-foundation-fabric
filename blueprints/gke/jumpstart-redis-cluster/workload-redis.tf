@@ -66,7 +66,7 @@ resource "kubernetes_manifest" "workload" {
     }
   }
   timeouts {
-    create = "20m"
+    create = "30m"
   }
   depends_on = [kubernetes_namespace.workload]
 }

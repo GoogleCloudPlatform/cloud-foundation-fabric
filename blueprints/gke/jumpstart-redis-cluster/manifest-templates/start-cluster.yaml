@@ -14,12 +14,12 @@ spec:
         image: ${image}
         command:
         - redis-cli
+        - --cluster-yes
+        - --cluster-replicas
+        - 1
         - --cluster
         - create
         %{~ for n in nodes ~}
         - ${n}
         %{~ endfor ~}
-        - --cluster-replicas
-        - 1
-        - --cluster-yes
       restartPolicy: Never
