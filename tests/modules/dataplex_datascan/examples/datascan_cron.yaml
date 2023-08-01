@@ -12,23 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 values:
-  module.dataplex-autodq.google_dataplex_datascan.datascan:
+  module.dataplex-datascan.google_dataplex_datascan.datascan:
     data:
-    - entity: projects/<project_number>/locations/<locationId>/lakes/<lakeId>/zones/<zoneId>/entities/<entityId>
-      resource: null
+    - entity: null
+      resource: //bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations
     data_profile_spec:
     - row_filter: null
       sampling_percent: null
     data_quality_spec: []
-    data_scan_id: test-autodq
+    data_scan_id: test-datascan
     description: Terraform Managed.
-    display_name: test-autodq
+    display_name: test-datascan
     execution_spec:
     - field: null
       trigger:
-      - on_demand:
-        - {}
-        schedule: []
+      - on_demand: []
+        schedule:
+        - cron: TZ=America/New_York 0 1 * * *
+    labels: null
     location: us-central1
     project: my-project-name
     timeouts: null

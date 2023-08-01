@@ -15,12 +15,12 @@
  */
 
 output "data_scan_id" {
-  description = "Dataplex AutoDQ DataScan ID."
+  description = "Dataplex DataScan ID."
   value       = google_dataplex_datascan.datascan.data_scan_id
 }
 
 output "id" {
-  description = "A fully qualified Dataplex AutoDQ DataScan identifier for the resource with format projects/{{project}}/locations/{{location}}/dataScans/{{data_scan_id}}."
+  description = "A fully qualified Dataplex DataScan identifier for the resource with format projects/{{project}}/locations/{{location}}/dataScans/{{data_scan_id}}."
   value       = google_dataplex_datascan.datascan.id
 }
 

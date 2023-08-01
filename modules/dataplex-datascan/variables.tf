@@ -105,7 +105,7 @@ variable "group_iam" {
 }
 
 variable "iam" {
-  description = "Dataplex AutoDQ  IAM bindings in {ROLE => [MEMBERS]} format."
+  description = "Dataplex DataScan IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
   nullable    = false
@@ -144,22 +144,22 @@ variable "labels" {
 }
 
 variable "name" {
-  description = "Name of Dataplex AutoDQ Scan."
+  description = "Name of Dataplex Scan."
   type        = string
 }
 
 variable "prefix" {
-  description = "Optional prefix used to generate Dataplex AutoDQ DataScan ID."
+  description = "Optional prefix used to generate Dataplex DataScan ID."
   type        = string
   default     = null
 }
 
 variable "project_id" {
-  description = "The ID of the project where the Dataplex AutoDQ Scans will be created."
+  description = "The ID of the project where the Dataplex DataScan will be created."
   type        = string
 }
 
 variable "region" {
-  description = "Region for the Dataplex AutoDQ Scan."
+  description = "Region for the Dataplex DataScan."
   type        = string
 }

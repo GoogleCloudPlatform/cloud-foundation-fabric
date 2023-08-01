@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 values:
-  module.dataplex-autodq.google_dataplex_datascan.datascan:
+  module.dataplex-datascan.google_dataplex_datascan.datascan:
     data:
     - entity: null
       resource: //bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations
@@ -150,9 +150,9 @@ values:
         threshold: null
         uniqueness_expectation: []
       sampling_percent: 100
-    data_scan_id: test-autodq
+    data_scan_id: test-datascan
     description: Terraform Managed.
-    display_name: test-autodq
+    display_name: test-datascan
     execution_spec:
     - field: modified_date
       trigger:
@@ -171,4 +171,3 @@ counts:
   resources: 1
 
 outputs: {}
-

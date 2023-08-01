@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 values:
-  module.dataplex-autodq.google_dataplex_datascan.datascan:
+  module.dataplex-datascan.google_dataplex_datascan.datascan:
     data:
     - entity: null
       resource: //bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations
@@ -20,9 +20,9 @@ values:
     - row_filter: null
       sampling_percent: null
     data_quality_spec: []
-    data_scan_id: test-autodq
+    data_scan_id: test-datascan
     description: Terraform Managed.
-    display_name: test-autodq
+    display_name: test-datascan
     execution_spec:
     - field: null
       trigger:
@@ -33,25 +33,25 @@ values:
     location: us-central1
     project: my-project-name
     timeouts: null
-  module.dataplex-autodq.google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanAdmin"]:
+  module.dataplex-datascan.google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanAdmin"]:
     condition: []
-    data_scan_id: test-autodq
+    data_scan_id: test-datascan
     location: us-central1
     members:
     - serviceAccount:svc-1@project-id.iam.gserviceaccount.com
     project: my-project-name
     role: roles/dataplex.dataScanAdmin
-  module.dataplex-autodq.google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanEditor"]:
+  module.dataplex-datascan.google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanEditor"]:
     condition: []
-    data_scan_id: test-autodq
+    data_scan_id: test-datascan
     location: us-central1
     members:
     - user:admin-user@example.com
     project: my-project-name
     role: roles/dataplex.dataScanEditor
-  module.dataplex-autodq.google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanViewer"]:
+  module.dataplex-datascan.google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanViewer"]:
     condition: []
-    data_scan_id: test-autodq
+    data_scan_id: test-datascan
     location: us-central1
     members:
     - group:user-group@example.com

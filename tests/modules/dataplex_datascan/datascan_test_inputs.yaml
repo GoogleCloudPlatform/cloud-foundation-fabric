@@ -150,9 +150,9 @@ values:
         threshold: null
         uniqueness_expectation: []
       sampling_percent: 100
-    data_scan_id: test-autodq
+    data_scan_id: test-datascan
     description: Terraform Managed. Custom description.
-    display_name: test-autodq
+    display_name: test-datascan
     execution_spec:
     - field: modified_date
       trigger:
@@ -166,7 +166,7 @@ values:
     timeouts: null
   google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanEditor"]:
     condition: []
-    data_scan_id: test-autodq
+    data_scan_id: test-datascan
     location: us-central1
     members:
     - group:user-group@example.com
@@ -175,7 +175,7 @@ values:
     role: roles/dataplex.dataScanEditor
   google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanViewer"]:
     condition: []
-    data_scan_id: test-autodq
+    data_scan_id: test-datascan
     location: us-central1
     members:
     - user:user@example.com
@@ -189,7 +189,7 @@ counts:
   resources: 3
 
 outputs:
-  data_scan_id: test-autodq
+  data_scan_id: test-datascan
   id: __missing__
   name: __missing__
   type: __missing__
