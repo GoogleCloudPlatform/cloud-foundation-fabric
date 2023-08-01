@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# file: tests/modules/net_vpc_swp/examples/tls.yaml
+# file: tests/modules/net_swp/examples/tls.yaml
 values:
   module.secure-web-proxy.google_network_security_gateway_security_policy.policy:
     name: "secure-web-proxy"

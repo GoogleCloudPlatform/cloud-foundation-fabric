@@ -98,7 +98,7 @@ These modules are used in the examples included in this repository. If you are u
 - [KMS](./kms)
 - [SecretManager](./secret-manager)
 - [VPC Service Control](./vpc-sc)
-- [Secure Web Proxy](./net-vpc-swp)
+- [Secure Web Proxy](./net-swp)
 
 ## Serverless
 
