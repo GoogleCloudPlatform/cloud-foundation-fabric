@@ -5,8 +5,7 @@
 ## Potential changes
 
 - [ ] optionally support external kubeconfig via variable, and skip fleet resources if a kubeconfig is specified
-- [ ] try using the fleet membership project id instead of number in the kubernetes provider configuration, if that works we can use the fleet membership `id` directly
-- [ ] Use Gateway to expose the service? it's a cluster with a headles service so maybe not?
+- [ ] Use Gateway to expose the service? it's a cluster with a headless service so maybe not?
 
 ## Prerequisites
 

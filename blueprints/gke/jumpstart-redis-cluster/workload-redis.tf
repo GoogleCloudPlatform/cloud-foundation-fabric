@@ -15,7 +15,6 @@
  */
 
 locals {
-  # TODO: prefix when creating
   wl_image = (
     var.create_config.remote_registry == true
     ? "${module.registry.0.image_path}/${var.workload_config.image}"

@@ -15,6 +15,14 @@
  */
 
 locals {
+  cluster_sa_roles = [
+    "roles/artifactregistry.reader",
+    "roles/gkehub.serviceAgent",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+    "roles/monitoring.viewer",
+    "roles/stackdriver.resourceMetadata.writer"
+  ]
   create_vpc = !local.use_shared_vpc && var.create_config.vpc != null
   fleet_project = (
     var.fleet_config.project_id == null
@@ -27,14 +35,6 @@ locals {
       number     = module.fleet-project.0.number
     }
   )
-  cluster_sa_roles = [
-    "roles/artifactregistry.reader",
-    "roles/gkehub.serviceAgent",
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
-    "roles/monitoring.viewer",
-    "roles/stackdriver.resourceMetadata.writer"
-  ]
   use_shared_vpc = (
     try(var.create_config.project.shared_vpc_host, null) != null
   )
@@ -56,7 +56,11 @@ module "project" {
       "gkehub.googleapis.com",
       "stackdriver.googleapis.com"
     ],
-    var.create_config.remote_registry ? ["artifactregistry.googleapis.com"] : []
+    (
+      var.create_config.remote_registry
+      ? ["artifactregistry.googleapis.com"]
+      : []
+    )
   )
   shared_vpc_service_config = !local.use_shared_vpc ? null : {
     attach       = true
@@ -84,14 +88,6 @@ module "project" {
       : "serviceAccount:${local.cluster_service_account}"
     ]
   }
-  logging_data_access = {
-    "artifactregistry.googleapis.com" = {
-      DATA_READ = []
-    }
-    "storage.googleapis.com" = {
-      DATA_READ = []
-    }
-  }
 }
 
 module "vpc" {
@@ -99,17 +95,15 @@ module "vpc" {
   count      = local.create_vpc ? 1 : 0
   project_id = module.project.project_id
   name       = var.prefix
-  subnets = [
-    {
-      ip_cidr_range = var.create_config.vpc.primary_range_nodes
-      name          = "${var.prefix}-default"
-      region        = var.region
-      secondary_ip_ranges = {
-        pods     = var.create_config.vpc.secondary_range_pods
-        services = var.create_config.vpc.secondary_range_services
-      }
+  subnets = [{
+    ip_cidr_range = var.create_config.vpc.primary_range_nodes
+    name          = "${var.prefix}-default"
+    region        = var.region
+    secondary_ip_ranges = {
+      pods     = var.create_config.vpc.secondary_range_pods
+      services = var.create_config.vpc.secondary_range_services
     }
-  ]
+  }]
 }
 
 module "fleet-project" {
