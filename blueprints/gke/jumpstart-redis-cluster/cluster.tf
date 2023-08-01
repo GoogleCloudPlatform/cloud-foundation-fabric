@@ -18,7 +18,7 @@ locals {
   cluster_service_account = (
     var.create_config.cluster == null
     ? data.google_container_cluster.cluster.0.node_config.0.service_account
-    : module.cluster-service-account.email
+    : module.cluster-service-account.0.email
   )
   cluster_vpc = (
     local.use_shared_vpc || !local.create_vpc
