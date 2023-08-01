@@ -9,25 +9,32 @@ In both modes, an optional service account can be created and assigned to either
 
 ## Examples
 
-- [Instance using defaults](#instance-using-defaults)
-- [Service account management](#service-account-management)
-- [Disk management](#disk-management)
-  - [Disk sources](#disk-sources)
-  - [Disk types and options](#disk-types-and-options)
-  - [Boot disk as an independent resource](#boot-disk-as-an-independent-resource)
-- [Network interfaces](#network-interfaces)
-  - [Internal and external IPs](#internal-and-external-ips)
-  - [Using Alias IPs](#using-alias-ips)
-  - [Using gVNIC](#using-gvnic)
-- [Metadata](#metadata)
-- [IAM](#iam)
-- [Spot VM](#spot-vm)
-- [Confidential compute](#confidential-compute)
-- [Disk encryption with Cloud KMS](#disk-encryption-with-cloud-kms)
-- [Instance template](#instance-template)
-- [Instance group](#instance-group)
-- [Instance Schedule](#instance-schedule)
-- [Snapshot Schedules](#snapshot-schedules)
+
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Instance using defaults](#instance-using-defaults)
+  - [Service account management](#service-account-management)
+  - [Disk management](#disk-management)
+    - [Disk sources](#disk-sources)
+    - [Disk types and options](#disk-types-and-options)
+    - [Boot disk as an independent resource](#boot-disk-as-an-independent-resource)
+  - [Network interfaces](#network-interfaces)
+    - [Internal and external IPs](#internal-and-external-ips)
+    - [Using Alias IPs](#using-alias-ips)
+    - [Using gVNIC](#using-gvnic)
+  - [Metadata](#metadata)
+  - [IAM](#iam)
+  - [Spot VM](#spot-vm)
+  - [Confidential compute](#confidential-compute)
+  - [Disk encryption with Cloud KMS](#disk-encryption-with-cloud-kms)
+  - [Instance template](#instance-template)
+  - [Instance group](#instance-group)
+  - [Instance Schedule](#instance-schedule)
+  - [Snapshot Schedules](#snapshot-schedules)
+- [Variables](#variables)
+- [Outputs](#outputs)
+- [TODO](#todo)
+<!-- END TOC -->
 
 ### Instance using defaults
 

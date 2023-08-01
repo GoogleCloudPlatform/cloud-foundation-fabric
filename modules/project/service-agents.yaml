@@ -155,6 +155,7 @@
   service_agent: "service-%s@gcp-sa-datapipelines.iam.gserviceaccount.com"
 - name: "dataplex"
   service_agent: "service-%s@gcp-sa-dataplex.iam.gserviceaccount.com"
+  jit: true # roles/dataplex.serviceAgent
 - name: "dataproc"
   service_agent: "service-%s@dataproc-accounts.iam.gserviceaccount.com"
 - name: "datastream"

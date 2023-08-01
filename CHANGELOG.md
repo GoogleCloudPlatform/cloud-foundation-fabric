@@ -6,6 +6,60 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2023-07-07 16:22:14+00:00 -->
 
+### BLUEPRINTS
+
+- [[#1548](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1548)] Minor fixes in Vertex Ai MLOPs blueprint ([javiergp](https://github.com/javiergp)) <!-- 2023-07-31 10:52:37+00:00 -->
+- [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
+- [[#1542](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1542)] Grant IAM rights to service identities in host project ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-29 18:07:21+00:00 -->
+- [[#1536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1536)] **incompatible change:** Update and refactor artifact registry module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-28 09:54:37+00:00 -->
+- [[#1533](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1533)] Make demo pipeline append into BQ tables ([danieldeleo](https://github.com/danieldeleo)) <!-- 2023-07-27 15:38:01+00:00 -->
+- [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] **incompatible change:** Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
+- [[#1504](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1504)] Bump semver from 5.7.1 to 5.7.2 in /blueprints/serverless/api-gateway/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2023-07-13 06:05:52+00:00 -->
+- [[#1501](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1501)] Fix in nb-glb-psc-neg-sb-psc-ilbl7-hybrid-neg blueprint ([apichick](https://github.com/apichick)) <!-- 2023-07-11 10:01:54+00:00 -->
+- [[#1498](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1498)] Return only bucket name of composer, not full url to dags folder ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-10 09:20:51+00:00 -->
+
+### DOCUMENTATION
+
+- [[#1546](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1546)] **incompatible change:** rename cloud-dataplex to dataplex ([thinhha](https://github.com/thinhha)) <!-- 2023-07-29 12:31:18+00:00 -->
+- [[#1506](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1506)] Document architectural decisions ([ludoo](https://github.com/ludoo)) <!-- 2023-07-13 14:15:32+00:00 -->
+- [[#1500](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1500)] README: audit logs on org level go to a logging bucket, not bigquery ([skalolazka](https://github.com/skalolazka)) <!-- 2023-07-10 14:59:00+00:00 -->
+
+### FAST
+
+- [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
+- [[#1514](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1514)] Fix FAST stage links script for GKE stage ([ludoo](https://github.com/ludoo)) <!-- 2023-07-20 10:48:45+00:00 -->
+- [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] **incompatible change:** Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
+
+### MODULES
+
+- [[#1554](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1554)] Fix in IAM bindings of cloud function v2 module ([apichick](https://github.com/apichick)) <!-- 2023-07-31 11:22:07+00:00 -->
+- [[#1551](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1551)] Fix in validation of healthchecks variable ([apichick](https://github.com/apichick)) <!-- 2023-07-31 10:13:19+00:00 -->
+- [[#1552](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1552)] Add image path output to ar module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-31 09:34:02+00:00 -->
+- [[#1550](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1550)] Fix in validation of healthchecks variable ([apichick](https://github.com/apichick)) <!-- 2023-07-31 08:16:52+00:00 -->
+- [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
+- [[#1542](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1542)] Grant IAM rights to service identities in host project ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-29 18:07:21+00:00 -->
+- [[#1546](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1546)] **incompatible change:** rename cloud-dataplex to dataplex ([thinhha](https://github.com/thinhha)) <!-- 2023-07-29 12:31:18+00:00 -->
+- [[#1540](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1540)] Fixes in cloud function v2 module for trigger service account ([apichick](https://github.com/apichick)) <!-- 2023-07-28 15:21:18+00:00 -->
+- [[#1536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1536)] **incompatible change:** Update and refactor artifact registry module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-28 09:54:37+00:00 -->
+- [[#1537](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1537)] Wrong ASN when using partner_interconnect. ([sruffilli](https://github.com/sruffilli)) <!-- 2023-07-28 09:16:04+00:00 -->
+- [[#1535](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1535)] Renamed output.tf in net-vlan-attachment ([sruffilli](https://github.com/sruffilli)) <!-- 2023-07-28 08:35:48+00:00 -->
+- [[#1523](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1523)] Fix in event_filters of trigger_config ([apichick](https://github.com/apichick)) <!-- 2023-07-25 14:49:07+00:00 -->
+- [[#1519](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1519)] Improve Dataplex ([lcaggio](https://github.com/lcaggio)) <!-- 2023-07-24 08:52:08+00:00 -->
+- [[#1520](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1520)] feat(cloudsql-instance): Add query insights config ([LiuVII](https://github.com/LiuVII)) <!-- 2023-07-21 18:14:35+00:00 -->
+- [[#1512](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1512)] enable-logging flag can only be true for public zones ([apichick](https://github.com/apichick)) <!-- 2023-07-19 15:09:47+00:00 -->
+- [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] **incompatible change:** Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
+- [[#1509](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1509)] Add output to org module with custom constraint details and depends_on ([juliocc](https://github.com/juliocc)) <!-- 2023-07-18 08:24:39+00:00 -->
+- [[#1503](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1503)] Move IAM grant to function level for trigger SA ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-12 14:19:35+00:00 -->
+- [[#1479](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1479)] Update ncc-spoke-ra module to explicity request ncc hub id when referencing existing hubs ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-07-10 14:18:43+00:00 -->
+- [[#1499](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1499)] Add support for custom description in net-address ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-07-10 11:04:54+00:00 -->
+- [[#1497](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1497)] **incompatible change:** Implement proper support for data access logs in resource manager modules ([ludoo](https://github.com/ludoo)) <!-- 2023-07-10 08:08:03+00:00 -->
+
+### TOOLS
+
+- [[#1544](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1544)] Minimal tfdoc refactoring for legibility ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 09:11:31+00:00 -->
+- [[#1538](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1538)] Extend tfdoc to generate TOCs ([juliocc](https://github.com/juliocc)) <!-- 2023-07-28 15:45:12+00:00 -->
+- [[#1511](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1511)] Fail if run with Python below 3.10 ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-19 12:18:55+00:00 -->
+
 ## [24.0.0] - 2023-07-07
 
 ### BLUEPRINTS

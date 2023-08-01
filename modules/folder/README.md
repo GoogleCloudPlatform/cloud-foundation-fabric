@@ -2,17 +2,22 @@
 
 This module allows the creation and management of folders, including support for IAM bindings, organization policies, and hierarchical firewall rules.
 
-## Features
 
+<!-- BEGIN TOC -->
+- [Basic example with IAM bindings](#basic-example-with-iam-bindings)
 - [IAM](#iam)
-- [Organization Policies](#organization-policies)
-  - [Factory](#organization-policy-factory)
+- [Organization policies](#organization-policies)
+  - [Organization Policy Factory](#organization-policy-factory)
 - [Hierarchical Firewall Policies](#hierarchical-firewall-policies)
-  - [Directly Defined](#directly-defined-firewall-policies)
-  - [Factory](#firewall-policy-factory)
+  - [Directly Defined Firewall Policies](#directly-defined-firewall-policies)
+  - [Firewall Policy Factory](#firewall-policy-factory)
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
 - [Tags](#tags)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Basic example with IAM bindings
 

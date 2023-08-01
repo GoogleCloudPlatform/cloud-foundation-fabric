@@ -4,13 +4,21 @@ Cloud Run management, with support for IAM roles, revision annotations and optio
 
 ## Examples
 
-- [IAM and environment variables](#iam-and-environment-variables)
-- [Mounting secrets as volumes](#mounting-secrets-as-volumes)
-- [Revision annotations](#revision-annotations)
-- [VPC Access Connector creation](#vpc-access-connector-creation)
-- [Traffic split](#traffic-split)
-- [Eventarc triggers](#eventarc-triggers)
-- [Service account](#service-account)
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [IAM and environment variables](#iam-and-environment-variables)
+  - [Mounting secrets as volumes](#mounting-secrets-as-volumes)
+  - [Revision annotations](#revision-annotations)
+  - [VPC Access Connector creation](#vpc-access-connector-creation)
+  - [Traffic split](#traffic-split)
+  - [Eventarc triggers](#eventarc-triggers)
+    - [PubSub](#pubsub)
+    - [Audit logs](#audit-logs)
+    - [Using custom service accounts for triggers](#using-custom-service-accounts-for-triggers)
+  - [Service account](#service-account)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ### IAM and environment variables
 

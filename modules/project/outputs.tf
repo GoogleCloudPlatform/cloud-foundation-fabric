@@ -107,6 +107,15 @@ output "service_accounts" {
   ]
 }
 
+output "services" {
+  description = "Service APIs to enabled in the project."
+  value       = var.services
+  depends_on = [
+    google_project_service.project_services,
+    google_project_service_identity.jit_si,
+  ]
+}
+
 output "sink_writer_identities" {
   description = "Writer identities created for each sink."
   value = {

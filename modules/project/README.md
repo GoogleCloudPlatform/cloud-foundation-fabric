@@ -2,23 +2,30 @@
 
 This module implements the creation and management of one GCP project including IAM, organization policies, Shared VPC host or service attachment, service API activation, and tag attachment. It also offers a convenient way to refer to managed service identities (aka robot service accounts) for APIs.
 
-## Features
+## TOC
 
+<!-- BEGIN TOC -->
+- [TOC](#toc)
 - [Basic Project Creation](#basic-project-creation)
 - [IAM](#iam)
-  - [Authoritative](#authoritative-iam)
-  - [Additive](#additive-iam)
-  - [Additive By Member](#additive-iam-by-member)
+  - [Authoritative IAM](#authoritative-iam)
+  - [Additive IAM](#additive-iam)
+  - [Additive IAM by Member](#additive-iam-by-member)
   - [Service Identities and Authoritative IAM](#service-identities-and-authoritative-iam)
-  - [Using Shortcodes for Service Identities](#using-shortcodes-for-service-identities-in-additive-iam)
-  - [Service Identities and Manual IAM Grants](#service-identities-requiring-manual-iam-grants)
+  - [Using Shortcodes for Service Identities in Additive Iam](#using-shortcodes-for-service-identities-in-additive-iam)
+  - [Service Identities Requiring Manual Iam Grants](#service-identities-requiring-manual-iam-grants)
 - [Shared VPC](#shared-vpc)
 - [Organization Policies](#organization-policies)
-  - [Factory](#organization-policy-factory)
+  - [Organization Policy Factory](#organization-policy-factory)
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
-- [Cloud KMS Encryption Keys](#cloud-kms-encryption-keys)
+- [Cloud Kms Encryption Keys](#cloud-kms-encryption-keys)
 - [Tags](#tags)
+- [Outputs](#outputs)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Basic Project Creation
 
@@ -209,6 +216,7 @@ This table lists all affected services and roles that you need to grant to servi
 | artifactregistry.googleapis.com | artifactregistry | roles/artifactregistry.serviceAgent |
 | cloudasset.googleapis.com | cloudasset | roles/cloudasset.serviceAgent |
 | cloudbuild.googleapis.com | cloudbuild | roles/cloudbuild.builds.builder |
+| dataplex.googleapis.com | dataplex | roles/dataplex.serviceAgent |
 | gkehub.googleapis.com | fleet | roles/gkehub.serviceAgent |
 | meshconfig.googleapis.com | servicemesh | roles/anthosservicemesh.serviceAgent |
 | multiclusteringress.googleapis.com | multicluster-ingress | roles/multiclusteringress.serviceAgent |
@@ -249,6 +257,30 @@ module "service-project" {
   }
 }
 # tftest modules=2 resources=8 inventory=shared-vpc.yaml
+```
+
+The module allows also granting necessary permissions in host project to service identities by specifying which services will be used in service project in `grant_iam_for_services`.
+```hcl
+module "host-project" {
+  source = "./fabric/modules/project"
+  name   = "my-host-project"
+  shared_vpc_host_config = {
+    enabled = true
+  }
+}
+
+module "service-project" {
+  source = "./fabric/modules/project"
+  name   = "my-service-project"
+  services = [
+    "container.googleapis.com",
+  ]
+  shared_vpc_service_config = {
+    host_project       = module.host-project.project_id
+    service_iam_grants = module.service-project.services
+  }
+}
+# tftest modules=2 resources=9 inventory=shared-vpc-auto-grants.yaml
 ```
 
 ## Organization Policies
@@ -570,7 +602,6 @@ output "compute_robot" {
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
-
 ## Files
 
 | name | description | resources |
@@ -623,9 +654,9 @@ output "compute_robot" {
 | [service_perimeter_standard](variables.tf#L272) | Name of VPC-SC Standard perimeter to add project into. See comment in the variables file for format. | <code>string</code> |  | <code>null</code> |
 | [services](variables.tf#L278) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [shared_vpc_host_config](variables.tf#L284) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code title="object&#40;&#123;&#10;  enabled          &#61; bool&#10;  service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [shared_vpc_service_config](variables.tf#L293) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project         &#61; string&#10;  service_identity_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [skip_delete](variables.tf#L303) | Allows the underlying resources to be destroyed without destroying the project itself. | <code>bool</code> |  | <code>false</code> |
-| [tag_bindings](variables.tf#L309) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [shared_vpc_service_config](variables.tf#L293) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project         &#61; string&#10;  service_identity_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [skip_delete](variables.tf#L315) | Allows the underlying resources to be destroyed without destroying the project itself. | <code>bool</code> |  | <code>false</code> |
+| [tag_bindings](variables.tf#L321) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -637,6 +668,6 @@ output "compute_robot" {
 | [number](outputs.tf#L56) | Project number. |  |
 | [project_id](outputs.tf#L75) | Project id. |  |
 | [service_accounts](outputs.tf#L94) | Product robot service accounts in project. |  |
-| [sink_writer_identities](outputs.tf#L110) | Writer identities created for each sink. |  |
-
+| [services](outputs.tf#L110) | Service APIs to enabled in the project. |  |
+| [sink_writer_identities](outputs.tf#L119) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->

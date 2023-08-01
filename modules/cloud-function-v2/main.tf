@@ -45,7 +45,7 @@ locals {
   trigger_service_account_email = (
     try(var.trigger_config.service_account_create, false)
     ? google_service_account.trigger_service_account[0].email
-    : null
+    : try(var.trigger_config.service_account_email, null)
   )
   vpc_connector = (
     var.vpc_connector == null
@@ -99,12 +99,12 @@ resource "google_cloudfunctions2_function" "function" {
         for_each = var.trigger_config.event_filters
         iterator = event_filter
         content {
-          attribute = event_filter.attribute
-          value     = event_filter.value
-          operator  = event_filter.operator
+          attribute = event_filter.value.attribute
+          value     = event_filter.value.value
+          operator  = event_filter.value.operator
         }
       }
-      service_account_email = var.trigger_config.service_account_email
+      service_account_email = local.trigger_service_account_email
       retry_policy          = var.trigger_config.retry_policy
     }
   }
@@ -155,7 +155,7 @@ resource "google_cloudfunctions2_function" "function" {
 }
 
 resource "google_cloudfunctions2_function_iam_binding" "default" {
-  for_each       = var.iam
+  for_each       = local.iam
   project        = var.project_id
   location       = google_cloudfunctions2_function.function.location
   cloud_function = google_cloudfunctions2_function.function.name
