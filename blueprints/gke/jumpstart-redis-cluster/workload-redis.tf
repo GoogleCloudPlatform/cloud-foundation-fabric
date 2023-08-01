@@ -21,7 +21,7 @@ locals {
     : var.workload_config.image
   )
   wl_templates = [
-    for f in fileset(local.wl_templates_path, "*yaml") :
+    for f in fileset(local.wl_templates_path, "[0-9]*yaml") :
     "${local.wl_templates_path}/${f}"
   ]
   wl_templates_path = pathexpand(var.workload_config.templates_path)
@@ -55,44 +55,44 @@ resource "kubernetes_manifest" "workload" {
   depends_on = [kubernetes_namespace.workload]
 }
 
-
-# data "kubernetes_resources" "cluster-pods" {
-#   api_version    = "v1"
-#   kind           = "Pod"
-#   label_selector = "app=redis"
-#   namespace      = var.workload_config.namespace
-#   depends_on     = [kubernetes_manifest.workload]
-# }
-
-resource "kubernetes_job" "cluster-start-job" {
-  metadata {
-    name      = "redis-cluster-start"
+resource "kubernetes_manifest" "cluster-start" {
+  manifest = yamldecode(templatefile("${local.wl_templates_path}/start-cluster.yaml", {
+    image     = local.wl_image
     namespace = var.workload_config.namespace
-  }
-  spec {
-    template {
-      metadata {}
-      spec {
-        container {
-          name  = "redis-cluster-start"
-          image = local.wl_image
-          command = concat(
-            ["redis-cli", "--cluster", "create"],
-            [
-              for i in range(var.workload_config.statefulset_config.replicas) :
-              "redis-${i}:6379"
-            ],
-            ["--cluster-replicas", "1"]
-          )
-        }
-        restart_policy = "Never"
-      }
-    }
-    backoff_limit = 4
-  }
-  wait_for_completion = true
-  timeouts {
-    create = "2m"
-    update = "2m"
-  }
+    nodes = [
+      for i in range(var.workload_config.statefulset_config.replicas) :
+      "redis-${i}.redis-cluster.${var.workload_config.namespace}.svc.cluster.local:6379"
+    ]
+  }))
+  depends_on = [kubernetes_namespace.workload]
 }
+
+# resource "kubernetes_job" "cluster-start-job" {
+#   metadata {
+#     name      = "redis-cluster-start"
+#     namespace = var.workload_config.namespace
+#   }
+#   spec {
+#     suspend = true
+#     template {
+#       metadata {}
+#       spec {
+#         container {
+#           name  = "redis-cluster-start"
+#           image = local.wl_image
+#           command = concat(
+#             ["redis-cli", "--cluster", "create"],
+#             [
+#               for i in range(var.workload_config.statefulset_config.replicas) :
+#               "redis-${i}.redis-cluster.${var.workload_config.namespace}.svc.cluster.local:6379"
+#             ],
+#             ["--cluster-replicas", "1"]
+#           )
+#         }
+#         restart_policy = "Never"
+#       }
+#     }
+#     backoff_limit = 4
+#   }
+#   depends_on = [kubernetes_manifest.workload]
+# }

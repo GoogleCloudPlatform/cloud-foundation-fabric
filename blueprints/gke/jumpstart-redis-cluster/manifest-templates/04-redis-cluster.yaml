@@ -20,7 +20,7 @@ metadata:
   namespace: ${namespace}
 spec:
   serviceName: "redis-cluster"
-  replicas: 6
+  replicas: ${statefulset_config.replicas}
   selector:
     matchLabels:
       app: redis
@@ -97,11 +97,11 @@ spec:
       - name: conf
         configMap:
           name: redis-cluster
-          defaultMode: 1363
+          defaultMode: 493
       - name: probes
         configMap:
           name: redis-probes
-          defaultMode: 1053
+          defaultMode: 365
   volumeClaimTemplates:
   - metadata:
       name: data

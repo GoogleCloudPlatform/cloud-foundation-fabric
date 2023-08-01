@@ -89,7 +89,7 @@ variable "workload_config" {
     image     = optional(string, "redis:6.2")
     namespace = optional(string, "redis")
     statefulset_config = optional(object({
-      replicas = optional(number, 3)
+      replicas = optional(number, 6)
       resource_requests = optional(object({
         cpu    = optional(string, "1")
         memory = optional(string, "1Gi")
@@ -100,4 +100,8 @@ variable "workload_config" {
   })
   nullable = false
   default  = {}
+  validation {
+    condition     = var.workload_config.statefulset_config.replicas >= 6
+    error_message = "At least 6 cluster nodes are required."
+  }
 }

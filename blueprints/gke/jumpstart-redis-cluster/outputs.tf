@@ -14,3 +14,18 @@
  * limitations under the License.
  */
 
+output "cmd_get_credentials" {
+  description = "Run this command to get cluster credentials via fleet."
+  value       = <<-END
+  gcloud container fleet memberships get-credentials ${var.cluster_name} \
+    --project ${var.project_id}
+  END
+}
+
+output "cmd_create_cluster" {
+  description = "Run this command once cluster credentials are in place to create the cluster."
+  value       = <<END
+  kubectl patch job/redis-cluster-start -n ${var.workload_config.namespace} \
+    --type=strategic --patch '{"spec":{"suspend":false}}'
+  END
+}
