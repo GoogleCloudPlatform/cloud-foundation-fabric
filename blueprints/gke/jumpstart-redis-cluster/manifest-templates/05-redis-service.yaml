@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gke_manifests_redis_service_service_redis_cluster]
 apiVersion: v1
 kind: Service
 metadata:
   name: redis-cluster
+  namespace: ${namespace}
 spec:
   clusterIP: None
   ports:
@@ -30,4 +30,3 @@ spec:
     appCluster: redis-cluster
   sessionAffinity: None
   type: ClusterIP
-# [END gke_manifests_redis_service_service_redis_cluster]
