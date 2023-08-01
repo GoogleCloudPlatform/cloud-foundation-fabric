@@ -18,7 +18,6 @@ locals {
   # https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster#use_least_privilege_sa
   cluster_sa_roles = [
     "roles/artifactregistry.reader",
-    "roles/gkehub.serviceAgent",
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
     "roles/monitoring.viewer",
