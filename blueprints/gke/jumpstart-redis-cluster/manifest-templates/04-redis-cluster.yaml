@@ -55,6 +55,7 @@ spec:
         resources:
           requests:
             cpu: ${statefulset_config.resource_requests.cpu}
+            ephemeral-storage: ${statefulset_config.volume_claim_size}
             memory: ${statefulset_config.resource_requests.memory}
         ports:
             - name: redis
@@ -87,10 +88,8 @@ spec:
         volumeMounts:
         - name: conf
           mountPath: /conf
-          readOnly: false
         - name: data
           mountPath: /data
-          readOnly: false
         - name: probes
           mountPath: /probes
           readOnly: true
@@ -98,11 +97,11 @@ spec:
       - name: conf
         configMap:
           name: redis-cluster
-          defaultMode: 0755
+          defaultMode: 1363
       - name: probes
         configMap:
           name: redis-probes
-          defaultMode: 0555
+          defaultMode: 1053
   volumeClaimTemplates:
   - metadata:
       name: data
