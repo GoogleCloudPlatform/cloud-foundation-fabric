@@ -35,6 +35,12 @@ variable "delete_swg_autogen_router_on_destroy" {
   default     = true
 }
 
+variable "description" {
+  description = "Optional description for the created resources."
+  type        = string
+  default     = "Managed by Terraform."
+}
+
 variable "labels" {
   description = "Resource labels."
   type        = map(string)
@@ -62,6 +68,7 @@ variable "policy_rules" {
       action                 = optional(string, "ALLOW")
       enabled                = optional(bool, true)
       tls_inspection_enabled = optional(bool, false)
+      description            = optional(string)
     })), {})
 
     url_lists = optional(map(object({
@@ -73,6 +80,7 @@ variable "policy_rules" {
       action                 = optional(string, "ALLOW")
       enabled                = optional(bool, true)
       tls_inspection_enabled = optional(bool, false)
+      description            = optional(string)
     })), {})
 
     custom = optional(map(object({
@@ -82,6 +90,7 @@ variable "policy_rules" {
       action                 = optional(string, "ALLOW")
       enabled                = optional(bool, true)
       tls_inspection_enabled = optional(bool, false)
+      description            = optional(string)
     })), {})
   })
   validation {
@@ -131,8 +140,9 @@ variable "subnetwork" {
 variable "tls_inspection_config" {
   description = "TLS inspection configuration."
   type = object({
-    ca_pool               = string
+    ca_pool               = optional(string, null)
     exclude_public_ca_set = optional(bool, false)
+    description           = optional(string)
   })
   default = null
 }

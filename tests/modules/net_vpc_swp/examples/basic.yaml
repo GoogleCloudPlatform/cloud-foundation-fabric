@@ -32,6 +32,7 @@ values:
     delete_swg_autogen_router_on_destroy: true
     labels:
       example: "value"
+    description: "Managed by Terraform."
 
 counts:
   google_network_security_gateway_security_policy: 1

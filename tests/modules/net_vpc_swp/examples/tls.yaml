@@ -18,11 +18,13 @@ values:
     name: "secure-web-proxy"
     project: "my-project"
     location: "europe-west4"
+    description: "Managed by Terraform."
   module.secure-web-proxy.google_network_security_tls_inspection_policy.tls-policy[0]:
     project: "my-project"
     name: "secure-web-proxy"
     location: "europe-west4"
     exclude_public_ca_set: false
+    description: "Managed by Terraform."
   module.secure-web-proxy.google_network_services_gateway.gateway:
     project: "my-project"
     name: "secure-web-proxy"
@@ -35,6 +37,7 @@ values:
     network: "projects/my-project/global/networks/my-network"
     subnetwork: "projects/my-project/regions/europe-west4/subnetworks/my-subnetwork"
     delete_swg_autogen_router_on_destroy: true
+    description: "Managed by Terraform."
   module.secure-web-proxy.google_network_security_gateway_security_policy_rule.custom_rules["custom-rule-1"]:
     project: "my-project"
     name: "custom-rule-1"
@@ -45,6 +48,7 @@ values:
     application_matcher: "request.path.contains('generate_204')"
     tls_inspection_enabled: true
     basic_profile: "ALLOW"
+    description: "Managed by Terraform."
   google_privateca_ca_pool.pool:
     name: "secure-web-proxy-capool"
     location: "europe-west4"

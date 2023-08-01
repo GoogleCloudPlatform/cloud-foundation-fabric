@@ -30,6 +30,7 @@ values:
     network: "projects/my-project/global/networks/my-network"
     subnetwork: "projects/my-project/regions/europe-west4/subnetworks/my-subnetwork"
     delete_swg_autogen_router_on_destroy: true
+    description: "Managed by Terraform."
   module.secure-web-proxy.google_network_security_gateway_security_policy_rule.secure_tag_rules["secure-tag-1"]:
     project: "my-project"
     name: "secure-tag-1"
@@ -40,6 +41,7 @@ values:
     application_matcher: null
     tls_inspection_enabled: false
     basic_profile: "ALLOW"
+    description: "Managed by Terraform."
   module.secure-web-proxy.google_network_security_gateway_security_policy_rule.secure_tag_rules["secure-tag-2"]:
     project: "my-project"
     name: "secure-tag-2"
@@ -50,6 +52,7 @@ values:
     application_matcher: null
     tls_inspection_enabled: false
     basic_profile: "ALLOW"
+    description: "Managed by Terraform."
   module.secure-web-proxy.google_network_security_gateway_security_policy_rule.url_list_rules["url-list-1"]:
     project: "my-project"
     name: "url-list-1"
@@ -59,6 +62,7 @@ values:
     application_matcher: null
     tls_inspection_enabled: false
     basic_profile: "ALLOW"
+    description: "Managed by Terraform."
   module.secure-web-proxy.google_network_security_gateway_security_policy_rule.url_list_rules["url-list-2"]:
     project: "my-project"
     name: "url-list-2"
@@ -69,6 +73,7 @@ values:
     application_matcher: null
     tls_inspection_enabled: false
     basic_profile: "ALLOW"
+    description: "Managed by Terraform."
   module.secure-web-proxy.google_network_security_gateway_security_policy_rule.custom_rules["custom-rule-1"]:
     project: "my-project"
     name: "custom-rule-1"
@@ -79,6 +84,7 @@ values:
     application_matcher: null
     tls_inspection_enabled: false
     basic_profile: "DENY"
+    description: "Managed by Terraform."
   module.secure-web-proxy.google_network_security_url_lists.url_lists["my-url-list"]:
     project: "my-project"
     name: "my-url-list"
@@ -86,6 +92,7 @@ values:
     values:
       - "www.google.com"
       - "google.com"
+    description: "Managed by Terraform."
 
 counts:
   google_network_security_gateway_security_policy: 1
