@@ -20,6 +20,11 @@ locals {
     ? "${module.registry.0.image_path}/${var.workload_config.image}"
     : var.workload_config.image
   )
+  wl_nodes = flatten([
+    for s in data.kubernetes_endpoints_v1.cluster_nodes.subset : [
+      for a in s.address : a.ip
+    ]
+  ])
   wl_templates = [
     for f in fileset(local.wl_templates_path, "[0-9]*yaml") :
     "${local.wl_templates_path}/${f}"
@@ -52,47 +57,36 @@ resource "kubernetes_manifest" "workload" {
     namespace          = var.workload_config.namespace
     statefulset_config = var.workload_config.statefulset_config
   }))
+  dynamic "wait" {
+    for_each = strcontains(each.key, "statefulset") ? [""] : []
+    content {
+      fields = {
+        "status.availableReplicas" = var.workload_config.statefulset_config.replicas
+      }
+    }
+  }
+  timeouts {
+    create = "20m"
+  }
   depends_on = [kubernetes_namespace.workload]
+}
+
+data "kubernetes_endpoints_v1" "cluster_nodes" {
+  metadata {
+    name      = "redis-cluster"
+    namespace = var.workload_config.namespace
+  }
+  depends_on = [kubernetes_manifest.workload]
 }
 
 resource "kubernetes_manifest" "cluster-start" {
   manifest = yamldecode(templatefile("${local.wl_templates_path}/start-cluster.yaml", {
     image     = local.wl_image
     namespace = var.workload_config.namespace
-    nodes = [
-      for i in range(var.workload_config.statefulset_config.replicas) :
-      "redis-${i}.redis-cluster.${var.workload_config.namespace}.svc.cluster.local:6379"
-    ]
+    nodes     = [for n in local.wl_nodes : "${n}:6379"]
   }))
+  field_manager {
+    force_conflicts = true
+  }
   depends_on = [kubernetes_namespace.workload]
 }
-
-# resource "kubernetes_job" "cluster-start-job" {
-#   metadata {
-#     name      = "redis-cluster-start"
-#     namespace = var.workload_config.namespace
-#   }
-#   spec {
-#     suspend = true
-#     template {
-#       metadata {}
-#       spec {
-#         container {
-#           name  = "redis-cluster-start"
-#           image = local.wl_image
-#           command = concat(
-#             ["redis-cli", "--cluster", "create"],
-#             [
-#               for i in range(var.workload_config.statefulset_config.replicas) :
-#               "redis-${i}.redis-cluster.${var.workload_config.namespace}.svc.cluster.local:6379"
-#             ],
-#             ["--cluster-replicas", "1"]
-#           )
-#         }
-#         restart_policy = "Never"
-#       }
-#     }
-#     backoff_limit = 4
-#   }
-#   depends_on = [kubernetes_manifest.workload]
-# }
