@@ -13,27 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gke_manifests_redis_configmap_configmap_redis_cluster]
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: redis-cluster
-data:
-  redis.conf:  |+
-    cluster-enabled yes
-    cluster-node-timeout 15000
-    cluster-config-file /data/nodes.conf
-    appendonly yes
-    protected-mode no
-    dir /data
-    port 6379
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: redis-probes
+  namespace: ${namespace}
 data:
-# [START gke_manifests_redis_configmap_configmap_redis_cluster_probes]
   readiness.sh: |-
     #!/bin/sh
 
@@ -60,5 +45,3 @@ data:
       echo "$pingResponse"
       exit 1
     fi
-# [END gke_manifests_redis_configmap_configmap_redis_cluster_probes]
-# [END gke_manifests_redis_configmap_configmap_redis_cluster]
