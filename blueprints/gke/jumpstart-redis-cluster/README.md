@@ -6,6 +6,7 @@
 
 - [ ] optionally support external kubeconfig via variable, and skip fleet resources if a kubeconfig is specified
 - [ ] Use Gateway to expose the service? it's a cluster with a headless service so maybe not?
+- [ ] Create autopilot cluster so that it does not need to go through 3 scale up cycles?
 
 ## Prerequisites
 
