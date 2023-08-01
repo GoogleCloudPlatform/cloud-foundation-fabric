@@ -15,6 +15,7 @@
  */
 
 locals {
+  # https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster#use_least_privilege_sa
   cluster_sa_roles = [
     "roles/artifactregistry.reader",
     "roles/gkehub.serviceAgent",
@@ -74,20 +75,22 @@ module "project" {
       ]
     }
   }
-  iam = {
-    "roles/gkehub.serviceAgent" = [
-      var.fleet_config.project_id == null
-      ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
-      : "serviceAccount:service-${module.fleet-project.0.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
-    ]
-  }
-  iam_additive = var.create_config.cluster != null ? {} : {
-    for k in local.cluster_sa_roles : k => [
-      local.cluster_service_account == "default"
-      ? "serviceAccount:${module.project.service_accounts.default.compute}"
-      : "serviceAccount:${local.cluster_service_account}"
-    ]
-  }
+  iam_additive = merge(
+    {
+      "roles/gkehub.serviceAgent" = [
+        var.fleet_config.project_id == null
+        ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
+        : "serviceAccount:service-${module.fleet-project.0.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      for k in local.cluster_sa_roles : k => [
+        local.cluster_service_account == "default"
+        ? "serviceAccount:${module.project.service_accounts.default.compute}"
+        : "serviceAccount:${local.cluster_service_account}"
+      ]
+    }
+  )
 }
 
 module "vpc" {
