@@ -149,10 +149,8 @@ module "dataplex-autodq" {
   data = {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
-  incremental_field = "modified_date"
-  data_quality_spec_file = {
-    path = "config/data_quality_spec.yaml"
-  }
+  incremental_field      = "modified_date"
+  data_quality_spec_file = "config/data_quality_spec.yaml"
 }
 # tftest modules=1 resources=1 files=data_quality_spec inventory=datascan_dq.yaml
 ```
@@ -232,11 +230,8 @@ module "dataplex-autodq" {
   data = {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
-  incremental_field = "modified_date"
-  data_quality_spec_file = {
-    path               = "config/data_quality_spec_camel_case.yaml"
-    convert_camel_case = true
-  }
+  incremental_field      = "modified_date"
+  data_quality_spec_file = "config/data_quality_spec_camel_case.yaml"
 }
 # tftest modules=1 resources=1 files=data_quality_spec_camel_case inventory=datascan_dq.yaml
 ```
