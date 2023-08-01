@@ -78,9 +78,11 @@ variable "data_quality_spec" {
 }
 
 variable "data_quality_spec_file" {
-  description = "Path to a YAML file containing DataQualityScan related setting. Set `convert_camel_case` to true if your YAML file uses camelCase instead of snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec."
+  description = "Path to a YAML file containing DataQualityScan related setting. Input content can use either camelCase or snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec."
   default     = null
-  type        = string
+  type = object({
+    path = string
+  })
 }
 
 variable "description" {

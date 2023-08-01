@@ -32,7 +32,7 @@ module "dataplex-autodq" {
 
 To create an AutoDQ Data Quality scan, provide the `data_quality_spec` input arguments as documented in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec.
 
-Please refer to [this page](https://cloud.example.com/dataplex/docs/reference/rest/v1/DataQualityRule) for the rule types and specifications. You need to convert any variable names in the linked page from `CamelCase` to `snake_case`.
+Documentation for the supported rule types and rule specifications can be found in https://cloud.example.com/dataplex/docs/reference/rest/v1/DataQualityRule.
 
 This example shows how to create a Data Quality scan using AutoDQ.
 
@@ -150,7 +150,9 @@ module "dataplex-autodq" {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
   incremental_field      = "modified_date"
-  data_quality_spec_file = "config/data_quality_spec.yaml"
+  data_quality_spec_file = {
+    path = "config/data_quality_spec.yaml"
+  }
 }
 # tftest modules=1 resources=1 files=data_quality_spec inventory=datascan_dq.yaml
 ```
@@ -214,7 +216,7 @@ rules:
       sql_expression: COUNT(*) > 0
 ```
 
-If your input YAML uses camelCase instead of snake_case which is expected by the module, you can use the following code to convert the input YAML into the expected format. This should also produce the same DataScan configuration as the previous examples.
+While the module only accepts input in snake_case, the YAML file provided to the `data_quality_spec_file` variable can use either camelCase or snake_case. This example below should also produce the same DataScan configuration as the previous examples.
 
 ```hcl
 module "dataplex-autodq" {
@@ -231,7 +233,9 @@ module "dataplex-autodq" {
     resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
   }
   incremental_field      = "modified_date"
-  data_quality_spec_file = "config/data_quality_spec_camel_case.yaml"
+  data_quality_spec_file = {
+    path = "config/data_quality_spec_camel_case.yaml"
+  }
 }
 # tftest modules=1 resources=1 files=data_quality_spec_camel_case inventory=datascan_dq.yaml
 ```
@@ -364,7 +368,6 @@ module "dataplex-autodq" {
 
 ## IAM
 
-
 There are three mutually exclusive ways of managing IAM in this module
 
 - non-authoritative via the `iam_additive` and `iam_additive_members` variables, where bindings created outside this module will coexist with those managed here
@@ -412,22 +415,22 @@ module "dataplex-autodq" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [data](variables.tf#L17) | The data source for DataScan. The source can be either a Dataplex `entity` or a BigQuery `resource`. | <code title="object&#40;&#123;&#10;  entity   &#61; optional&#40;string&#41;&#10;  resource &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L147) | Name of Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L158) | The ID of the project where the Dataplex AutoDQ Scans will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L163) | Region for the Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L146) | Name of Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L157) | The ID of the project where the Dataplex AutoDQ Scans will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L162) | Region for the Dataplex AutoDQ Scan. | <code>string</code> | ✓ |  |
 | [data_profile_spec](variables.tf#L29) | DataProfileScan related setting. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [data_quality_spec](variables.tf#L38) | DataQualityScan related setting. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;  rules &#61; list&#40;object&#40;&#123;&#10;    column               &#61; optional&#40;string&#41;&#10;    ignore_null          &#61; optional&#40;bool, null&#41;&#10;    dimension            &#61; string&#10;    threshold            &#61; optional&#40;number&#41;&#10;    non_null_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    range_expectation &#61; optional&#40;object&#40;&#123;&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    regex_expectation &#61; optional&#40;object&#40;&#123;&#10;      regex &#61; string&#10;    &#125;&#41;&#41;&#10;    set_expectation &#61; optional&#40;object&#40;&#123;&#10;      values &#61; list&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    uniqueness_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    statistic_range_expectation &#61; optional&#40;object&#40;&#123;&#10;      statistic          &#61; string&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    row_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;    table_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [data_quality_spec_file](variables.tf#L80) | Path to a YAML file containing DataQualityScan related setting. Set `convert_camel_case` to true if your YAML file uses camelCase instead of snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  path               &#61; string&#10;  convert_camel_case &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [description](variables.tf#L89) | Custom description for DataScan. | <code>string</code> |  | <code>null</code> |
-| [execution_schedule](variables.tf#L95) | Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API. | <code>string</code> |  | <code>null</code> |
-| [group_iam](variables.tf#L101) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam](variables.tf#L108) | Dataplex AutoDQ  IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive](variables.tf#L115) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive_members](variables.tf#L122) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_policy](variables.tf#L128) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
-| [incremental_field](variables.tf#L134) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L140) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L152) | Optional prefix used to generate Dataplex AutoDQ DataScan ID. | <code>string</code> |  | <code>null</code> |
+| [data_quality_spec_file](variables.tf#L80) | Path to a YAML file containing DataQualityScan related setting. Input content can use either camelCase or snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  path &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L88) | Custom description for DataScan. | <code>string</code> |  | <code>null</code> |
+| [execution_schedule](variables.tf#L94) | Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API. | <code>string</code> |  | <code>null</code> |
+| [group_iam](variables.tf#L100) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables.tf#L107) | Dataplex AutoDQ  IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_additive](variables.tf#L114) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_additive_members](variables.tf#L121) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_policy](variables.tf#L127) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
+| [incremental_field](variables.tf#L133) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L139) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L151) | Optional prefix used to generate Dataplex AutoDQ DataScan ID. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

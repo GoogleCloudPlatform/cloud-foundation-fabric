@@ -61,9 +61,6 @@ locals {
     merge(var.data_quality_spec, local._file_data_quality_spec) :
     null
   )
-  # data_quality_spec = (
-  #   var.data_quality_spec
-  # )
 }
 
 resource "google_dataplex_datascan" "datascan" {
