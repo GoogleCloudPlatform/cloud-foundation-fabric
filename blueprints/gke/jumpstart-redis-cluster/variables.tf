@@ -90,8 +90,8 @@ variable "workload_config" {
     namespace = optional(string, "redis")
     statefulset_config = optional(object({
       resource_requests = optional(object({
-        cpu    = optional(string, "100m")
-        memory = optional(string, "100Mi")
+        cpu    = optional(string, "1")
+        memory = optional(string, "1Gi")
       }), {})
       volume_claim_size = optional(string, "1Gi")
     }), {})
