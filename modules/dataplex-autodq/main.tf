@@ -16,7 +16,7 @@
 
 locals {
   prefix                      = var.prefix == null ? "" : "${var.prefix}-"
-  _file_data_quality_spec_raw = var.data_quality_spec_file != null ? yamldecode(file(var.data_quality_spec_file)) : tomap({})
+  _file_data_quality_spec_raw = var.data_quality_spec_file != null ? yamldecode(file(var.data_quality_spec_file.path)) : tomap({})
   _file_data_quality_spec = var.data_quality_spec_file == null ? null : {
     sampling_percent = try(local._file_data_quality_spec_raw.samplingPercent, local._file_data_quality_spec_raw.sampling_percent, null)
     row_filter       = try(local._file_data_quality_spec_raw.rowFilter, local._file_data_quality_spec_raw.row_filter, null)
