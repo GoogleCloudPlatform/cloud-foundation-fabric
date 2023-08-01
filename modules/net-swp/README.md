@@ -15,7 +15,7 @@ policies:
 
 ```hcl
 module "secure-web-proxy" {
-  source = "./fabric/modules/net-vpc-swp"
+  source = "./fabric/modules/net-swp"
 
   project_id   = "my-project"
   region       = "europe-west4"
@@ -35,7 +35,7 @@ module "secure-web-proxy" {
 
 ```hcl
 module "secure-web-proxy" {
-  source = "./fabric/modules/net-vpc-swp"
+  source = "./fabric/modules/net-swp"
 
   project_id   = "my-project"
   region       = "europe-west4"
@@ -136,7 +136,7 @@ resource "google_privateca_ca_pool_iam_member" "member" {
 }
 
 module "secure-web-proxy" {
-  source = "./fabric/modules/net-vpc-swp"
+  source = "./fabric/modules/net-swp"
 
   project_id   = "my-project"
   region       = "europe-west4"

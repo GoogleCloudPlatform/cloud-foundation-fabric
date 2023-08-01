@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# file: tests/modules/net_vpc_swp/examples/basic.yaml
+# file: tests/modules/net_swp/examples/basic.yaml
 
 values:
   module.secure-web-proxy.google_network_security_gateway_security_policy.policy:
