@@ -2,6 +2,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: redis-pdb
+  namespace: ${namespace}
 spec:
   minAvailable: 3
   selector:

@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gke_manifests_redis_cluster_statefulset_redis]
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis
+  namespace: ${namespace}
 spec:
   serviceName: "redis-cluster"
   replicas: 6
@@ -45,7 +45,7 @@ spec:
               topologyKey: kubernetes.io/hostname
       containers:
       - name: redis
-        image: "redis:6.2"
+        image: ${image}
         command:
           - "redis-server"
         args:
@@ -54,8 +54,8 @@ spec:
           - "no"
         resources:
           requests:
-            cpu: "100m"
-            memory: "100Mi"
+            cpu: ${statefulset_config.resource_requests.cpu}
+            memory: ${statefulset_config.resource_requests.memory}
         ports:
             - name: redis
               containerPort: 6379
@@ -63,7 +63,6 @@ spec:
             - name: cluster
               containerPort: 16379
               protocol: "TCP"
-        # [START gke_manifests_redis_cluster_statefulset_redis_probes]
         startupProbe:
           periodSeconds: 5
           timeoutSeconds: 5
@@ -85,7 +84,6 @@ spec:
           failureThreshold: 5
           exec:
             command: ["sh", "-c", "/probes/readiness.sh"]
-        # [END gke_manifests_redis_cluster_statefulset_redis_probes]
         volumeMounts:
         - name: conf
           mountPath: /conf
@@ -112,5 +110,4 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 1Gi
-# [END gke_manifests_redis_cluster_statefulset_redis]
+          storage: ${statefulset_config.volume_claim_size}

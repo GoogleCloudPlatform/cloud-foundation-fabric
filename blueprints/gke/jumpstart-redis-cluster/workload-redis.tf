@@ -48,8 +48,9 @@ resource "kubernetes_namespace" "workload" {
 resource "kubernetes_manifest" "workload" {
   for_each = toset(local.wl_templates)
   manifest = yamldecode(templatefile(each.value, {
-    image     = local.wl_image
-    namespace = var.workload_config.namespace
+    image              = local.wl_image
+    namespace          = var.workload_config.namespace
+    statefulset_config = var.workload_config.statefulset_config
   }))
   depends_on = [kubernetes_namespace.workload]
 }
