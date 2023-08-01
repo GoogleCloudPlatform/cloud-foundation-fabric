@@ -23,7 +23,7 @@ resource "google_network_security_gateway_security_policy" "policy" {
   project               = var.project_id
   name                  = var.name
   location              = var.region
-  description           = var.tls_inspection_config != null ? var.tls_inspection_config.gateway_description : null
+  description           = var.gateway_security_policy_description
   tls_inspection_policy = var.tls_inspection_config != null ? google_network_security_tls_inspection_policy.tls-policy.0.id : null
 }
 
@@ -33,7 +33,7 @@ resource "google_network_security_tls_inspection_policy" "tls-policy" {
   project               = var.project_id
   name                  = var.name
   location              = var.region
-  description           = var.tls_inspection_config.tls_description
+  description           = var.tls_inspection_config.description
   ca_pool               = var.tls_inspection_config.ca_pool
   exclude_public_ca_set = var.tls_inspection_config.exclude_public_ca_set
 }

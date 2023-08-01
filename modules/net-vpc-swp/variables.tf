@@ -41,6 +41,12 @@ variable "description" {
   default     = "Managed by Terraform."
 }
 
+variable "gateway_security_policy_description" {
+  description = "Optional description for the gateway security policy."
+  type        = string
+  default     = "Managed by Terraform."
+}
+
 variable "labels" {
   description = "Resource labels."
   type        = map(string)
@@ -140,10 +146,9 @@ variable "subnetwork" {
 variable "tls_inspection_config" {
   description = "TLS inspection configuration."
   type = object({
-    ca_pool               = string
+    ca_pool               = optional(string, null)
     exclude_public_ca_set = optional(bool, false)
-    gateway_description   = optional(string, "Managed by Terraform.")
-    tls_description       = optional(string, "Managed by Terraform.")
+    description           = optional(string, "Managed by Terraform.")
   })
   default = null
 }
