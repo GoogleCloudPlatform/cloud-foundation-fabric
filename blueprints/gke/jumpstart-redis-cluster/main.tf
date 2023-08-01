@@ -74,22 +74,13 @@ module "project" {
       ]
     }
   }
-  iam_additive = merge(
-    {
-      "roles/gkehub.serviceAgent" = [
-        var.fleet_config.project_id == null
-        ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
-        : "serviceAccount:service-${module.fleet-project.0.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
-      ]
-    },
-    {
-      for k in local.cluster_sa_roles : k => [
-        local.cluster_service_account == "default"
-        ? "serviceAccount:${module.project.service_accounts.default.compute}"
-        : "serviceAccount:${local.cluster_service_account}"
-      ]
-    }
-  )
+  iam_additive = {
+    "roles/gkehub.serviceAgent" = [
+      var.fleet_config.project_id == null
+      ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
+      : "serviceAccount:service-${module.fleet-project.0.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
+    ]
+  }
 }
 
 module "vpc" {

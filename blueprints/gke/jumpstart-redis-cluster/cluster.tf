@@ -46,12 +46,16 @@ data "google_container_cluster" "cluster" {
 
 module "cluster-service-account" {
   source     = "../../../modules/iam-service-account"
-  count      = var.create_config.cluster != null ? 1 : 0
   project_id = module.project.project_id
-  name       = var.prefix
+  name = (
+    var.create_config.cluster != null
+    ? var.prefix
+    : data.google_container_cluster.cluster.0.node_config.0.service_account
+  )
   iam_project_roles = {
     (module.project.project_id) = local.cluster_sa_roles
   }
+  service_account_create = var.create_config.cluster != null
 }
 
 module "cluster" {
