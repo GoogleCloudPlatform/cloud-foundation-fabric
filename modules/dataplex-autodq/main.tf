@@ -129,7 +129,7 @@ resource "google_dataplex_datascan" "datascan" {
         for_each = local.data_quality_spec.rules
         content {
           column      = try(rules.value.column, null)
-          ignore_null = try(rules.value.ignore_null, rules.value.ignoreNull, null)
+          ignore_null = try(rules.value.ignore_null, null)
           dimension   = rules.value.dimension
           threshold   = try(rules.value.threshold, null)
 
@@ -215,7 +215,16 @@ resource "google_dataplex_datascan" "datascan" {
         for rule in try(local.data_quality_spec.rules, []) :
         length([
           for k, v in rule :
-          v if contains(["non_null_expectation", "range_expectation", "regex_expectation", "set_expectation", "uniqueness_expectation", "statistic_range_expectation", "row_condition_expectation", "table_condition_expectation"], k) && v != null
+          v if contains([
+            "non_null_expectation",
+            "range_expectation",
+            "regex_expectation",
+            "set_expectation",
+            "uniqueness_expectation",
+            "statistic_range_expectation",
+            "row_condition_expectation",
+            "table_condition_expectation"
+          ], k) && v != null
       ]) == 1])
       error_message = "Datascan rule must contain a key that is one of ['non_null_expectation', 'range_expectation', 'regex_expectation', 'set_expectation', 'uniqueness_expectation', 'statistic_range_expectation', 'row_condition_expectation', 'table_condition_expectation]."
     }
