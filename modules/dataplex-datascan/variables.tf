@@ -27,7 +27,7 @@ variable "data" {
 }
 
 variable "data_profile_spec" {
-  description = "DataProfileScan related setting. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec."
+  description = "DataProfileScan related setting. Variable descriptions are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec."
   default     = null
   type = object({
     sampling_percent = optional(number)
@@ -36,7 +36,7 @@ variable "data_profile_spec" {
 }
 
 variable "data_quality_spec" {
-  description = "DataQualityScan related setting. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec."
+  description = "DataQualityScan related setting. Variable descriptions are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec."
   default     = null
   type = object({
     sampling_percent = optional(number)
