@@ -70,6 +70,7 @@ variable "organization" {
     billing_type            = optional(string)
     database_encryption_key = optional(string)
     analytics_region        = optional(string, "europe-west1")
+    retention               = optional(string)
   })
   default = null
 }
