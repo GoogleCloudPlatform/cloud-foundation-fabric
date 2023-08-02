@@ -77,6 +77,7 @@ These modules are used in the examples included in this repository. If you are u
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
 - [Dataplex](./dataplex)
+- [Dataplex DataScan](./dataplex-datascan/)
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
 - [Datafusion](./datafusion)
