@@ -1,0 +1,195 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+values:
+  google_dataplex_datascan.datascan:
+    data:
+    - entity: null
+      resource: //bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations
+    data_profile_spec: []
+    data_quality_spec:
+    - row_filter: station_id > 1000
+      rules:
+      - column: address
+        dimension: VALIDITY
+        ignore_null: null
+        non_null_expectation:
+        - {}
+        range_expectation: []
+        regex_expectation: []
+        row_condition_expectation: []
+        set_expectation: []
+        statistic_range_expectation: []
+        table_condition_expectation: []
+        threshold: 0.99
+        uniqueness_expectation: []
+      - column: council_district
+        dimension: VALIDITY
+        ignore_null: true
+        non_null_expectation: []
+        range_expectation:
+        - max_value: '10'
+          min_value: '1'
+          strict_max_enabled: false
+          strict_min_enabled: true
+        regex_expectation: []
+        row_condition_expectation: []
+        set_expectation: []
+        statistic_range_expectation: []
+        table_condition_expectation: []
+        threshold: 0.9
+        uniqueness_expectation: []
+      - column: council_district
+        dimension: VALIDITY
+        ignore_null: null
+        non_null_expectation: []
+        range_expectation:
+        - max_value: null
+          min_value: '3'
+          strict_max_enabled: false
+          strict_min_enabled: false
+        regex_expectation: []
+        row_condition_expectation: []
+        set_expectation: []
+        statistic_range_expectation: []
+        table_condition_expectation: []
+        threshold: 0.8
+        uniqueness_expectation: []
+      - column: power_type
+        dimension: VALIDITY
+        ignore_null: false
+        non_null_expectation: []
+        range_expectation: []
+        regex_expectation:
+        - regex: .*solar.*
+        row_condition_expectation: []
+        set_expectation: []
+        statistic_range_expectation: []
+        table_condition_expectation: []
+        threshold: null
+        uniqueness_expectation: []
+      - column: property_type
+        dimension: VALIDITY
+        ignore_null: false
+        non_null_expectation: []
+        range_expectation: []
+        regex_expectation: []
+        row_condition_expectation: []
+        set_expectation:
+        - values:
+          - sidewalk
+          - parkland
+        statistic_range_expectation: []
+        table_condition_expectation: []
+        threshold: null
+        uniqueness_expectation: []
+      - column: address
+        dimension: UNIQUENESS
+        ignore_null: null
+        non_null_expectation: []
+        range_expectation: []
+        regex_expectation: []
+        row_condition_expectation: []
+        set_expectation: []
+        statistic_range_expectation: []
+        table_condition_expectation: []
+        threshold: null
+        uniqueness_expectation:
+        - {}
+      - column: number_of_docks
+        dimension: VALIDITY
+        ignore_null: null
+        non_null_expectation: []
+        range_expectation: []
+        regex_expectation: []
+        row_condition_expectation: []
+        set_expectation: []
+        statistic_range_expectation:
+        - max_value: '15'
+          min_value: '5'
+          statistic: MEAN
+          strict_max_enabled: true
+          strict_min_enabled: true
+        table_condition_expectation: []
+        threshold: null
+        uniqueness_expectation: []
+      - column: footprint_length
+        dimension: VALIDITY
+        ignore_null: null
+        non_null_expectation: []
+        range_expectation: []
+        regex_expectation: []
+        row_condition_expectation:
+        - sql_expression: footprint_length > 0 AND footprint_length <= 10
+        set_expectation: []
+        statistic_range_expectation: []
+        table_condition_expectation: []
+        threshold: null
+        uniqueness_expectation: []
+      - column: null
+        dimension: VALIDITY
+        ignore_null: null
+        non_null_expectation: []
+        range_expectation: []
+        regex_expectation: []
+        row_condition_expectation: []
+        set_expectation: []
+        statistic_range_expectation: []
+        table_condition_expectation:
+        - sql_expression: COUNT(*) > 0
+        threshold: null
+        uniqueness_expectation: []
+      sampling_percent: 100
+    data_scan_id: test-datascan
+    description: Terraform Managed. Custom description.
+    display_name: test-datascan
+    execution_spec:
+    - field: modified_date
+      trigger:
+      - on_demand: []
+        schedule:
+        - cron: TZ=America/New_York 1 1 * * *
+    labels:
+      billing_id: a
+    location: us-central1
+    project: test-project
+    timeouts: null
+  google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanEditor"]:
+    condition: []
+    data_scan_id: test-datascan
+    location: us-central1
+    members:
+    - group:user-group@example.com
+    - user:user@example.com
+    project: test-project
+    role: roles/dataplex.dataScanEditor
+  google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanViewer"]:
+    condition: []
+    data_scan_id: test-datascan
+    location: us-central1
+    members:
+    - user:user@example.com
+    project: test-project
+    role: roles/dataplex.dataScanViewer
+
+counts:
+  google_dataplex_datascan: 1
+  google_dataplex_datascan_iam_binding: 2
+  modules: 0
+  resources: 3
+
+outputs:
+  data_scan_id: test-datascan
+  id: __missing__
+  name: __missing__
+  type: __missing__
