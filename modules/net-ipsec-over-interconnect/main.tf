@@ -15,11 +15,6 @@
  */
 
 locals {
-  peer_gateway = (
-    var.peer_gateway_config.create
-    ? try(google_compute_external_vpn_gateway.default[0], null)
-    : var.peer_gateway_config
-  )
   peer_gateway_id = (
     var.peer_gateway_config.create
     ? try(google_compute_external_vpn_gateway.default[0].id, null)
