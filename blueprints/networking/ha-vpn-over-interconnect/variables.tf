@@ -33,10 +33,7 @@ variable "overlay_config" {
         ip_ranges   = map(string)
       }))
     })
-    onprem_vpn_gateway = object({
-      redundancy_type = optional(string, "TWO_IPS_REDUNDANCY")
-      interfaces      = list(string)
-    })
+    onprem_vpn_gateway_interfaces = list(string)
     gateways = map(map(object({
       bgp_peer = object({
         address        = string
