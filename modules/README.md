@@ -46,9 +46,11 @@ These modules are used in the examples included in this repository. If you are u
 - [DNS](./dns)
 - [DNS Response Policy](./dns-response-policy/)
 - [External Application Load Balancer](./net-lb-app-ext/)
-- [External Network Passthrough Load Balancer](./net-lb-ext)
-- [Internal Application LB](./net-lb-app-int)
-- [Internal Network Passthrough Load Balancer](./net-lb-int)
+- [External Passthrough Network Load Balancer](./net-lb-ext)
+- [Internal Application Load Balancer](./net-lb-app-int)
+- [Internal Passthrough Network Load Balancer](./net-lb-int)
+- [Internal Proxy Network Load Balancer](./net-lb-proxy-int)
+- [Internal ]
 - [NAT](./net-cloudnat)
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)
@@ -97,7 +99,7 @@ These modules are used in the examples included in this repository. If you are u
 - [KMS](./kms)
 - [SecretManager](./secret-manager)
 - [VPC Service Control](./vpc-sc)
-- [Secure Web Proxy](./net-vpc-swp)
+- [Secure Web Proxy](./net-swp)
 
 ## Serverless
 
