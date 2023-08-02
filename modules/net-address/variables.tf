@@ -46,6 +46,18 @@ variable "internal_addresses" {
   default = {}
 }
 
+variable "ipsec_interconnect_addresses" {
+  description = "Map of internal addresses used for HPA VPN over Cloud Interconnect."
+  type = map(object({
+    region        = string
+    address       = string
+    network       = string
+    description   = optional(string, "Terraform managed.")
+    prefix_length = number
+  }))
+  default = {}
+}
+
 # variable "internal_address_labels" {
 #   description = "Optional labels for internal addresses, keyed by address name."
 #   type        = map(map(string))
