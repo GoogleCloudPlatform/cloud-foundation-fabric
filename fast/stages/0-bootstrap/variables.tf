@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,12 +113,12 @@ variable "fast_features" {
 variable "federated_identity_providers" {
   description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
   type = map(object({
-    attribute_condition = string
+    attribute_condition = optional(string)
     issuer              = string
-    custom_settings = object({
-      issuer_uri        = string
-      allowed_audiences = list(string)
-    })
+    custom_settings = optional(object({
+      issuer_uri        = optional(string)
+      allowed_audiences = optional(list(string))
+    }))
   }))
   default  = {}
   nullable = false

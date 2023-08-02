@@ -20,8 +20,18 @@ locals {
   cicd_workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
       "${path.module}/templates/workflow-${v.type}.yaml", {
+        # If users give a list of custom audiences we set by default the first element.
+        # If no audiences are given, we set https://iam.googleapis.com/{PROVIDER_NAME}
+        audience = (
+          try(var.federated_identity_providers.custom_settings.allowed_audiences, null) != null
+          ? var.federated_identity_providers.custom_settings.allowed_audiences[0]
+          : try(
+            "https://iam.googleapis.com/${google_iam_workload_identity_pool_provider.default[v.identity_provider].name}",
+            null
+          )
+        )
         identity_provider = try(
-          local.cicd_providers[v["identity_provider"]].name, ""
+          google_iam_workload_identity_pool_provider.default[v.identity_provider].name, ""
         )
         outputs_bucket = module.automation-tf-output-gcs.name
         service_account = try(

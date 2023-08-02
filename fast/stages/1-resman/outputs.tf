@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,11 @@ locals {
     for k, v in local.cicd_repositories : k => templatefile(
       "${path.module}/templates/workflow-${v.type}.yaml",
       merge(local.cicd_workflow_attrs[k], {
+        # If users give a list of custom audiences we set by default the first element.
+        # If no audiences are given, we set https://iam.googleapis.com/{PROVIDER_NAME}
+        audience = try(
+          local.identity_providers[v.identity_provider].audience, null
+        )
         identity_provider = try(
           local.identity_providers[v.identity_provider].name, null
         )
