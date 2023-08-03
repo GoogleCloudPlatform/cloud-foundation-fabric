@@ -25,7 +25,7 @@ locals {
         "https://iam.googleapis.com/${v.name}"
       )
       issuer           = local.identity_providers[k].issuer
-      issuer_uri       = v.oidc[0].issuer_uri
+      issuer_uri       = try(v.oidc[0].issuer_uri, null)
       name             = v.name
       principal_tpl    = local.identity_providers[k].principal_tpl
       principalset_tpl = local.identity_providers[k].principalset_tpl

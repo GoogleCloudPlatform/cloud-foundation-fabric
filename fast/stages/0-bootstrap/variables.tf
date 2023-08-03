@@ -117,11 +117,16 @@ variable "federated_identity_providers" {
     issuer              = string
     custom_settings = optional(object({
       issuer_uri        = optional(string)
-      allowed_audiences = optional(list(string))
-    }))
+      allowed_audiences = optional(list(string), [])
+    }), {})
   }))
   default  = {}
   nullable = false
+  # TODO: fix validation
+  # validation {
+  #   condition     = var.federated_identity_providers.custom_settings == null
+  #   error_message = "Custom settings cannot be null."
+  # }
 }
 
 variable "groups" {
