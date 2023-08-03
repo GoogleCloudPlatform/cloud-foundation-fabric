@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ variable "automation" {
     project_number          = string
     federated_identity_pool = string
     federated_identity_providers = map(object({
+      audience         = string
       issuer           = string
       issuer_uri       = string
       name             = string

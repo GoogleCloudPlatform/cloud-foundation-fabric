@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ locals {
       principal_tpl    = "principal://iam.googleapis.com/%s/subject/repo:%s:ref:refs/heads/%s"
       principalset_tpl = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
-    # https://docs.gitlab.com/ee/ci/cloud_services/index.html#how-it-works
+    # https://docs.gitlab.com/ee/ci/secrets/id_token_authentication.html#token-payload
     gitlab = {
       attribute_mapping = {
         "google.subject"                  = "assertion.sub"
@@ -56,10 +56,9 @@ locals {
         "attribute.ref_protected"         = "assertion.ref_protected"
         "attribute.ref_type"              = "assertion.ref_type"
       }
-      allowed_audiences = ["https://gitlab.com"]
-      issuer_uri        = "https://gitlab.com"
-      principal_tpl     = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
-      principalset_tpl  = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      issuer_uri       = "https://gitlab.com"
+      principal_tpl    = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
+      principalset_tpl = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
   }
 }
@@ -82,13 +81,11 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   attribute_condition                = each.value.attribute_condition
   attribute_mapping                  = each.value.attribute_mapping
   oidc {
-    allowed_audiences = (
-      try(each.value.custom_settings.allowed_audiences, null) != null
-      ? each.value.custom_settings.allowed_audiences
-      : try(each.value.allowed_audiences, null)
-    )
+    # Setting an empty list configures allowed_audiences to the url of the provider
+    allowed_audiences = each.value.custom_settings.allowed_audiences
+    # If users don't provide an issuer_uri, we set the public one for the plaform choosed.
     issuer_uri = (
-      try(each.value.custom_settings.issuer_uri, null) != null
+      each.value.custom_settings.issuer_uri != null
       ? each.value.custom_settings.issuer_uri
       : try(each.value.issuer_uri, null)
     )
