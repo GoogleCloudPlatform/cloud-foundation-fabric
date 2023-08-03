@@ -399,7 +399,7 @@ This is a sample configuration of a GitHub and a Gitlab provider. Every paramete
 
 If users don't specify the issuer_uri we assume the default issuer_uri for public platforms should be used.
 
-If users don't specify the audience, we set the url of the provider, as recommended in the [WIF FA section](https://cloud.google.com/iam/docs/best-practices-for-using-workload-identity-federation#provider-audience)
+If users don't specify the audience, we set the url of the provider, as recommended in the [WIF FA section](https://cloud.google.com/iam/docs/best-practices-for-using-workload-identity-federation#provider-audience).
 
 ```tfvars
 federated_identity_providers = {
