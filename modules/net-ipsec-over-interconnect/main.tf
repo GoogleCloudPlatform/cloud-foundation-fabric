@@ -15,11 +15,6 @@
  */
 
 locals {
-  peer_gateway = (
-    var.peer_gateway_config.create
-    ? try(google_compute_external_vpn_gateway.default[0], null)
-    : var.peer_gateway_config
-  )
   peer_gateway_id = (
     var.peer_gateway_config.create
     ? try(google_compute_external_vpn_gateway.default[0].id, null)
@@ -35,7 +30,7 @@ locals {
 }
 
 resource "google_compute_ha_vpn_gateway" "default" {
-  name    = var.name
+  name    = "vpn-gw-${var.name}"
   network = var.network
   project = var.project_id
   region  = var.region
@@ -51,10 +46,10 @@ resource "google_compute_ha_vpn_gateway" "default" {
 
 resource "google_compute_external_vpn_gateway" "default" {
   count           = var.peer_gateway_config.create ? 1 : 0
-  name            = var.name
+  name            = coalesce(var.peer_gateway_config.name, "peer-vpn-gw-${var.name}")
   project         = var.project_id
   description     = var.peer_gateway_config.description
-  redundancy_type = var.peer_gateway_config.redundancy_type
+  redundancy_type = length(var.peer_gateway_config.interfaces) == 2 ? "TWO_IPS_REDUNDANCY" : "SINGLE_IP_INTERNALLY_REDUNDANT"
   dynamic "interface" {
     for_each = var.peer_gateway_config.interfaces
     content {
@@ -66,7 +61,7 @@ resource "google_compute_external_vpn_gateway" "default" {
 
 resource "google_compute_router" "default" {
   count   = var.router_config.create ? 1 : 0
-  name    = coalesce(var.router_config.name, "vpn-${var.name}")
+  name    = coalesce(var.router_config.name, "router-${var.name}")
   project = var.project_id
   region  = var.region
   network = var.network

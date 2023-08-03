@@ -38,6 +38,14 @@ output "internal_addresses" {
   }
 }
 
+output "ipsec_interconnect_addresses" {
+  description = "Allocated internal addresses for HA VPN over Cloud Interconnect."
+  value = {
+    for address in google_compute_address.ipsec_interconnect :
+    address.name => address
+  }
+}
+
 output "psa_addresses" {
   description = "Allocated internal addresses for PSA endpoints."
   value = {

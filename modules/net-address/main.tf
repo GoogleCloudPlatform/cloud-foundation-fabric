@@ -69,3 +69,16 @@ resource "google_compute_global_address" "psa" {
   purpose       = "VPC_PEERING"
   # labels       = lookup(var.internal_address_labels, each.key, {})
 }
+
+resource "google_compute_address" "ipsec_interconnect" {
+  for_each      = var.ipsec_interconnect_addresses
+  project       = var.project_id
+  name          = each.key
+  description   = each.value.description
+  address       = each.value.address
+  address_type  = "INTERNAL"
+  region        = each.value.region
+  network       = each.value.network
+  prefix_length = each.value.prefix_length
+  purpose       = "IPSEC_INTERCONNECT"
+}

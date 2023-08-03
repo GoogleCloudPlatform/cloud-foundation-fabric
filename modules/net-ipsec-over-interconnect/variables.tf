@@ -35,20 +35,19 @@ variable "network" {
 variable "peer_gateway_config" {
   description = "IP addresses for the external peer gateway."
   type = object({
-    create          = optional(bool, false)
-    description     = optional(string, "Terraform managed IPSec over Interconnect VPN gateway")
-    name            = optional(string, null)
-    id              = optional(string, null)
-    redundancy_type = optional(string)
-    interfaces      = optional(list(string))
+    create      = optional(bool, false)
+    description = optional(string, "Terraform managed IPSec over Interconnect VPN gateway")
+    name        = optional(string, null)
+    id          = optional(string, null)
+    interfaces  = optional(list(string), [])
   })
+  nullable = false
   validation {
     condition = anytrue([
       var.peer_gateway_config.create == false && var.peer_gateway_config.id != null,
-      var.peer_gateway_config.create == true && try(var.peer_gateway_config.redundancy_type, "") == "SINGLE_IP_INTERNALLY_REDUNDANT" && try(length(var.peer_gateway_config.interfaces) == 1, false),
-      var.peer_gateway_config.create == true && try(var.peer_gateway_config.redundancy_type, "") == "TWO_IPS_REDUNDANCY" && try(length(var.peer_gateway_config.interfaces) == 2, false),
+      var.peer_gateway_config.create == true && (try(length(var.peer_gateway_config.interfaces) == 1, false) || try(length(var.peer_gateway_config.interfaces) == 2, false))
     ])
-    error_message = "When using an existing gateway, an ID must be provided. SINGLE_IP_INTERNALLY_REDUNDANT requires exactly 1 interface, TWO_IPS_REDUNDANCY requires exactly 2."
+    error_message = "When using an existing gateway, an ID must be provided. When not, the gateway can have one or two interfaces."
   }
 }
 
