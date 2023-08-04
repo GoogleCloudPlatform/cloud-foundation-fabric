@@ -18,6 +18,7 @@ values:
     project: my-project
     routing_mode: GLOBAL
   module.vpc["gateway"].google_compute_route.gateway["gateway"]:
+    description: Terraform-managed.
     dest_range: 0.0.0.0/0
     name: my-network-with-route-gateway-gateway
     next_hop_gateway: global/gateways/default-internet-gateway
@@ -29,6 +30,7 @@ values:
     tags:
     - tag-a
   module.vpc["gateway"].google_compute_route.gateway["next-hop"]:
+    description: Route to internal range.
     dest_range: 192.168.128.0/24
     name: my-network-with-route-gateway-next-hop
     next_hop_gateway: global/gateways/default-internet-gateway
@@ -43,6 +45,7 @@ values:
     project: my-project
     routing_mode: GLOBAL
   module.vpc["ilb"].google_compute_route.gateway["gateway"]:
+    description: Terraform-managed.
     dest_range: 0.0.0.0/0
     name: my-network-with-route-ilb-gateway
     next_hop_gateway: global/gateways/default-internet-gateway
@@ -54,6 +57,7 @@ values:
     tags:
     - tag-a
   module.vpc["ilb"].google_compute_route.ilb["next-hop"]:
+    description: Route to internal range.
     dest_range: 192.168.128.0/24
     name: my-network-with-route-ilb-next-hop
     next_hop_gateway: null
@@ -68,6 +72,7 @@ values:
     project: my-project
     routing_mode: GLOBAL
   module.vpc["instance"].google_compute_route.gateway["gateway"]:
+    description: Terraform-managed.
     dest_range: 0.0.0.0/0
     name: my-network-with-route-instance-gateway
     next_hop_gateway: global/gateways/default-internet-gateway
@@ -79,6 +84,7 @@ values:
     tags:
     - tag-a
   module.vpc["instance"].google_compute_route.instance["next-hop"]:
+    description: Route to internal range.
     dest_range: 192.168.128.0/24
     name: my-network-with-route-instance-next-hop
     next_hop_gateway: null
@@ -94,6 +100,7 @@ values:
     project: my-project
     routing_mode: GLOBAL
   module.vpc["ip"].google_compute_route.gateway["gateway"]:
+    description: Terraform-managed.
     dest_range: 0.0.0.0/0
     name: my-network-with-route-ip-gateway
     next_hop_gateway: global/gateways/default-internet-gateway
@@ -105,6 +112,7 @@ values:
     tags:
     - tag-a
   module.vpc["ip"].google_compute_route.ip["next-hop"]:
+    description: Route to internal range.
     dest_range: 192.168.128.0/24
     name: my-network-with-route-ip-next-hop
     next_hop_gateway: null
@@ -120,6 +128,7 @@ values:
     project: my-project
     routing_mode: GLOBAL
   module.vpc["vpn_tunnel"].google_compute_route.gateway["gateway"]:
+    description: Terraform-managed.
     dest_range: 0.0.0.0/0
     name: my-network-with-route-vpn-tunnel-gateway
     next_hop_gateway: global/gateways/default-internet-gateway
@@ -131,6 +140,7 @@ values:
     tags:
     - tag-a
   module.vpc["vpn_tunnel"].google_compute_route.vpn_tunnel["next-hop"]:
+    description: Route to internal range.
     dest_range: 192.168.128.0/24
     name: my-network-with-route-vpn-tunnel-next-hop
     next_hop_gateway: null
