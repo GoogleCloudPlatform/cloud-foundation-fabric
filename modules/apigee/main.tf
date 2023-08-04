@@ -30,6 +30,7 @@ resource "google_apigee_organization" "organization" {
   billing_type                         = var.organization.billing_type
   runtime_type                         = var.organization.runtime_type
   runtime_database_encryption_key_name = var.organization.database_encryption_key
+  retention                            = var.organization.retention
 }
 
 resource "google_apigee_envgroup" "envgroups" {

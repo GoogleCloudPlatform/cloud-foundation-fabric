@@ -12,16 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/apigee
+values:
+  google_apigee_organization.organization[0]:
+    analytics_region: europe-west1
+    authorized_network: my-vpc
+    billing_type: PAYG
+    description: null
+    display_name: null
+    project_id: my-project
+    retention: MINIMUM
+    runtime_database_encryption_key_name: '123456789'
+    runtime_type: CLOUD
 
-tests:
-  all:
-  endpoint_attachment_only:
-  env_only:
-  env_only_with_api_proxy_type:
-  env_only_with_deployment_type:
-  envgroup_only:
-  instance_only:
-  no_instances:
-  organization_only:
-  organization_retention:
+counts:
+  google_apigee_organization: 1
