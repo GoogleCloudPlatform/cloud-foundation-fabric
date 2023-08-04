@@ -114,6 +114,7 @@ variable "psa_config" {
 variable "routes" {
   description = "Network routes, keyed by name."
   type = map(object({
+    description   = optional(string, "Terraform-managed.")
     dest_range    = string
     next_hop_type = string # gateway, instance, ip, vpn_tunnel, ilb
     next_hop      = string
