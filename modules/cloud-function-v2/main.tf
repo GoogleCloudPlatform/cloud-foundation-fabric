@@ -186,12 +186,13 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
-  dynamic "versioning" {
-    for_each = var.bucket_config.lifecycle_delete_age_days == null ? [] : [""]
-    content {
-      enabled = true
-    }
-  }
+  # versioning triggers a permadiff, see issue #1539
+  # dynamic "versioning" {
+  #   for_each = var.bucket_config.lifecycle_delete_age_days == null ? [] : [""]
+  #   content {
+  #     enabled = true
+  #   }
+  # }
 }
 
 resource "google_storage_bucket_object" "bundle" {
