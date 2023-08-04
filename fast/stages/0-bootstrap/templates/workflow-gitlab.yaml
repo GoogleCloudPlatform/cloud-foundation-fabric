@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,6 @@
 # limitations under the License.
 
 default:
-  before_script:
-    - echo "$${CI_JOB_JWT_V2}" > token.txt
   image:
     name: hashicorp/terraform
     entrypoint:
@@ -22,6 +20,7 @@ default:
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 variables:
+  AUDIENCE: ${audience}
   GOOGLE_CREDENTIALS: cicd-sa-credentials.json
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}
   FAST_SERVICE_ACCOUNT: ${service_account}
@@ -39,13 +38,15 @@ stages:
 cache:
   key: gcp-auth
   paths:
-    - cicd-sa-credentials.json
     - .tf-setup
 
 gcp-auth:
+  stage: gcp-auth
+  id_tokens:
+    GITLAB_TOKEN:
+      aud: "$${AUDIENCE}"
   image:
     name: google/cloud-sdk:slim
-  stage: gcp-auth
   script:
     - |
       gcloud iam workload-identity-pools create-cred-config \
@@ -54,12 +55,14 @@ gcp-auth:
         --service-account-token-lifetime-seconds=3600 \
         --output-file=$${GOOGLE_CREDENTIALS} \
         --credential-source-file=token.txt
+    - rm token.txt
+  artifacts:
+    untracked: true
+
 tf-files:
-  dependencies:
-    - gcp-auth
+  stage: tf-files
   image:
     name: google/cloud-sdk:slim
-  stage: tf-files
   script:
     # - gcloud components install -q alpha
     - gcloud config set auth/credential_file_override $${GOOGLE_CREDENTIALS}
@@ -70,8 +73,13 @@ tf-files:
     - |
       gcloud alpha storage cp -r \
         "gs://$${FAST_OUTPUTS_BUCKET}/tfvars" .tf-setup/
+  artifacts:
+    untracked: true
+  dependencies:
+    - gcp-auth
 
 tf-plan:
+  stage: tf-plan
   # uncomment the following lines and set the SSH key secret for private modules repo
   # before_script:
   #   - |
@@ -80,20 +88,22 @@ tf-plan:
   #     mkdir -p ~/.ssh
   #     ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
   #     ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
-  stage: tf-plan
   script:
-    - cp .tf-setup/$${TF_PROVIDERS_FILE} ./
+    - cp ".tf-setup/$${TF_PROVIDERS_FILE}" ./
     - |
-      for f in $${TF_VAR_FILES}; do
+      for f in "$${TF_VAR_FILES}"; do
         ln -s ".tf-setup/tfvars/$f" ./
       done
     - terraform init
     - terraform validate
     - terraform plan
+  artifacts:
+    untracked: true
   dependencies:
     - tf-files
 
 tf-apply:
+  stage: tf-apply
   # uncomment the following lines and set the SSH key secret for private modules repo
   # before_script:
   #   - |
@@ -102,7 +112,6 @@ tf-apply:
   #     mkdir -p ~/.ssh
   #     ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
   #     ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
-  stage: tf-apply
   script:
     - cp .tf-setup/$${TF_PROVIDERS_FILE} ./
     - |
@@ -112,6 +121,8 @@ tf-apply:
     - terraform init
     - terraform validate
     - terraform apply -input=false -auto-approve
+  artifacts:
+    untracked: true
   dependencies:
     - tf-files
   when: manual

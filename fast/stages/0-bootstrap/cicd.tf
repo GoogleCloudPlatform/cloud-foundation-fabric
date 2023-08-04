@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,12 @@ locals {
   cicd_providers = {
     for k, v in google_iam_workload_identity_pool_provider.default :
     k => {
+      audience = try(
+        v.oidc[0].allowed_audiences[0],
+        "https://iam.googleapis.com/${v.name}"
+      )
       issuer           = local.identity_providers[k].issuer
-      issuer_uri       = local.identity_providers[k].issuer_uri
+      issuer_uri       = try(v.oidc[0].issuer_uri, null)
       name             = v.name
       principal_tpl    = local.identity_providers[k].principal_tpl
       principalset_tpl = local.identity_providers[k].principalset_tpl
