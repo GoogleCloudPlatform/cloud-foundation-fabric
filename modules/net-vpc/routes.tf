@@ -25,6 +25,7 @@ locals {
   }
   _googleapis_routes = {
     for k, v in local._googleapis_ranges : "${k}-googleapis" => {
+      description   = "Terraform-managed."
       dest_range    = v
       next_hop      = "default-internet-gateway"
       next_hop_type = "gateway"
