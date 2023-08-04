@@ -88,7 +88,9 @@ module "cf-http" {
 
 ### GCS bucket creation
 
-You can have the module auto-create the GCS bucket used for deployment via the `bucket_config` variable. Setting `bucket_config.location` to `null` will also use the function region for GCS.
+You can have the module auto-create the GCS bucket used for deployment via the `bucket_config` variable. Setting `bucket_config.location` to `null` will use the `region` variable for the GCS location.
+
+Bucket versioning is disabled as it triggers a permadiff with the GCS object generation (version id). The block of code that used to enable versioning is still present but commented out, so if you really need the feature edit your module's copy and enable it.
 
 ```hcl
 module "cf-http" {
