@@ -31,6 +31,11 @@ output "id" {
   ]
 }
 
+output "internal_ipv6_range" {
+  description = "ULA range."
+  value       = try(local.network.internal_ipv6_range, null)
+}
+
 output "name" {
   description = "Network name."
   value       = local.network.name
