@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1560](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1560)] Removed unused attribute in variable of ha-vpn-over-blueprint blueprint ([apichick](https://github.com/apichick)) <!-- 2023-08-02 11:41:08+00:00 -->
 - [[#1548](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1548)] Minor fixes in Vertex Ai MLOPs blueprint ([javiergp](https://github.com/javiergp)) <!-- 2023-07-31 10:52:37+00:00 -->
 - [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
 - [[#1542](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1542)] Grant IAM rights to service identities in host project ([wiktorn](https://github.com/wiktorn)) <!-- 2023-07-29 18:07:21+00:00 -->
@@ -20,18 +21,35 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1545](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1545)] add dataplex autodq base module ([thinhha](https://github.com/thinhha)) <!-- 2023-08-02 11:16:33+00:00 -->
+- [[#1557](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1557)] renaming net-vpc-swp to net-swp ([skalolazka](https://github.com/skalolazka)) <!-- 2023-08-01 15:48:22+00:00 -->
+- [[#1553](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1553)] Added module for Regional Internal Proxy Load Balancer ([apichick](https://github.com/apichick)) <!-- 2023-07-31 15:58:09+00:00 -->
 - [[#1546](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1546)] **incompatible change:** rename cloud-dataplex to dataplex ([thinhha](https://github.com/thinhha)) <!-- 2023-07-29 12:31:18+00:00 -->
 - [[#1506](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1506)] Document architectural decisions ([ludoo](https://github.com/ludoo)) <!-- 2023-07-13 14:15:32+00:00 -->
 - [[#1500](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1500)] README: audit logs on org level go to a logging bucket, not bigquery ([skalolazka](https://github.com/skalolazka)) <!-- 2023-07-10 14:59:00+00:00 -->
 
 ### FAST
 
+- [[#1566](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1566)] Remove unused ASN numbers from CloudNAT to avoid provider errors ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-04 08:02:12+00:00 -->
+- [[#1563](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1563)] Update FAST CI/CD workflows so it can work with ID_TOKEN and Gitlab 15+ ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-03 16:09:45+00:00 -->
 - [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
 - [[#1514](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1514)] Fix FAST stage links script for GKE stage ([ludoo](https://github.com/ludoo)) <!-- 2023-07-20 10:48:45+00:00 -->
 - [[#1510](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1510)] **incompatible change:** Refactoring of dns module ([apichick](https://github.com/apichick)) <!-- 2023-07-19 11:13:41+00:00 -->
 
 ### MODULES
 
+- [[#1569](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1569)] Add support for cost management to GKE module ([ludoo](https://github.com/ludoo)) <!-- 2023-08-05 11:46:53+00:00 -->
+- [[#1568](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1568)] Add support for ipv6 to net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2023-08-05 11:07:27+00:00 -->
+- [[#1567](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1567)] Allow custom route descriptions in net-vpc module ([juliocc](https://github.com/juliocc)) <!-- 2023-08-04 16:45:15+00:00 -->
+- [[#1558](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1558)] feat(apigee): add retention variable ([danistrebel](https://github.com/danistrebel)) <!-- 2023-08-04 11:25:36+00:00 -->
+- [[#1564](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1564)] Fixed error of inconsistent conditional result types when evaluating … ([apichick](https://github.com/apichick)) <!-- 2023-08-03 06:09:38+00:00 -->
+- [[#1561](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1561)] Removed unused attribute in peer_gateway_config variable ([apichick](https://github.com/apichick)) <!-- 2023-08-02 13:38:45+00:00 -->
+- [[#1545](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1545)] add dataplex autodq base module ([thinhha](https://github.com/thinhha)) <!-- 2023-08-02 11:16:33+00:00 -->
+- [[#1559](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1559)] Added IPSEC_INTERCONNECT addresses to net-address module ([apichick](https://github.com/apichick)) <!-- 2023-08-02 10:28:46+00:00 -->
+- [[#1557](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1557)] renaming net-vpc-swp to net-swp ([skalolazka](https://github.com/skalolazka)) <!-- 2023-08-01 15:48:22+00:00 -->
+- [[#1513](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1513)] optional description in modules/net-vpc-swp ([skalolazka](https://github.com/skalolazka)) <!-- 2023-08-01 13:50:07+00:00 -->
+- [[#1555](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1555)] Fix permadiff in artifact-registry ([juliocc](https://github.com/juliocc)) <!-- 2023-07-31 16:20:28+00:00 -->
+- [[#1553](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1553)] Added module for Regional Internal Proxy Load Balancer ([apichick](https://github.com/apichick)) <!-- 2023-07-31 15:58:09+00:00 -->
 - [[#1554](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1554)] Fix in IAM bindings of cloud function v2 module ([apichick](https://github.com/apichick)) <!-- 2023-07-31 11:22:07+00:00 -->
 - [[#1551](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1551)] Fix in validation of healthchecks variable ([apichick](https://github.com/apichick)) <!-- 2023-07-31 10:13:19+00:00 -->
 - [[#1552](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1552)] Add image path output to ar module ([ludoo](https://github.com/ludoo)) <!-- 2023-07-31 09:34:02+00:00 -->
