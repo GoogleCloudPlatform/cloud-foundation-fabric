@@ -552,10 +552,11 @@ module "vpc" {
 | [self_link](outputs.tf#L76) | Network self link. |  |
 | [subnet_ids](outputs.tf#L88) | Map of subnet IDs keyed by name. |  |
 | [subnet_ips](outputs.tf#L93) | Map of subnet address ranges keyed by name. |  |
-| [subnet_regions](outputs.tf#L100) | Map of subnet regions keyed by name. |  |
-| [subnet_secondary_ranges](outputs.tf#L107) | Map of subnet secondary ranges keyed by name. |  |
-| [subnet_self_links](outputs.tf#L118) | Map of subnet self links keyed by name. |  |
-| [subnets](outputs.tf#L123) | Subnet resources. |  |
-| [subnets_proxy_only](outputs.tf#L128) | L7 ILB or L7 Regional LB subnet resources. |  |
-| [subnets_psc](outputs.tf#L133) | Private Service Connect subnet resources. |  |
+| [subnet_ipv6_external_prefixes](outputs.tf#L100) | Map of subnet external IPv6 prefixes keyed by name. |  |
+| [subnet_regions](outputs.tf#L108) | Map of subnet regions keyed by name. |  |
+| [subnet_secondary_ranges](outputs.tf#L115) | Map of subnet secondary ranges keyed by name. |  |
+| [subnet_self_links](outputs.tf#L126) | Map of subnet self links keyed by name. |  |
+| [subnets](outputs.tf#L131) | Subnet resources. |  |
+| [subnets_proxy_only](outputs.tf#L136) | L7 ILB or L7 Regional LB subnet resources. |  |
+| [subnets_psc](outputs.tf#L141) | Private Service Connect subnet resources. |  |
 <!-- END TFDOC -->

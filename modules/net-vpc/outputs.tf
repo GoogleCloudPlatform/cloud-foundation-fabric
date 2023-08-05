@@ -97,6 +97,14 @@ output "subnet_ips" {
   }
 }
 
+output "subnet_ipv6_external_prefixes" {
+  description = "Map of subnet external IPv6 prefixes keyed by name."
+  value = {
+    for k, v in google_compute_subnetwork.subnetwork :
+    k => try(v.external_ipv6_prefix, null)
+  }
+}
+
 output "subnet_regions" {
   description = "Map of subnet regions keyed by name."
   value = {
