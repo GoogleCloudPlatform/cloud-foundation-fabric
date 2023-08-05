@@ -214,15 +214,15 @@ resource "google_bigquery_table" "default" {
   dataset_id          = google_bigquery_dataset.default.dataset_id
   table_id            = each.key
   friendly_name       = each.value.friendly_name
-  description         = "Terraform managed."
-  clustering          = try(each.value.options.clustering, null)
-  expiration_time     = try(each.value.options.expiration_time, null)
+  description         = each.value.description
+  clustering          = each.value.options.clustering
+  expiration_time     = each.value.options.expiration_time
   labels              = each.value.labels
   schema              = each.value.schema
   deletion_protection = each.value.deletion_protection
 
   dynamic "encryption_configuration" {
-    for_each = try(each.value.options.encryption_key, null) != null ? [""] : []
+    for_each = each.value.options.encryption_key != null ? [""] : []
     content {
       kms_key_name = each.value.options.encryption_key
     }
