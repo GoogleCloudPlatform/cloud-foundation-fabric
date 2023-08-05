@@ -74,6 +74,16 @@ variable "firewall_policy_enforcement_order" {
   }
 }
 
+variable "ipv6_config" {
+  description = "Optional IPv6 configuration for this network."
+  type = object({
+    enable_ula_internal = optional(bool)
+    internal_range      = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "mtu" {
   description = "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 (the default) and the maximum value is 1500 bytes."
   type        = number
@@ -184,8 +194,9 @@ variable "subnets" {
       metadata_fields = optional(list(string))
     }))
     ipv6 = optional(object({
-      access_type           = optional(string)
-      enable_private_access = optional(bool, true)
+      access_type = optional(string, "INTERNAL")
+      # this field is marked for internal use in the API documentation
+      # enable_private_access = optional(string)
     }))
     secondary_ip_ranges = optional(map(string))
   }))

@@ -1,0 +1,85 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: true
+    internal_ipv6_range: fd20:6b2:27e5:0:0:0:0:0/48
+    name: my-network
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    project: my-project
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc.google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: my-network-private-googleapis
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: my-network-restricted-googleapis
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/test"]:
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.0.0/24
+    ipv6_access_type: INTERNAL
+    log_config: []
+    name: test
+    private_ip_google_access: true
+    project: my-project
+    region: europe-west1
+    role: null
+    secondary_ip_range: []
+    stack_type: IPV4_IPV6
+    timeouts: null
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west3/test"]:
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.1.0/24
+    ipv6_access_type: EXTERNAL
+    log_config: []
+    name: test
+    private_ip_google_access: true
+    project: my-project
+    region: europe-west3
+    role: null
+    secondary_ip_range: []
+    stack_type: IPV4_IPV6
+    timeouts: null
+
+counts:
+  google_compute_network: 1
+  google_compute_route: 2
+  google_compute_subnetwork: 2
+  modules: 1
+  resources: 5
+
+outputs: {}
