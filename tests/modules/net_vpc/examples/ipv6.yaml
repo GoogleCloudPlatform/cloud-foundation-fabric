@@ -51,7 +51,7 @@ values:
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/test"]:
     description: Terraform-managed.
     ip_cidr_range: 10.0.0.0/24
-    ipv6_access_type: null
+    ipv6_access_type: INTERNAL
     log_config: []
     name: test
     private_ip_google_access: true
