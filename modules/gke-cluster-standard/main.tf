@@ -106,6 +106,13 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "cost_management_config" {
+    for_each = var.enable_features.cost_management == true ? [""] : []
+    content {
+      enabled = true
+    }
+  }
+
   dynamic "cluster_autoscaling" {
     for_each = var.cluster_autoscaling == null ? [] : [""]
     content {

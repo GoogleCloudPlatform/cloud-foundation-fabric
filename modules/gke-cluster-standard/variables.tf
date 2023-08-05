@@ -88,6 +88,7 @@ variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
     binary_authorization = optional(bool, false)
+    cost_management      = optional(bool, false)
     dns = optional(object({
       provider = optional(string)
       scope    = optional(string)

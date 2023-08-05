@@ -69,6 +69,13 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "cost_management_config" {
+    for_each = var.enable_features.cost_management == true ? [""] : []
+    content {
+      enabled = true
+    }
+  }
+
   cluster_autoscaling {
     dynamic "auto_provisioning_defaults" {
       for_each = var.service_account != null ? [""] : []
