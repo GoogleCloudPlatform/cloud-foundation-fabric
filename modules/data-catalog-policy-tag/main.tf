@@ -33,9 +33,13 @@ resource "google_data_catalog_taxonomy" "default" {
 }
 
 resource "google_data_catalog_policy_tag" "default" {
-  for_each     = toset(keys(var.tags))
+  for_each     = var.tags
   provider     = google-beta
   taxonomy     = google_data_catalog_taxonomy.default.id
   display_name = each.key
-  description  = "${each.key} - Terraform managed.  "
+  description = (
+    each.value.description == null
+    ? "${each.key} - Terraform managed."
+    : each.value.description
+  )
 }

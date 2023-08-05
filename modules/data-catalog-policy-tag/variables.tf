@@ -77,7 +77,10 @@ variable "project_id" {
 
 variable "tags" {
   description = "List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format."
-  type        = map(map(list(string)))
-  nullable    = false
-  default     = {}
+  type = map(object({
+    description = optional(string)
+    iam         = optional(map(list(string)), {})
+  }))
+  nullable = false
+  default  = {}
 }

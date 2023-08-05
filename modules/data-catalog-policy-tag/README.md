@@ -3,6 +3,7 @@
 This module simplifies the creation of [Data Catalog](https://cloud.google.com/data-catalog) Policy Tags. Policy Tags can be used to configure [Bigquery column-level access](https://cloud.google.com/bigquery/docs/best-practices-policy-tags).
 
 Note: Data Catalog is still in beta, hence this module currently uses the beta provider.
+
 ## Examples
 
 ### Simple Taxonomy with policy tags
@@ -13,7 +14,9 @@ module "cmn-dc" {
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
   tags = {
-    low = null, medium = null, high = null
+    low    = {}
+    medium = {}
+    high   = {}
   }
 }
 # tftest modules=1 resources=4
@@ -27,9 +30,15 @@ module "cmn-dc" {
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
   tags = {
-    low    = null
-    medium = null
-    high   = { "roles/datacatalog.categoryFineGrainedReader" = ["group:GROUP_NAME@example.com"] }
+    low    = {}
+    medium = {}
+    high = {
+      iam = {
+        "roles/datacatalog.categoryFineGrainedReader" = [
+          "group:GROUP_NAME@example.com"
+        ]
+      }
+    }
   }
   iam = {
     "roles/datacatalog.categoryAdmin" = ["group:GROUP_NAME@example.com"]
@@ -38,7 +47,6 @@ module "cmn-dc" {
 # tftest modules=1 resources=6
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -53,7 +61,7 @@ module "cmn-dc" {
 | [iam_additive_members](variables.tf#L47) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location](variables.tf#L53) | Data Catalog Taxonomy location. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
 | [prefix](variables.tf#L64) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
-| [tags](variables.tf#L78) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tags](variables.tf#L78) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -61,8 +69,8 @@ module "cmn-dc" {
 |---|---|:---:|
 | [id](outputs.tf#L17) | Fully qualified taxonomy id. |  |
 | [tags](outputs.tf#L22) | Policy Tags. |  |
-
 <!-- END TFDOC -->
 ## TODO
+
 - Support IAM at tag level.
 - Support Child policy tags
