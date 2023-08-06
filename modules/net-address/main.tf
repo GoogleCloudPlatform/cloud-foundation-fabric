@@ -21,13 +21,14 @@ resource "google_compute_global_address" "global" {
 }
 
 resource "google_compute_address" "external" {
+  provider     = google-beta
   for_each     = var.external_addresses
   project      = var.project_id
   name         = each.key
-  description  = "Terraform managed."
+  description  = each.value.description
   address_type = "EXTERNAL"
-  region       = each.value
-  # labels       = lookup(var.external_address_labels, each.key, {})
+  region       = each.value.region
+  labels       = each.value.labels
 }
 
 resource "google_compute_address" "internal" {

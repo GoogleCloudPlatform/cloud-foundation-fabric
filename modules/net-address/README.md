@@ -11,8 +11,8 @@ module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = var.project_id
   external_addresses = {
-    one = "europe-west1"
-    two = "europe-west2"
+    one = { region = "europe-west1" }
+    two = { region = "europe-west2" }
   }
   global_addresses = ["app-1", "app-2"]
 }
@@ -106,13 +106,13 @@ module "addresses" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L67) | Project where the addresses will be created. | <code>string</code> | ✓ |  |
-| [external_addresses](variables.tf#L17) | Map of external address regions, keyed by name. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [global_addresses](variables.tf#L29) | List of global addresses to create. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [internal_addresses](variables.tf#L35) | Map of internal addresses to create, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  region      &#61; string&#10;  subnetwork  &#61; string&#10;  address     &#61; optional&#40;string&#41;&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  labels      &#61; optional&#40;map&#40;string&#41;&#41;&#10;  purpose     &#61; optional&#40;string&#41;&#10;  tier        &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ipsec_interconnect_addresses](variables.tf#L49) | Map of internal addresses used for HPA VPN over Cloud Interconnect. | <code title="map&#40;object&#40;&#123;&#10;  region        &#61; string&#10;  address       &#61; string&#10;  network       &#61; string&#10;  description   &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  prefix_length &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [psa_addresses](variables.tf#L72) | Map of internal addresses used for Private Service Access. | <code title="map&#40;object&#40;&#123;&#10;  address       &#61; string&#10;  network       &#61; string&#10;  description   &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  prefix_length &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [psc_addresses](variables.tf#L83) | Map of internal addresses used for Private Service Connect. | <code title="map&#40;object&#40;&#123;&#10;  address     &#61; string&#10;  network     &#61; string&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_id](variables.tf#L65) | Project where the addresses will be created. | <code>string</code> | ✓ |  |
+| [external_addresses](variables.tf#L17) | Map of external addresses, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  region      &#61; string&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  labels      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [global_addresses](variables.tf#L27) | List of global addresses to create. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [internal_addresses](variables.tf#L33) | Map of internal addresses to create, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  region      &#61; string&#10;  subnetwork  &#61; string&#10;  address     &#61; optional&#40;string&#41;&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  labels      &#61; optional&#40;map&#40;string&#41;&#41;&#10;  purpose     &#61; optional&#40;string&#41;&#10;  tier        &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ipsec_interconnect_addresses](variables.tf#L47) | Map of internal addresses used for HPA VPN over Cloud Interconnect. | <code title="map&#40;object&#40;&#123;&#10;  region        &#61; string&#10;  address       &#61; string&#10;  network       &#61; string&#10;  description   &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  prefix_length &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [psa_addresses](variables.tf#L70) | Map of internal addresses used for Private Service Access. | <code title="map&#40;object&#40;&#123;&#10;  address       &#61; string&#10;  network       &#61; string&#10;  description   &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  prefix_length &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [psc_addresses](variables.tf#L81) | Map of internal addresses used for Private Service Connect. | <code title="map&#40;object&#40;&#123;&#10;  address     &#61; string&#10;  network     &#61; string&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

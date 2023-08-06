@@ -133,27 +133,28 @@ variable "project_id" {
 variable "tables" {
   description = "Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null."
   type = map(object({
-    friendly_name = string
-    labels        = map(string)
-    options = object({
-      clustering      = list(string)
-      encryption_key  = string
-      expiration_time = number
-    })
-    partitioning = object({
-      field = string
-      range = object({
+    deletion_protection = optional(bool)
+    description         = optional(string, "Terraform managed.")
+    friendly_name       = optional(string)
+    labels              = optional(map(string), {})
+    schema              = optional(string)
+    options = optional(object({
+      clustering      = optional(list(string))
+      encryption_key  = optional(string)
+      expiration_time = optional(number)
+    }), {})
+    partitioning = optional(object({
+      field = optional(string)
+      range = optional(object({
         end      = number
         interval = number
         start    = number
-      })
-      time = object({
+      }))
+      time = optional(object({
         expiration_ms = number
         type          = string
-      })
-    })
-    schema              = string
-    deletion_protection = bool
+      }))
+    }))
   }))
   default = {}
 }
@@ -161,11 +162,12 @@ variable "tables" {
 variable "views" {
   description = "View definitions."
   type = map(object({
-    friendly_name       = string
-    labels              = map(string)
     query               = string
-    use_legacy_sql      = bool
-    deletion_protection = bool
+    deletion_protection = optional(bool)
+    description         = optional(string, "Terraform managed.")
+    friendly_name       = optional(string)
+    labels              = optional(map(string), {})
+    use_legacy_sql      = optional(bool)
   }))
   default = {}
 }
