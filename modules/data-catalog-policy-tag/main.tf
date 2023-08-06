@@ -37,9 +37,7 @@ resource "google_data_catalog_policy_tag" "default" {
   provider     = google-beta
   taxonomy     = google_data_catalog_taxonomy.default.id
   display_name = each.key
-  description = (
-    each.value.description == null
-    ? "${each.key} - Terraform managed."
-    : each.value.description
+  description = coalesce(
+    each.value.description, "${each.key} - Terraform managed."
   )
 }
