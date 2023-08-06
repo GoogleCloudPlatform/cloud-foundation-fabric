@@ -29,7 +29,7 @@ module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = "my-project"
   external_addresses = {
-    a1 = { region = "europe-west1" Z}
+    a1 = { region = "europe-west1" }
     a2 = { region = "europe-west1" }
     a3 = { region = "europe-west1" }
   }
