@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1572)] **incompatible change:** More module descriptions ([ludoo](https://github.com/ludoo)) <!-- 2023-08-06 09:25:45+00:00 -->
 - [[#1560](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1560)] Removed unused attribute in variable of ha-vpn-over-blueprint blueprint ([apichick](https://github.com/apichick)) <!-- 2023-08-02 11:41:08+00:00 -->
 - [[#1548](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1548)] Minor fixes in Vertex Ai MLOPs blueprint ([javiergp](https://github.com/javiergp)) <!-- 2023-07-31 10:52:37+00:00 -->
 - [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
@@ -30,6 +31,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1572)] **incompatible change:** More module descriptions ([ludoo](https://github.com/ludoo)) <!-- 2023-08-06 09:25:45+00:00 -->
 - [[#1566](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1566)] Remove unused ASN numbers from CloudNAT to avoid provider errors ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-04 08:02:12+00:00 -->
 - [[#1563](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1563)] Update FAST CI/CD workflows so it can work with ID_TOKEN and Gitlab 15+ ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-03 16:09:45+00:00 -->
 - [[#1547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1547)] **incompatible change:** Peering module refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-07-29 19:33:58+00:00 -->
@@ -38,6 +40,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1572)] **incompatible change:** More module descriptions ([ludoo](https://github.com/ludoo)) <!-- 2023-08-06 09:25:45+00:00 -->
 - [[#1569](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1569)] Add support for cost management to GKE module ([ludoo](https://github.com/ludoo)) <!-- 2023-08-05 11:46:53+00:00 -->
 - [[#1568](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1568)] Add support for ipv6 to net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2023-08-05 11:07:27+00:00 -->
 - [[#1567](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1567)] Allow custom route descriptions in net-vpc module ([juliocc](https://github.com/juliocc)) <!-- 2023-08-04 16:45:15+00:00 -->
