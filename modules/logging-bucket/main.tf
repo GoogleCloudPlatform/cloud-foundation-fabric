@@ -46,7 +46,7 @@ resource "google_logging_linked_dataset" "dataset" {
   parent      = "projects/${google_logging_project_bucket_config.bucket[0].project}"
   bucket      = google_logging_project_bucket_config.bucket[0].id
   location    = var.location
-  description = "Log Analytics Dataset"
+  description = var.log_analytics.description
 }
 
 resource "google_logging_organization_bucket_config" "bucket" {
