@@ -174,6 +174,10 @@ To deploy this blueprint on your GCP organization, you will need
 
 - a folder or organization where new projects will be created
 - a billing account that will be associated with the new projects
+- user groups defined within the organization (provided as `organization_domain` variable):
+  - gcp-data-analysts
+  - gcp-data-engineers
+  - gcp-data-security
 
 The Data Platform is meant to be executed by a Service Account (or a regular user) having this minimal set of permission:
 
