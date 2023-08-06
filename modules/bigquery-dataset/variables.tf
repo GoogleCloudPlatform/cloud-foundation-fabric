@@ -164,6 +164,7 @@ variable "views" {
   type = map(object({
     query               = string
     deletion_protection = optional(bool)
+    description         = optional(string, "Terraform managed.")
     friendly_name       = optional(string)
     labels              = optional(map(string), {})
     use_legacy_sql      = optional(bool)

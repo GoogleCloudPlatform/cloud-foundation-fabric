@@ -257,7 +257,7 @@ resource "google_bigquery_table" "views" {
   dataset_id          = google_bigquery_dataset.default.dataset_id
   table_id            = each.key
   friendly_name       = each.value.friendly_name
-  description         = "Terraform managed."
+  description         = each.value.description
   labels              = each.value.labels
   deletion_protection = each.value.deletion_protection
 
