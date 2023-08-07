@@ -22,7 +22,7 @@ values:
     project: project-id
     template:
     - metadata:
-      - labels: null
+      - {}
       spec:
       - containers:
         - args: null
@@ -34,7 +34,6 @@ values:
           volume_mounts: []
           working_dir: null
         volumes: []
-    timeouts: null
   module.cloud_run.google_vpc_access_connector.connector[0]:
     ip_cidr_range: null
     machine_type: e2-micro
@@ -46,7 +45,6 @@ values:
     subnet:
     - name: subnet-vpc-access
       project_id: host-project
-    timeouts: null
 
 counts:
   google_cloud_run_service: 1

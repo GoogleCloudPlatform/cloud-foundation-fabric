@@ -32,6 +32,7 @@ resource "google_container_cluster" "cluster" {
   initial_node_count       = 1
 
   enable_autopilot = true
+  allow_net_admin  = var.enable_features.allow_net_admin
 
   addons_config {
     http_load_balancing {
