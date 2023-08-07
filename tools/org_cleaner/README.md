@@ -6,10 +6,10 @@ cleanup of E2E test deployments.
 
 ## Features (WIP)
 
-- Delete organization policies: Remove organization-level IAM policies that are no longer needed.
-- Delete firewall policies: Clean up firewall policies associated with the specified organization.
-- Delete log sinks: Remove log sinks (export destinations) that are configured for the organization.
-- Delete secure tags: Delete secure tag keys and values associated with the organization.
+- Delete organization policies: Remove organization-level IAM policies.
+- Delete firewall policies: Clean up firewall policies.
+- Delete log sinks: Remove log sinks.
+- Delete secure tags: Delete secure tag keys and values.
 
 ## Missing features
 
@@ -25,13 +25,13 @@ TODO: document the list of required permissions
 
 To use GCP Organization Cleaner run:
 
-   ```bash
-   python org_cleaner.py <organization_id> [options]
-   ```
+```bash
+python org_cleaner.py <organization_id> [options]
+```
 
-   Replace `<organization_id>` with the ID of the target GCP organization.
+Replace `<organization_id>` with the ID of the target GCP organization.
 
-   Available options:
+Available options:
 
 - `--dry-run`: Perform a dry-run without actual deletions.
 - `--exclude-log-sinks`: Exclude specific log sinks in '{organizations,folders}/{id}/sinks/{sink_name}' format, comma-separated.
@@ -44,21 +44,21 @@ To use GCP Organization Cleaner run:
 
 - Delete all types of resources within the organization:
 
-  ```sh
-  python gcp_organization_cleaner.py <organization_id>
+```sh
+python gcp_organization_cleaner.py <organization_id>
   ```
 
 - Delete only organization policies and log sinks (dry-run):
 
-  ```sh
-  python gcp_organization_cleaner.py <organization_id> --dry-run --only-orgpolicies --only-logsinks
-  ```
+```sh
+python gcp_organization_cleaner.py <organization_id> --dry-run --only-orgpolicies --only-logsinks
+```
 
 - Delete specific log sinks and firewall policies:
 
-  ```sh
-  python gcp_organization_cleaner.py <organization_id> --exclude-log-sinks=<sink1,sink2> --only-logsinks --only-fwpolicies
-  ```
+```sh
+python gcp_organization_cleaner.py <organization_id> --exclude-log-sinks=<sink1,sink2> --only-logsinks --only-fwpolicies
+```
 
 ## Note
 
