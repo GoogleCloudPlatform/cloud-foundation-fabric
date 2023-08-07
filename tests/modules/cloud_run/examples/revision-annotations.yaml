@@ -14,6 +14,12 @@
 
 values:
   module.cloud_run.google_cloud_run_service.service:
+    autogenerate_revision_name: false
+    location: europe-west1
+    metadata:
+    - {}
+    name: hello
+    project: project-id
     template:
     - metadata:
       - annotations:
@@ -21,7 +27,6 @@ values:
           autoscaling.knative.dev/minScale: '1'
           run.googleapis.com/vpc-access-connector: foo
           run.googleapis.com/vpc-access-egress: all-traffic
-        labels: null
       spec:
       - containers:
         - args: null
@@ -36,7 +41,3 @@ values:
 
 counts:
   google_cloud_run_service: 1
-  modules: 1
-  resources: 1
-
-outputs: {}
