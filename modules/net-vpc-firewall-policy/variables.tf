@@ -127,3 +127,14 @@ variable "region" {
   type        = string
   default     = null
 }
+
+variable "rules_factory_config" {
+  description = "Configuration for the optional rules factory."
+  type = object({
+    cidr_file_path          = optional(string)
+    egress_rules_file_path  = optional(string)
+    ingress_rules_file_path = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
