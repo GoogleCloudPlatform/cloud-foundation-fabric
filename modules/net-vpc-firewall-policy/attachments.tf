@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+resource "google_compute_firewall_policy_association" "default" {
+  for_each          = local.use_hierarchical ? var.attachments : {}
+  name              = "${var.name}-${each.key}"
+  attachment_target = each.value
+  firewall_policy   = google_compute_firewall_policy.default.0.name
+}
+
 resource "google_compute_network_firewall_policy_association" "default" {
   for_each = (
     !local.use_hierarchical && !local.use_regional ? var.attachments : {}

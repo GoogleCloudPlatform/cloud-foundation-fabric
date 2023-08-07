@@ -11,6 +11,52 @@ The module also makes fewer assumptions about implicit defaults, only using one 
 
 ## Examples
 
+### Hierarchical policy
+
+```hcl
+module "firewall-policy" {
+  source    = "./fabric/modules/net-vpc-firewall-policy"
+  name      = "test-1"
+  parent_id = "folders/1234567890"
+  attachments = {
+    test = "folders/4567890123"
+  }
+  egress_rules = {
+    smtp = {
+      priority = 900
+      match = {
+        destination_ranges = ["0.0.0.0/0"]
+        layer4_configs     = [{ protocol = "tcp", ports = ["25"] }]
+      }
+    }
+  }
+  ingress_rules = {
+    icmp = {
+      priority = 1000
+      match = {
+        source_ranges  = ["0.0.0.0/0"]
+        layer4_configs = [{ protocol = "icmp" }]
+      }
+    }
+    mgmt = {
+      priority = 1001
+      match = {
+        source_ranges = ["10.1.1.0/24"]
+      }
+    }
+    ssh = {
+      priority = 1002
+      match = {
+        source_ranges = ["10.0.0.0/8"]
+        # source_tags    = ["tagValues/123456"]
+        layer4_configs = [{ protocol = "tcp", ports = ["22"] }]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2
+```
+
 ### Network policy
 
 ```hcl
@@ -64,6 +110,7 @@ module "firewall-policy" {
 }
 # tftest modules=2 resources=9
 ```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
