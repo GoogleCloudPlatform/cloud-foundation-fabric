@@ -38,10 +38,13 @@ variable "egress_rules" {
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
     match = object({
-      # destination_fqdns  = optional(list(string))
-      destination_ranges = optional(list(string))
-      source_ranges      = optional(list(string))
-      source_tags        = optional(list(string))
+      address_groups       = optional(list(string))
+      fqdns                = optional(list(string))
+      region_codes         = optional(list(string))
+      threat_intelligences = optional(list(string))
+      destination_ranges   = optional(list(string))
+      source_ranges        = optional(list(string))
+      source_tags          = optional(list(string))
       layer4_configs = optional(list(object({
         protocol = optional(string, "all")
         ports    = optional(list(string))

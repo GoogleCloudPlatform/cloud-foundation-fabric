@@ -46,8 +46,12 @@ resource "google_compute_network_firewall_policy_rule" "net-global-egress" {
   priority                = each.value.priority
   target_service_accounts = each.value.target_service_accounts
   match {
-    dest_ip_ranges = each.value.match.destination_ranges
-    src_ip_ranges  = each.value.match.source_ranges
+    dest_address_groups       = each.value.match.address_groups
+    dest_fqdns                = each.value.match.fqdns
+    dest_region_codes         = each.value.match.region_codes
+    dest_threat_intelligences = each.value.match.threat_intelligences
+    dest_ip_ranges            = each.value.match.destination_ranges
+    src_ip_ranges             = each.value.match.source_ranges
     dynamic "layer4_configs" {
       for_each = each.value.match.layer4_configs
       content {
