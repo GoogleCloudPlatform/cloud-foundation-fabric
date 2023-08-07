@@ -9,6 +9,17 @@ The module also manages policy rules via code or a factory, and optional policy 
 
 The module also makes fewer assumptions about implicit defaults, only using one to set `match.layer4_configs` to `[{ protocol = "all" }]` if no explicit set of protocols and ports has been specified.
 
+## TODO
+
+- [ ] `dest_address_groups` in rules
+- [ ] `dest_fqdns` in rules
+- [ ] `dest_region_codes` in rules
+- [ ] `dest_threat_intelligences` in rules
+- [ ] `src_address_groups` in rules
+- [ ] `src_fqdns` in rules
+- [ ] `src_region_codes` in rules
+- [ ] `src_threat_intelligences` in rules
+
 ## Examples
 
 ### Hierarchical policy
@@ -54,7 +65,7 @@ module "firewall-policy" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=6
 ```
 
 ### Network policy
