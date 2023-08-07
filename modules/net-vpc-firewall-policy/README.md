@@ -1,4 +1,4 @@
-# Google Cloud Firewall Policy
+# Firewall Policies
 
 This module allows creation and management of twi different firewall policy types:
 
@@ -9,20 +9,9 @@ The module also manages policy rules via code or a factory, and optional policy 
 
 The module also makes fewer assumptions about implicit defaults, only using one to set `match.layer4_configs` to `[{ protocol = "all" }]` if no explicit set of protocols and ports has been specified.
 
-## TODO
-
-- [ ] `dest_address_groups` in rules
-- [ ] `dest_fqdns` in rules
-- [ ] `dest_region_codes` in rules
-- [ ] `dest_threat_intelligences` in rules
-- [ ] `src_address_groups` in rules
-- [ ] `src_fqdns` in rules
-- [ ] `src_region_codes` in rules
-- [ ] `src_threat_intelligences` in rules
-
 ## Examples
 
-### Hierarchical policy
+### Hierarchical Policy
 
 ```hcl
 module "firewall-policy" {
@@ -68,7 +57,7 @@ module "firewall-policy" {
 # tftest modules=1 resources=6
 ```
 
-### Network policy
+### Global Network policy
 
 ```hcl
 module "vpc" {
@@ -81,8 +70,6 @@ module "firewall-policy" {
   source    = "./fabric/modules/net-vpc-firewall-policy"
   name      = "test-1"
   parent_id = "my-project"
-  # specify a region to create and manage a regional policy
-  # region     = "europe-west8"
   attachments = {
     my-vpc = module.vpc.self_link
   }
@@ -122,18 +109,56 @@ module "firewall-policy" {
 # tftest modules=2 resources=9
 ```
 
+### Regional Network policy
+
+```hcl
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-network"
+}
+
+module "firewall-policy" {
+  source    = "./fabric/modules/net-vpc-firewall-policy"
+  name      = "test-1"
+  parent_id = "my-project"
+  region    = "europe-west8"
+  attachments = {
+    my-vpc = module.vpc.self_link
+  }
+  egress_rules = {
+    smtp = {
+      priority = 900
+      match = {
+        destination_ranges = ["0.0.0.0/0"]
+        layer4_configs     = [{ protocol = "tcp", ports = ["25"] }]
+      }
+    }
+  }
+  ingress_rules = {
+    icmp = {
+      priority = 1000
+      match = {
+        source_ranges  = ["0.0.0.0/0"]
+        layer4_configs = [{ protocol = "icmp" }]
+      }
+    }
+  }
+}
+# tftest modules=2 resources=7
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L105) | Policy name. | <code>string</code> | ✓ |  |
-| [parent_id](variables.tf#L111) | Parent node where the policy will be created, `folders/nnn` or `organizations/nnn` for hierarchical policy, project id for a network policy. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L113) | Policy name. | <code>string</code> | ✓ |  |
+| [parent_id](variables.tf#L119) | Parent node where the policy will be created, `folders/nnn` or `organizations/nnn` for hierarchical policy, project id for a network policy. | <code>string</code> | ✓ |  |
 | [attachments](variables.tf#L17) | Ids of the resources to which this policy will be attached, in descriptive name => self link format. Specify folders or organization for hierarchical policy, VPCs for network policy. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L24) | Policy description. | <code>string</code> |  | <code>null</code> |
-| [egress_rules](variables.tf#L30) | List of egress rule definitions, action can be 'allow', 'deny', 'goto_next'. The match.layer4configs map is in protocol => optional [ports] format. | <code title="map&#40;object&#40;&#123;&#10;  priority                &#61; number&#10;  action                  &#61; optional&#40;string, &#34;deny&#34;&#41;&#10;  description             &#61; optional&#40;string&#41;&#10;  disabled                &#61; optional&#40;bool, false&#41;&#10;  enable_logging          &#61; optional&#40;bool&#41;&#10;  target_service_accounts &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_tags             &#61; optional&#40;list&#40;string&#41;&#41;&#10;  match &#61; object&#40;&#123;&#10;    destination_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_ranges      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_tags        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;      protocol &#61; optional&#40;string, &#34;all&#34;&#41;&#10;      ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#123;&#125;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ingress_rules](variables.tf#L67) | List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next'. | <code title="map&#40;object&#40;&#123;&#10;  priority                &#61; number&#10;  action                  &#61; optional&#40;string, &#34;allow&#34;&#41;&#10;  description             &#61; optional&#40;string&#41;&#10;  disabled                &#61; optional&#40;bool, false&#41;&#10;  enable_logging          &#61; optional&#40;bool&#41;&#10;  target_service_accounts &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_tags             &#61; optional&#40;list&#40;string&#41;&#41;&#10;  match &#61; object&#40;&#123;&#10;    destination_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_ranges      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_tags        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;      protocol &#61; optional&#40;string, &#34;all&#34;&#41;&#10;      ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#123;&#125;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [region](variables.tf#L117) | Policy region. Leave null for hierarchical policy, or global network policy. | <code>string</code> |  | <code>null</code> |
+| [egress_rules](variables.tf#L30) | List of egress rule definitions, action can be 'allow', 'deny', 'goto_next'. The match.layer4configs map is in protocol => optional [ports] format. | <code title="map&#40;object&#40;&#123;&#10;  priority                &#61; number&#10;  action                  &#61; optional&#40;string, &#34;deny&#34;&#41;&#10;  description             &#61; optional&#40;string&#41;&#10;  disabled                &#61; optional&#40;bool, false&#41;&#10;  enable_logging          &#61; optional&#40;bool&#41;&#10;  target_service_accounts &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_tags             &#61; optional&#40;list&#40;string&#41;&#41;&#10;  match &#61; object&#40;&#123;&#10;    address_groups       &#61; optional&#40;list&#40;string&#41;&#41;&#10;    fqdns                &#61; optional&#40;list&#40;string&#41;&#41;&#10;    region_codes         &#61; optional&#40;list&#40;string&#41;&#41;&#10;    threat_intelligences &#61; optional&#40;list&#40;string&#41;&#41;&#10;    destination_ranges   &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_ranges        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_tags          &#61; optional&#40;list&#40;string&#41;&#41;&#10;    layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;      protocol &#61; optional&#40;string, &#34;all&#34;&#41;&#10;      ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#123;&#125;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ingress_rules](variables.tf#L71) | List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next'. | <code title="map&#40;object&#40;&#123;&#10;  priority                &#61; number&#10;  action                  &#61; optional&#40;string, &#34;allow&#34;&#41;&#10;  description             &#61; optional&#40;string&#41;&#10;  disabled                &#61; optional&#40;bool, false&#41;&#10;  enable_logging          &#61; optional&#40;bool&#41;&#10;  target_service_accounts &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_tags             &#61; optional&#40;list&#40;string&#41;&#41;&#10;  match &#61; object&#40;&#123;&#10;    address_groups       &#61; optional&#40;list&#40;string&#41;&#41;&#10;    fqdns                &#61; optional&#40;list&#40;string&#41;&#41;&#10;    region_codes         &#61; optional&#40;list&#40;string&#41;&#41;&#10;    threat_intelligences &#61; optional&#40;list&#40;string&#41;&#41;&#10;    destination_ranges   &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_ranges        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_tags          &#61; optional&#40;list&#40;string&#41;&#41;&#10;    layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;      protocol &#61; optional&#40;string, &#34;all&#34;&#41;&#10;      ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#123;&#125;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [region](variables.tf#L125) | Policy region. Leave null for hierarchical policy, or global network policy. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

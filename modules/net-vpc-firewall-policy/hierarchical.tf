@@ -28,39 +28,12 @@ resource "google_compute_firewall_policy_association" "hierarchical" {
   firewall_policy   = google_compute_firewall_policy.hierarchical.0.name
 }
 
-resource "google_compute_firewall_policy_rule" "hierarchical-egress" {
-  for_each                = local.use_hierarchical ? var.egress_rules : {}
+resource "google_compute_firewall_policy_rule" "hierarchical" {
+  for_each                = local.use_hierarchical ? local.rules : {}
   firewall_policy         = google_compute_firewall_policy.hierarchical.0.name
   action                  = each.value.action
   description             = each.value.description
-  direction               = "EGRESS"
-  disabled                = each.value.disabled
-  enable_logging          = each.value.enable_logging
-  priority                = each.value.priority
-  target_service_accounts = each.value.target_service_accounts
-  match {
-    dest_address_groups       = each.value.match.address_groups
-    dest_fqdns                = each.value.match.fqdns
-    dest_region_codes         = each.value.match.region_codes
-    dest_threat_intelligences = each.value.match.threat_intelligences
-    dest_ip_ranges            = each.value.match.destination_ranges
-    src_ip_ranges             = each.value.match.source_ranges
-    dynamic "layer4_configs" {
-      for_each = each.value.match.layer4_configs
-      content {
-        ip_protocol = layer4_configs.value.protocol
-        ports       = layer4_configs.value.ports
-      }
-    }
-  }
-}
-
-resource "google_compute_firewall_policy_rule" "hierarchical-ingress" {
-  for_each                = local.use_hierarchical ? var.ingress_rules : {}
-  firewall_policy         = google_compute_firewall_policy.hierarchical.0.name
-  action                  = each.value.action
-  description             = each.value.description
-  direction               = "INGRESS"
+  direction               = each.value.direction
   disabled                = each.value.disabled
   enable_logging          = each.value.enable_logging
   priority                = each.value.priority
@@ -68,6 +41,30 @@ resource "google_compute_firewall_policy_rule" "hierarchical-ingress" {
   match {
     dest_ip_ranges = each.value.match.destination_ranges
     src_ip_ranges  = each.value.match.source_ranges
+    dest_address_groups = (
+      each.value.direction == "EGRESS" ? each.value.match.address_groups : null
+    )
+    dest_fqdns = (
+      each.value.direction == "EGRESS" ? each.value.match.fqdns : null
+    )
+    dest_region_codes = (
+      each.value.direction == "EGRESS" ? each.value.match.region_codes : null
+    )
+    dest_threat_intelligences = (
+      each.value.direction == "EGRESS" ? each.value.match.threat_intelligences : null
+    )
+    src_address_groups = (
+      each.value.direction == "INGRESS" ? each.value.match.address_groups : null
+    )
+    src_fqdns = (
+      each.value.direction == "INGRESS" ? each.value.match.fqdns : null
+    )
+    src_region_codes = (
+      each.value.direction == "INGRESS" ? each.value.match.region_codes : null
+    )
+    src_threat_intelligences = (
+      each.value.direction == "INGRESS" ? each.value.match.threat_intelligences : null
+    )
     dynamic "layer4_configs" {
       for_each = each.value.match.layer4_configs
       content {

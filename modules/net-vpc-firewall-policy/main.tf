@@ -15,6 +15,17 @@
  */
 
 locals {
+  _rules_egress = {
+    for name, rule in merge(var.egress_rules) :
+    name => merge(rule, { direction = "EGRESS" })
+  }
+  _rules_ingress = {
+    for name, rule in merge(var.ingress_rules) :
+    name => merge(rule, { direction = "INGRESS" })
+  }
+  rules = merge(
+    local._rules_egress, local._rules_ingress
+  )
   use_hierarchical = strcontains(var.parent_id, "/") ? true : false
   use_regional     = !local.use_hierarchical && var.region != null
 }
