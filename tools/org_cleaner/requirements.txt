@@ -1,0 +1,6 @@
+click
+google-cloud-asset
+google-cloud-compute
+google-cloud-logging
+google-cloud-org-policy
+google-cloud-resource-manager
