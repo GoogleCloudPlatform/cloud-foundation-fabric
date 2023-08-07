@@ -14,39 +14,36 @@
  * limitations under the License.
  */
 
-resource "google_compute_firewall_policy_rule" "default" {
-  for_each                = local.use_hierarchical ? local.rules : {}
-  firewall_policy         = google_compute_firewall_policy.default.0.name
-  action                  = each.value.action
-  description             = each.value.description
-  direction               = each.value.direction
-  disabled                = each.value.disabled
-  enable_logging          = each.value.enable_logging
-  priority                = each.value.priority
-  target_service_accounts = each.value.target_service_accounts
-  match {
-    dest_ip_ranges = each.value.match.destination_ranges
-    src_ip_ranges  = each.value.match.source_ranges
-    dynamic "layer4_configs" {
-      for_each = each.value.match.layer4_configs
-      content {
-        ip_protocol = layer4_configs.value.protocol
-        ports       = layer4_configs.value.ports
-      }
-    }
-  }
+resource "google_compute_region_network_firewall_policy" "net-regional" {
+  count       = !local.use_hierarchical && local.use_regional ? 1 : 0
+  project     = var.parent_id
+  name        = var.name
+  description = var.description
+  region      = var.region
 }
 
-resource "google_compute_network_firewall_policy_rule" "default" {
+resource "google_compute_region_network_firewall_policy_association" "net-regional" {
   for_each = (
-    !local.use_hierarchical && !local.use_regional ? local.rules : {}
+    !local.use_hierarchical && local.use_regional ? var.attachments : {}
+  )
+  project           = var.parent_id
+  region            = var.region
+  name              = "${var.name}-${each.key}"
+  attachment_target = each.value
+  firewall_policy   = google_compute_region_network_firewall_policy.net-regional.0.name
+}
+
+resource "google_compute_region_network_firewall_policy_rule" "net-regional-egress" {
+  for_each = (
+    !local.use_hierarchical && local.use_regional ? var.egress_rules : {}
   )
   project                 = var.parent_id
-  firewall_policy         = google_compute_network_firewall_policy.default.0.name
+  region                  = var.region
+  firewall_policy         = google_compute_region_network_firewall_policy.net-regional.0.name
   rule_name               = each.key
   action                  = each.value.action
   description             = each.value.description
-  direction               = each.value.direction
+  direction               = "EGRESS"
   disabled                = each.value.disabled
   enable_logging          = each.value.enable_logging
   priority                = each.value.priority
@@ -78,17 +75,17 @@ resource "google_compute_network_firewall_policy_rule" "default" {
   }
 }
 
-resource "google_compute_region_network_firewall_policy_rule" "default" {
+resource "google_compute_region_network_firewall_policy_rule" "net-regional-ingress" {
   for_each = (
-    !local.use_hierarchical && local.use_regional ? local.rules : {}
+    !local.use_hierarchical && local.use_regional ? var.ingress_rules : {}
   )
   project                 = var.parent_id
   region                  = var.region
-  firewall_policy         = google_compute_region_network_firewall_policy.default.0.name
+  firewall_policy         = google_compute_region_network_firewall_policy.net-regional.0.name
   rule_name               = each.key
   action                  = each.value.action
   description             = each.value.description
-  direction               = each.value.direction
+  direction               = "INGRESS"
   disabled                = each.value.disabled
   enable_logging          = each.value.enable_logging
   priority                = each.value.priority

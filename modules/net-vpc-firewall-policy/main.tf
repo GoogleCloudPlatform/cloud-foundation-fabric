@@ -15,39 +15,6 @@
  */
 
 locals {
-  _rules_egress = {
-    for name, rule in merge(var.egress_rules) :
-    name => merge(rule, { direction = "EGRESS" })
-  }
-  _rules_ingress = {
-    for name, rule in merge(var.ingress_rules) :
-    name => merge(rule, { direction = "INGRESS" })
-  }
-  rules = merge(
-    local._rules_egress, local._rules_ingress
-  )
   use_hierarchical = strcontains(var.parent_id, "/") ? true : false
   use_regional     = !local.use_hierarchical && var.region != null
-}
-
-resource "google_compute_firewall_policy" "default" {
-  count       = local.use_hierarchical ? 1 : 0
-  parent      = var.parent_id
-  short_name  = var.name
-  description = var.description
-}
-
-resource "google_compute_network_firewall_policy" "default" {
-  count       = !local.use_hierarchical && !local.use_regional ? 1 : 0
-  project     = var.parent_id
-  name        = var.name
-  description = var.description
-}
-
-resource "google_compute_region_network_firewall_policy" "default" {
-  count       = !local.use_hierarchical && local.use_regional ? 1 : 0
-  project     = var.parent_id
-  name        = var.name
-  description = var.description
-  region      = var.region
 }

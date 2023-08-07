@@ -16,9 +16,9 @@
 
 output "id" {
   description = "Fully qualified firewall policy id."
-  value = (
-    var.region == null
-    ? try(google_compute_network_firewall_policy.default.0.id, null)
-    : try(google_compute_region_network_firewall_policy.default.0.id, null)
-  )
+  value = coalesce([
+    try(google_compute_firewall_policy.hierarchical.0.id, null),
+    try(google_compute_network_firewall_policy.net-global.0.id, null),
+    try(google_compute_region_network_firewall_policy.net-regional.0.id, null)
+  ])
 }
