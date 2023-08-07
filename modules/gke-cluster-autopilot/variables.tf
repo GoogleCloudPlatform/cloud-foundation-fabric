@@ -211,3 +211,9 @@ variable "vpc_config" {
   })
   nullable = false
 }
+
+variable "allow_net_admin" {
+  description = "Enable NET_ADMIN feature on autopilot cluster."
+  type        = bool
+  default     = false
+}
