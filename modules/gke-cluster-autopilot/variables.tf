@@ -80,6 +80,7 @@ variable "enable_features" {
     l4_ilb_subsetting   = optional(bool, false)
     mesh_certificates   = optional(bool)
     pod_security_policy = optional(bool, false)
+    allow_net_admin     = optional(bool, false)
     resource_usage_export = optional(object({
       dataset                              = string
       enable_network_egress_metering       = optional(bool)
@@ -210,10 +211,4 @@ variable "vpc_config" {
     stack_type               = optional(string)
   })
   nullable = false
-}
-
-variable "allow_net_admin" {
-  description = "Enable NET_ADMIN feature on autopilot cluster."
-  type        = bool
-  default     = false
 }
