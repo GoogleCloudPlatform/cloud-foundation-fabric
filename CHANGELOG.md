@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1573](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1573)] Add information about required groups ([wiktorn](https://github.com/wiktorn)) <!-- 2023-08-06 18:27:59+00:00 -->
 - [[#1572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1572)] **incompatible change:** More module descriptions ([ludoo](https://github.com/ludoo)) <!-- 2023-08-06 09:25:45+00:00 -->
 - [[#1560](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1560)] Removed unused attribute in variable of ha-vpn-over-blueprint blueprint ([apichick](https://github.com/apichick)) <!-- 2023-08-02 11:41:08+00:00 -->
 - [[#1548](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1548)] Minor fixes in Vertex Ai MLOPs blueprint ([javiergp](https://github.com/javiergp)) <!-- 2023-07-31 10:52:37+00:00 -->
@@ -22,6 +23,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1573](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1573)] Add information about required groups ([wiktorn](https://github.com/wiktorn)) <!-- 2023-08-06 18:27:59+00:00 -->
 - [[#1545](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1545)] add dataplex autodq base module ([thinhha](https://github.com/thinhha)) <!-- 2023-08-02 11:16:33+00:00 -->
 - [[#1557](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1557)] renaming net-vpc-swp to net-swp ([skalolazka](https://github.com/skalolazka)) <!-- 2023-08-01 15:48:22+00:00 -->
 - [[#1553](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1553)] Added module for Regional Internal Proxy Load Balancer ([apichick](https://github.com/apichick)) <!-- 2023-07-31 15:58:09+00:00 -->
