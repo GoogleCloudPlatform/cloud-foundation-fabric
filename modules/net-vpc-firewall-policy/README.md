@@ -1,8 +1,8 @@
 # Firewall Policies
 
-This module allows creation and management of twi different firewall policy types:
+This module allows creation and management of two different firewall policy types:
 
-- a [hierarchical policy]() in a folder or organization, or
+- a [hierarchical policy](https://cloud.google.com/firewall/docs/firewall-policies) in a folder or organization, or
 - a [global](https://cloud.google.com/vpc/docs/network-firewall-policies) or [regional](https://cloud.google.com/vpc/docs/regional-firewall-policies) network policy
 
 The module also manages policy rules via code or a factory, and optional policy attachments. The interface deviates slightly from the [`net-vpc-firewall`](../net-vpc-firewall/) module since the underlying resources and API objects are different.
@@ -147,6 +147,79 @@ module "firewall-policy" {
 }
 # tftest modules=2 resources=7
 ```
+
+### Factory
+
+Similarly to other modules, a rules factory (see [Resource Factories](../../blueprints/factories/)) is also included here to allow route management via descriptive configuration files.
+
+Factory configuration is via three optional attributes in the `rules_factory_config` variable:
+
+- `cidr_file_path` specifying the path to a mapping of logical names to CIDR ranges, used for source and destination ranges in rules when available
+- `egress_rules_file_path` specifying the path to the egress rules file
+- `ingress_rules_file_path` specifying the path to the ingress rules file
+
+Factory rules are merged with rules declared in code, with the latter taking precedence where both use the same key.
+
+This is an example of a simple factory:
+
+```hcl
+module "firewall-policy" {
+  source    = "./fabric/modules/net-vpc-firewall-policy"
+  name      = "test-1"
+  parent_id = "folders/1234567890"
+  attachments = {
+    test = "folders/4567890123"
+  }
+  ingress_rules = {
+    ssh = {
+      priority = 1002
+      match = {
+        source_ranges  = ["10.0.0.0/8"]
+        layer4_configs = [{ protocol = "tcp", ports = ["22"] }]
+      }
+    }
+  }
+  rules_factory_config = {
+    cidr_file_path          = "configs/cidrs.yaml"
+    egress_rules_file_path  = "configs/egress.yaml"
+    ingress_rules_file_path = "configs/ingress.yaml"
+  }
+}
+# tftest modules=1 resources=5 files=cidrs,egress,ingress inventory=factory.yaml
+```
+
+```yaml
+# tftest-file id=cidrs path=configs/cidrs.yaml
+rfc1918:
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/24
+```
+
+```yaml
+# tftest-file id=egress path=configs/egress.yaml
+smtp:
+  priority: 900
+  match:
+   destination_ranges:
+   - rfc1918
+   layer4_configs:
+   - protocol: tcp
+     ports:
+     - 25
+```
+
+```yaml
+# tftest-file id=ingress path=configs/ingress.yaml
+icmp:
+  priority: 1000
+  match:
+   source_ranges:
+   - 10.0.0.0/8
+   layer4_configs:
+   - protocol: icmp
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

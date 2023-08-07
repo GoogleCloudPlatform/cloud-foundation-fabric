@@ -15,11 +15,6 @@
  */
 
 locals {
-  _factory_cidrs = (
-    var.rules_factory_config.cidr_file_path == null
-    ? {}
-    : yamldecode(file(var.rules_factory_config.cidr_file_path))
-  )
   _factory_egress_rules = (
     var.rules_factory_config.egress_rules_file_path == null
     ? {}
@@ -30,9 +25,16 @@ locals {
     ? {}
     : yamldecode(file(var.rules_factory_config.ingress_rules_file_path))
   )
+  factory_cidrs = (
+    var.rules_factory_config.cidr_file_path == null
+    ? {}
+    : yamldecode(file(var.rules_factory_config.cidr_file_path))
+  )
   factory_egress_rules = {
     for k, v in local._factory_egress_rules : k => {
       action                  = "deny"
+      direction               = "EGRESS"
+      priority                = v.priority
       description             = lookup(v, "description", null)
       disabled                = lookup(v, "disabled", false)
       enable_logging          = lookup(v, "enable_logging", null)
@@ -43,9 +45,23 @@ locals {
         fqdns                = lookup(v.match, "fqdns", null)
         region_codes         = lookup(v.match, "region_codes", null)
         threat_intelligences = lookup(v.match, "threat_intelligences", null)
-        destination_ranges   = lookup(v.match, "destination_ranges", null)
-        source_ranges        = lookup(v.match, "source_ranges", null)
-        source_tags          = lookup(v.match, "source_tags", null)
+        destination_ranges = (
+          lookup(v.match, "destination_ranges", null) == null
+          ? null
+          : flatten([
+            for r in v.match.destination_ranges :
+            try(local.factory_cidrs[r], r)
+          ])
+        )
+        source_ranges = (
+          lookup(v.match, "source_ranges", null) == null
+          ? null
+          : flatten([
+            for r in v.match.source_ranges :
+            try(local.factory_cidrs[r], r)
+          ])
+        )
+        source_tags = lookup(v.match, "source_tags", null)
         layer4_configs = (
           lookup(v.match, "layer4_configs", null) == null
           ? [{ protocol = "all", ports = null }]
@@ -60,6 +76,8 @@ locals {
   factory_ingress_rules = {
     for k, v in local._factory_ingress_rules : k => {
       action                  = "allow"
+      direction               = "INGRESS"
+      priority                = v.priority
       description             = lookup(v, "description", null)
       disabled                = lookup(v, "disabled", false)
       enable_logging          = lookup(v, "enable_logging", null)
@@ -70,9 +88,23 @@ locals {
         fqdns                = lookup(v.match, "fqdns", null)
         region_codes         = lookup(v.match, "region_codes", null)
         threat_intelligences = lookup(v.match, "threat_intelligences", null)
-        destination_ranges   = lookup(v.match, "destination_ranges", null)
-        source_ranges        = lookup(v.match, "source_ranges", null)
-        source_tags          = lookup(v.match, "source_tags", null)
+        destination_ranges = (
+          lookup(v.match, "destination_ranges", null) == null
+          ? null
+          : flatten([
+            for r in v.match.destination_ranges :
+            try(local.factory_cidrs[r], r)
+          ])
+        )
+        source_ranges = (
+          lookup(v.match, "source_ranges", null) == null
+          ? null
+          : flatten([
+            for r in v.match.source_ranges :
+            try(local.factory_cidrs[r], r)
+          ])
+        )
+        source_tags = lookup(v.match, "source_tags", null)
         layer4_configs = (
           lookup(v.match, "layer4_configs", null) == null
           ? [{ protocol = "all", ports = null }]

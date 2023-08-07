@@ -1,0 +1,99 @@
+values:
+  module.firewall-policy.google_compute_firewall_policy.hierarchical[0]:
+    description: null
+    parent: folders/1234567890
+    short_name: test-1
+    timeouts: null
+  module.firewall-policy.google_compute_firewall_policy_association.hierarchical["test"]:
+    attachment_target: folders/4567890123
+    name: test-1-test
+    timeouts: null
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["icmp"]:
+    action: allow
+    description: null
+    direction: INGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: icmp
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 10.0.0.0/8
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 1000
+    target_resources: null
+    target_service_accounts: null
+    timeouts: null
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["smtp"]:
+    action: deny
+    description: null
+    direction: EGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/24
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '25'
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges: null
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 900
+    target_resources: null
+    target_service_accounts: null
+    timeouts: null
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ssh"]:
+    action: allow
+    description: null
+    direction: INGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '22'
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 10.0.0.0/8
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 1002
+    target_resources: null
+    target_service_accounts: null
+    timeouts: null
+
+counts:
+  google_compute_firewall_policy: 1
+  google_compute_firewall_policy_association: 1
+  google_compute_firewall_policy_rule: 3
+  modules: 1
+  resources: 5
+
+outputs: {}
+
