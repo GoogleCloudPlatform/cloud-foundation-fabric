@@ -34,7 +34,6 @@ locals {
 }
 
 resource "google_dns_response_policy" "default" {
-  provider             = google-beta
   count                = var.policy_create ? 1 : 0
   project              = var.project_id
   response_policy_name = var.name
@@ -53,7 +52,6 @@ resource "google_dns_response_policy" "default" {
 }
 
 resource "google_dns_response_policy_rule" "default" {
-  provider        = google-beta
   for_each        = merge(local.factory_rules, var.rules)
   project         = var.project_id
   response_policy = local.policy_name
