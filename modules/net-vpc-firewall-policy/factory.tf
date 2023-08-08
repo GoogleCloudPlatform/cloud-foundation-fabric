@@ -31,7 +31,7 @@ locals {
     : yamldecode(file(var.rules_factory_config.cidr_file_path))
   )
   factory_egress_rules = {
-    for k, v in local._factory_egress_rules : k => {
+    for k, v in local._factory_egress_rules : "ingress/${k}" => {
       action                  = "deny"
       direction               = "EGRESS"
       priority                = v.priority
@@ -74,7 +74,7 @@ locals {
     }
   }
   factory_ingress_rules = {
-    for k, v in local._factory_ingress_rules : k => {
+    for k, v in local._factory_ingress_rules : "egress/${k}" => {
       action                  = "allow"
       direction               = "INGRESS"
       priority                = v.priority

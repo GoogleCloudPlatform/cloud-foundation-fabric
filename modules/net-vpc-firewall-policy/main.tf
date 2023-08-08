@@ -17,11 +17,11 @@
 locals {
   _rules_egress = {
     for name, rule in merge(var.egress_rules) :
-    name => merge(rule, { direction = "EGRESS" })
+    "egress/${name}" => merge(rule, { direction = "EGRESS" })
   }
   _rules_ingress = {
     for name, rule in merge(var.ingress_rules) :
-    name => merge(rule, { direction = "INGRESS" })
+    "ingress/${name}" => merge(rule, { direction = "INGRESS" })
   }
   rules = merge(
     local.factory_egress_rules, local.factory_ingress_rules,
