@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+variable "attachments" {
+  description = "Ids of the resources to which this policy will be attached, in descriptive name => self link format. Specify folders or organization for hierarchical policy, VPCs for network policy."
+  type        = map(string)
+  default     = {}
+  nullable    = false
+}
+
 variable "description" {
   description = "Policy description."
   type        = string
@@ -31,9 +38,13 @@ variable "egress_rules" {
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
     match = object({
-      destination_ranges = optional(list(string))
-      source_ranges      = optional(list(string))
-      source_tags        = optional(list(string))
+      address_groups       = optional(list(string))
+      fqdns                = optional(list(string))
+      region_codes         = optional(list(string))
+      threat_intelligences = optional(list(string))
+      destination_ranges   = optional(list(string))
+      source_ranges        = optional(list(string))
+      source_tags          = optional(list(string))
       layer4_configs = optional(list(object({
         protocol = optional(string, "all")
         ports    = optional(list(string))
@@ -68,9 +79,13 @@ variable "ingress_rules" {
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
     match = object({
-      destination_ranges = optional(list(string))
-      source_ranges      = optional(list(string))
-      source_tags        = optional(list(string))
+      address_groups       = optional(list(string))
+      fqdns                = optional(list(string))
+      region_codes         = optional(list(string))
+      threat_intelligences = optional(list(string))
+      destination_ranges   = optional(list(string))
+      source_ranges        = optional(list(string))
+      source_tags          = optional(list(string))
       layer4_configs = optional(list(object({
         protocol = optional(string, "all")
         ports    = optional(list(string))
@@ -101,21 +116,25 @@ variable "name" {
   nullable    = false
 }
 
-variable "project_id" {
-  description = "Project id of the project that holds the network."
+variable "parent_id" {
+  description = "Parent node where the policy will be created, `folders/nnn` or `organizations/nnn` for hierarchical policy, project id for a network policy."
   type        = string
   nullable    = false
 }
 
 variable "region" {
-  description = "Policy region. Leave null for global policy."
+  description = "Policy region. Leave null for hierarchical policy, or global network policy."
   type        = string
   default     = null
 }
 
-variable "target_vpcs" {
-  description = "VPC ids to which this policy will be attached, in descriptive name => self link format."
-  type        = map(string)
-  default     = {}
-  nullable    = false
+variable "rules_factory_config" {
+  description = "Configuration for the optional rules factory."
+  type = object({
+    cidr_file_path          = optional(string)
+    egress_rules_file_path  = optional(string)
+    ingress_rules_file_path = optional(string)
+  })
+  nullable = false
+  default  = {}
 }
