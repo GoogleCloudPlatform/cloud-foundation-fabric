@@ -54,7 +54,7 @@ module "firewall-policy" {
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=6 inventory=hierarchical.yaml
 ```
 
 ### Global Network policy
@@ -106,7 +106,7 @@ module "firewall-policy" {
     }
   }
 }
-# tftest modules=2 resources=9
+# tftest modules=2 resources=9 inventory=global-net.yaml
 ```
 
 ### Regional Network policy
@@ -145,7 +145,7 @@ module "firewall-policy" {
     }
   }
 }
-# tftest modules=2 resources=7
+# tftest modules=2 resources=7 inventory=regional-net.yaml
 ```
 
 ### Factory

@@ -13,17 +13,49 @@
 # limitations under the License.
 
 values:
-  module.firewall-policy.google_compute_firewall_policy.hierarchical[0]:
-    parent: folders/1234567890
-    short_name: test-1
-  module.firewall-policy.google_compute_firewall_policy_association.hierarchical["test"]:
-    attachment_target: folders/4567890123
-    name: test-1-test
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["icmp"]:
+  module.firewall-policy.google_compute_region_network_firewall_policy.net-regional[0]:
+    name: test-1
+    project: my-project
+    region: europe-west8
+    firewall_policy: test-1
+    name: test-1-my-vpc
+    project: my-project
+    region: europe-west8
+  module.firewall-policy.google_compute_region_network_firewall_policy_rule.net-regional["egress/smtp"]:
+    action: deny
+    direction: EGRESS
+    disabled: false
+    enable_logging: null
+    firewall_policy: test-1
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges:
+      - 0.0.0.0/0
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '25'
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges: null
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
+    priority: 900
+    project: my-project
+    region: europe-west8
+    rule_name: egress/smtp
+    target_secure_tags: []
+    target_service_accounts: null
+  module.firewall-policy.google_compute_region_network_firewall_policy_rule.net-regional["ingress/icmp"]:
     action: allow
     direction: INGRESS
     disabled: false
     enable_logging: null
+    firewall_policy: test-1
     match:
     - dest_address_groups: null
       dest_fqdns: null
@@ -36,65 +68,19 @@ values:
       src_address_groups: null
       src_fqdns: null
       src_ip_ranges:
-      - 10.0.0.0/8
+      - 0.0.0.0/0
       src_region_codes: null
+      src_secure_tags: []
       src_threat_intelligences: null
     priority: 1000
-    target_resources: null
+    project: my-project
+    region: europe-west8
+    rule_name: ingress/icmp
+    target_secure_tags: []
     target_service_accounts: null
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["smtp"]:
-    action: deny
-    direction: EGRESS
-    disabled: false
-    enable_logging: null
-    match:
-    - dest_address_groups: null
-      dest_fqdns: null
-      dest_ip_ranges:
-      - 10.0.0.0/8
-      - 172.16.0.0/12
-      - 192.168.0.0/24
-      dest_region_codes: null
-      dest_threat_intelligences: null
-      layer4_configs:
-      - ip_protocol: tcp
-        ports:
-        - '25'
-      src_address_groups: null
-      src_fqdns: null
-      src_ip_ranges: null
-      src_region_codes: null
-      src_threat_intelligences: null
-    priority: 900
-    target_resources: null
-    target_service_accounts: null
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ssh"]:
-    action: allow
-    direction: INGRESS
-    disabled: false
-    enable_logging: null
-    match:
-    - dest_address_groups: null
-      dest_fqdns: null
-      dest_ip_ranges: null
-      dest_region_codes: null
-      dest_threat_intelligences: null
-      layer4_configs:
-      - ip_protocol: tcp
-        ports:
-        - '22'
-      src_address_groups: null
-      src_fqdns: null
-      src_ip_ranges:
-      - 10.0.0.0/8
-      src_region_codes: null
-      src_threat_intelligences: null
-    priority: 1002
-    target_resources: null
-    target_service_accounts: null
+
 
 counts:
-  google_compute_firewall_policy: 1
-  google_compute_firewall_policy_association: 1
-  google_compute_firewall_policy_rule: 3
-
+  google_compute_region_network_firewall_policy: 1
+  google_compute_region_network_firewall_policy_association: 1
+  google_compute_region_network_firewall_policy_rule: 2

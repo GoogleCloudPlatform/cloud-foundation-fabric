@@ -14,13 +14,40 @@
 
 values:
   module.firewall-policy.google_compute_firewall_policy.hierarchical[0]:
+    description: null
     parent: folders/1234567890
     short_name: test-1
   module.firewall-policy.google_compute_firewall_policy_association.hierarchical["test"]:
     attachment_target: folders/4567890123
     name: test-1-test
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["icmp"]:
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["egress/smtp"]:
+    action: deny
+    description: null
+    direction: EGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges:
+      - 0.0.0.0/0
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '25'
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges: null
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 900
+    target_resources: null
+    target_service_accounts: null
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/icmp"]:
     action: allow
+    description: null
     direction: INGRESS
     disabled: false
     enable_logging: null
@@ -36,40 +63,39 @@ values:
       src_address_groups: null
       src_fqdns: null
       src_ip_ranges:
-      - 10.0.0.0/8
+      - 0.0.0.0/0
       src_region_codes: null
       src_threat_intelligences: null
     priority: 1000
     target_resources: null
     target_service_accounts: null
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["smtp"]:
-    action: deny
-    direction: EGRESS
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/mgmt"]:
+    action: allow
+    description: null
+    direction: INGRESS
     disabled: false
     enable_logging: null
     match:
     - dest_address_groups: null
       dest_fqdns: null
-      dest_ip_ranges:
-      - 10.0.0.0/8
-      - 172.16.0.0/12
-      - 192.168.0.0/24
+      dest_ip_ranges: null
       dest_region_codes: null
       dest_threat_intelligences: null
       layer4_configs:
-      - ip_protocol: tcp
-        ports:
-        - '25'
+      - ip_protocol: all
+        ports: null
       src_address_groups: null
       src_fqdns: null
-      src_ip_ranges: null
+      src_ip_ranges:
+      - 10.1.1.0/24
       src_region_codes: null
       src_threat_intelligences: null
-    priority: 900
+    priority: 1001
     target_resources: null
     target_service_accounts: null
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ssh"]:
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/ssh"]:
     action: allow
+    description: null
     direction: INGRESS
     disabled: false
     enable_logging: null
@@ -96,5 +122,4 @@ values:
 counts:
   google_compute_firewall_policy: 1
   google_compute_firewall_policy_association: 1
-  google_compute_firewall_policy_rule: 3
-
+  google_compute_firewall_policy_rule: 4
