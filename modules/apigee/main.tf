@@ -16,6 +16,7 @@
 
 locals {
   org_id               = try(google_apigee_organization.organization[0].id, "organizations/${var.project_id}")
+  org_name             = try(google_apigee_organization.organization[0].name, var.project_id)
   envgroups            = coalesce(var.envgroups, {})
   environments         = coalesce(var.environments, {})
   instances            = coalesce(var.instances, {})
@@ -118,4 +119,43 @@ resource "google_apigee_endpoint_attachment" "endpoint_attachments" {
   endpoint_attachment_id = each.key
   location               = each.value.region
   service_attachment     = each.value.service_attachment
+}
+
+resource "google_apigee_addons_config" "test_organization" {
+  org = local.org_name
+  dynamic "addons_config" {
+    for_each = var.addons_config == null ? [] : [""]
+    content {
+      dynamic "advanced_api_ops_config" {
+        for_each = var.addons_config.advanced_api_ops ? [] : [""]
+        content {
+          enabled = true
+        }
+      }
+      dynamic "api_security_config" {
+        for_each = var.addons_config.api_security ? [] : [""]
+        content {
+          enabled = true
+        }
+      }
+      dynamic "connectors_platform_config" {
+        for_each = var.addons_config.connectors_platform ? [] : [""]
+        content {
+          enabled = true
+        }
+      }
+      dynamic "integration_config" {
+        for_each = var.addons_config.integration ? [] : [""]
+        content {
+          enabled = true
+        }
+      }
+      dynamic "monetization_config" {
+        for_each = var.addons_config.monetization ? [] : [""]
+        content {
+          enabled = true
+        }
+      }
+    }
+  }
 }
