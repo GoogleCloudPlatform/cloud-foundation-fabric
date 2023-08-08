@@ -332,7 +332,9 @@ module "nginx-mig" {
 
 Here is an example defining the stateful config at the instance level.
 
-Note that you will need to know the instance name in order to use this configuration.
+An instance level configuration defines an instance to create within the MIG using previously created disks. The instance created using an instance level 
+configuration will be provisioned using the instance template within the MIG with any disks configured on the instance template plus any stateful disks you
+define in the instance level configuration. As is configured in the following example, the template has a single boot disk plus one stateful disk attached. 
 
 ```hcl
 module "cos-nginx" {
@@ -356,21 +358,16 @@ module "nginx-template" {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
-  attached_disks = [{
-    name        = "repd-1"
-    size        = null
-    source_type = "attach"
-    source      = "regions/${var.region}/disks/repd-test-1"
-    options = {
-      mode         = "READ_ONLY"
-      replica_zone = "${var.region}-c"
-      type         = "PERSISTENT"
-    }
-  }]
   create_template = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
+}
+
+resource "google_compute_disk" "test_disk" {
+  name  = "test-disk"
+  zone  = "europe-west1-b"
+  physical_block_size_bytes = 4096
 }
 
 module "nginx-mig" {
@@ -391,14 +388,13 @@ module "nginx-mig" {
     }
   }
   stateful_config = {
-    # name needs to match a MIG instance name
-    instance-1 = {
+    stateful-instance-1 = {
       minimal_action                 = "NONE",
       most_disruptive_allowed_action = "REPLACE"
       preserved_state = {
         disks = {
-          persistent-disk-1 = {
-            source = "test-disk",
+          stateful-disk-1 = {
+            source = google_compute_disk.test_disk.id,
           }
         }
         metadata = {
