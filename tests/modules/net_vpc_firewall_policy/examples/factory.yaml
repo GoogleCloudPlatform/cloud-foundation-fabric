@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 values:
   module.firewall-policy.google_compute_firewall_policy.hierarchical[0]:
     parent: folders/1234567890
@@ -19,7 +18,7 @@ values:
   module.firewall-policy.google_compute_firewall_policy_association.hierarchical["test"]:
     attachment_target: folders/4567890123
     name: test-1-test
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["icmp"]:
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["egress/icmp"]:
     action: allow
     direction: INGRESS
     disabled: false
@@ -42,7 +41,7 @@ values:
     priority: 1000
     target_resources: null
     target_service_accounts: null
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["smtp"]:
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/smtp"]:
     action: deny
     direction: EGRESS
     disabled: false
@@ -68,7 +67,7 @@ values:
     priority: 900
     target_resources: null
     target_service_accounts: null
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ssh"]:
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/ssh"]:
     action: allow
     direction: INGRESS
     disabled: false
@@ -97,4 +96,3 @@ counts:
   google_compute_firewall_policy: 1
   google_compute_firewall_policy_association: 1
   google_compute_firewall_policy_rule: 3
-

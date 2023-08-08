@@ -17,6 +17,7 @@ values:
     name: test-1
     project: my-project
     region: europe-west8
+  module.firewall-policy.google_compute_region_network_firewall_policy_association.net-regional["my-vpc"]:
     firewall_policy: test-1
     name: test-1-my-vpc
     project: my-project
@@ -47,7 +48,7 @@ values:
     priority: 900
     project: my-project
     region: europe-west8
-    rule_name: egress/smtp
+    rule_name: smtp
     target_secure_tags: []
     target_service_accounts: null
   module.firewall-policy.google_compute_region_network_firewall_policy_rule.net-regional["ingress/icmp"]:
@@ -75,10 +76,9 @@ values:
     priority: 1000
     project: my-project
     region: europe-west8
-    rule_name: ingress/icmp
+    rule_name: icmp
     target_secure_tags: []
     target_service_accounts: null
-
 
 counts:
   google_compute_region_network_firewall_policy: 1

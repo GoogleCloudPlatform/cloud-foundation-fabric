@@ -45,7 +45,7 @@ values:
       src_threat_intelligences: null
     priority: 900
     project: my-project
-    rule_name: egress/smtp
+    rule_name: smtp
     target_secure_tags: []
     target_service_accounts: null
   module.firewall-policy.google_compute_network_firewall_policy_rule.net-global["ingress/icmp"]:
@@ -72,7 +72,7 @@ values:
       src_threat_intelligences: null
     priority: 1000
     project: my-project
-    rule_name: ingress/icmp
+    rule_name: icmp
     target_secure_tags: []
     target_service_accounts: null
   module.firewall-policy.google_compute_network_firewall_policy_rule.net-global["ingress/mgmt"]:
@@ -99,7 +99,7 @@ values:
       src_threat_intelligences: null
     priority: 1001
     project: my-project
-    rule_name: ingress/mgmt
+    rule_name: mgmt
     target_secure_tags: []
     target_service_accounts: null
   module.firewall-policy.google_compute_network_firewall_policy_rule.net-global["ingress/ssh"]:
@@ -127,7 +127,7 @@ values:
       src_threat_intelligences: null
     priority: 1002
     project: my-project
-    rule_name: ingress/ssh
+    rule_name: ssh
     target_secure_tags: []
     target_service_accounts: null
 

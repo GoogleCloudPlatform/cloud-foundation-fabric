@@ -40,7 +40,7 @@ resource "google_compute_network_firewall_policy_rule" "net-global" {
   )
   project                 = var.parent_id
   firewall_policy         = google_compute_network_firewall_policy.net-global.0.name
-  rule_name               = each.key
+  rule_name               = local.rules[each.key].name
   action                  = local.rules[each.key].action
   description             = local.rules[each.key].description
   direction               = local.rules[each.key].direction
