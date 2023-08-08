@@ -42,6 +42,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1575](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1575)] Expose allow_net_admin feature in gke-cluster-autopilot module ([eunanhardy](https://github.com/eunanhardy)) <!-- 2023-08-07 15:03:51+00:00 -->
 - [[#1572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1572)] **incompatible change:** More module descriptions ([ludoo](https://github.com/ludoo)) <!-- 2023-08-06 09:25:45+00:00 -->
 - [[#1569](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1569)] Add support for cost management to GKE module ([ludoo](https://github.com/ludoo)) <!-- 2023-08-05 11:46:53+00:00 -->
 - [[#1568](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1568)] Add support for ipv6 to net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2023-08-05 11:07:27+00:00 -->
