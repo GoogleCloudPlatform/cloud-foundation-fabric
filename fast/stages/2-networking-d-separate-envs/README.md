@@ -317,14 +317,13 @@ Regions are defined via the `regions` variable which sets up a mapping between t
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
-
 ## Files
 
 | name | description | modules | resources |
 |---|---|---|---|
 | [dns-dev.tf](./dns-dev.tf) | Development spoke DNS zones and peerings setup. | <code>dns</code> · <code>dns-response-policy</code> |  |
 | [dns-prod.tf](./dns-prod.tf) | Production spoke DNS zones and peerings setup. | <code>dns</code> · <code>dns-response-policy</code> |  |
-| [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> |  |
+| [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> · <code>net-firewall-policy</code> |  |
 | [monitoring-vpn-onprem.tf](./monitoring-vpn-onprem.tf) | VPN monitoring alerts. |  | <code>google_monitoring_alert_policy</code> |
 | [monitoring.tf](./monitoring.tf) | Network monitoring dashboards. |  | <code>google_monitoring_dashboard</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
@@ -366,5 +365,4 @@ Regions are defined via the `regions` variable which sets up a mapping between t
 | [shared_vpc_self_links](outputs.tf#L79) | Shared VPC host projects. |  |  |
 | [tfvars](outputs.tf#L84) | Terraform variables file for the following stages. | ✓ |  |
 | [vpn_gateway_endpoints](outputs.tf#L90) | External IP Addresses for the GCP VPN gateways. |  |  |
-
 <!-- END TFDOC -->
