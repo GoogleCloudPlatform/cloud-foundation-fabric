@@ -58,6 +58,13 @@ locals {
       tf_var_files      = local.cicd_workflow_var_files.stage_2
     }
   }
+  team_cicd_workflow_attrs = {
+    for k, v in local.team_cicd_repositories : k => {
+      service_account   = try(module.branch-teams-team-sa-cicd[k].email, null)
+      tf_providers_file = "3-teams-${k}"
+      tf_var_files     = local.cicd_workflow_var_files.stage_3      
+    }
+  }
   cicd_workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
       "${path.module}/templates/workflow-${v.type}.yaml",
@@ -67,6 +74,18 @@ locals {
         )
         identity_provider = try(
           local.identity_providers[v.identity_provider].name, null
+        )
+        outputs_bucket = var.automation.outputs_bucket
+        stage_name     = k
+      })
+    )
+  }
+  team_cicd_workflows = {
+    for k, v in local.team_cicd_repositories : k => templatefile(
+      "${path.module}/templates/workflow-${v.cicd.type}.yaml",
+      merge(local.team_cicd_workflow_attrs[k], {
+        identity_provider = try(
+          local.identity_providers[v.cicd.identity_provider].name, null
         )
         outputs_bucket = var.automation.outputs_bucket
         stage_name     = k
@@ -221,6 +240,20 @@ output "cicd_repositories" {
       )
       service_account = local.cicd_workflow_attrs[k].service_account
     } if v != null
+  }
+}
+
+output "team_cicd_repositories" {
+  description = "WIF configuration for Team CI/CD repositories."
+  value = {
+    for k, v in local.team_cicd_repositories : k => {
+      branch = v.cicd.branch
+      name   = v.cicd.name
+      provider = try(
+        local.identity_providers[v.cicd.identity_provider].name, null
+      )
+      service_account = local.team_cicd_workflow_attrs[k].service_account
+    } if v.cicd != null
   }
 }
 

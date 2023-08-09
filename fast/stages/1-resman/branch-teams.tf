@@ -90,10 +90,13 @@ module "branch-teams-team-sa" {
   display_name = "Terraform team ${each.key} service account."
   prefix       = var.prefix
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = (
-      each.value.impersonation_groups == null
-      ? []
-      : [for g in each.value.impersonation_groups : "group:${g}"]
+    "roles/iam.serviceAccountTokenCreator" = concat(
+      compact([try(module.branch-teams-team-sa-cicd[each.key].iam_email, null)]),
+      (
+        each.value.impersonation_groups == null
+        ? []
+        : [for g in each.value.impersonation_groups : "group:${g}"]
+      )
     )
   }
 }
