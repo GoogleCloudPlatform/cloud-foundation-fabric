@@ -37,16 +37,6 @@ output "custom_roles" {
   value       = google_organization_iam_custom_role.roles
 }
 
-output "firewall_policies" {
-  description = "Map of firewall policy resources created in the organization."
-  value       = { for k, v in google_compute_firewall_policy.policy : k => v }
-}
-
-output "firewall_policy_id" {
-  description = "Map of firewall policy ids created in the organization."
-  value       = { for k, v in google_compute_firewall_policy.policy : k => v.id }
-}
-
 output "id" {
   description = "Fully qualified organization id."
   value       = var.organization_id

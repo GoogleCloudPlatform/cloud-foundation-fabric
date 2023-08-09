@@ -276,7 +276,7 @@ BGP sessions for trusted landing to on-premises are configured through the varia
 **VPC firewall rules** ([`net-vpc-firewall`](../../../modules/net-vpc-firewall)) are defined per-vpc on each `vpc-*.tf` file and leverage a resource factory to massively create rules.
 To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](../../../modules/net-vpc-firewall#rules-factory)" section of the module documentation. Sample firewall rules are shipped in [data/firewall-rules/landing-untrusted](./data/firewall-rules/landing-untrusted) and in [data/firewall-rules/landing-trusted](./data/firewall-rules/landing-trusted), and can be easily customized.
 
-**Hierarchical firewall policies** ([`folder`](../../../modules/folder)) are defined in `main.tf`, and managed through a policy factory implemented by the `folder` module, which applies the defined hierarchical to the `Networking` folder, which contains all the core networking infrastructure. Policies are defined in the `rules_file` file - to define a new one simply use the instructions found on "[Firewall policy factory](../../../modules/organization#firewall-policy-factory)". Sample hierarchical firewall policies are shipped in [data/hierarchical-policy-rules.yaml](./data/hierarchical-policy-rules.yaml) and can be easily customized.
+**Hierarchical firewall policies** ([`folder`](../../../modules/folder)) are defined in `main.tf` and managed through a policy factory implemented by the `net-firewall-policy` module, which is then applied to the `Networking` folder containing all the core networking infrastructure. Policies are defined in the `rules_file` file, to define a new one simply use the [firewall policy module documentation](../../../modules/net-firewall-policy/README.md#factory)". Sample hierarchical firewall rules are shipped in [data/hierarchical-ingress-rules.yaml](./data/hierarchical-ingress-rules.yaml) and can be easily customised.
 
 ### DNS architecture
 
@@ -476,7 +476,6 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
-
 ## Files
 
 | name | description | modules | resources |
@@ -485,7 +484,7 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [dns-landing.tf](./dns-landing.tf) | Landing DNS zones and peerings setup. | <code>dns</code> · <code>dns-response-policy</code> |  |
 | [dns-prod.tf](./dns-prod.tf) | Production spoke DNS zones and peerings setup. | <code>dns</code> |  |
 | [landing.tf](./landing.tf) | Landing VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
-| [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> |  |
+| [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> · <code>net-firewall-policy</code> |  |
 | [monitoring-vpn-onprem.tf](./monitoring-vpn-onprem.tf) | VPN monitoring alerts. |  | <code>google_monitoring_alert_policy</code> |
 | [monitoring.tf](./monitoring.tf) | Network monitoring dashboards. |  | <code>google_monitoring_dashboard</code> |
 | [ncc.tf](./ncc.tf) | None | <code>ncc-spoke-ra</code> |  |
@@ -531,5 +530,4 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [shared_vpc_self_links](outputs.tf#L68) | Shared VPC host projects. |  |  |
 | [tfvars](outputs.tf#L73) | Terraform variables file for the following stages. | ✓ |  |
 | [vpn_gateway_endpoints](outputs.tf#L79) | External IP Addresses for the GCP VPN gateways. |  |  |
-
 <!-- END TFDOC -->

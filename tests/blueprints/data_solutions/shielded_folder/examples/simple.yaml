@@ -13,21 +13,611 @@
 # limitations under the License.
 
 values:
-  module.test.module.folder.google_compute_firewall_policy.policy["prefix-fw-policy"]:
-    short_name: prefix-fw-policy
+  module.test.module.firewall-policy.google_compute_firewall_policy.hierarchical[0]:
+    description: null
+    short_name: default
+    timeouts: null
+  module.test.module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["egress/allow-admins"]:
+    action: allow
+    description: Access from the admin subnet to all subnets
+    direction: INGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 1000
+    target_resources: null
+    target_service_accounts: null
+    timeouts: null
+  module.test.module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["egress/allow-healthchecks"]:
+    action: allow
+    description: Enable HTTP and HTTPS healthchecks
+    direction: INGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 35.191.0.0/16
+      - 130.211.0.0/22
+      - 209.85.152.0/22
+      - 209.85.204.0/22
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 1001
+    target_resources: null
+    target_service_accounts: null
+    timeouts: null
+  module.test.module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["egress/allow-icmp"]:
+    action: allow
+    description: Enable ICMP
+    direction: INGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 0.0.0.0/0
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 1003
+    target_resources: null
+    target_service_accounts: null
+    timeouts: null
+  module.test.module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["egress/allow-ssh-from-iap"]:
+    action: allow
+    description: Enable SSH from IAP
+    direction: INGRESS
+    disabled: false
+    enable_logging: null
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 35.235.240.0/20
+      src_region_codes: null
+      src_threat_intelligences: null
+    priority: 1002
+    target_resources: null
+    target_service_accounts: null
+    timeouts: null
+  module.test.module.folder-workload.google_folder.folder[0]:
+    display_name: prefix-workload
+    timeouts: null
+  module.test.module.folder.google_bigquery_dataset_iam_member.bq-sinks-binding["audit-logs"]:
+    condition: []
+    role: roles/bigquery.dataEditor
+  module.test.module.folder.google_bigquery_dataset_iam_member.bq-sinks-binding["vpc-sc"]:
+    condition: []
+    role: roles/bigquery.dataEditor
   module.test.module.folder.google_folder.folder[0]:
     display_name: ShieldedMVP
     parent: organizations/1234567890123
+    timeouts: null
+  module.test.module.folder.google_folder_iam_binding.authoritative["roles/editor"]:
+    condition: []
+    members:
+    - group:gcp-data-engineers@example.com
+    role: roles/editor
+  module.test.module.folder.google_folder_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members:
+    - group:gcp-data-engineers@example.com
+    role: roles/iam.serviceAccountTokenCreator
+  module.test.module.folder.google_logging_folder_sink.sink["audit-logs"]:
+    description: audit-logs (Terraform-managed).
+    disabled: false
+    exclusions: []
+    filter: logName:"/logs/cloudaudit.googleapis.com%2Factivity" OR logName:"/logs/cloudaudit.googleapis.com%2Fsystem_event"
+    include_children: true
+    name: audit-logs
+  module.test.module.folder.google_logging_folder_sink.sink["vpc-sc"]:
+    description: vpc-sc (Terraform-managed).
+    disabled: false
+    exclusions: []
+    filter: protoPayload.metadata.@type="type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata"
+    include_children: true
+    name: vpc-sc
+  module.test.module.folder.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["compute.requireOsLogin"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["compute.restrictLoadBalancerCreationForTypes"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - in:INTERNAL
+          denied_values: null
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
+        values: []
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["iam.automaticIamGrantsForDefaultServiceAccounts"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["run.allowedIngress"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - is:internal
+          denied_values: null
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["sql.restrictAuthorizedNetworks"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["sql.restrictPublicIp"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.test.module.folder.google_org_policy_policy.default["storage.uniformBucketLevelAccess"]:
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  module.test.module.log-export-dataset[0].google_bigquery_dataset.default:
+    dataset_id: prefix_audit_export
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    friendly_name: Audit logs export.
+    location: EU
+    max_time_travel_hours: '168'
+    project: prefix-audit-logs
+    timeouts: null
+  module.test.module.log-export-project[0].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: prefix-audit-logs
+  module.test.module.log-export-project[0].data.google_storage_project_service_account.gcs_sa[0]:
+    project: prefix-audit-logs
+    user_project: null
   module.test.module.log-export-project[0].google_project.project[0]:
+    auto_create_network: false
     billing_account: 123456-123456-123456
+    labels: null
+    name: prefix-audit-logs
     project_id: prefix-audit-logs
+    skip_delete: false
+    timeouts: null
+  module.test.module.log-export-project[0].google_project_iam_binding.authoritative["roles/editor"]:
+    condition: []
+    members:
+    - group:gcp-data-security@example.com
+    project: prefix-audit-logs
+    role: roles/editor
+  module.test.module.log-export-project[0].google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: prefix-audit-logs
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.test.module.log-export-project[0].google_project_service.project_services["pubsub.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: prefix-audit-logs
+    service: pubsub.googleapis.com
+    timeouts: null
+  module.test.module.log-export-project[0].google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: prefix-audit-logs
+    service: stackdriver.googleapis.com
+    timeouts: null
+  module.test.module.log-export-project[0].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: prefix-audit-logs
+    service: storage.googleapis.com
+    timeouts: null
+  module.test.module.log-export-project[0].google_project_service_identity.jit_si["pubsub.googleapis.com"]:
+    project: prefix-audit-logs
+    service: pubsub.googleapis.com
+    timeouts: null
   module.test.module.vpc-sc[0].google_access_context_manager_access_policy.default[0]:
     parent: organizations/1122334455
+    timeouts: null
     title: shielded-folder
   module.test.module.vpc-sc[0].google_access_context_manager_service_perimeter.regular["shielded"]:
     description: null
     perimeter_type: PERIMETER_TYPE_REGULAR
+    spec:
+    - access_levels: []
+      egress_policies: []
+      ingress_policies:
+      - ingress_from:
+        - identity_type: null
+          sources:
+          - access_level: '*'
+            resource: null
+        ingress_to:
+        - operations:
+          - method_selectors: []
+            service_name: '*'
+      restricted_services:
+      - accessapproval.googleapis.com
+      - adsdatahub.googleapis.com
+      - aiplatform.googleapis.com
+      - alloydb.googleapis.com
+      - alpha-documentai.googleapis.com
+      - analyticshub.googleapis.com
+      - apigee.googleapis.com
+      - apigeeconnect.googleapis.com
+      - artifactregistry.googleapis.com
+      - assuredworkloads.googleapis.com
+      - automl.googleapis.com
+      - baremetalsolution.googleapis.com
+      - batch.googleapis.com
+      - beyondcorp.googleapis.com
+      - bigquery.googleapis.com
+      - bigquerydatapolicy.googleapis.com
+      - bigquerydatatransfer.googleapis.com
+      - bigquerymigration.googleapis.com
+      - bigqueryreservation.googleapis.com
+      - bigtable.googleapis.com
+      - binaryauthorization.googleapis.com
+      - cloudasset.googleapis.com
+      - cloudbuild.googleapis.com
+      - clouddebugger.googleapis.com
+      - clouderrorreporting.googleapis.com
+      - cloudfunctions.googleapis.com
+      - cloudkms.googleapis.com
+      - cloudprofiler.googleapis.com
+      - cloudresourcemanager.googleapis.com
+      - cloudsearch.googleapis.com
+      - cloudtrace.googleapis.com
+      - composer.googleapis.com
+      - compute.googleapis.com
+      - connectgateway.googleapis.com
+      - contactcenterinsights.googleapis.com
+      - container.googleapis.com
+      - containeranalysis.googleapis.com
+      - containerfilesystem.googleapis.com
+      - containerregistry.googleapis.com
+      - containerthreatdetection.googleapis.com
+      - contentwarehouse.googleapis.com
+      - datacatalog.googleapis.com
+      - dataflow.googleapis.com
+      - datafusion.googleapis.com
+      - datalineage.googleapis.com
+      - datamigration.googleapis.com
+      - datapipelines.googleapis.com
+      - dataplex.googleapis.com
+      - dataproc.googleapis.com
+      - datastream.googleapis.com
+      - dialogflow.googleapis.com
+      - dlp.googleapis.com
+      - dns.googleapis.com
+      - documentai.googleapis.com
+      - domains.googleapis.com
+      - essentialcontacts.googleapis.com
+      - eventarc.googleapis.com
+      - file.googleapis.com
+      - firebaseappcheck.googleapis.com
+      - firebaserules.googleapis.com
+      - firestore.googleapis.com
+      - gameservices.googleapis.com
+      - gkebackup.googleapis.com
+      - gkeconnect.googleapis.com
+      - gkehub.googleapis.com
+      - gkemulticloud.googleapis.com
+      - healthcare.googleapis.com
+      - iam.googleapis.com
+      - iamcredentials.googleapis.com
+      - iaptunnel.googleapis.com
+      - ids.googleapis.com
+      - integrations.googleapis.com
+      - language.googleapis.com
+      - lifesciences.googleapis.com
+      - logging.googleapis.com
+      - managedidentities.googleapis.com
+      - memcache.googleapis.com
+      - meshca.googleapis.com
+      - metastore.googleapis.com
+      - ml.googleapis.com
+      - monitoring.googleapis.com
+      - networkconnectivity.googleapis.com
+      - networkmanagement.googleapis.com
+      - networksecurity.googleapis.com
+      - networkservices.googleapis.com
+      - notebooks.googleapis.com
+      - opsconfigmonitoring.googleapis.com
+      - osconfig.googleapis.com
+      - oslogin.googleapis.com
+      - policytroubleshooter.googleapis.com
+      - privateca.googleapis.com
+      - pubsub.googleapis.com
+      - pubsublite.googleapis.com
+      - recaptchaenterprise.googleapis.com
+      - recommender.googleapis.com
+      - redis.googleapis.com
+      - retail.googleapis.com
+      - run.googleapis.com
+      - secretmanager.googleapis.com
+      - servicecontrol.googleapis.com
+      - servicedirectory.googleapis.com
+      - spanner.googleapis.com
+      - speakerid.googleapis.com
+      - speech.googleapis.com
+      - sqladmin.googleapis.com
+      - storage.googleapis.com
+      - storagetransfer.googleapis.com
+      - texttospeech.googleapis.com
+      - tpu.googleapis.com
+      - trafficdirector.googleapis.com
+      - transcoder.googleapis.com
+      - translate.googleapis.com
+      - videointelligence.googleapis.com
+      - vision.googleapis.com
+      - visionai.googleapis.com
+      - vpcaccess.googleapis.com
+      - workstations.googleapis.com
+      vpc_accessible_services:
+      - allowed_services:
+        - accessapproval.googleapis.com
+        - adsdatahub.googleapis.com
+        - aiplatform.googleapis.com
+        - alloydb.googleapis.com
+        - alpha-documentai.googleapis.com
+        - analyticshub.googleapis.com
+        - apigee.googleapis.com
+        - apigeeconnect.googleapis.com
+        - artifactregistry.googleapis.com
+        - assuredworkloads.googleapis.com
+        - automl.googleapis.com
+        - baremetalsolution.googleapis.com
+        - batch.googleapis.com
+        - beyondcorp.googleapis.com
+        - bigquery.googleapis.com
+        - bigquerydatapolicy.googleapis.com
+        - bigquerydatatransfer.googleapis.com
+        - bigquerymigration.googleapis.com
+        - bigqueryreservation.googleapis.com
+        - bigtable.googleapis.com
+        - binaryauthorization.googleapis.com
+        - cloudasset.googleapis.com
+        - cloudbuild.googleapis.com
+        - clouddebugger.googleapis.com
+        - clouderrorreporting.googleapis.com
+        - cloudfunctions.googleapis.com
+        - cloudkms.googleapis.com
+        - cloudprofiler.googleapis.com
+        - cloudresourcemanager.googleapis.com
+        - cloudsearch.googleapis.com
+        - cloudtrace.googleapis.com
+        - composer.googleapis.com
+        - compute.googleapis.com
+        - connectgateway.googleapis.com
+        - contactcenterinsights.googleapis.com
+        - container.googleapis.com
+        - containeranalysis.googleapis.com
+        - containerfilesystem.googleapis.com
+        - containerregistry.googleapis.com
+        - containerthreatdetection.googleapis.com
+        - contentwarehouse.googleapis.com
+        - datacatalog.googleapis.com
+        - dataflow.googleapis.com
+        - datafusion.googleapis.com
+        - datalineage.googleapis.com
+        - datamigration.googleapis.com
+        - datapipelines.googleapis.com
+        - dataplex.googleapis.com
+        - dataproc.googleapis.com
+        - datastream.googleapis.com
+        - dialogflow.googleapis.com
+        - dlp.googleapis.com
+        - dns.googleapis.com
+        - documentai.googleapis.com
+        - domains.googleapis.com
+        - essentialcontacts.googleapis.com
+        - eventarc.googleapis.com
+        - file.googleapis.com
+        - firebaseappcheck.googleapis.com
+        - firebaserules.googleapis.com
+        - firestore.googleapis.com
+        - gameservices.googleapis.com
+        - gkebackup.googleapis.com
+        - gkeconnect.googleapis.com
+        - gkehub.googleapis.com
+        - gkemulticloud.googleapis.com
+        - healthcare.googleapis.com
+        - iam.googleapis.com
+        - iamcredentials.googleapis.com
+        - iaptunnel.googleapis.com
+        - ids.googleapis.com
+        - integrations.googleapis.com
+        - language.googleapis.com
+        - lifesciences.googleapis.com
+        - logging.googleapis.com
+        - managedidentities.googleapis.com
+        - memcache.googleapis.com
+        - meshca.googleapis.com
+        - metastore.googleapis.com
+        - ml.googleapis.com
+        - monitoring.googleapis.com
+        - networkconnectivity.googleapis.com
+        - networkmanagement.googleapis.com
+        - networksecurity.googleapis.com
+        - networkservices.googleapis.com
+        - notebooks.googleapis.com
+        - opsconfigmonitoring.googleapis.com
+        - osconfig.googleapis.com
+        - oslogin.googleapis.com
+        - policytroubleshooter.googleapis.com
+        - privateca.googleapis.com
+        - pubsub.googleapis.com
+        - pubsublite.googleapis.com
+        - recaptchaenterprise.googleapis.com
+        - recommender.googleapis.com
+        - redis.googleapis.com
+        - retail.googleapis.com
+        - run.googleapis.com
+        - secretmanager.googleapis.com
+        - servicecontrol.googleapis.com
+        - servicedirectory.googleapis.com
+        - spanner.googleapis.com
+        - speakerid.googleapis.com
+        - speech.googleapis.com
+        - sqladmin.googleapis.com
+        - storage.googleapis.com
+        - storagetransfer.googleapis.com
+        - texttospeech.googleapis.com
+        - tpu.googleapis.com
+        - trafficdirector.googleapis.com
+        - transcoder.googleapis.com
+        - translate.googleapis.com
+        - videointelligence.googleapis.com
+        - vision.googleapis.com
+        - visionai.googleapis.com
+        - vpcaccess.googleapis.com
+        - workstations.googleapis.com
+        enable_restriction: true
+    status: []
+    timeouts: null
     title: shielded
+    use_explicit_dry_run_spec: true
 
 counts:
   google_access_context_manager_access_policy: 1
@@ -47,5 +637,7 @@ counts:
   google_project_service_identity: 1
   google_projects: 1
   google_storage_project_service_account: 1
-  modules: 6
+  modules: 7
   resources: 38
+
+outputs: {}
