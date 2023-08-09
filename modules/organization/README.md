@@ -11,6 +11,7 @@ This module allows managing several organization properties:
 To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
 
 ## TOC
+
 <!-- BEGIN TOC -->
 - [TOC](#toc)
 - [Example](#example)
@@ -19,9 +20,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
   - [Organization Policy Factory](#organization-policy-factory)
   - [Organization Policy Custom Constraints](#organization-policy-custom-constraints)
   - [Organization Policy Custom Constraints Factory](#organization-policy-custom-constraints-factory)
-- [Hierarchical Firewall Policies](#hierarchical-firewall-policies)
-  - [Directly Defined Firewall Policies](#directly-defined-firewall-policies)
-  - [Firewall Policy Factory](#firewall-policy-factory)
+- [Hierarchical Firewall Policy Attachments](#hierarchical-firewall-policy-attachments)
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
 - [Custom Roles](#custom-roles)
@@ -226,109 +225,30 @@ custom.dataprocNoMoreThan10Workers:
   description: Cluster cannot have more than 10 workers, including primary and secondary workers.
 ```
 
-## Hierarchical Firewall Policies
+## Hierarchical Firewall Policy Attachments
 
-Hierarchical firewall policies can be managed in two ways:
-
-- via the `firewall_policies` variable, to directly define policies and rules in Terraform
-- via the `firewall_policy_factory` variable, to leverage external YaML files via a simple "factory" embedded in the module ([see here](../../blueprints/factories) for more context on factories)
-
-Once you have policies (either created via the module or externally), you can associate them using the `firewall_policy_association` variable.
-
-### Directly Defined Firewall Policies
+Hierarchical firewall policies can be managed via the [`net-firewall-policy`](../net-firewall-policy/) module, including support for factories. Once a policy is available, attaching it to the organization can be done either in the firewall policy module itself, or here:
 
 ```hcl
+module "firewall-policy" {
+  source    = "./fabric/modules/net-firewall-policy"
+  name      = "test-1"
+  parent_id = var.organization_id
+  # attachment via the firewall policy module
+  # attachments = {
+  #   org = var.organization_id
+  # }
+}
+
 module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
-  firewall_policies = {
-    iap-policy = {
-      allow-admins = {
-        description             = "Access from the admin subnet to all subnets"
-        direction               = "INGRESS"
-        action                  = "allow"
-        priority                = 1000
-        ranges                  = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
-        ports                   = { all = [] }
-        target_service_accounts = null
-        target_resources        = null
-        logging                 = false
-      }
-      allow-iap-ssh = {
-        description = "Always allow ssh from IAP."
-        direction   = "INGRESS"
-        action      = "allow"
-        priority    = 100
-        ranges      = ["35.235.240.0/20"]
-        ports = {
-          tcp = ["22"]
-        }
-        target_service_accounts = null
-        target_resources        = null
-        logging                 = false
-      }
-    }
-  }
-  firewall_policy_association = {
-    iap_policy = "iap-policy"
+  # attachment via the organization module
+  firewall_policy_associations = {
+    test-1 = module.firewall-policy.id
   }
 }
-# tftest modules=1 resources=4 inventory=hfw.yaml
-```
-
-### Firewall Policy Factory
-
-The in-built factory allows you to define a single policy, using one file for rules, and an optional file for CIDR range substitution variables. Remember that non-absolute paths are relative to the root module (the folder where you run `terraform`).
-
-```hcl
-module "org" {
-  source          = "./fabric/modules/organization"
-  organization_id = var.organization_id
-  firewall_policy_factory = {
-    cidr_file   = "configs/firewall-policies/cidrs.yaml"
-    policy_name = "iap-policy"
-    rules_file  = "configs/firewall-policies/rules.yaml"
-  }
-  firewall_policy_association = {
-    iap_policy = module.org.firewall_policy_id["iap-policy"]
-  }
-}
-# tftest modules=1 resources=4 files=cidrs,rules inventory=hfw.yaml
-```
-
-```yaml
-# tftest-file id=cidrs path=configs/firewall-policies/cidrs.yaml
-rfc1918:
-  - 10.0.0.0/8
-  - 172.16.0.0/12
-  - 192.168.0.0/16
-```
-
-```yaml
-# tftest-file id=rules path=configs/firewall-policies/rules.yaml
-allow-admins:
-  description: Access from the admin subnet to all subnets
-  direction: INGRESS
-  action: allow
-  priority: 1000
-  ranges:
-    - $rfc1918
-  ports:
-    all: []
-  target_resources: null
-  logging: false
-
-allow-iap-ssh:
-  description: "Always allow ssh from IAP."
-  direction: INGRESS
-  action: allow
-  priority: 100
-  ranges:
-    - 35.235.240.0/20
-  ports:
-    tcp: ["22"]
-  target_resources: null
-  logging: false
+# tftest modules=2 resources=2
 ```
 
 ## Log Sinks
@@ -530,18 +450,14 @@ module "org" {
 ```
 
 <!-- TFDOC OPTS files:1 -->
-
-
 <!-- BEGIN TFDOC -->
-
 ## Files
 
 | name | description | resources |
 |---|---|---|
-| [firewall-policies.tf](./firewall-policies.tf) | Hierarchical firewall policies. | <code>google_compute_firewall_policy</code> · <code>google_compute_firewall_policy_association</code> · <code>google_compute_firewall_policy_rule</code> |
 | [iam.tf](./iam.tf) | IAM bindings, roles and audit logging resources. | <code>google_organization_iam_binding</code> · <code>google_organization_iam_custom_role</code> · <code>google_organization_iam_member</code> · <code>google_organization_iam_policy</code> |
 | [logging.tf](./logging.tf) | Log sinks and data access logs. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_organization_exclusion</code> · <code>google_logging_organization_sink</code> · <code>google_organization_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_essential_contacts_contact</code> |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> |
 | [org-policy-custom-constraints.tf](./org-policy-custom-constraints.tf) | None | <code>google_org_policy_custom_constraint</code> |
 | [organization-policies.tf](./organization-policies.tf) | Organization-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
@@ -553,27 +469,25 @@ module "org" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization_id](variables.tf#L226) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
+| [organization_id](variables.tf#L199) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
 | [contacts](variables.tf#L17) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables.tf#L24) | Map of role name => list of permissions to create in this project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policies](variables.tf#L31) | Hierarchical firewall policy rules created in the organization. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  action                  &#61; string&#10;  description             &#61; string&#10;  direction               &#61; string&#10;  logging                 &#61; bool&#10;  ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;  priority                &#61; number&#10;  ranges                  &#61; list&#40;string&#41;&#10;  target_resources        &#61; list&#40;string&#41;&#10;  target_service_accounts &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy_association](variables.tf#L48) | The hierarchical firewall policy to associate to this folder. Must be either a key in the `firewall_policies` map or the id of a policy defined somewhere else. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy_factory](variables.tf#L55) | Configuration for the firewall policy factory. | <code title="object&#40;&#123;&#10;  cidr_file   &#61; string&#10;  policy_name &#61; string&#10;  rules_file  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [group_iam](variables.tf#L65) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam](variables.tf#L72) | IAM bindings, in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive](variables.tf#L79) | Non authoritative IAM bindings, in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive_members](variables.tf#L86) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_policy](variables.tf#L93) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
-| [logging_data_access](variables.tf#L99) | Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [logging_exclusions](variables.tf#L114) | Logging exclusions for this organization in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [logging_sinks](variables.tf#L121) | Logging sinks to create for the organization. | <code title="map&#40;object&#40;&#123;&#10;  bq_partitioned_table &#61; optional&#40;bool&#41;&#10;  description          &#61; optional&#40;string&#41;&#10;  destination          &#61; string&#10;  disabled             &#61; optional&#40;bool, false&#41;&#10;  exclusions           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  filter               &#61; string&#10;  include_children     &#61; optional&#40;bool, true&#41;&#10;  type                 &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [network_tags](variables.tf#L151) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  id          &#61; optional&#40;string&#41;&#10;  network     &#61; string &#35; project_id&#47;vpc_name&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies](variables.tf#L173) | Organization policies applied to this organization keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies_data_path](variables.tf#L200) | Path containing org policies in YAML format. | <code>string</code> |  | <code>null</code> |
-| [org_policy_custom_constraints](variables.tf#L206) | Organization policy custom constraints keyed by constraint name. | <code title="map&#40;object&#40;&#123;&#10;  display_name   &#61; optional&#40;string&#41;&#10;  description    &#61; optional&#40;string&#41;&#10;  action_type    &#61; string&#10;  condition      &#61; string&#10;  method_types   &#61; list&#40;string&#41;&#10;  resource_types &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policy_custom_constraints_data_path](variables.tf#L220) | Path containing org policy custom constraints in YAML format. | <code>string</code> |  | <code>null</code> |
-| [tag_bindings](variables.tf#L235) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [tags](variables.tf#L241) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  id          &#61; optional&#40;string&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    id          &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy_associations](variables.tf#L31) | Hierarchical firewall policies to associate to this folder, in association name => policy id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [group_iam](variables.tf#L38) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables.tf#L45) | IAM bindings, in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_additive](variables.tf#L52) | Non authoritative IAM bindings, in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_additive_members](variables.tf#L59) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_policy](variables.tf#L66) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
+| [logging_data_access](variables.tf#L72) | Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_exclusions](variables.tf#L87) | Logging exclusions for this organization in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_sinks](variables.tf#L94) | Logging sinks to create for the organization. | <code title="map&#40;object&#40;&#123;&#10;  bq_partitioned_table &#61; optional&#40;bool&#41;&#10;  description          &#61; optional&#40;string&#41;&#10;  destination          &#61; string&#10;  disabled             &#61; optional&#40;bool, false&#41;&#10;  exclusions           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  filter               &#61; string&#10;  include_children     &#61; optional&#40;bool, true&#41;&#10;  type                 &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [network_tags](variables.tf#L124) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  id          &#61; optional&#40;string&#41;&#10;  network     &#61; string &#35; project_id&#47;vpc_name&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies](variables.tf#L146) | Organization policies applied to this organization keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_data_path](variables.tf#L173) | Path containing org policies in YAML format. | <code>string</code> |  | <code>null</code> |
+| [org_policy_custom_constraints](variables.tf#L179) | Organization policy custom constraints keyed by constraint name. | <code title="map&#40;object&#40;&#123;&#10;  display_name   &#61; optional&#40;string&#41;&#10;  description    &#61; optional&#40;string&#41;&#10;  action_type    &#61; string&#10;  condition      &#61; string&#10;  method_types   &#61; list&#40;string&#41;&#10;  resource_types &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policy_custom_constraints_data_path](variables.tf#L193) | Path containing org policy custom constraints in YAML format. | <code>string</code> |  | <code>null</code> |
+| [tag_bindings](variables.tf#L208) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L214) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  id          &#61; optional&#40;string&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    id          &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -582,13 +496,11 @@ module "org" {
 | [custom_constraint_ids](outputs.tf#L17) | Map of CUSTOM_CONSTRAINTS => ID in the organization. |  |
 | [custom_role_id](outputs.tf#L22) | Map of custom role IDs created in the organization. |  |
 | [custom_roles](outputs.tf#L35) | Map of custom roles resources created in the organization. |  |
-| [firewall_policies](outputs.tf#L40) | Map of firewall policy resources created in the organization. |  |
-| [firewall_policy_id](outputs.tf#L45) | Map of firewall policy ids created in the organization. |  |
-| [id](outputs.tf#L50) | Fully qualified organization id. |  |
-| [network_tag_keys](outputs.tf#L67) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L76) | Tag value resources. |  |
-| [organization_id](outputs.tf#L86) | Organization id dependent on module resources. |  |
-| [sink_writer_identities](outputs.tf#L103) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L111) | Tag key resources. |  |
-| [tag_values](outputs.tf#L120) | Tag value resources. |  |
+| [id](outputs.tf#L40) | Fully qualified organization id. |  |
+| [network_tag_keys](outputs.tf#L57) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L66) | Tag value resources. |  |
+| [organization_id](outputs.tf#L76) | Organization id dependent on module resources. |  |
+| [sink_writer_identities](outputs.tf#L93) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L101) | Tag key resources. |  |
+| [tag_values](outputs.tf#L110) | Tag value resources. |  |
 <!-- END TFDOC -->
