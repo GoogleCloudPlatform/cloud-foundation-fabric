@@ -352,7 +352,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [cicd-networking.tf](./cicd-networking.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-project-factory.tf](./cicd-project-factory.tf) | CI/CD resources for the teams branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-security.tf](./cicd-security.tf) | CI/CD resources for the security branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
-| [cicd-teams.tf](./cicd-teams.tf) | None | <code>iam-service-account</code> · <code>source-repository</code> |  |
+| [cicd-teams.tf](./cicd-teams.tf) | CI/CD resources for individual teams. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
 | [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> |  |
 | [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>local_file</code> |
