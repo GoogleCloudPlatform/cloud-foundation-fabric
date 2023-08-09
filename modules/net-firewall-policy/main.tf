@@ -27,6 +27,6 @@ locals {
     local.factory_egress_rules, local.factory_ingress_rules,
     local._rules_egress, local._rules_ingress
   )
-  use_hierarchical = strcontains(var.parent_id, "/") ? true : false
-  use_regional     = !local.use_hierarchical && var.region != null
+  use_hierarchical = var.region == null
+  use_regional     = !local.use_hierarchical && var.region != "global"
 }
