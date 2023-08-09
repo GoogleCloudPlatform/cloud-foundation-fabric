@@ -15,7 +15,7 @@ The module also makes fewer assumptions about implicit defaults, only using one 
 
 ```hcl
 module "firewall-policy" {
-  source    = "./fabric/modules/net-vpc-firewall-policy"
+  source    = "./fabric/modules/net-firewall-policy"
   name      = "test-1"
   parent_id = "folders/1234567890"
   attachments = {
@@ -67,7 +67,7 @@ module "vpc" {
 }
 
 module "firewall-policy" {
-  source    = "./fabric/modules/net-vpc-firewall-policy"
+  source    = "./fabric/modules/net-firewall-policy"
   name      = "test-1"
   parent_id = "my-project"
   attachments = {
@@ -119,7 +119,7 @@ module "vpc" {
 }
 
 module "firewall-policy" {
-  source    = "./fabric/modules/net-vpc-firewall-policy"
+  source    = "./fabric/modules/net-firewall-policy"
   name      = "test-1"
   parent_id = "my-project"
   region    = "europe-west8"
@@ -164,7 +164,7 @@ This is an example of a simple factory:
 
 ```hcl
 module "firewall-policy" {
-  source    = "./fabric/modules/net-vpc-firewall-policy"
+  source    = "./fabric/modules/net-firewall-policy"
   name      = "test-1"
   parent_id = "folders/1234567890"
   attachments = {
