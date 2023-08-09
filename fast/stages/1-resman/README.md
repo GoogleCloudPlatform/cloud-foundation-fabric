@@ -388,14 +388,14 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
 | [cicd_repositories](outputs.tf#L232) | WIF configuration for CI/CD repositories. |  |  |
-| [dataplatform](outputs.tf#L260) | Data for the Data Platform stage. |  |  |
-| [gke_multitenant](outputs.tf#L276) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
-| [networking](outputs.tf#L297) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L306) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L321) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L328) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L342) | Data for the networking stage. |  | <code>02-security</code> |
-| [team_cicd_repositories](outputs.tf#L246) | WIF configuration for Team CI/CD repositories. |  |  |
+| [dataplatform](outputs.tf#L246) | Data for the Data Platform stage. |  |  |
+| [gke_multitenant](outputs.tf#L262) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
+| [networking](outputs.tf#L283) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L292) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L307) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L314) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L328) | Data for the networking stage. |  | <code>02-security</code> |
+| [team_cicd_repositories](outputs.tf#L338) | WIF configuration for Team CI/CD repositories. |  |  |
 | [teams](outputs.tf#L352) | Data for the teams stage. |  |  |
 | [tfvars](outputs.tf#L364) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->
