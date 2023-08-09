@@ -61,7 +61,7 @@ locals {
   team_cicd_workflow_attrs = {
     for k, v in local.team_cicd_repositories : k => {
       service_account   = try(module.branch-teams-team-sa-cicd[k].email, null)
-      tf_providers_file = "3-teams-${k}"
+      tf_providers_file = "3-teams-${k}-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
   }
