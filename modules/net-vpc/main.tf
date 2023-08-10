@@ -43,6 +43,8 @@ resource "google_compute_network" "network" {
   mtu                                       = var.mtu
   routing_mode                              = var.routing_mode
   network_firewall_policy_enforcement_order = var.firewall_policy_enforcement_order
+  enable_ula_internal_ipv6                  = var.ipv6_config.enable_ula_internal
+  internal_ipv6_range                       = var.ipv6_config.internal_range
 }
 
 resource "google_compute_network_peering" "local" {

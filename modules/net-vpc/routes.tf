@@ -25,6 +25,7 @@ locals {
   }
   _googleapis_routes = {
     for k, v in local._googleapis_ranges : "${k}-googleapis" => {
+      description   = "Terraform-managed."
       dest_range    = v
       next_hop      = "default-internet-gateway"
       next_hop_type = "gateway"
@@ -51,7 +52,7 @@ resource "google_compute_route" "gateway" {
   project          = var.project_id
   network          = local.network.name
   name             = "${var.name}-${each.key}"
-  description      = "Terraform-managed."
+  description      = each.value.description
   dest_range       = each.value.dest_range
   priority         = each.value.priority
   tags             = each.value.tags
@@ -63,7 +64,7 @@ resource "google_compute_route" "ilb" {
   project      = var.project_id
   network      = local.network.name
   name         = "${var.name}-${each.key}"
-  description  = "Terraform-managed."
+  description  = each.value.description
   dest_range   = each.value.dest_range
   priority     = each.value.priority
   tags         = each.value.tags
@@ -75,7 +76,7 @@ resource "google_compute_route" "instance" {
   project           = var.project_id
   network           = local.network.name
   name              = "${var.name}-${each.key}"
-  description       = "Terraform-managed."
+  description       = each.value.description
   dest_range        = each.value.dest_range
   priority          = each.value.priority
   tags              = each.value.tags
@@ -89,7 +90,7 @@ resource "google_compute_route" "ip" {
   project     = var.project_id
   network     = local.network.name
   name        = "${var.name}-${each.key}"
-  description = "Terraform-managed."
+  description = each.value.description
   dest_range  = each.value.dest_range
   priority    = each.value.priority
   tags        = each.value.tags
@@ -101,7 +102,7 @@ resource "google_compute_route" "vpn_tunnel" {
   project             = var.project_id
   network             = local.network.name
   name                = "${var.name}-${each.key}"
-  description         = "Terraform-managed."
+  description         = each.value.description
   dest_range          = each.value.dest_range
   priority            = each.value.priority
   tags                = each.value.tags

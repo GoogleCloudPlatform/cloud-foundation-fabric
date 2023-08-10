@@ -2,6 +2,13 @@
 
 Simple Cloud NAT management, with optional router creation.
 
+<!-- BEGIN TOC -->
+- [Basic Example](#basic-example)
+- [Reserved IPs and custom rules](#reserved-ips-and-custom-rules)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Basic Example
 
 ```hcl
@@ -15,16 +22,16 @@ module "nat" {
 # tftest modules=1 resources=2
 ```
 
-# Reserved IPs and custom rules
+## Reserved IPs and custom rules
 
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = "my-project"
   external_addresses = {
-    a1 = "europe-west1"
-    a2 = "europe-west1"
-    a3 = "europe-west1"
+    a1 = { region = "europe-west1" }
+    a2 = { region = "europe-west1" }
+    a3 = { region = "europe-west1" }
   }
 }
 

@@ -45,6 +45,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Cloud Endpoints](./endpoints)
 - [DNS](./dns)
 - [DNS Response Policy](./dns-response-policy/)
+- [Firewall policy](./net-firewall-policy)
 - [External Application Load Balancer](./net-lb-app-ext/)
 - [External Passthrough Network Load Balancer](./net-lb-ext)
 - [Internal Application Load Balancer](./net-lb-app-int)
@@ -55,7 +56,6 @@ These modules are used in the examples included in this repository. If you are u
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)
 - [VPC firewall](./net-vpc-firewall)
-- [VPC firewall policy](./net-vpc-firewall-policy)
 - [VPN dynamic](./net-vpn-dynamic)
 - [VPC peering](./net-vpc-peering)
 - [VPN HA](./net-vpn-ha)
@@ -77,6 +77,7 @@ These modules are used in the examples included in this repository. If you are u
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
 - [Dataplex](./dataplex)
+- [Dataplex DataScan](./dataplex-datascan/)
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
 - [Datafusion](./datafusion)
@@ -98,7 +99,7 @@ These modules are used in the examples included in this repository. If you are u
 - [KMS](./kms)
 - [SecretManager](./secret-manager)
 - [VPC Service Control](./vpc-sc)
-- [Secure Web Proxy](./net-vpc-swp)
+- [Secure Web Proxy](./net-swp)
 
 ## Serverless
 

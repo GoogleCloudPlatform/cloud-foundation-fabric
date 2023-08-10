@@ -1,0 +1,42 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+values:
+  module.dataplex-datascan.google_dataplex_datascan.datascan:
+    data:
+    - entity: null
+      resource: //bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations
+    data_profile_spec:
+    - row_filter: null
+      sampling_percent: null
+    data_quality_spec: []
+    data_scan_id: test-datascan
+    description: Terraform Managed.
+    display_name: test-datascan
+    execution_spec:
+    - field: null
+      trigger:
+      - on_demand: []
+        schedule:
+        - cron: TZ=America/New_York 0 1 * * *
+    labels: null
+    location: us-central1
+    project: my-project-name
+    timeouts: null
+
+counts:
+  google_dataplex_datascan: 1
+  modules: 1
+  resources: 1
+
+outputs: {}

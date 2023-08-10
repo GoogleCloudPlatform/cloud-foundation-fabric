@@ -65,6 +65,7 @@ variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
     binary_authorization = optional(bool, false)
+    cost_management      = optional(bool, false)
     dns = optional(object({
       provider = optional(string)
       scope    = optional(string)
@@ -79,6 +80,7 @@ variable "enable_features" {
     l4_ilb_subsetting   = optional(bool, false)
     mesh_certificates   = optional(bool)
     pod_security_policy = optional(bool, false)
+    allow_net_admin     = optional(bool, false)
     resource_usage_export = optional(object({
       dataset                              = string
       enable_network_egress_metering       = optional(bool)

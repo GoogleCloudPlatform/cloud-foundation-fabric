@@ -7,7 +7,7 @@ module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = var.project_id
   external_addresses = {
-    vpn = "europe-west1"
+    vpn = { region = "europe-west1" }
   }
 }
 

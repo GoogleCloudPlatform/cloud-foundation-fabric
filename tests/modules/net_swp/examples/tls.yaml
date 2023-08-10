@@ -1,0 +1,71 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# file: tests/modules/net_swp/examples/tls.yaml
+values:
+  module.secure-web-proxy.google_network_security_gateway_security_policy.policy:
+    name: "secure-web-proxy"
+    project: "my-project"
+    location: "europe-west4"
+    description: "Managed by Terraform."
+  module.secure-web-proxy.google_network_security_tls_inspection_policy.tls-policy[0]:
+    project: "my-project"
+    name: "secure-web-proxy"
+    location: "europe-west4"
+    exclude_public_ca_set: false
+    description: "Managed by Terraform."
+  module.secure-web-proxy.google_network_services_gateway.gateway:
+    project: "my-project"
+    name: "secure-web-proxy"
+    location: "europe-west4"
+    type: "SECURE_WEB_GATEWAY"
+    addresses: 
+      - "10.142.68.3"
+    ports: [443]
+    certificate_urls: ["projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert"]
+    network: "projects/my-project/global/networks/my-network"
+    subnetwork: "projects/my-project/regions/europe-west4/subnetworks/my-subnetwork"
+    delete_swg_autogen_router_on_destroy: true
+    description: "Managed by Terraform."
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.custom_rules["custom-rule-1"]:
+    project: "my-project"
+    name: "custom-rule-1"
+    location: "europe-west4"
+    enabled: true
+    priority: 1000
+    session_matcher: "host() == 'google.com'"
+    application_matcher: "request.path.contains('generate_204')"
+    tls_inspection_enabled: true
+    basic_profile: "ALLOW"
+    description: "Managed by Terraform."
+  google_privateca_ca_pool.pool:
+    name: "secure-web-proxy-capool"
+    location: "europe-west4"
+    project: "my-project"
+    tier: "DEVOPS"
+  google_privateca_certificate_authority.ca:
+    certificate_authority_id: "secure-web-proxy-ca"
+    location: "europe-west4"
+    project: "my-project"
+  google_privateca_ca_pool_iam_member.member:
+    role: "roles/privateca.certificateManager"
+    member: "serviceAccount:service-123456789@gcp-sa-networksecurity.iam.gserviceaccount.com"
+  
+counts:
+  google_network_security_gateway_security_policy: 1
+  google_network_services_gateway: 1
+  google_network_security_gateway_security_policy_rule: 1
+  google_network_security_tls_inspection_policy: 1
+  google_privateca_certificate_authority: 1
+  google_privateca_ca_pool: 1

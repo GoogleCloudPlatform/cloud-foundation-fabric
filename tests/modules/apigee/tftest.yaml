@@ -24,3 +24,4 @@ tests:
   instance_only:
   no_instances:
   organization_only:
+  organization_retention:

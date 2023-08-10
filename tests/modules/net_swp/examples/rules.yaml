@@ -1,0 +1,101 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# file: tests/modules/net_swp/examples/rules.yaml
+values:
+  module.secure-web-proxy.google_network_security_gateway_security_policy.policy:
+    name: "secure-web-proxy"
+    project: "my-project"
+    location: "europe-west4"
+  module.secure-web-proxy.google_network_services_gateway.gateway:
+    project: "my-project"
+    name: "secure-web-proxy"
+    location: "europe-west4"
+    type: "SECURE_WEB_GATEWAY"
+    addresses: 
+      - "10.142.68.3"
+    ports: [80, 443]
+    certificate_urls: ["projects/my-project/locations/europe-west4/certificates/secure-web-proxy-cert"]
+    network: "projects/my-project/global/networks/my-network"
+    subnetwork: "projects/my-project/regions/europe-west4/subnetworks/my-subnetwork"
+    delete_swg_autogen_router_on_destroy: true
+    description: "Managed by Terraform."
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.secure_tag_rules["secure-tag-1"]:
+    project: "my-project"
+    name: "secure-tag-1"
+    location: "europe-west4"
+    enabled: true
+    priority: 1000
+    session_matcher: "source.matchTag('tagValues/281484836404786')"
+    application_matcher: null
+    tls_inspection_enabled: false
+    basic_profile: "ALLOW"
+    description: "Managed by Terraform."
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.secure_tag_rules["secure-tag-2"]:
+    project: "my-project"
+    name: "secure-tag-2"
+    location: "europe-west4"
+    enabled: true
+    priority: 1001
+    session_matcher: "source.matchTag('tagValues/281484836404786') && (host() != 'google.com')"
+    application_matcher: null
+    tls_inspection_enabled: false
+    basic_profile: "ALLOW"
+    description: "Managed by Terraform."
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.url_list_rules["url-list-1"]:
+    project: "my-project"
+    name: "url-list-1"
+    location: "europe-west4"
+    enabled: true
+    priority: 1002
+    application_matcher: null
+    tls_inspection_enabled: false
+    basic_profile: "ALLOW"
+    description: "Managed by Terraform."
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.url_list_rules["url-list-2"]:
+    project: "my-project"
+    name: "url-list-2"
+    location: "europe-west4"
+    enabled: false
+    priority: 1003
+    session_matcher: "inUrlList(host(), 'projects/my-project/locations/europe-west4/urlLists/my-url-list') && (source.matchServiceAccount('my-sa@my-project.iam.gserviceaccount.com'))"
+    application_matcher: null
+    tls_inspection_enabled: false
+    basic_profile: "ALLOW"
+    description: "Managed by Terraform."
+  module.secure-web-proxy.google_network_security_gateway_security_policy_rule.custom_rules["custom-rule-1"]:
+    project: "my-project"
+    name: "custom-rule-1"
+    location: "europe-west4"
+    enabled: true
+    priority: 1004
+    session_matcher: "host() == 'google.com'"
+    application_matcher: null
+    tls_inspection_enabled: false
+    basic_profile: "DENY"
+    description: "Managed by Terraform."
+  module.secure-web-proxy.google_network_security_url_lists.url_lists["my-url-list"]:
+    project: "my-project"
+    name: "my-url-list"
+    location: "europe-west4"
+    values:
+      - "www.google.com"
+      - "google.com"
+    description: "Managed by Terraform."
+
+counts:
+  google_network_security_gateway_security_policy: 1
+  google_network_services_gateway: 1
+  google_network_security_gateway_security_policy_rule: 5
+  google_network_security_url_lists: 1

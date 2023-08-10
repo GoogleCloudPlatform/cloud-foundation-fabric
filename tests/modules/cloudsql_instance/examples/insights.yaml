@@ -24,12 +24,14 @@ values:
       advanced_machine_features: []
       availability_type: ZONAL
       collation: null
+      data_cache_config: []
       database_flags: []
       deletion_protection_enabled: null
       deny_maintenance_period: []
       disk_autoresize: true
       disk_autoresize_limit: 0
       disk_type: PD_SSD
+      edition: null
       insights_config:
       - query_insights_enabled: true
         query_plans_per_minute: 5

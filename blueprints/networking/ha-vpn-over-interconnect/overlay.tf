@@ -47,9 +47,9 @@ resource "google_compute_external_vpn_gateway" "default" {
   name            = "peer-vpn-gateway"
   project         = var.project_id
   description     = "Peer IPSec over Interconnect VPN gateway"
-  redundancy_type = length(var.overlay_config.onprem_vpn_gateway) == 2 ? "TWO_IPS_REDUNDANCY" : "SINGLE_IP_INTERNALLY_REDUNDANT"
+  redundancy_type = length(var.overlay_config.onprem_vpn_gateway_interfaces) == 2 ? "TWO_IPS_REDUNDANCY" : "SINGLE_IP_INTERNALLY_REDUNDANT"
   dynamic "interface" {
-    for_each = var.overlay_config.onprem_vpn_gateway.interfaces
+    for_each = var.overlay_config.onprem_vpn_gateway_interfaces
     content {
       id         = interface.key
       ip_address = interface.value

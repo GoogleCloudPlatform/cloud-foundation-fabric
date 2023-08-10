@@ -205,9 +205,6 @@ module "bigquery-dataset" {
   tables = {
     countries = {
       friendly_name       = "Countries"
-      labels              = {}
-      options             = null
-      partitioning        = null
       schema              = local.countries_schema
       deletion_protection = true
     }
@@ -232,16 +229,12 @@ module "bigquery-dataset" {
   id         = "my-dataset"
   tables = {
     table_a = {
-      friendly_name = "Table a"
-      labels        = {}
-      options       = null
-      partitioning = {
-        field = null
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }
-      schema              = local.countries_schema
       deletion_protection = true
+      friendly_name       = "Table a"
+      schema              = local.countries_schema
+      partitioning = {
+        time = { type = "DAY", expiration_ms = null }
+      }
     }
   }
 }
@@ -265,9 +258,6 @@ module "bigquery-dataset" {
   tables = {
     countries = {
       friendly_name       = "Countries"
-      labels              = {}
-      options             = null
-      partitioning        = null
       schema              = local.countries_schema
       deletion_protection = true
     }
@@ -275,7 +265,6 @@ module "bigquery-dataset" {
   views = {
     population = {
       friendly_name       = "Population"
-      labels              = {}
       query               = "SELECT SUM(population) FROM my_dataset.countries"
       use_legacy_sql      = false
       deletion_protection = true
@@ -286,7 +275,6 @@ module "bigquery-dataset" {
 # tftest modules=1 resources=3 inventory=views.yaml
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -306,8 +294,8 @@ module "bigquery-dataset" {
 | [labels](variables.tf#L103) | Dataset labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location](variables.tf#L109) | Dataset location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
 | [options](variables.tf#L115) | Dataset options. | <code title="object&#40;&#123;&#10;  default_collation               &#61; optional&#40;string&#41;&#10;  default_table_expiration_ms     &#61; optional&#40;number&#41;&#10;  default_partition_expiration_ms &#61; optional&#40;number&#41;&#10;  delete_contents_on_destroy      &#61; optional&#40;bool, false&#41;&#10;  is_case_insensitive             &#61; optional&#40;bool&#41;&#10;  max_time_travel_hours           &#61; optional&#40;number, 168&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tables](variables.tf#L133) | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name &#61; string&#10;  labels        &#61; map&#40;string&#41;&#10;  options &#61; object&#40;&#123;&#10;    clustering      &#61; list&#40;string&#41;&#10;    encryption_key  &#61; string&#10;    expiration_time &#61; number&#10;  &#125;&#41;&#10;  partitioning &#61; object&#40;&#123;&#10;    field &#61; string&#10;    range &#61; object&#40;&#123;&#10;      end      &#61; number&#10;      interval &#61; number&#10;      start    &#61; number&#10;    &#125;&#41;&#10;    time &#61; object&#40;&#123;&#10;      expiration_ms &#61; number&#10;      type          &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  schema              &#61; string&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [views](variables.tf#L161) | View definitions. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name       &#61; string&#10;  labels              &#61; map&#40;string&#41;&#10;  query               &#61; string&#10;  use_legacy_sql      &#61; bool&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tables](variables.tf#L133) | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;  deletion_protection &#61; optional&#40;bool&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  friendly_name       &#61; optional&#40;string&#41;&#10;  labels              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  schema              &#61; optional&#40;string&#41;&#10;  options &#61; optional&#40;object&#40;&#123;&#10;    clustering      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    encryption_key  &#61; optional&#40;string&#41;&#10;    expiration_time &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  partitioning &#61; optional&#40;object&#40;&#123;&#10;    field &#61; optional&#40;string&#41;&#10;    range &#61; optional&#40;object&#40;&#123;&#10;      end      &#61; number&#10;      interval &#61; number&#10;      start    &#61; number&#10;    &#125;&#41;&#41;&#10;    time &#61; optional&#40;object&#40;&#123;&#10;      expiration_ms &#61; number&#10;      type          &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [views](variables.tf#L162) | View definitions. | <code title="map&#40;object&#40;&#123;&#10;  query               &#61; string&#10;  deletion_protection &#61; optional&#40;bool&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  friendly_name       &#61; optional&#40;string&#41;&#10;  labels              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  use_legacy_sql      &#61; optional&#40;bool&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -321,5 +309,4 @@ module "bigquery-dataset" {
 | [tables](outputs.tf#L69) | Table resources. |  |
 | [view_ids](outputs.tf#L74) | Map of fully qualified view ids keyed by view ids. |  |
 | [views](outputs.tf#L79) | View resources. |  |
-
 <!-- END TFDOC -->

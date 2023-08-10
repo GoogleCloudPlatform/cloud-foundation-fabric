@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+variable "addons_config" {
+  description = "Addons configuration."
+  type = object({
+    advanced_api_ops    = optional(bool, false)
+    api_security        = optional(bool, false)
+    connectors_platform = optional(bool, false)
+    integration         = optional(bool, false)
+    monetization        = optional(bool, false)
+  })
+  default = null
+}
+
 variable "endpoint_attachments" {
   description = "Endpoint attachments."
   type = map(object({
@@ -70,6 +82,7 @@ variable "organization" {
     billing_type            = optional(string)
     database_encryption_key = optional(string)
     analytics_region        = optional(string, "europe-west1")
+    retention               = optional(string)
   })
   default = null
 }

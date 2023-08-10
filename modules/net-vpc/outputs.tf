@@ -31,6 +31,11 @@ output "id" {
   ]
 }
 
+output "internal_ipv6_range" {
+  description = "ULA range."
+  value       = try(local.network.internal_ipv6_range, null)
+}
+
 output "name" {
   description = "Network name."
   value       = local.network.name
@@ -89,6 +94,14 @@ output "subnet_ips" {
   description = "Map of subnet address ranges keyed by name."
   value = {
     for k, v in google_compute_subnetwork.subnetwork : k => v.ip_cidr_range
+  }
+}
+
+output "subnet_ipv6_external_prefixes" {
+  description = "Map of subnet external IPv6 prefixes keyed by name."
+  value = {
+    for k, v in google_compute_subnetwork.subnetwork :
+    k => try(v.external_ipv6_prefix, null)
   }
 }
 

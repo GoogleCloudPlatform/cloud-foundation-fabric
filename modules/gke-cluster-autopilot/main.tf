@@ -32,6 +32,7 @@ resource "google_container_cluster" "cluster" {
   initial_node_count       = 1
 
   enable_autopilot = true
+  allow_net_admin  = var.enable_features.allow_net_admin
 
   addons_config {
     http_load_balancing {
@@ -66,6 +67,13 @@ resource "google_container_cluster" "cluster" {
     for_each = var.enable_features.binary_authorization ? [""] : []
     content {
       evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
+    }
+  }
+
+  dynamic "cost_management_config" {
+    for_each = var.enable_features.cost_management == true ? [""] : []
+    content {
+      enabled = true
     }
   }
 

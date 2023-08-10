@@ -24,26 +24,22 @@ A single pre-existing project and a VPC is used in this blueprint to keep variab
 The provided project needs a valid billing account and the Compute APIs enabled.
 
 The two Dedicated Interconnect connections should already exist, either in the same project or in any other project belonging to the same GCP Organization.
-
-
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [network](variables.tf#L18) | The VPC name to which resources are associated to. | <code>string</code> | ✓ |  |
-| [overlay_config](variables.tf#L24) | Configuration for the overlay resources. | <code title="object&#40;&#123;&#10;  gcp_bgp &#61; object&#40;&#123;&#10;    asn       &#61; number&#10;    name      &#61; optional&#40;string&#41;&#10;    keepalive &#61; optional&#40;number&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  onprem_vpn_gateway &#61; object&#40;&#123;&#10;    redundancy_type &#61; optional&#40;string, &#34;TWO_IPS_REDUNDANCY&#34;&#41;&#10;    interfaces      &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  gateways &#61; map&#40;map&#40;object&#40;&#123;&#10;    bgp_peer &#61; object&#40;&#123;&#10;      address        &#61; string&#10;      asn            &#61; number&#10;      route_priority &#61; optional&#40;number, 1000&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets          &#61; bool&#10;        all_vpc_subnets      &#61; bool&#10;        all_peer_vpc_subnets &#61; bool&#10;        ip_ranges            &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    bgp_session_range               &#61; string&#10;    ike_version                     &#61; optional&#40;number, 2&#41;&#10;    peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;    peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;    router                          &#61; optional&#40;string&#41;&#10;    shared_secret                   &#61; optional&#40;string&#41;&#10;    vpn_gateway_interface           &#61; number&#10;    &#125;&#41;&#41;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L66) | The project id. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L71) | GCP Region. | <code>string</code> | ✓ |  |
-| [underlay_config](variables.tf#L76) | Configuration for the underlay resources. | <code title="object&#40;&#123;&#10;  attachments &#61; map&#40;object&#40;&#123;&#10;    bandwidth              &#61; optional&#40;string, &#34;BPS_10G&#34;&#41;&#10;    base_name              &#61; optional&#40;string, &#34;encrypted-vlan-attachment&#34;&#41;&#10;    bgp_range              &#61; string&#10;    interconnect_self_link &#61; string&#10;    onprem_asn             &#61; number&#10;    vlan_tag               &#61; number&#10;    vpn_gateways_ip_range  &#61; string&#10;  &#125;&#41;&#41;&#10;  gcp_bgp &#61; object&#40;&#123;&#10;    asn &#61; number&#10;  &#125;&#41;&#10;  interconnect_type &#61; optional&#40;string, &#34;DEDICATED&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [overlay_config](variables.tf#L24) | Configuration for the overlay resources. | <code title="object&#40;&#123;&#10;  gcp_bgp &#61; object&#40;&#123;&#10;    asn       &#61; number&#10;    name      &#61; optional&#40;string&#41;&#10;    keepalive &#61; optional&#40;number&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  onprem_vpn_gateway_interfaces &#61; list&#40;string&#41;&#10;  gateways &#61; map&#40;map&#40;object&#40;&#123;&#10;    bgp_peer &#61; object&#40;&#123;&#10;      address        &#61; string&#10;      asn            &#61; number&#10;      route_priority &#61; optional&#40;number, 1000&#41;&#10;      custom_advertise &#61; optional&#40;object&#40;&#123;&#10;        all_subnets          &#61; bool&#10;        all_vpc_subnets      &#61; bool&#10;        all_peer_vpc_subnets &#61; bool&#10;        ip_ranges            &#61; map&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    bgp_session_range               &#61; string&#10;    ike_version                     &#61; optional&#40;number, 2&#41;&#10;    peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;    peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;    router                          &#61; optional&#40;string&#41;&#10;    shared_secret                   &#61; optional&#40;string&#41;&#10;    vpn_gateway_interface           &#61; number&#10;    &#125;&#41;&#41;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L63) | The project id. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L68) | GCP Region. | <code>string</code> | ✓ |  |
+| [underlay_config](variables.tf#L73) | Configuration for the underlay resources. | <code title="object&#40;&#123;&#10;  attachments &#61; map&#40;object&#40;&#123;&#10;    bandwidth              &#61; optional&#40;string, &#34;BPS_10G&#34;&#41;&#10;    base_name              &#61; optional&#40;string, &#34;encrypted-vlan-attachment&#34;&#41;&#10;    bgp_range              &#61; string&#10;    interconnect_self_link &#61; string&#10;    onprem_asn             &#61; number&#10;    vlan_tag               &#61; number&#10;    vpn_gateways_ip_range  &#61; string&#10;  &#125;&#41;&#41;&#10;  gcp_bgp &#61; object&#40;&#123;&#10;    asn &#61; number&#10;  &#125;&#41;&#10;  interconnect_type &#61; optional&#40;string, &#34;DEDICATED&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [underlay](outputs.tf#L17) | Setup for the underlay connection. |  |
-
 <!-- END TFDOC -->
 ## Test
 
@@ -64,9 +60,7 @@ module "test" {
         }
       }
     }
-    onprem_vpn_gateway = {
-      interfaces = ["172.16.0.1", "172.16.0.2"]
-    }
+    onprem_vpn_gateway_interfaces = ["172.16.0.1", "172.16.0.2"]
     gateways = {
       a = {
         remote-0 = {

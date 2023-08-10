@@ -15,16 +15,14 @@
  */
 
 variable "external_addresses" {
-  description = "Map of external address regions, keyed by name."
-  type        = map(string)
-  default     = {}
+  description = "Map of external addresses, keyed by name."
+  type = map(object({
+    region      = string
+    description = optional(string, "Terraform managed.")
+    labels      = optional(map(string), {})
+  }))
+  default = {}
 }
-
-# variable "external_address_labels" {
-#   description = "Optional labels for external addresses, keyed by address name."
-#   type        = map(map(string))
-#   default     = {}
-# }
 
 variable "global_addresses" {
   description = "List of global addresses to create."
@@ -42,6 +40,18 @@ variable "internal_addresses" {
     labels      = optional(map(string))
     purpose     = optional(string)
     tier        = optional(string)
+  }))
+  default = {}
+}
+
+variable "ipsec_interconnect_addresses" {
+  description = "Map of internal addresses used for HPA VPN over Cloud Interconnect."
+  type = map(object({
+    region        = string
+    address       = string
+    network       = string
+    description   = optional(string, "Terraform managed.")
+    prefix_length = number
   }))
   default = {}
 }
