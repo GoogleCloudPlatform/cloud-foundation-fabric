@@ -4,9 +4,23 @@ All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
-<!-- None < 2023-07-07 16:22:14+00:00 -->
+<!-- None < 2023-08-09 17:02:13+00:00 -->
 
-## v25.0.0
+### FAST
+
+- [[#1583](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1583)] Fix module path for teams cicd ([ludoo](https://github.com/ludoo)) <!-- 2023-08-09 21:41:57+00:00 -->
+
+### MODULES
+
+- [[#1578](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1578)] Fix: Instance level stateful disk config  ([beardedsamwise](https://github.com/beardedsamwise)) <!-- 2023-08-11 15:25:17+00:00 -->
+- [[#1582](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1582)] feat(modules/cloud-run): add gen2 exec env support ([LiuVII](https://github.com/LiuVII)) <!-- 2023-08-09 21:04:17+00:00 -->
+
+### TOOLS
+
+- [[#1585](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1585)] Print inventory path when a test fails ([juliocc](https://github.com/juliocc)) <!-- 2023-08-11 10:28:08+00:00 -->
+
+## [25.0.0] - 2023-08-09
+<!-- 2023-08-09 17:02:13+00:00 < 2023-07-07 16:22:14+00:00 -->
 
 ### BLUEPRINTS
 
@@ -1447,7 +1461,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v24.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v25.0.0...HEAD
+[25.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v24.0.0...v25.0.0
 [24.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v23.0.0...v24.0.0
 [23.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v22.0.0...v23.0.0
 [22.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v21.0.0...v22.0.0
