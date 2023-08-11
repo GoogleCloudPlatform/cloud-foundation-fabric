@@ -388,7 +388,7 @@ module "nginx-mig" {
     }
   }
   stateful_config = {
-    stateful-instance-1 = {
+    instance-1 = {
       minimal_action                 = "NONE",
       most_disruptive_allowed_action = "REPLACE"
       preserved_state = {
