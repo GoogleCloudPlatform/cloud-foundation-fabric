@@ -168,6 +168,7 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
   for path in inventory_paths:
     # allow tfvars and inventory to be relative to the caller
     path = basedir / path
+    relative_path = path.relative_to(_REPO_ROOT)
     try:
       inventory = yaml.safe_load(path.read_text())
     except (IOError, OSError, yaml.YAMLError) as e:
@@ -193,34 +194,34 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
       expected_values = inventory['values']
       for address, expected_value in expected_values.items():
         assert address in summary.values, \
-            f'{address} is not a valid address in the plan'
+            f'{relative_path}: {address} is not a valid address in the plan'
         for k, v in expected_value.items():
           assert k in summary.values[address], \
-              f'{k} not found at {address}'
+              f'{relative_path}: {k} not found at {address}'
           plan_value = summary.values[address][k]
           assert plan_value == v, \
-              f'{k} at {address} failed. Got `{plan_value}`, expected `{v}`'
+              f'{relative_path}: {k} at {address} failed. Got `{plan_value}`, expected `{v}`'
 
     if 'counts' in inventory:
       expected_counts = inventory['counts']
       for type_, expected_count in expected_counts.items():
         assert type_ in summary.counts, \
-            f'module does not create any resources of type `{type_}`'
+            f'{relative_path}: module does not create any resources of type `{type_}`'
         plan_count = summary.counts[type_]
         assert plan_count == expected_count, \
-            f'count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
+            f'{relative_path}: count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
 
     if 'outputs' in inventory:
       expected_outputs = inventory['outputs']
       for output_name, expected_output in expected_outputs.items():
         assert output_name in summary.outputs, \
-            f'module does not output `{output_name}`'
+            f'{relative_path}: module does not output `{output_name}`'
         output = summary.outputs[output_name]
         # assert 'value' in output, \
         #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
         plan_output = output.get('value', '__missing__')
         assert plan_output == expected_output, \
-            f'output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
+            f'{relative_path}: output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
 
   return summary
 
