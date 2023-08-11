@@ -22,7 +22,6 @@ values:
       - delete_rule: NEVER
         device_name: persistent-disk-1
         mode: READ_WRITE
-        source: test-disk
       metadata:
         foo: bar
     project: my-project
