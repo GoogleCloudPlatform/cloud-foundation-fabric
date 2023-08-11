@@ -13,25 +13,49 @@
 # limitations under the License.
 
 values:
+  module.nginx-mig.google_compute_instance_group_manager.default[0]:
+    all_instances_config: []
+    auto_healing_policies: []
+    base_instance_name: mig-test
+    description: Terraform managed.
+    list_managed_instances_results: PAGELESS
+    name: mig-test
+    named_port: []
+    project: my-prj
+    stateful_disk: []
+    stateful_external_ip: []
+    stateful_internal_ip: []
+    target_pools: null
+    timeouts: null
+    version:
+    - name: default
+      target_size: []
+    wait_for_instances: false
+    wait_for_instances_status: STABLE
+    zone: europe-west8-b
   module.nginx-mig.google_compute_per_instance_config.default["instance-1"]:
+    instance_group_manager: mig-test
     minimal_action: NONE
     most_disruptive_allowed_action: REPLACE
     name: instance-1
     preserved_state:
     - disk:
       - delete_rule: NEVER
-        device_name: persistent-disk-1
+        device_name: data-1
         mode: READ_WRITE
-        source: test-disk
+        source: projects/my-prj/zones/europe-west8-b/disks/test-data-1
       metadata:
         foo: bar
-    project: my-project
+    project: my-prj
     remove_instance_state_on_destroy: false
     timeouts: null
-    zone: europe-west1-b
+    zone: europe-west8-b
 
 counts:
-  google_compute_autoscaler: 1
   google_compute_instance_group_manager: 1
   google_compute_instance_template: 1
   google_compute_per_instance_config: 1
+  modules: 2
+  resources: 3
+
+outputs: {}
