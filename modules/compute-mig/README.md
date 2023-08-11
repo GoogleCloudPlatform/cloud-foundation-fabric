@@ -6,7 +6,22 @@ This module can be coupled with the [`compute-vm`](../compute-vm) module which c
 
 Stateful disks can be created directly, as shown in the last example below.
 
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Simple Example](#simple-example)
+  - [Multiple Versions](#multiple-versions)
+  - [Health Check and Autohealing Policies](#health-check-and-autohealing-policies)
+  - [Autoscaling](#autoscaling)
+  - [Update Policy](#update-policy)
+  - [Stateful MIGs - MIG Config](#stateful-migs-mig-config)
+  - [Stateful MIGs - Instance Config](#stateful-migs-instance-config)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Examples
+
+### Simple Example
 
 This example shows how to manage a simple MIG that leverages the `compute-vm` module to manage the underlying instance template. The following sub-examples will only show how to enable specific features of this module, and won't replicate the combined setup.
 
@@ -49,7 +64,7 @@ module "nginx-mig" {
 # tftest modules=2 resources=2 inventory=simple.yaml
 ```
 
-### Multiple versions
+### Multiple Versions
 
 If multiple versions are desired, use more `compute-vm` instances for the additional templates used in each version (not shown here), and reference them like this:
 
@@ -100,7 +115,7 @@ module "nginx-mig" {
 # tftest modules=2 resources=2
 ```
 
-### Health check and autohealing policies
+### Health Check and Autohealing Policies
 
 Autohealing policies can use an externally defined health check, or have this module auto-create one:
 
@@ -205,7 +220,7 @@ module "nginx-mig" {
 # tftest modules=2 resources=3 inventory=autoscaling.yaml
 ```
 
-### Update policy
+### Update Policy
 
 ```hcl
 module "cos-nginx" {
@@ -262,7 +277,7 @@ You can configure a disk defined in the instance template to be stateful  for al
 
 An example using only the configuration at the MIG level can be seen below.
 
-Note that when referencing the stateful disk, you use `device_name` and not `disk_name`.
+Note that when referencing the stateful disk, you use `device_name` and not `disk_name`. Specifying an existing disk in the template (and stateful config) only allows a single instance to be managed by the MIG, typically coupled with an autohealing policy (shown in the examples above).
 
 ```hcl
 module "cos-nginx" {
@@ -270,16 +285,15 @@ module "cos-nginx" {
 }
 
 module "nginx-template" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = var.project_id
-  name       = "nginx-template"
-  zone       = "europe-west1-b"
-  tags       = ["http-server", "ssh"]
+  source        = "./fabric/modules/compute-vm"
+  project_id    = "my-prj"
+  name          = "nginx-template"
+  zone          = "europe-west8-b"
+  tags          = ["http-server", "ssh"]
+  instance_type = "e2-small"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
-    nat        = false
-    addresses  = null
   }]
   boot_disk = {
     initialize_params = {
@@ -287,15 +301,10 @@ module "nginx-template" {
     }
   }
   attached_disks = [{
-    name        = "repd-1"
-    size        = null
     source_type = "attach"
-    source      = "regions/${var.region}/disks/repd-test-1"
-    options = {
-      mode         = "READ_ONLY"
-      replica_zone = "${var.region}-c"
-      type         = "PERSISTENT"
-    }
+    name        = "data-1"
+    size        = 10
+    source      = "test-data-1"
   }]
   create_template = true
   metadata = {
@@ -305,36 +314,21 @@ module "nginx-template" {
 
 module "nginx-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "my-project"
-  location          = "europe-west1-b"
-  name              = "mig-test"
-  target_size       = 3
+  project_id        = "my-prj"
+  location          = "europe-west8-b"
+  name              = "mig-test-2"
+  target_size       = 1
   instance_template = module.nginx-template.template.self_link
-  autoscaler_config = {
-    max_replicas    = 3
-    min_replicas    = 1
-    cooldown_period = 30
-    scaling_signals = {
-      cpu_utilization = {
-        target = 0.65
-      }
-    }
-  }
   stateful_disks = {
-    repd-1 = false
+    data-1 = false
   }
 }
-# tftest modules=2 resources=3
-
+# tftest modules=2 resources=2
 ```
 
 ### Stateful MIGs - Instance Config
 
-Here is an example defining the stateful config at the instance level.
-
-An instance level configuration defines an instance to create within the MIG using previously created disks. The instance created using an instance level 
-configuration will be provisioned using the instance template within the MIG with any disks configured on the instance template plus any stateful disks you
-define in the instance level configuration. As is configured in the following example, the template has a single boot disk plus one stateful disk attached. 
+Here is an example defining the stateful config at the instance level. As in the example above, specifying an existing disk in the template (and stateful config) only allows a single instance to be managed by the MIG, typically coupled with an autohealing policy (shown in the examples above).
 
 ```hcl
 module "cos-nginx" {
@@ -342,59 +336,47 @@ module "cos-nginx" {
 }
 
 module "nginx-template" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = var.project_id
-  name       = "nginx-template"
-  zone       = "europe-west1-b"
-  tags       = ["http-server", "ssh"]
+  source        = "./fabric/modules/compute-vm"
+  project_id    = "my-prj"
+  name          = "nginx-template"
+  zone          = "europe-west8-b"
+  tags          = ["http-server", "ssh"]
+  instance_type = "e2-small"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
-    nat        = false
-    addresses  = null
   }]
   boot_disk = {
     initialize_params = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
+  attached_disks = [{
+    source_type = "attach"
+    name        = "data-1"
+    size        = 10
+    source      = "test-data-1"
+  }]
   create_template = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
 }
 
-resource "google_compute_disk" "test_disk" {
-  name  = "test-disk"
-  zone  = "europe-west1-b"
-  physical_block_size_bytes = 4096
-}
-
 module "nginx-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "my-project"
-  location          = "europe-west1-b"
+  project_id        = "my-prj"
+  location          = "europe-west8-b"
   name              = "mig-test"
-  target_size       = 3
   instance_template = module.nginx-template.template.self_link
-  autoscaler_config = {
-    max_replicas    = 3
-    min_replicas    = 1
-    cooldown_period = 30
-    scaling_signals = {
-      cpu_utilization = {
-        target = 0.65
-      }
-    }
-  }
   stateful_config = {
     instance-1 = {
       minimal_action                 = "NONE",
       most_disruptive_allowed_action = "REPLACE"
       preserved_state = {
         disks = {
-          persistent-disk-1 = {
-            source = google_compute_disk.test_disk.id,
+          data-1 = {
+            source = "projects/my-prj/zones/europe-west8-b/disks/test-data-1"
           }
         }
         metadata = {
@@ -404,8 +386,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest modules=2 resources=4 inventory=stateful.yaml
-
+# tftest modules=2 resources=3 inventory=stateful.yaml
 ```
 <!-- BEGIN TFDOC -->
 
