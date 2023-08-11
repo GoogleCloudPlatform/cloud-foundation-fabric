@@ -41,7 +41,7 @@ locals {
 }
 
 module "project" {
-  source          = "../../../modules/project"
+  source          = "../../../../modules/project"
   parent          = try(var.create_config.project.parent, null)
   billing_account = try(var.create_config.project.billing_account, null)
   name            = var.project_id
@@ -84,7 +84,7 @@ module "project" {
 }
 
 module "vpc" {
-  source     = "../../../modules/net-vpc"
+  source     = "../../../../modules/net-vpc"
   count      = local.create_vpc ? 1 : 0
   project_id = module.project.project_id
   name       = var.prefix
@@ -100,14 +100,14 @@ module "vpc" {
 }
 
 module "fleet-project" {
-  source         = "../../../modules/project"
+  source         = "../../../../modules/project"
   count          = var.fleet_config.project_id == null ? 0 : 1
   name           = var.fleet_config.project_id
   project_create = false
 }
 
 module "fleet" {
-  source     = "../../../modules/gke-hub"
+  source     = "../../../../modules/gke-hub"
   project_id = local.fleet_project.project_id
   clusters = {
     (var.cluster_name) = (
@@ -119,7 +119,7 @@ module "fleet" {
 }
 
 module "registry" {
-  source     = "../../../modules/artifact-registry"
+  source     = "../../../../modules/artifact-registry"
   count      = var.create_config.remote_registry ? 1 : 0
   project_id = module.project.project_id
   location   = var.region

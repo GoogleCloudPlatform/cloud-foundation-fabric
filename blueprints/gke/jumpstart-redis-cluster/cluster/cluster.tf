@@ -45,7 +45,7 @@ data "google_container_cluster" "cluster" {
 }
 
 module "cluster-service-account" {
-  source     = "../../../modules/iam-service-account"
+  source     = "../../../../modules/iam-service-account"
   project_id = module.project.project_id
   name = (
     var.create_config.cluster != null
@@ -59,7 +59,7 @@ module "cluster-service-account" {
 }
 
 module "cluster" {
-  source     = "../../../modules/gke-cluster-autopilot"
+  source     = "../../../../modules/gke-cluster-autopilot"
   count      = var.create_config.cluster != null ? 1 : 0
   project_id = module.project.project_id
   name       = var.cluster_name
