@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2023-07-07 16:22:14+00:00 -->
 
+## v25.0.0
+
 ### BLUEPRINTS
 
 - [[#1581](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1581)] **incompatible change:** Remove firewall policy management from resource management modules ([ludoo](https://github.com/ludoo)) <!-- 2023-08-09 11:23:08+00:00 -->
