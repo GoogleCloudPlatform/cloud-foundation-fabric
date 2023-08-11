@@ -99,7 +99,7 @@ module "bucket" {
   project_id = "myproject"
   name       = "my-bucket"
   objects_to_upload = {
-    "sample-data" = {
+    sample-data = {
       name         = "example-file.csv"
       source       = "data/example-file.csv"
       content_type = "text/csv"

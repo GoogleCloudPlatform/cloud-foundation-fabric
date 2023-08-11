@@ -133,7 +133,7 @@ variable "notification_config" {
 }
 
 variable "objects_to_upload" {
-  description = "Objects to be uploaded to bucket"
+  description = "Objects to be uploaded to bucket."
   type = map(object({
     name         = string
     source       = string
