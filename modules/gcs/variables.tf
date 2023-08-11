@@ -132,6 +132,16 @@ variable "notification_config" {
   default = null
 }
 
+variable "objects_to_upload" {
+  description = "Objects to be uploaded to bucket"
+  type = map(object({
+    name         = string
+    source       = string
+    content_type = string
+  }))
+  default = {}
+}
+
 variable "prefix" {
   description = "Optional prefix used to generate the bucket name."
   type        = string

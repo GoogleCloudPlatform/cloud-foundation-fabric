@@ -99,6 +99,15 @@ resource "google_storage_bucket" "bucket" {
   }
 }
 
+resource "google_storage_bucket_object" "objects" {
+  for_each = var.objects_to_upload
+
+  bucket       = google_storage_bucket.bucket.id
+  name         = each.value.name
+  source       = each.value.source
+  content_type = each.value.content_type
+}
+
 resource "google_storage_bucket_iam_binding" "bindings" {
   for_each = var.iam
   bucket   = google_storage_bucket.bucket.name
