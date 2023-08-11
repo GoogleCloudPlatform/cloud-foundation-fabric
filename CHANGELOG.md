@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1581](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1581)] **incompatible change:** Remove firewall policy management from resource management modules ([ludoo](https://github.com/ludoo)) <!-- 2023-08-09 11:23:08+00:00 -->
 - [[#1573](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1573)] Add information about required groups ([wiktorn](https://github.com/wiktorn)) <!-- 2023-08-06 18:27:59+00:00 -->
 - [[#1572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1572)] **incompatible change:** More module descriptions ([ludoo](https://github.com/ludoo)) <!-- 2023-08-06 09:25:45+00:00 -->
 - [[#1560](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1560)] Removed unused attribute in variable of ha-vpn-over-blueprint blueprint ([apichick](https://github.com/apichick)) <!-- 2023-08-02 11:41:08+00:00 -->
@@ -23,6 +24,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1581](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1581)] **incompatible change:** Remove firewall policy management from resource management modules ([ludoo](https://github.com/ludoo)) <!-- 2023-08-09 11:23:08+00:00 -->
 - [[#1573](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1573)] Add information about required groups ([wiktorn](https://github.com/wiktorn)) <!-- 2023-08-06 18:27:59+00:00 -->
 - [[#1545](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1545)] add dataplex autodq base module ([thinhha](https://github.com/thinhha)) <!-- 2023-08-02 11:16:33+00:00 -->
 - [[#1557](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1557)] renaming net-vpc-swp to net-swp ([skalolazka](https://github.com/skalolazka)) <!-- 2023-08-01 15:48:22+00:00 -->
@@ -33,6 +35,8 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1579](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1579)] Enable team CI/CD impersonation ([williamsmt](https://github.com/williamsmt)) <!-- 2023-08-09 12:46:24+00:00 -->
+- [[#1581](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1581)] **incompatible change:** Remove firewall policy management from resource management modules ([ludoo](https://github.com/ludoo)) <!-- 2023-08-09 11:23:08+00:00 -->
 - [[#1572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1572)] **incompatible change:** More module descriptions ([ludoo](https://github.com/ludoo)) <!-- 2023-08-06 09:25:45+00:00 -->
 - [[#1566](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1566)] Remove unused ASN numbers from CloudNAT to avoid provider errors ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-04 08:02:12+00:00 -->
 - [[#1563](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1563)] Update FAST CI/CD workflows so it can work with ID_TOKEN and Gitlab 15+ ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-08-03 16:09:45+00:00 -->
@@ -42,6 +46,9 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1581](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1581)] **incompatible change:** Remove firewall policy management from resource management modules ([ludoo](https://github.com/ludoo)) <!-- 2023-08-09 11:23:08+00:00 -->
+- [[#1580](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1580)] Apigee addons ([apichick](https://github.com/apichick)) <!-- 2023-08-09 06:33:20+00:00 -->
+- [[#1576](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1576)] **incompatible change:** Refactor firewall policy module ([ludoo](https://github.com/ludoo)) <!-- 2023-08-08 16:57:59+00:00 -->
 - [[#1575](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1575)] Expose allow_net_admin feature in gke-cluster-autopilot module ([eunanhardy](https://github.com/eunanhardy)) <!-- 2023-08-07 15:03:51+00:00 -->
 - [[#1572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1572)] **incompatible change:** More module descriptions ([ludoo](https://github.com/ludoo)) <!-- 2023-08-06 09:25:45+00:00 -->
 - [[#1569](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1569)] Add support for cost management to GKE module ([ludoo](https://github.com/ludoo)) <!-- 2023-08-05 11:46:53+00:00 -->

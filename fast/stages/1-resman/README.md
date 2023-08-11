@@ -352,6 +352,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [cicd-networking.tf](./cicd-networking.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-project-factory.tf](./cicd-project-factory.tf) | CI/CD resources for the teams branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-security.tf](./cicd-security.tf) | CI/CD resources for the security branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
+| [cicd-teams.tf](./cicd-teams.tf) | CI/CD resources for individual teams. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
 | [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> |  |
 | [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>local_file</code> |
@@ -378,22 +379,23 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [outputs_location](variables.tf#L210) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable. | <code>string</code> |  | <code>null</code> |  |
 | [tag_names](variables.tf#L227) | Customized names for resource management tags. | <code title="object&#40;&#123;&#10;  context      &#61; string&#10;  environment  &#61; string&#10;  org-policies &#61; string&#10;  tenant       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  context      &#61; &#34;context&#34;&#10;  environment  &#61; &#34;environment&#34;&#10;  org-policies &#61; &#34;org-policies&#34;&#10;  tenant       &#61; &#34;tenant&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [tags](variables.tf#L248) | Custome secure tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    id          &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [team_folders](variables.tf#L269) | Team folders to be created. Format is described in a code comment. | <code title="map&#40;object&#40;&#123;&#10;  descriptive_name     &#61; string&#10;  group_iam            &#61; map&#40;list&#40;string&#41;&#41;&#10;  impersonation_groups &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |  |
-| [tenants](variables.tf#L279) | Lightweight tenant definitions. | <code title="map&#40;object&#40;&#123;&#10;  admin_group_email &#61; string&#10;  descriptive_name  &#61; string&#10;  billing_account   &#61; optional&#40;string&#41;&#10;  organization &#61; optional&#40;object&#40;&#123;&#10;    customer_id &#61; string&#10;    domain      &#61; string&#10;    id          &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [tenants_config](variables.tf#L295) | Lightweight tenants shared configuration. Roles will be assigned to tenant admin group and service accounts. | <code title="object&#40;&#123;&#10;  core_folder_roles   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  tenant_folder_roles &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  top_folder_roles    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [team_folders](variables.tf#L269) | Team folders to be created. Format is described in a code comment. | <code title="map&#40;object&#40;&#123;&#10;  descriptive_name     &#61; string&#10;  group_iam            &#61; map&#40;list&#40;string&#41;&#41;&#10;  impersonation_groups &#61; list&#40;string&#41;&#10;  cicd &#61; optional&#40;object&#40;&#123;&#10;    branch            &#61; string&#10;    identity_provider &#61; string&#10;    name              &#61; string&#10;    type              &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |  |
+| [tenants](variables.tf#L285) | Lightweight tenant definitions. | <code title="map&#40;object&#40;&#123;&#10;  admin_group_email &#61; string&#10;  descriptive_name  &#61; string&#10;  billing_account   &#61; optional&#40;string&#41;&#10;  organization &#61; optional&#40;object&#40;&#123;&#10;    customer_id &#61; string&#10;    domain      &#61; string&#10;    id          &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [tenants_config](variables.tf#L301) | Lightweight tenants shared configuration. Roles will be assigned to tenant admin group and service accounts. | <code title="object&#40;&#123;&#10;  core_folder_roles   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  tenant_folder_roles &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  top_folder_roles    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L213) | WIF configuration for CI/CD repositories. |  |  |
-| [dataplatform](outputs.tf#L227) | Data for the Data Platform stage. |  |  |
-| [gke_multitenant](outputs.tf#L243) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
-| [networking](outputs.tf#L264) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L273) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L288) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L295) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L309) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L319) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L331) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L232) | WIF configuration for CI/CD repositories. |  |  |
+| [dataplatform](outputs.tf#L246) | Data for the Data Platform stage. |  |  |
+| [gke_multitenant](outputs.tf#L262) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
+| [networking](outputs.tf#L283) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L292) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L307) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L314) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L328) | Data for the networking stage. |  | <code>02-security</code> |
+| [team_cicd_repositories](outputs.tf#L338) | WIF configuration for Team CI/CD repositories. |  |  |
+| [teams](outputs.tf#L352) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L364) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

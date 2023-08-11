@@ -78,11 +78,6 @@ module "folder" {
   id                     = var.folder_config.folder_create != null ? null : var.folder_config.folder_id
   group_iam              = local.group_iam
   org_policies_data_path = var.data_dir != null ? "${var.data_dir}/org-policies" : null
-  firewall_policy_factory = var.data_dir != null ? {
-    cidr_file   = "${var.data_dir}/firewall-policies/cidrs.yaml"
-    policy_name = "${var.prefix}-fw-policy"
-    rules_file  = "${var.data_dir}/firewall-policies/hierarchical-policy-rules.yaml"
-  } : null
   logging_sinks = var.enable_features.log_sink ? {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
@@ -93,14 +88,24 @@ module "folder" {
   } : null
 }
 
+module "firewall-policy" {
+  source    = "../../../modules/net-firewall-policy"
+  name      = "default"
+  parent_id = module.folder.id
+  rules_factory_config = var.data_dir == null ? {} : {
+    cidr_file_path          = "${var.data_dir}/firewall-policies/cidrs.yaml"
+    ingress_rules_file_path = "${var.data_dir}/firewall-policies/hierarchical-ingress-rules.yaml"
+  }
+}
+
 module "folder-workload" {
   source = "../../../modules/folder"
   parent = module.folder.id
   name   = "${var.prefix}-workload"
 }
 
+#TODO VPCSC: Access levels
 
-#TODO VPCSC: Access levels 
 data "google_projects" "folder-projects" {
   filter = "parent.id:${split("/", module.folder.id)[1]}"
 

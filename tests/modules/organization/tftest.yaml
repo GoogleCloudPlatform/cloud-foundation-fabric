@@ -21,5 +21,4 @@ tests:
   org_policies_list:
   org_policies_boolean:
   org_policies_custom_constraints:
-  firewall_policies_factory_combined:
   tags:
