@@ -393,7 +393,7 @@ module "nginx-mig" {
       most_disruptive_allowed_action = "REPLACE"
       preserved_state = {
         disks = {
-          stateful-disk-1 = {
+          persistent-disk-1 = {
             source = google_compute_disk.test_disk.id,
           }
         }
