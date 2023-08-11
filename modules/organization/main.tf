@@ -26,3 +26,10 @@ resource "google_essential_contacts_contact" "contact" {
   language_tag                        = "en"
   notification_category_subscriptions = each.value
 }
+
+resource "google_compute_firewall_policy_association" "default" {
+  for_each          = var.firewall_policy_associations
+  attachment_target = var.organization_id
+  name              = each.key
+  firewall_policy   = each.value
+}

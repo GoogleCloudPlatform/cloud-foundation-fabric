@@ -102,6 +102,12 @@ variable "eventarc_triggers" {
   default = {}
 }
 
+variable "gen2_execution_environment" {
+  description = "Use second generation execution environment."
+  type        = bool
+  default     = false
+}
+
 variable "iam" {
   description = "IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format."
   type        = map(list(string))

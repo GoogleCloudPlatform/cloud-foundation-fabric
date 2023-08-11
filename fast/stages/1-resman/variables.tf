@@ -272,6 +272,12 @@ variable "team_folders" {
     descriptive_name     = string
     group_iam            = map(list(string))
     impersonation_groups = list(string)
+    cicd = optional(object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    }))
   }))
   default = null
 }
