@@ -53,6 +53,8 @@ variable "create_registry" {
 variable "create_vpc" {
   description = "Project configuration for newly created VPC. Leave null to use existing VPC, or defaults when project creation is required."
   type = object({
+    name                     = optional(string)
+    subnet_name              = optional(string)
     primary_range_nodes      = optional(string, "10.0.0.0/24")
     secondary_range_pods     = optional(string, "10.16.0.0/20")
     secondary_range_services = optional(string, "10.32.0.0/24")

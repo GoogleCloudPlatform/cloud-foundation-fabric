@@ -77,9 +77,9 @@ module "vpc" {
   source     = "../../../../modules/net-vpc"
   count      = local.create_vpc ? 1 : 0
   project_id = module.project.project_id
-  name       = var.prefix
+  name       = coalesce(var.create_vpc.name, var.prefix)
   subnets = [{
-    name   = "${var.prefix}-default"
+    name   = coalesce(var.create_vpc.subnet_name, "${var.prefix}-default")
     region = var.region
     ip_cidr_range = try(
       var.create_vpc.primary_range_nodes, "10.0.0.0/24"

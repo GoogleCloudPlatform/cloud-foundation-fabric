@@ -50,9 +50,11 @@ locals {
     : {
       network               = module.vpc.0.id
       secondary_range_names = { pods = "pods", services = "services" }
-      subnet                = module.vpc.0.subnet_ids["${var.region}/${var.prefix}-default"]
+      subnet                = values(module.vpc.0.subnet_ids)[0]
     }
   )
+  # needed when vpc is created and vpc/subnet names are passed in as variables
+  depends_on = [module.vpc]
 }
 
 data "google_container_cluster" "cluster" {
