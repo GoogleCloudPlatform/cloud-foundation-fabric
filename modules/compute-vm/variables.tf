@@ -28,7 +28,6 @@ variable "attached_disk_defaults" {
     replica_zone = null
     type         = "pd-balanced"
   }
-
   validation {
     condition     = var.attached_disk_defaults.mode == "READ_WRITE" || !var.attached_disk_defaults.auto_delete
     error_message = "auto_delete can only be specified on READ_WRITE disks."
@@ -38,8 +37,9 @@ variable "attached_disk_defaults" {
 variable "attached_disks" {
   description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
-    name              = string
-    device_name       = optional(string)
+    name        = string
+    device_name = optional(string)
+    # TODO: size can be null when source_type is attach
     size              = string
     snapshot_schedule = optional(string)
     source            = optional(string)
