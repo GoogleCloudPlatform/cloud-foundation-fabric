@@ -15,14 +15,6 @@
  */
 
 locals {
-  # https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster#use_least_privilege_sa
-  cluster_sa_roles = [
-    "roles/artifactregistry.reader",
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
-    "roles/monitoring.viewer",
-    "roles/stackdriver.resourceMetadata.writer"
-  ]
   create_vpc = (
     !local.use_shared_vpc && (
       var.create_vpc != null || var.create_project != null

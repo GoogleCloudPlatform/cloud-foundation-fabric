@@ -10,8 +10,8 @@
 ```hcl
 module "jumpstart-0" {
   source       = "./fabric/blueprints/gke/jumpstart/jumpstart-0-infra/"
-  cluster_name = "test-0"
-  project_id   = "my-prj"
+  cluster_name = "test-00"
+  project_id   = "tf-playground-svpc-gke-fleet"
 }
 # tftest modules=1 resources=1
 ```

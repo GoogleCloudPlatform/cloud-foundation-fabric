@@ -21,3 +21,7 @@ output "cmd_get_credentials" {
     --project ${var.project_id}
   END
 }
+
+output "foo" {
+  value = local.cluster_sa
+}

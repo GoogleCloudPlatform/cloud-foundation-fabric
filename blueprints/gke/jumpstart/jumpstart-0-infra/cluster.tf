@@ -15,11 +15,18 @@
  */
 
 locals {
-  cluster_service_account = (
+  cluster_sa = (
     var.create_cluster == null
     ? data.google_container_cluster.cluster.0.node_config.0.service_account
     : module.cluster-service-account.0.email
   )
+  cluster_sa_roles = [
+    "roles/artifactregistry.reader",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+    "roles/monitoring.viewer",
+    "roles/stackdriver.resourceMetadata.writer"
+  ]
   cluster_vpc = (
     local.use_shared_vpc || !local.create_vpc
     # cluster variable configures networking
@@ -52,16 +59,12 @@ data "google_container_cluster" "cluster" {
 
 module "cluster-service-account" {
   source     = "../../../../modules/iam-service-account"
+  count      = var.create_cluster != null ? 1 : 0
   project_id = module.project.project_id
-  name = (
-    var.create_cluster != null
-    ? var.prefix
-    : data.google_container_cluster.cluster.0.node_config.0.service_account
-  )
+  name       = var.prefix
   iam_project_roles = {
     (module.project.project_id) = local.cluster_sa_roles
   }
-  service_account_create = var.create_cluster != null
 }
 
 module "cluster" {
@@ -83,4 +86,15 @@ module "cluster" {
   }
   service_account = module.cluster-service-account.0.email
   labels          = var.create_cluster.labels
+}
+
+resource "google_project_iam_member" "cluster_sa" {
+  for_each = toset(var.create_cluster == null ? [] : local.cluster_sa_roles)
+  project  = module.project.project_id
+  role     = each.key
+  member = (
+    local.cluster_sa == "default"
+    ? module.project.service_accounts.default.compute
+    : local.cluster_sa
+  )
 }
