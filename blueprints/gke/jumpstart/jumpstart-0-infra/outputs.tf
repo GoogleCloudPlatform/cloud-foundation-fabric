@@ -13,3 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "cmd_get_credentials" {
+  description = "Run this command to get cluster credentials via fleet."
+  value       = <<-END
+  gcloud container fleet memberships get-credentials ${var.cluster_name} \
+    --project ${var.project_id}
+  END
+}

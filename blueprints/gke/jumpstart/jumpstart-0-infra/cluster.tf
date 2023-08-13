@@ -16,19 +16,25 @@
 
 locals {
   cluster_service_account = (
-    var.create_config.cluster == null
+    var.create_cluster == null
     ? data.google_container_cluster.cluster.0.node_config.0.service_account
     : module.cluster-service-account.0.email
   )
   cluster_vpc = (
     local.use_shared_vpc || !local.create_vpc
+    # cluster variable configures networking
     ? {
-      network = try(var.create_config.cluster.vpc.id, null)
-      secondary_range_names = try(
-        var.create_config.cluster.vpc.secondary_range_names, null
+      network = try(
+        var.create_cluster.vpc.id, null
       )
-      subnet = try(var.create_config.cluster.vpc.subnet_id, null)
+      secondary_range_names = try(
+        var.create_cluster.vpc.secondary_range_names, null
+      )
+      subnet = try(
+        var.create_cluster.vpc.subnet_id, null
+      )
     }
+    # VPC creation configures networking
     : {
       network               = module.vpc.0.id
       secondary_range_names = { pods = "pods", services = "services" }
@@ -38,7 +44,7 @@ locals {
 }
 
 data "google_container_cluster" "cluster" {
-  count    = var.create_config.cluster == null ? 1 : 0
+  count    = var.create_cluster == null ? 1 : 0
   project  = var.project_id
   location = var.region
   name     = var.cluster_name
@@ -48,19 +54,19 @@ module "cluster-service-account" {
   source     = "../../../../modules/iam-service-account"
   project_id = module.project.project_id
   name = (
-    var.create_config.cluster != null
+    var.create_cluster != null
     ? var.prefix
     : data.google_container_cluster.cluster.0.node_config.0.service_account
   )
   iam_project_roles = {
     (module.project.project_id) = local.cluster_sa_roles
   }
-  service_account_create = var.create_config.cluster != null
+  service_account_create = var.create_cluster != null
 }
 
 module "cluster" {
   source     = "../../../../modules/gke-cluster-autopilot"
-  count      = var.create_config.cluster != null ? 1 : 0
+  count      = var.create_cluster != null ? 1 : 0
   project_id = module.project.project_id
   name       = var.cluster_name
   location   = var.region
@@ -68,13 +74,13 @@ module "cluster" {
     network                  = local.cluster_vpc.network
     subnetwork               = local.cluster_vpc.subnet
     secondary_range_names    = local.cluster_vpc.secondary_range_names
-    master_authorized_ranges = var.create_config.cluster.master_authorized_ranges
-    master_ipv4_cidr_block   = var.create_config.cluster.master_ipv4_cidr_block
+    master_authorized_ranges = var.create_cluster.master_authorized_ranges
+    master_ipv4_cidr_block   = var.create_cluster.master_ipv4_cidr_block
   }
   private_cluster_config = {
     enable_private_endpoint = true
     master_global_access    = true
   }
   service_account = module.cluster-service-account.0.email
-  labels          = var.create_config.cluster.labels
+  labels          = var.create_cluster.labels
 }

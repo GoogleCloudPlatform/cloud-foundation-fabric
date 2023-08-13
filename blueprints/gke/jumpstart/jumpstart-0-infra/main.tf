@@ -23,48 +23,46 @@ locals {
     "roles/monitoring.viewer",
     "roles/stackdriver.resourceMetadata.writer"
   ]
-  create_vpc = !local.use_shared_vpc && var.create_config.vpc != null
+  create_vpc = (
+    !local.use_shared_vpc && (
+      var.create_vpc != null || var.create_project != null
+    )
+  )
   fleet_project = (
-    var.fleet_config.project_id == null
+    var.fleet_project_id == null
     ? {
       project_id = var.project_id
       number     = module.project.number
     }
     : {
-      project_id = var.fleet_config.project_id
+      project_id = var.fleet_project_id
       number     = module.fleet-project.0.number
     }
   )
   use_shared_vpc = (
-    try(var.create_config.project.shared_vpc_host, null) != null
+    try(var.create_project.shared_vpc_host, null) != null
   )
 }
 
 module "project" {
   source          = "../../../../modules/project"
-  parent          = try(var.create_config.project.parent, null)
-  billing_account = try(var.create_config.project.billing_account, null)
+  parent          = try(var.create_project.parent, null)
+  billing_account = try(var.create_project.billing_account, null)
   name            = var.project_id
-  project_create  = var.create_config.project != null
-  services = concat(
-    [
-      "anthos.googleapis.com",
-      "cloudresourcemanager.googleapis.com",
-      "connectgateway.googleapis.com",
-      "container.googleapis.com",
-      "gkeconnect.googleapis.com",
-      "gkehub.googleapis.com",
-      "stackdriver.googleapis.com"
-    ],
-    (
-      var.create_config.remote_registry
-      ? ["artifactregistry.googleapis.com"]
-      : []
-    )
-  )
+  project_create  = var.create_project != null
+  services = compact([
+    "anthos.googleapis.com",
+    var.create_registry ? "artifactregistry.googleapis.com" : null,
+    "cloudresourcemanager.googleapis.com",
+    "connectgateway.googleapis.com",
+    "container.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
+    "stackdriver.googleapis.com"
+  ])
   shared_vpc_service_config = !local.use_shared_vpc ? null : {
     attach       = true
-    host_project = var.create_config.project.shared_vpc_host
+    host_project = var.create_project.shared_vpc_host
     service_identity_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
@@ -76,7 +74,7 @@ module "project" {
   }
   iam_additive = {
     "roles/gkehub.serviceAgent" = [
-      var.fleet_config.project_id == null
+      var.fleet_project_id == null
       ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
       : "serviceAccount:service-${module.fleet-project.0.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
     ]
@@ -89,20 +87,26 @@ module "vpc" {
   project_id = module.project.project_id
   name       = var.prefix
   subnets = [{
-    ip_cidr_range = var.create_config.vpc.primary_range_nodes
-    name          = "${var.prefix}-default"
-    region        = var.region
+    name   = "${var.prefix}-default"
+    region = var.region
+    ip_cidr_range = try(
+      var.create_vpc.primary_range_nodes, "10.0.0.0/24"
+    )
     secondary_ip_ranges = {
-      pods     = var.create_config.vpc.secondary_range_pods
-      services = var.create_config.vpc.secondary_range_services
+      pods = try(
+        var.create_vpc.secondary_range_pods, "10.16.0.0/20"
+      )
+      services = try(
+        var.create_vpc.secondary_range_services, "10.32.0.0/24"
+      )
     }
   }]
 }
 
 module "fleet-project" {
   source         = "../../../../modules/project"
-  count          = var.fleet_config.project_id == null ? 0 : 1
-  name           = var.fleet_config.project_id
+  count          = var.fleet_project_id == null ? 0 : 1
+  name           = var.fleet_project_id
   project_create = false
 }
 
@@ -111,7 +115,7 @@ module "fleet" {
   project_id = local.fleet_project.project_id
   clusters = {
     (var.cluster_name) = (
-      var.create_config.cluster != null
+      var.create_cluster != null
       ? module.cluster.0.id
       : "projects/${var.project_id}/locations/${var.region}/clusters/${var.cluster_name}"
     )
@@ -120,7 +124,7 @@ module "fleet" {
 
 module "registry" {
   source     = "../../../../modules/artifact-registry"
-  count      = var.create_config.remote_registry ? 1 : 0
+  count      = var.create_registry ? 1 : 0
   project_id = module.project.project_id
   location   = var.region
   name       = var.prefix
