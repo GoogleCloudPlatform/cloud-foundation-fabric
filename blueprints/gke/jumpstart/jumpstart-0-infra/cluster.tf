@@ -15,10 +15,15 @@
  */
 
 locals {
-  cluster_sa = (
+  _cluster_sa = (
     var.create_cluster == null
     ? data.google_container_cluster.cluster.0.node_config.0.service_account
     : module.cluster-service-account.0.email
+  )
+  cluster_sa = (
+    local._cluster_sa == "default"
+    ? module.project.service_accounts.default.compute
+    : local._cluster_sa
   )
   cluster_sa_roles = [
     "roles/artifactregistry.reader",
@@ -92,9 +97,5 @@ resource "google_project_iam_member" "cluster_sa" {
   for_each = toset(var.create_cluster == null ? [] : local.cluster_sa_roles)
   project  = module.project.project_id
   role     = each.key
-  member = (
-    local.cluster_sa == "default"
-    ? module.project.service_accounts.default.compute
-    : local.cluster_sa
-  )
+  member   = "serviceAccount:${local.cluster_sa}"
 }

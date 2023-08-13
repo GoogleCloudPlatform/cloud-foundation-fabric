@@ -21,7 +21,7 @@ variable "create_cluster" {
     master_authorized_ranges = optional(map(string), {
       rfc-1918-10-8 = "10.0.0.0/8"
     })
-    master_ipv4_cidr_block = optional(string, "172.16.20.0/28")
+    master_ipv4_cidr_block = optional(string, "172.16.255.0/28")
     vpc = optional(object({
       id        = string
       subnet_id = string
