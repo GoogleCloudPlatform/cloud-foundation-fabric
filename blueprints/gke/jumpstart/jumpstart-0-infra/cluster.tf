@@ -16,9 +16,9 @@
 
 locals {
   _cluster_sa = (
-    var.create_cluster == null
-    ? data.google_container_cluster.cluster.0.node_config.0.service_account
-    : module.cluster-service-account.0.email
+    local.create_cluster
+    ? module.cluster-service-account.0.email
+    : data.google_container_cluster.cluster.0.node_config.0.service_account
   )
   cluster_sa = (
     local._cluster_sa == "default"
@@ -58,7 +58,7 @@ locals {
 }
 
 data "google_container_cluster" "cluster" {
-  count    = var.create_cluster == null ? 1 : 0
+  count    = !local.create_cluster ? 1 : 0
   project  = var.project_id
   location = var.region
   name     = var.cluster_name
@@ -66,7 +66,7 @@ data "google_container_cluster" "cluster" {
 
 module "cluster-service-account" {
   source     = "../../../../modules/iam-service-account"
-  count      = var.create_cluster != null ? 1 : 0
+  count      = local.create_cluster ? 1 : 0
   project_id = module.project.project_id
   name       = var.prefix
   iam_project_roles = {
@@ -74,9 +74,23 @@ module "cluster-service-account" {
   }
 }
 
+check "cluster_networking" {
+  assert {
+    condition = (
+      local.use_shared_vpc
+      ? (
+        try(var.create_cluster.vpc.id, null) != null &&
+        try(var.create_cluster.vpc.subnet_id, null) != null
+      )
+      : true
+    )
+    error_message = "Cluster network and subnetwork are required in shared VPC mode."
+  }
+}
+
 module "cluster" {
   source     = "../../../../modules/gke-cluster-autopilot"
-  count      = var.create_cluster != null ? 1 : 0
+  count      = local.create_cluster ? 1 : 0
   project_id = module.project.project_id
   name       = var.cluster_name
   location   = var.region
@@ -96,7 +110,7 @@ module "cluster" {
 }
 
 resource "google_project_iam_member" "cluster_sa" {
-  for_each = toset(var.create_cluster == null ? [] : local.cluster_sa_roles)
+  for_each = toset(local.create_cluster ? [] : local.cluster_sa_roles)
   project  = module.project.project_id
   role     = each.key
   member   = "serviceAccount:${local.cluster_sa}"

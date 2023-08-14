@@ -15,6 +15,7 @@
  */
 
 locals {
+  create_cluster = var.create_cluster != null || local.create_vpc
   create_vpc = (
     !local.use_shared_vpc && (
       var.create_vpc != null || var.create_project != null
@@ -64,22 +65,19 @@ module "project" {
       ]
     }
   }
-  iam_additive = {
-    "roles/gkehub.serviceAgent" = [
-      var.fleet_project_id == null
-      ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
-      : "serviceAccount:service-${module.fleet-project.0.number}@gcp-sa-gkehub.iam.gserviceaccount.com"
-    ]
-  }
 }
 
 module "vpc" {
   source     = "../../../../modules/net-vpc"
   count      = local.create_vpc ? 1 : 0
   project_id = module.project.project_id
-  name       = coalesce(var.create_vpc.name, var.prefix)
+  name = coalesce(
+    try(var.create_vpc.name, null), var.prefix
+  )
   subnets = [{
-    name   = coalesce(var.create_vpc.subnet_name, "${var.prefix}-default")
+    name = coalesce(
+      try(var.create_vpc.subnet_name, null), "${var.prefix}-default"
+    )
     region = var.region
     ip_cidr_range = try(
       var.create_vpc.primary_range_nodes, "10.0.0.0/24"
@@ -112,6 +110,16 @@ module "fleet" {
       : "projects/${var.project_id}/locations/${var.region}/clusters/${var.cluster_name}"
     )
   }
+}
+
+resource "google_project_iam_member" "fleet" {
+  project = module.project.project_id
+  role    = "roles/gkehub.serviceAgent"
+  member = (
+    var.fleet_project_id == null
+    ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
+    : "serviceAccount:${module.fleet-project.0.service_accounts.robots.gkehub}"
+  )
 }
 
 module "registry" {
