@@ -152,6 +152,7 @@ module "jumpstart-0" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [cmd_get_credentials](outputs.tf#L17) | Run this command to get cluster credentials via fleet. |  |
-| [foo](outputs.tf#L25) |  |  |
+| [created_resources](outputs.tf#L17) | IDs of the resources created, if any. |  |
+| [fleet_host](outputs.tf#L37) | Fleet Connect Gateway host that can be used to configure the GKE provider. |  |
+| [get_credentials](outputs.tf#L46) | Run one of these commands to get cluster credentials. Credentials via fleet allow reaching private clusters without no direct connectivity. |  |
 <!-- END TFDOC -->
