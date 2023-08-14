@@ -203,6 +203,16 @@ variable "iam_additive" {
   nullable    = false
 }
 
+variable "iam_members" {
+  description = "Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop."
+  type = map(object({
+    member = string
+    role   = string
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "labels" {
   description = "The resource labels for instance to use to annotate any related underlying resources, such as Compute Engine VMs."
   type        = map(string)
