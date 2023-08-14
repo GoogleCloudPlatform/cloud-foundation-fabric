@@ -53,8 +53,6 @@ locals {
       subnet                = values(module.vpc.0.subnet_ids)[0]
     }
   )
-  # needed when vpc is created and vpc/subnet names are passed in as variables
-  depends_on = [module.vpc]
 }
 
 data "google_container_cluster" "cluster" {

@@ -56,6 +56,7 @@ module "project" {
   shared_vpc_service_config = !local.use_shared_vpc ? null : {
     attach       = true
     host_project = var.create_project.shared_vpc_host
+    # grant required roles on the host project to service identities
     service_identity_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
@@ -66,6 +67,7 @@ module "project" {
     }
   }
   iam_members = merge(
+    # allow GKE fleet service identity to manage clusters in this project
     {
       gkehub-robot = {
         role = "roles/gkehub.serviceAgent"
@@ -76,6 +78,7 @@ module "project" {
         )
       }
     },
+    # grant required roles to GKE node service account
     {
       for r in local.cluster_sa_roles : "gke-sa-${r}" => {
         role   = r
