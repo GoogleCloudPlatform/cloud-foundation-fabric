@@ -46,6 +46,16 @@ variable "iam_additive" {
   nullable    = false
 }
 
+variable "iam_members" {
+  description = "Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop."
+  type = map(object({
+    member = string
+    role   = string
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "iam_billing_roles" {
   description = "Billing account roles granted to this service account, by billing account id. Non-authoritative."
   type        = map(list(string))
