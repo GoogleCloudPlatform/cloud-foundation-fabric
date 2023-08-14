@@ -58,9 +58,9 @@ locals {
 resource "google_data_catalog_taxonomy_iam_binding" "authoritative" {
   provider = google-beta
   for_each = local.iam
+  taxonomy = google_data_catalog_taxonomy.default.id
   role     = each.key
   members  = each.value
-  taxonomy = google_data_catalog_taxonomy.default.id
 }
 
 resource "google_data_catalog_taxonomy_iam_member" "additive" {
@@ -70,9 +70,16 @@ resource "google_data_catalog_taxonomy_iam_member" "additive" {
     ? local.iam_additive
     : {}
   )
+  taxonomy = google_data_catalog_taxonomy.default.id
   role     = each.value.role
   member   = each.value.member
+}
+
+resource "google_data_catalog_taxonomy_iam_member" "members" {
+  for_each = var.iam_members
   taxonomy = google_data_catalog_taxonomy.default.id
+  role     = each.value.role
+  member   = each.value.member
 }
 
 resource "google_data_catalog_policy_tag_iam_binding" "authoritative" {
@@ -80,7 +87,6 @@ resource "google_data_catalog_policy_tag_iam_binding" "authoritative" {
   for_each = {
     for v in local.tags_iam : "${v.tag}.${v.role}" => v
   }
-
   policy_tag = google_data_catalog_policy_tag.default[each.value.tag].name
   role       = each.value.role
   members    = each.value.members

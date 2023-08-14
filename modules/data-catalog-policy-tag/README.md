@@ -4,6 +4,15 @@ This module simplifies the creation of [Data Catalog](https://cloud.google.com/d
 
 Note: Data Catalog is still in beta, hence this module currently uses the beta provider.
 
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Simple Taxonomy with policy tags](#simple-taxonomy-with-policy-tags)
+  - [Taxonomy with IAM binding](#taxonomy-with-iam-binding)
+- [Variables](#variables)
+- [Outputs](#outputs)
+- [TODO](#todo)
+<!-- END TOC -->
+
 ## Examples
 
 ### Simple Taxonomy with policy tags
@@ -43,25 +52,32 @@ module "cmn-dc" {
   iam = {
     "roles/datacatalog.categoryAdmin" = ["group:GROUP_NAME@example.com"]
   }
+  iam_members = {
+    am1-admin = {
+      member = "user:am1@example.com"
+      role   = "roles/datacatalog.categoryAdmin"
+    }
+  }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=7
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L59) | Name of this taxonomy. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L74) | GCP project id. | <code></code> | ✓ |  |
+| [name](variables.tf#L69) | Name of this taxonomy. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L84) | GCP project id. | <code></code> | ✓ |  |
 | [activated_policy_types](variables.tf#L17) | A list of policy types that are activated for this taxonomy. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;FINE_GRAINED_ACCESS_CONTROL&#34;&#93;</code> |
 | [description](variables.tf#L23) | Description of this taxonomy. | <code>string</code> |  | <code>&#34;Taxonomy - Terraform managed&#34;</code> |
 | [group_iam](variables.tf#L29) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables.tf#L35) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_additive](variables.tf#L41) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_additive_members](variables.tf#L47) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L53) | Data Catalog Taxonomy location. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
-| [prefix](variables.tf#L64) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
-| [tags](variables.tf#L78) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_members](variables.tf#L53) | Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L63) | Data Catalog Taxonomy location. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
+| [prefix](variables.tf#L74) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
+| [tags](variables.tf#L88) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
