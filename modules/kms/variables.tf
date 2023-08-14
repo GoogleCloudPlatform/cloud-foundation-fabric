@@ -26,6 +26,16 @@ variable "iam_additive" {
   default     = {}
 }
 
+variable "iam_members" {
+  description = "Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop."
+  type = map(object({
+    member = string
+    role   = string
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "key_iam" {
   description = "Key IAM bindings in {KEY => {ROLE => [MEMBERS]}} format."
   type        = map(map(list(string)))
@@ -33,9 +43,20 @@ variable "key_iam" {
 }
 
 variable "key_iam_additive" {
-  description = "Key IAM additive bindings in {ROLE => [MEMBERS]} format."
+  description = "Key IAM additive bindings in {KEY => {ROLE => [MEMBERS]}} format."
   type        = map(map(list(string)))
   default     = {}
+}
+
+variable "key_iam_members" {
+  description = "Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop."
+  type = map(object({
+    key    = string
+    member = string
+    role   = string
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "key_purpose" {

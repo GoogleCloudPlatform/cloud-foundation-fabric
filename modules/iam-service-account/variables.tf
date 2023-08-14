@@ -60,6 +60,16 @@ variable "iam_folder_roles" {
   nullable    = false
 }
 
+variable "iam_members" {
+  description = "Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop."
+  type = map(object({
+    member = string
+    role   = string
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "iam_organization_roles" {
   description = "Organization roles granted to this service account, by organization id. Non-authoritative."
   type        = map(list(string))

@@ -177,6 +177,17 @@ variable "subnet_iam_additive" {
   nullable    = false
 }
 
+variable "subnet_iam_members" {
+  description = "Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop."
+  type = map(object({
+    member = string
+    role   = string
+    subnet = string
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "subnets" {
   description = "Subnet configuration."
   type = list(object({
