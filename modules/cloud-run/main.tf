@@ -69,6 +69,9 @@ locals {
         var.revision_annotations.vpcaccess_egress
       )
     },
+    var.gen2_execution_environment ? {
+      "run.googleapis.com/execution-environment" = "gen2"
+    } : {},
   )
   revision_name = (
     try(var.revision_name, null) == null

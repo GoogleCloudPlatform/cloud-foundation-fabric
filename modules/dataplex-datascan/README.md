@@ -2,9 +2,20 @@
 
 This module manages the creation of Dataplex DataScan resources.
 
+<!-- BEGIN TOC -->
+- [Data Profiling](#data-profiling)
+- [Data Quality](#data-quality)
+- [Data Source](#data-source)
+- [Execution Schedule](#execution-schedule)
+- [IAM](#iam)
+- [TODO](#todo)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Data Profiling
 
-This example shows how to create a Data Profiling scan. To create an Data Profiling scan, provide the `data_profile_spec` input arguments as documented in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec.
+This example shows how to create a Data Profiling scan. To create an Data Profiling scan, provide the `data_profile_spec` input arguments as documented in <https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec>.
 
 ```hcl
 module "dataplex-datascan" {
@@ -30,9 +41,9 @@ module "dataplex-datascan" {
 
 ## Data Quality
 
-To create an Data Quality scan, provide the `data_quality_spec` input arguments as documented in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec.
+To create an Data Quality scan, provide the `data_quality_spec` input arguments as documented in <https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec>.
 
-Documentation for the supported rule types and rule specifications can be found in https://cloud.example.com/dataplex/docs/reference/rest/v1/DataQualityRule.
+Documentation for the supported rule types and rule specifications can be found in <https://cloud.example.com/dataplex/docs/reference/rest/v1/DataQualityRule>.
 
 This example shows how to create a Data Quality scan.
 
@@ -304,6 +315,7 @@ rules:
 The input variable 'data' is required to create a DataScan. This value is immutable. Once it is set, you cannot change the DataScan to another source.
 
 The input variable 'data' should be an object containing a single key-value pair that can be one of:
+
 * `entity`: The Dataplex entity that represents the data source (e.g. BigQuery table) for DataScan, of the form: `projects/{project_number}/locations/{locationId}/lakes/{lakeId}/zones/{zoneId}/entities/{entityId}`.
 * `resource`: The service-qualified full resource name of the cloud resource for a DataScan job to scan against. The field could be: BigQuery table of type "TABLE" for DataProfileScan/DataQualityScan format, e.g: `//bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID`.
 
@@ -368,17 +380,17 @@ module "dataplex-datascan" {
 
 ## IAM
 
-There are three mutually exclusive ways of managing IAM in this module
+IAM is managed via several variables that implement different levels of control:
 
-- non-authoritative via the `iam_additive` and `iam_additive_members` variables, where bindings created outside this module will coexist with those managed here
-- authoritative via the `group_iam` and `iam` variables, where bindings created outside this module (eg in the console) will be removed at each `terraform apply` cycle if the same role is also managed here
-- authoritative policy via the `iam_policy` variable, where any binding created outside this module (eg in the console) will be removed at each `terraform apply` cycle regardless of the role
+* `group_iam` and `iam` configure authoritative bindings that manage individual roles exclusively, mapping to the [`google_project_iam_binding`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_binding) resource
+* `iam_additive`, `iam_additive_members` and `iam_members` configure additive bindings that only manage individual role/member pairs, mapping to the [`google_project_iam_member`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member) resource
+* `iam_policy` which controls the entire IAM policy for the project, where any binding created outside this module (eg in the console) will be removed at each `terraform apply` cycle regardless of the role
 
 The authoritative and additive approaches can be used together, provided different roles are managed by each. The IAM policy is incompatible with the other approaches, and must be used with extreme care.
 
-Some care must also be taken with the `group_iam` variable (and in some situations with the additive variables) to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
+Some care must also be taken with the `group_iam` and `iam_additive_*` variables to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph. For additive roles `iam_members` ensures that no dynamic values are used in the internal loop.
 
-An example is provided beow for using `group_iam` and `iam` variables.
+An example is provided below for using some of these variables.
 
 ```hcl
 module "dataplex-datascan" {
@@ -404,8 +416,14 @@ module "dataplex-datascan" {
       "roles/dataplex.dataScanViewer"
     ]
   }
+  iam_members = {
+    am1-viewer = {
+      member = "user:am1@example.com"
+      role   = "roles/dataplex.dataScanViewer"
+    }
+  }
 }
-# tftest modules=1 resources=4 inventory=datascan_iam.yaml
+# tftest modules=1 resources=5 inventory=datascan_iam.yaml
 ```
 
 ## TODO
@@ -415,9 +433,9 @@ module "dataplex-datascan" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [data](variables.tf#L17) | The data source for DataScan. The source can be either a Dataplex `entity` or a BigQuery `resource`. | <code title="object&#40;&#123;&#10;  entity   &#61; optional&#40;string&#41;&#10;  resource &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L146) | Name of Dataplex Scan. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L157) | The ID of the project where the Dataplex DataScan will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L162) | Region for the Dataplex DataScan. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L156) | Name of Dataplex Scan. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L167) | The ID of the project where the Dataplex DataScan will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L172) | Region for the Dataplex DataScan. | <code>string</code> | ✓ |  |
 | [data_profile_spec](variables.tf#L29) | DataProfileScan related setting. Variable descriptions are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [data_quality_spec](variables.tf#L38) | DataQualityScan related setting. Variable descriptions are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  sampling_percent &#61; optional&#40;number&#41;&#10;  row_filter       &#61; optional&#40;string&#41;&#10;  rules &#61; list&#40;object&#40;&#123;&#10;    column               &#61; optional&#40;string&#41;&#10;    ignore_null          &#61; optional&#40;bool, null&#41;&#10;    dimension            &#61; string&#10;    threshold            &#61; optional&#40;number&#41;&#10;    non_null_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    range_expectation &#61; optional&#40;object&#40;&#123;&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    regex_expectation &#61; optional&#40;object&#40;&#123;&#10;      regex &#61; string&#10;    &#125;&#41;&#41;&#10;    set_expectation &#61; optional&#40;object&#40;&#123;&#10;      values &#61; list&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    uniqueness_expectation &#61; optional&#40;object&#40;&#123;&#125;&#41;&#41;&#10;    statistic_range_expectation &#61; optional&#40;object&#40;&#123;&#10;      statistic          &#61; string&#10;      min_value          &#61; optional&#40;number&#41;&#10;      max_value          &#61; optional&#40;number&#41;&#10;      strict_min_enabled &#61; optional&#40;bool&#41;&#10;      strict_max_enabled &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    row_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;    table_condition_expectation &#61; optional&#40;object&#40;&#123;&#10;      sql_expression &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [data_quality_spec_file](variables.tf#L80) | Path to a YAML file containing DataQualityScan related setting. Input content can use either camelCase or snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  path &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
@@ -427,10 +445,11 @@ module "dataplex-datascan" {
 | [iam](variables.tf#L107) | Dataplex DataScan IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_additive](variables.tf#L114) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_additive_members](variables.tf#L121) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_policy](variables.tf#L127) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
-| [incremental_field](variables.tf#L133) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L139) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L151) | Optional prefix used to generate Dataplex DataScan ID. | <code>string</code> |  | <code>null</code> |
+| [iam_members](variables.tf#L127) | Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_policy](variables.tf#L137) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
+| [incremental_field](variables.tf#L143) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L149) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L161) | Optional prefix used to generate Dataplex DataScan ID. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

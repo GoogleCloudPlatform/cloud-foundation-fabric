@@ -19,12 +19,14 @@ values:
     purpose: ENCRYPT_DECRYPT
     rotation_period: null
     skip_initial_version_creation: null
+    timeouts: null
   module.kms.google_kms_crypto_key.default["key-b"]:
     labels: null
     name: key-b
     purpose: ENCRYPT_DECRYPT
     rotation_period: 604800s
     skip_initial_version_creation: null
+    timeouts: null
   module.kms.google_kms_crypto_key.default["key-c"]:
     labels:
       env: test
@@ -32,23 +34,29 @@ values:
     purpose: ENCRYPT_DECRYPT
     rotation_period: null
     skip_initial_version_creation: null
+    timeouts: null
   module.kms.google_kms_crypto_key_iam_binding.default["key-a.roles/cloudkms.admin"]:
     condition: []
     members:
     - user:user3@example.com
     role: roles/cloudkms.admin
-  module.kms.google_kms_crypto_key_iam_member.default["key-b.roles/cloudkms.cryptoKeyEncrypterDecrypteruser:user4@example.com"]:
-    condition: []
+  ? module.kms.google_kms_crypto_key_iam_member.default["key-b.roles/cloudkms.cryptoKeyEncrypterDecrypteruser:user4@example.com"]
+  : condition: []
     member: user:user4@example.com
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  module.kms.google_kms_crypto_key_iam_member.default["key-b.roles/cloudkms.cryptoKeyEncrypterDecrypteruser:user5@example.com"]:
-    condition: []
+  ? module.kms.google_kms_crypto_key_iam_member.default["key-b.roles/cloudkms.cryptoKeyEncrypterDecrypteruser:user5@example.com"]
+  : condition: []
     member: user:user5@example.com
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.kms.google_kms_crypto_key_iam_member.members["key-b-am1"]:
+    condition: []
+    member: user:am1@example.com
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.kms.google_kms_key_ring.default[0]:
     location: europe-west1
     name: test
     project: my-project
+    timeouts: null
   module.kms.google_kms_key_ring_iam_member.default["roles/cloudkms.cryptoKeyEncrypterDecrypteruser:user1@example.com"]:
     condition: []
     member: user:user1@example.com
@@ -61,6 +69,10 @@ values:
 counts:
   google_kms_crypto_key: 3
   google_kms_crypto_key_iam_binding: 1
-  google_kms_crypto_key_iam_member: 2
+  google_kms_crypto_key_iam_member: 3
   google_kms_key_ring: 1
   google_kms_key_ring_iam_member: 2
+  modules: 1
+  resources: 10
+
+outputs: {}

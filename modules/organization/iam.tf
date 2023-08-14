@@ -73,6 +73,13 @@ resource "google_organization_iam_member" "additive" {
   member = each.value.member
 }
 
+resource "google_organization_iam_member" "members" {
+  for_each = var.iam_members
+  org_id   = local.organization_id_numeric
+  role     = each.value.role
+  member   = each.value.member
+}
+
 resource "google_organization_iam_policy" "authoritative" {
   count       = var.iam_policy != null ? 1 : 0
   org_id      = local.organization_id_numeric

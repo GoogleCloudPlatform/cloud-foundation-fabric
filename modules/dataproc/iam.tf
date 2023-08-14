@@ -65,3 +65,11 @@ resource "google_dataproc_cluster_iam_member" "additive" {
   role    = each.value.role
   member  = each.value.member
 }
+
+resource "google_dataproc_cluster_iam_member" "members" {
+  for_each = var.iam_members
+  project  = var.project_id
+  cluster  = google_dataproc_cluster.cluster.name
+  role     = each.value.role
+  member   = each.value.member
+}

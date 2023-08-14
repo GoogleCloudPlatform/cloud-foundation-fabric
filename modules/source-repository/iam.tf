@@ -65,3 +65,11 @@ resource "google_sourcerepo_repository_iam_member" "additive" {
   role       = each.value.role
   member     = each.value.member
 }
+
+resource "google_sourcerepo_repository_iam_member" "members" {
+  for_each   = var.iam_members
+  project    = var.project_id
+  repository = google_sourcerepo_repository.default.name
+  role       = each.value.role
+  member     = each.value.member
+}

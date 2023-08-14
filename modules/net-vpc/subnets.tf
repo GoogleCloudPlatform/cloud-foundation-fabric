@@ -189,3 +189,12 @@ resource "google_compute_subnetwork_iam_member" "binding" {
   role       = each.value.role
   member     = each.value.member
 }
+
+resource "google_compute_subnetwork_iam_member" "members" {
+  for_each   = var.subnet_iam_members
+  project    = var.project_id
+  subnetwork = google_compute_subnetwork.subnetwork[each.value.subnet].name
+  region     = google_compute_subnetwork.subnetwork[each.value.subnet].region
+  role       = each.value.role
+  member     = each.value.member
+}

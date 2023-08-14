@@ -28,38 +28,11 @@ variable "custom_roles" {
   nullable    = false
 }
 
-variable "firewall_policies" {
-  description = "Hierarchical firewall policy rules created in the organization."
-  type = map(map(object({
-    action                  = string
-    description             = string
-    direction               = string
-    logging                 = bool
-    ports                   = map(list(string))
-    priority                = number
-    ranges                  = list(string)
-    target_resources        = list(string)
-    target_service_accounts = list(string)
-    # preview                 = bool
-  })))
-  default = {}
-}
-
-variable "firewall_policy_association" {
-  description = "The hierarchical firewall policy to associate to this folder. Must be either a key in the `firewall_policies` map or the id of a policy defined somewhere else."
+variable "firewall_policy_associations" {
+  description = "Hierarchical firewall policies to associate to this folder, in association name => policy id format."
   type        = map(string)
   default     = {}
   nullable    = false
-}
-
-variable "firewall_policy_factory" {
-  description = "Configuration for the firewall policy factory."
-  type = object({
-    cidr_file   = string
-    policy_name = string
-    rules_file  = string
-  })
-  default = null
 }
 
 variable "group_iam" {
@@ -88,6 +61,16 @@ variable "iam_additive_members" {
   type        = map(list(string))
   default     = {}
   nullable    = false
+}
+
+variable "iam_members" {
+  description = "Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop."
+  type = map(object({
+    member = string
+    role   = string
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "iam_policy" {
