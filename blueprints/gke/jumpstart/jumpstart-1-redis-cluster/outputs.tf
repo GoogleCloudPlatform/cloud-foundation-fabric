@@ -13,3 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "start_cluster" {
+  description = "Run suspended job that initializes and starts the cluster."
+  value       = <<-END
+    kubectl patch job/redis-cluster-start --type=strategic \
+    --patch '{"spec":{"suspend":false}}' -n ${var.namespace}
+  END
+}

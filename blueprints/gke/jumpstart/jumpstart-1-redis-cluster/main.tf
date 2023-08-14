@@ -15,6 +15,11 @@
  */
 
 locals {
+  wl_nodes = flatten([
+    for s in data.kubernetes_endpoints_v1.cluster_nodes.subset : [
+      for a in s.address : a.ip
+    ]
+  ])
   wl_templates = [
     for f in fileset(local.wl_templates_path, "[0-9]*yaml") :
     "${local.wl_templates_path}/${f}"
@@ -66,5 +71,24 @@ resource "kubernetes_manifest" "default" {
   }
   timeouts {
     create = "30m"
+  }
+}
+
+data "kubernetes_endpoints_v1" "cluster_nodes" {
+  metadata {
+    name      = "redis-cluster"
+    namespace = kubernetes_namespace.default.metadata.0.name
+  }
+  depends_on = [kubernetes_manifest.default]
+}
+
+resource "kubernetes_manifest" "cluster-start" {
+  manifest = yamldecode(templatefile("${local.wl_templates_path}/start-cluster.yaml", {
+    image     = var.image
+    namespace = kubernetes_namespace.default.metadata.0.name
+    nodes     = [for n in local.wl_nodes : "${n}:6379"]
+  }))
+  field_manager {
+    force_conflicts = true
   }
 }
