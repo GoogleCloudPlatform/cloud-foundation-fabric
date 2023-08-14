@@ -17,6 +17,7 @@ values:
     name: my-repo
     project: my-project
     pubsub_configs: []
+    timeouts: null
   module.repo.google_sourcerepo_repository_iam_binding.authoritative["roles/source.reader"]:
     condition: []
     members:
@@ -24,7 +25,18 @@ values:
     project: my-project
     repository: my-repo
     role: roles/source.reader
+  module.repo.google_sourcerepo_repository_iam_member.members["am1-reader"]:
+    condition: []
+    member: user:am1@example.com
+    project: my-project
+    repository: my-repo
+    role: roles/source.reader
 
 counts:
   google_sourcerepo_repository: 1
   google_sourcerepo_repository_iam_binding: 1
+  google_sourcerepo_repository_iam_member: 1
+  modules: 1
+  resources: 3
+
+outputs: {}

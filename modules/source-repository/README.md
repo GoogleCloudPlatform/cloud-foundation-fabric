@@ -2,6 +2,15 @@
 
 This module allows managing a single Cloud Source Repository, including IAM bindings and basic Cloud Build triggers.
 
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Repository with IAM](#repository-with-iam)
+  - [Repository with Cloud Build trigger](#repository-with-cloud-build-trigger)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Examples
 
 ### Repository with IAM
@@ -14,8 +23,14 @@ module "repo" {
   iam = {
     "roles/source.reader" = ["user:foo@example.com"]
   }
+  iam_members = {
+    am1-reader = {
+      member = "user:am1@example.com"
+      role   = "roles/source.reader"
+    }
+  }
 }
-# tftest modules=1 resources=2 inventory=simple.yaml
+# tftest modules=1 resources=3 inventory=simple.yaml
 ```
 
 ### Repository with Cloud Build trigger
@@ -46,7 +61,6 @@ module "repo" {
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
-
 ## Files
 
 | name | description | resources |
@@ -61,13 +75,14 @@ module "repo" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L44) | Repository name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L49) | Project used for resources. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L54) | Repository name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L59) | Project used for resources. | <code>string</code> | ✓ |  |
 | [group_iam](variables.tf#L17) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables.tf#L24) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_additive](variables.tf#L31) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_additive_members](variables.tf#L38) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [triggers](variables.tf#L54) | Cloud Build triggers. | <code title="map&#40;object&#40;&#123;&#10;  filename        &#61; string&#10;  included_files  &#61; list&#40;string&#41;&#10;  service_account &#61; string&#10;  substitutions   &#61; map&#40;string&#41;&#10;  template &#61; object&#40;&#123;&#10;    branch_name &#61; string&#10;    project_id  &#61; string&#10;    tag_name    &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_members](variables.tf#L44) | Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [triggers](variables.tf#L64) | Cloud Build triggers. | <code title="map&#40;object&#40;&#123;&#10;  filename        &#61; string&#10;  included_files  &#61; list&#40;string&#41;&#10;  service_account &#61; string&#10;  substitutions   &#61; map&#40;string&#41;&#10;  template &#61; object&#40;&#123;&#10;    branch_name &#61; string&#10;    project_id  &#61; string&#10;    tag_name    &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -76,5 +91,4 @@ module "repo" {
 | [id](outputs.tf#L17) | Fully qualified repository id. |  |
 | [name](outputs.tf#L22) | Repository name. |  |
 | [url](outputs.tf#L27) | Repository URL. |  |
-
 <!-- END TFDOC -->

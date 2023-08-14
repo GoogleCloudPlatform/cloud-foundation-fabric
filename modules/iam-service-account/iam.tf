@@ -134,6 +134,13 @@ resource "google_service_account_iam_member" "additive" {
   member             = local.resource_iam_email
 }
 
+resource "google_service_account_iam_member" "members" {
+  for_each           = var.iam_members
+  service_account_id = each.value.entity
+  role               = each.value.role
+  member             = each.value.member
+}
+
 resource "google_storage_bucket_iam_member" "bucket-roles" {
   for_each = {
     for pair in local.iam_storage_pairs :

@@ -16,6 +16,7 @@ values:
   module.folder.google_folder.folder[0]:
     display_name: Folder name
     parent: organizations/1234567890
+    timeouts: null
   module.folder.google_folder_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
@@ -52,8 +53,16 @@ values:
     condition: []
     member: user:am2@example.org
     role: roles/storage.objectViewer
+  module.folder.google_folder_iam_member.members["am1-storage-admin"]:
+    condition: []
+    member: user:am1@example.org
+    role: roles/storage.admin
 
 counts:
   google_folder: 1
   google_folder_iam_binding: 3
-  google_folder_iam_member: 5
+  google_folder_iam_member: 6
+  modules: 1
+  resources: 10
+
+outputs: {}
