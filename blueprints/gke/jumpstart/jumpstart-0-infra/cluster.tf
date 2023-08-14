@@ -69,23 +69,6 @@ module "cluster-service-account" {
   count      = local.create_cluster ? 1 : 0
   project_id = module.project.project_id
   name       = var.prefix
-  iam_project_roles = {
-    (module.project.project_id) = local.cluster_sa_roles
-  }
-}
-
-check "cluster_networking" {
-  assert {
-    condition = (
-      local.use_shared_vpc
-      ? (
-        try(var.create_cluster.vpc.id, null) != null &&
-        try(var.create_cluster.vpc.subnet_id, null) != null
-      )
-      : true
-    )
-    error_message = "Cluster network and subnetwork are required in shared VPC mode."
-  }
 }
 
 module "cluster" {
@@ -109,9 +92,16 @@ module "cluster" {
   labels          = var.create_cluster.labels
 }
 
-resource "google_project_iam_member" "cluster_sa" {
-  for_each = toset(local.create_cluster ? [] : local.cluster_sa_roles)
-  project  = module.project.project_id
-  role     = each.key
-  member   = "serviceAccount:${local.cluster_sa}"
+check "cluster_networking" {
+  assert {
+    condition = (
+      local.use_shared_vpc
+      ? (
+        try(var.create_cluster.vpc.id, null) != null &&
+        try(var.create_cluster.vpc.subnet_id, null) != null
+      )
+      : true
+    )
+    error_message = "Cluster network and subnetwork are required in shared VPC mode."
+  }
 }

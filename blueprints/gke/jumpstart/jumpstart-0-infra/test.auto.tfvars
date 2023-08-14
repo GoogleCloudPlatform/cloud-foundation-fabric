@@ -54,6 +54,5 @@ create_cluster = {
 create_project = {
   billing_account = "017479-47ADAB-670295"
   parent          = "folders/210938489642"
-  shared_vpc_host = "ldj-prod-net-landing-0"
+  shared_vpc_host = "ldj-dev-net-spoke-0"
 }
-# TODO: fails due to missing network user role

@@ -65,6 +65,24 @@ module "project" {
       ]
     }
   }
+  iam_members = merge(
+    {
+      gkehub-robot = {
+        role = "roles/gkehub.serviceAgent"
+        member = (
+          var.fleet_project_id == null
+          ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
+          : "serviceAccount:${module.fleet-project.0.service_accounts.robots.gkehub}"
+        )
+      }
+    },
+    {
+      for r in local.cluster_sa_roles : "gke-sa-${r}" => {
+        role   = r
+        member = "serviceAccount:${local.cluster_sa}"
+      }
+    }
+  )
 }
 
 module "vpc" {
@@ -110,16 +128,6 @@ module "fleet" {
       : "projects/${var.project_id}/locations/${var.region}/clusters/${var.cluster_name}"
     )
   }
-}
-
-resource "google_project_iam_member" "fleet" {
-  project = module.project.project_id
-  role    = "roles/gkehub.serviceAgent"
-  member = (
-    var.fleet_project_id == null
-    ? "serviceAccount:${module.project.service_accounts.robots.gkehub}"
-    : "serviceAccount:${module.fleet-project.0.service_accounts.robots.gkehub}"
-  )
 }
 
 module "registry" {
