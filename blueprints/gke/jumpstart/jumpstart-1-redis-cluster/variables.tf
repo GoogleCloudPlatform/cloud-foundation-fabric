@@ -35,12 +35,14 @@ variable "credentials_config" {
 
 variable "image" {
   description = "Container image to use."
+  type        = string
   nullable    = false
   default     = "redis:6.2"
 }
 
 variable "namespace" {
   description = "Namespace used for Redis cluster resources."
+  type        = string
   nullable    = false
   default     = "redis"
 }
@@ -53,6 +55,7 @@ variable "statefulset_config" {
       cpu    = optional(string, "1")
       memory = optional(string, "1Gi")
     }), {})
+    volume_claim_size = optional(string, "10Gi")
   })
   nullable = false
   default  = {}

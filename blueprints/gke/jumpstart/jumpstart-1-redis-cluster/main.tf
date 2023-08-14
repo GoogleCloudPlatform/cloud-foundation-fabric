@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+locals {
+  wl_templates = [
+    for f in fileset(local.wl_templates_path, "[0-9]*yaml") :
+    "${local.wl_templates_path}/${f}"
+  ]
+  wl_templates_path = pathexpand(var.templates_path)
+}
+
 data "google_client_config" "identity" {
   count = var.credentials_config.fleet_host != null ? 1 : 0
 }
@@ -38,5 +46,25 @@ provider "kubernetes" {
 resource "kubernetes_namespace" "default" {
   metadata {
     name = var.namespace
+  }
+}
+
+resource "kubernetes_manifest" "default" {
+  for_each = toset(local.wl_templates)
+  manifest = yamldecode(templatefile(each.value, {
+    image              = var.image
+    namespace          = kubernetes_namespace.default.metadata.0.name
+    statefulset_config = var.statefulset_config
+  }))
+  dynamic "wait" {
+    for_each = strcontains(each.key, "statefulset") ? [""] : []
+    content {
+      fields = {
+        "status.availableReplicas" = var.statefulset_config.replicas
+      }
+    }
+  }
+  timeouts {
+    create = "30m"
   }
 }
