@@ -167,6 +167,12 @@ variable "replicas" {
   default = {}
 }
 
+variable "require_ssl" {
+  description = "Enable SSL connections only."
+  type        = bool
+  default     = null
+}
+
 variable "root_password" {
   description = "Root password of the Cloud SQL instance. Required for MS SQL Server."
   type        = string
