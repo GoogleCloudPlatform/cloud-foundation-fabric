@@ -47,31 +47,37 @@ module "jumpstart-0" {
 ### New cluster with local fleet, existing default VPC
 
 ```hcl
-project_id     = "tf-playground-svpc-gke-fleet"
-cluster_name   = "test-01"
-create_cluster = {}
+module "jumpstart-0" {
+  project_id     = "tf-playground-svpc-gke-fleet"
+  cluster_name   = "test-01"
+  create_cluster = {}
+}
 # tftest skip
 ```
 
 ### New cluster and VPC, implied cluster VPC
 
 ```hcl
-project_id     = "tf-playground-svpc-gke-fleet"
-cluster_name   = "test-01"
-create_cluster = {}
-create_vpc     = {}
+module "jumpstart-0" {
+  project_id     = "tf-playground-svpc-gke-fleet"
+  cluster_name   = "test-01"
+  create_cluster = {}
+  create_vpc     = {}
+}
 # tftest skip
 ```
 
 ### New cluster and project, default VPC (fails)
 
 ```hcl
-project_id     = "tf-playground-svpc-gke-j0"
-cluster_name   = "test-00"
-create_cluster = {}
-create_project = {
-  billing_account = "017479-47ADAB-670295"
-  parent          = "folders/210938489642"
+module "jumpstart-0" {
+  project_id     = "tf-playground-svpc-gke-j0"
+  cluster_name   = "test-00"
+  create_cluster = {}
+  create_project = {
+    billing_account = "017479-47ADAB-670295"
+    parent          = "folders/210938489642"
+  }
 }
 # tftest skip
 ```
@@ -79,12 +85,14 @@ create_project = {
 ### New cluster and project, implied VPC creation and cluster VPC
 
 ```hcl
-project_id     = "tf-playground-svpc-gke-j0"
-cluster_name   = "test-00"
-create_cluster = {}
-create_project = {
-  billing_account = "017479-47ADAB-670295"
-  parent          = "folders/210938489642"
+module "jumpstart-0" {
+  project_id     = "tf-playground-svpc-gke-j0"
+  cluster_name   = "test-00"
+  create_cluster = {}
+  create_project = {
+    billing_account = "017479-47ADAB-670295"
+    parent          = "folders/210938489642"
+  }
 }
 # tftest skip
 ```
@@ -92,13 +100,15 @@ create_project = {
 ### New cluster and project, service project fails VPC check
 
 ```hcl
-project_id     = "tf-playground-svpc-gke-j1"
-cluster_name   = "test-00"
-create_cluster = {}
-create_project = {
-  billing_account = "017479-47ADAB-670295"
-  parent          = "folders/210938489642"
-  shared_vpc_host = "ldj-prod-net-landing-0"
+module "jumpstart-0" {
+  project_id     = "tf-playground-svpc-gke-j1"
+  cluster_name   = "test-00"
+  create_cluster = {}
+  create_project = {
+    billing_account = "017479-47ADAB-670295"
+    parent          = "folders/210938489642"
+    shared_vpc_host = "ldj-prod-net-landing-0"
+  }
 }
 # tftest skip
 ```
@@ -106,18 +116,20 @@ create_project = {
 ### New cluster and project, service project passes VPC check
 
 ```hcl
-project_id   = "tf-playground-svpc-gke-j1"
-cluster_name = "test-00"
-create_cluster = {
-  vpc = {
-    id        = "projects/ldj-dev-net-spoke-0/global/networks/dev-spoke-0"
-    subnet_id = "projects/ldj-dev-net-spoke-0/regions/europe-west8/subnetworks/gke"
+module "jumpstart-0" {
+  project_id   = "tf-playground-svpc-gke-j1"
+  cluster_name = "test-00"
+  create_cluster = {
+    vpc = {
+      id        = "projects/ldj-dev-net-spoke-0/global/networks/dev-spoke-0"
+      subnet_id = "projects/ldj-dev-net-spoke-0/regions/europe-west8/subnetworks/gke"
+    }
   }
-}
-create_project = {
-  billing_account = "017479-47ADAB-670295"
-  parent          = "folders/210938489642"
-  shared_vpc_host = "ldj-dev-net-spoke-0"
+  create_project = {
+    billing_account = "017479-47ADAB-670295"
+    parent          = "folders/210938489642"
+    shared_vpc_host = "ldj-dev-net-spoke-0"
+  }
 }
 # tftest skip
 ```
