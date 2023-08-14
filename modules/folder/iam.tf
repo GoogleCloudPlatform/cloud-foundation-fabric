@@ -64,6 +64,13 @@ resource "google_folder_iam_member" "additive" {
   member = each.value.member
 }
 
+resource "google_folder_iam_member" "members" {
+  for_each = var.iam_members
+  folder   = local.folder.name
+  role     = each.value.role
+  member   = each.value.member
+}
+
 resource "google_folder_iam_policy" "authoritative" {
   count       = var.iam_policy != null ? 1 : 0
   folder      = local.folder.name

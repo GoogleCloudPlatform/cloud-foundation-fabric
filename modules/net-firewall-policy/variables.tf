@@ -123,7 +123,7 @@ variable "parent_id" {
 }
 
 variable "region" {
-  description = "Policy region. Leave null for hierarchical policy, or global network policy."
+  description = "Policy region. Leave null for hierarchical policy, set to 'global' for a global network policy."
   type        = string
   default     = null
 }

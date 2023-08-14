@@ -18,7 +18,7 @@ values:
   module.firewall-policy.google_compute_firewall_policy_association.hierarchical["test"]:
     attachment_target: folders/4567890123
     name: test-1-test
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["egress/icmp"]:
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/icmp"]:
     action: allow
     direction: INGRESS
     disabled: false
@@ -41,7 +41,7 @@ values:
     priority: 1000
     target_resources: null
     target_service_accounts: null
-  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/smtp"]:
+  module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["egress/smtp"]:
     action: deny
     direction: EGRESS
     disabled: false

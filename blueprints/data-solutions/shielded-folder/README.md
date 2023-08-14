@@ -209,5 +209,5 @@ module "test" {
     billing_account_id = "123456-123456-123456"
   }
 }
-# tftest modules=6 resources=38 inventory=simple.yaml
+# tftest modules=7 resources=38
 ```

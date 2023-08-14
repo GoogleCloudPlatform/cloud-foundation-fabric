@@ -69,6 +69,15 @@ resource "google_dataplex_datascan_iam_member" "additive" {
   member       = each.value.member
 }
 
+resource "google_dataplex_datascan_iam_member" "members" {
+  for_each     = var.iam_members
+  project      = google_dataplex_datascan.datascan.project
+  location     = google_dataplex_datascan.datascan.location
+  data_scan_id = google_dataplex_datascan.datascan.data_scan_id
+  role         = each.value.role
+  member       = each.value.member
+}
+
 resource "google_dataplex_datascan_iam_policy" "authoritative_for_resource" {
   count        = var.iam_policy != null ? 1 : 0
   project      = google_dataplex_datascan.datascan.project

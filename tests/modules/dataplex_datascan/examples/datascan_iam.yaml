@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 values:
   module.dataplex-datascan.google_dataplex_datascan.datascan:
     data:
@@ -57,11 +58,19 @@ values:
     - group:user-group@example.com
     project: my-project-name
     role: roles/dataplex.dataScanViewer
+  module.dataplex-datascan.google_dataplex_datascan_iam_member.members["am1-viewer"]:
+    condition: []
+    data_scan_id: test-datascan
+    location: us-central1
+    member: user:am1@example.com
+    project: my-project-name
+    role: roles/dataplex.dataScanViewer
 
 counts:
   google_dataplex_datascan: 1
   google_dataplex_datascan_iam_binding: 3
+  google_dataplex_datascan_iam_member: 1
   modules: 1
-  resources: 4
+  resources: 5
 
 outputs: {}

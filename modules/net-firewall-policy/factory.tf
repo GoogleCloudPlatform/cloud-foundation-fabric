@@ -15,23 +15,17 @@
  */
 
 locals {
-  _factory_egress_rules = (
-    var.rules_factory_config.egress_rules_file_path == null
-    ? {}
-    : yamldecode(file(var.rules_factory_config.egress_rules_file_path))
+  _factory_egress_rules = try(
+    yamldecode(file(var.rules_factory_config.egress_rules_file_path)), {}
   )
-  _factory_ingress_rules = (
-    var.rules_factory_config.ingress_rules_file_path == null
-    ? {}
-    : yamldecode(file(var.rules_factory_config.ingress_rules_file_path))
+  _factory_ingress_rules = try(
+    yamldecode(file(var.rules_factory_config.ingress_rules_file_path)), {}
   )
-  factory_cidrs = (
-    var.rules_factory_config.cidr_file_path == null
-    ? {}
-    : yamldecode(file(var.rules_factory_config.cidr_file_path))
+  factory_cidrs = try(
+    yamldecode(file(var.rules_factory_config.cidr_file_path)), {}
   )
   factory_egress_rules = {
-    for k, v in local._factory_egress_rules : "ingress/${k}" => {
+    for k, v in local._factory_egress_rules : "egress/${k}" => {
       action                  = "deny"
       direction               = "EGRESS"
       priority                = v.priority
@@ -74,7 +68,7 @@ locals {
     }
   }
   factory_ingress_rules = {
-    for k, v in local._factory_ingress_rules : "egress/${k}" => {
+    for k, v in local._factory_ingress_rules : "ingress/${k}" => {
       action                  = "allow"
       direction               = "INGRESS"
       priority                = v.priority
