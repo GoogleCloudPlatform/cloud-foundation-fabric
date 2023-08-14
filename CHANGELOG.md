@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1589](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1589)] Add new `iam_members` variable to IAM additive module interfaces ([ludoo](https://github.com/ludoo)) <!-- 2023-08-14 09:54:50+00:00 -->
+- [[#1588](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1588)] feat: 🎸 (modules/cloudsql-instance): enable require_ssl cert support ([erabusi](https://github.com/erabusi)) <!-- 2023-08-14 09:37:04+00:00 -->
 - [[#1587](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1587)] **incompatible change:** Fix factory rules key in net firewall policy module ([ludoo](https://github.com/ludoo)) <!-- 2023-08-14 05:52:37+00:00 -->
 - [[#1578](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1578)] Fix: Instance level stateful disk config  ([beardedsamwise](https://github.com/beardedsamwise)) <!-- 2023-08-11 15:25:17+00:00 -->
 - [[#1582](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1582)] feat(modules/cloud-run): add gen2 exec env support ([LiuVII](https://github.com/LiuVII)) <!-- 2023-08-09 21:04:17+00:00 -->
