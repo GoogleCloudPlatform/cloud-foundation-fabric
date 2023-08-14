@@ -14,25 +14,57 @@
  * limitations under the License.
  */
 
-variable "workload_config" {
-  description = "Workload configuration. Registry prefix will only work if registry is created by this module."
+variable "credentials_config" {
+  description = "Configure how Terraform authenticates to the cluster."
   type = object({
-    image     = optional(string, "redis:6.2")
-    namespace = optional(string, "redis")
-    statefulset_config = optional(object({
-      replicas = optional(number, 6)
-      resource_requests = optional(object({
-        cpu    = optional(string, "1")
-        memory = optional(string, "1Gi")
-      }), {})
-      volume_claim_size = optional(string, "1Gi")
+    fleet_host = optional(string)
+    kubeconfig = optional(object({
+      context = optional(string)
+      path    = optional(string, "~/.kube/config")
+    }))
+  })
+  nullable = false
+  validation {
+    condition = (
+      (var.credentials_config.fleet_host != null ? 1 : 0) +
+      (var.credentials_config.kubeconfig != null ? 1 : 0)
+    ) == 1
+    error_message = "One of fleet host or kubeconfig need to be set."
+  }
+}
+
+variable "image" {
+  description = "Container image to use."
+  nullable    = false
+  default     = "redis:6.2"
+}
+
+variable "namespace" {
+  description = "Namespace used for Redis cluster resources."
+  nullable    = false
+  default     = "redis"
+}
+
+variable "statefulset_config" {
+  description = "Configure Redis cluster statefulset parameters."
+  type = object({
+    replicas = optional(number, 6)
+    resource_requests = optional(object({
+      cpu    = optional(string, "1")
+      memory = optional(string, "1Gi")
     }), {})
-    templates_path = optional(string, "manifest-templates")
   })
   nullable = false
   default  = {}
   validation {
-    condition     = var.workload_config.statefulset_config.replicas >= 6
-    error_message = "At least 6 cluster nodes are required."
+    condition     = var.statefulset_config.replicas >= 6
+    error_message = "The minimum number of Redis cluster replicas is 6."
   }
+}
+
+variable "templates_path" {
+  description = "Path where manifest templates will be read from."
+  type        = string
+  nullable    = false
+  default     = "manifest-templates"
 }
