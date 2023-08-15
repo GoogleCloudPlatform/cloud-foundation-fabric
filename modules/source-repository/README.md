@@ -75,14 +75,14 @@ module "repo" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L54) | Repository name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L59) | Project used for resources. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L59) | Repository name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L64) | Project used for resources. | <code>string</code> | ✓ |  |
 | [group_iam](variables.tf#L17) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables.tf#L24) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_additive](variables.tf#L31) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_additive_members](variables.tf#L38) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_members](variables.tf#L44) | Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [triggers](variables.tf#L64) | Cloud Build triggers. | <code title="map&#40;object&#40;&#123;&#10;  filename        &#61; string&#10;  included_files  &#61; list&#40;string&#41;&#10;  service_account &#61; string&#10;  substitutions   &#61; map&#40;string&#41;&#10;  template &#61; object&#40;&#123;&#10;    branch_name &#61; string&#10;    project_id  &#61; string&#10;    tag_name    &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_members](variables.tf#L44) | Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [triggers](variables.tf#L69) | Cloud Build triggers. | <code title="map&#40;object&#40;&#123;&#10;  filename        &#61; string&#10;  included_files  &#61; list&#40;string&#41;&#10;  service_account &#61; string&#10;  substitutions   &#61; map&#40;string&#41;&#10;  template &#61; object&#40;&#123;&#10;    branch_name &#61; string&#10;    project_id  &#61; string&#10;    tag_name    &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

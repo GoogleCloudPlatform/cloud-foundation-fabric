@@ -183,6 +183,11 @@ variable "subnet_iam_members" {
     member = string
     role   = string
     subnet = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
   }))
   nullable = false
   default  = {}

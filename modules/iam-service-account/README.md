@@ -41,8 +41,8 @@ module "myproject-default-service-accounts" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L101) | Name of the service account to create. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L116) | Project id where service account will be created. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L106) | Name of the service account to create. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L121) | Project id where service account will be created. | <code>string</code> | ✓ |  |
 | [description](variables.tf#L17) | Optional description. | <code>string</code> |  | <code>null</code> |
 | [display_name](variables.tf#L23) | Display name of the service account to create. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
 | [generate_key](variables.tf#L29) | Generate a key for service account. | <code>bool</code> |  | <code>false</code> |
@@ -50,14 +50,14 @@ module "myproject-default-service-accounts" {
 | [iam_additive](variables.tf#L42) | IAM additive bindings on the service account in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_billing_roles](variables.tf#L49) | Billing account roles granted to this service account, by billing account id. Non-authoritative. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_folder_roles](variables.tf#L56) | Folder roles granted to this service account, by folder id. Non-authoritative. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_members](variables.tf#L63) | Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_organization_roles](variables.tf#L73) | Organization roles granted to this service account, by organization id. Non-authoritative. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_project_roles](variables.tf#L80) | Project roles granted to this service account, by project id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_sa_roles](variables.tf#L87) | Service account roles granted to this service account, by service account name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_storage_roles](variables.tf#L94) | Storage roles granted to this service account, by bucket name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L106) | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
-| [public_keys_directory](variables.tf#L121) | Path to public keys data files to upload to the service account (should have `.pem` extension). | <code>string</code> |  | <code>&#34;&#34;</code> |
-| [service_account_create](variables.tf#L127) | Create service account. When set to false, uses a data source to reference an existing service account. | <code>bool</code> |  | <code>true</code> |
+| [iam_members](variables.tf#L63) | Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_organization_roles](variables.tf#L78) | Organization roles granted to this service account, by organization id. Non-authoritative. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_project_roles](variables.tf#L85) | Project roles granted to this service account, by project id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_sa_roles](variables.tf#L92) | Service account roles granted to this service account, by service account name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_storage_roles](variables.tf#L99) | Storage roles granted to this service account, by bucket name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L111) | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
+| [public_keys_directory](variables.tf#L126) | Path to public keys data files to upload to the service account (should have `.pem` extension). | <code>string</code> |  | <code>&#34;&#34;</code> |
+| [service_account_create](variables.tf#L132) | Create service account. When set to false, uses a data source to reference an existing service account. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
