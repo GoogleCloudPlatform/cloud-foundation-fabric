@@ -129,6 +129,11 @@ variable "iam_members" {
   type = map(object({
     member = string
     role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
   }))
   nullable = false
   default  = {}
