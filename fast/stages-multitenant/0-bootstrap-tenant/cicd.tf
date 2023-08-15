@@ -29,6 +29,10 @@ locals {
     {
       for k, v in google_iam_workload_identity_pool_provider.default :
       k => {
+        audiences = concat(
+          v.oidc[0].allowed_audiences,
+          ["https://iam.googleapis.com/${v.name}"]
+        )
         issuer           = local.identity_providers[k].issuer
         issuer_uri       = local.identity_providers[k].issuer_uri
         name             = v.name

@@ -20,6 +20,7 @@ locals {
       "${path.module}/templates/workflow-${v.type}.yaml", (
         k == "bootstrap"
         ? {
+          audiences = local.cicd_providers[v["identity_provider"]].audiences
           identity_provider = try(
             local.cicd_identity_providers[v["identity_provider"]].name, ""
           )
@@ -36,6 +37,7 @@ locals {
           ]
         }
         : {
+          audiences = local.cicd_providers[v["identity_provider"]].audiences
           identity_provider = try(
             local.cicd_identity_providers[v["identity_provider"]].name, ""
           )

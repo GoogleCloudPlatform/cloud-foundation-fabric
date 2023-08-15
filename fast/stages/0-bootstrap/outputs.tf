@@ -22,7 +22,7 @@ locals {
       "${path.module}/templates/workflow-${v.type}.yaml", {
         # If users give a list of custom audiences we set by default the first element.
         # If no audiences are given, we set https://iam.googleapis.com/{PROVIDER_NAME}
-        audience = local.cicd_providers[v["identity_provider"]].audience
+        audiences = local.cicd_providers[v["identity_provider"]].audiences
         identity_provider = try(
           local.cicd_providers[v["identity_provider"]].name, ""
         )

@@ -20,9 +20,9 @@ locals {
   cicd_providers = {
     for k, v in google_iam_workload_identity_pool_provider.default :
     k => {
-      audience = try(
-        v.oidc[0].allowed_audiences[0],
-        "https://iam.googleapis.com/${v.name}"
+      audiences = concat(
+        v.oidc[0].allowed_audiences,
+        ["https://iam.googleapis.com/${v.name}"]
       )
       issuer           = local.identity_providers[k].issuer
       issuer_uri       = try(v.oidc[0].issuer_uri, null)
