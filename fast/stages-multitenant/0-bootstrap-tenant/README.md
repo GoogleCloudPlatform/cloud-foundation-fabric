@@ -179,7 +179,6 @@ This configuration is possible but unsupported and only exists for development p
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [0-bootstrap-tenant-providers.tf](./0-bootstrap-tenant-providers.tf) | None |  |  |
 | [automation-sas.tf](./automation-sas.tf) | Tenant automation stage 2 and 3 service accounts. | <code>iam-service-account</code> | <code>google_organization_iam_member</code> |
 | [automation.tf](./automation.tf) | Tenant automation project and resources. | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
 | [billing.tf](./billing.tf) | Billing roles for standalone billing accounts. |  | <code>google_billing_account_iam_member</code> |
