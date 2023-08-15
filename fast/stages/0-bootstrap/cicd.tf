@@ -39,10 +39,15 @@ locals {
       (
         try(v.type, null) == "sourcerepo"
         ||
-        contains(keys(local.identity_providers), coalesce(try(v.identity_provider, null), ":"))
+        contains(
+          keys(local.identity_providers),
+          coalesce(try(v.identity_provider, null), ":")
+        )
       )
       &&
-      fileexists(format("${path.module}/templates/workflow-%s.yaml", try(v.type, "")))
+      fileexists(
+        format("${path.module}/templates/workflow-%s.yaml", try(v.type, ""))
+      )
     )
   }
   cicd_workflow_providers = {

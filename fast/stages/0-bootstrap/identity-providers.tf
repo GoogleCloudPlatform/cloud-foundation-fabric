@@ -82,7 +82,7 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   attribute_mapping                  = each.value.attribute_mapping
   oidc {
     # Setting an empty list configures allowed_audiences to the url of the provider
-    allowed_audiences = each.value.custom_settings.allowed_audiences
+    allowed_audiences = each.value.custom_settings.audiences
     # If users don't provide an issuer_uri, we set the public one for the plaform choosed.
     issuer_uri = (
       each.value.custom_settings.issuer_uri != null

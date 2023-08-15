@@ -119,12 +119,12 @@ variable "fast_features" {
 variable "federated_identity_providers" {
   description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
   type = map(object({
-    attribute_condition = string
+    attribute_condition = optional(string)
     issuer              = string
-    custom_settings = object({
-      issuer_uri        = string
-      allowed_audiences = list(string)
-    })
+    custom_settings = optional(object({
+      issuer_uri = optional(string)
+      audiences  = optional(list(string), [])
+    }), {})
   }))
   default  = {}
   nullable = false

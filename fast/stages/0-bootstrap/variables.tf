@@ -116,8 +116,8 @@ variable "federated_identity_providers" {
     attribute_condition = optional(string)
     issuer              = string
     custom_settings = optional(object({
-      issuer_uri        = optional(string)
-      allowed_audiences = optional(list(string), [])
+      issuer_uri = optional(string)
+      audiences  = optional(list(string), [])
     }), {})
   }))
   default  = {}

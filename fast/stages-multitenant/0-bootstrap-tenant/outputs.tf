@@ -22,7 +22,7 @@ locals {
         ? {
           audiences = local.cicd_providers[v["identity_provider"]].audiences
           identity_provider = try(
-            local.cicd_identity_providers[v["identity_provider"]].name, ""
+            local.cicd_providers[v["identity_provider"]].name, ""
           )
           outputs_bucket = var.automation.outputs_bucket
           service_account = try(
@@ -39,7 +39,7 @@ locals {
         : {
           audiences = local.cicd_providers[v["identity_provider"]].audiences
           identity_provider = try(
-            local.cicd_identity_providers[v["identity_provider"]].name, ""
+            local.cicd_providers[v["identity_provider"]].name, ""
           )
           outputs_bucket = module.automation-tf-output-gcs.name
           service_account = try(
@@ -72,7 +72,7 @@ locals {
         try(google_iam_workload_identity_pool.default.0.name, null),
         var.automation.federated_identity_pool,
       ])
-      federated_identity_providers = local.cicd_identity_providers
+      federated_identity_providers = local.cicd_providers
       service_accounts = merge(
         { resman = module.automation-tf-resman-sa.email },
         {
@@ -118,7 +118,7 @@ output "federated_identity" {
     pool = try(
       google_iam_workload_identity_pool.default.0.name, null
     )
-    providers = local.cicd_identity_providers
+    providers = local.cicd_providers
   }
 }
 
