@@ -62,13 +62,6 @@ resource "google_folder_iam_policy" "authoritative" {
 
 data "google_iam_policy" "authoritative" {
   count = var.iam_policy != null ? 1 : 0
-  dynamic "binding" {
-    for_each = try(var.iam_policy, {})
-    content {
-      role    = binding.key
-      members = binding.value
-    }
-  }
   dynamic "audit_config" {
     for_each = var.logging_data_access
     content {
