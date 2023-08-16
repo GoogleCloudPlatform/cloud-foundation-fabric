@@ -197,7 +197,7 @@ module "vm-bastion" {
 ################################################################################
 
 module "cluster-1" {
-  source     = "../../../modules/gke-cluster-standard"
+  source     = "../../../modules/gke-cluster-autopilot"
   count      = var.cluster_create ? 1 : 0
   name       = "cluster-1"
   project_id = module.project-svc-gke.project_id
@@ -210,7 +210,6 @@ module "cluster-1" {
     }
     master_ipv4_cidr_block = var.private_service_ranges.cluster-1
   }
-  max_pods_per_node = 32
   private_cluster_config = {
     enable_private_endpoint = true
     master_global_access    = true
@@ -220,15 +219,3 @@ module "cluster-1" {
   }
 }
 
-module "cluster-1-nodepool-1" {
-  source       = "../../../modules/gke-nodepool"
-  count        = var.cluster_create ? 1 : 0
-  name         = "nodepool-1"
-  project_id   = module.project-svc-gke.project_id
-  location     = module.cluster-1.0.location
-  cluster_name = module.cluster-1.0.name
-  cluster_id   = module.cluster-1.0.id
-  service_account = {
-    create = true
-  }
-}

@@ -91,7 +91,6 @@ variable "enable_features" {
     vertical_pod_autoscaling = optional(bool, false)
   })
   default = {
-
   }
 }
 
@@ -182,7 +181,19 @@ variable "release_channel" {
 variable "service_account" {
   description = "The Google Cloud Platform Service Account to be used by the node VMs created by GKE Autopilot."
   type        = string
-  default     = null
+  default     = ""
+}
+
+variable "create_service_account" {
+  type        = bool
+  description = "Defines if service account specified to run nodes should be created."
+  default     = true
+}
+
+variable "service_account_name" {
+  type        = string
+  description = "The name of the service account that will be created if create_service_account is true. If you wish to use an existing service account, use service_account variable."
+  default     = ""
 }
 
 variable "tags" {

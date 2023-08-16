@@ -14,6 +14,33 @@
  * limitations under the License.
  */
 
+locals {
+  service_account_list = compact(
+    concat(
+      google_service_account.cluster_service_account.*.email,
+      ["dummy"],
+    ),
+  )
+  service_account_default_name = "tf-gke-${substr(var.name, 0, min(15, length(var.name)))}-${random_string.cluster_service_account_suffix.result}"
+
+  // if user set var.service_account it will be used even if var.create_service_account==true, so service account will be created but not used
+  service_account = (var.service_account == "" || var.service_account == "create") && var.create_service_account ? local.service_account_list[0] : var.service_account
+}
+
+resource "random_string" "cluster_service_account_suffix" {
+  upper   = false
+  lower   = true
+  special = false
+  length  = 4
+}
+
+resource "google_service_account" "cluster_service_account" {
+  count        = var.create_service_account ? 1 : 0
+  project      = var.project_id
+  account_id   = var.service_account_name == "" ? local.service_account_default_name : var.service_account_name
+  display_name = "Terraform-managed service account for cluster ${var.name}"
+}
+
 resource "google_container_cluster" "cluster" {
   provider    = google-beta
   project     = var.project_id
@@ -71,9 +98,10 @@ resource "google_container_cluster" "cluster" {
 
   cluster_autoscaling {
     dynamic "auto_provisioning_defaults" {
-      for_each = var.service_account != null ? [""] : []
+      for_each = (var.create_service_account || var.service_account != "") ? [1] : []
+
       content {
-        service_account = var.service_account
+        service_account = local.service_account
       }
     }
   }
