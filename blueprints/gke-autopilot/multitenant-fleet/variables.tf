@@ -38,7 +38,7 @@ variable "clusters" {
       recurring_window        = null
       maintenance_exclusion   = []
     })
-    min_master_version = optional(string)
+    min_master_version     = optional(string)
     node_locations         = optional(list(string))
     private_cluster_config = optional(any)
     release_channel        = optional(string)

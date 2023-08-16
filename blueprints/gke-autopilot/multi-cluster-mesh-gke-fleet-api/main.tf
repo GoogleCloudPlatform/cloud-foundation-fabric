@@ -18,7 +18,7 @@
 
 locals {
   np_service_account_iam_email = [
-     for k, v in module.clusters : v.service_account
+    for k, v in module.clusters : v.service_account
   ]
 }
 
