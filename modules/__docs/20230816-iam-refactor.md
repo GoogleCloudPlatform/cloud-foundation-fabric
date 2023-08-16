@@ -127,6 +127,10 @@ module "organization" {
 }
 ```
 
+### IAM policy
+
+The **proposal** is to remove support for setting policy, as its coverage is very uneven and we never used it in practice.
+
 ### Conditions for authoritative bindings
 
 Directly supporting conditions in authoritative variables would greatly complicate their type to support the tiny minority of use cases where conditions are needed.
@@ -157,7 +161,7 @@ variable "iam" {
 }
 ```
 
-The proposal is to support conditions in authoritative IAM via the new `iam_members` variable, by adding an extra optional `authoritative` attribute to its type:
+The **proposal** is to support conditions in authoritative IAM via the new `iam_members` variable, by adding an extra optional `authoritative` attribute to its type:
 
 ```hcl
 variable "iam_members" {
