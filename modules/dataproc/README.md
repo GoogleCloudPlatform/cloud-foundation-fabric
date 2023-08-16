@@ -144,11 +144,6 @@ module "processing-dp-cluster" {
   name       = "my-cluster"
   region     = "europe-west1"
   prefix     = "prefix"
-  iam_additive = {
-    "roles/dataproc.viewer" = [
-      "serviceAccount:service-account@PROJECT_ID.iam.gserviceaccount.com"
-    ]
-  }
   iam_members = {
     am1-viewer = {
       member = "user:am1@example.com"
@@ -156,7 +151,7 @@ module "processing-dp-cluster" {
     }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=2
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
