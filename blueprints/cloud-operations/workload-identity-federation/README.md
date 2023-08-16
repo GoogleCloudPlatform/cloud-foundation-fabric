@@ -93,3 +93,19 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 | [vm_public_ip_address](outputs.tf#L39) | Azure VM public IP address. |  |
 
 <!-- END TFDOC -->
+
+<!--
+## Test
+
+```hcl
+module "test" {
+  source          = "./fabric/blueprints/cloud-operations/workload-identity-federation"
+  project_create = {
+    billing_account_id = "1234-ABCD-1234"
+    parent             = "folders/1234563"
+  }
+  project_id      = "test-prj"
+}
+# tftest modules=5 resources=33
+```
+-->
