@@ -1,7 +1,6 @@
 # Refactor IAM interface
 
-**authors:** [Ludo](https://github.com/ludoo)
-
+**authors:** [Ludo](https://github.com/ludoo)\
 **date:** August 16, 2023
 
 ## Status
@@ -20,7 +19,7 @@ We currently support, with uneven coverage across modules:
 - legacy additive `iam_additive_members` in `PRINCIPAL => [ROLES]` format which breaks for dynamic values
 - new additive `iam_members` in `KEY => {role: ROLE, member: MEMBER, condition: CONDITION}` format which works with dynamic values and supports conditions
 - policy authoritative `iam_policy`
-- specific support for thrid party resource bindings in the service account module
+- specific support for third party resource bindings in the service account module
 
 ## Proposal
 
