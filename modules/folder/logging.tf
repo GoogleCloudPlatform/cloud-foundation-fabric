@@ -28,11 +28,9 @@ locals {
 }
 
 resource "google_folder_iam_audit_config" "default" {
-  for_each = (
-    var.iam_policy == null ? var.logging_data_access : {}
-  )
-  folder  = local.folder.name
-  service = each.key
+  for_each = var.logging_data_access
+  folder   = local.folder.name
+  service  = each.key
   dynamic "audit_log_config" {
     for_each = each.value
     iterator = config

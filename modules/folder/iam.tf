@@ -53,27 +53,3 @@ resource "google_folder_iam_member" "members" {
     }
   }
 }
-
-resource "google_folder_iam_policy" "authoritative" {
-  count       = var.iam_policy != null ? 1 : 0
-  folder      = local.folder.name
-  policy_data = data.google_iam_policy.authoritative.0.policy_data
-}
-
-data "google_iam_policy" "authoritative" {
-  count = var.iam_policy != null ? 1 : 0
-  dynamic "audit_config" {
-    for_each = var.logging_data_access
-    content {
-      service = audit_config.key
-      dynamic "audit_log_configs" {
-        for_each = audit_config.value
-        iterator = config
-        content {
-          log_type         = config.key
-          exempted_members = config.value
-        }
-      }
-    }
-  }
-}

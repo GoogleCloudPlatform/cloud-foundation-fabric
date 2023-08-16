@@ -230,32 +230,6 @@ module "folder" {
 # tftest modules=1 resources=3 inventory=logging-data-access.yaml
 ```
 
-While this sets an authoritative policies that has exclusive control of both IAM bindings for all roles and data access log configuration, and should be used with extreme care:
-
-```hcl
-module "folder" {
-  source = "./fabric/modules/folder"
-  parent = "folders/657104291943"
-  name   = "my-folder"
-  iam_policy = {
-    "roles/owner"                             = ["group:org-admins@example.com"]
-    "roles/resourcemanager.folderAdmin"       = ["group:org-admins@example.com"]
-    "roles/resourcemanager.organizationAdmin" = ["group:org-admins@example.com"]
-    "roles/resourcemanager.projectCreator"    = ["group:org-admins@example.com"]
-  }
-  logging_data_access = {
-    allServices = {
-      ADMIN_READ = ["group:organization-admins@example.org"]
-    }
-    "storage.googleapis.com" = {
-      DATA_READ  = []
-      DATA_WRITE = []
-    }
-  }
-}
-# tftest modules=1 resources=2 inventory=iam-policy.yaml
-```
-
 ## Tags
 
 Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
@@ -294,7 +268,7 @@ module "folder" {
 
 | name | description | resources |
 |---|---|---|
-| [iam.tf](./iam.tf) | IAM bindings, roles and audit logging resources. | <code>google_folder_iam_binding</code> · <code>google_folder_iam_member</code> · <code>google_folder_iam_policy</code> |
+| [iam.tf](./iam.tf) | IAM bindings, roles and audit logging resources. | <code>google_folder_iam_binding</code> · <code>google_folder_iam_member</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_folder_iam_audit_config</code> · <code>google_logging_folder_exclusion</code> · <code>google_logging_folder_sink</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> · <code>google_folder</code> |
 | [organization-policies.tf](./organization-policies.tf) | Folder-level organization policies. | <code>google_org_policy_policy</code> |
@@ -330,6 +304,6 @@ module "folder" {
 |---|---|:---:|
 | [folder](outputs.tf#L17) | Folder resource. |  |
 | [id](outputs.tf#L22) | Fully qualified folder id. |  |
-| [name](outputs.tf#L32) | Folder name. |  |
-| [sink_writer_identities](outputs.tf#L37) | Writer identities created for each sink. |  |
+| [name](outputs.tf#L31) | Folder name. |  |
+| [sink_writer_identities](outputs.tf#L36) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->
