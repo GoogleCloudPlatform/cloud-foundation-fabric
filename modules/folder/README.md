@@ -45,10 +45,10 @@ module "folder" {
 
 ## IAM
 
-IAM bindings are managed via a set of three variables:
+IAM is managed via several variables that implement different levels of control:
 
-- `group_iam` and `iam` implementing role-authoritative bindings
-- `iam_members` implementing additive bindings (with our without condition), or role-level additive bindings with conditions
+- `group_iam` and `iam` configure authoritative bindings that manage individual roles exclusively
+- `iam_members` manages additive bindings via individual role/member pairs, with optional conditions
 
 The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `groups_iam` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
