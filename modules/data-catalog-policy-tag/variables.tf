@@ -38,18 +38,6 @@ variable "iam" {
   default     = {}
 }
 
-variable "iam_additive" {
-  description = "IAM additive bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "iam_additive_members" {
-  description = "IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values."
-  type        = map(list(string))
-  default     = {}
-}
-
 variable "iam_members" {
   description = "Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop."
   type = map(object({

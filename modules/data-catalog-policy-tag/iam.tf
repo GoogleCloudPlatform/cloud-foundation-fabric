@@ -23,26 +23,12 @@ locals {
     ]
   }
   _group_iam_roles = distinct(flatten(values(var.group_iam)))
-  _iam_additive_member_pairs = flatten([
-    for member, roles in var.iam_additive_members : [
-      for role in roles : { role = role, member = member }
-    ]
-  ])
-  _iam_additive_pairs = flatten([
-    for role, members in var.iam_additive : [
-      for member in members : { role = role, member = member }
-    ]
-  ])
   iam = {
     for role in distinct(concat(keys(var.iam), keys(local._group_iam))) :
     role => concat(
       try(var.iam[role], []),
       try(local._group_iam[role], [])
     )
-  }
-  iam_additive = {
-    for pair in concat(local._iam_additive_pairs, local._iam_additive_member_pairs) :
-    "${pair.role}-${pair.member}" => pair
   }
   tags_iam = flatten([
     for k, v in var.tags : [
@@ -61,18 +47,6 @@ resource "google_data_catalog_taxonomy_iam_binding" "authoritative" {
   taxonomy = google_data_catalog_taxonomy.default.id
   role     = each.key
   members  = each.value
-}
-
-resource "google_data_catalog_taxonomy_iam_member" "additive" {
-  provider = google-beta
-  for_each = (
-    length(var.iam_additive) + length(var.iam_additive_members) > 0
-    ? local.iam_additive
-    : {}
-  )
-  taxonomy = google_data_catalog_taxonomy.default.id
-  role     = each.value.role
-  member   = each.value.member
 }
 
 resource "google_data_catalog_taxonomy_iam_member" "members" {
