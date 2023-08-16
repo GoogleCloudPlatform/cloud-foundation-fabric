@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-variable "data_eng_principals" {
-  description = "Groups with Service Account Token creator role on service accounts in IAM format, only user supported on CloudSQL, eg 'user@domain.com'."
-  type        = list(string)
-  default     = []
+variable "data_eng_principal" {
+  description = "Group or user in IAM format (`group:foo@example.com`) with permissions to access resources and impersonate service accounts."
+  type        = string
+  default     = null
 }
 
 variable "network_config" {
@@ -98,4 +98,10 @@ variable "sql_configuration" {
     psa_range         = "10.60.0.0/16"
     tier              = "db-g1-small"
   }
+}
+
+variable "sql_users" {
+  description = "Cloud SQL user emails."
+  type        = list(string)
+  default     = []
 }

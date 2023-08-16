@@ -39,7 +39,7 @@ module "db" {
 }
 
 resource "google_sql_user" "users" {
-  for_each = toset(var.data_eng_principals)
+  for_each = toset(var.sql_users)
   project  = module.project.project_id
   name     = each.value
   instance = module.db.name
@@ -47,8 +47,7 @@ resource "google_sql_user" "users" {
 }
 
 resource "google_sql_user" "service-account" {
-  for_each = toset(var.data_eng_principals)
-  project  = module.project.project_id
+  project = module.project.project_id
   # Omit the .gserviceaccount.com suffix in the email
   name     = regex("(.+)(.gserviceaccount)", module.service-account-sql.email)[0]
   instance = module.db.name
