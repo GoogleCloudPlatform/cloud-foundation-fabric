@@ -117,8 +117,7 @@ resource "google_org_policy_policy" "default" {
   depends_on = [
     google_organization_iam_binding.authoritative,
     google_organization_iam_custom_role.roles,
-    google_organization_iam_member.additive,
-    google_organization_iam_policy.authoritative,
+    google_organization_iam_member.members,
     google_org_policy_custom_constraint.constraint,
     google_tags_tag_key.default,
     google_tags_tag_value.default,

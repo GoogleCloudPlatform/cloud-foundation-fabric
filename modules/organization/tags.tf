@@ -81,8 +81,7 @@ resource "google_tags_tag_key" "default" {
   description = each.value.description
   depends_on = [
     google_organization_iam_binding.authoritative,
-    google_organization_iam_member.additive,
-    google_organization_iam_policy.authoritative,
+    google_organization_iam_member.members,
   ]
 }
 

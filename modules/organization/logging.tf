@@ -27,11 +27,9 @@ locals {
 }
 
 resource "google_organization_iam_audit_config" "default" {
-  for_each = (
-    var.iam_policy == null ? var.logging_data_access : {}
-  )
-  org_id  = local.organization_id_numeric
-  service = each.key
+  for_each = var.logging_data_access
+  org_id   = local.organization_id_numeric
+  service  = each.key
   dynamic "audit_log_config" {
     for_each = each.value
     iterator = config
@@ -70,8 +68,7 @@ resource "google_logging_organization_sink" "sink" {
 
   depends_on = [
     google_organization_iam_binding.authoritative,
-    google_organization_iam_member.additive,
-    google_organization_iam_policy.authoritative,
+    google_organization_iam_member.members,
   ]
 }
 

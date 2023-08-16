@@ -49,20 +49,6 @@ variable "iam" {
   nullable    = false
 }
 
-variable "iam_additive" {
-  description = "Non authoritative IAM bindings, in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_additive_members" {
-  description = "IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "iam_members" {
   description = "Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop."
   type = map(object({
@@ -76,12 +62,6 @@ variable "iam_members" {
   }))
   nullable = false
   default  = {}
-}
-
-variable "iam_policy" {
-  description = "IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution."
-  type        = map(list(string))
-  default     = null
 }
 
 variable "logging_data_access" {
