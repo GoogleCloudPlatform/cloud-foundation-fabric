@@ -32,20 +32,11 @@ locals {
       ipv6                  = try(v.ipv6, null)
       secondary_ip_ranges   = try(v.secondary_ip_ranges, null)
       iam                   = try(v.iam, [])
-      iam_additive          = try(v.iam_additive, [])
+      iam_members           = try(v.iam_members, [])
       purpose               = try(v.purpose, null)
       active                = try(v.active, null)
     }
   }
-  _factory_subnets_iam_additive = flatten([
-    for k, v in local._factory_subnets : [
-      for member in lookup(v, "iam_additive", []) : {
-        member = member
-        subnet = k
-        role   = "roles/compute.networkUser"
-      }
-    ] if v.purpose == null
-  ])
   _factory_subnets_iam = [
     for k, v in local._factory_subnets : {
       subnet  = k
@@ -53,18 +44,7 @@ locals {
       members = v.iam
     } if v.purpose == null && v.iam != null
   ]
-  _subnet_iam_additive_members = flatten([
-    for subnet, roles in var.subnet_iam_additive : [
-      for role, members in roles : [
-        for member in members : {
-          member = member
-          role   = role
-          subnet = subnet
-        }
-      ]
-    ]
-  ])
-  _subnet_iam_members = flatten([
+  _subnet_iam = flatten([
     for subnet, roles in(var.subnet_iam == null ? {} : var.subnet_iam) : [
       for role, members in roles : {
         members = members
@@ -73,13 +53,9 @@ locals {
       }
     ]
   ])
-  subnet_iam_additive_members = concat(
-    local._factory_subnets_iam_additive,
-    local._subnet_iam_additive_members
-  )
-  subnet_iam_members = concat(
+  subnet_iam = concat(
     [for k in local._factory_subnets_iam : k if length(k.members) > 0],
-    local._subnet_iam_members
+    local._subnet_iam
   )
   subnets = merge(
     { for s in var.subnets : "${s.region}/${s.name}" => s },
@@ -168,7 +144,7 @@ resource "google_compute_subnetwork" "psc" {
 
 resource "google_compute_subnetwork_iam_binding" "binding" {
   for_each = {
-    for binding in local.subnet_iam_members :
+    for binding in local.subnet_iam :
     "${binding.subnet}.${binding.role}" => binding
   }
   project    = var.project_id
@@ -178,17 +154,8 @@ resource "google_compute_subnetwork_iam_binding" "binding" {
   members    = each.value.members
 }
 
-resource "google_compute_subnetwork_iam_member" "binding" {
-  for_each = {
-    for binding in local.subnet_iam_additive_members :
-    "${binding.subnet}.${binding.role}.${binding.member}" => binding
-  }
-  project    = var.project_id
-  subnetwork = google_compute_subnetwork.subnetwork[each.value.subnet].name
-  region     = google_compute_subnetwork.subnetwork[each.value.subnet].region
-  role       = each.value.role
-  member     = each.value.member
-}
+# TODO: move IAM inside the subnets variable
+# TODO: merge factory subnet IAM members
 
 resource "google_compute_subnetwork_iam_member" "members" {
   for_each   = var.subnet_iam_members
