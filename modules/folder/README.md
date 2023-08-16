@@ -33,14 +33,6 @@ module "folder" {
   iam = {
     "roles/owner" = ["user:one@example.org"]
   }
-  iam_additive = {
-    "roles/compute.admin"  = ["user:a1@example.org", "user:a2@example.org"]
-    "roles/compute.viewer" = ["user:a2@example.org"]
-  }
-  iam_additive_members = {
-    "user:am1@example.org" = ["roles/storage.admin"]
-    "user:am2@example.org" = ["roles/storage.objectViewer"]
-  }
   iam_members = {
     am1-storage-admin = {
       member = "user:am1@example.org"
@@ -48,20 +40,17 @@ module "folder" {
     }
   }
 }
-# tftest modules=1 resources=10 inventory=iam.yaml
+# tftest modules=1 resources=5 inventory=iam.yaml
 ```
 
 ## IAM
 
-There are four three exclusive ways at the role level of managing IAM in this module
+IAM bindings are managed via a set of three variables:
 
-- non-authoritative via the `iam_additive`, `iam_additive_members` and `iam_members` variables, where bindings created outside this module will coexist with those managed here
-- authoritative via the `group_iam` and `iam` variables, where bindings created outside this module (eg in the console) will be removed at each `terraform apply` cycle if the same role is also managed here
-- authoritative policy via the `iam_policy` variable, where any binding created outside this module (eg in the console) will be removed at each `terraform apply` cycle regardless of the role
+- `group_iam` and `iam` implementing role-authoritative bindings
+- `iam_members` implementing additive bindings (with our without condition), or role-level additive bindings with conditions
 
-The authoritative and additive approaches can be used together, provided different roles are managed by each. The IAM policy is incompatible with the other approaches, and must be used with extreme care.
-
-Some care must be taken with the `groups_iam` variable (and in some situations with the additive variables) to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
+The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `groups_iam` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
 ## Organization policies
 
@@ -323,19 +312,17 @@ module "folder" {
 | [folder_create](variables.tf#L31) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
 | [group_iam](variables.tf#L37) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables.tf#L44) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive](variables.tf#L51) | Non authoritative IAM bindings, in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive_members](variables.tf#L58) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_members](variables.tf#L65) | Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_policy](variables.tf#L80) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
-| [id](variables.tf#L86) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
-| [logging_data_access](variables.tf#L92) | Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [logging_exclusions](variables.tf#L107) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [logging_sinks](variables.tf#L114) | Logging sinks to create for the organization. | <code title="map&#40;object&#40;&#123;&#10;  bq_partitioned_table &#61; optional&#40;bool&#41;&#10;  description          &#61; optional&#40;string&#41;&#10;  destination          &#61; string&#10;  disabled             &#61; optional&#40;bool, false&#41;&#10;  exclusions           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  filter               &#61; string&#10;  include_children     &#61; optional&#40;bool, true&#41;&#10;  type                 &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [name](variables.tf#L144) | Folder name. | <code>string</code> |  | <code>null</code> |
-| [org_policies](variables.tf#L150) | Organization policies applied to this folder keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies_data_path](variables.tf#L177) | Path containing org policies in YAML format. | <code>string</code> |  | <code>null</code> |
-| [parent](variables.tf#L183) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
-| [tag_bindings](variables.tf#L193) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [iam_members](variables.tf#L51) | Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_policy](variables.tf#L66) | IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
+| [id](variables.tf#L72) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
+| [logging_data_access](variables.tf#L78) | Control activation of data access logs. Format is service => { log type => [exempted members]}. The special 'allServices' key denotes configuration for all services. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_exclusions](variables.tf#L93) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_sinks](variables.tf#L100) | Logging sinks to create for the organization. | <code title="map&#40;object&#40;&#123;&#10;  bq_partitioned_table &#61; optional&#40;bool&#41;&#10;  description          &#61; optional&#40;string&#41;&#10;  destination          &#61; string&#10;  disabled             &#61; optional&#40;bool, false&#41;&#10;  exclusions           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  filter               &#61; string&#10;  include_children     &#61; optional&#40;bool, true&#41;&#10;  type                 &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L130) | Folder name. | <code>string</code> |  | <code>null</code> |
+| [org_policies](variables.tf#L136) | Organization policies applied to this folder keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_data_path](variables.tf#L163) | Path containing org policies in YAML format. | <code>string</code> |  | <code>null</code> |
+| [parent](variables.tf#L169) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
+| [tag_bindings](variables.tf#L179) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
