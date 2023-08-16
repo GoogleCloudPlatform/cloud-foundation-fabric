@@ -23,24 +23,12 @@ locals {
       for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
     ]
   }
-  _iam_additive_pairs = flatten([
-    for role, members in var.iam_additive : [
-      for member in members : { role = role, member = member }
-    ]
-  ])
   iam = {
     for role in distinct(concat(keys(var.iam), keys(local._group_iam))) :
     role => concat(
       try(var.iam[role], []),
       try(local._group_iam[role], [])
     )
-  }
-  iam_additive = {
-    for pair in local._iam_additive_pairs :
-    "${pair.role}-${pair.member}" => {
-      role   = pair.role
-      member = pair.member
-    }
   }
 }
 
@@ -51,19 +39,6 @@ resource "google_dataproc_cluster_iam_binding" "authoritative" {
   region   = var.region
   role     = each.key
   members  = each.value
-}
-
-resource "google_dataproc_cluster_iam_member" "additive" {
-  for_each = (
-    length(var.iam_additive) > 0
-    ? local.iam_additive
-    : {}
-  )
-  project = var.project_id
-  cluster = google_dataproc_cluster.cluster.name
-  region  = var.region
-  role    = each.value.role
-  member  = each.value.member
 }
 
 resource "google_dataproc_cluster_iam_member" "members" {
