@@ -14,20 +14,38 @@
 
 values:
   module.project.google_project.project[0]:
-    project_id: project-example
-  module.project.google_project_iam_member.additive["roles/editor-user:two@example.org"]:
+    auto_create_network: false
+    billing_account: null
+    folder_id: null
+    labels: null
+    name: project-1
+    org_id: null
+    project_id: project-1
+    skip_delete: false
+    timeouts: null
+  module.project.google_project_iam_member.members["apigee-robot"]:
     condition: []
-    project: project-example
-    role: roles/editor
-  module.project.google_project_iam_member.additive["roles/owner-user:one@example.org"]:
+    project: project-1
+    role: roles/apigee.serviceAgent
+  module.project.google_project_iam_member.members["delegated-grant-example"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute(\n  'iam.googleapis.com/modifiedGrantsByRole',\
+        \ []\n).hasOnly([\n  'roles/compute.networkAdmin'\n])\n"
+      title: delegated_network_user_one
+    member: user:one@example.org
+    project: project-1
+    role: roles/resourcemanager.projectIamAdmin
+  module.project.google_project_iam_member.members["group-owner"]:
     condition: []
-    project: project-example
-    role: roles/owner
-  module.project.google_project_iam_member.additive["roles/owner-user:two@example.org"]:
-    condition: []
-    project: project-example
+    member: group:p1-owners@example.org
+    project: project-1
     role: roles/owner
 
 counts:
   google_project: 1
   google_project_iam_member: 3
+  modules: 1
+  resources: 4
+
+outputs: {}
