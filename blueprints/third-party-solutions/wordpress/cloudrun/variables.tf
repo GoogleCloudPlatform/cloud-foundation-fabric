@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "admin_principal" {
+  description = "User or group that is assigned roles, in IAM format (`group:foo@example.com`)."
+  type        = string
+  default     = null
+}
+
 # Documentation: https://cloud.google.com/run/docs/securing/managing-access#making_a_service_public
 variable "cloud_run_invoker" {
   type        = string
@@ -61,12 +67,6 @@ variable "prefix" {
     condition     = var.prefix != ""
     error_message = "Prefix cannot be empty."
   }
-}
-
-variable "principals" {
-  description = "List of users to give rights to (CloudSQL admin, client and instanceUser, Logging admin, Service Account User and TokenCreator), eg 'user@domain.com'."
-  type        = list(string)
-  default     = []
 }
 
 variable "project_create" {

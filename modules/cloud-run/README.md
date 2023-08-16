@@ -251,6 +251,7 @@ module "cloud_run" {
 By default `Compute default service account` is used to trigger Cloud Run. If you want to use custom Service Account you can either provide your own in `eventarc_triggers.service_account_email` or set `eventarc_triggers.service_account_create` to true and service account named `tf-cr-trigger-${var.name}` will be created with `roles/run.invoker` granted on this Cloud Run service.
 
 Example using provided service account:
+
 ```hcl
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
@@ -275,6 +276,7 @@ module "cloud_run" {
 ```
 
 Example using automatically created service account:
+
 ```hcl
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
@@ -295,7 +297,6 @@ module "cloud_run" {
 }
 # tftest modules=1 resources=5 inventory=trigger-service-account.yaml
 ```
-
 
 ### Service account
 
