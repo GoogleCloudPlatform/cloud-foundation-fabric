@@ -39,8 +39,25 @@ resource "google_dataplex_datascan_iam_binding" "authoritative_for_role" {
   members      = each.value
 }
 
-resource "google_dataplex_datascan_iam_member" "members" {
-  for_each     = var.iam_members
+resource "google_dataplex_datascan_iam_binding" "bindings" {
+  for_each     = var.iam_bindings
+  project      = google_dataplex_datascan.datascan.project
+  location     = google_dataplex_datascan.datascan.location
+  data_scan_id = google_dataplex_datascan.datascan.data_scan_id
+  role         = each.key
+  members      = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_dataplex_datascan_iam_member" "bindings" {
+  for_each     = var.iam_bindings_additive
   project      = google_dataplex_datascan.datascan.project
   location     = google_dataplex_datascan.datascan.location
   data_scan_id = google_dataplex_datascan.datascan.data_scan_id
@@ -52,25 +69,6 @@ resource "google_dataplex_datascan_iam_member" "members" {
       expression  = each.value.condition.expression
       title       = each.value.condition.title
       description = each.value.condition.description
-    }
-  }
-}
-
-resource "google_dataplex_datascan_iam_policy" "authoritative_for_resource" {
-  count        = var.iam_policy != null ? 1 : 0
-  project      = google_dataplex_datascan.datascan.project
-  location     = google_dataplex_datascan.datascan.location
-  data_scan_id = google_dataplex_datascan.datascan.data_scan_id
-  policy_data  = data.google_iam_policy.authoritative.0.policy_data
-}
-
-data "google_iam_policy" "authoritative" {
-  count = var.iam_policy != null ? 1 : 0
-  dynamic "binding" {
-    for_each = try(var.iam_policy, {})
-    content {
-      role    = binding.key
-      members = binding.value
     }
   }
 }
