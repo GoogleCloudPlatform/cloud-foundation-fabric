@@ -166,7 +166,7 @@ values:
     - group:cloud-admins@example.org
     org_id: '1234567890'
     role: roles/resourcemanager.projectCreator
-  module.org.google_organization_iam_member.members["am1-storage-admin"]:
+  module.org.google_organization_iam_member.bindings["am1-storage-admin"]:
     condition: []
     member: user:am1@example.org
     org_id: '1234567890'

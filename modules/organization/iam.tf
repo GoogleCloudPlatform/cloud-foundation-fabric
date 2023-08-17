@@ -48,8 +48,23 @@ resource "google_organization_iam_binding" "authoritative" {
   members  = each.value
 }
 
-resource "google_organization_iam_member" "members" {
-  for_each = var.iam_members
+resource "google_organization_iam_binding" "bindings" {
+  for_each = var.iam_bindings
+  org_id   = local.organization_id_numeric
+  role     = each.key
+  members  = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_organization_iam_member" "bindings" {
+  for_each = var.iam_bindings_additive
   org_id   = local.organization_id_numeric
   role     = each.value.role
   member   = each.value.member

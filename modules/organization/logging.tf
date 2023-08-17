@@ -65,10 +65,10 @@ resource "google_logging_organization_sink" "sink" {
       filter = exclusion.value
     }
   }
-
   depends_on = [
     google_organization_iam_binding.authoritative,
-    google_organization_iam_member.members,
+    google_organization_iam_binding.bindings,
+    google_organization_iam_member.bindings
   ]
 }
 
