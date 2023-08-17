@@ -32,9 +32,11 @@ module "project" {
   source          = "../../../modules/project"
   project_create  = var.project_create != null
   billing_account = try(var.project_create.billing_account, null)
-  oslogin         = try(var.project_create.oslogin, false)
-  parent          = try(var.project_create.parent, null)
-  name            = var.project_id
+  compute_metadata = var.project_create.oslogin != true ? {} : {
+    enable-oslogin = "true"
+  }
+  parent = try(var.project_create.parent, null)
+  name   = var.project_id
   services = [
     "compute.googleapis.com",
     "container.googleapis.com"

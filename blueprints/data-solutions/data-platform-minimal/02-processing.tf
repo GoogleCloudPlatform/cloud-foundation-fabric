@@ -105,7 +105,9 @@ module "processing-project" {
   iam_bindings_additive = (
     var.project_config.billing_account_id != null ? {} : local.iam_prc_additive
   )
-  oslogin = false
+  compute_metadata = {
+    enable-oslogin = "false"
+  }
   services = [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
