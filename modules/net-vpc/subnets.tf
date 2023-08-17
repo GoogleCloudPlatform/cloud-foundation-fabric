@@ -57,6 +57,16 @@ locals {
     [for k in local._factory_subnets_iam : k if length(k.members) > 0],
     local._subnet_iam
   )
+  subnet_iam_bindings = flatten([
+    for subnet, roles in(var.subnet_iam_bindings == null ? {} : var.subnet_iam_bindings) : [
+      for role, data in roles : {
+        role      = role
+        subnet    = subnet
+        members   = data.members
+        condition = data.condition
+      }
+    ]
+  ])
   subnets = merge(
     { for s in var.subnets : "${s.region}/${s.name}" => s },
     { for k, v in local._factory_subnets : k => v if v.purpose == null }
@@ -142,7 +152,7 @@ resource "google_compute_subnetwork" "psc" {
   purpose = "PRIVATE_SERVICE_CONNECT"
 }
 
-resource "google_compute_subnetwork_iam_binding" "binding" {
+resource "google_compute_subnetwork_iam_binding" "authoritative" {
   for_each = {
     for binding in local.subnet_iam :
     "${binding.subnet}.${binding.role}" => binding
@@ -154,11 +164,30 @@ resource "google_compute_subnetwork_iam_binding" "binding" {
   members    = each.value.members
 }
 
-# TODO: move IAM inside the subnets variable
+resource "google_compute_subnetwork_iam_binding" "bindings" {
+  for_each = {
+    for binding in local.subnet_iam_bindings :
+    "${binding.subnet}.${binding.role}.${try(binding.condition.title, "")}" => binding
+  }
+  project    = var.project_id
+  subnetwork = google_compute_subnetwork.subnetwork[each.value.subnet].name
+  region     = google_compute_subnetwork.subnetwork[each.value.subnet].region
+  role       = each.value.role
+  members    = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
 # TODO: merge factory subnet IAM members
 
-resource "google_compute_subnetwork_iam_member" "members" {
-  for_each   = var.subnet_iam_members
+resource "google_compute_subnetwork_iam_member" "bindings" {
+  for_each   = var.subnet_iam_bindings_additive
   project    = var.project_id
   subnetwork = google_compute_subnetwork.subnetwork[each.value.subnet].name
   region     = google_compute_subnetwork.subnetwork[each.value.subnet].region
