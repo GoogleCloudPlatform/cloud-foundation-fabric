@@ -41,10 +41,28 @@ resource "google_dataproc_cluster_iam_binding" "authoritative" {
   members  = each.value
 }
 
-resource "google_dataproc_cluster_iam_member" "members" {
-  for_each = var.iam_members
+resource "google_dataproc_cluster_iam_binding" "bindings" {
+  for_each = var.iam_bindings
   project  = var.project_id
   cluster  = google_dataproc_cluster.cluster.name
+  region   = var.region
+  role     = each.key
+  members  = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_dataproc_cluster_iam_member" "bindings" {
+  for_each = var.iam_bindings_additive
+  project  = var.project_id
+  cluster  = google_dataproc_cluster.cluster.name
+  region   = var.region
   role     = each.value.role
   member   = each.value.member
   dynamic "condition" {
