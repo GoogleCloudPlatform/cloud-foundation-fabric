@@ -60,10 +60,6 @@ resource "google_project_iam_binding" "bindings" {
   project  = local.project.project_id
   role     = each.key
   members  = each.value.members
-  depends_on = [
-    google_project_service.project_services,
-    google_project_iam_custom_role.roles
-  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -72,6 +68,10 @@ resource "google_project_iam_binding" "bindings" {
       description = each.value.condition.description
     }
   }
+  depends_on = [
+    google_project_service.project_services,
+    google_project_iam_custom_role.roles
+  ]
 }
 
 resource "google_project_iam_member" "bindings" {
