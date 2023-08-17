@@ -192,6 +192,12 @@ variable "service_account_create" {
   default     = false
 }
 
+variable "startup_cpu_boost" {
+  description = "Enable startup cpu boost."
+  type        = bool
+  default     = false
+}
+
 variable "timeout_seconds" {
   description = "Maximum duration the instance is allowed for responding to a request."
   type        = number
