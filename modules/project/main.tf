@@ -61,12 +61,13 @@ resource "google_project_service" "project_services" {
   disable_dependent_services = var.service_config.disable_dependent_services
 }
 
-resource "google_compute_project_metadata_item" "oslogin_meta" {
-  count   = var.oslogin ? 1 : 0
-  project = local.project.project_id
-  key     = "enable-oslogin"
-  value   = "TRUE"
-  # depend on services or it will fail on destroy
+resource "google_compute_project_metadata_item" "default" {
+  for_each = (
+    contains(var.services, "compute.googleapis.com") ? var.compute_metadata : {}
+  )
+  project    = local.project.project_id
+  key        = each.key
+  value      = each.value
   depends_on = [google_project_service.project_services]
 }
 

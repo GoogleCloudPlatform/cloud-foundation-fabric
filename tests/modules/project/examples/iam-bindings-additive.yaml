@@ -1,0 +1,32 @@
+values:
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: null
+    folder_id: null
+    labels: null
+    name: project-1
+    org_id: null
+    project_id: project-1
+    skip_delete: false
+    timeouts: null
+  module.project.google_project_iam_member.bindings["group-owner"]:
+    condition: []
+    member: group:p1-owners@example.org
+    project: project-1
+    role: roles/owner
+  module.project.google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: project-1
+    service: compute.googleapis.com
+    timeouts: null
+
+counts:
+  google_project: 1
+  google_project_iam_member: 1
+  google_project_service: 1
+  modules: 1
+  resources: 3
+
+outputs: {}
+

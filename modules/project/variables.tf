@@ -26,6 +26,13 @@ variable "billing_account" {
   default     = null
 }
 
+variable "compute_metadata" {
+  description = "Optional compute metadata key/values. Only usable if compute API has been enabled."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "contacts" {
   description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
   type        = map(list(string))
@@ -60,14 +67,28 @@ variable "group_iam" {
 }
 
 variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  description = "Authoritative IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
   nullable    = false
 }
 
-variable "iam_members" {
-  description = "Individual additive IAM bindings. Keys are arbitrary and only used for the internal loop."
+variable "iam_bindings" {
+  description = "Authoritative IAM bindings in {ROLE => {members = [], condition = {}}}."
+  type = map(object({
+    members = list(string)
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
+variable "iam_bindings_additive" {
+  description = "Individual additive IAM bindings. Keys are arbitrary."
   type = map(object({
     member = string
     role   = string
@@ -190,27 +211,6 @@ variable "org_policies_data_path" {
   description = "Path containing org policies in YAML format."
   type        = string
   default     = null
-}
-
-variable "oslogin" {
-  description = "Enable OS Login."
-  type        = bool
-  default     = false
-}
-
-variable "oslogin_admins" {
-  description = "List of IAM-style identities that will be granted roles necessary for OS Login administrators."
-  type        = list(string)
-  default     = []
-  nullable    = false
-
-}
-
-variable "oslogin_users" {
-  description = "List of IAM-style identities that will be granted roles necessary for OS Login users."
-  type        = list(string)
-  default     = []
-  nullable    = false
 }
 
 variable "parent" {

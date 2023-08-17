@@ -18,8 +18,6 @@
 
 # IAM notes:
 # - external users need to have accepted the invitation email to join
-# - oslogin roles also require role to list instances
-# - additive (non-authoritative) roles might fail due to dynamic values
 
 locals {
   _group_iam_roles = distinct(flatten(values(var.group_iam)))
@@ -57,8 +55,27 @@ resource "google_project_iam_binding" "authoritative" {
   ]
 }
 
-resource "google_project_iam_member" "members" {
-  for_each = var.iam_members
+resource "google_project_iam_binding" "bindings" {
+  for_each = var.iam_bindings
+  project  = local.project.project_id
+  role     = each.key
+  members  = each.value.members
+  depends_on = [
+    google_project_service.project_services,
+    google_project_iam_custom_role.roles
+  ]
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_project_iam_member" "bindings" {
+  for_each = var.iam_bindings_additive
   project  = local.project.project_id
   role     = each.value.role
   member   = each.value.member
@@ -74,32 +91,4 @@ resource "google_project_iam_member" "members" {
     google_project_service.project_services,
     google_project_iam_custom_role.roles
   ]
-}
-
-resource "google_project_iam_member" "oslogin_iam_serviceaccountuser" {
-  for_each = var.oslogin ? toset(distinct(concat(var.oslogin_admins, var.oslogin_users))) : toset([])
-  project  = local.project.project_id
-  role     = "roles/iam.serviceAccountUser"
-  member   = each.value
-}
-
-resource "google_project_iam_member" "oslogin_compute_viewer" {
-  for_each = var.oslogin ? toset(distinct(concat(var.oslogin_admins, var.oslogin_users))) : toset([])
-  project  = local.project.project_id
-  role     = "roles/compute.viewer"
-  member   = each.value
-}
-
-resource "google_project_iam_member" "oslogin_admins" {
-  for_each = var.oslogin ? toset(var.oslogin_admins) : toset([])
-  project  = local.project.project_id
-  role     = "roles/compute.osAdminLogin"
-  member   = each.value
-}
-
-resource "google_project_iam_member" "oslogin_users" {
-  for_each = var.oslogin ? toset(var.oslogin_users) : toset([])
-  project  = local.project.project_id
-  role     = "roles/compute.osLogin"
-  member   = each.value
 }

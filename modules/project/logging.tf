@@ -68,7 +68,8 @@ resource "google_logging_project_sink" "sink" {
 
   depends_on = [
     google_project_iam_binding.authoritative,
-    google_project_iam_member.members
+    google_project_iam_binding.bindings,
+    google_project_iam_member.bindings
   ]
 }
 
