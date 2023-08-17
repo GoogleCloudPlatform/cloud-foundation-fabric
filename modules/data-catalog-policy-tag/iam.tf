@@ -49,8 +49,25 @@ resource "google_data_catalog_taxonomy_iam_binding" "authoritative" {
   members  = each.value
 }
 
-resource "google_data_catalog_taxonomy_iam_member" "members" {
-  for_each = var.iam_members
+resource "google_data_catalog_taxonomy_iam_binding" "bindings" {
+  provider = google-beta
+  for_each = var.iam_bindings
+  taxonomy = google_data_catalog_taxonomy.default.id
+  role     = each.key
+  members  = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_data_catalog_taxonomy_iam_member" "bindings" {
+  provider = google-beta
+  for_each = var.iam_bindings_additive
   taxonomy = google_data_catalog_taxonomy.default.id
   role     = each.value.role
   member   = each.value.member
