@@ -194,6 +194,7 @@ resource "google_sql_user" "users" {
 resource "google_sql_ssl_cert" "postgres_client_certificates" {
   for_each    = var.postgres_client_certificates != null ? toset(var.postgres_client_certificates) : toset([])
   provider    = google-beta
+  project     = var.project_id
   instance    = google_sql_database_instance.primary.name
   common_name = each.key
 }
