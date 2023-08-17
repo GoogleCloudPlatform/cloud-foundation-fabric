@@ -49,7 +49,7 @@ module "project" {
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
   prefix          = var.project_create == null ? null : var.prefix
-  iam_members = merge(
+  iam_bindings_additive = merge(
     var.data_eng_principal == null ? {} : {
       for r in local.iam_roles.data_eng : "data_eng-${r}" => {
         member = var.data_eng_principal

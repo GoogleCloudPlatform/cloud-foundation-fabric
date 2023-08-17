@@ -17,20 +17,40 @@
 locals {
   iam_drp = {
     "roles/bigquery.dataEditor" = [
-      module.drop-sa-bq-0.iam_email, local.groups_iam.data-engineers
+      module.drop-sa-bq-0.iam_email,
+      local.groups_iam.data-engineers
     ]
     "roles/bigquery.user" = [
-      module.load-sa-df-0.iam_email, local.groups_iam.data-engineers
+      module.load-sa-df-0.iam_email,
+      local.groups_iam.data-engineers
     ]
-    "roles/pubsub.publisher" = [module.drop-sa-ps-0.iam_email]
+    "roles/pubsub.publisher" = [
+      module.drop-sa-ps-0.iam_email
+    ]
     "roles/pubsub.subscriber" = [
-      module.orch-sa-cmp-0.iam_email, module.load-sa-df-0.iam_email
+      module.orch-sa-cmp-0.iam_email,
+      module.load-sa-df-0.iam_email
     ]
-    "roles/storage.objectCreator" = [module.drop-sa-cs-0.iam_email]
-    "roles/storage.objectViewer"  = [module.orch-sa-cmp-0.iam_email]
+    "roles/storage.objectCreator" = [
+      module.drop-sa-cs-0.iam_email
+    ]
+    "roles/storage.objectViewer" = [
+      module.orch-sa-cmp-0.iam_email
+    ]
     "roles/storage.objectAdmin" = [
-      module.load-sa-df-0.iam_email, module.load-sa-df-0.iam_email
+      module.load-sa-df-0.iam_email,
     ]
+  }
+  # this only works because the service account module uses a static output
+  iam_drp_additive = {
+    for k in flatten([
+      for role, members in local.iam_drp : [
+        for member in members : {
+          role   = role
+          member = member
+        }
+      ]
+    ]) : "{k.member}-{k.role}" => k
   }
 }
 
@@ -39,10 +59,20 @@ module "drop-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.drop : "${var.project_config.project_ids.drop}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.iam_drp : null
-  iam_additive    = var.project_config.billing_account_id == null ? local.iam_drp : null
+  prefix = (
+    var.project_config.billing_account_id == null ? null : var.prefix
+  )
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.drop
+    : "${var.project_config.project_ids.drop}${local.project_suffix}"
+  )
+  iam = (
+    var.project_config.billing_account_id == null ? {} : local.iam_drp
+  )
+  iam_bindings_additive = (
+    var.project_config.billing_account_id != null ? {} : local.iam_drp_additive
+  )
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",

@@ -34,7 +34,7 @@ module "landing-project" {
     "vmmigration.googleapis.com"
   ]
   project_create = var.project_create != null
-  iam_members = {
+  iam_bindings_additive = {
     admin_sa_key_admin = {
       role   = "roles/iam.serviceAccountKeyAdmin"
       member = var.migration_admin

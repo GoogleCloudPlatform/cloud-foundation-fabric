@@ -51,7 +51,7 @@ module "project" {
     ? {}
     : { for r in local.iam_roles : r => [var.admin_principal] }
   )
-  iam_members = (
+  iam_bindings_additive = (
     var.project_create == true || var.admin_principal == null
     ? {}
     : { for r in local.iam_roles : r => {

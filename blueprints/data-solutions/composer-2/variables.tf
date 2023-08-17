@@ -55,7 +55,7 @@ variable "composer_config" {
   }
 }
 
-variable "iam_members" {
+variable "iam_bindings_additive" {
   description = "Map of Role => principal in IAM format (`group:foo@example.org`) to be added on the project."
   type        = map(list(string))
   nullable    = false

@@ -15,25 +15,7 @@
 # tfdoc:file:description Data Warehouse projects.
 
 locals {
-  dwh_lnd_iam = {
-    "roles/bigquery.dataOwner" = [
-      module.load-sa-df-0.iam_email,
-    ]
-    "roles/bigquery.dataViewer" = [
-      module.transf-sa-df-0.iam_email,
-      module.transf-sa-bq-0.iam_email,
-      local.groups_iam.data-engineers
-    ]
-    "roles/bigquery.jobUser" = [
-      module.load-sa-df-0.iam_email, local.groups_iam.data-engineers
-    ]
-    "roles/datacatalog.categoryAdmin"     = [module.transf-sa-bq-0.iam_email]
-    "roles/datacatalog.tagTemplateViewer" = [local.groups_iam.data-engineers]
-    "roles/datacatalog.viewer"            = [local.groups_iam.data-engineers]
-    "roles/storage.objectCreator"         = [module.load-sa-df-0.iam_email]
-    "roles/storage.objectViewer"          = [local.groups_iam.data-engineers]
-  }
-  dwh_iam = {
+  iam_dwh = {
     "roles/bigquery.dataOwner" = [
       module.transf-sa-df-0.iam_email,
       module.transf-sa-bq-0.iam_email,
@@ -48,15 +30,71 @@ locals {
       local.groups_iam.data-engineers
     ]
     "roles/datacatalog.tagTemplateViewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
     ]
     "roles/datacatalog.viewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
     ]
     "roles/storage.objectViewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
+      local.groups_iam.data-analysts,
+      local.groups_iam.data-engineers
     ]
-    "roles/storage.objectAdmin" = [module.transf-sa-df-0.iam_email]
+    "roles/storage.objectAdmin" = [
+      module.transf-sa-df-0.iam_email
+    ]
+  }
+  # this only works because the service account module uses a static output
+  iam_dwh_additive = {
+    for k in flatten([
+      for role, members in local.iam_dwh : [
+        for member in members : {
+          role   = role
+          member = member
+        }
+      ]
+    ]) : "{k.member}-{k.role}" => k
+  }
+  iam_lnd = {
+    "roles/bigquery.dataOwner" = [
+      module.load-sa-df-0.iam_email,
+    ]
+    "roles/bigquery.dataViewer" = [
+      module.transf-sa-df-0.iam_email,
+      module.transf-sa-bq-0.iam_email,
+      local.groups_iam.data-engineers
+    ]
+    "roles/bigquery.jobUser" = [
+      module.load-sa-df-0.iam_email,
+      local.groups_iam.data-engineers
+    ]
+    "roles/datacatalog.categoryAdmin" = [
+      module.transf-sa-bq-0.iam_email
+    ]
+    "roles/datacatalog.tagTemplateViewer" = [
+      local.groups_iam.data-engineers
+    ]
+    "roles/datacatalog.viewer" = [
+      local.groups_iam.data-engineers
+    ]
+    "roles/storage.objectCreator" = [
+      module.load-sa-df-0.iam_email
+    ]
+    "roles/storage.objectViewer" = [
+      local.groups_iam.data-engineers
+    ]
+  }
+  # this only works because the service account module uses a static output
+  iam_lnd_additive = {
+    for k in flatten([
+      for role, members in local.iam_lnd : [
+        for member in members : {
+          role   = role
+          member = member
+        }
+      ]
+    ]) : "{k.member}-{k.role}" => k
   }
   dwh_services = concat(var.project_services, [
     "bigquery.googleapis.com",
@@ -79,11 +117,21 @@ module "dwh-lnd-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-lnd : "${var.project_config.project_ids.dwh-lnd}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.dwh_lnd_iam : {}
-  iam_additive    = var.project_config.billing_account_id == null ? local.dwh_lnd_iam : {}
-  services        = local.dwh_services
+  prefix = (
+    var.project_config.billing_account_id == null ? null : var.prefix
+  )
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.dwh-lnd
+    : "${var.project_config.project_ids.dwh-lnd}${local.project_suffix}"
+  )
+  iam = (
+    var.project_config.billing_account_id == null ? {} : local.iam_lnd
+  )
+  iam_bindings_additive = (
+    var.project_config.billing_account_id != null ? {} : local.iam_lnd_additive
+  )
+  services = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -95,11 +143,21 @@ module "dwh-cur-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-cur : "${var.project_config.project_ids.dwh-cur}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.dwh_iam : {}
-  iam_additive    = var.project_config.billing_account_id == null ? local.dwh_iam : {}
-  services        = local.dwh_services
+  prefix = (
+    var.project_config.billing_account_id == null ? null : var.prefix
+  )
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.dwh-cur
+    : "${var.project_config.project_ids.dwh-cur}${local.project_suffix}"
+  )
+  iam = (
+    var.project_config.billing_account_id == null ? {} : local.iam_dwh
+  )
+  iam_bindings_additive = (
+    var.project_config.billing_account_id != null ? {} : local.iam_dwh_additive
+  )
+  services = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -111,11 +169,21 @@ module "dwh-conf-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-conf : "${var.project_config.project_ids.dwh-conf}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.dwh_iam : null
-  iam_additive    = var.project_config.billing_account_id == null ? local.dwh_iam : null
-  services        = local.dwh_services
+  prefix = (
+    var.project_config.billing_account_id == null ? null : var.prefix
+  )
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.dwh-conf
+    : "${var.project_config.project_ids.dwh-conf}${local.project_suffix}"
+  )
+  iam = (
+    var.project_config.billing_account_id == null ? {} : local.iam_dwh
+  )
+  iam_bindings_additive = (
+    var.project_config.billing_account_id != null ? {} : local.iam_dwh_additive
+  )
+  services = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]

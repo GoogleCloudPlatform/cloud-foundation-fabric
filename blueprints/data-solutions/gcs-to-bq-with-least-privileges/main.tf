@@ -46,6 +46,17 @@ locals {
       module.service-account-df.iam_email,
     ]
   }
+  # this only works because the service account module uses a static output
+  iam_additive = {
+    for k in flatten([
+      for role, members in local.iam : [
+        for member in members : {
+          role   = role
+          member = member
+        }
+      ]
+    ]) : "{k.member}-{k.role}" => k
+  }
   network_subnet_selflink = try(
     module.vpc[0].subnets["${var.region}/subnet"].self_link,
     var.network_config.subnet_self_link
@@ -75,8 +86,12 @@ module "project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  iam          = var.project_config.billing_account_id != null ? local.iam : {}
-  iam_additive = var.project_config.billing_account_id == null ? local.iam : {}
+  iam = (
+    var.project_config.billing_account_id != null ? local.iam : {}
+  )
+  iam_bindings_additive = (
+    var.project_config.billing_account_id == null ? local.iam_additive : {}
+  )
   shared_vpc_service_config = var.network_config.host_project == null ? null : {
     attach       = true
     host_project = var.network_config.host_project

@@ -28,6 +28,17 @@ locals {
       "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
     ]
   }
+  # this only works because the service account module uses a static output
+  iam_trf_additive = {
+    for k in flatten([
+      for role, members in local.iam_trf : [
+        for member in members : {
+          role   = role
+          member = member
+        }
+      ]
+    ]) : "{k.member}-{k.role}" => k
+  }
   transf_subnet = (
     local.use_shared_vpc
     ? var.network_config.subnet_self_links.orchestration
@@ -45,10 +56,20 @@ module "transf-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.trf : "${var.project_config.project_ids.trf}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.iam_trf : null
-  iam_additive    = var.project_config.billing_account_id == null ? local.iam_trf : null
+  prefix = (
+    var.project_config.billing_account_id == null ? null : var.prefix
+  )
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.trf
+    : "${var.project_config.project_ids.trf}${local.project_suffix}"
+  )
+  iam = (
+    var.project_config.billing_account_id == null ? {} : local.iam_trf
+  )
+  iam_bindings_additive = (
+    var.project_config.billing_account_id != null ? {} : local.iam_trf_additive
+  )
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",

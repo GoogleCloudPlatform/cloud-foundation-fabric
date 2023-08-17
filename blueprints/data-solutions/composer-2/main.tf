@@ -73,7 +73,7 @@ module "project" {
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
   prefix          = var.project_create == null ? null : var.prefix
-  iam_members = merge(
+  iam_bindings_additive = merge(
     {
       composer_worker = {
         member = module.comp-sa.iam_email
@@ -85,7 +85,7 @@ module "project" {
       }
     },
     {
-      for k, v in var.iam_members : "${k}:${v}" => {
+      for k, v in var.iam_bindings_additive : "${k}:${v}" => {
         member = v
         role   = k
       }

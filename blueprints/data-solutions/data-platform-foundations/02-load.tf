@@ -16,7 +16,9 @@
 
 locals {
   iam_load = {
-    "roles/bigquery.jobUser" = [module.load-sa-df-0.iam_email]
+    "roles/bigquery.jobUser" = [
+      module.load-sa-df-0.iam_email
+    ]
     "roles/dataflow.admin" = [
       module.orch-sa-cmp-0.iam_email,
       module.load-sa-df-0.iam_email,
@@ -25,13 +27,25 @@ locals {
     "roles/dataflow.developer" = [
       local.groups_iam.data-engineers
     ]
-    "roles/dataflow.worker"     = [module.load-sa-df-0.iam_email]
-    "roles/storage.objectAdmin" = local.load_service_accounts
+    "roles/dataflow.worker" = [
+      module.load-sa-df-0.iam_email
+    ]
+    "roles/storage.objectAdmin" = [
+      "serviceAccount:${module.load-project.service_accounts.robots.dataflow}",
+      module.load-sa-df-0.iam_email
+    ]
   }
-  load_service_accounts = [
-    "serviceAccount:${module.load-project.service_accounts.robots.dataflow}",
-    module.load-sa-df-0.iam_email
-  ]
+  # this only works because the service account module uses a static output
+  iam_load_additive = {
+    for k in flatten([
+      for role, members in local.iam_load : [
+        for member in members : {
+          role   = role
+          member = member
+        }
+      ]
+    ]) : "{k.member}-{k.role}" => k
+  }
   load_subnet = (
     local.use_shared_vpc
     ? var.network_config.subnet_self_links.orchestration
@@ -51,10 +65,20 @@ module "load-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.load : "${var.project_config.project_ids.load}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.iam_load : null
-  iam_additive    = var.project_config.billing_account_id == null ? local.iam_load : null
+  prefix = (
+    var.project_config.billing_account_id == null ? null : var.prefix
+  )
+  name = (
+    var.project_config.billing_account_id == null
+    ? var.project_config.project_ids.load
+    : "${var.project_config.project_ids.load}${local.project_suffix}"
+  )
+  iam = (
+    var.project_config.billing_account_id == null ? {} : local.iam_load
+  )
+  iam_bindings_additive = (
+    var.project_config.billing_account_id != null ? {} : local.iam_load_
+  )
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
