@@ -31,14 +31,14 @@ The only small use case that they do not cover is IAM conditions, which are easy
 
 The **proposal** for authoritative bindings is to
 
-- leave the current interface in place
+- leave the current interface in place (`iam` and `group_iam`)
 - expand coverage so that all modules who have iam resources expose both
-- repurpose the recently added `iam_members` variable to support authoritative IAM with conditions, and move its current functionality to a new variable described later
+- add a new `iam_bindings` variable to support authoritative IAM with conditions
 
-The repurposed `iam_members` variable will look like this:
+The new `iam_bindings` variable will look like this:
 
 ```hcl
-variable "iam_members" {
+variable "iam_bindings" {
   description = "Authoritative IAM bindings with support for conditions, in {ROLE => { members = [], condition = {}}} format."
   type = map(object({
     members   = list(string)
@@ -57,7 +57,7 @@ This variable will not be internally merged in modules with `iam` or `group_iam`
 
 Additive bindings have evolved to mimick authoritative ones, but the result is an interface which is bloated (no one uses `iam_additive_members`), and hard to understand and use without triggering dynamic errors. Coverage is also spotty and uneven across modules, and the interface needs to support aliasing of project service accounts in the project module to work around dynamic errors.
 
-The `iam_additive` variable has a special use case for data blueprints, where it is used when optional project creation is not set so as not to alter existing IAM bindings in the project on destroy. The assumption is that this type of usage is potentially unsafe, and tests are not catching errors as we never test blueprints with existint projects. This is a simple example of the pattern:
+The `iam_additive` variable is used in a special patterns in data blueprints, to allow code to not mess up existing IAM bindings in an external project on destroy. This pattern only works in a limited set of cases, where principals are passed in via static variables or refer to "magic" static outputs in our modules. This is a simple example of the pattern:
 
 ```hcl
 locals {
@@ -78,74 +78,30 @@ module "project" {
 }
 ```
 
-A new `iam_members` variable has been recently introduced, which addresses the legacy variables shortcomings by making loop keys static, and adds support for conditions. It comes at the cost of a slightly more verbose interface, but allows error-free and explicit code and the use of `for` loops for both roles and members if needed.
-
-This is an example of `iam_members` supporting conditions:
-
-```hcl
-module "project" {
-  source = "./fabric/modules/project"
-  name   = "project-example"
-  iam_members = {
-    one-delegated-grant = {
-      member = "user:one@example.org"
-      role   = "roles/resourcemanager.projectIamAdmin"
-      condition = {
-        title      = "delegated_network_user_one"
-        expression = <<-END
-          api.getAttribute(
-            'iam.googleapis.com/modifiedGrantsByRole', []
-          ).hasOnly([
-            'roles/compute.networkAdmin'
-          ])
-        END
-      }
-    }
-  }
-}
-# tftest skip
-```
-
 The **proposal** for authoritative bindings is to
 
-- assess usage of `iam_additive` in data blueprints to confirm the implementation is unsafe
-- once the assumption has been confirmed, remove `iam_additive` and `iam_additive_members` from the interface
-- rename the recently added `iam_members` variable to `iam_members_additive` keeping its type
+- remove `iam_additive` and `iam_additive_members` from the interface
+- add a new `iam_bindings_additive` variable
 
-Once new variables are in place, migrate existing blueprints to using `iam_members_additive` using one of the two available patterns:
+Once new variables are in place, migrate existing blueprints to using `iam_bindings_additive` using one of the two available patterns:
 
 - the flat verbose one where bindings are declared in the module call
 - the more complex one that moves roles out to `locals` and uses them in `for` loops
 
-Some refactoring will also be needed for principals passed in via variables. This a simple example showing both patterns:
+The new variable will closely follow the type of the authoritative `iam_bindings` variable described above:
 
 ```hcl
-locals {
-  network_sa_roles = [
-    "roles/compute.orgFirewallPolicyAdmin",
-    "roles/compute.xpnAdmin"
-  ]
-}
-
-module "organization" {
-  source          = "../../../modules/organization"
-  organization_id = "organizations/${var.organization.id}"
-  iam_members = merge(
-    # IAM bindings via locals
-    {
-      for r in local.network_sa_roles : "network_sa-${r}" : {
-        member = module.branch-network-sa.iam_email
-        role   = r
-      }
-    },
-    # IAM bindings via explicit reference
-    {
-      security_sa = {
-        member = module.branch-security-sa.iam_email
-        role   = "roles/accesscontextmanager.policyAdmin"
-      }
-    }
-  )
+variable "iam_bindings_additive" {
+  description = "Additive IAM bindings with support for conditions, in {KEY => { role = ROLE, members = [], condition = {}}} format."
+  type = map(object({
+    members   = list(string)
+    role      = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
 }
 ```
 
@@ -159,4 +115,34 @@ The proposal above summarizes the state of discussions between the authors, and 
 
 ## Consequences
 
-TBD
+A few data blueprints that leverage `iam_additive` will need to be refactored to use the new variable, using one of the following patterns:
+
+```hcl
+locals {
+  network_sa_roles = [
+    "roles/compute.orgFirewallPolicyAdmin",
+    "roles/compute.xpnAdmin"
+  ]
+}
+
+module "organization" {
+  source          = "../../../modules/organization"
+  organization_id = "organizations/${var.organization.id}"
+  iam_bindings_additive = merge(
+    # IAM bindings via locals pattern
+    {
+      for r in local.network_sa_roles : "network_sa-${r}" : {
+        member = module.branch-network-sa.iam_email
+        role   = r
+      }
+    },
+    # IAM bindings via explicit reference pattern
+    {
+      security_sa = {
+        member = module.branch-security-sa.iam_email
+        role   = "roles/accesscontextmanager.policyAdmin"
+      }
+    }
+  )
+}
+```
