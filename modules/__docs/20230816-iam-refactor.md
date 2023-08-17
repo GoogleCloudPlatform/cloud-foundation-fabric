@@ -1,8 +1,8 @@
 # Refactor IAM interface
 
 **authors:** [Ludo](https://github.com/ludoo)\
-**approvers:** [Julio](https://github.com/juliocc)\
-**date:** August 16, 2023
+**reviewers:** [Julio](https://github.com/juliocc)\
+**last modified:** August 17, 2023
 
 ## Status
 
@@ -38,7 +38,7 @@ The **proposal** for authoritative bindings is to
 
 ### Additive bindings
 
-Additive bindings have evolved to mimick authoritative ones, but the result is an interface which is bloated (no one uses `iam_additive_members`), and hard to understand and use without triggering dynamic errors. Coverage is also spotty and uneven across modules.
+Additive bindings have evolved to mimick authoritative ones, but the result is an interface which is bloated (no one uses `iam_additive_members`), and hard to understand and use without triggering dynamic errors. Coverage is also spotty and uneven across modules, and the interface needs to support aliasing of project service accounts in the project module to work around dynamic errors.
 
 A new `iam_members` variable has been recently introduced, which addresses the legacy variables shortcomings by making loop keys static, and adds support for conditions. It comes at the cost of a slightly more verbose interface, but allows error-free and explicit code and the use of `for` loops for both roles and members if needed.
 
@@ -73,32 +73,37 @@ module "project" {
 # tftest skip
 ```
 
-The **proposal** for additive bindings is to nuke the legacy interface out of existence, and only leave `iam_members` in place. This will have no appreciable impact on code readability, and remove a lot of potential sources of error.
+~The **proposal** for additive bindings is to nuke the legacy interface out of existence, and only leave `iam_members` in place. This will have no appreciable impact on code readability, and remove a lot of potential sources of error.~
 
-One example of the legacy interface:
+The legacy interface is used in few places, but is critical for several exisiting data-related blueprints where optional project creation decides whether IAM bindings are authoritative, and a lot of roles are assigned to different principals.
+
+The **proposal** for additive bindings strips the legacy interface of all functionality and only leaves a barebones `iam_additive` in place, so that it can be consumed by blueprints. It also removes aliasing of project-level service identities, which was recently added in #1160. 
+
+One example of the legacy interface as used in blueprints:
 
 ```hcl
-module "organization" {
-  source          = "../../../modules/organization"
-  organization_id = "organizations/${var.organization.id}"
-  iam_additive = {
-    "roles/accesscontextmanager.policyAdmin" = [
-      module.branch-security-sa.iam_email
-    ]
-    "roles/compute.orgFirewallPolicyAdmin" = [
-      module.branch-network-sa.iam_email
-    ]
-    "roles/compute.xpnAdmin" = [
-      module.branch-network-sa.iam_email
+locals {
+  iam = {
+    "roles/viewer" = [
+      module.sa.iam_email,
+      var.group.admins
     ]
   }
 }
+module "project" {
+  iam          = (
+    var.project_create == null ? {} : local.iam
+  )
+  iam_additive = (
+    var.project_create != null ? {} : local.iam
+  )
+}
 ```
 
-This is how the above example can be refactored with the new interface, showing both approaches to declaring bindings:
+Where possible, code should leverage the new interface which can be used in two ways:
 
-- the simple one where bindings are flat and declared in the module call, which might be preferred for simple usage
-- and the more complex one that moves roles out to `locals` and uses them in `for` loops, which might be preferred for complex code like FAST where local variables offer more immediate readability of important data
+- a verbose one where bindings are flat and declared in the module call, which should be preferred for simple usage
+- a more complex one that moves roles out to `locals` and uses them in `for` loops, which should be preferred for complex code like FAST where local variables allow for better readability / end user modifications
 
 ```hcl
 locals {
@@ -112,12 +117,14 @@ module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
   iam_members = merge(
+    # IAM bindings via locals
     {
       for r in local.network_sa_roles : "network_sa-${r}" : {
         member = module.branch-network-sa.iam_email
         role   = r
       }
     },
+    # IAM bindings via explicit reference
     {
       security_sa = {
         member = module.branch-security-sa.iam_email
