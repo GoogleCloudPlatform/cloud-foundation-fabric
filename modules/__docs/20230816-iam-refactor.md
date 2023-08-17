@@ -77,7 +77,7 @@ module "project" {
 
 The legacy interface is used in few places, but is critical for several exisiting data-related blueprints where optional project creation decides whether IAM bindings are authoritative, and a lot of roles are assigned to different principals.
 
-The **proposal** for additive bindings stripts the legacy of interface of all functionality and only leaves a barebones `iam_additive` in place, so that it can be consumed by blueprints. It also removes aliasing of project-level service identities, which was recently added in #1160. 
+The **proposal** for additive bindings strips the legacy interface of all functionality and only leaves a barebones `iam_additive` in place, so that it can be consumed by blueprints. It also removes aliasing of project-level service identities, which was recently added in #1160. 
 
 One example of the legacy interface as used in blueprints:
 
