@@ -40,7 +40,7 @@ module "folder" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=iam.yaml
 ```
 
 ## IAM
