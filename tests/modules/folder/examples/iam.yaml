@@ -33,7 +33,7 @@ values:
     members:
     - group:cloud-owners@example.org
     role: roles/resourcemanager.projectCreator
-  module.folder.google_folder_iam_member.members["am1-storage-admin"]:
+  module.folder.google_folder_iam_member.bindings["am1-storage-admin"]:
     condition: []
     member: user:am1@example.org
     role: roles/storage.admin
@@ -46,3 +46,4 @@ counts:
   resources: 5
 
 outputs: {}
+

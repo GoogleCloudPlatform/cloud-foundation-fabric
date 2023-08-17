@@ -39,8 +39,23 @@ resource "google_folder_iam_binding" "authoritative" {
   members  = each.value
 }
 
-resource "google_folder_iam_member" "members" {
-  for_each = var.iam_members
+resource "google_folder_iam_binding" "bindings" {
+  for_each = var.iam_bindings
+  folder   = local.folder.name
+  role     = each.key
+  members  = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_folder_iam_member" "bindings" {
+  for_each = var.iam_bindings_additive
   folder   = local.folder.name
   role     = each.value.role
   member   = each.value.member
