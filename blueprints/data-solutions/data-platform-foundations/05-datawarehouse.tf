@@ -54,7 +54,7 @@ locals {
           member = member
         }
       ]
-    ]) : "{k.member}-{k.role}" => k
+    ]) : "${k.member}-${k.role}" => k
   }
   iam_lnd = {
     "roles/bigquery.dataOwner" = [
@@ -94,7 +94,7 @@ locals {
           member = member
         }
       ]
-    ]) : "{k.member}-{k.role}" => k
+    ]) : "${k.member}-${k.role}" => k
   }
   dwh_services = concat(var.project_services, [
     "bigquery.googleapis.com",

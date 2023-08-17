@@ -35,7 +35,7 @@ locals {
           member = member
         }
       ]
-    ]) : "{k.member}-{k.role}" => k
+    ]) : "${k.member}-${k.role}" => k
   }
 }
 

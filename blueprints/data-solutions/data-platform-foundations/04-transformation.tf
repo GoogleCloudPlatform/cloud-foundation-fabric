@@ -37,7 +37,7 @@ locals {
           member = member
         }
       ]
-    ]) : "{k.member}-{k.role}" => k
+    ]) : "${k.member}-${k.role}" => k
   }
   transf_subnet = (
     local.use_shared_vpc
