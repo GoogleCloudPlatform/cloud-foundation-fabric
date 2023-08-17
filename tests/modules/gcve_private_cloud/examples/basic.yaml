@@ -14,12 +14,14 @@
 
 values:
   module.gcve-pc.google_vmwareengine_network.private-cloud-network[0]:
+    description: Terraform-managed.
     location: asia-southeast1
     name: asia-southeast1-default
     project: gcve-test-project
     timeouts: null
     type: LEGACY
   module.gcve-pc.google_vmwareengine_private_cloud.private-cloud:
+    description: Terraform-managed.
     location: asia-southeast1-a
     management_cluster:
     - cluster_id: gcve-pc-mgmt-cluster

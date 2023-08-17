@@ -14,7 +14,7 @@
 
 values:
   module.gcve-pc.google_vmwareengine_network.private-cloud-network[0]:
-    description: Private cloud gcve-pc network.
+    description: Terraform-managed.
     location: asia-southeast1
     name: asia-southeast1-default
     project: gcve-test-project
