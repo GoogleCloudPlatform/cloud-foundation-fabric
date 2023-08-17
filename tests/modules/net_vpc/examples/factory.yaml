@@ -113,7 +113,7 @@ values:
     role: null
     secondary_ip_range: []
     timeouts: null
-  module.vpc.google_compute_subnetwork_iam_binding.binding["europe-west1/subnet-detailed.roles/compute.networkUser"]:
+  module.vpc.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-detailed.roles/compute.networkUser"]:
     condition: []
     members:
     - group:lorem@example.com

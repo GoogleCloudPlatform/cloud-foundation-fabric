@@ -71,7 +71,7 @@ values:
     role: null
     secondary_ip_range: []
     timeouts: null
-  module.vpc.google_compute_subnetwork_iam_binding.binding["europe-west1/subnet-1.roles/compute.networkUser"]:
+  module.vpc.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.networkUser"]:
     condition: []
     members:
     - group:group1@example.com
@@ -80,7 +80,18 @@ values:
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
-  module.vpc.google_compute_subnetwork_iam_member.members["subnet-2-am1"]:
+  module.vpc.google_compute_subnetwork_iam_binding.bindings["europe-west1/subnet-1.roles/compute.networkUser.test_condition"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('123456789012/env', 'prod')
+      title: test_condition
+    members:
+    - group:group2@example.com
+    project: my-project
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: subnet-1
+  module.vpc.google_compute_subnetwork_iam_member.bindings["subnet-2-am1"]:
     condition: []
     member: user:am1@example.com
     project: my-project
@@ -92,9 +103,9 @@ counts:
   google_compute_network: 1
   google_compute_route: 2
   google_compute_subnetwork: 2
-  google_compute_subnetwork_iam_binding: 1
+  google_compute_subnetwork_iam_binding: 2
   google_compute_subnetwork_iam_member: 1
   modules: 1
-  resources: 7
+  resources: 8
 
 outputs: {}
