@@ -90,5 +90,6 @@ service_accounts:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [default](outputs.tf#L17) |  |  |
+| [projects](outputs.tf#L17) | Project module outputs. |  |
+| [service_accounts](outputs.tf#L22) | Service account emails. |  |
 <!-- END TFDOC -->
