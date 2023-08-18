@@ -35,6 +35,15 @@ locals {
   groups_iam = {
     for k, v in local.groups : k => "group:${v}"
   }
+  iam_principals = {
+    data_engineers    = "group:${local.groups.data-engineers}"
+    robots_cloudbuild = "serviceAccount:${module.orch-project.service_accounts.robots.cloudbuild}"
+    robots_composer   = "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
+    sa_load           = module.load-sa-df-0.iam_email
+    sa_orch_cmp       = module.orch-sa-cmp-0.iam_email
+    sa_transf_bq      = module.transf-sa-bq-0.iam_email,
+    sa_transf_df      = module.transf-sa-df-0.iam_email,
+  }
   project_suffix          = var.project_suffix == null ? "" : "-${var.project_suffix}"
   service_encryption_keys = var.service_encryption_keys
   shared_vpc_project      = try(var.network_config.host_project, null)
@@ -57,6 +66,7 @@ locals {
       ]
     ]) : "${binding.role}-${binding.member}" => binding
   }
+  use_projects   = var.project_config.billing_account_id == null
   use_shared_vpc = var.network_config != null
 }
 

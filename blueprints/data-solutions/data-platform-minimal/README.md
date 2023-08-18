@@ -12,6 +12,9 @@ The following diagram is a high-level reference of the resources created and man
 
 A set of demo [Airflow pipelines](./demo/) are also part of this blueprint: they can be run on top of the foundational infrastructure to verify and test the setup.
 
+<!-- BEGIN TOC -->
+<!-- END TOC -->
+
 ## Design overview and choices
 
 Despite its simplicity, this stage implements the basics of a design that we've seen working well for various customers.
@@ -203,7 +206,7 @@ module "data-platform" {
   prefix = "myprefix"
 }
 
-# tftest modules=23 resources=123
+# tftest modules=23 resources=135
 ```
 
 ## Customizations

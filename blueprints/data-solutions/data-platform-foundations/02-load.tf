@@ -65,20 +65,14 @@ module "load-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix = (
-    var.project_config.billing_account_id == null ? null : var.prefix
-  )
+  prefix          = local.use_projects ? null : var.prefix
   name = (
-    var.project_config.billing_account_id == null
+    local.use_projects
     ? var.project_config.project_ids.load
     : "${var.project_config.project_ids.load}${local.project_suffix}"
   )
-  iam = (
-    var.project_config.billing_account_id == null ? {} : local.iam_load
-  )
-  iam_bindings_additive = (
-    var.project_config.billing_account_id != null ? {} : local.iam_load_
-  )
+  iam                   = local.use_projects ? {} : local.iam_load
+  iam_bindings_additive = !local.use_projects ? {} : local.iam_load_additive
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",

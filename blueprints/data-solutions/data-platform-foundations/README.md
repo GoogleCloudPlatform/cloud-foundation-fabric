@@ -202,8 +202,7 @@ project_config = {
     parent              = "folders/1111111111"
     billing_account_id  = "1111111-2222222-33333333"
 }
-organization_domain     = "domain.com"
-~                                        
+organization_domain     = "domain.com"                                       
 ```
 
 For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration. Remember to create team groups described [below](#groups).
@@ -229,8 +228,7 @@ module "data-platform" {
   }
   prefix = "myprefix"
 }
-
-# tftest modules=43 resources=285
+# tftest modules=43 resources=289
 ```
 
 ## Customizations

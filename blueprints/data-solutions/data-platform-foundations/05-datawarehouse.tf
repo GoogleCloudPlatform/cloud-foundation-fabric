@@ -47,14 +47,14 @@ locals {
   }
   # this only works because the service account module uses a static output
   iam_dwh_additive = {
-    for k in flatten([
-      for role, members in local.iam_dwh : [
-        for member in members : {
-          role   = role
-          member = member
-        }
-      ]
-    ]) : "${k.member}-${k.role}" => k
+    # for k in flatten([
+    #   for role, members in local.iam_dwh : [
+    #     for member in members : {
+    #       role   = role
+    #       member = member
+    #     }
+    #   ]
+    # ]) : "${k.member}-${k.role}" => k
   }
   iam_lnd = {
     "roles/bigquery.dataOwner" = [
@@ -117,21 +117,15 @@ module "dwh-lnd-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix = (
-    var.project_config.billing_account_id == null ? null : var.prefix
-  )
+  prefix          = local.use_projects ? null : var.prefix
   name = (
-    var.project_config.billing_account_id == null
+    local.use_projects
     ? var.project_config.project_ids.dwh-lnd
     : "${var.project_config.project_ids.dwh-lnd}${local.project_suffix}"
   )
-  iam = (
-    var.project_config.billing_account_id == null ? {} : local.iam_lnd
-  )
-  iam_bindings_additive = (
-    var.project_config.billing_account_id != null ? {} : local.iam_lnd_additive
-  )
-  services = local.dwh_services
+  iam                   = local.use_projects ? {} : local.iam_lnd
+  iam_bindings_additive = !local.use_projects ? {} : local.iam_lnd_additive
+  services              = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -143,21 +137,15 @@ module "dwh-cur-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix = (
-    var.project_config.billing_account_id == null ? null : var.prefix
-  )
+  prefix          = local.use_projects ? null : var.prefix
   name = (
-    var.project_config.billing_account_id == null
+    local.use_projects
     ? var.project_config.project_ids.dwh-cur
     : "${var.project_config.project_ids.dwh-cur}${local.project_suffix}"
   )
-  iam = (
-    var.project_config.billing_account_id == null ? {} : local.iam_dwh
-  )
-  iam_bindings_additive = (
-    var.project_config.billing_account_id != null ? {} : local.iam_dwh_additive
-  )
-  services = local.dwh_services
+  iam                   = local.use_projects ? {} : local.iam_dwh
+  iam_bindings_additive = !local.use_projects ? {} : local.iam_dwh_additive
+  services              = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -169,21 +157,15 @@ module "dwh-conf-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix = (
-    var.project_config.billing_account_id == null ? null : var.prefix
-  )
+  prefix          = local.use_projects ? null : var.prefix
   name = (
-    var.project_config.billing_account_id == null
+    local.use_projects
     ? var.project_config.project_ids.dwh-conf
     : "${var.project_config.project_ids.dwh-conf}${local.project_suffix}"
   )
-  iam = (
-    var.project_config.billing_account_id == null ? {} : local.iam_dwh
-  )
-  iam_bindings_additive = (
-    var.project_config.billing_account_id != null ? {} : local.iam_dwh_additive
-  )
-  services = local.dwh_services
+  iam                   = local.use_projects ? {} : local.iam_dwh
+  iam_bindings_additive = !local.use_projects ? {} : local.iam_dwh_additive
+  services              = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
