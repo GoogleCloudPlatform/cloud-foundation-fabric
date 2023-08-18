@@ -24,7 +24,7 @@ If the network_config variable is not provided, one VPC will be created in each 
 
 ## Deploy your environment
 
-We assume the identiy running the following steps has the following role:
+We assume the identity running the following steps has the following role:
 
 - resourcemanager.projectCreator in case a new project will be created.
 - owner on the project in case you use an existing project.
