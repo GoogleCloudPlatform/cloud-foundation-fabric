@@ -51,6 +51,13 @@ variable "default_service_account" {
   description = "Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`."
   default     = "keep"
   type        = string
+  validation {
+    condition = (
+      var.default_service_account == null ||
+      contains(["delete", "deprivilege", "disable", "keep"], var.default_service_account)
+    )
+    error_message = "Only `delete`, `deprivilege`, `disable`, or `keep` are supported."
+  }
 }
 
 variable "descriptive_name" {
@@ -112,7 +119,7 @@ variable "labels" {
 variable "lien_reason" {
   description = "If non-empty, creates a project lien with this description."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "logging_data_access" {

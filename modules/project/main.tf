@@ -72,7 +72,7 @@ resource "google_compute_project_metadata_item" "default" {
 }
 
 resource "google_resource_manager_lien" "lien" {
-  count        = var.lien_reason != "" ? 1 : 0
+  count        = var.lien_reason != null ? 1 : 0
   parent       = "projects/${local.project.number}"
   restrictions = ["resourcemanager.projects.delete"]
   origin       = "created-by-terraform"
