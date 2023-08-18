@@ -15,30 +15,23 @@
  */
 
 locals {
+  _load_iam = flatten([
+    for principal, roles in local.load_iam : [
+      for role in roles : {
+        key       = "${principal}-${role}"
+        principal = principal
+        role      = role
+      }
+    ]
+  ])
   load_iam_additive = {
-    for binding in flatten([
-      for principal, roles in local.load_iam : [
-        for role in roles : {
-          key       = "${principal}-${role}"
-          principal = principal
-          role      = role
-        }
-      ]
-    ]) :
-    binding.key => {
+    for binding in local._load_iam : binding.key => {
       role   = binding.role
       member = local.iam_principals[binding.principal]
     }
   }
   load_iam_auth = {
-    for binding in flatten([
-      for principal, roles in local.load_iam : [
-        for role in roles : {
-          principal = principal
-          role      = role
-        }
-      ]
-    ]) :
+    for binding in local._load_iam :
     binding.role => local.iam_principals[binding.principal]...
   }
   load_subnet = (

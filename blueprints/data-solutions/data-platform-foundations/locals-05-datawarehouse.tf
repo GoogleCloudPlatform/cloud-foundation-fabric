@@ -15,30 +15,32 @@
  */
 
 locals {
+  _dwh_iam = flatten([
+    for principal, roles in local.dwh_iam : [
+      for role in roles : {
+        key       = "${principal}-${role}"
+        principal = principal
+        role      = role
+      }
+    ]
+  ])
+  _lnd_iam = flatten([
+    for principal, roles in local.lnd_iam : [
+      for role in roles : {
+        key       = "${principal}-${role}"
+        principal = principal
+        role      = role
+      }
+    ]
+  ])
   dwh_iam_additive = {
-    for binding in flatten([
-      for principal, roles in local.dwh_iam : [
-        for role in roles : {
-          key       = "${principal}-${role}"
-          principal = principal
-          role      = role
-        }
-      ]
-    ]) :
-    binding.key => {
+    for binding in local._dwh_iam : binding.key => {
       role   = binding.role
       member = local.iam_principals[binding.principal]
     }
   }
   dwh_iam_auth = {
-    for binding in flatten([
-      for principal, roles in local.dwh_iam : [
-        for role in roles : {
-          principal = principal
-          role      = role
-        }
-      ]
-    ]) :
+    for binding in local._dwh_iam :
     binding.role => local.iam_principals[binding.principal]...
   }
   dwh_services = concat(var.project_services, [
@@ -54,29 +56,13 @@ locals {
     "storage-component.googleapis.com"
   ])
   lnd_iam_additive = {
-    for binding in flatten([
-      for principal, roles in local.lnd_iam : [
-        for role in roles : {
-          key       = "${principal}-${role}"
-          principal = principal
-          role      = role
-        }
-      ]
-    ]) :
-    binding.key => {
+    for binding in local._lnd_iam : binding.key => {
       role   = binding.role
       member = local.iam_principals[binding.principal]
     }
   }
   lnd_iam_auth = {
-    for binding in flatten([
-      for principal, roles in local.lnd_iam : [
-        for role in roles : {
-          principal = principal
-          role      = role
-        }
-      ]
-    ]) :
+    for binding in local._lnd_iam :
     binding.role => local.iam_principals[binding.principal]...
   }
 }

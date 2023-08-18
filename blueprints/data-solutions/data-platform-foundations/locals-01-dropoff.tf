@@ -15,30 +15,23 @@
  */
 
 locals {
+  _drp_iam = flatten([
+    for principal, roles in local.drp_iam : [
+      for role in roles : {
+        key       = "${principal}-${role}"
+        principal = principal
+        role      = role
+      }
+    ]
+  ])
   drp_iam_additive = {
-    for binding in flatten([
-      for principal, roles in local.drp_iam : [
-        for role in roles : {
-          key       = "${principal}-${role}"
-          principal = principal
-          role      = role
-        }
-      ]
-    ]) :
-    binding.key => {
+    for binding in local._drp_iam : binding.key => {
       role   = binding.role
       member = local.iam_principals[binding.principal]
     }
   }
   drp_iam_auth = {
-    for binding in flatten([
-      for principal, roles in local.drp_iam : [
-        for role in roles : {
-          principal = principal
-          role      = role
-        }
-      ]
-    ]) :
+    for binding in local._drp_iam :
     binding.role => local.iam_principals[binding.principal]...
   }
 }
