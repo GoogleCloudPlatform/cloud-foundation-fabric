@@ -31,7 +31,7 @@ values:
         node_type_id: standard-72
     name: gcve-pc
     network_config:
-    - cidr: 192.168.0.0/24
+    - management_cidr: 192.168.0.0/24
     project: gcve-test-project
     timeouts: null
 
