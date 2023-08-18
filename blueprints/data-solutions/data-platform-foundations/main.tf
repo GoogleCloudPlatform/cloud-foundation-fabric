@@ -36,13 +36,20 @@ locals {
     for k, v in local.groups : k => "group:${v}"
   }
   iam_principals = {
-    data_engineers    = "group:${local.groups.data-engineers}"
-    robots_cloudbuild = "serviceAccount:${module.orch-project.service_accounts.robots.cloudbuild}"
-    robots_composer   = "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
-    sa_load           = module.load-sa-df-0.iam_email
-    sa_orch_cmp       = module.orch-sa-cmp-0.iam_email
-    sa_transf_bq      = module.transf-sa-bq-0.iam_email,
-    sa_transf_df      = module.transf-sa-df-0.iam_email,
+    data_analysts        = "group:${local.groups.data-analysts}"
+    data_engineers       = "group:${local.groups.data-engineers}"
+    data_security        = "group:${local.groups.data-security}"
+    robots_cloudbuild    = "serviceAccount:${module.orch-project.service_accounts.robots.cloudbuild}"
+    robots_composer      = "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
+    robots_dataflow_load = "serviceAccount:${module.load-project.service_accounts.robots.dataflow}"
+    robots_dataflow_trf  = "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
+    sa_drop_bq           = module.drop-sa-bq-0.iam_email
+    sa_drop_cs           = module.drop-sa-cs-0.iam_email
+    sa_drop_ps           = module.drop-sa-ps-0.iam_email
+    sa_load              = module.load-sa-df-0.iam_email
+    sa_orch              = module.orch-sa-cmp-0.iam_email
+    sa_transf_bq         = module.transf-sa-bq-0.iam_email,
+    sa_transf_df         = module.transf-sa-df-0.iam_email,
   }
   project_suffix          = var.project_suffix == null ? "" : "-${var.project_suffix}"
   service_encryption_keys = var.service_encryption_keys

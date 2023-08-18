@@ -15,9 +15,9 @@
  */
 
 locals {
-  cmn_iam_additive = {
+  load_iam_additive = {
     for binding in flatten([
-      for principal, roles in local.cmn_iam : [
+      for principal, roles in local.load_iam : [
         for role in roles : {
           key       = "${principal}-${role}"
           principal = principal
@@ -30,9 +30,9 @@ locals {
       member = local.iam_principals[binding.principal]
     }
   }
-  cmn_iam_auth = {
+  load_iam_auth = {
     for binding in flatten([
-      for principal, roles in local.cmn_iam : [
+      for principal, roles in local.load_iam : [
         for role in roles : {
           principal = principal
           role      = role
@@ -41,4 +41,14 @@ locals {
     ]) :
     binding.role => local.iam_principals[binding.principal]...
   }
+  load_subnet = (
+    local.use_shared_vpc
+    ? var.network_config.subnet_self_links.orchestration
+    : values(module.load-vpc.0.subnet_self_links)[0]
+  )
+  load_vpc = (
+    local.use_shared_vpc
+    ? var.network_config.network_self_link
+    : module.load-vpc.0.self_link
+  )
 }

@@ -38,7 +38,7 @@ locals {
       "roles/bigquery.dataEditor",
       "roles/storage.objectViewer"
     ]
-    sa_orch_cmp = [
+    sa_orch = [
       "roles/bigquery.jobUser",
       "roles/composer.worker",
       "roles/iam.serviceAccountUser",

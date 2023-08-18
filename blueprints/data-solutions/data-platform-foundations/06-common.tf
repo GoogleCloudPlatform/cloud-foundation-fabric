@@ -15,7 +15,7 @@
 # tfdoc:file:description common project.
 
 locals {
-  iam_cmn = {
+  cmn_iam = {
     data_analysts = [
       # uncomment if access to all tagged columns is needed
       # "roles/datacatalog.categoryFineGrainedReader",

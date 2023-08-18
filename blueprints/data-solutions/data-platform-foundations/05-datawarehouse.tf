@@ -15,99 +15,48 @@
 # tfdoc:file:description Data Warehouse projects.
 
 locals {
-  iam_dwh = {
-    "roles/bigquery.dataOwner" = [
-      module.transf-sa-df-0.iam_email,
-      module.transf-sa-bq-0.iam_email,
+  dwh_iam = {
+    data_analysts = [
+      "roles/bigquery.dataViewer",
+      "roles/bigquery.jobUser",
+      "roles/datacatalog.viewer",
+      "roles/storage.objectViewer"
     ]
-    "roles/bigquery.dataViewer" = [
-      local.groups_iam.data-analysts,
-      local.groups_iam.data-engineers
+    data_engineers = [
+      "roles/bigquery.dataViewer",
+      "roles/bigquery.jobUser",
+      "roles/datacatalog.viewer",
+      "roles/storage.objectViewer"
     ]
-    "roles/bigquery.jobUser" = [
-      module.transf-sa-bq-0.iam_email,
-      local.groups_iam.data-analysts,
-      local.groups_iam.data-engineers
+    sa_transf_bq = [
+      "roles/bigquery.dataOwner",
+      "roles/bigquery.jobUser"
     ]
-    "roles/datacatalog.tagTemplateViewer" = [
-      local.groups_iam.data-analysts,
-      local.groups_iam.data-engineers
-    ]
-    "roles/datacatalog.viewer" = [
-      local.groups_iam.data-analysts,
-      local.groups_iam.data-engineers
-    ]
-    "roles/storage.objectViewer" = [
-      local.groups_iam.data-analysts,
-      local.groups_iam.data-engineers
-    ]
-    "roles/storage.objectAdmin" = [
-      module.transf-sa-df-0.iam_email
+    sa_transf_df = [
+      "roles/bigquery.dataOwner",
+      "roles/storage.objectAdmin"
     ]
   }
-  # this only works because the service account module uses a static output
-  iam_dwh_additive = {
-    # for k in flatten([
-    #   for role, members in local.iam_dwh : [
-    #     for member in members : {
-    #       role   = role
-    #       member = member
-    #     }
-    #   ]
-    # ]) : "${k.member}-${k.role}" => k
-  }
-  iam_lnd = {
-    "roles/bigquery.dataOwner" = [
-      module.load-sa-df-0.iam_email,
+  lnd_iam = {
+    data_engineers = [
+      "roles/bigquery.dataViewer",
+      "roles/bigquery.jobUser",
+      "roles/datacatalog.viewer",
+      "roles/storage.objectViewer"
     ]
-    "roles/bigquery.dataViewer" = [
-      module.transf-sa-df-0.iam_email,
-      module.transf-sa-bq-0.iam_email,
-      local.groups_iam.data-engineers
+    sa_load = [
+      "roles/storage.objectCreator"
     ]
-    "roles/bigquery.jobUser" = [
-      module.load-sa-df-0.iam_email,
-      local.groups_iam.data-engineers
+    sa_transf_bq = [
+      "roles/bigquery.dataViewer",
+      "roles/datacatalog.categoryAdmin"
     ]
-    "roles/datacatalog.categoryAdmin" = [
-      module.transf-sa-bq-0.iam_email
-    ]
-    "roles/datacatalog.tagTemplateViewer" = [
-      local.groups_iam.data-engineers
-    ]
-    "roles/datacatalog.viewer" = [
-      local.groups_iam.data-engineers
-    ]
-    "roles/storage.objectCreator" = [
-      module.load-sa-df-0.iam_email
-    ]
-    "roles/storage.objectViewer" = [
-      local.groups_iam.data-engineers
+    sa_transf_df = [
+      "roles/bigquery.dataOwner",
+      "roles/bigquery.dataViewer",
+      "roles/bigquery.jobUser"
     ]
   }
-  # this only works because the service account module uses a static output
-  iam_lnd_additive = {
-    for k in flatten([
-      for role, members in local.iam_lnd : [
-        for member in members : {
-          role   = role
-          member = member
-        }
-      ]
-    ]) : "${k.member}-${k.role}" => k
-  }
-  dwh_services = concat(var.project_services, [
-    "bigquery.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "cloudkms.googleapis.com",
-    "compute.googleapis.com",
-    "dataflow.googleapis.com",
-    "pubsub.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "storage.googleapis.com",
-    "storage-component.googleapis.com"
-  ])
 }
 
 # Project
@@ -123,8 +72,8 @@ module "dwh-lnd-project" {
     ? var.project_config.project_ids.dwh-lnd
     : "${var.project_config.project_ids.dwh-lnd}${local.project_suffix}"
   )
-  iam                   = local.use_projects ? {} : local.iam_lnd
-  iam_bindings_additive = !local.use_projects ? {} : local.iam_lnd_additive
+  iam                   = local.use_projects ? {} : local.lnd_iam_auth
+  iam_bindings_additive = !local.use_projects ? {} : local.lnd_iam_additive
   services              = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
@@ -143,8 +92,8 @@ module "dwh-cur-project" {
     ? var.project_config.project_ids.dwh-cur
     : "${var.project_config.project_ids.dwh-cur}${local.project_suffix}"
   )
-  iam                   = local.use_projects ? {} : local.iam_dwh
-  iam_bindings_additive = !local.use_projects ? {} : local.iam_dwh_additive
+  iam                   = local.use_projects ? {} : local.dwh_iam_auth
+  iam_bindings_additive = !local.use_projects ? {} : local.dwh_iam_additive
   services              = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
@@ -163,16 +112,14 @@ module "dwh-conf-project" {
     ? var.project_config.project_ids.dwh-conf
     : "${var.project_config.project_ids.dwh-conf}${local.project_suffix}"
   )
-  iam                   = local.use_projects ? {} : local.iam_dwh
-  iam_bindings_additive = !local.use_projects ? {} : local.iam_dwh_additive
+  iam                   = local.use_projects ? {} : local.dwh_iam_auth
+  iam_bindings_additive = !local.use_projects ? {} : local.dwh_iam_additive
   services              = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
-
-# Bigquery
 
 module "dwh-lnd-bq-0" {
   source         = "../../../modules/bigquery-dataset"
@@ -197,8 +144,6 @@ module "dwh-conf-bq-0" {
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
-
-# Cloud storage
 
 module "dwh-lnd-cs-0" {
   source         = "../../../modules/gcs"

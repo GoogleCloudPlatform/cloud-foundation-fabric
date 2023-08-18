@@ -15,50 +15,24 @@
 # tfdoc:file:description Load project and VPC.
 
 locals {
-  iam_load = {
-    "roles/bigquery.jobUser" = [
-      module.load-sa-df-0.iam_email
+  load_iam = {
+    data_engineers = [
+      "roles/dataflow.admin"
     ]
-    "roles/dataflow.admin" = [
-      module.orch-sa-cmp-0.iam_email,
-      module.load-sa-df-0.iam_email,
-      local.groups_iam.data-engineers
+    robots_dataflow_load = [
+      "roles/storage.objectAdmin"
     ]
-    "roles/dataflow.developer" = [
-      local.groups_iam.data-engineers
+    sa_load = [
+      "roles/bigquery.jobUser",
+      "roles/dataflow.admin",
+      "roles/dataflow.worker",
+      "roles/storage.objectAdmin"
     ]
-    "roles/dataflow.worker" = [
-      module.load-sa-df-0.iam_email
-    ]
-    "roles/storage.objectAdmin" = [
-      "serviceAccount:${module.load-project.service_accounts.robots.dataflow}",
-      module.load-sa-df-0.iam_email
+    sa_orch = [
+      "roles/dataflow.admin"
     ]
   }
-  # this only works because the service account module uses a static output
-  iam_load_additive = {
-    for k in flatten([
-      for role, members in local.iam_load : [
-        for member in members : {
-          role   = role
-          member = member
-        }
-      ]
-    ]) : "${k.member}-${k.role}" => k
-  }
-  load_subnet = (
-    local.use_shared_vpc
-    ? var.network_config.subnet_self_links.orchestration
-    : values(module.load-vpc.0.subnet_self_links)[0]
-  )
-  load_vpc = (
-    local.use_shared_vpc
-    ? var.network_config.network_self_link
-    : module.load-vpc.0.self_link
-  )
 }
-
-# Project
 
 module "load-project" {
   source          = "../../../modules/project"
@@ -71,8 +45,8 @@ module "load-project" {
     ? var.project_config.project_ids.load
     : "${var.project_config.project_ids.load}${local.project_suffix}"
   )
-  iam                   = local.use_projects ? {} : local.iam_load
-  iam_bindings_additive = !local.use_projects ? {} : local.iam_load_additive
+  iam                   = local.use_projects ? {} : local.load_iam_auth
+  iam_bindings_additive = !local.use_projects ? {} : local.load_iam_additive
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -123,8 +97,6 @@ module "load-cs-df-0" {
   storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
 }
-
-# internal VPC resources
 
 module "load-vpc" {
   source     = "../../../modules/net-vpc"

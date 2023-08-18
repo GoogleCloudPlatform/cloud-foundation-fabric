@@ -15,40 +15,25 @@
 # tfdoc:file:description Transformation project and VPC.
 
 locals {
-  iam_trf = {
-    "roles/bigquery.jobUser" = [
-      module.transf-sa-bq-0.iam_email, local.groups_iam.data-engineers
+  trf_iam = {
+    data_engineers = [
+      "roles/bigquery.jobUser",
+      "roles/dataflow.admin"
     ]
-    "roles/dataflow.admin" = [
-      module.orch-sa-cmp-0.iam_email, local.groups_iam.data-engineers
+    robots_dataflow_trf = [
+      "roles/storage.objectAdmin"
     ]
-    "roles/dataflow.worker" = [module.transf-sa-df-0.iam_email]
-    "roles/storage.objectAdmin" = [
-      module.transf-sa-df-0.iam_email,
-      "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
+    sa_orch = [
+      "roles/dataflow.admin"
+    ]
+    sa_transf_bq = [
+      "roles/bigquery.jobUser"
+    ]
+    sa_transf_df = [
+      "roles/dataflow.worker",
+      "roles/storage.objectAdmin"
     ]
   }
-  # this only works because the service account module uses a static output
-  iam_trf_additive = {
-    # for k in flatten([
-    #   for role, members in local.iam_trf : [
-    #     for member in members : {
-    #       role   = role
-    #       member = member
-    #     }
-    #   ]
-    # ]) : "${k.member}-${k.role}" => k
-  }
-  transf_subnet = (
-    local.use_shared_vpc
-    ? var.network_config.subnet_self_links.orchestration
-    : values(module.transf-vpc.0.subnet_self_links)[0]
-  )
-  transf_vpc = (
-    local.use_shared_vpc
-    ? var.network_config.network_self_link
-    : module.transf-vpc.0.self_link
-  )
 }
 
 module "transf-project" {
@@ -62,8 +47,8 @@ module "transf-project" {
     ? var.project_config.project_ids.trf
     : "${var.project_config.project_ids.trf}${local.project_suffix}"
   )
-  iam                   = local.use_projects ? {} : local.iam_trf
-  iam_bindings_additive = !local.use_projects ? {} : local.iam_trf_additive
+  iam                   = local.use_projects ? {} : local.trf_iam_auth
+  iam_bindings_additive = !local.use_projects ? {} : local.trf_iam_additive
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -86,8 +71,6 @@ module "transf-project" {
     host_project = local.shared_vpc_project
   }
 }
-
-# Cloud Storage
 
 module "transf-sa-df-0" {
   source       = "../../../modules/iam-service-account"
@@ -116,8 +99,6 @@ module "transf-cs-df-0" {
   encryption_key = try(local.service_encryption_keys.storage, null)
 }
 
-# BigQuery
-
 module "transf-sa-bq-0" {
   source       = "../../../modules/iam-service-account"
   project_id   = module.transf-project.project_id
@@ -134,8 +115,6 @@ module "transf-sa-bq-0" {
     ]
   }
 }
-
-# internal VPC resources
 
 module "transf-vpc" {
   source     = "../../../modules/net-vpc"
