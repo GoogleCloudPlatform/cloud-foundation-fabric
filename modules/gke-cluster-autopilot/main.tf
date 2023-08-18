@@ -95,7 +95,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "dns_config" {
-    for_each = var.enable_features.dns != null ? [""] : []
+    for_each = var.enable_features.dns
     content {
       cluster_dns        = var.enable_features.dns.provider
       cluster_dns_scope  = var.enable_features.dns.scope
