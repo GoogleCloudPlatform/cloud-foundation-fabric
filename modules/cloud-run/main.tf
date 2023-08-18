@@ -34,9 +34,6 @@ locals {
     var.ingress_settings == null ? {} : {
       "run.googleapis.com/ingress" = var.ingress_settings
     },
-    var.startup_cpu_boost ? {
-      "run.googleapis.com/startup-cpu-boost" = "true"
-    } : {}
   )
   _iam_run_invoker_members = concat(
     lookup(var.iam, "roles/run.invoker", []),
@@ -74,6 +71,9 @@ locals {
     },
     var.gen2_execution_environment ? {
       "run.googleapis.com/execution-environment" = "gen2"
+    } : {},
+    var.startup_cpu_boost ? {
+      "run.googleapis.com/startup-cpu-boost" = "true"
     } : {},
   )
   revision_name = (
