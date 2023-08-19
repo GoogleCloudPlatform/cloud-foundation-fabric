@@ -48,9 +48,14 @@ locals {
   group_iam = {
     for k, v in local.iam_group_bindings : k => v.authoritative
   }
-  iam = {
-    for b in local._iam_bindings_auth : b.role => b.member...
-  }
+  iam = merge(
+    {
+      for r in local.iam_delete_roles : r => []
+    },
+    {
+      for b in local._iam_bindings_auth : b.role => b.member...
+    }
+  )
   iam_bindings_additive = {
     for b in local._iam_bindings_add : "${b.role}-${b.member}" => {
       member = b.member
@@ -68,15 +73,48 @@ module "organization" {
     k => distinct(concat(v, lookup(var.group_iam, k, [])))
   }
   # machine (service accounts) IAM bindings
-  iam = {
-    for k, v in local.iam :
-    k => distinct(concat(v, lookup(var.iam, k, [])))
-  }
+  iam = merge(
+    {
+      for k, v in local.iam : k => distinct(concat(v, lookup(var.iam, k, [])))
+    },
+    {
+      for k, v in var.iam : k => v if lookup(local.iam, k, null) == null
+    }
+  )
   # additive bindings, used for roles co-managed by different stages
   iam_bindings_additive = merge(
     local.iam_bindings_additive,
     var.iam_bindings_additive
   )
+  # delegated role grant for resource manager service account
+  iam_bindings = {
+    sa_resman_delegated_iam = {
+      members = [module.automation-tf-resman-sa.iam_email]
+      role    = module.organization.custom_role_id[var.custom_role_names.organization_iam_admin]
+      condition = {
+        expression = format(
+          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+          join(",", formatlist("'%s'", concat(
+            [
+              "roles/accesscontextmanager.policyAdmin",
+              "roles/compute.orgFirewallPolicyAdmin",
+              "roles/compute.xpnAdmin",
+              "roles/orgpolicy.policyAdmin",
+              "roles/resourcemanager.organizationViewer",
+              module.organization.custom_role_id[var.custom_role_names.tenant_network_admin]
+            ],
+            local.billing_mode == "org" ? [
+              "roles/billing.admin",
+              "roles/billing.costsManager",
+              "roles/billing.user",
+            ] : []
+          )))
+        )
+        title       = "automation_sa_delegated_grants"
+        description = "Automation service account delegated grants."
+      }
+    }
+  }
   custom_roles = merge(var.custom_roles, {
     # this is needed for use in additive IAM bindings, to avoid conflicts
     (var.custom_role_names.organization_iam_admin) = [
@@ -113,37 +151,4 @@ module "organization" {
       type                 = attrs.type
     }
   }
-}
-
-# assign the custom restricted Organization Admin role to the relevant service
-# accounts, with a condition that only enables granting specific roles;
-# these roles use additive bindings everywhere to avoid conflicts / permadiffs
-
-resource "google_organization_iam_binding" "org_admin_delegated" {
-  org_id  = var.organization.id
-  role    = module.organization.custom_role_id[var.custom_role_names.organization_iam_admin]
-  members = [module.automation-tf-resman-sa.iam_email]
-  condition {
-    title       = "automation_sa_delegated_grants"
-    description = "Automation service account delegated grants."
-    expression = format(
-      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-      join(",", formatlist("'%s'", concat(
-        [
-          "roles/accesscontextmanager.policyAdmin",
-          "roles/compute.orgFirewallPolicyAdmin",
-          "roles/compute.xpnAdmin",
-          "roles/orgpolicy.policyAdmin",
-          "roles/resourcemanager.organizationViewer",
-          module.organization.custom_role_id[var.custom_role_names.tenant_network_admin]
-        ],
-        local.billing_mode == "org" ? [
-          "roles/billing.admin",
-          "roles/billing.costsManager",
-          "roles/billing.user",
-        ] : []
-      )))
-    )
-  }
-  depends_on = [module.organization]
 }

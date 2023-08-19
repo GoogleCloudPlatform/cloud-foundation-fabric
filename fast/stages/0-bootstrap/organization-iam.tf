@@ -18,7 +18,7 @@
 
 locals {
   # IAM roles assigned at org or billing account level depending on config
-  iam_billing_roles = [
+  _iam_billing_roles = [
     "roles/billing.admin",
     "roles/billing.costsManager"
   ]
@@ -38,7 +38,7 @@ locals {
     (local.groups.gcp-billing-admins) = {
       authoritative = []
       additive = (
-        local.billing_mode != "org" ? [] : local.iam_billing_roles
+        local.billing_mode != "org" ? [] : local._iam_billing_roles
       )
     }
     (local.groups.gcp-network-admins) = {
@@ -64,7 +64,7 @@ locals {
       ]
       additive = concat(
         ["roles/orgpolicy.policyAdmin"],
-        local.billing_mode != "org" ? [] : local.iam_billing_roles
+        local.billing_mode != "org" ? [] : local._iam_billing_roles
       )
     }
     (local.groups.gcp-security-admins) = {
@@ -105,7 +105,7 @@ locals {
           "roles/iam.organizationRoleAdmin",
           "roles/orgpolicy.policyAdmin"
         ],
-        local.billing_mode != "org" ? [] : local.iam_billing_roles
+        local.billing_mode != "org" ? [] : local._iam_billing_roles
       )
     }
     (module.automation-tf-resman-sa.iam_email) = {
@@ -118,7 +118,7 @@ locals {
       ]
       additive = concat(
         ["roles/orgpolicy.policyAdmin"],
-        local.billing_mode != "org" ? [] : local.iam_billing_roles
+        local.billing_mode != "org" ? [] : local._iam_billing_roles
       )
     }
   }
@@ -132,7 +132,7 @@ locals {
         "roles/resourcemanager.projectCreator"
       ]
       additive = (
-        local.billing_mode != "org" ? [] : local.iam_billing_roles
+        local.billing_mode != "org" ? [] : local._iam_billing_roles
       )
     }
   }
