@@ -86,7 +86,9 @@ module "tenant-core-folder-iam" {
   folder_create = false
   iam = merge(
     {
-      "roles/owner"  = [module.tenant-core-sa[each.key].iam_email]
+      "roles/owner" = [
+        module.tenant-core-sa[each.key].iam_email
+      ]
       "roles/viewer" = local.tenant_iam[each.key]
     },
     {

@@ -180,18 +180,13 @@ variable "iam_bindings_additive" {
 variable "locations" {
   description = "Optional locations for GCS, BigQuery, and logging buckets created here."
   type = object({
-    bq      = string
-    gcs     = string
-    logging = string
-    pubsub  = list(string)
+    bq      = optional(string, "EU")
+    gcs     = optional(string, "EU")
+    logging = optional(string, "global")
+    pubsub  = optional(list(string), [])
   })
-  default = {
-    bq      = "EU"
-    gcs     = "EU"
-    logging = "global"
-    pubsub  = []
-  }
   nullable = false
+  default  = {}
 }
 
 # See https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics

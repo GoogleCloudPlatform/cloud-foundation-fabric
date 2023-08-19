@@ -112,7 +112,7 @@ locals {
         }
       }
     },
-    # tenant roles
+    # lightweight tenant roles
     {
       for k, v in var.tenants : "oslogin_ext_user-tenant_${k}" => {
         member = "domain:${v.organization.domain}"
@@ -129,6 +129,12 @@ locals {
       for k, v in var.tenants : "org-viewer-tenant_${k}_admin" => {
         member = "group:${v.admin_group_email}"
         role   = "roles/resourcemanager.organizationViewer"
+      }
+    },
+    local.billing_mode != "org" ? {} : {
+      for k, v in var.tenants : "billing_user-tenant_${k}_billing_admin" => {
+        member = "group:${v.admin_group_email}"
+        role   = "roles/billing.user"
       }
     },
   )
