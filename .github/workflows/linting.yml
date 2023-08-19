@@ -17,15 +17,12 @@ on:
   pull_request:
     branches:
       - master
-    tags:
-      - ci
-      - lint
 
 jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout
 
       - name: Set up Python
         uses: actions/setup-python@v4
