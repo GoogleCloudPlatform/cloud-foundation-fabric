@@ -17,11 +17,6 @@
 # tfdoc:file:description Organization-level IAM bindings locals.
 
 locals {
-  # IAM roles assigned at org or billing account level depending on config
-  _iam_billing_roles = [
-    "roles/billing.admin",
-    "roles/billing.costsManager"
-  ]
   # IAM roles in the org to reset (remove principals)
   iam_delete_roles = [
     "roles/billing.creator"
@@ -38,7 +33,10 @@ locals {
     (local.groups.gcp-billing-admins) = {
       authoritative = []
       additive = (
-        local.billing_mode != "org" ? [] : local._iam_billing_roles
+        local.billing_mode != "org" ? [] : [
+          "roles/billing.admin",
+          "roles/billing.costsManager"
+        ]
       )
     }
     (local.groups.gcp-network-admins) = {
@@ -63,8 +61,13 @@ locals {
         "roles/resourcemanager.projectCreator",
       ]
       additive = concat(
-        ["roles/orgpolicy.policyAdmin"],
-        local.billing_mode != "org" ? [] : local._iam_billing_roles
+        [
+          "roles/orgpolicy.policyAdmin"
+        ],
+        local.billing_mode != "org" ? [] : [
+          "roles/billing.admin",
+          "roles/billing.costsManager"
+        ]
       )
     }
     (local.groups.gcp-security-admins) = {
@@ -105,7 +108,10 @@ locals {
           "roles/iam.organizationRoleAdmin",
           "roles/orgpolicy.policyAdmin"
         ],
-        local.billing_mode != "org" ? [] : local._iam_billing_roles
+        local.billing_mode != "org" ? [] : [
+          "roles/billing.admin",
+          "roles/billing.costsManager"
+        ]
       )
     }
     (module.automation-tf-resman-sa.iam_email) = {
@@ -117,8 +123,13 @@ locals {
         "roles/resourcemanager.tagUser"
       ]
       additive = concat(
-        ["roles/orgpolicy.policyAdmin"],
-        local.billing_mode != "org" ? [] : local._iam_billing_roles
+        [
+          "roles/orgpolicy.policyAdmin"
+        ],
+        local.billing_mode != "org" ? [] : [
+          "roles/billing.admin",
+          "roles/billing.costsManager"
+        ]
       )
     }
   }
@@ -132,7 +143,10 @@ locals {
         "roles/resourcemanager.projectCreator"
       ]
       additive = (
-        local.billing_mode != "org" ? [] : local._iam_billing_roles
+        local.billing_mode != "org" ? [] : [
+          "roles/billing.admin",
+          "roles/billing.costsManager"
+        ]
       )
     }
   }
