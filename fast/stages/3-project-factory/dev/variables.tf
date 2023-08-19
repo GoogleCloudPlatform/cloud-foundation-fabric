@@ -29,32 +29,20 @@ variable "billing_account" {
   }
 }
 
-variable "data_dir" {
-  description = "Relative path for the folder storing configuration data."
-  type        = string
-  default     = "data/projects"
-}
-
-variable "defaults_file" {
-  description = "Relative path for the file storing the project factory configuration."
-  type        = string
-  default     = "data/defaults.yaml"
-}
-
-variable "environment_dns_zone" {
-  # tfdoc:variable:source 2-networking
-  description = "DNS zone suffix for environment."
-  type        = string
-  default     = null
-}
-
-variable "host_project_ids" {
-  # tfdoc:variable:source 2-networking
-  description = "Host project for the shared VPC."
+variable "factory_data" {
+  description = "Project data from either YAML files or externally parsed data."
   type = object({
-    dev-spoke-0 = string
+    data      = optional(map(any))
+    data_path = optional(string)
   })
-  default = null
+  nullable = false
+  validation {
+    condition = (
+      (var.factory_data.data != null ? 1 : 0) +
+      (var.factory_data.data_path != null ? 1 : 0)
+    ) == 1
+    error_message = "One of data or data_path needs to be set."
+  }
 }
 
 variable "prefix" {
@@ -66,13 +54,4 @@ variable "prefix" {
     condition     = try(length(var.prefix), 0) < 10
     error_message = "Use a maximum of 9 characters for prefix."
   }
-}
-
-variable "vpc_self_links" {
-  # tfdoc:variable:source 2-networking
-  description = "Self link for the shared VPC."
-  type = object({
-    dev-spoke-0 = string
-  })
-  default = null
 }

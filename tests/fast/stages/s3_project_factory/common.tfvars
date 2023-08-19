@@ -1,7 +1,7 @@
-data_dir             = "../../../../tests/fast/stages/s3_project_factory/data/projects/"
-defaults_file        = "../../../../tests/fast/stages/s3_project_factory/data/defaults.yaml"
-prefix               = "test"
-environment_dns_zone = "dev"
+factory_data = {
+  data_path = "../../../../tests/fast/stages/s3_project_factory/data/projects/"
+}
+prefix = "test"
 billing_account = {
   id = "000000-111111-222222"
 }
