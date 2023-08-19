@@ -17,111 +17,46 @@
 # tfdoc:file:description Organization-level IAM.
 
 locals {
-  # organization authoritative IAM bindings, in an easy to edit format before
-  # they are combined with var.iam a bit further in locals
-  _iam = {
-    "roles/billing.creator" = []
-    "roles/browser" = [
-      "domain:${var.organization.domain}"
-    ]
-    "roles/logging.admin" = concat(
-      [
-        module.automation-tf-bootstrap-sa.iam_email,
-        module.automation-tf-resman-sa.iam_email
-      ],
-      local._iam_bootstrap_user
-    )
-    "roles/owner" = local._iam_bootstrap_user
-    "roles/resourcemanager.folderAdmin" = [
-      module.automation-tf-resman-sa.iam_email
-    ]
-    "roles/resourcemanager.organizationAdmin" = concat(
-      [module.automation-tf-bootstrap-sa.iam_email],
-      local._iam_bootstrap_user
-    )
-    "roles/resourcemanager.projectCreator" = concat(
-      [
-        module.automation-tf-bootstrap-sa.iam_email,
-        module.automation-tf-resman-sa.iam_email
-      ],
-      local._iam_bootstrap_user
-    )
-    "roles/resourcemanager.projectMover" = [
-      module.automation-tf-bootstrap-sa.iam_email
-    ]
-    "roles/resourcemanager.tagAdmin" = [
-      module.automation-tf-resman-sa.iam_email
-    ]
-    "roles/resourcemanager.tagUser" = [
-      module.automation-tf-resman-sa.iam_email
-    ]
-  }
-  # organization additive IAM bindings, in an easy to edit format before
-  # they are combined with var.iam_additive a bit further in locals
-  _iam_additive = merge(
+  # reassemble logical bindings into the formats expected by the module
+  _iam_bindings = merge(
+    local.iam_domain_bindings,
+    local.iam_sa_bindings,
+    local.iam_user_bootstrap_bindings,
     {
-      "roles/accesscontextmanager.policyAdmin" = [
-        local.groups_iam.gcp-security-admins
-      ]
-      "roles/compute.orgFirewallPolicyAdmin" = [
-        local.groups_iam.gcp-network-admins
-      ]
-      "roles/compute.xpnAdmin" = [
-        local.groups_iam.gcp-network-admins
-      ]
-      # use additive to support cross-org roles for billing
-      "roles/iam.organizationRoleAdmin" = [
-        # uncomment if roles/owner is removed to organization admins
-        # local.groups.gcp-organization-admins,
-        local.groups_iam.gcp-security-admins,
-        module.automation-tf-bootstrap-sa.iam_email
-      ]
-      "roles/orgpolicy.policyAdmin" = [
-        local.groups_iam.gcp-organization-admins,
-        local.groups_iam.gcp-security-admins,
-        module.automation-tf-resman-sa.iam_email
-      ]
-      # the following is useful if roles/browser is not desirable
-      # "roles/resourcemanager.organizationViewer" = [
-      #   "domain:${var.organization.domain}"
-      # ]
-    },
-    local.billing_mode == "org" ? {
-      "roles/billing.admin" = [
-        local.groups_iam.gcp-billing-admins,
-        local.groups_iam.gcp-organization-admins,
-        module.automation-tf-bootstrap-sa.iam_email,
-        module.automation-tf-resman-sa.iam_email
-      ],
-      "roles/billing.costsManager" = [
-        local.groups_iam.gcp-billing-admins,
-        local.groups_iam.gcp-organization-admins,
-        module.automation-tf-bootstrap-sa.iam_email,
-        module.automation-tf-resman-sa.iam_email
-      ]
-    } : {}
+      for k, v in local.iam_group_bindings : "group:${k}" => {
+        authoritative = []
+        additive      = v.additive
+      }
+    }
   )
-  _iam_bootstrap_user = (
-    var.bootstrap_user == null ? [] : ["user:${var.bootstrap_user}"]
-  )
+  _iam_bindings_auth = flatten([
+    for member, data in local._iam_bindings : [
+      for role in data.authoritative : {
+        member = member
+        role   = role
+      }
+    ]
+  ])
+  _iam_bindings_add = flatten([
+    for member, data in local._iam_bindings : [
+      for role in data.additive : {
+        member = member
+        role   = role
+      }
+    ]
+  ])
+  group_iam = {
+    for k, v in local.iam_group_bindings : k => v.authoritative
+  }
   iam = {
-    for role in local.iam_roles : role => distinct(concat(
-      try(sort(local._iam[role]), []),
-      try(sort(var.iam[role]), [])
-    ))
+    for b in local._iam_bindings_auth : b.role => b.member...
   }
-  iam_additive = {
-    for role in local.iam_roles_additive : role => distinct(concat(
-      try(sort(local._iam_additive[role]), []),
-      try(sort(var.iam_additive[role]), [])
-    ))
+  iam_bindings_additive = {
+    for b in local._iam_bindings_add : "${b.role}-${b.member}" => {
+      member = b.member
+      role   = b.role
+    }
   }
-  iam_roles = distinct(concat(
-    keys(local._iam), keys(var.iam)
-  ))
-  iam_roles_additive = distinct(concat(
-    keys(local._iam_additive), keys(var.iam_additive)
-  ))
 }
 
 module "organization" {
@@ -129,40 +64,19 @@ module "organization" {
   organization_id = "organizations/${var.organization.id}"
   # human (groups) IAM bindings
   group_iam = {
-    (local.groups.gcp-organization-admins) = [
-      "roles/cloudasset.owner",
-      "roles/cloudsupport.admin",
-      "roles/compute.osAdminLogin",
-      "roles/compute.osLoginExternalUser",
-      "roles/owner",
-      # granted via additive roles
-      # roles/iam.organizationRoleAdmin
-      # roles/orgpolicy.policyAdmin
-      "roles/resourcemanager.folderAdmin",
-      "roles/resourcemanager.organizationAdmin",
-      "roles/resourcemanager.projectCreator",
-    ],
-    (local.groups.gcp-network-admins) = [
-      "roles/cloudasset.owner",
-      "roles/cloudsupport.techSupportEditor",
-    ]
-    (local.groups.gcp-security-admins) = [
-      "roles/cloudasset.owner",
-      "roles/cloudsupport.techSupportEditor",
-      "roles/iam.securityReviewer",
-      "roles/logging.admin",
-      "roles/securitycenter.admin",
-    ],
-    (local.groups.gcp-support) = [
-      "roles/cloudsupport.techSupportEditor",
-      "roles/logging.viewer",
-      "roles/monitoring.viewer",
-    ]
+    for k, v in local.group_iam :
+    k => distinct(concat(v, lookup(var.group_iam, k, [])))
   }
   # machine (service accounts) IAM bindings
-  iam = local.iam
+  iam = {
+    for k, v in local.iam :
+    k => distinct(concat(v, lookup(var.iam, k, [])))
+  }
   # additive bindings, used for roles co-managed by different stages
-  iam_additive = local.iam_additive
+  iam_bindings_additive = merge(
+    local.iam_bindings_additive,
+    var.iam_bindings_additive
+  )
   custom_roles = merge(var.custom_roles, {
     # this is needed for use in additive IAM bindings, to avoid conflicts
     (var.custom_role_names.organization_iam_admin) = [

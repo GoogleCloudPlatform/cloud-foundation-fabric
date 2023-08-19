@@ -129,6 +129,14 @@ variable "federated_identity_providers" {
   # }
 }
 
+variable "group_iam" {
+  description = "Organization-level authoritative IAM binding for groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
@@ -150,13 +158,23 @@ variable "groups" {
 variable "iam" {
   description = "Organization-level custom IAM settings in role => [principal] format."
   type        = map(list(string))
+  nullable    = false
   default     = {}
 }
 
-variable "iam_additive" {
-  description = "Organization-level custom IAM settings in role => [principal] format for non-authoritative bindings."
-  type        = map(list(string))
-  default     = {}
+variable "iam_bindings_additive" {
+  description = "Organization-level custom additive IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "locations" {
