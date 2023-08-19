@@ -22,7 +22,7 @@ jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4

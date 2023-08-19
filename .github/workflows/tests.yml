@@ -32,7 +32,7 @@ jobs:
   setup-tf-providers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@v3
 
       - uses: hashicorp/setup-terraform@v2
         with:
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@v3
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@v3
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@v3
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@v3
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@v3
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
