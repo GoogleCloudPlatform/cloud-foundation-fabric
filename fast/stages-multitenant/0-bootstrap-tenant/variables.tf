@@ -130,6 +130,12 @@ variable "federated_identity_providers" {
   nullable = false
 }
 
+variable "group_iam" {
+  description = "Tenant-level custom group IAM settings in group => [roles] format."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "groups" {
   # tfdoc:variable:source 0-bootstrap
   # https://cloud.google.com/docs/enterprise/setup-checklist
@@ -141,12 +147,6 @@ variable "groups" {
   })
   default  = {}
   nullable = false
-}
-
-variable "group_iam" {
-  description = "Tenant-level custom group IAM settings in group => [roles] format."
-  type        = map(list(string))
-  default     = {}
 }
 
 variable "iam" {
