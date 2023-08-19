@@ -130,6 +130,19 @@ variable "federated_identity_providers" {
   nullable = false
 }
 
+variable "groups" {
+  # tfdoc:variable:source 0-bootstrap
+  # https://cloud.google.com/docs/enterprise/setup-checklist
+  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
+  type = object({
+    gcp-devops          = optional(string)
+    gcp-network-admins  = optional(string)
+    gcp-security-admins = optional(string)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "group_iam" {
   description = "Tenant-level custom group IAM settings in group => [roles] format."
   type        = map(list(string))
@@ -142,10 +155,19 @@ variable "iam" {
   default     = {}
 }
 
-variable "iam_additive" {
-  description = "Tenant-level custom IAM settings in role => [principal] format for non-authoritative bindings."
-  type        = map(list(string))
-  default     = {}
+variable "iam_bindings_additive" {
+  description = "Individual additive IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "locations" {
