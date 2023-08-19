@@ -46,7 +46,7 @@ module "dev-sec-kms" {
     name     = "dev-${each.key}"
   }
   # rename to `key_iam` to switch to authoritative bindings
-  key_iam_additive = {
+  key_iam = {
     for k, v in local.kms_locations_keys[each.key] : k => v.iam
   }
   keys = local.kms_locations_keys[each.key]
