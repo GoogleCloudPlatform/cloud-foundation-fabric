@@ -23,7 +23,6 @@ module "landing-project" {
     ? var.project_create.parent
     : null
   )
-
   services = [
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
@@ -34,14 +33,24 @@ module "landing-project" {
     "servicecontrol.googleapis.com",
     "vmmigration.googleapis.com"
   ]
-
   project_create = var.project_create != null
-
-  iam_additive = {
-    "roles/iam.serviceAccountKeyAdmin" = var.migration_admin_users,
-    "roles/iam.serviceAccountCreator"  = var.migration_admin_users,
-    "roles/vmmigration.admin"          = var.migration_admin_users,
-    "roles/vmmigration.viewer"         = var.migration_viewer_users
+  iam_bindings_additive = {
+    admin_sa_key_admin = {
+      role   = "roles/iam.serviceAccountKeyAdmin"
+      member = var.migration_admin
+    }
+    admin_sa_creator = {
+      role   = "roles/iam.serviceAccountCreator"
+      member = var.migration_admin
+    }
+    admin_vmm_admin = {
+      role   = "roles/vmmigration.admin"
+      member = var.migration_admin
+    }
+    viewer_vmm_viewer = {
+      role   = "roles/vmmigration.viewer"
+      member = var.migration_viewer
+    }
   }
 }
 

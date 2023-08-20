@@ -24,7 +24,7 @@ output "id" {
   value       = local.folder.name
   depends_on = [
     google_folder_iam_binding.authoritative,
-    google_folder_iam_policy.authoritative,
+    google_folder_iam_binding.bindings,
     google_org_policy_policy.default,
   ]
 }
@@ -37,6 +37,7 @@ output "name" {
 output "sink_writer_identities" {
   description = "Writer identities created for each sink."
   value = {
-    for name, sink in google_logging_folder_sink.sink : name => sink.writer_identity
+    for name, sink in google_logging_folder_sink.sink :
+    name => sink.writer_identity
   }
 }

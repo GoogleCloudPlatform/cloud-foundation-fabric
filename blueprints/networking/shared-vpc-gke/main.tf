@@ -41,8 +41,9 @@ module "project-svc-gce" {
   prefix          = var.prefix
   name            = "gce"
   services        = var.project_services
-  oslogin         = true
-  oslogin_admins  = var.owners_gce
+  compute_metadata = {
+    enable-oslogin = "true"
+  }
   shared_vpc_service_config = {
     host_project = module.project-host.project_id
     service_identity_iam = {
@@ -50,7 +51,8 @@ module "project-svc-gce" {
     }
   }
   iam = {
-    "roles/owner" = var.owners_gce
+    "roles/compute.osAdminLogin" = var.owners_gce
+    "roles/owner"                = var.owners_gce
   }
 }
 

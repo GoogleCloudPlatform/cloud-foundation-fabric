@@ -15,44 +15,43 @@
 values:
   module.project.google_project.project[0]:
     auto_create_network: false
-    billing_account: null
-    folder_id: null
+    billing_account: 123456-123456-123456
+    folder_id: '1234567890'
     labels: null
-    name: project-example
+    name: foo-project-example
     org_id: null
-    project_id: project-example
+    project_id: foo-project-example
     skip_delete: false
     timeouts: null
-  module.project.google_project_iam_member.members["one-delegated-grant"]:
+  module.project.google_project_iam_binding.bindings["roles/resourcemanager.projectIamAdmin"]:
     condition:
     - description: null
       expression: "api.getAttribute(\n  'iam.googleapis.com/modifiedGrantsByRole',\
         \ []\n).hasOnly([\n  'roles/compute.networkAdmin'\n])\n"
       title: delegated_network_user_one
-    member: user:one@example.org
-    project: project-example
+    members:
+    - group:test-admins@example.org
+    project: foo-project-example
     role: roles/resourcemanager.projectIamAdmin
-  module.project.google_project_iam_member.members["one-owner"]:
-    condition: []
-    member: user:one@example.org
-    project: project-example
-    role: roles/owner
-  module.project.google_project_iam_member.members["two-compute-admin"]:
-    condition: []
-    member: user:two@example.org
-    project: project-example
-    role: roles/compute.admin
-  module.project.google_project_iam_member.members["two-viewer"]:
-    condition: []
-    member: user:two@example.org
-    project: project-example
-    role: roles/viewer
+  module.project.google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: foo-project-example
+    service: container.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["stackdriver.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: foo-project-example
+    service: stackdriver.googleapis.com
+    timeouts: null
 
 counts:
   google_project: 1
-  google_project_iam_member: 4
+  google_project_iam_binding: 1
+  google_project_service: 2
   modules: 1
-  resources: 5
+  resources: 4
 
 outputs: {}
 

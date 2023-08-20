@@ -342,11 +342,11 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [branch-data-platform.tf](./branch-data-platform.tf) | Data Platform stages resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> | <code>google_organization_iam_member</code> |
 | [branch-gke.tf](./branch-gke.tf) | GKE multitenant stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-networking.tf](./branch-networking.tf) | Networking stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-project-factory.tf](./branch-project-factory.tf) | Project factory stage resources. | <code>gcs</code> · <code>iam-service-account</code> | <code>google_organization_iam_member</code> |
+| [branch-project-factory.tf](./branch-project-factory.tf) | Project factory stage resources. | <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-sandbox.tf](./branch-sandbox.tf) | Sandbox stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> | <code>google_organization_iam_member</code> |
 | [branch-security.tf](./branch-security.tf) | Security stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-teams.tf](./branch-teams.tf) | Team stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-tenants.tf](./branch-tenants.tf) | Lightweight tenant resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> · <code>organization</code> · <code>project</code> |  |
+| [branch-tenants.tf](./branch-tenants.tf) | Lightweight tenant resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
 | [cicd-data-platform.tf](./cicd-data-platform.tf) | CI/CD resources for the data platform branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-gke.tf](./cicd-gke.tf) | CI/CD resources for the data platform branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-networking.tf](./cicd-networking.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
@@ -354,6 +354,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [cicd-security.tf](./cicd-security.tf) | CI/CD resources for the security branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-teams.tf](./cicd-teams.tf) | CI/CD resources for individual teams. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
+| [organization-iam.tf](./organization-iam.tf) | Organization-level IAM bindings locals. |  |  |
 | [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> |  |
 | [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>local_file</code> |
 | [outputs-gcs.tf](./outputs-gcs.tf) | Output files persistence to automation GCS bucket. |  | <code>google_storage_bucket_object</code> |

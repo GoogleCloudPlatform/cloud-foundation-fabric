@@ -13,7 +13,16 @@
 # limitations under the License.
 
 values:
-  module.project.google_project.project[0]: {}
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    folder_id: '1234567890'
+    labels: null
+    name: foo-project-example
+    org_id: null
+    project_id: foo-project-example
+    skip_delete: false
+    timeouts: null
   module.project.google_project_iam_binding.authoritative["roles/container.hostServiceAgentUser"]:
     condition: []
     members:
@@ -37,3 +46,8 @@ counts:
   google_project: 1
   google_project_iam_binding: 1
   google_project_service: 2
+  modules: 1
+  resources: 4
+
+outputs: {}
+

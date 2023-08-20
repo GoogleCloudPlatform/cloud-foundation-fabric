@@ -55,10 +55,11 @@ variable "composer_config" {
   }
 }
 
-variable "iam_groups_map" {
-  description = "Map of Role => groups to be added on the project. Example: { \"roles/composer.admin\" = [\"group:gcp-data-engineers@example.com\"]}."
+variable "iam_bindings_additive" {
+  description = "Map of Role => principal in IAM format (`group:foo@example.org`) to be added on the project."
   type        = map(list(string))
-  default     = null
+  nullable    = false
+  default     = {}
 }
 
 variable "network_config" {

@@ -1,270 +1,95 @@
-# Minimal Project Factory
+# Project Factory
 
-This module implements a minimal, opinionated project factory (see [Factories](../README.md) for rationale) that allows for the creation of projects.
+This is a working example of how to manage project creation at scale, by wrapping the [project module](../../../modules/project/) and driving it via external data, either directly provided or parsed via YAML files.
 
-While the module can be invoked by manually populating the required variables, its interface is meant for the massive creation of resources leveraging a set of well-defined YaML documents, as shown in the examples below.
+The wrapping layer around the project module is intentionally thin, so that
 
-The Project Factory is meant to be executed by a Service Account (or a regular user) having this minimal set of permissions over your resources:
+- all the features of the project module are available
+- no "magic" or hidden side effects are implemented in code
+- debugging and integration of new features is simple
 
-* **Org level** - a custom role for networking operations including the following permissions
-  * `"compute.organizations.enableXpnResource"`,
-  * `"compute.organizations.disableXpnResource"`,
-  * `"compute.subnetworks.setIamPolicy"`,
-  * `"dns.networks.bindPrivateDNSZone"`
-  * and role `"roles/orgpolicy.policyAdmin"`
-* **on each folder** where projects will be created
-  * `"roles/logging.admin"`
-  * `"roles/owner"`
-  * `"roles/resourcemanager.folderAdmin"`
-  * `"roles/resourcemanager.projectCreator"`
-* **on the host project** for the Shared VPC/s
-  * `"roles/browser"`
-  * `"roles/compute.viewer"`
-  * `"roles/dns.admin"`
+The code is meant to be executed by a high level service accounts with powerful permissions:
+
+- Shared VPC connection if service project attachment is desired
+- project creation on the nodes (folder or org) where projects will be defined
+
+The module also supports optional creation of specific resources that usually part of the project creation flow:
+
+- service accounts used for VM instances, and associated basic roles
+- KMS key encrypt/decrypt permissions for service identities in the project
+- membership in VPC SC standard or bridge perimeters
+
+Compared to the previous version of this code, network-related resources (DNS zones, VPC subnets, etc.) have been removed as they are not typically in scope for the team who manages project creation, and adding them when needed requires just a few trivial code changes.
 
 ## Example
 
-### Directory structure
-
-```
-.
-├── data
-│   ├── defaults.yaml
-│   └── projects
-│       ├── project-example-one.yaml
-│       ├── project-example-two.yaml
-│       └── project-example-three.yaml
-├── main.tf
-└── terraform.tfvars
-
-```
-
-### Terraform code
-
 ```hcl
-locals {
-  defaults = yamldecode(file(local._defaults_file))
-  projects = {
-    for f in fileset("${local._data_dir}", "**/*.yaml") :
-    trimsuffix(f, ".yaml") => yamldecode(file("${local._data_dir}/${f}"))
+module "project-factory" {
+  source = "./fabric/blueprints/factories/project-factory"
+  data_defaults = {
+    billing_account = "012345-67890A-ABCDEF"
   }
-  # these are usually set via variables
-  _base_dir      = "./fabric/blueprints/factories/project-factory"
-  _data_dir      = "${local._base_dir}/sample-data/projects/"
-  _defaults_file = "${local._base_dir}/sample-data/defaults.yaml"
+  data_merges = {
+    labels = {
+      environment = "test"
+    }
+    services = [
+      "stackdriver.googleapis.com"
+    ]
+  }
+  data_overrides = {
+    contacts = {
+      "admin@example.com" = ["ALL"]
+    }
+    prefix = "test-pf"
+  }
+  factory_data = {
+    data_path = "data"
+  }
 }
-
-module "projects" {
-  source                 = "./fabric/blueprints/factories/project-factory"
-  for_each               = local.projects
-  defaults               = local.defaults
-  project_id             = each.key
-  descriptive_name       = try(each.value.descriptive_name, null)
-  billing_account_id     = try(each.value.billing_account_id, null)
-  billing_alert          = try(each.value.billing_alert, null)
-  dns_zones              = try(each.value.dns_zones, [])
-  essential_contacts     = try(each.value.essential_contacts, [])
-  folder_id              = each.value.folder_id
-  group_iam              = try(each.value.group_iam, {})
-  iam                    = try(each.value.iam, {})
-  kms_service_agents     = try(each.value.kms_service_agents, {})
-  labels                 = try(each.value.labels, {})
-  org_policies           = try(each.value.org_policies, {})
-  prefix                 = each.value.prefix
-  service_accounts       = try(each.value.service_accounts, {})
-  services               = try(each.value.services, [])
-  service_identities_iam = try(each.value.service_identities_iam, {})
-  vpc                    = try(each.value.vpc, null)
-}
-# tftest modules=7 resources=38 inventory=example.yaml
-```
-
-### Projects configuration
-
-```yaml
-# ./data/defaults.yaml
-# The following applies as overridable defaults for all projects
-# All attributes are required
-
-billing_account_id: 012345-67890A-BCDEF0
-billing_alert:
-  amount: 1000
-  thresholds:
-    current: [0.5, 0.8]
-    forecasted: [0.5, 0.8]
-  credit_treatment: INCLUDE_ALL_CREDITS
-environment_dns_zone: prod.gcp.example.com
-essential_contacts: []
-labels:
-  environment: production
-  department: legal
-  application: my-legal-bot
-notification_channels: []
-shared_vpc_self_link: https://www.googleapis.com/compute/v1/projects/project-example-host-project/global/networks/vpc-one
-vpc_host_project: project-example-host-project
-
+# tftest modules=6 resources=12 files=prj-app-1,prj-app-2 inventory=example.yaml
 ```
 
 ```yaml
-# ./data/projects/project-example-one.yaml
-# One file per project - projects will be named after the filename
-
-# [opt] Billing account id - overrides default if set
-billing_account_id: 012345-67890A-BCDEF0
-
-# [opt] Billing alerts config - overrides default if set
-billing_alert:
-  amount: 10
-  thresholds:
-    current:
-      - 0.5
-      - 0.8
-    forecasted: []
-
-# [opt] DNS zones to be created as children of the environment_dns_zone defined in defaults
-dns_zones:
-    - lorem
-    - ipsum
-
-# [opt] Contacts for billing alerts and important notifications
-essential_contacts:
-  - team-a-contacts@example.com
-
-# Folder the project will be created as children of
-folder_id: folders/012345678901
-
-# [opt] Authoritative IAM bindings in group => [roles] format
-group_iam:
-  test-team-foobar@fast-lab-0.gcp-pso-italy.net:
-    - roles/compute.admin
-
-# [opt] Authoritative IAM bindings in role => [principals] format
-# Generally used to grant roles to service accounts external to the project
-iam:
-  roles/compute.admin:
-    - serviceAccount:service-account
-
-# [opt] Service robots and keys they will be assigned as cryptoKeyEncrypterDecrypter
-# in service => [keys] format
-kms_service_agents:
-  compute: [key1, key2]
-  storage: [key1, key2]
-
-# [opt] Labels for the project - merged with the ones defined in defaults
+billing_account: 012345-67890A-BCDEF0
 labels:
-  environment: prod
-
-# [opt] Org policy overrides defined at project level
-org_policies:
-  compute.disableGuestAttributesAccess:
-    rules:
-    - enforce: true
-  compute.trustedImageProjects:
-    rules:
-    - allow:
-        values:
-        - projects/fast-dev-iac-core-0
-  compute.vmExternalIpAccess:
-    rules:
-    - deny:
-        all: true
-
-# [opt] Service account to create for the project and their roles on the project
-# in name => [roles] format
-service_accounts:
-  another-service-account:
-    - roles/compute.admin
-  my-service-account:
-    - roles/compute.admin
-
-# [opt] IAM bindings on the service account resources.
-# in name => {role => [members]} format
-service_accounts_iam:
-  another-service-account:
-    - roles/iam.serviceAccountTokenCreator:
-      - group: app-team-1@example.com
-
-# [opt] APIs to enable on the project.
+ app: app-1
+ team: foo
+service_encryption_key_ids:
+ compute:
+ - projects/kms-central-prj/locations/europe-west3/keyRings/my-keyring/cryptoKeys/europe3-gce
 services:
-  - storage.googleapis.com
-  - stackdriver.googleapis.com
-  - compute.googleapis.com
+- storage.googleapis.com
+service_accounts:
+  app-1-be: {}
+  app-1-fe: {}
 
-# [opt] Roles to assign to the robots service accounts in robot => [roles] format
-services_iam:
-  compute:
-    - roles/storage.objectViewer
+# tftest-file id=prj-app-1 path=data/prj-app-1.yaml
+```
 
- # [opt] VPC setup.
- # If set enables the `compute.googleapis.com` service and configures
- # service project attachment
-vpc:
+```yaml
+labels:
+ app: app-1
+ team: foo
+service_accounts:
+  app-2-be: {}
 
-  # [opt] If set, enables the container API
-  gke_setup:
-
-    # Grants "roles/container.hostServiceAgentUser" to the container robot if set
-    enable_host_service_agent: false
-
-    # Grants  "roles/compute.securityAdmin" to the container robot if set
-    enable_security_admin: true
-
-  # Host project the project will be service project of
-  host_project: fast-prod-net-spoke-0
-
-  # [opt] Services for which set up the IAM in the host project
-  service_iam_grants:
-    - dataproc.googleapis.com
-
-  # [opt] Roles to rant service project service identities in host project
-  service_identity_iam:
-    "roles/compute.networkUser":
-      - cloudservices
-      - container-engine
-
-  # [opt] Subnets in the host project where principals will be granted networkUser
-  # in region/subnet-name => [principals]
-  subnets_iam:
-    europe-west1/prod-default-ew1:
-      - user:foobar@example.com
-      - serviceAccount:service-account1@my-project.iam.gserviceaccount.com
+# tftest-file id=prj-app-2 path=data/prj-app-2.yaml
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [billing_account_id](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L144) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L153) | Project id. | <code>string</code> | ✓ |  |
-| [billing_alert](variables.tf#L22) | Billing alert configuration. | <code title="object&#40;&#123;&#10;  amount &#61; number&#10;  thresholds &#61; object&#40;&#123;&#10;    current    &#61; list&#40;number&#41;&#10;    forecasted &#61; list&#40;number&#41;&#10;  &#125;&#41;&#10;  credit_treatment &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [defaults](variables.tf#L35) | Project factory default values. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  billing_alert &#61; object&#40;&#123;&#10;    amount &#61; number&#10;    thresholds &#61; object&#40;&#123;&#10;      current    &#61; list&#40;number&#41;&#10;      forecasted &#61; list&#40;number&#41;&#10;    &#125;&#41;&#10;    credit_treatment &#61; string&#10;  &#125;&#41;&#10;  environment_dns_zone  &#61; string&#10;  essential_contacts    &#61; list&#40;string&#41;&#10;  labels                &#61; map&#40;string&#41;&#10;  notification_channels &#61; list&#40;string&#41;&#10;  shared_vpc_self_link  &#61; string&#10;  vpc_host_project      &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [descriptive_name](variables.tf#L57) | Name of the project name. Used for project name instead of `name` variable. | <code>string</code> |  | <code>null</code> |
-| [dns_zones](variables.tf#L63) | DNS private zones to create as child of var.defaults.environment_dns_zone. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [essential_contacts](variables.tf#L69) | Email contacts to be used for billing and GCP notifications. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [folder_id](variables.tf#L75) | Folder ID for the folder where the project will be created. | <code>string</code> |  | <code>null</code> |
-| [group_iam](variables.tf#L81) | Custom IAM settings in group => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [group_iam_additive](variables.tf#L87) | Custom additive IAM settings in group => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam](variables.tf#L93) | Custom IAM settings in role => [principal] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_additive](variables.tf#L99) | Custom additive IAM settings in role => [principal] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [kms_service_agents](variables.tf#L105) | KMS IAM configuration in as service => [key]. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L111) | Labels to be assigned at project level. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies](variables.tf#L117) | Org-policy overrides at project level. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_accounts](variables.tf#L158) | Service accounts to be created, and roles assigned them on the project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_accounts_additive](variables.tf#L164) | Service accounts to be created, and roles assigned them on the project additively. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_accounts_iam](variables.tf#L170) | IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_accounts_iam_additive](variables.tf#L177) | IAM additive bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_identities_iam](variables.tf#L184) | Custom IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_identities_iam_additive](variables.tf#L191) | Custom additive IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [services](variables.tf#L198) | Services to be enabled for the project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc](variables.tf#L205) | VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; optional&#40;object&#40;&#123;&#10;    enable_security_admin     &#61; optional&#40;bool, false&#41;&#10;    enable_host_service_agent &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_identity_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  subnets_iam          &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [factory_data](variables.tf#L83) | Project data from either YAML files or externally parsed data. | <code title="object&#40;&#123;&#10;  data      &#61; optional&#40;map&#40;any&#41;&#41;&#10;  data_path &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [data_defaults](variables.tf#L17) | Optional default values used when corresponding project data from files are missing. | <code title="object&#40;&#123;&#10;  billing_account            &#61; optional&#40;string&#41;&#10;  contacts                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  labels                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metric_scopes              &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  prefix                     &#61; optional&#40;string&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_perimeter_bridges  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_perimeter_standard &#61; optional&#40;string&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  shared_vpc_service_config &#61; optional&#40;object&#40;&#123;&#10;    host_project         &#61; string&#10;    service_identity_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_iam_grants   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;, &#123; host_project &#61; null &#125;&#41;&#10;  tag_bindings &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    default_roles &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_merges](variables.tf#L44) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code title="object&#40;&#123;&#10;  contacts                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  labels                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metric_scopes              &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_perimeter_bridges  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    default_roles &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_overrides](variables.tf#L63) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code title="object&#40;&#123;&#10;  billing_account            &#61; optional&#40;string&#41;&#10;  contacts                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  prefix                     &#61; optional&#40;string&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  service_perimeter_bridges  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  service_perimeter_standard &#61; optional&#40;string&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    default_roles &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [project](outputs.tf#L19) | The project resource as return by the `project` module. |  |
-| [project_id](outputs.tf#L29) | Project ID. |  |
-
+| [projects](outputs.tf#L17) | Project module outputs. |  |
+| [service_accounts](outputs.tf#L22) | Service account emails. |  |
 <!-- END TFDOC -->
