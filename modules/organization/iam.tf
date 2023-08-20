@@ -78,6 +78,14 @@ resource "google_organization_iam_member" "members" {
   org_id   = local.organization_id_numeric
   role     = each.value.role
   member   = each.value.member
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 resource "google_organization_iam_policy" "authoritative" {

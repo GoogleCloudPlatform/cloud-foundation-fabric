@@ -36,7 +36,7 @@ Once the resources have been created, do the following to verify that everything
 
         kubectl apply -f tenant-setup.yaml
 
-   By applying that manifest thw following is created:
+   By applying that manifest the following is created:
 
     * A namespace called "apis". This is the namespace where the application will be deployed. 
     * A Role and a RoleBinding in previously created namespace so the service account that has been configured for the CD pipeline trigger in Cloud Build is able to deploy the kubernetes application to that namespace.

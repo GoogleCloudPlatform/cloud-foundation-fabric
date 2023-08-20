@@ -67,6 +67,14 @@ resource "google_kms_key_ring_iam_member" "members" {
   key_ring_id = local.keyring.id
   role        = each.value.role
   member      = each.value.member
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 resource "google_kms_crypto_key_iam_binding" "default" {
@@ -94,4 +102,12 @@ resource "google_kms_crypto_key_iam_member" "members" {
   crypto_key_id = google_kms_crypto_key.default[each.value.key].id
   role          = each.value.role
   member        = each.value.member
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }

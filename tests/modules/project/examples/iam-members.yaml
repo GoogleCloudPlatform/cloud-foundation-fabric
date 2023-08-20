@@ -23,6 +23,15 @@ values:
     project_id: project-example
     skip_delete: false
     timeouts: null
+  module.project.google_project_iam_member.members["one-delegated-grant"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute(\n  'iam.googleapis.com/modifiedGrantsByRole',\
+        \ []\n).hasOnly([\n  'roles/compute.networkAdmin'\n])\n"
+      title: delegated_network_user_one
+    member: user:one@example.org
+    project: project-example
+    role: roles/resourcemanager.projectIamAdmin
   module.project.google_project_iam_member.members["one-owner"]:
     condition: []
     member: user:one@example.org
@@ -41,8 +50,9 @@ values:
 
 counts:
   google_project: 1
-  google_project_iam_member: 3
+  google_project_iam_member: 4
   modules: 1
-  resources: 4
+  resources: 5
 
 outputs: {}
+

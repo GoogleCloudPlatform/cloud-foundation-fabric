@@ -209,10 +209,10 @@ Then make sure you have configured the correct values for the following variable
 - `organization.id`, `organization.domain`, `organization.customer_id`
   the id, domain and customer id of your organization, derived from the Cloud Console UI or by running `gcloud organizations list`
 - `prefix`
-  the fixed org-level prefix used in your naming, maximum 9 characters long. Note that if you are using multitenant stages, then you will later need to configure a `tenant prefix`. 
-  This `tenant prefix` can have a maximum length of 2 characters, 
-  plus any unused characters from the from the `prefix`. 
-  For example, if you specify a `prefix` that is 7 characters long, 
+  the fixed org-level prefix used in your naming, maximum 9 characters long. Note that if you are using multitenant stages, then you will later need to configure a `tenant prefix`.
+  This `tenant prefix` can have a maximum length of 2 characters,
+  plus any unused characters from the from the `prefix`.
+  For example, if you specify a `prefix` that is 7 characters long,
   then your `tenant prefix` can have a maximum of 4 characters.
 
 You can also adapt the example that follows to your needs:
@@ -421,7 +421,7 @@ federated_identity_providers = {
     attribute_condition = "attribute.namespace_path==\"my-gitlab-org\""
     issuer              = "gitlab"
     custom_settings = {
-      allowed_audiences = ["https://gitlab.fast.example.com"]
+      audiences = ["https://gitlab.fast.example.com"]
       issuer_uri        = "https://gitlab.fast.example.com"
     }
   }
@@ -516,7 +516,7 @@ The remaining configuration is manual, as it regards the repositories themselves
 | [custom_role_names](variables.tf#L79) | Names of custom roles defined at the org level. | <code title="object&#40;&#123;&#10;  organization_iam_admin        &#61; string&#10;  service_project_network_admin &#61; string&#10;  tenant_network_admin          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  organization_iam_admin        &#61; &#34;organizationIamAdmin&#34;&#10;  service_project_network_admin &#61; &#34;serviceProjectNetworkAdmin&#34;&#10;  tenant_network_admin          &#61; &#34;tenantNetworkAdmin&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [custom_roles](variables.tf#L93) | Map of role names => list of permissions to additionally create at the organization level. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [fast_features](variables.tf#L100) | Selective control for top-level FAST features. | <code title="object&#40;&#123;&#10;  data_platform   &#61; optional&#40;bool, false&#41;&#10;  gke             &#61; optional&#40;bool, false&#41;&#10;  project_factory &#61; optional&#40;bool, false&#41;&#10;  sandbox         &#61; optional&#40;bool, false&#41;&#10;  teams           &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [federated_identity_providers](variables.tf#L113) | Workload Identity Federation pools. The `cicd_repositories` variable references keys here. | <code title="map&#40;object&#40;&#123;&#10;  attribute_condition &#61; optional&#40;string&#41;&#10;  issuer              &#61; string&#10;  custom_settings &#61; optional&#40;object&#40;&#123;&#10;    issuer_uri        &#61; optional&#40;string&#41;&#10;    allowed_audiences &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [federated_identity_providers](variables.tf#L113) | Workload Identity Federation pools. The `cicd_repositories` variable references keys here. | <code title="map&#40;object&#40;&#123;&#10;  attribute_condition &#61; optional&#40;string&#41;&#10;  issuer              &#61; string&#10;  custom_settings &#61; optional&#40;object&#40;&#123;&#10;    issuer_uri &#61; optional&#40;string&#41;&#10;    audiences  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [groups](variables.tf#L132) | Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp-billing-admins      &#61; &#34;gcp-billing-admins&#34;,&#10;  gcp-devops              &#61; &#34;gcp-devops&#34;,&#10;  gcp-network-admins      &#61; &#34;gcp-network-admins&#34;&#10;  gcp-organization-admins &#61; &#34;gcp-organization-admins&#34;&#10;  gcp-security-admins     &#61; &#34;gcp-security-admins&#34;&#10;  gcp-support &#61; &#34;gcp-devops&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [iam](variables.tf#L150) | Organization-level custom IAM settings in role => [principal] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [iam_additive](variables.tf#L156) | Organization-level custom IAM settings in role => [principal] format for non-authoritative bindings. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
@@ -529,14 +529,14 @@ The remaining configuration is manual, as it regards the repositories themselves
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [automation](outputs.tf#L100) | Automation resources. |  |  |
-| [billing_dataset](outputs.tf#L105) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L110) | CI/CD repository configurations. |  |  |
-| [custom_roles](outputs.tf#L122) | Organization-level custom roles. |  |  |
-| [federated_identity](outputs.tf#L127) | Workload Identity Federation pool and providers. |  |  |
-| [outputs_bucket](outputs.tf#L137) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L142) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L152) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L159) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L168) | Terraform variable files for the following stages. | ✓ |  |
+| [automation](outputs.tf#L102) | Automation resources. |  |  |
+| [billing_dataset](outputs.tf#L107) | BigQuery dataset prepared for billing export. |  |  |
+| [cicd_repositories](outputs.tf#L112) | CI/CD repository configurations. |  |  |
+| [custom_roles](outputs.tf#L124) | Organization-level custom roles. |  |  |
+| [federated_identity](outputs.tf#L129) | Workload Identity Federation pool and providers. |  |  |
+| [outputs_bucket](outputs.tf#L139) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L144) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L154) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L161) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L170) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->
