@@ -94,7 +94,7 @@ The new variable will closely follow the type of the authoritative `iam_bindings
 variable "iam_bindings_additive" {
   description = "Additive IAM bindings with support for conditions, in {KEY => { role = ROLE, members = [], condition = {}}} format."
   type = map(object({
-    members   = list(string)
+    member    = string
     role      = string
     condition = optional(object({
       expression  = string
