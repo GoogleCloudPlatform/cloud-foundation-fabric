@@ -15,6 +15,11 @@
  */
 
 output "projects" {
-  description = "Created projects and service accounts."
-  value       = module.projects
+  description = "Created projects."
+  value       = module.projects.projects
+}
+
+output "service_accounts" {
+  description = "Created service accounts."
+  value       = module.projects.service_accounts
 }

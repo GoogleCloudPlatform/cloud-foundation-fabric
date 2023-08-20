@@ -23,26 +23,12 @@ locals {
       for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
     ]
   }
-  _iam_additive_pairs = flatten([
-    for role, members in var.iam_additive : [
-      for member in members : { role = role, member = member }
-    ]
-  ])
-  _iam_additive_member_pairs = flatten([
-    for member, roles in var.iam_additive_members : [
-      for role in roles : { role = role, member = member }
-    ]
-  ])
   iam = {
     for role in distinct(concat(keys(var.iam), keys(local._group_iam))) :
     role => concat(
       try(var.iam[role], []),
       try(local._group_iam[role], [])
     )
-  }
-  iam_additive = {
-    for pair in concat(local._iam_additive_pairs, local._iam_additive_member_pairs) :
-    "${pair.role}-${pair.member}" => pair
   }
 }
 
@@ -62,22 +48,11 @@ resource "google_organization_iam_binding" "authoritative" {
   members  = each.value
 }
 
-resource "google_organization_iam_member" "additive" {
-  for_each = (
-    length(var.iam_additive) + length(var.iam_additive_members) > 0
-    ? local.iam_additive
-    : {}
-  )
-  org_id = local.organization_id_numeric
-  role   = each.value.role
-  member = each.value.member
-}
-
-resource "google_organization_iam_member" "members" {
-  for_each = var.iam_members
+resource "google_organization_iam_binding" "bindings" {
+  for_each = var.iam_bindings
   org_id   = local.organization_id_numeric
-  role     = each.value.role
-  member   = each.value.member
+  role     = each.key
+  members  = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -88,33 +63,17 @@ resource "google_organization_iam_member" "members" {
   }
 }
 
-resource "google_organization_iam_policy" "authoritative" {
-  count       = var.iam_policy != null ? 1 : 0
-  org_id      = local.organization_id_numeric
-  policy_data = data.google_iam_policy.authoritative.0.policy_data
-}
-
-data "google_iam_policy" "authoritative" {
-  count = var.iam_policy != null ? 1 : 0
-  dynamic "binding" {
-    for_each = try(var.iam_policy, {})
+resource "google_organization_iam_member" "bindings" {
+  for_each = var.iam_bindings_additive
+  org_id   = local.organization_id_numeric
+  role     = each.value.role
+  member   = each.value.member
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
     content {
-      role    = binding.key
-      members = binding.value
-    }
-  }
-  dynamic "audit_config" {
-    for_each = var.logging_data_access
-    content {
-      service = audit_config.key
-      dynamic "audit_log_configs" {
-        for_each = audit_config.value
-        iterator = config
-        content {
-          log_type         = config.key
-          exempted_members = config.value
-        }
-      }
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
     }
   }
 }

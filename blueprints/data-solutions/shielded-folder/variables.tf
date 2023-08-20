@@ -75,10 +75,11 @@ variable "groups" {
 variable "kms_keys" {
   description = "KMS keys to create, keyed by name."
   type = map(object({
-    iam             = optional(map(list(string)), {})
-    labels          = optional(map(string), {})
-    locations       = optional(list(string), ["global", "europe", "europe-west1"])
-    rotation_period = optional(string, "7776000s")
+    iam                   = optional(map(list(string)), {})
+    iam_bindings_additive = optional(map(map(any)), {})
+    labels                = optional(map(string), {})
+    locations             = optional(list(string), ["global", "europe", "europe-west1"])
+    rotation_period       = optional(string, "7776000s")
   }))
   default = {}
 }

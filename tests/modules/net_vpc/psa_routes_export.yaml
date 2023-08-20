@@ -46,7 +46,6 @@ counts:
   google_service_networking_connection: 1
 
 outputs:
-  bindings: {}
   name: __missing__
   network: __missing__
   project_id: test-project

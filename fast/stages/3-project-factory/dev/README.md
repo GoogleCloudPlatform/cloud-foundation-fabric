@@ -13,43 +13,13 @@ A single factory creates projects in a well-defined context, according to your r
 
 Projects for each environment across different teams are created by dedicated service accounts, as exemplified in the diagram above. While there's no intrinsic limitation regarding where the project factory can create a projects, the IAM bindings for the service account effectively enforce boundaries (e.g., the production service account shouldn't be able to create or have any access to the development projects, and vice versa).
 
-The project factory takes care of the following activities:
-
-- Project creation
-- API/Services enablement
-- Service accounts creation
-- IAM roles assignment for groups and service accounts
-- KMS keys roles assignment
-- Shared VPC attachment and subnets IAM binding
-- DNS zones creation and visibility configuration
-- Project-level org policies definition
-- Billing setup (billing account attachment and budget configuration)
-- Essential contacts definition (for [budget alerts](https://cloud.google.com/billing/docs/how-to/budgets) and [important notifications](https://cloud.google.com/resource-manager/docs/managing-notification-contacts?hl=en))
+The project factory exposes all the features of the underlying [project module](../../../../modules/project/), including Shared VPC service project attachment, VPC SC perimeter membership, etc.
   
 ## How to run this stage
 
 This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../0-bootstrap), [`01-resman`](../../1-resman), 02-networking (either [VPN](../../2-networking-b-vpn), [NVA](../../2-networking-c-nva), [NVA with BGP support](../../2-networking-e-nva-bgp)) and [`02-security`](../../2-security)) have been run.
 
-It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
-
-- One service account per environment, each with appropriate permissions
-  - at the organization level a custom role for networking operations including the following permissions
-    - `"compute.organizations.enableXpnResource"`,
-    - `"compute.organizations.disableXpnResource"`,
-    - `"compute.subnetworks.setIamPolicy"`,
-    - `"dns.networks.bindPrivateDNSZone"`
-    - and role `"roles/orgpolicy.policyAdmin"`
-  - on each folder where projects are created
-    - `"roles/logging.admin"`
-    - `"roles/owner"`
-    - `"roles/resourcemanager.folderAdmin"`
-    - `"roles/resourcemanager.projectCreator"`
-  - on the host project for the Shared VPC
-    - `"roles/browser"`
-    - `"roles/compute.viewer"`
-    - `"roles/dns.admin"`
-- If networking is used (e.g., for VMs, GKE Clusters or AppEngine flex), VPC Host projects and their subnets should exist when creating projects
-- If per-environment DNS sub-zones are required, one "root" zone per environment should exist when creating projects (e.g., dev.gcp.example.com.)
+It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the appropriate roles.
 
 ### Provider and Terraform variables
 
@@ -83,14 +53,11 @@ gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.aut
 gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-security.auto.tfvars.json ./
 ```
 
-If you're not using Fast, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
+If you're not using FAST, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
 
-Besides the values above, a project factory takes 2 additional inputs:
+Besides the values above, the project factory is drive by data files, with one file per project.
 
-- `data/defaults.yaml`, manually configured by adapting the [`data/defaults.yaml`](./data/defaults.yaml), which defines per-environment default values e.g., for billing alerts and labels.
-- `data/projects/*.yaml`, one file per project (optionally grouped in folders), which configures each project. A [`data/projects/project.yaml`](./data/projects/project.yaml.sample) is provided as reference and documentation for the schema. Projects will be named after the filename, e.g., `fast-dev-lab0.yaml` will create project `fast-dev-lab0`.
-
-Once the configuration is complete, run the project factory by running
+Once the configuration is complete, run the project factory with:
 
 ```bash
 terraform init
@@ -99,7 +66,6 @@ terraform apply
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
-
 ## Files
 
 | name | description | modules |
@@ -113,17 +79,13 @@ terraform apply
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account](variables.tf#L19) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [prefix](variables.tf#L60) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
-| [data_dir](variables.tf#L32) | Relative path for the folder storing configuration data. | <code>string</code> |  | <code>&#34;data&#47;projects&#34;</code> |  |
-| [defaults_file](variables.tf#L38) | Relative path for the file storing the project factory configuration. | <code>string</code> |  | <code>&#34;data&#47;defaults.yaml&#34;</code> |  |
-| [environment_dns_zone](variables.tf#L44) | DNS zone suffix for environment. | <code>string</code> |  | <code>null</code> | <code>2-networking</code> |
-| [host_project_ids](variables.tf#L51) | Host project for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>2-networking</code> |
-| [vpc_self_links](variables.tf#L71) | Self link for the shared VPC. | <code title="object&#40;&#123;&#10;  dev-spoke-0 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>2-networking</code> |
+| [factory_data](variables.tf#L32) | Project data from either YAML files or externally parsed data. | <code title="object&#40;&#123;&#10;  data      &#61; optional&#40;map&#40;any&#41;&#41;&#10;  data_path &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [prefix](variables.tf#L48) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [projects](outputs.tf#L17) | Created projects and service accounts. |  |  |
-
+| [projects](outputs.tf#L17) | Created projects. |  |  |
+| [service_accounts](outputs.tf#L22) | Created service accounts. |  |  |
 <!-- END TFDOC -->

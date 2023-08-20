@@ -16,9 +16,26 @@
 
 locals {
   iam_lnd = {
-    "roles/storage.objectCreator" = [module.land-sa-0.iam_email]
-    "roles/storage.objectViewer"  = [module.processing-sa-cmp-0.iam_email]
-    "roles/storage.objectAdmin"   = [module.processing-sa-0.iam_email]
+    "roles/storage.objectCreator" = [
+      module.land-sa-0.iam_email
+    ]
+    "roles/storage.objectViewer" = [
+      module.processing-sa-cmp-0.iam_email
+    ]
+    "roles/storage.objectAdmin" = [
+      module.processing-sa-0.iam_email
+    ]
+  }
+  # this only works because the service account module uses a static output
+  iam_lnd_additive = {
+    for k in flatten([
+      for role, members in local.iam_lnd : [
+        for member in members : {
+          role   = role
+          member = member
+        }
+      ]
+    ]) : "${k.member}-${k.role}" => k
   }
 }
 
@@ -27,14 +44,20 @@ module "land-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  prefix = (
+    var.project_config.billing_account_id == null ? null : var.prefix
+  )
   name = (
     var.project_config.billing_account_id == null
     ? var.project_config.project_ids.landing
     : "${var.project_config.project_ids.landing}${local.project_suffix}"
   )
-  iam          = var.project_config.billing_account_id != null ? local.iam_lnd : null
-  iam_additive = var.project_config.billing_account_id == null ? local.iam_lnd : null
+  iam = (
+    var.project_config.billing_account_id == null ? {} : local.iam_lnd
+  )
+  iam_bindings_additive = (
+    var.project_config.billing_account_id != null ? {} : local.iam_lnd_additive
+  )
   services = [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",

@@ -23,27 +23,6 @@ locals {
       module.tenant-self-iac-sa[k].iam_email
     ]
   }
-  tenant_org_iam = compact(flatten([
-    for k, v in var.tenants : [
-      "group:${v.admin_group_email}",
-      v.organization != null ? "domain:${v.organization.domain}" : null
-    ]
-  ]))
-}
-
-
-# org-level roles for each tenant (additive)
-
-module "tenant-org-iam" {
-  source          = "../../../modules/organization"
-  organization_id = "organizations/${var.organization.id}"
-  iam_additive = {
-    "roles/compute.osLoginExternalUser" = [
-      for k, v in var.tenants :
-      "domain:${v.organization.domain}" if v.organization != null
-    ]
-    "roles/resourcemanager.organizationViewer" = local.tenant_org_iam
-  }
 }
 
 # top-level "Tenants" folder
@@ -107,7 +86,9 @@ module "tenant-core-folder-iam" {
   folder_create = false
   iam = merge(
     {
-      "roles/owner"  = [module.tenant-core-sa[each.key].iam_email]
+      "roles/owner" = [
+        module.tenant-core-sa[each.key].iam_email
+      ]
       "roles/viewer" = local.tenant_iam[each.key]
     },
     {

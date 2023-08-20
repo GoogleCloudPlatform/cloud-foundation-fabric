@@ -100,6 +100,8 @@ module "vpc" {
 
 ### Subnet IAM
 
+Subnet IAM variables follow our general interface, with extra keys/members for the subnet to which each binding will be applied.
+
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
@@ -124,14 +126,18 @@ module "vpc" {
       ]
     }
   }
-  subnet_iam_additive = {
-    "europe-west1/subnet-2" = {
-      "roles/compute.networkUser" = [
-        "user:user2@example.com", "group:group2@example.com"
-      ]
+  subnet_iam_bindings = {
+    "europe-west1/subnet-1" = {
+      "roles/compute.networkUser" = {
+        members = ["group:group2@example.com"]
+        condition = {
+          expression = "resource.matchTag('123456789012/env', 'prod')"
+          title      = "test_condition"
+        }
+      }
     }
   }
-  subnet_iam_members = {
+  subnet_iam_bindings_additive = {
     subnet-2-am1 = {
       member = "user:am1@example.com"
       role   = "roles/compute.networkUser"
@@ -139,7 +145,7 @@ module "vpc" {
     }
   }
 }
-# tftest modules=1 resources=9 inventory=subnet-iam.yaml
+# tftest modules=1 resources=8 inventory=subnet-iam.yaml
 ```
 
 ### Peering
@@ -342,7 +348,7 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=11 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-psc inventory=factory.yaml
+# tftest modules=1 resources=9 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-psc inventory=factory.yaml
 ```
 
 ```yaml
@@ -370,9 +376,6 @@ iam:                          # grant roles/compute.networkUser
   - group:lorem@example.com
   - serviceAccount:fbz@prj.iam.gserviceaccount.com
   - user:foobar@example.com
-iam_additive:                 # grant roles/compute.networkUser
-  - user:foo@example.com
-  - serviceAccount:fbx@prj.iam.gserviceaccount.com
 secondary_ip_ranges:          # map of secondary ip ranges
   secondary-range-a: 192.168.0.0/24
 flow_logs:                    # enable, set to empty map to use defaults
@@ -540,31 +543,30 @@ module "vpc" {
 | [shared_vpc_host](variables.tf#L155) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |
 | [shared_vpc_service_projects](variables.tf#L161) | Shared VPC service projects to register with this host. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [subnet_iam](variables.tf#L167) | Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnet_iam_additive](variables.tf#L173) | Subnet IAM additive bindings in {REGION/NAME => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnet_iam_members](variables.tf#L180) | Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  subnet &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnets](variables.tf#L196) | Subnet configuration. | <code title="list&#40;object&#40;&#123;&#10;  name                  &#61; string&#10;  ip_cidr_range         &#61; string&#10;  region                &#61; string&#10;  description           &#61; optional&#40;string&#41;&#10;  enable_private_access &#61; optional&#40;bool, true&#41;&#10;  flow_logs_config &#61; optional&#40;object&#40;&#123;&#10;    aggregation_interval &#61; optional&#40;string&#41;&#10;    filter_expression    &#61; optional&#40;string&#41;&#10;    flow_sampling        &#61; optional&#40;number&#41;&#10;    metadata             &#61; optional&#40;string&#41;&#10;    metadata_fields &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  ipv6 &#61; optional&#40;object&#40;&#123;&#10;    access_type &#61; optional&#40;string, &#34;INTERNAL&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  secondary_ip_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_proxy_only](variables.tf#L222) | List of proxy-only subnets for Regional HTTPS  or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active. | <code title="list&#40;object&#40;&#123;&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;  description   &#61; optional&#40;string&#41;&#10;  active        &#61; bool&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_psc](variables.tf#L234) | List of subnets for Private Service Connect service producers. | <code title="list&#40;object&#40;&#123;&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;  description   &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc_create](variables.tf#L245) | Create VPC. When set to false, uses a data source to reference existing VPC. | <code>bool</code> |  | <code>true</code> |
+| [subnet_iam_bindings](variables.tf#L173) | Authoritative IAM bindings in {REGION/NAME => {ROLE => {members = [], condition = {}}}}. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [subnet_iam_bindings_additive](variables.tf#L187) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  subnet &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [subnets](variables.tf#L203) | Subnet configuration. | <code title="list&#40;object&#40;&#123;&#10;  name                  &#61; string&#10;  ip_cidr_range         &#61; string&#10;  region                &#61; string&#10;  description           &#61; optional&#40;string&#41;&#10;  enable_private_access &#61; optional&#40;bool, true&#41;&#10;  flow_logs_config &#61; optional&#40;object&#40;&#123;&#10;    aggregation_interval &#61; optional&#40;string&#41;&#10;    filter_expression    &#61; optional&#40;string&#41;&#10;    flow_sampling        &#61; optional&#40;number&#41;&#10;    metadata             &#61; optional&#40;string&#41;&#10;    metadata_fields &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  ipv6 &#61; optional&#40;object&#40;&#123;&#10;    access_type &#61; optional&#40;string, &#34;INTERNAL&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  secondary_ip_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_proxy_only](variables.tf#L229) | List of proxy-only subnets for Regional HTTPS  or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active. | <code title="list&#40;object&#40;&#123;&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;  description   &#61; optional&#40;string&#41;&#10;  active        &#61; bool&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_psc](variables.tf#L241) | List of subnets for Private Service Connect service producers. | <code title="list&#40;object&#40;&#123;&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;  description   &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [vpc_create](variables.tf#L252) | Create VPC. When set to false, uses a data source to reference existing VPC. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [bindings](outputs.tf#L17) | Subnet IAM bindings. |  |
-| [id](outputs.tf#L22) | Fully qualified network id. |  |
-| [internal_ipv6_range](outputs.tf#L34) | ULA range. |  |
-| [name](outputs.tf#L39) | Network name. |  |
-| [network](outputs.tf#L51) | Network resource. |  |
-| [project_id](outputs.tf#L63) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
-| [self_link](outputs.tf#L76) | Network self link. |  |
-| [subnet_ids](outputs.tf#L88) | Map of subnet IDs keyed by name. |  |
-| [subnet_ips](outputs.tf#L93) | Map of subnet address ranges keyed by name. |  |
-| [subnet_ipv6_external_prefixes](outputs.tf#L100) | Map of subnet external IPv6 prefixes keyed by name. |  |
-| [subnet_regions](outputs.tf#L108) | Map of subnet regions keyed by name. |  |
-| [subnet_secondary_ranges](outputs.tf#L115) | Map of subnet secondary ranges keyed by name. |  |
-| [subnet_self_links](outputs.tf#L126) | Map of subnet self links keyed by name. |  |
-| [subnets](outputs.tf#L131) | Subnet resources. |  |
-| [subnets_proxy_only](outputs.tf#L136) | L7 ILB or L7 Regional LB subnet resources. |  |
-| [subnets_psc](outputs.tf#L141) | Private Service Connect subnet resources. |  |
+| [id](outputs.tf#L17) | Fully qualified network id. |  |
+| [internal_ipv6_range](outputs.tf#L29) | ULA range. |  |
+| [name](outputs.tf#L34) | Network name. |  |
+| [network](outputs.tf#L46) | Network resource. |  |
+| [project_id](outputs.tf#L58) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
+| [self_link](outputs.tf#L71) | Network self link. |  |
+| [subnet_ids](outputs.tf#L83) | Map of subnet IDs keyed by name. |  |
+| [subnet_ips](outputs.tf#L88) | Map of subnet address ranges keyed by name. |  |
+| [subnet_ipv6_external_prefixes](outputs.tf#L95) | Map of subnet external IPv6 prefixes keyed by name. |  |
+| [subnet_regions](outputs.tf#L103) | Map of subnet regions keyed by name. |  |
+| [subnet_secondary_ranges](outputs.tf#L110) | Map of subnet secondary ranges keyed by name. |  |
+| [subnet_self_links](outputs.tf#L121) | Map of subnet self links keyed by name. |  |
+| [subnets](outputs.tf#L126) | Subnet resources. |  |
+| [subnets_proxy_only](outputs.tf#L131) | L7 ILB or L7 Regional LB subnet resources. |  |
+| [subnets_psc](outputs.tf#L136) | Private Service Connect subnet resources. |  |
 <!-- END TFDOC -->

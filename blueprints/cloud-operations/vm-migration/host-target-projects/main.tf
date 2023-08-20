@@ -19,11 +19,11 @@ module "host-project" {
     : null
   )
   name = var.project_name
-  parent = (var.project_create != null
+  parent = (
+    var.project_create != null
     ? var.project_create.parent
     : null
   )
-
   services = [
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
@@ -33,14 +33,24 @@ module "host-project" {
     "servicecontrol.googleapis.com",
     "vmmigration.googleapis.com",
   ]
-
   project_create = var.project_create != null
-
-  iam_additive = {
-    "roles/iam.serviceAccountKeyAdmin" = var.migration_admin_users,
-    "roles/iam.serviceAccountCreator"  = var.migration_admin_users,
-    "roles/vmmigration.admin"          = var.migration_admin_users,
-    "roles/vmmigration.viewer"         = var.migration_viewer_users,
+  iam_bindings_additive = {
+    admin_sa_key_admin = {
+      role   = "roles/iam.serviceAccountKeyAdmin"
+      member = var.migration_admin
+    }
+    admin_sa_creator = {
+      role   = "roles/iam.serviceAccountCreator"
+      member = var.migration_admin
+    }
+    admin_vmm_admin = {
+      role   = "roles/vmmigration.admin"
+      member = var.migration_admin
+    }
+    viewer_vmm_viewer = {
+      role   = "roles/vmmigration.viewer"
+      member = var.migration_viewer
+    }
   }
 }
 
@@ -56,7 +66,6 @@ module "target-projects" {
   source         = "../../../../modules/project"
   name           = each.key
   project_create = false
-
   services = [
     "servicemanagement.googleapis.com",
     "servicecontrol.googleapis.com",
@@ -64,10 +73,18 @@ module "target-projects" {
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com"
   ]
-
-  iam_additive = {
-    "roles/resourcemanager.projectIamAdmin" = var.migration_admin_users,
-    "roles/compute.viewer"                  = var.migration_admin_users,
-    "roles/iam.serviceAccountUser"          = var.migration_admin_users
+  iam_bindings_additive = {
+    admin_project_iam_admin = {
+      role   = "roles/resourcemanager.projectIamAdmin"
+      member = var.migration_admin
+    }
+    admin_compute_viewer = {
+      role   = "roles/compute.viewer"
+      member = var.migration_admin
+    }
+    admin_sa_user = {
+      role   = "roles/iam.serviceAccountUser"
+      member = var.migration_admin
+    }
   }
 }

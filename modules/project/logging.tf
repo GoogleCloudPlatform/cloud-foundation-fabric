@@ -27,11 +27,9 @@ locals {
 }
 
 resource "google_project_iam_audit_config" "default" {
-  for_each = (
-    var.iam_policy == null ? var.logging_data_access : {}
-  )
-  project = local.project.project_id
-  service = each.key
+  for_each = var.logging_data_access
+  project  = local.project.project_id
+  service  = each.key
   dynamic "audit_log_config" {
     for_each = each.value
     iterator = config
@@ -70,7 +68,8 @@ resource "google_logging_project_sink" "sink" {
 
   depends_on = [
     google_project_iam_binding.authoritative,
-    google_project_iam_member.additive
+    google_project_iam_binding.bindings,
+    google_project_iam_member.bindings
   ]
 }
 

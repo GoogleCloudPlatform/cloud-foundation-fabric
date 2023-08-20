@@ -35,7 +35,6 @@ counts:
   google_compute_shared_vpc_service_project: 2
 
 outputs:
-  bindings: {}
   project_id: test-project
   subnet_ips: {}
   subnet_regions: {}

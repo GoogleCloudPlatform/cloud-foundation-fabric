@@ -60,6 +60,9 @@ locals {
       )
     )
   }
+  cicd_sa_resman = try(
+    module.automation-tf-cicd-sa-bootstrap["0"].iam_email, null
+  )
 }
 
 # tenant bootstrap runs in the org scope and uses top-level automation project
@@ -145,10 +148,11 @@ module "automation-tf-org-resman-sa" {
   project_id             = var.automation.project_id
   name                   = local.resman_sa
   service_account_create = false
-  iam_additive = {
-    "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.automation-tf-cicd-sa-bootstrap["0"].iam_email, null)
-    ])
+  iam_bindings_additive = local.cicd_sa_resman == null ? {} : {
+    sa_resman_cicd = {
+      member = local.cicd_sa_resman
+      role   = "roles/iam.serviceAccountTokenCreator"
+    }
   }
 }
 

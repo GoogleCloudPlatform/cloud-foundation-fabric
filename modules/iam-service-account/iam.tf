@@ -17,15 +17,6 @@
 # tfdoc:file:description IAM bindings.
 
 locals {
-  _iam_additive_pairs = flatten([
-    for role, members in var.iam_additive : [
-      for member in members : { role = role, member = member }
-    ]
-  ])
-  iam_additive = {
-    for pair in local._iam_additive_pairs :
-    "${pair.role}-${pair.member}" => pair
-  }
   iam_billing_pairs = flatten([
     for entity, roles in var.iam_billing_roles : [
       for role in roles : [
@@ -70,18 +61,41 @@ locals {
   ])
 }
 
-resource "google_service_account_iam_member" "roles" {
-  for_each           = local.iam_additive
-  service_account_id = local.service_account.name
-  role               = each.value.role
-  member             = each.value.member
-}
-
-resource "google_service_account_iam_binding" "roles" {
+resource "google_service_account_iam_binding" "authoritative" {
   for_each           = var.iam
   service_account_id = local.service_account.name
   role               = each.key
   members            = each.value
+}
+
+resource "google_service_account_iam_binding" "bindings" {
+  for_each           = var.iam_bindings
+  service_account_id = local.service_account.name
+  role               = each.key
+  members            = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_service_account_iam_member" "bindings" {
+  for_each           = var.iam_bindings_additive
+  service_account_id = local.service_account.name
+  role               = each.value.role
+  member             = each.value.member
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 resource "google_billing_account_iam_member" "billing-roles" {
@@ -132,21 +146,6 @@ resource "google_service_account_iam_member" "additive" {
   service_account_id = each.value.entity
   role               = each.value.role
   member             = local.resource_iam_email
-}
-
-resource "google_service_account_iam_member" "members" {
-  for_each           = var.iam_members
-  service_account_id = each.value.entity
-  role               = each.value.role
-  member             = each.value.member
-  dynamic "condition" {
-    for_each = each.value.condition == null ? [] : [""]
-    content {
-      expression  = each.value.condition.expression
-      title       = each.value.condition.title
-      description = each.value.condition.description
-    }
-  }
 }
 
 resource "google_storage_bucket_iam_member" "bucket-roles" {

@@ -15,26 +15,7 @@
  */
 
 locals {
-  iam_additive_members = flatten([
-    for role, members in var.iam_additive : [
-      for member in members : {
-        member = member
-        role   = role
-      }
-    ]
-  ])
-  key_iam_additive_members = flatten([
-    for key, roles in var.key_iam_additive : [
-      for role, members in roles : [
-        for member in members : {
-          key    = key
-          member = member
-          role   = role
-        }
-      ]
-    ]
-  ])
-  key_iam_members = flatten([
+  key_iam = flatten([
     for key, roles in var.key_iam : [
       for role, members in roles : {
         key     = key
@@ -43,27 +24,42 @@ locals {
       }
     ]
   ])
+  key_iam_bindings = flatten([
+    for key, roles in var.key_iam_bindings : [
+      for role, data in roles : {
+        key       = key
+        role      = role
+        members   = data.members
+        condition = data.condition
+      }
+    ]
+  ])
 }
 
-resource "google_kms_key_ring_iam_binding" "default" {
+resource "google_kms_key_ring_iam_binding" "authoritative" {
   for_each    = var.iam
   key_ring_id = local.keyring.id
   role        = each.key
   members     = each.value
 }
 
-resource "google_kms_key_ring_iam_member" "default" {
-  for_each = {
-    for binding in local.iam_additive_members :
-    "${binding.role}${binding.member}" => binding
-  }
+resource "google_kms_key_ring_iam_binding" "bindings" {
+  for_each    = var.iam_bindings
   key_ring_id = local.keyring.id
-  role        = each.value.role
-  member      = each.value.member
+  role        = each.key
+  members     = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
-resource "google_kms_key_ring_iam_member" "members" {
-  for_each    = var.iam_members
+resource "google_kms_key_ring_iam_member" "bindings" {
+  for_each    = var.iam_bindings_additive
   key_ring_id = local.keyring.id
   role        = each.value.role
   member      = each.value.member
@@ -77,9 +73,9 @@ resource "google_kms_key_ring_iam_member" "members" {
   }
 }
 
-resource "google_kms_crypto_key_iam_binding" "default" {
+resource "google_kms_crypto_key_iam_binding" "authoritative" {
   for_each = {
-    for binding in local.key_iam_members :
+    for binding in local.key_iam :
     "${binding.key}.${binding.role}" => binding
   }
   role          = each.value.role
@@ -87,18 +83,26 @@ resource "google_kms_crypto_key_iam_binding" "default" {
   members       = each.value.members
 }
 
-resource "google_kms_crypto_key_iam_member" "default" {
+resource "google_kms_crypto_key_iam_binding" "bindings" {
   for_each = {
-    for binding in local.key_iam_additive_members :
-    "${binding.key}.${binding.role}${binding.member}" => binding
+    for binding in local.key_iam_bindings :
+    "${binding.key}.${binding.role}" => binding
   }
   role          = each.value.role
   crypto_key_id = google_kms_crypto_key.default[each.value.key].id
-  member        = each.value.member
+  members       = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 resource "google_kms_crypto_key_iam_member" "members" {
-  for_each      = var.key_iam_members
+  for_each      = var.key_iam_bindings_additive
   crypto_key_id = google_kms_crypto_key.default[each.value.key].id
   role          = each.value.role
   member        = each.value.member

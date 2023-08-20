@@ -170,15 +170,22 @@ variable "subnet_iam" {
   default     = {}
 }
 
-variable "subnet_iam_additive" {
-  description = "Subnet IAM additive bindings in {REGION/NAME => {ROLE => [MEMBERS]}} format."
-  type        = map(map(list(string)))
-  default     = {}
-  nullable    = false
+variable "subnet_iam_bindings" {
+  description = "Authoritative IAM bindings in {REGION/NAME => {ROLE => {members = [], condition = {}}}}."
+  type = map(map(object({
+    members = list(string)
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  })))
+  nullable = false
+  default  = {}
 }
 
-variable "subnet_iam_members" {
-  description = "Individual additive IAM bindings, use this when iam_additive does not work due to dynamic resources. Keys are arbitrary and only used for the internal loop."
+variable "subnet_iam_bindings_additive" {
+  description = "Individual additive IAM bindings. Keys are arbitrary."
   type = map(object({
     member = string
     role   = string

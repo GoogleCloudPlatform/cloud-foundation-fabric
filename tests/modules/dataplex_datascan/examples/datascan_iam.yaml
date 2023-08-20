@@ -58,7 +58,7 @@ values:
     - group:user-group@example.com
     project: my-project-name
     role: roles/dataplex.dataScanViewer
-  module.dataplex-datascan.google_dataplex_datascan_iam_member.members["am1-viewer"]:
+  module.dataplex-datascan.google_dataplex_datascan_iam_member.bindings["am1-viewer"]:
     condition: []
     data_scan_id: test-datascan
     location: us-central1
