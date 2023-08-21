@@ -5,7 +5,7 @@
 
 ## Status
 
-Discussed.
+Implemented in #1595.
 
 ## Context
 
@@ -115,34 +115,16 @@ The proposal above summarizes the state of discussions between the authors, and 
 
 ## Consequences
 
-A few data blueprints that leverage `iam_additive` will need to be refactored to use the new variable, using one of the following patterns:
+### FAST
 
-```hcl
-locals {
-  network_sa_roles = [
-    "roles/compute.orgFirewallPolicyAdmin",
-    "roles/compute.xpnAdmin"
-  ]
-}
+IAM implementation in the bootstrap stage and matching multitenant bootstrap has radically changed, with the addition of a new [`organization-iam.tf`](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/fast/stages/0-bootstrap/organization-iam.tf) file which contains IAM binding definitions in an abstracted format, that is then converted to the specific formats required by the `iam`, `iam_bindings` and `iam_bindings_additive` variables.
 
-module "organization" {
-  source          = "../../../modules/organization"
-  organization_id = "organizations/${var.organization.id}"
-  iam_bindings_additive = merge(
-    # IAM bindings via locals pattern
-    {
-      for r in local.network_sa_roles : "network_sa-${r}" : {
-        member = module.branch-network-sa.iam_email
-        role   = r
-      }
-    },
-    # IAM bindings via explicit reference pattern
-    {
-      security_sa = {
-        member = module.branch-security-sa.iam_email
-        role   = "roles/accesscontextmanager.policyAdmin"
-      }
-    }
-  )
-}
-```
+This brings several advantages over the previous handling of IAM:
+
+- authoritative and additive bindings are now grouped by principal in an easy to read and change format that serves as its own documentation
+- support for IAM conditions has removed the need for standalone resources and made the intent behind those more explicit
+- some subtle bugs on the intersection of user-specified bindings and internally-specified ones have been addressed
+
+### Blueprints
+
+A few data blueprints that leverage `iam_additive` have been refactored to use the new variable. This is most notable in data blueprints, where extra files have been added to the more complex examples like data foundations, to abstract IAM bindings in a way similar to what is described above for FAST.
