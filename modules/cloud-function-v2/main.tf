@@ -24,28 +24,17 @@ locals {
       : null
     )
   )
-  _iam_run_invoker_members = concat(
-    lookup(var.iam, "roles/run.invoker", []),
-    var.trigger_config == null ? [] :
-    var.trigger_config.service_account_create ? ["serviceAccount:${local.trigger_service_account_email}"] : []
-  )
-  iam = merge(
-    var.iam,
-    length(local._iam_run_invoker_members) == 0 ? {} :
-    {
-      "roles/run.invoker" : local._iam_run_invoker_members
-    },
-  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   service_account_email = (
     var.service_account_create
     ? google_service_account.service_account[0].email
     : var.service_account
   )
-  trigger_service_account_email = (
-    try(var.trigger_config.service_account_create, false)
-    ? google_service_account.trigger_service_account[0].email
-    : try(var.trigger_config.service_account_email, null)
+  trigger_sa_create = (
+    try(var.trigger_config.service_account_create, false) == true
+  )
+  trigger_sa_email = try(
+    google_service_account.trigger_service_account[0].email, null
   )
   vpc_connector = (
     var.vpc_connector == null
@@ -104,7 +93,7 @@ resource "google_cloudfunctions2_function" "function" {
           operator  = event_filter.value.operator
         }
       }
-      service_account_email = local.trigger_service_account_email
+      service_account_email = local.trigger_sa_email
       retry_policy          = var.trigger_config.retry_policy
     }
   }
@@ -154,13 +143,48 @@ resource "google_cloudfunctions2_function" "function" {
   labels = var.labels
 }
 
-resource "google_cloudfunctions2_function_iam_binding" "default" {
-  for_each       = local.iam
+resource "google_cloudfunctions2_function_iam_binding" "binding" {
+  for_each = {
+    for k, v in var.iam : k => v if k != "roles/run.invoker"
+  }
   project        = var.project_id
   location       = google_cloudfunctions2_function.function.location
   cloud_function = google_cloudfunctions2_function.function.name
   role           = each.key
   members        = each.value
+}
+
+resource "google_cloud_run_service_iam_binding" "invoker" {
+  # cloud run resources are needed for invoker role to the underlying service
+  count = (
+    lookup(var.iam, "roles/run.invoker", null) != null
+  ) ? 1 : 0
+  project  = var.project_id
+  location = google_cloudfunctions2_function.function.location
+  service  = google_cloudfunctions2_function.function.name
+  role     = "roles/run.invoker"
+  members = distinct(compact(concat(
+    lookup(var.iam, "roles/run.invoker", []),
+    (
+      !local.trigger_sa_create
+      ? []
+      : ["serviceAccount:${local.trigger_sa_email}"]
+    )
+  )))
+}
+
+resource "google_cloud_run_service_iam_member" "invoker" {
+  # if authoritative invoker role is not present and we create trigger sa
+  # use additive binding to grant it the role
+  count = (
+    lookup(var.iam, "roles/run.invoker", null) == null &&
+    local.trigger_sa_create
+  ) ? 1 : 0
+  project  = var.project_id
+  location = google_cloudfunctions2_function.function.location
+  service  = google_cloudfunctions2_function.function.name
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:${local.trigger_sa_email}"
 }
 
 resource "google_storage_bucket" "bucket" {
@@ -216,9 +240,7 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_service_account" "trigger_service_account" {
-  count = (
-    try(var.trigger_config.service_account_create, false) == true ? 1 : 0
-  )
+  count        = local.trigger_sa_create ? 1 : 0
   project      = var.project_id
   account_id   = "tf-cf-trigger-${var.name}"
   display_name = "Terraform trigger for Cloud Function ${var.name}."

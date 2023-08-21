@@ -35,17 +35,6 @@ locals {
       "run.googleapis.com/ingress" = var.ingress_settings
     },
   )
-  _iam_run_invoker_members = concat(
-    lookup(var.iam, "roles/run.invoker", []),
-    var.eventarc_triggers.service_account_create ? ["serviceAccount:${local.trigger_service_account_email}"] : []
-  )
-  iam = merge(
-    var.iam,
-    length(local._iam_run_invoker_members) == 0 ? {} :
-    {
-      "roles/run.invoker" : local._iam_run_invoker_members
-    },
-  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   revision_annotations = merge(
     try(var.revision_annotations.autoscaling, null) == null ? {} : {
@@ -90,17 +79,12 @@ locals {
     )
     : var.service_account
   )
-  trigger_service_account_email = (
-    var.eventarc_triggers.service_account_create
-    ? (
-      length(google_service_account.trigger_service_account) > 0
-      ? google_service_account.trigger_service_account[0].email
-      # : google_service_account.trigger_service_account[0].email # : null
-      : null
-    )
-    : var.eventarc_triggers.service_account_email
+  trigger_sa_create = try(
+    var.eventarc_triggers.service_account_create, false
   )
-
+  trigger_sa_email = try(
+    google_service_account.trigger_service_account[0].email, null
+  )
   vpc_connector_create = var.vpc_connector_create != null
 }
 
@@ -317,12 +301,33 @@ resource "google_cloud_run_service" "service" {
 }
 
 resource "google_cloud_run_service_iam_binding" "binding" {
-  for_each = local.iam
+  for_each = var.iam
   project  = google_cloud_run_service.service.project
   location = google_cloud_run_service.service.location
   service  = google_cloud_run_service.service.name
   role     = each.key
-  members  = each.value
+  members = (
+    each.key != "roles/run.invoker" || !local.trigger_sa_create
+    ? each.value
+    # if invoker role is present and we create trigger sa, add it as member
+    : concat(
+      each.value, ["serviceAccount:${local.trigger_sa_email}"]
+    )
+  )
+}
+
+resource "google_cloud_run_service_iam_member" "default" {
+  # if authoritative invoker role is not present and we create trigger sa
+  # use additive binding to grant it the role
+  count = (
+    lookup(var.iam, "roles/run.invoker", null) == null &&
+    local.trigger_sa_create
+  ) ? 1 : 0
+  project  = google_cloud_run_service.service.project
+  location = google_cloud_run_service.service.location
+  service  = google_cloud_run_service.service.name
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:${local.trigger_sa_email}"
 }
 
 resource "google_service_account" "service_account" {
@@ -355,7 +360,7 @@ resource "google_eventarc_trigger" "audit_log_triggers" {
       region  = google_cloud_run_service.service.location
     }
   }
-  service_account = local.trigger_service_account_email
+  service_account = local.trigger_sa_email
 }
 
 resource "google_eventarc_trigger" "pubsub_triggers" {
@@ -378,11 +383,11 @@ resource "google_eventarc_trigger" "pubsub_triggers" {
       region  = google_cloud_run_service.service.location
     }
   }
-  service_account = local.trigger_service_account_email
+  service_account = local.trigger_sa_email
 }
 
 resource "google_service_account" "trigger_service_account" {
-  count        = var.eventarc_triggers.service_account_create ? 1 : 0 # coalesce(try(var.eventarc_triggers.service_account_create, false), false) ? 1 : 0
+  count        = local.trigger_sa_create ? 1 : 0
   project      = var.project_id
   account_id   = "tf-cr-trigger-${var.name}"
   display_name = "Terraform trigger for Cloud Run ${var.name}."

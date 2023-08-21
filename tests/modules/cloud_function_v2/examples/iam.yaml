@@ -13,17 +13,67 @@
 # limitations under the License.
 
 values:
-  module.cf-http.google_cloudfunctions2_function_iam_binding.default["roles/cloudfunctions.invoker"]:
-    cloud_function: test-cf-http
+  module.cf-http.google_cloud_run_service_iam_binding.invoker[0]:
     condition: []
     location: europe-west1
     members:
     - allUsers
     project: my-project
-    role: roles/cloudfunctions.invoker
+    role: roles/run.invoker
+    service: test-cf-http
+  module.cf-http.google_cloudfunctions2_function.function:
+    build_config:
+    - docker_repository: null
+      entry_point: main
+      runtime: python310
+      source:
+      - repo_source: []
+        storage_source:
+        - bucket: test-cf-bundles
+          object: bundle-6f1ece136848fee658e335b05fe2d79d.zip
+      worker_pool: null
+    description: Terraform managed.
+    event_trigger: []
+    labels: null
+    location: europe-west1
+    name: test-cf-http
+    project: my-project
+    service_config:
+    - all_traffic_on_latest_revision: true
+      available_cpu: '0.166'
+      available_memory: 256M
+      environment_variables: null
+      ingress_settings: ALLOW_ALL
+      max_instance_count: 1
+      min_instance_count: 0
+      secret_environment_variables: []
+      secret_volumes: []
+      timeout_seconds: 180
+      vpc_connector: null
+      vpc_connector_egress_settings: null
+    timeouts: null
+  module.cf-http.google_storage_bucket_object.bundle:
+    bucket: test-cf-bundles
+    cache_control: null
+    content: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    detect_md5hash: different hash
+    event_based_hold: null
+    metadata: null
+    name: bundle-6f1ece136848fee658e335b05fe2d79d.zip
+    source: bundle.zip
+    temporary_hold: null
+    timeouts: null
 
 counts:
+  google_cloud_run_service_iam_binding: 1
   google_cloudfunctions2_function: 1
   google_storage_bucket_object: 1
   modules: 1
   resources: 3
+
+outputs: {}
+
