@@ -156,18 +156,18 @@ resource "google_cloudfunctions2_function_iam_binding" "default" {
   )
 }
 
-resource "google_cloudfunctions2_service_iam_member" "member" {
+resource "google_cloud_run_service_iam_member" "member" {
   # if authoritative invoker role is not present and we create trigger sa
   # use additive binding to grant it the role
   count = (
     lookup(var.iam, "roles/run.invoker", null) == null &&
     var.trigger_config.service_account_create
   ) ? 1 : 0
-  project        = google_cloud_run_service.service.project
-  location       = google_cloudfunctions2_function.function.location
-  cloud_function = google_cloudfunctions2_function.function.name
-  role           = "roles/run.invoker"
-  member         = "serviceAccount:${local.trigger_sa_email}"
+  project  = google_cloudfunctions2_function.function.project
+  location = google_cloudfunctions2_function.function.location
+  service  = google_cloudfunctions2_function.function.name
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:${local.trigger_sa_email}"
 }
 
 resource "google_storage_bucket" "bucket" {
