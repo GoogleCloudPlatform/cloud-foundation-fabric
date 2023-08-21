@@ -99,7 +99,8 @@ variable "eventarc_triggers" {
     service_account_email  = optional(string)
     service_account_create = optional(bool, false)
   })
-  default = {}
+  nullable = false
+  default  = {}
 }
 
 variable "gen2_execution_environment" {
