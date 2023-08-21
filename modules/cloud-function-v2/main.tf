@@ -24,18 +24,6 @@ locals {
       : null
     )
   )
-  _iam_run_invoker_members = concat(
-    lookup(var.iam, "roles/run.invoker", []),
-    var.trigger_config == null ? [] :
-    var.trigger_config.service_account_create ? ["serviceAccount:${local.trigger_service_account_email}"] : []
-  )
-  iam = merge(
-    var.iam,
-    length(local._iam_run_invoker_members) == 0 ? {} :
-    {
-      "roles/run.invoker" : local._iam_run_invoker_members
-    },
-  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   service_account_email = (
     var.service_account_create
@@ -155,7 +143,7 @@ resource "google_cloudfunctions2_function" "function" {
 }
 
 resource "google_cloudfunctions2_function_iam_binding" "default" {
-  for_each       = local.iam
+  for_each       = var.iam
   project        = var.project_id
   location       = google_cloudfunctions2_function.function.location
   cloud_function = google_cloudfunctions2_function.function.name
