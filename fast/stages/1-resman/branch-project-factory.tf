@@ -79,33 +79,3 @@ module "branch-pf-prod-gcs" {
     "roles/storage.objectAdmin" = [module.branch-pf-prod-sa.0.iam_email]
   }
 }
-
-resource "google_organization_iam_member" "org_policy_admin_pf_dev" {
-  count  = var.fast_features.project_factory ? 1 : 0
-  org_id = var.organization.id
-  role   = "roles/orgpolicy.policyAdmin"
-  member = module.branch-pf-dev-sa.0.iam_email
-  condition {
-    title       = "org_policy_tag_pf_scoped_dev"
-    description = "Org policy tag scoped grant for project factory dev."
-    expression  = <<-END
-    resource.matchTag('${var.organization.id}/${var.tag_names.context}', 'teams')
-    &&
-    resource.matchTag('${var.organization.id}/${var.tag_names.environment}', 'development')
-    END
-  }
-}
-
-resource "google_organization_iam_member" "org_policy_admin_pf_prod" {
-  count  = var.fast_features.project_factory ? 1 : 0
-  org_id = var.organization.id
-  role   = "roles/orgpolicy.policyAdmin"
-  member = module.branch-pf-prod-sa.0.iam_email
-  condition {
-    title       = "org_policy_tag_pf_scoped_prod"
-    description = "Org policy tag scoped grant for project factory prod."
-    expression  = <<-END
-    resource.matchTag('${var.organization.id}/${var.tag_names.context}', 'teams')
-    END
-  }
-}

@@ -15,7 +15,7 @@
  */
 
 variable "ignore_folders" {
-  description = "A list of folder IDs or numbers to be excluded from the output, all the subfolders and projects are exluded from the output regardless of the include_projects variable."
+  description = "A list of folder IDs or numbers to be excluded from the output, all the subfolders and projects are excluded from the output regardless of the include_projects variable."
   type        = list(string)
   default     = []
   # example exlusing a folder

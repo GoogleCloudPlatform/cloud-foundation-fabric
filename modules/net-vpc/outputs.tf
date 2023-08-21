@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-output "bindings" {
-  description = "Subnet IAM bindings."
-  value       = { for k, v in google_compute_subnetwork_iam_binding.binding : k => v }
-}
-
 output "id" {
   description = "Fully qualified network id."
   value       = local.network.id

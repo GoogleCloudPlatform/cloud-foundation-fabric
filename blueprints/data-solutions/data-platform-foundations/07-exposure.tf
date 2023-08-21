@@ -19,6 +19,10 @@ module "exp-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.exp : "${var.project_config.project_ids.exp}${local.project_suffix}"
+  prefix          = local.use_projects ? null : var.prefix
+  name = (
+    local.use_projects
+    ? var.project_config.project_ids.exp
+    : "${var.project_config.project_ids.exp}${local.project_suffix}"
+  )
 }

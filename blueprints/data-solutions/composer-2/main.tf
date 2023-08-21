@@ -15,14 +15,8 @@
  */
 
 locals {
-  iam = merge(
-    {
-      "roles/composer.worker"            = [module.comp-sa.iam_email]
-      "roles/composer.ServiceAgentV2Ext" = ["serviceAccount:${module.project.service_accounts.robots.composer}"]
-    },
-    var.iam_groups_map
-  )
-  # Adding Roles on Service Identities Service account as per documentation: https://cloud.google.com/composer/docs/composer-2/configure-shared-vpc#edit_permissions_for_the_google_apis_service_account
+  # add Roles on Service Identities service account as per documentation
+  # https://cloud.google.com/composer/docs/composer-2/configure-shared-vpc#edit_permissions_for_the_google_apis_service_account
   _shared_vpc_bindings = {
     "roles/compute.networkUser" = [
       "prj-cloudservices", "prj-robot-gke"
@@ -34,11 +28,16 @@ locals {
       "prj-robot-gke"
     ]
   }
-  shared_vpc_role_members = {
-    prj-cloudservices = "serviceAccount:${module.project.service_accounts.cloud_services}"
-    prj-robot-gke     = "serviceAccount:${module.project.service_accounts.robots.container-engine}"
-    prj-robot-cs      = "serviceAccount:${module.project.service_accounts.robots.composer}"
-  }
+  orch_subnet = (
+    local.use_shared_vpc
+    ? var.network_config.subnet_self_link
+    : values(module.vpc.0.subnet_self_links)[0]
+  )
+  orch_vpc = (
+    local.use_shared_vpc
+    ? var.network_config.network_self_link
+    : module.vpc.0.self_link
+  )
   # reassemble in a format suitable for for_each
   shared_vpc_bindings_map = {
     for binding in flatten([
@@ -47,23 +46,20 @@ locals {
       ]
     ]) : "${binding.role}-${binding.member}" => binding
   }
-
   shared_vpc_project = try(var.network_config.host_project, null)
-  use_shared_vpc     = var.network_config != null
-
+  shared_vpc_role_members = {
+    prj-cloudservices = (
+      "serviceAccount:${module.project.service_accounts.cloud_services}"
+    )
+    prj-robot-gke = (
+      "serviceAccount:${module.project.service_accounts.robots.container-engine}"
+    )
+    prj-robot-cs = (
+      "serviceAccount:${module.project.service_accounts.robots.composer}"
+    )
+  }
+  use_shared_vpc = var.network_config != null
   vpc_self_link = (
-    local.use_shared_vpc
-    ? var.network_config.network_self_link
-    : module.vpc.0.self_link
-  )
-
-  orch_subnet = (
-    local.use_shared_vpc
-    ? var.network_config.subnet_self_link
-    : values(module.vpc.0.subnet_self_links)[0]
-  )
-
-  orch_vpc = (
     local.use_shared_vpc
     ? var.network_config.network_self_link
     : module.vpc.0.self_link
@@ -77,8 +73,24 @@ module "project" {
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
   prefix          = var.project_create == null ? null : var.prefix
-  iam             = var.project_create != null ? local.iam : {}
-  iam_additive    = var.project_create == null ? local.iam : {}
+  iam_bindings_additive = merge(
+    {
+      composer_worker = {
+        member = module.comp-sa.iam_email
+        role   = "roles/composer.worker"
+      },
+      composer_service_agent = {
+        member = "serviceAccount:${module.project.service_accounts.robots.composer}"
+        role   = "roles/composer.ServiceAgentV2Ext"
+      }
+    },
+    {
+      for k, v in var.iam_bindings_additive : "${k}:${v}" => {
+        member = v
+        role   = k
+      }
+    }
+  )
   services = [
     "artifactregistry.googleapis.com",
     "cloudkms.googleapis.com",
@@ -94,18 +106,12 @@ module "project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
     attach       = true
     host_project = local.shared_vpc_project
   }
-
   service_encryption_key_ids = {
     composer = [try(lookup(var.service_encryption_keys, var.region, null), null)]
-  }
-
-  service_config = {
-    disable_on_destroy = false, disable_dependent_services = false
   }
 }
 

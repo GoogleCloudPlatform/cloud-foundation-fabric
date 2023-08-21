@@ -26,6 +26,7 @@ variable "automation" {
     project_number          = string
     federated_identity_pool = string
     federated_identity_providers = map(object({
+      audiences        = list(string)
       issuer           = string
       issuer_uri       = string
       name             = string
@@ -118,12 +119,12 @@ variable "fast_features" {
 variable "federated_identity_providers" {
   description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
   type = map(object({
-    attribute_condition = string
+    attribute_condition = optional(string)
     issuer              = string
-    custom_settings = object({
-      issuer_uri        = string
-      allowed_audiences = list(string)
-    })
+    custom_settings = optional(object({
+      issuer_uri = optional(string)
+      audiences  = optional(list(string), [])
+    }), {})
   }))
   default  = {}
   nullable = false
@@ -135,16 +136,38 @@ variable "group_iam" {
   default     = {}
 }
 
+variable "groups" {
+  # tfdoc:variable:source 0-bootstrap
+  # https://cloud.google.com/docs/enterprise/setup-checklist
+  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
+  type = object({
+    gcp-devops          = optional(string)
+    gcp-network-admins  = optional(string)
+    gcp-security-admins = optional(string)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "iam" {
   description = "Tenant-level custom IAM settings in role => [principal] format."
   type        = map(list(string))
   default     = {}
 }
 
-variable "iam_additive" {
-  description = "Tenant-level custom IAM settings in role => [principal] format for non-authoritative bindings."
-  type        = map(list(string))
-  default     = {}
+variable "iam_bindings_additive" {
+  description = "Individual additive IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "locations" {

@@ -12,6 +12,32 @@ The following diagram is a high-level reference of the resources created and man
 
 A set of demo [Airflow pipelines](./demo/) are also part of this blueprint: they can be run on top of the foundational infrastructure to verify and test the setup.
 
+<!-- BEGIN TOC -->
+- [Design overview and choices](#design-overview-and-choices)
+- [Project structure](#project-structure)
+- [Roles](#roles)
+- [Service accounts](#service-accounts)
+- [User groups](#user-groups)
+  - [Virtual Private Cloud (VPC) design](#virtual-private-cloud-vpc-design)
+  - [IP ranges and subnetting](#ip-ranges-and-subnetting)
+  - [Resource naming conventions](#resource-naming-conventions)
+  - [Encryption](#encryption)
+- [Data Anonymization](#data-anonymization)
+- [Data Catalog](#data-catalog)
+- [How to run this script](#how-to-run-this-script)
+- [Variable configuration](#variable-configuration)
+- [How to use this blueprint from Terraform](#how-to-use-this-blueprint-from-terraform)
+- [Customizations](#customizations)
+  - [Assign roles at BQ Dataset level](#assign-roles-at-bq-dataset-level)
+  - [Project Configuration](#project-configuration)
+  - [Shared VPC](#shared-vpc)
+  - [Customer Managed Encryption key](#customer-managed-encryption-key)
+- [Demo pipeline](#demo-pipeline)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Design overview and choices
 
 Despite its simplicity, this stage implements the basics of a design that we've seen working well for various customers.
@@ -203,7 +229,7 @@ module "data-platform" {
   prefix = "myprefix"
 }
 
-# tftest modules=23 resources=123
+# tftest modules=23 resources=135
 ```
 
 ## Customizations

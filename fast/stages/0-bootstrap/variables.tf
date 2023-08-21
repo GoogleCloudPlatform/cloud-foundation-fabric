@@ -116,8 +116,8 @@ variable "federated_identity_providers" {
     attribute_condition = optional(string)
     issuer              = string
     custom_settings = optional(object({
-      issuer_uri        = optional(string)
-      allowed_audiences = optional(list(string), [])
+      issuer_uri = optional(string)
+      audiences  = optional(list(string), [])
     }), {})
   }))
   default  = {}
@@ -128,6 +128,14 @@ variable "federated_identity_providers" {
   #   error_message = "Custom settings cannot be null."
   # }
 }
+
+variable "group_iam" {
+  description = "Organization-level authoritative IAM binding for groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
@@ -150,30 +158,35 @@ variable "groups" {
 variable "iam" {
   description = "Organization-level custom IAM settings in role => [principal] format."
   type        = map(list(string))
+  nullable    = false
   default     = {}
 }
 
-variable "iam_additive" {
-  description = "Organization-level custom IAM settings in role => [principal] format for non-authoritative bindings."
-  type        = map(list(string))
-  default     = {}
+variable "iam_bindings_additive" {
+  description = "Organization-level custom additive IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "locations" {
   description = "Optional locations for GCS, BigQuery, and logging buckets created here."
   type = object({
-    bq      = string
-    gcs     = string
-    logging = string
-    pubsub  = list(string)
+    bq      = optional(string, "EU")
+    gcs     = optional(string, "EU")
+    logging = optional(string, "global")
+    pubsub  = optional(list(string), [])
   })
-  default = {
-    bq      = "EU"
-    gcs     = "EU"
-    logging = "global"
-    pubsub  = []
-  }
   nullable = false
+  default  = {}
 }
 
 # See https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics

@@ -15,15 +15,32 @@
 # tfdoc:file:description Data curated project and resources.
 
 locals {
-  cur_iam = {
-    "roles/bigquery.dataOwner" = [module.processing-sa-0.iam_email]
+  cur_services = [
+    "bigquery.googleapis.com",
+    "bigqueryreservation.googleapis.com",
+    "bigquerystorage.googleapis.com",
+    "cloudkms.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "compute.googleapis.com",
+    "iam.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "serviceusage.googleapis.com",
+    "stackdriver.googleapis.com",
+    "storage.googleapis.com",
+    "storage-component.googleapis.com"
+  ]
+  iam_cur = {
+    "roles/bigquery.dataOwner" = [
+      module.processing-sa-0.iam_email
+    ]
     "roles/bigquery.dataViewer" = [
       module.cur-sa-0.iam_email,
       local.groups_iam.data-analysts,
       local.groups_iam.data-engineers
     ]
     "roles/bigquery.jobUser" = [
-      module.processing-sa-0.iam_email, # Remove once bug is fixed. https://github.com/apache/airflow/issues/32106
+      # Remove once bug is fixed. https://github.com/apache/airflow/issues/32106
+      module.processing-sa-0.iam_email,
       module.cur-sa-0.iam_email,
       local.groups_iam.data-analysts,
       local.groups_iam.data-engineers
@@ -43,22 +60,21 @@ locals {
       local.groups_iam.data-analysts,
       local.groups_iam.data-engineers
     ]
-    "roles/storage.objectAdmin" = [module.processing-sa-0.iam_email]
+    "roles/storage.objectAdmin" = [
+      module.processing-sa-0.iam_email
+    ]
   }
-  cur_services = [
-    "bigquery.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "cloudkms.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "compute.googleapis.com",
-    "iam.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "serviceusage.googleapis.com",
-    "stackdriver.googleapis.com",
-    "storage.googleapis.com",
-    "storage-component.googleapis.com"
-  ]
+  # this only works because the service account module uses a static output
+  iam_cur_additive = {
+    for k in flatten([
+      for role, members in local.iam_cur : [
+        for member in members : {
+          role   = role
+          member = member
+        }
+      ]
+    ]) : "${k.member}-${k.role}" => k
+  }
 }
 
 # Project
@@ -68,15 +84,21 @@ module "cur-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
+  prefix = (
+    var.project_config.billing_account_id == null ? null : var.prefix
+  )
   name = (
     var.project_config.billing_account_id == null
     ? var.project_config.project_ids.curated
     : "${var.project_config.project_ids.curated}${local.project_suffix}"
   )
-  iam          = var.project_config.billing_account_id != null ? local.cur_iam : {}
-  iam_additive = var.project_config.billing_account_id == null ? local.cur_iam : {}
-  services     = local.cur_services
+  iam = (
+    var.project_config.billing_account_id != null ? {} : local.iam_cur
+  )
+  iam_bindings_additive = (
+    var.project_config.billing_account_id == null ? {} : local.iam_cur_additive
+  )
+  services = local.cur_services
   service_encryption_key_ids = {
     bq      = [var.service_encryption_keys.bq]
     storage = [var.service_encryption_keys.storage]

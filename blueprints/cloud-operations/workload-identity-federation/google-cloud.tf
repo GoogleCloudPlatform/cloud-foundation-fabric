@@ -32,8 +32,11 @@ module "prj" {
     "sts.googleapis.com",
   ]
   project_create = var.project_create != null
-  iam_additive = {
-    "roles/viewer" : [module.sa.iam_email]
+  iam_bindings_additive = {
+    sa_viewer = {
+      member = module.sa.iam_email
+      role   = "roles/viewer"
+    }
   }
 }
 

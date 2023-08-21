@@ -29,6 +29,7 @@ import warnings
 
 import click
 import google.auth
+import requests.exceptions
 
 from google.auth.transport.requests import AuthorizedSession
 
@@ -123,7 +124,8 @@ def fetch(request, delete=False):
     else:
       response = HTTP.post(request.url, headers=request.headers,
                            data=json.dumps(request.data))
-  except google.auth.exceptions.RefreshError as e:
+  except (google.auth.exceptions.RefreshError,
+          requests.exceptions.ReadTimeout) as e:
     raise SystemExit(e.args[0])
   try:
     rdata = json.loads(response.content)

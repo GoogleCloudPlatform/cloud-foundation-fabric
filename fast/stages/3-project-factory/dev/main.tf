@@ -16,43 +16,24 @@
 
 # tfdoc:file:description Project factory.
 
-
-locals {
-  _defaults = yamldecode(file(var.defaults_file))
-  _defaults_net = {
-    billing_account_id   = var.billing_account.id
-    environment_dns_zone = var.environment_dns_zone
-    shared_vpc_self_link = try(var.vpc_self_links["dev-spoke-0"], null)
-    vpc_host_project     = try(var.host_project_ids["dev-spoke-0"], null)
-  }
-  defaults = merge(local._defaults, local._defaults_net)
-  projects = {
-    for f in fileset("${var.data_dir}", "**/*.yaml") :
-    trimsuffix(f, ".yaml") => yamldecode(file("${var.data_dir}/${f}"))
-  }
-}
-
 module "projects" {
-  source                 = "../../../../blueprints/factories/project-factory"
-  for_each               = local.projects
-  defaults               = local.defaults
-  project_id             = each.key
-  billing_account_id     = try(each.value.billing_account_id, null)
-  billing_alert          = try(each.value.billing_alert, null)
-  dns_zones              = try(each.value.dns_zones, [])
-  essential_contacts     = try(each.value.essential_contacts, [])
-  folder_id              = try(each.value.folder_id, local.defaults.folder_id)
-  group_iam              = try(each.value.group_iam, {})
-  iam                    = try(each.value.iam, {})
-  kms_service_agents     = try(each.value.kms_service_agents, {})
-  labels                 = try(each.value.labels, {})
-  org_policies           = try(each.value.org_policies, null)
-  prefix                 = var.prefix
-  service_accounts       = try(each.value.service_accounts, {})
-  service_accounts_iam   = try(each.value.service_accounts_iam, {})
-  services               = try(each.value.services, [])
-  service_identities_iam = try(each.value.service_identities_iam, {})
-  vpc                    = try(each.value.vpc, null)
+  source = "../../../../blueprints/factories/project-factory"
+  data_defaults = {
+    billing_account = var.billing_account.id
+    # more defaults are available, check the project factory variables
+  }
+  data_merges = {
+    labels = {
+      environment = "dev"
+    }
+    services = [
+      "stackdriver.googleapis.com"
+    ]
+  }
+  data_overrides = {
+    prefix = var.prefix
+  }
+  factory_data = var.factory_data
 }
 
 

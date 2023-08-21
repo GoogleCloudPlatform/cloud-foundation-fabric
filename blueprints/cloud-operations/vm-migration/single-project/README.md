@@ -13,21 +13,20 @@ This is the high level diagram:
 This sample creates several distinct groups of resources:
 
 - projects
-  - M4CE host project with [required services](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#enabling_required_services_on_the_host_project) deployed on a new or existing project. 
+  - M4CE host project with [required services](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#enabling_required_services_on_the_host_project) deployed on a new or existing project.
 - networking
   - Default VPC network
 - IAM
   - One [service account](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/migrate-connector#step-3) used at runtime by the M4CE connector for data replication
-  - Grant [migration admin roles](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/enable-services#using_predefined_roles) to admin user accounts
-  - Grant [migration viewer role](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/enable-services#using_predefined_roles) to viewer user accounts
+  - Grant [migration admin roles](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/enable-services#using_predefined_roles) to admin user or group
+  - Grant [migration viewer role](https://cloud.google.com/migrate/virtual-machines/docs/5.0/how-to/enable-services#using_predefined_roles) to viewer user or group
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [migration_admin_users](variables.tf#L15) | List of users authorized to create a new M4CE sources and perform all other migration operations, in IAM format. | <code>list&#40;string&#41;</code> | ✓ |  |
-| [migration_viewer_users](variables.tf#L20) | List of users authorized to retrieve information about M4CE in the Google Cloud Console, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [migration_admin](variables.tf#L15) | User or group who can create a new M4CE sources and perform all other migration operations, in IAM format (`group:foo@example.com`). | <code>string</code> | ✓ |  |
+| [migration_viewer](variables.tf#L20) | User or group authorized to retrieve information about M4CE in the Google Cloud Console, in IAM format (`group:foo@example.com`). | <code>string</code> |  | <code>null</code> |
 | [project_create](variables.tf#L26) | Parameters for the creation of the new project to host the M4CE backend. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [project_name](variables.tf#L35) | Name of an existing project or of the new project assigned as M4CE host an target project. | <code>string</code> |  | <code>&#34;m4ce-host-project-000&#34;</code> |
 | [vpc_config](variables.tf#L41) | Parameters to create a simple VPC on the M4CE project. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string,&#10;  region        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  ip_cidr_range &#61; &#34;10.200.0.0&#47;20&#34;,&#10;  region        &#61; &#34;us-west2&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -37,9 +36,7 @@ This sample creates several distinct groups of resources:
 | name | description | sensitive |
 |---|---|:---:|
 | [m4ce_gmanaged_service_account](outputs.tf#L15) | Google managed service account created automatically during the migrate connector registration. It is used by M4CE to perform activities on target projects. |  |
-
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl
@@ -49,8 +46,8 @@ module "test" {
     billing_account_id = "1234-ABCD-1234"
     parent             = "folders/1234563"
   }
-  migration_admin_users  = ["user:admin@example.com"]
-  migration_viewer_users = ["user:viewer@example.com"]
+  migration_admin  = "user:admin@example.com"
+  migration_viewer = "user:viewer@example.com"
 }
 # tftest modules=5 resources=22
 ```

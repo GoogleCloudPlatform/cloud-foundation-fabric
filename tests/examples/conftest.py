@@ -66,7 +66,7 @@ def pytest_generate_tests(metafunc):
             name = f'{path}:{last_header}'
             if index > 1:
               name += f' {index}'
-            ids.append(name)
+            ids.append(f'{path}:{last_header}:{index}')
             examples.append(Example(name, code, path, files[last_header]))
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children

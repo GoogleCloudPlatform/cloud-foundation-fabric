@@ -48,24 +48,33 @@ variable "iam" {
   nullable    = false
 }
 
-variable "iam_additive" {
-  description = "Non authoritative IAM bindings, in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
+variable "iam_bindings" {
+  description = "Authoritative IAM bindings in {ROLE => {members = [], condition = {}}}."
+  type = map(object({
+    members = list(string)
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
 
-variable "iam_additive_members" {
-  description = "IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_policy" {
-  description = "IAM authoritative policy in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared, use with extreme caution."
-  type        = map(list(string))
-  default     = null
+variable "iam_bindings_additive" {
+  description = "Individual additive IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "id" {

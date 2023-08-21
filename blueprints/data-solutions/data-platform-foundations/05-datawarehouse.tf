@@ -15,61 +15,48 @@
 # tfdoc:file:description Data Warehouse projects.
 
 locals {
-  dwh_lnd_iam = {
-    "roles/bigquery.dataOwner" = [
-      module.load-sa-df-0.iam_email,
-    ]
-    "roles/bigquery.dataViewer" = [
-      module.transf-sa-df-0.iam_email,
-      module.transf-sa-bq-0.iam_email,
-      local.groups_iam.data-engineers
-    ]
-    "roles/bigquery.jobUser" = [
-      module.load-sa-df-0.iam_email, local.groups_iam.data-engineers
-    ]
-    "roles/datacatalog.categoryAdmin"     = [module.transf-sa-bq-0.iam_email]
-    "roles/datacatalog.tagTemplateViewer" = [local.groups_iam.data-engineers]
-    "roles/datacatalog.viewer"            = [local.groups_iam.data-engineers]
-    "roles/storage.objectCreator"         = [module.load-sa-df-0.iam_email]
-    "roles/storage.objectViewer"          = [local.groups_iam.data-engineers]
-  }
   dwh_iam = {
-    "roles/bigquery.dataOwner" = [
-      module.transf-sa-df-0.iam_email,
-      module.transf-sa-bq-0.iam_email,
+    data_analysts = [
+      "roles/bigquery.dataViewer",
+      "roles/bigquery.jobUser",
+      "roles/datacatalog.viewer",
+      "roles/storage.objectViewer"
     ]
-    "roles/bigquery.dataViewer" = [
-      local.groups_iam.data-analysts,
-      local.groups_iam.data-engineers
+    data_engineers = [
+      "roles/bigquery.dataViewer",
+      "roles/bigquery.jobUser",
+      "roles/datacatalog.viewer",
+      "roles/storage.objectViewer"
     ]
-    "roles/bigquery.jobUser" = [
-      module.transf-sa-bq-0.iam_email,
-      local.groups_iam.data-analysts,
-      local.groups_iam.data-engineers
+    sa_transf_bq = [
+      "roles/bigquery.dataOwner",
+      "roles/bigquery.jobUser"
     ]
-    "roles/datacatalog.tagTemplateViewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
+    sa_transf_df = [
+      "roles/bigquery.dataOwner",
+      "roles/storage.objectAdmin"
     ]
-    "roles/datacatalog.viewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
-    ]
-    "roles/storage.objectViewer" = [
-      local.groups_iam.data-analysts, local.groups_iam.data-engineers
-    ]
-    "roles/storage.objectAdmin" = [module.transf-sa-df-0.iam_email]
   }
-  dwh_services = concat(var.project_services, [
-    "bigquery.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "cloudkms.googleapis.com",
-    "compute.googleapis.com",
-    "dataflow.googleapis.com",
-    "pubsub.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "storage.googleapis.com",
-    "storage-component.googleapis.com"
-  ])
+  lnd_iam = {
+    data_engineers = [
+      "roles/bigquery.dataViewer",
+      "roles/bigquery.jobUser",
+      "roles/datacatalog.viewer",
+      "roles/storage.objectViewer"
+    ]
+    sa_load = [
+      "roles/storage.objectCreator"
+    ]
+    sa_transf_bq = [
+      "roles/bigquery.dataViewer",
+      "roles/datacatalog.categoryAdmin"
+    ]
+    sa_transf_df = [
+      "roles/bigquery.dataOwner",
+      "roles/bigquery.dataViewer",
+      "roles/bigquery.jobUser"
+    ]
+  }
 }
 
 # Project
@@ -79,11 +66,15 @@ module "dwh-lnd-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-lnd : "${var.project_config.project_ids.dwh-lnd}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.dwh_lnd_iam : {}
-  iam_additive    = var.project_config.billing_account_id == null ? local.dwh_lnd_iam : {}
-  services        = local.dwh_services
+  prefix          = local.use_projects ? null : var.prefix
+  name = (
+    local.use_projects
+    ? var.project_config.project_ids.dwh-lnd
+    : "${var.project_config.project_ids.dwh-lnd}${local.project_suffix}"
+  )
+  iam                   = local.use_projects ? {} : local.lnd_iam_auth
+  iam_bindings_additive = !local.use_projects ? {} : local.lnd_iam_additive
+  services              = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -95,11 +86,15 @@ module "dwh-cur-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-cur : "${var.project_config.project_ids.dwh-cur}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.dwh_iam : {}
-  iam_additive    = var.project_config.billing_account_id == null ? local.dwh_iam : {}
-  services        = local.dwh_services
+  prefix          = local.use_projects ? null : var.prefix
+  name = (
+    local.use_projects
+    ? var.project_config.project_ids.dwh-cur
+    : "${var.project_config.project_ids.dwh-cur}${local.project_suffix}"
+  )
+  iam                   = local.use_projects ? {} : local.dwh_iam_auth
+  iam_bindings_additive = !local.use_projects ? {} : local.dwh_iam_additive
+  services              = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -111,18 +106,20 @@ module "dwh-conf-project" {
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  name            = var.project_config.billing_account_id == null ? var.project_config.project_ids.dwh-conf : "${var.project_config.project_ids.dwh-conf}${local.project_suffix}"
-  iam             = var.project_config.billing_account_id != null ? local.dwh_iam : null
-  iam_additive    = var.project_config.billing_account_id == null ? local.dwh_iam : null
-  services        = local.dwh_services
+  prefix          = local.use_projects ? null : var.prefix
+  name = (
+    local.use_projects
+    ? var.project_config.project_ids.dwh-conf
+    : "${var.project_config.project_ids.dwh-conf}${local.project_suffix}"
+  )
+  iam                   = local.use_projects ? {} : local.dwh_iam_auth
+  iam_bindings_additive = !local.use_projects ? {} : local.dwh_iam_additive
+  services              = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
-
-# Bigquery
 
 module "dwh-lnd-bq-0" {
   source         = "../../../modules/bigquery-dataset"
@@ -147,8 +144,6 @@ module "dwh-conf-bq-0" {
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
-
-# Cloud storage
 
 module "dwh-lnd-cs-0" {
   source         = "../../../modules/gcs"

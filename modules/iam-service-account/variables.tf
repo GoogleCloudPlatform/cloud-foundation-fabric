@@ -39,18 +39,40 @@ variable "iam" {
   nullable    = false
 }
 
-variable "iam_additive" {
-  description = "IAM additive bindings on the service account in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "iam_billing_roles" {
   description = "Billing account roles granted to this service account, by billing account id. Non-authoritative."
   type        = map(list(string))
   default     = {}
   nullable    = false
+}
+
+variable "iam_bindings" {
+  description = "Authoritative IAM bindings on the service account in {ROLE => {members = [], condition = {}}}."
+  type = map(object({
+    members = list(string)
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
+variable "iam_bindings_additive" {
+  description = "Individual additive IAM bindings on the service account. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "iam_folder_roles" {

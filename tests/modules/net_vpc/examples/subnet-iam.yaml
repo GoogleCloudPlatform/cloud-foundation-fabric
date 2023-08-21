@@ -14,18 +14,64 @@
 
 values:
   module.vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
     name: my-network
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     project: my-project
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc.google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: my-network-private-googleapis
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: my-network-restricted-googleapis
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: my-project
+    tags: null
+    timeouts: null
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/subnet-1"]:
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.1.0/24
+    ipv6_access_type: null
+    log_config: []
     name: subnet-1
+    private_ip_google_access: true
     project: my-project
     region: europe-west1
+    role: null
+    secondary_ip_range: []
+    timeouts: null
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/subnet-2"]:
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.1.0/24
+    ipv6_access_type: null
+    log_config: []
     name: subnet-2
     private_ip_google_access: true
     project: my-project
     region: europe-west1
-  module.vpc.google_compute_subnetwork_iam_binding.binding["europe-west1/subnet-1.roles/compute.networkUser"]:
+    role: null
+    secondary_ip_range: []
+    timeouts: null
+  module.vpc.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.networkUser"]:
     condition: []
     members:
     - group:group1@example.com
@@ -34,16 +80,20 @@ values:
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
-  module.vpc.google_compute_subnetwork_iam_member.binding["europe-west1/subnet-2.roles/compute.networkUser.user:user2@example.com"]:
-    condition: []
-    member: user:user2@example.com
+  module.vpc.google_compute_subnetwork_iam_binding.bindings["europe-west1/subnet-1.roles/compute.networkUser.test_condition"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('123456789012/env', 'prod')
+      title: test_condition
+    members:
+    - group:group2@example.com
     project: my-project
     region: europe-west1
     role: roles/compute.networkUser
-    subnetwork: subnet-2
-  module.vpc.google_compute_subnetwork_iam_member.binding["europe-west1/subnet-2.roles/compute.networkUser.group:group2@example.com"]:
+    subnetwork: subnet-1
+  module.vpc.google_compute_subnetwork_iam_member.bindings["subnet-2-am1"]:
     condition: []
-    member: group:group2@example.com
+    member: user:am1@example.com
     project: my-project
     region: europe-west1
     role: roles/compute.networkUser
@@ -51,7 +101,11 @@ values:
 
 counts:
   google_compute_network: 1
-  google_compute_subnetwork: 2
-  google_compute_subnetwork_iam_binding: 1
-  google_compute_subnetwork_iam_member: 2
   google_compute_route: 2
+  google_compute_subnetwork: 2
+  google_compute_subnetwork_iam_binding: 2
+  google_compute_subnetwork_iam_member: 1
+  modules: 1
+  resources: 8
+
+outputs: {}

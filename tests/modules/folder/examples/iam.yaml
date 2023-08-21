@@ -16,6 +16,7 @@ values:
   module.folder.google_folder.folder[0]:
     display_name: Folder name
     parent: organizations/1234567890
+    timeouts: null
   module.folder.google_folder_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
@@ -32,28 +33,17 @@ values:
     members:
     - group:cloud-owners@example.org
     role: roles/resourcemanager.projectCreator
-  module.folder.google_folder_iam_member.additive["roles/compute.admin-user:a1@example.org"]:
-    condition: []
-    member: user:a1@example.org
-    role: roles/compute.admin
-  module.folder.google_folder_iam_member.additive["roles/compute.admin-user:a2@example.org"]:
-    condition: []
-    member: user:a2@example.org
-    role: roles/compute.admin
-  module.folder.google_folder_iam_member.additive["roles/compute.viewer-user:a2@example.org"]:
-    condition: []
-    member: user:a2@example.org
-    role: roles/compute.viewer
-  module.folder.google_folder_iam_member.additive["roles/storage.admin-user:am1@example.org"]:
+  module.folder.google_folder_iam_member.bindings["am1-storage-admin"]:
     condition: []
     member: user:am1@example.org
     role: roles/storage.admin
-  module.folder.google_folder_iam_member.additive["roles/storage.objectViewer-user:am2@example.org"]:
-    condition: []
-    member: user:am2@example.org
-    role: roles/storage.objectViewer
 
 counts:
   google_folder: 1
   google_folder_iam_binding: 3
-  google_folder_iam_member: 5
+  google_folder_iam_member: 1
+  modules: 1
+  resources: 5
+
+outputs: {}
+

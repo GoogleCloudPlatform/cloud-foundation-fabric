@@ -20,13 +20,14 @@ default:
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 variables:
-  AUDIENCE: ${audience}
   GOOGLE_CREDENTIALS: cicd-sa-credentials.json
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}
   FAST_SERVICE_ACCOUNT: ${service_account}
   FAST_WIF_PROVIDER: ${identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+  %{~ if tf_providers_file != "" ~}
   TF_PROVIDERS_FILE: ${tf_providers_file}
+  %{~ endif ~}
   TF_VAR_FILES: ${tf_var_files == [] ? "''" : join("\n    ", tf_var_files)}
 
 stages:
@@ -38,16 +39,27 @@ stages:
 cache:
   key: gcp-auth
   paths:
-    - .tf-setup
+    - cicd-sa-credentials.json
+    - token.txt
+    %{~ if tf_providers_file != "" ~}
+    - ${tf_providers_file}
+    %{~ endif ~}
+    %{~ for f in tf_var_files ~}
+    - ${f}
+    %{~ endfor ~}
 
 gcp-auth:
-  stage: gcp-auth
   id_tokens:
     GITLAB_TOKEN:
-      aud: "$${AUDIENCE}"
+      aud:
+      %{~ for aud in audiences ~}
+        - ${aud}
+      %{~ endfor ~}
   image:
     name: google/cloud-sdk:slim
+  stage: gcp-auth
   script:
+    - echo "$${GITLAB_TOKEN}" > token.txt
     - |
       gcloud iam workload-identity-pools create-cred-config \
         $${FAST_WIF_PROVIDER} \
@@ -55,30 +67,27 @@ gcp-auth:
         --service-account-token-lifetime-seconds=3600 \
         --output-file=$${GOOGLE_CREDENTIALS} \
         --credential-source-file=token.txt
-    - rm token.txt
-  artifacts:
-    untracked: true
 
 tf-files:
-  stage: tf-files
+  dependencies:
+    - gcp-auth
   image:
     name: google/cloud-sdk:slim
+  stage: tf-files
   script:
     # - gcloud components install -q alpha
     - gcloud config set auth/credential_file_override $${GOOGLE_CREDENTIALS}
-    - mkdir -p .tf-setup
-    - |
-      gcloud alpha storage cp -r \
-        "gs://$${FAST_OUTPUTS_BUCKET}/providers/$${TF_PROVIDERS_FILE}" .tf-setup/
-    - |
-      gcloud alpha storage cp -r \
-        "gs://$${FAST_OUTPUTS_BUCKET}/tfvars" .tf-setup/
-  artifacts:
-    untracked: true
-  dependencies:
-    - gcp-auth
+    %{~ if tf_providers_file != "" ~}
+    - gcloud alpha storage cp -r "gs://$${FAST_OUTPUTS_BUCKET}/providers/${tf_providers_file}" ./
+    %{~ endif ~}
+    %{~ for f in tf_var_files ~}
+    - gcloud alpha storage cp -r "gs://$${FAST_OUTPUTS_BUCKET}/tfvars/${f}" ./
+    %{~ endfor ~}
+    - ls -l
 
 tf-plan:
+  dependencies:
+    - tf-files
   stage: tf-plan
   # uncomment the following lines and set the SSH key secret for private modules repo
   # before_script:
@@ -89,20 +98,13 @@ tf-plan:
   #     ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
   #     ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
   script:
-    - cp ".tf-setup/$${TF_PROVIDERS_FILE}" ./
-    - |
-      for f in "$${TF_VAR_FILES}"; do
-        ln -s ".tf-setup/tfvars/$f" ./
-      done
     - terraform init
     - terraform validate
     - terraform plan
-  artifacts:
-    untracked: true
-  dependencies:
-    - tf-files
 
 tf-apply:
+  dependencies:
+    - tf-files
   stage: tf-apply
   # uncomment the following lines and set the SSH key secret for private modules repo
   # before_script:
@@ -113,18 +115,9 @@ tf-apply:
   #     ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
   #     ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
   script:
-    - cp .tf-setup/$${TF_PROVIDERS_FILE} ./
-    - |
-      for f in $${TF_VAR_FILES}; do
-        ln -s ".tf-setup/tfvars/$f" ./
-      done
     - terraform init
     - terraform validate
     - terraform apply -input=false -auto-approve
-  artifacts:
-    untracked: true
-  dependencies:
-    - tf-files
   when: manual
   only:
     variables:

@@ -43,10 +43,7 @@ output "project_id" {
   value       = module.project.project_id
 }
 
-output "service_accounts" {
-  description = "Service Accounts."
-  value = {
-    "gcs" = module.service-account-gcs.email
-    "sql" = module.service-account-sql.email
-  }
+output "service_account" {
+  description = "SQL client service Accounts."
+  value       = module.service-account-sql.email
 }
