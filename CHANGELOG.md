@@ -6,13 +6,29 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2023-08-09 17:02:13+00:00 -->
 
+### BLUEPRINTS
+
+- [[#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595)] **incompatible change:** IAM interface refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-08-20 07:44:20+00:00 -->
+- [[#1601](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1601)] [Data Platform] Update README.md ([lcaggio](https://github.com/lcaggio)) <!-- 2023-08-18 16:27:43+00:00 -->
+
+### DOCUMENTATION
+
+- [[#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595)] **incompatible change:** IAM interface refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-08-20 07:44:20+00:00 -->
+
 ### FAST
 
+- [[#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595)] **incompatible change:** IAM interface refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-08-20 07:44:20+00:00 -->
+- [[#1597](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1597)] fix null object exception in bootstrap output when using cloudsource ([sm3142](https://github.com/sm3142)) <!-- 2023-08-17 09:03:23+00:00 -->
 - [[#1593](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1593)] Fix FAST CI/CD for Gitlab ([ludoo](https://github.com/ludoo)) <!-- 2023-08-15 10:59:31+00:00 -->
 - [[#1583](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1583)] Fix module path for teams cicd ([ludoo](https://github.com/ludoo)) <!-- 2023-08-09 21:41:57+00:00 -->
 
 ### MODULES
 
+- [[#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595)] **incompatible change:** IAM interface refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-08-20 07:44:20+00:00 -->
+- [[#1600](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1600)] fix(cloud-run): move cpu boost annotation to revision ([LiuVII](https://github.com/LiuVII)) <!-- 2023-08-18 14:46:25+00:00 -->
+- [[#1599](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1599)] Fixing some typos ([bluPhy](https://github.com/bluPhy)) <!-- 2023-08-18 08:29:26+00:00 -->
+- [[#1598](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1598)] feat(cloud-run): add startup cpu boost option ([JSchwerberg](https://github.com/JSchwerberg)) <!-- 2023-08-17 22:05:24+00:00 -->
+- [[#1594](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1594)] Add support for conditions to `iam_members` module variables ([ludoo](https://github.com/ludoo)) <!-- 2023-08-15 14:28:23+00:00 -->
 - [[#1591](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1591)] feat: 🎸 (modules/cloudsql-instance):add project_id for ssl cert ([erabusi](https://github.com/erabusi)) <!-- 2023-08-14 10:40:25+00:00 -->
 - [[#1589](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1589)] Add new `iam_members` variable to IAM additive module interfaces ([ludoo](https://github.com/ludoo)) <!-- 2023-08-14 09:54:50+00:00 -->
 - [[#1588](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1588)] feat: 🎸 (modules/cloudsql-instance): enable require_ssl cert support ([erabusi](https://github.com/erabusi)) <!-- 2023-08-14 09:37:04+00:00 -->
@@ -22,6 +38,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595)] **incompatible change:** IAM interface refactor ([ludoo](https://github.com/ludoo)) <!-- 2023-08-20 07:44:20+00:00 -->
 - [[#1585](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1585)] Print inventory path when a test fails ([juliocc](https://github.com/juliocc)) <!-- 2023-08-11 10:28:08+00:00 -->
 
 ## [25.0.0] - 2023-08-09
