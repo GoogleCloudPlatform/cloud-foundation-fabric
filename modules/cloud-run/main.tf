@@ -79,16 +79,6 @@ locals {
     )
     : var.service_account
   )
-  trigger_service_account_email = (
-    var.eventarc_triggers.service_account_create
-    ? (
-      length(google_service_account.trigger_service_account) > 0
-      ? google_service_account.trigger_service_account[0].email
-      # : google_service_account.trigger_service_account[0].email # : null
-      : null
-    )
-    : var.eventarc_triggers.service_account_email
-  )
   vpc_connector_create = var.vpc_connector_create != null
 }
 
@@ -305,7 +295,7 @@ resource "google_cloud_run_service" "service" {
 }
 
 resource "google_cloud_run_service_iam_binding" "binding" {
-  for_each = local.iam
+  for_each = var.iam
   project  = google_cloud_run_service.service.project
   location = google_cloud_run_service.service.location
   service  = google_cloud_run_service.service.name
@@ -315,7 +305,7 @@ resource "google_cloud_run_service_iam_binding" "binding" {
     ? each.value
     # if invoker role is present and we create trigger sa, add it as member
     : concat(
-      each.value, ["serviceAccount:${local.trigger_service_account_email}"]
+      each.value, ["serviceAccount:${google_service_account.trigger_service_account[0].email}"]
     )
   )
 }
@@ -331,7 +321,7 @@ resource "google_cloud_run_service_iam_member" "member" {
   location = google_cloud_run_service.service.location
   service  = google_cloud_run_service.service.name
   role     = "roles/run.invoker"
-  member   = "serviceAccount:${local.trigger_service_account_email}"
+  member   = "serviceAccount:${google_service_account.trigger_service_account[0].email}"
 }
 
 resource "google_service_account" "service_account" {

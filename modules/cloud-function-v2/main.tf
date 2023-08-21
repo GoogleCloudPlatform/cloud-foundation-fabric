@@ -30,11 +30,6 @@ locals {
     ? google_service_account.service_account[0].email
     : var.service_account
   )
-  trigger_service_account_email = (
-    try(var.trigger_config.service_account_create, false)
-    ? google_service_account.trigger_service_account[0].email
-    : try(var.trigger_config.service_account_email, null)
-  )
   vpc_connector = (
     var.vpc_connector == null
     ? null
@@ -148,7 +143,28 @@ resource "google_cloudfunctions2_function_iam_binding" "default" {
   location       = google_cloudfunctions2_function.function.location
   cloud_function = google_cloudfunctions2_function.function.name
   role           = each.key
-  members        = each.value
+  members = (
+    role != "roles/run.invoker" || !var.trigger_config.service_account_create
+    ? each.value
+    # if invoker role is present and we create trigger sa, add it as member
+    : concat(
+      each.value, ["serviceAccount:${google_service_account.trigger_service_account[0].email}"]
+    )
+  )
+}
+
+resource "google_cloudfunctions2_service_iam_member" "member" {
+  # if authoritative invoker role is not present and we create trigger sa
+  # use additive binding to grant it the role
+  count = (
+    lookup(var.iam, "roles/run.invoker", null) == null &&
+    var.trigger_config.service_account_create
+  ) ? 1 : 0
+  project        = google_cloud_run_service.service.project
+  location       = google_cloudfunctions2_function.function.location
+  cloud_function = google_cloudfunctions2_function.function.name
+  role           = "roles/run.invoker"
+  member         = "serviceAccount:${google_service_account.trigger_service_account[0].email}"
 }
 
 resource "google_storage_bucket" "bucket" {
