@@ -380,15 +380,46 @@ module "dataplex-datascan" {
 
 ## IAM
 
-IAM is managed via several variables that implement different features and levels of control:
+IAM is managed via several variables that implement different levels of control:
 
-- `iam` and `group_iam` configure authoritative bindings that manage individual roles exclusively, and are internally merged
-- `iam_bindings` configure authoritative bindings with optional support for conditions, and are not internally merged with the previous two variables
-- `iam_bindings_additive` configure additive bindings via individual role/member pairs with optional support  conditions
+* `iam_bindings` which is authoritative and controls the entire IAM policy for the project, where any binding created outside this module (eg in the console) will be removed at each `terraform apply` cycle regardless of the role
+* `iam_bindings_additive` which is additive and compatible with any bindings created outside of this module
+* `group_iam` and `iam` configure authoritative bindings that manage individual roles exclusively, provided for legacy compatibility purposes
 
-The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `groups_iam` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
+The authoritative and additive approaches can be used together, provided different roles are managed by each.
 
-An example is provided below for using some of these variables. Refer to the [project module](../project/README.md#iam) for complete examples of the IAM interface.
+The example uses `iam_bindings`, which is the recommended approach for managing IAM using this module.
+
+```hcl
+module "dataplex-datascan" {
+  source     = "./fabric/modules/dataplex-datascan"
+  name       = "datascan"
+  prefix     = "test"
+  project_id = "my-project-name"
+  region     = "us-central1"
+  data = {
+    resource = "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
+  }
+  data_profile_spec = {}
+  iam_bindings = {
+    "roles/dataplex.dataScanAdmin" = {
+      members = [
+        "serviceAccount:svc-1@project-id.iam.gserviceaccount.com"
+    ] },
+    "roles/dataplex.dataScanEditor" = {
+      members = [
+        "user:admin-user@example.com"
+    ] },
+    "roles/dataplex.dataScanViewer" = {
+      members = [
+        "group:user-group@example.com"
+    ] }
+  }
+}
+# tftest modules=1 resources=4 inventory=datascan_iam.yaml
+```
+
+The example uses `iam` and `group_iam`, which is provided for compatibility with other module interfacess.
 
 ```hcl
 module "dataplex-datascan" {
@@ -421,7 +452,7 @@ module "dataplex-datascan" {
     }
   }
 }
-# tftest modules=1 resources=5 inventory=datascan_iam.yaml
+# tftest modules=1 resources=5 inventory=datascan_iam_2.yaml
 ```
 
 ## TODO

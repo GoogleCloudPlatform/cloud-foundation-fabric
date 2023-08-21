@@ -34,7 +34,7 @@ values:
     location: us-central1
     project: my-project-name
     timeouts: null
-  module.dataplex-datascan.google_dataplex_datascan_iam_binding.bindings["roles/dataplex.dataScanAdmin"]:
+  module.dataplex-datascan.google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanAdmin"]:
     condition: []
     data_scan_id: test-datascan
     location: us-central1
@@ -42,7 +42,7 @@ values:
     - serviceAccount:svc-1@project-id.iam.gserviceaccount.com
     project: my-project-name
     role: roles/dataplex.dataScanAdmin
-  module.dataplex-datascan.google_dataplex_datascan_iam_binding.bindings["roles/dataplex.dataScanEditor"]:
+  module.dataplex-datascan.google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanEditor"]:
     condition: []
     data_scan_id: test-datascan
     location: us-central1
@@ -50,7 +50,7 @@ values:
     - user:admin-user@example.com
     project: my-project-name
     role: roles/dataplex.dataScanEditor
-  module.dataplex-datascan.google_dataplex_datascan_iam_binding.bindings["roles/dataplex.dataScanViewer"]:
+  module.dataplex-datascan.google_dataplex_datascan_iam_binding.authoritative_for_role["roles/dataplex.dataScanViewer"]:
     condition: []
     data_scan_id: test-datascan
     location: us-central1
@@ -58,11 +58,19 @@ values:
     - group:user-group@example.com
     project: my-project-name
     role: roles/dataplex.dataScanViewer
+  module.dataplex-datascan.google_dataplex_datascan_iam_member.bindings["am1-viewer"]:
+    condition: []
+    data_scan_id: test-datascan
+    location: us-central1
+    member: user:am1@example.com
+    project: my-project-name
+    role: roles/dataplex.dataScanViewer
 
 counts:
   google_dataplex_datascan: 1
   google_dataplex_datascan_iam_binding: 3
+  google_dataplex_datascan_iam_member: 1
   modules: 1
-  resources: 4
+  resources: 5
 
 outputs: {}
