@@ -147,7 +147,8 @@ resource "google_cloudfunctions2_function_iam_binding" "default" {
   cloud_function = google_cloudfunctions2_function.function.name
   role           = each.key
   members = (
-    each.key != "roles/run.invoker" || !var.trigger_config.service_account_create
+    each.key != "roles/run.invoker" ||
+    try(var.trigger_config.service_account_create, null) != true
     ? each.value
     # if invoker role is present and we create trigger sa, add it as member
     : concat(
@@ -161,7 +162,7 @@ resource "google_cloud_run_service_iam_member" "member" {
   # use additive binding to grant it the role
   count = (
     lookup(var.iam, "roles/run.invoker", null) == null &&
-    var.trigger_config.service_account_create
+    try(var.trigger_config.service_account_create, null) == true
   ) ? 1 : 0
   project  = google_cloudfunctions2_function.function.project
   location = google_cloudfunctions2_function.function.location
