@@ -70,6 +70,7 @@ These modules are used in the examples included in this repository. If you are u
 - [GKE standard cluster](./gke-cluster-standard)
 - [GKE hub](./gke-hub)
 - [GKE nodepool](./gke-nodepool)
+- [GCVE private cloud](./gcve-private-cloud)
 
 ## Data
 
