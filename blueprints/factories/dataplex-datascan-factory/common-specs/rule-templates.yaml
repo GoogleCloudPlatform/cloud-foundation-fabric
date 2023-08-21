@@ -1,0 +1,89 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Rules templates of type map(object({})) that can be referenced in the data_quality_spec of each datascan yaml
+rule_templates:
+  valid_address:
+    column: address
+    dimension: VALIDITY
+    ignore_null: true
+    non_null_expectation: {}
+    threshold: 0.99
+  valid_council_district:
+    column: council_district
+    dimension: VALIDITY
+    ignore_null: true
+    threshold: 0.9
+    range_expectation:
+      max_value: '10'
+      min_value: '1'
+      strict_max_enabled: false
+      strict_min_enabled: true
+  valid_power_type:
+    column: power_type
+    dimension: VALIDITY
+    ignore_null: false
+    regex_expectation:
+      regex: .*solar.*
+  valid_property_type:
+    column: property_type
+    dimension: VALIDITY
+    ignore_null: false
+    set_expectation:
+      values:
+      - sidewalk
+      - parkland
+  unique_column:
+    dimension: UNIQUENESS
+    uniqueness_expectation: {}
+  valid_number_of_docks:
+    column: number_of_docks
+    dimension: VALIDITY
+    statistic_range_expectation:
+      max_value: '15'
+      min_value: '5'
+      statistic: MEAN
+      strict_max_enabled: true
+      strict_min_enabled: true
+  valid_footprint_length:
+    column: footprint_length
+    dimension: VALIDITY
+    row_condition_expectation:
+      sql_expression: footprint_length > 0 AND footprint_length <= 10
+  not_empty:
+    dimension: VALIDITY
+    table_condition_expectation:
+      sql_expression: COUNT(*) > 0
+
+# Example usage of rule templates inside a datascan data_quality_spec is shown below.
+# data_quality_scan:
+#   rules:
+#     - use_rule_template: 
+#         name: valid_council_district
+#     - use_rule_template: 
+#         name: valid_property_type
+#         override:
+#           set_expectation:
+#             values:
+#             - parkland
+#     - use_rule_template: 
+#         name: unique_column
+#         override:
+#           column: address
+#     - use_rule_template: 
+#         name: valid_number_of_docks
+#         override:
+#           statistic_range_expectation:
+#             strict_max_enabled: false
+#             strict_min_enabled: false
