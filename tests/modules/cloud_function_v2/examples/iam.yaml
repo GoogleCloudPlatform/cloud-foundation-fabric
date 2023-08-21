@@ -21,37 +21,7 @@ values:
     project: my-project
     role: roles/run.invoker
     service: test-cf-http
-  module.cf-http.google_cloudfunctions2_function.function:
-    build_config:
-    - docker_repository: null
-      entry_point: main
-      runtime: python310
-      source:
-      - repo_source: []
-        storage_source:
-        - bucket: test-cf-bundles
-          object: bundle-6f1ece136848fee658e335b05fe2d79d.zip
-      worker_pool: null
-    description: Terraform managed.
-    event_trigger: []
-    labels: null
-    location: europe-west1
-    name: test-cf-http
-    project: my-project
-    service_config:
-    - all_traffic_on_latest_revision: true
-      available_cpu: '0.166'
-      available_memory: 256M
-      environment_variables: null
-      ingress_settings: ALLOW_ALL
-      max_instance_count: 1
-      min_instance_count: 0
-      secret_environment_variables: []
-      secret_volumes: []
-      timeout_seconds: 180
-      vpc_connector: null
-      vpc_connector_egress_settings: null
-    timeouts: null
+  module.cf-http.google_cloudfunctions2_function.function: {}
   module.cf-http.google_storage_bucket_object.bundle:
     bucket: test-cf-bundles
     cache_control: null
