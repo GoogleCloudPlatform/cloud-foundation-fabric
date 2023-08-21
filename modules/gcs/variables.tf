@@ -135,10 +135,34 @@ variable "notification_config" {
 variable "objects_to_upload" {
   description = "Objects to be uploaded to bucket."
   type = map(object({
-    name         = string
-    source       = string
-    content_type = string
+    name                = string
+    metadata            = optional(map(string))
+    content             = optional(string)
+    source              = optional(string)
+    cache_control       = optional(string)
+    content_disposition = optional(string)
+    content_encoding    = optional(string)
+    content_language    = optional(string)
+    content_type        = optional(string)
+    event_based_hold    = optional(bool)
+    temporary_hold      = optional(bool)
+    detect_md5hash      = optional(string)
+    storage_class       = optional(string)
+    kms_key_name        = optional(string)
+    customer_encryption = optional(object({
+      encryption_algorithm = optional(string)
+      encryption_key       = string
+    }))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.objects_to_upload :
+      v.content != null
+      ||
+      v.source != null
+    ])
+    error_message = "Object must have either content or source defined."
+  }
   default = {}
 }
 
