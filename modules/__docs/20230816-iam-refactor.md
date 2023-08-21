@@ -9,7 +9,7 @@ Implemented in [#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-f
 
 ## Context
 
-Our modules IAM interface has evolved organically to progressively support more functionality, resulting in a large variable surface, lack of support for some key features like conditions, and some fragility for specific use cases.
+The IAM interface in our modules has evolved organically to progressively support more functionality, resulting in a large variable surface, lack of support for some key features like conditions, and some fragility for specific use cases.
 
 We currently support, with uneven coverage across modules:
 
