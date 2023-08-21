@@ -53,7 +53,7 @@ module "folder" {
 
 module "firewall-policy-default" {
   source    = "../../../modules/net-firewall-policy"
-  name      = "net-default"
+  name      = var.factories_config.firewall_policy_name
   parent_id = module.folder.id
   rules_factory_config = {
     cidr_file_path          = "${var.factories_config.data_dir}/cidrs.yaml"
