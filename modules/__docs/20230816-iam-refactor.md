@@ -5,7 +5,7 @@
 
 ## Status
 
-Implemented in #1595.
+Implemented in [#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595).
 
 ## Context
 
