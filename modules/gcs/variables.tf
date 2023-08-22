@@ -154,7 +154,8 @@ variable "objects_to_upload" {
       encryption_key       = string
     }))
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "prefix" {
