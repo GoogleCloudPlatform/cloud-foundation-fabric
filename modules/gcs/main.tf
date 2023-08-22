@@ -99,6 +99,35 @@ resource "google_storage_bucket" "bucket" {
   }
 }
 
+resource "google_storage_bucket_object" "objects" {
+  for_each = var.objects_to_upload
+
+  bucket              = google_storage_bucket.bucket.id
+  name                = each.value.name
+  metadata            = each.value.metadata
+  content             = each.value.content
+  source              = each.value.source
+  cache_control       = each.value.cache_control
+  content_disposition = each.value.content_disposition
+  content_encoding    = each.value.content_encoding
+  content_language    = each.value.content_language
+  content_type        = each.value.content_type
+  event_based_hold    = each.value.event_based_hold
+  temporary_hold      = each.value.temporary_hold
+  detect_md5hash      = each.value.detect_md5hash
+  storage_class       = each.value.storage_class
+  kms_key_name        = each.value.kms_key_name
+
+  dynamic "customer_encryption" {
+    for_each = each.value.customer_encryption == null ? [] : [""]
+
+    content {
+      encryption_algorithm = each.value.customer_encryption.encryption_algorithm
+      encryption_key       = each.value.customer_encryption.encryption_key
+    }
+  }
+}
+
 resource "google_storage_bucket_iam_binding" "bindings" {
   for_each = var.iam
   bucket   = google_storage_bucket.bucket.name
