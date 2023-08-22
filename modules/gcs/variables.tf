@@ -154,15 +154,6 @@ variable "objects_to_upload" {
       encryption_key       = string
     }))
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.objects_to_upload :
-      v.content != null
-      ||
-      v.source != null
-    ])
-    error_message = "Object must have either content or source defined."
-  }
   default = {}
 }
 
