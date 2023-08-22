@@ -15,16 +15,11 @@
  */
 
 locals {
-  wl_nodes = flatten([
-    for s in data.kubernetes_endpoints_v1.cluster_nodes.subset : [
-      for a in s.address : a.ip
-    ]
-  ])
   wl_templates = [
     for f in fileset(local.wl_templates_path, "[0-9]*yaml") :
     "${local.wl_templates_path}/${f}"
   ]
-  wl_templates_path = pathexpand(var.templates_path)
+  wl_templates_path = "${path.module}/manifest-templates"
 }
 
 data "google_client_config" "identity" {
@@ -65,7 +60,7 @@ resource "kubernetes_manifest" "default" {
     for_each = strcontains(each.key, "statefulset") ? [""] : []
     content {
       fields = {
-        "status.availableReplicas" = var.statefulset_config.replicas
+        "status.readyReplicas" = var.statefulset_config.replicas
       }
     }
   }
@@ -74,21 +69,17 @@ resource "kubernetes_manifest" "default" {
   }
 }
 
-data "kubernetes_endpoints_v1" "cluster_nodes" {
-  metadata {
-    name      = "redis-cluster"
-    namespace = kubernetes_namespace.default.metadata.0.name
-  }
-  depends_on = [kubernetes_manifest.default]
-}
-
 resource "kubernetes_manifest" "cluster-start" {
   manifest = yamldecode(templatefile("${local.wl_templates_path}/start-cluster.yaml", {
     image     = var.image
     namespace = kubernetes_namespace.default.metadata.0.name
-    nodes     = [for n in local.wl_nodes : "${n}:6379"]
+    nodes = [
+      for i in range(var.statefulset_config.replicas) :
+      "redis-${i}.redis-cluster.redis.svc.cluster.local"
+    ]
   }))
   field_manager {
     force_conflicts = true
   }
+  depends_on = [kubernetes_manifest.default]
 }

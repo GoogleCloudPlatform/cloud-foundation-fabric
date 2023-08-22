@@ -94,13 +94,10 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic "dns_config" {
-    for_each = var.enable_features.dns != null ? [""] : []
-    content {
-      cluster_dns        = var.enable_features.dns.provider
-      cluster_dns_scope  = var.enable_features.dns.scope
-      cluster_dns_domain = var.enable_features.dns.domain
-    }
+  dns_config {
+    cluster_dns        = var.enable_features.dns.provider
+    cluster_dns_scope  = var.enable_features.dns.scope
+    cluster_dns_domain = var.enable_features.dns.domain
   }
 
   dynamic "ip_allocation_policy" {
