@@ -48,6 +48,18 @@ output "notification" {
   value       = local.notification ? google_storage_notification.notification[0].self_link : null
 }
 
+output "objects" {
+  description = "Objects in GCS bucket."
+  value = { for k, v in google_storage_bucket_object.objects : k => {
+    crc32c      = v.crc32c
+    md5hash     = v.md5hash
+    self_link   = v.self_link
+    output_name = v.output_name
+    media_link  = v.media_link
+    }
+  }
+}
+
 output "topic" {
   description = "Topic ID used by GCS."
   value       = local.notification ? google_pubsub_topic.topic[0].id : null

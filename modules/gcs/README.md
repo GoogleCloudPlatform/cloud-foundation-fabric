@@ -140,6 +140,7 @@ module "bucket" {
 | [id](outputs.tf#L28) | Fully qualified bucket id. |  |
 | [name](outputs.tf#L37) | Bucket name. |  |
 | [notification](outputs.tf#L46) | GCS Notification self link. |  |
-| [topic](outputs.tf#L51) | Topic ID used by GCS. |  |
-| [url](outputs.tf#L56) | Bucket URL. |  |
+| [objects](outputs.tf#L51) | Objects in GCS bucket. |  |
+| [topic](outputs.tf#L63) | Topic ID used by GCS. |  |
+| [url](outputs.tf#L68) | Bucket URL. |  |
 <!-- END TFDOC -->
