@@ -66,14 +66,14 @@ output "trigger_service_account" {
 
 output "trigger_service_account_email" {
   description = "Service account email."
-  value       = local.trigger_service_account_email
+  value       = local.trigger_sa_email
 }
 
 output "trigger_service_account_iam_email" {
   description = "Service account email."
   value = join("", [
     "serviceAccount:",
-    local.trigger_service_account_email == null ? "" : local.trigger_service_account_email
+    local.trigger_sa_email == null ? "" : local.trigger_sa_email
   ])
 }
 

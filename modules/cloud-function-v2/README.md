@@ -4,6 +4,21 @@ Cloud Function management, with support for IAM roles and optional bucket creati
 
 The GCS object used for deployment uses a hash of the bundle zip contents in its name, which ensures change tracking and avoids recreating the function if the GCS object is deleted and needs recreating.
 
+<!-- BEGIN TOC -->
+- [TODO](#todo)
+- [Examples](#examples)
+  - [HTTP trigger](#http-trigger)
+  - [PubSub and non-HTTP triggers](#pubsub-and-non-http-triggers)
+  - [Controlling HTTP access](#controlling-http-access)
+  - [GCS bucket creation](#gcs-bucket-creation)
+  - [Service account management](#service-account-management)
+  - [Custom bundle config](#custom-bundle-config)
+  - [Private Cloud Build Pool](#private-cloud-build-pool)
+  - [Multiple Cloud Functions within project](#multiple-cloud-functions-within-project)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## TODO
 
 - [ ] add support for `source_repository`
@@ -67,7 +82,7 @@ as documented [here](https://cloud.google.com/eventarc/docs/roles-permissions#pu
 
 ### Controlling HTTP access
 
-To allow anonymous access to the function, grant the `roles/cloudfunctions.invoker` role to the special `allUsers` identifier. Use specific identities (service accounts, groups, etc.) instead of `allUsers` to only allow selective access.
+To allow anonymous access to the function, grant the `roles/run.invoker` role to the special `allUsers` identifier. Use specific identities (service accounts, groups, etc.) instead of `allUsers` to only allow selective access. The Cloud Run role needs to be used as explained in the [gcloud documentation](https://cloud.google.com/sdk/gcloud/reference/functions/add-invoker-policy-binding#DESCRIPTION).
 
 ```hcl
 module "cf-http" {
@@ -80,7 +95,7 @@ module "cf-http" {
     output_path = "bundle.zip"
   }
   iam = {
-    "roles/cloudfunctions.invoker" = ["allUsers"]
+    "roles/run.invoker" = ["allUsers"]
   }
 }
 # tftest modules=1 resources=3 inventory=iam.yaml
