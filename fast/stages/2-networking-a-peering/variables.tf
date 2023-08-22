@@ -82,7 +82,7 @@ variable "factories_config" {
   type = object({
     data_dir              = optional(string, "data")
     dns_policy_rules_file = optional(string, "data/dns-policy-rules.yaml")
-    firewall_policy_name  = optional(string, "factory")
+    firewall_policy_name  = optional(string, "net-default")
   })
   default = {
     data_dir = "data"
