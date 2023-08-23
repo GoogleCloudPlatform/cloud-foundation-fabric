@@ -26,10 +26,10 @@ locals {
   )
   factory_egress_rules = {
     for k, v in local._factory_egress_rules : "egress/${k}" => {
-      action                  = "deny"
       direction               = "EGRESS"
       name                    = k
       priority                = v.priority
+      action                  = lookup(v, "action", "deny")
       description             = lookup(v, "description", null)
       disabled                = lookup(v, "disabled", false)
       enable_logging          = lookup(v, "enable_logging", null)
@@ -70,10 +70,10 @@ locals {
   }
   factory_ingress_rules = {
     for k, v in local._factory_ingress_rules : "ingress/${k}" => {
-      action                  = "allow"
       direction               = "INGRESS"
       name                    = k
       priority                = v.priority
+      action                  = lookup(v, "action", "deny")
       description             = lookup(v, "description", null)
       disabled                = lookup(v, "disabled", false)
       enable_logging          = lookup(v, "enable_logging", null)
