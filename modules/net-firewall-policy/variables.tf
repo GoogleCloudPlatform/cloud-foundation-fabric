@@ -55,9 +55,15 @@ variable "egress_rules" {
   nullable = false
   validation {
     condition = alltrue([
-      for k, v in var.egress_rules : v.match.destination_ranges != null
+      for k, v in var.egress_rules : (
+        v.match.address_groups != null ||
+        v.match.destination_ranges != null ||
+        v.match.fqdns != null ||
+        v.match.region_codes != null ||
+        v.match.threat_intelligences != null
+      )
     ])
-    error_message = "Engress rules need destination ranges."
+    error_message = "Egress rules require a destination to be set. These can be IP address ranges, address groups, FQDNs, region codes, or threat intelligence sources."
   }
   validation {
     condition = alltrue([
@@ -96,10 +102,16 @@ variable "ingress_rules" {
   nullable = false
   validation {
     condition = alltrue([
-      for k, v in var.ingress_rules :
-      v.match.source_ranges != null || v.match.source_tags != null
+      for k, v in var.ingress_rules : (
+        v.match.address_groups != null ||
+        v.match.fqdns != null ||
+        v.match.region_codes != null ||
+        v.match.source_ranges != null ||
+        v.match.source_tags != null ||
+        v.match.threat_intelligences != null
+      )
     ])
-    error_message = "Ingress rules need source ranges or tags."
+    error_message = "Ingress rules require a source to be set. These can be IP address ranges, tags, address groups, FQDNs, region codes, or threat intelligence sources."
   }
   validation {
     condition = alltrue([
