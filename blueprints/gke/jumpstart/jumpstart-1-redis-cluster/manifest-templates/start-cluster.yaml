@@ -12,14 +12,16 @@ spec:
       volumes:
       - name: shared-data
         emptyDir: {}
-    
+
       initContainers:
+        # we resolve node names in an init container using alpine
+        # because the redis image doesn't include nslookup
       - name: resolve-node-names
         image: alpine
         volumeMounts:
         - name: shared-data
           mountPath: /tmp/shared-data
-        command: 
+        command:
         - /bin/sh
         - -c
         - |

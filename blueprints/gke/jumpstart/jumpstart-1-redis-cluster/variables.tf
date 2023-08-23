@@ -26,10 +26,10 @@ variable "credentials_config" {
   nullable = false
   validation {
     condition = (
-      (var.credentials_config.fleet_host != null ? 1 : 0) +
-      (var.credentials_config.kubeconfig != null ? 1 : 0)
-    ) == 1
-    error_message = "One of fleet host or kubeconfig need to be set."
+      (var.credentials_config.fleet_host != null) !=
+      (var.credentials_config.kubeconfig != null)
+    )
+    error_message = "Exactly one of fleet host or kubeconfig must be set."
   }
 }
 
@@ -66,8 +66,7 @@ variable "statefulset_config" {
 }
 
 variable "templates_path" {
-  description = "Path where manifest templates will be read from."
+  description = "Path where manifest templates will be read from. Set to null to use the default manifests"
   type        = string
-  nullable    = false
-  default     = "manifest-templates"
+  default     = null
 }

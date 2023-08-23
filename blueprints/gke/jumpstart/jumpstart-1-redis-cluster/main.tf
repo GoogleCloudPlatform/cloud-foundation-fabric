@@ -19,7 +19,11 @@ locals {
     for f in fileset(local.wl_templates_path, "[0-9]*yaml") :
     "${local.wl_templates_path}/${f}"
   ]
-  wl_templates_path = "${path.module}/manifest-templates"
+  wl_templates_path = (
+    var.templates_path == null
+    ? "${path.module}/manifest-templates"
+    : pathexpand(var.templates_path)
+  )
 }
 
 data "google_client_config" "identity" {
@@ -75,7 +79,7 @@ resource "kubernetes_manifest" "cluster-start" {
     namespace = kubernetes_namespace.default.metadata.0.name
     nodes = [
       for i in range(var.statefulset_config.replicas) :
-      "redis-${i}.redis-cluster.redis.svc.cluster.local"
+      "redis-${i}.redis-cluster.${var.namespace}.svc.cluster.local"
     ]
   }))
   field_manager {
