@@ -73,7 +73,7 @@ locals {
       direction               = "INGRESS"
       name                    = k
       priority                = v.priority
-      action                  = lookup(v, "action", "deny")
+      action                  = lookup(v, "action", "allow")
       description             = lookup(v, "description", null)
       disabled                = lookup(v, "disabled", false)
       enable_logging          = lookup(v, "enable_logging", null)
