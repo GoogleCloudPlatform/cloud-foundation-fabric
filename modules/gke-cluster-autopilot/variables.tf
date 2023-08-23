@@ -93,11 +93,7 @@ variable "enable_features" {
     vertical_pod_autoscaling = optional(bool, false)
   })
   default = {
-    dns = {
-      provider = "CLOUD_DNS"
-      scope    = "CLUSTER_SCOPE"
-      domain   = "cluster.local"
-    }
+
   }
 }
 
