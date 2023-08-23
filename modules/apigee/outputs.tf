@@ -53,3 +53,8 @@ output "service_attachments" {
   description = "Service attachments."
   value       = { for k, v in google_apigee_instance.instances : k => v.service_attachment }
 }
+
+output "instance_nat_ips" {
+  description = "NAT IP addresses used in instances."
+  value       = try(google_apigee_nat_address.apigee-nat, null)
+}
