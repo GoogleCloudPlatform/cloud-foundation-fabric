@@ -100,6 +100,16 @@ resource "google_apigee_instance" "instances" {
   consumer_accept_list     = each.value.consumer_accept_list
 }
 
+resource "google_apigee_nat_address" "apigee_nat" {
+  for_each = {
+    for instance_name, instance_config in local.instances :
+    instance_name => instance_config.nat_required ? instance_config : null
+  }
+
+  name        = "nat-${each.key}"
+  instance_id = google_apigee_instance.instances[each.key].id
+}
+
 resource "google_apigee_instance_attachment" "instance_attachments" {
   for_each = merge(concat([for k1, v1 in local.environments : {
     for v2 in coalesce(v1.regions, []) :

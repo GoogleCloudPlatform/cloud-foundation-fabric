@@ -29,6 +29,11 @@ output "environments" {
   value       = try(google_apigee_environment.environments, null)
 }
 
+output "instance_nat_ips" {
+  description = "NAT IP addresses used in instances."
+  value       = try(google_apigee_nat_address.apigee_nat, null)
+}
+
 output "instances" {
   description = "Instances."
   value       = try(google_apigee_instance.instances, null)
