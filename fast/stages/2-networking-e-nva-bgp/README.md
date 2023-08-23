@@ -488,7 +488,7 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> · <code>net-firewall-policy</code> |  |
 | [monitoring-vpn-onprem.tf](./monitoring-vpn-onprem.tf) | VPN monitoring alerts. |  | <code>google_monitoring_alert_policy</code> |
 | [monitoring.tf](./monitoring.tf) | Network monitoring dashboards. |  | <code>google_monitoring_dashboard</code> |
-| [ncc.tf](./ncc.tf) | None | <code>ncc-spoke-ra</code> |  |
+| [ncc.tf](./ncc.tf) | None | <code>ncc-spoke-ra</code> | <code>google_network_connectivity_hub</code> |
 | [nva.tf](./nva.tf) | None | <code>compute-vm</code> · <code>simple-nva</code> | <code>google_compute_address</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [regions.tf](./regions.tf) | Compute short names for regions. |  |  |

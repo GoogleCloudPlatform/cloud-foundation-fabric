@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+resource "google_network_connectivity_hub" "hub_trusted" {
+  name        = "prod-hub-trusted"
+  description = "Prod hub trusted"
+  project     = module.landing-project.project_id
+}
+
+resource "google_network_connectivity_hub" "hub_untrusted" {
+  name        = "prod-hub-untrusted"
+  description = "Prod hub untrusted"
+  project     = module.landing-project.project_id
+}
+
 module "spokes-trusted" {
   for_each   = var.regions
   source     = "../../../modules/ncc-spoke-ra"
@@ -22,8 +34,8 @@ module "spokes-trusted" {
   region     = each.value
 
   hub = {
-    create = true,
-    name   = "prod-hub-trusted-${each.value}"
+    create = false,
+    id     = google_network_connectivity_hub.hub_trusted.id
   }
 
   router_appliances = [
@@ -72,8 +84,8 @@ module "spokes-untrusted" {
   region     = each.value
 
   hub = {
-    create = true,
-    name   = "prod-hub-untrusted-${each.value}"
+    create = false,
+    id     = google_network_connectivity_hub.hub_untrusted.id
   }
 
   router_appliances = [
