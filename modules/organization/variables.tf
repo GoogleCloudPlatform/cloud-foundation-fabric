@@ -53,6 +53,7 @@ variable "iam_bindings" {
   description = "Authoritative IAM bindings in {ROLE => {members = [], condition = {}}}."
   type = map(object({
     members = list(string)
+    role    = string
     condition = optional(object({
       expression  = string
       title       = string
