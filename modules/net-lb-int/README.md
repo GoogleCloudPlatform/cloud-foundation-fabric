@@ -13,7 +13,7 @@ One other issue is a `Provider produced inconsistent final plan` error which is 
 ## Examples
 
 - [Referencing existing MIGs](#referencing-existing-migs)
-- [Externally manages instances](#externally-managed-instances)
+- [Externally managed instances](#externally-managed-instances)
 - [End to end example](#end-to-end-example)
 
 ### Referencing existing MIGs
