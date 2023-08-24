@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,9 @@
  */
 
 locals {
-  org_id               = try(google_apigee_organization.organization[0].id, "organizations/${var.project_id}")
-  org_name             = try(google_apigee_organization.organization[0].name, var.project_id)
-  envgroups            = coalesce(var.envgroups, {})
-  environments         = coalesce(var.environments, {})
-  instances            = coalesce(var.instances, {})
-  endpoint_attachments = coalesce(var.endpoint_attachments, {})
+  instance_ips = merge([
+  org_id   = try(google_apigee_organization.organization[0].id, "organizations/${var.project_id}")
+  org_name = try(google_apigee_organization.organization[0].name, var.project_id)
 }
 
 resource "google_apigee_organization" "organization" {
@@ -35,14 +32,14 @@ resource "google_apigee_organization" "organization" {
 }
 
 resource "google_apigee_envgroup" "envgroups" {
-  for_each  = local.envgroups
+  for_each  = var.envgroups
   name      = each.key
   hostnames = each.value
   org_id    = local.org_id
 }
 
 resource "google_apigee_environment" "environments" {
-  for_each        = local.environments
+  for_each        = var.environments
   name            = each.key
   display_name    = each.value.display_name
   description     = each.value.description
@@ -64,7 +61,7 @@ resource "google_apigee_environment" "environments" {
 }
 
 resource "google_apigee_envgroup_attachment" "envgroup_attachments" {
-  for_each = merge(concat([for k1, v1 in local.environments : {
+  for_each = merge(concat([for k1, v1 in var.environments : {
     for v2 in coalesce(v1.envgroups, []) : "${k1}-${v2}" => {
       environment = k1
       envgroup    = v2
@@ -75,7 +72,7 @@ resource "google_apigee_envgroup_attachment" "envgroup_attachments" {
 }
 
 resource "google_apigee_environment_iam_binding" "binding" {
-  for_each = merge(concat([for k1, v1 in local.environments : {
+  for_each = merge(concat([for k1, v1 in var.environments : {
     for k2, v2 in coalesce(v1.iam, {}) : "${k1}-${k2}" => {
       environment = "${k1}"
       role        = k2
@@ -89,7 +86,7 @@ resource "google_apigee_environment_iam_binding" "binding" {
 }
 
 resource "google_apigee_instance" "instances" {
-  for_each                 = local.instances
+  for_each                 = var.instances
   name                     = "instance-${each.key}"
   display_name             = each.value.display_name
   description              = each.value.description
@@ -101,17 +98,13 @@ resource "google_apigee_instance" "instances" {
 }
 
 resource "google_apigee_nat_address" "apigee_nat" {
-  for_each = {
-    for instance_name, instance_config in local.instances :
-    instance_name => instance_config.nat_required ? instance_config : null
-  }
-
-  name        = "nat-${each.key}"
-  instance_id = google_apigee_instance.instances[each.key].id
+  for_each    = local.instance_ips
+  name        = each.key
+  instance_id = each.value
 }
 
 resource "google_apigee_instance_attachment" "instance_attachments" {
-  for_each = merge(concat([for k1, v1 in local.environments : {
+  for_each = merge(concat([for k1, v1 in var.environments : {
     for v2 in coalesce(v1.regions, []) :
     "${k1}-${v2}" => {
       environment = k1
@@ -124,7 +117,7 @@ resource "google_apigee_instance_attachment" "instance_attachments" {
 }
 
 resource "google_apigee_endpoint_attachment" "endpoint_attachments" {
-  for_each               = local.endpoint_attachments
+  for_each               = var.endpoint_attachments
   org_id                 = local.org_id
   endpoint_attachment_id = each.key
   location               = each.value.region
@@ -132,39 +125,37 @@ resource "google_apigee_endpoint_attachment" "endpoint_attachments" {
 }
 
 resource "google_apigee_addons_config" "test_organization" {
-  org = local.org_name
-  dynamic "addons_config" {
-    for_each = var.addons_config == null ? [] : [""]
-    content {
-      dynamic "advanced_api_ops_config" {
-        for_each = var.addons_config.advanced_api_ops ? [] : [""]
-        content {
-          enabled = true
-        }
+  for_each = toset(var.addons_config == null ? [] : [""])
+  org      = local.org_name
+  addons_config {
+    dynamic "advanced_api_ops_config" {
+      for_each = var.addons_config.advanced_api_ops ? [] : [""]
+      content {
+        enabled = true
       }
-      dynamic "api_security_config" {
-        for_each = var.addons_config.api_security ? [] : [""]
-        content {
-          enabled = true
-        }
+    }
+    dynamic "api_security_config" {
+      for_each = var.addons_config.api_security ? [] : [""]
+      content {
+        enabled = true
       }
-      dynamic "connectors_platform_config" {
-        for_each = var.addons_config.connectors_platform ? [] : [""]
-        content {
-          enabled = true
-        }
+    }
+    dynamic "connectors_platform_config" {
+      for_each = var.addons_config.connectors_platform ? [] : [""]
+      content {
+        enabled = true
       }
-      dynamic "integration_config" {
-        for_each = var.addons_config.integration ? [] : [""]
-        content {
-          enabled = true
-        }
+    }
+    dynamic "integration_config" {
+      for_each = var.addons_config.integration ? [] : [""]
+      content {
+        enabled = true
       }
-      dynamic "monetization_config" {
-        for_each = var.addons_config.monetization ? [] : [""]
-        content {
-          enabled = true
-        }
+    }
+    dynamic "monetization_config" {
+      for_each = var.addons_config.monetization ? [] : [""]
+      content {
+        enabled = true
       }
     }
   }
