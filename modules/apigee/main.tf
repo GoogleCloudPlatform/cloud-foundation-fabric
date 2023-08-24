@@ -100,6 +100,7 @@ resource "google_apigee_nat_address" "apigee_nat" {
   for_each = {
     for k, v in var.instances :
     k => google_apigee_instance.instances[k].id
+    if v.enable_nat
   }
   name        = each.key
   instance_id = each.value
