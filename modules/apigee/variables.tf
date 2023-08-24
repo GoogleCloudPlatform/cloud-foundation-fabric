@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,15 @@ variable "endpoint_attachments" {
     region             = string
     service_attachment = string
   }))
-  default = null
+  default  = {}
+  nullable = false
 }
 
 variable "envgroups" {
   description = "Environment groups (NAME => [HOSTNAMES])."
   type        = map(list(string))
-  default     = null
+  default     = {}
+  nullable    = false
 }
 
 variable "environments" {
@@ -56,7 +58,8 @@ variable "environments" {
     envgroups = optional(list(string))
     regions   = optional(list(string))
   }))
-  default = null
+  default  = {}
+  nullable = false
 }
 
 variable "instances" {
@@ -68,8 +71,10 @@ variable "instances" {
     troubleshooting_ip_cidr_range = string
     disk_encryption_key           = optional(string)
     consumer_accept_list          = optional(list(string))
+    enable_nat                    = optional(bool, false)
   }))
-  default = null
+  default  = {}
+  nullable = false
 }
 
 variable "organization" {
