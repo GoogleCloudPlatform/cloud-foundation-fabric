@@ -29,17 +29,17 @@ output "environments" {
   value       = try(google_apigee_environment.environments, null)
 }
 
+output "instances" {
+  description = "Instances."
+  value       = try(google_apigee_instance.instances, null)
+}
+
 output "nat_ips" {
   description = "NAT IP addresses used in instances."
   value = {
     for k, v in google_apigee_nat_address.apigee_nat :
     k => v.ip_address
   }
-}
-
-output "instances" {
-  description = "Instances."
-  value       = try(google_apigee_instance.instances, null)
 }
 
 output "org_id" {

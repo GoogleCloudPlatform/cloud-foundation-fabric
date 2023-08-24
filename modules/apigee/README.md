@@ -195,8 +195,8 @@ module "apigee" {
 | [endpoint_attachment_hosts](outputs.tf#L17) | Endpoint hosts. |  |
 | [envgroups](outputs.tf#L22) | Environment groups. |  |
 | [environments](outputs.tf#L27) | Environment. |  |
-| [instances](outputs.tf#L40) | Instances. |  |
-| [nat_ips](outputs.tf#L32) | NAT IP addresses used in instances. |  |
+| [instances](outputs.tf#L32) | Instances. |  |
+| [nat_ips](outputs.tf#L37) | NAT IP addresses used in instances. |  |
 | [org_id](outputs.tf#L45) | Organization ID. |  |
 | [org_name](outputs.tf#L50) | Organization name. |  |
 | [organization](outputs.tf#L55) | Organization. |  |
