@@ -97,7 +97,7 @@ module "apigee" {
     }
   }
 }
-# tftest modules=1 resources=9
+# tftest modules=1 resources=8
 ```
 
 ### New environment group
@@ -110,7 +110,7 @@ module "apigee" {
     test = ["test.example.com"]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=1
 ```
 
 ### New environment
@@ -126,7 +126,7 @@ module "apigee" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=1
 ```
 
 ### New instance
@@ -142,7 +142,7 @@ module "apigee" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=1
 ```
 
 ### New endpoint attachment
@@ -160,7 +160,7 @@ module "apigee" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=1
 ```
 
 ### Apigee add-ons
