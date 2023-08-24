@@ -71,7 +71,7 @@ variable "instances" {
     troubleshooting_ip_cidr_range = string
     disk_encryption_key           = optional(string)
     consumer_accept_list          = optional(list(string))
-    nat_ips                       = optional(number, 0)
+    enable_nat                    = optional(bool, false)
   }))
   default  = {}
   nullable = false
