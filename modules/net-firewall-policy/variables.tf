@@ -55,12 +55,6 @@ variable "egress_rules" {
   nullable = false
   validation {
     condition = alltrue([
-      for k, v in var.egress_rules : v.match.destination_ranges != null
-    ])
-    error_message = "Engress rules need destination ranges."
-  }
-  validation {
-    condition = alltrue([
       for k, v in var.egress_rules :
       contains(["allow", "deny", "goto_next"], v.action)
     ])
@@ -94,13 +88,6 @@ variable "ingress_rules" {
   }))
   default  = {}
   nullable = false
-  validation {
-    condition = alltrue([
-      for k, v in var.ingress_rules :
-      v.match.source_ranges != null || v.match.source_tags != null
-    ])
-    error_message = "Ingress rules need source ranges or tags."
-  }
   validation {
     condition = alltrue([
       for k, v in var.ingress_rules :
