@@ -42,14 +42,13 @@ module "apigee" {
   }
   instances = {
     europe-west1 = {
-      nat_required                  = true
       runtime_ip_cidr_range         = "10.0.4.0/22"
       troubleshooting_ip_cidr_range = "10.1.1.0.0/28"
     }
     europe-west3 = {
-      nat_required                  = false
       runtime_ip_cidr_range         = "10.0.8.0/22"
       troubleshooting_ip_cidr_range = "10.1.16.0/28"
+      enable_nat                    = true
     }
   }
   endpoint_attachments = {
@@ -63,7 +62,7 @@ module "apigee" {
     }
   }
 }
-# tftest modules=1 resources=15
+# tftest modules=1 resources=16
 ```
 
 ### All resources (HYBRID control plane)
@@ -196,10 +195,10 @@ module "apigee" {
 | [endpoint_attachment_hosts](outputs.tf#L17) | Endpoint hosts. |  |
 | [envgroups](outputs.tf#L22) | Environment groups. |  |
 | [environments](outputs.tf#L27) | Environment. |  |
-| [instances](outputs.tf#L37) | Instances. |  |
+| [instances](outputs.tf#L40) | Instances. |  |
 | [nat_ips](outputs.tf#L32) | NAT IP addresses used in instances. |  |
-| [org_id](outputs.tf#L42) | Organization ID. |  |
-| [org_name](outputs.tf#L47) | Organization name. |  |
-| [organization](outputs.tf#L52) | Organization. |  |
-| [service_attachments](outputs.tf#L57) | Service attachments. |  |
+| [org_id](outputs.tf#L45) | Organization ID. |  |
+| [org_name](outputs.tf#L50) | Organization name. |  |
+| [organization](outputs.tf#L55) | Organization. |  |
+| [service_attachments](outputs.tf#L60) | Service attachments. |  |
 <!-- END TFDOC -->

@@ -31,7 +31,10 @@ output "environments" {
 
 output "nat_ips" {
   description = "NAT IP addresses used in instances."
-  value       = try(google_apigee_nat_address.apigee_nat, null)
+  value = {
+    for k, v in google_apigee_nat_address.apigee_nat :
+    k => v.ip_address
+  }
 }
 
 output "instances" {
