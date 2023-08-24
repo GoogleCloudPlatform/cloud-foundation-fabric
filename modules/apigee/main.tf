@@ -15,7 +15,6 @@
  */
 
 locals {
-  instance_ips = merge([
   org_id   = try(google_apigee_organization.organization[0].id, "organizations/${var.project_id}")
   org_name = try(google_apigee_organization.organization[0].name, var.project_id)
 }
@@ -98,7 +97,10 @@ resource "google_apigee_instance" "instances" {
 }
 
 resource "google_apigee_nat_address" "apigee_nat" {
-  for_each    = local.instance_ips
+  for_each = {
+    for k, v in var.instances :
+    k => google_apigee_instance.instances[k].id
+  }
   name        = each.key
   instance_id = each.value
 }
