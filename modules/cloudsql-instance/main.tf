@@ -59,6 +59,7 @@ resource "google_sql_database_instance" "primary" {
     disk_type         = var.disk_type
     availability_type = var.availability_type
     user_labels       = var.labels
+    activation_policy = var.activation_policy
 
     ip_configuration {
       ipv4_enabled       = var.ipv4_enabled
@@ -137,7 +138,8 @@ resource "google_sql_database_instance" "replicas" {
     disk_size       = var.disk_size
     disk_type       = var.disk_type
     # availability_type = var.availability_type
-    user_labels = var.labels
+    user_labels       = var.labels
+    activation_policy = var.activation_policy
 
     ip_configuration {
       ipv4_enabled       = var.ipv4_enabled
