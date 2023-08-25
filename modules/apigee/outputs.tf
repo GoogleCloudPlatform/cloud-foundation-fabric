@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,14 @@ output "environments" {
 output "instances" {
   description = "Instances."
   value       = try(google_apigee_instance.instances, null)
+}
+
+output "nat_ips" {
+  description = "NAT IP addresses used in instances."
+  value = {
+    for k, v in google_apigee_nat_address.apigee_nat :
+    k => v.ip_address
+  }
 }
 
 output "org_id" {
