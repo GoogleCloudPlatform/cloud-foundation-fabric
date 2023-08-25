@@ -119,7 +119,7 @@ resource "google_sql_database_instance" "primary" {
     }
   }
   deletion_protection = var.deletion_protection
-  activation_policy = var.activation_policy
+  activation_policy   = var.activation_policy
 }
 
 resource "google_sql_database_instance" "replicas" {
