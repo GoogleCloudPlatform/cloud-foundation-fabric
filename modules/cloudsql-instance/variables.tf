@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 variable "activation_policy" {
-  description = "(Optional) This specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS"
+  description = "This specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS"
+  type = string
   default  = "ALWAYS"
   validation {
     condition     = var.activation_policy == "NEVER" || var.activation_policy == "ON_DEMAND" || var.activation_policy == "ALWAYS" 
-    error_message = "activation_policy must be ALWAYS, NEVER or ON_DEMAND"
+    error_message = "The variable activation_policy must be ALWAYS, NEVER or ON_DEMAND"
   }
   nullable = false
 }
