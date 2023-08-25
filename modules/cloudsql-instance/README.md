@@ -193,7 +193,7 @@ module "db" {
 | [project_id](variables.tf#L161) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L166) | Region of the primary instance. | <code>string</code> | ✓ |  |
 | [tier](variables.tf#L192) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
-| [activation_policy](variables.tf#L16) | This variable specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS | <code>string</code> |  | <code>&#34;ALWAYS&#34;</code> |
+| [activation_policy](variables.tf#L16) | This variable specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS. | <code>string</code> |  | <code>&#34;ALWAYS&#34;</code> |
 | [allocated_ip_ranges](variables.tf#L27) | (Optional)The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with RFC 1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z?. | <code title="object&#40;&#123;&#10;  primary &#61; optional&#40;string&#41;&#10;  replica &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [authorized_networks](variables.tf#L36) | Map of NAME=>CIDR_RANGE to allow to connect to the database(s). | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [availability_type](variables.tf#L42) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;ZONAL&#34;</code> |
