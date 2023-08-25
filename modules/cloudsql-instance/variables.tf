@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 variable "activation_policy" {
-  description = "This specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS"
+  description = "This variable specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS"
   type = string
   default  = "ALWAYS"
   validation {
