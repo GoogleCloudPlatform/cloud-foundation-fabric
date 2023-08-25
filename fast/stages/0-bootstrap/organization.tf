@@ -88,9 +88,8 @@ module "organization" {
   )
   # delegated role grant for resource manager service account
   iam_bindings = {
-    sa_resman_delegated_iam = {
+    (module.organization.custom_role_id[var.custom_role_names.organization_iam_admin]) = {
       members = [module.automation-tf-resman-sa.iam_email]
-      role    = module.organization.custom_role_id[var.custom_role_names.organization_iam_admin]
       condition = {
         expression = format(
           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
