@@ -92,9 +92,7 @@ variable "enable_features" {
     }))
     vertical_pod_autoscaling = optional(bool, false)
   })
-  default = {
-
-  }
+  default = {}
 }
 
 variable "issue_client_certificate" {
@@ -114,6 +112,16 @@ variable "location" {
   type        = string
 }
 
+variable "logging_config" {
+  description = "Logging configuration for control plane components."
+  type = object({
+    enable_api_server_logging         = optional(bool, false)
+    enable_scheduler_logging          = optional(bool, false)
+    enable_controller_manager_logging = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+}
 
 variable "maintenance_config" {
   description = "Maintenance window configuration."
