@@ -79,6 +79,7 @@ module "prod-spoke-cloudnat" {
   name           = "prod-nat-${local.region_shortnames[each.value]}"
   router_create  = true
   router_network = module.prod-spoke-vpc.name
+  router_asn     = 4200001024
   logging_filter = "ERRORS_ONLY"
 }
 
