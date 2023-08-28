@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ resource "google_essential_contacts_contact" "contact" {
 }
 
 resource "google_compute_firewall_policy_association" "default" {
-  for_each          = var.firewall_policy_associations
+  for_each          = toset(var.firewall_policy == null ? [] : [""])
   attachment_target = local.folder.id
-  name              = each.key
-  firewall_policy   = each.value
+  name              = var.firewall_policy.name
+  firewall_policy   = var.firewall_policy.policy
 }

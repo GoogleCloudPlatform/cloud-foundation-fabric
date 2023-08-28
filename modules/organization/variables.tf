@@ -28,11 +28,13 @@ variable "custom_roles" {
   nullable    = false
 }
 
-variable "firewall_policy_associations" {
-  description = "Hierarchical firewall policies to associate to this folder, in association name => policy id format."
-  type        = map(string)
-  default     = {}
-  nullable    = false
+variable "firewall_policy" {
+  description = "Hierarchical firewall policies to associate to the organization."
+  type = object({
+    name   = string
+    policy = string
+  })
+  default = null
 }
 
 variable "group_iam" {
