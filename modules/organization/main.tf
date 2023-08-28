@@ -29,7 +29,7 @@ resource "google_essential_contacts_contact" "contact" {
 
 
 resource "google_compute_firewall_policy_association" "default" {
-  for_each          = toset(var.firewall_policy == null ? [] : [""])
+  count             = var.firewall_policy == null ? 0 : 1
   attachment_target = var.organization_id
   name              = var.firewall_policy.name
   firewall_policy   = var.firewall_policy.policy
