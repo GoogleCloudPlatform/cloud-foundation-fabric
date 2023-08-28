@@ -46,7 +46,7 @@ module "folder" {
   name          = "Networking"
   folder_create = var.folder_ids.networking == null
   id            = var.folder_ids.networking
-  firewall_policy_ = {
+  firewall_policy = {
     name   = default
     policy = module.firewall-policy-default.id
   }
