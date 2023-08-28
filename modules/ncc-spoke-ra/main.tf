@@ -15,15 +15,15 @@
  */
 
 locals {
-  spoke_vms = [
-    for ras in var.router_appliances : {
-      ip = ras.internal_ip
-      vm = ras.vm_self_link
+  spoke_vms = {
+    for instance in try(google_network_connectivity_spoke.spoke-ra.linked_router_appliance_instances[0].instances, [])
+    : instance.virtual_machine => {
+      peer_ip_address = instance.ip_address
       vm_name = element(
-        split("/", ras.vm_self_link), length(split("/", ras.vm_self_link)) - 1
+        split("/", instance.virtual_machine), length(split("/", instance.virtual_machine)) - 1
       )
     }
-  ]
+  }
 }
 
 resource "google_network_connectivity_hub" "hub" {
@@ -95,9 +95,7 @@ resource "google_compute_router_interface" "intf_1" {
 }
 
 resource "google_compute_router_peer" "peer_0" {
-  for_each = {
-    for idx, entry in local.spoke_vms : idx => entry
-  }
+  for_each                  = local.spoke_vms
   project                   = var.project_id
   name                      = "${google_compute_router.cr.name}-${each.value.vm_name}-peer1"
   router                    = google_compute_router.cr.name
@@ -105,14 +103,12 @@ resource "google_compute_router_peer" "peer_0" {
   advertised_route_priority = var.router_config.routes_priority
   interface                 = google_compute_router_interface.intf_0.name
   peer_asn                  = var.router_config.peer_asn
-  peer_ip_address           = each.value.ip
-  router_appliance_instance = each.value.vm
+  peer_ip_address           = each.value.peer_ip_address
+  router_appliance_instance = each.key
 }
 
 resource "google_compute_router_peer" "peer_1" {
-  for_each = {
-    for idx, entry in local.spoke_vms : idx => entry
-  }
+  for_each                  = local.spoke_vms
   project                   = var.project_id
   name                      = "${google_compute_router.cr.name}-${each.value.vm_name}-peer2"
   router                    = google_compute_router.cr.name
@@ -120,6 +116,6 @@ resource "google_compute_router_peer" "peer_1" {
   advertised_route_priority = var.router_config.routes_priority
   interface                 = google_compute_router_interface.intf_1.name
   peer_asn                  = var.router_config.peer_asn
-  peer_ip_address           = each.value.ip
-  router_appliance_instance = each.value.vm
+  peer_ip_address           = each.value.peer_ip_address
+  router_appliance_instance = each.key
 }
