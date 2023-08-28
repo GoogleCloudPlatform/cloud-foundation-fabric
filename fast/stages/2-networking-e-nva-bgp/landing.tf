@@ -86,6 +86,7 @@ module "landing-nat-primary" {
   router_create  = true
   router_name    = "prod-nat-${local.region_shortnames[var.regions.primary]}"
   router_network = module.landing-untrusted-vpc.name
+  router_asn     = 4200001024
 }
 
 moved {
@@ -101,6 +102,7 @@ module "landing-nat-secondary" {
   router_create  = true
   router_name    = "prod-nat-${local.region_shortnames[var.regions.secondary]}"
   router_network = module.landing-untrusted-vpc.name
+  router_asn     = 4200001024
 }
 
 # Trusted VPC
