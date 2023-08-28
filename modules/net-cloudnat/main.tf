@@ -28,8 +28,12 @@ resource "google_compute_router" "router" {
   project = var.project_id
   region  = var.region
   network = var.router_network
-  bgp {
-    asn = var.router_asn
+
+  dynamic "bgp" {
+    for_each = var.router_asn == null ? [] : [1]
+    content {
+      asn = var.router_asn
+    }
   }
 }
 

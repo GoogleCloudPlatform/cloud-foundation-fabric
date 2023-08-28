@@ -21,11 +21,13 @@ variable "contacts" {
   nullable    = false
 }
 
-variable "firewall_policy_associations" {
-  description = "Hierarchical firewall policies to associate to this folder, in association name => policy id format."
-  type        = map(string)
-  default     = {}
-  nullable    = false
+variable "firewall_policy" {
+  description = "Hierarchical firewall policy to associate to this folder."
+  type = object({
+    name   = string
+    policy = string
+  })
+  default = null
 }
 
 variable "folder_create" {
