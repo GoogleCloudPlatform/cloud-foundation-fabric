@@ -107,6 +107,10 @@ resource "google_compute_router_peer" "peer_0" {
   peer_asn                  = var.router_config.peer_asn
   peer_ip_address           = each.value.ip
   router_appliance_instance = each.value.vm
+
+  depends_on = [
+    google_network_connectivity_spoke.spoke-ra
+  ]
 }
 
 resource "google_compute_router_peer" "peer_1" {
@@ -122,4 +126,8 @@ resource "google_compute_router_peer" "peer_1" {
   peer_asn                  = var.router_config.peer_asn
   peer_ip_address           = each.value.ip
   router_appliance_instance = each.value.vm
+
+  depends_on = [
+    google_network_connectivity_spoke.spoke-ra
+  ]
 }
