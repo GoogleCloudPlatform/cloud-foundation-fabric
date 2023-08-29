@@ -113,18 +113,14 @@ variable "location" {
 }
 
 variable "logging_config" {
-  description = "Logging configuration. Defaults to the minimum required components for Autopilot clusters."
-  type        = list(string)
-  default     = ["SYSTEM_COMPONENTS", "WORKLOADS"]
-  nullable    = false
-  validation {
-    condition     = length(setintersection(var.logging_config, ["SYSTEM_COMPONENTS", "WORKLOADS"])) == 2
-    error_message = "Must contain SYSTEM_COMPONENTS and WORKLOADS for Autopilot clusters."
-  }
-  validation {
-    condition     = length(setsubtract(var.logging_config, ["SYSTEM_COMPONENTS", "WORKLOADS", "APISERVER", "SCHEDULER", "CONTROLLER_MANAGER"])) == 0
-    error_message = "Allowed values: SYSTEM_COMPONENTS, WORKLOADS, APISERVER, SCHEDULER, CONTROLLER_MANAGER."
-  }
+  description = "Logging configuration for control plane components."
+  type = object({
+    enable_api_server_logging         = optional(bool, false)
+    enable_scheduler_logging          = optional(bool, false)
+    enable_controller_manager_logging = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "maintenance_config" {
