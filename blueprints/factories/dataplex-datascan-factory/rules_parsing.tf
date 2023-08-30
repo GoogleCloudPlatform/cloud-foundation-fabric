@@ -20,8 +20,19 @@ locals {
     datascan_name => merge(
       local._datascan_defaults,
       datascan_configs,
-      var.merge_labels_with_defaults ? { labels = merge(local._datascan_defaults.labels, try(datascan_configs.labels, {})) } : {},
-      var.merge_iam_bindings_defaults ? { iam_bindings = merge(local._datascan_defaults.iam_bindings, try(datascan_configs.iam_bindings, {})) } : {},
+      var.merge_labels_with_defaults ? { 
+        labels = merge(
+          try(local._datascan_defaults.labels, {}), 
+          try(datascan_configs.labels, {})) 
+        } : {},
+      var.merge_iam_bindings_defaults ? { 
+        iam_bindings = merge(
+          try(local._datascan_defaults.iam_bindings, {}), 
+          try(datascan_configs.iam_bindings, {}))
+        } : {},
+      !can(datascan_configs.data_profile_spec) ? {} : {
+        data_profile_spec = datascan_configs.data_profile_spec != null ? datascan_configs.data_profile_spec : {} 
+      },
       !can(datascan_configs.data_quality_spec) ? {} : {
         data_quality_spec = {
           sampling_percent = try(datascan_configs.data_quality_spec.sampling_percent, null)

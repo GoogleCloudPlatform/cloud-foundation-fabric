@@ -16,8 +16,8 @@
 
 locals {
   _datascan_specs = {
-    for f in fileset(var.datascan_spec_folder, "**/*.yaml") :
-    replace(trimsuffix(f, ".yaml"), "/", "-") => yamldecode(file("${var.datascan_spec_folder}/${f}"))
+    for f in setunion(fileset(var.datascan_spec_folder, "**/*.yaml"), fileset(var.datascan_spec_folder, "**/*.yml")) :
+    replace(trimsuffix(trimsuffix(f, ".yaml"), ".yml"), "/", "-") => yamldecode(file("${var.datascan_spec_folder}/${f}"))
   }
 
   _datascan_rule_templates = yamldecode(file(var.datascan_rule_templates_file_path))
@@ -27,6 +27,7 @@ locals {
   datascans = {
     for datascan_name, datascan_configs in local._resolved_datascan_rules :
     datascan_name => {
+      name               = try(datascan_configs.name, null)
       prefix             = try(datascan_configs.prefix, null)
       labels             = try(datascan_configs.labels, null)
       execution_schedule = try(datascan_configs.execution_schedule, null)
@@ -44,7 +45,7 @@ module "dataplex-datascan" {
   for_each           = local.datascans
   project_id         = var.project_id
   region             = var.region
-  name               = each.key
+  name               = each.value.name != null ? each.value.name : each.key
   prefix             = each.value.prefix
   labels             = each.value.labels
   execution_schedule = each.value.execution_schedule

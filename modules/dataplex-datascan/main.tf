@@ -74,6 +74,8 @@ resource "google_dataplex_datascan" "datascan" {
       dynamic "rules" {
         for_each = local.data_quality_spec.rules
         content {
+          # name        = try(rules.value.name, null)
+          # description = try(rules.value.description, null)
           column      = try(rules.value.column, null)
           ignore_null = try(rules.value.ignore_null, null)
           dimension   = rules.value.dimension

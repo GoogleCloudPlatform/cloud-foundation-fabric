@@ -12,21 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [Optional] The resource name for the datascan. If not provided, the file path will be used as the datascan name.
+# The name of the datascan is created as the relative file path including directory names from the `datascan_spec_folder` input variable, substituting forward slashes for hyphens.  
+# name: "datascan"
+
 # The data source for DataScan. The source can be either a Dataplex `entity` or a BigQuery `resource`. If present, this variable will override the variable provided in datascan_defaults.
 # If present, this variable will override the variable provided in datascan_defaults.
 data:
   resource: "//bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations"
-
-# [Optional] DataProfileScan related setting. Variable descriptions are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataProfileSpec.
-# A datascan can specify only one of data_profile_spec or data_quality_spec, but not both.
-# data_profile_spec:
-#   # [Optional] The percentage of the records to be selected from the dataset for DataScan.
-#   # If present, this variable will override the variable provided in datascan_defaults.
-#   sampling_percent: 100
-
-#   # [Optional]  A filter applied to all rows in a single DataScan job. The filter needs to be a valid SQL expression for a WHERE clause in BigQuery standard SQL syntax. Example: col1 >= 0 AND col2 < 10
-#   # If present, this variable will override the variable provided in datascan_defaults.
-#   row_filter: "station_id > 1000"
 
 # [Optional] DataQualityScan related setting. Variable descriptions are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec.
 data_quality_spec:
@@ -92,15 +85,6 @@ data_quality_spec:
       table_condition_expectation:
         sql_expression: COUNT(*) > 0
 
-# Note: Variable not allowed. DataScan factory will always use the file name as the DataScan name.
-# # name: "datascan"
-
-# Note: Variable not allowed. DataScan factory will always use the project_id provided in the module definition.
-# # project_id: "my-project-name"
-
-# Note: Variable not allowed. DataScan factory will always use the region provided in the module definition.
-# # region: "us-central1"
-
 # [Optional] Prefix for DataScan name. 
 # If present, this variable will override the variable provided in datascan_defaults.
 # prefix: "test"
@@ -125,12 +109,12 @@ data_quality_spec:
 # [Optional] IAM bindings for the datascan.
 # If present, this variable will override the variable provided in datascan_defaults.
 # iam_bindings:
-  # "roles/dataplex.dataScanAdmin":
-  #   members:
-  #     - "serviceAccount:svc-1@project-id.iam.gserviceaccount.com"
-  # "roles/dataplex.dataScanEditor":
-  #   members:
-  #     - "user:admin-user@example.com"
-  # "roles/dataplex.dataScanViewer":
-  #   members:
-  #     - "group:user-group@example.com"
+#  "roles/dataplex.dataScanAdmin":
+#    members:
+#      - "serviceAccount:svc-1@project-id.iam.gserviceaccount.com"
+#  "roles/dataplex.dataScanEditor":
+#    members:
+#      - "user:admin-user@example.com"
+#  "roles/dataplex.dataScanViewer":
+#    members:
+#      - "group:user-group@example.com"

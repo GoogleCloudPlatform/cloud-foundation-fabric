@@ -28,12 +28,12 @@ labels:
 
 # [Optional] IAM bindings for the datascan.
 # iam_bindings:
-#   "roles/dataplex.dataScanAdmin":
-#     members:
-#       - "serviceAccount:svc-1@project-id.iam.gserviceaccount.com"
-#   "roles/dataplex.dataScanEditor":
-#     members:
-#       - "user:admin-user@example.com"
-#   "roles/dataplex.dataScanViewer":
-#     members:
-#       - "group:user-group@example.com"
+#  "roles/dataplex.dataScanAdmin":
+#    members:
+#      - "serviceAccount:svc-1@project-id.iam.gserviceaccount.com"
+#  "roles/dataplex.dataScanEditor":
+#    members:
+#      - "user:admin-user@example.com"
+#  "roles/dataplex.dataScanViewer":
+#    members:
+#      - "group:user-group@example.com"
