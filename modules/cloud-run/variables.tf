@@ -34,7 +34,7 @@ variable "containers" {
     })), {})
     liveness_probe = optional(object({
       action = object({
-        grcp = optional(object({
+        grpc = optional(object({
           port    = optional(number)
           service = optional(string)
         }))
@@ -65,7 +65,7 @@ variable "containers" {
     }))
     startup_probe = optional(object({
       action = object({
-        grcp = optional(object({
+        grpc = optional(object({
           port    = optional(number)
           service = optional(string)
         }))
