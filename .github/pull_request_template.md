@@ -3,9 +3,7 @@
 ---
 **Checklist**
 <!--
-Replace each [ ] with [X] to check it. Switch to the preview view to make it easier to click on links.
-These steps will speed up the review process, and we appreciate you spending time on them before sending
-your code to be reviewed.
+Replace each [ ] with [X] to check it. These steps will speed up the review process, and we appreciate you spending time on them before sending your code to be reviewed.
 -->
 
 I applicable, I acknowledge that I have:
