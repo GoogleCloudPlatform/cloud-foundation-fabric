@@ -53,17 +53,17 @@ jobs:
       - name: Check documentation
         id: documentation-fabric
         run: |
-          python3 tools/check_documentation.py --show-diffs modules fast blueprints
+          python3 tools/check_documentation.py --show-diffs --no-show-summary modules fast blueprints
 
       - name: Check documentation links
         id: documentation-links-fabric
         run: |
-          python3 tools/check_links.py .
+          python3 tools/check_links.py --no-show-summary .
 
       - name: Check name length (fast)
         id: name-length-fast
         run: |
-          python3 tools/check_names.py --prefix-length=10 fast/stages
+          python3 tools/check_names.py --prefix-length=10 --failed-only fast/stages
 
       - name: Check python formatting
         id: yapf
@@ -76,4 +76,4 @@ jobs:
       - name: Check blueprint metadata
         id: metadata
         run: |
-          python tools/validate_metadata.py -v blueprints
+          python tools/validate_metadata.py -v --failed-only blueprints
