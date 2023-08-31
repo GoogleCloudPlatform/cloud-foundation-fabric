@@ -33,7 +33,7 @@ variable "clusters" {
     issue_client_certificate = optional(bool, false)
     labels                   = optional(map(string))
     location                 = string
-    logging_config           = optional(list(string), ["SYSTEM_COMPONENTS"])
+    logging_config           = optional(any)
     maintenance_config = optional(any, {
       daily_window_start_time = "03:00"
       recurring_window        = null
