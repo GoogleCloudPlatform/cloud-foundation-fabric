@@ -113,7 +113,7 @@ variable "location" {
 }
 
 variable "logging_config" {
-  description = "Logging configuration for control plane components."
+  description = "Logging configuration."
   type = object({
     enable_api_server_logging         = optional(bool, false)
     enable_scheduler_logging          = optional(bool, false)

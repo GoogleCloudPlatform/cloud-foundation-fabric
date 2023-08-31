@@ -122,13 +122,13 @@ resource "google_container_cluster" "cluster" {
   }
 
   logging_config {
-    enable_components = compact([
+    enable_components = toset(compact([
+      var.logging_config.enable_api_server_logging ? "APISERVER" : null,
+      var.logging_config.enable_controller_manager_logging ? "CONTROLLER_MANAGER" : null,
+      var.logging_config.enable_scheduler_logging ? "SCHEDULER" : null,
       "SYSTEM_COMPONENTS",
       "WORKLOADS",
-      try(var.logging_config.enable_api_server_logging, false) ? "APISERVER" : null,
-      try(var.logging_config.enable_scheduler_logging, false) ? "SCHEDULER" : null,
-      try(var.logging_config.enable_controller_manager_logging, false) ? "CONTROLLER_MANAGER" : null,
-    ])
+    ]))
   }
 
   dynamic "gateway_api_config" {
