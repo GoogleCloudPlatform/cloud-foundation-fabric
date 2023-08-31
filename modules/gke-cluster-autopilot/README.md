@@ -79,9 +79,9 @@ module "cluster-1" {
     subnetwork = var.subnet.self_link
   }
   logging_config {
-    enable_api_server_logging         = true
-    enable_scheduler_logging          = true
-    enable_controller_manager_logging = true
+    enable_api_server_logs         = true
+    enable_scheduler_logs          = true
+    enable_controller_manager_logs = true
   }
 }
 # tftest modules=1 resources=1 inventory=logging-config.yaml
@@ -129,7 +129,7 @@ module "cluster-1" {
 | [enable_features](variables.tf#L64) | Enable cluster-level features. Certain features allow configuration. | <code title="object&#40;&#123;&#10;  binary_authorization &#61; optional&#40;bool, false&#41;&#10;  cost_management      &#61; optional&#40;bool, false&#41;&#10;  dns &#61; optional&#40;object&#40;&#123;&#10;    provider &#61; optional&#40;string&#41;&#10;    scope    &#61; optional&#40;string&#41;&#10;    domain   &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  database_encryption &#61; optional&#40;object&#40;&#123;&#10;    state    &#61; string&#10;    key_name &#61; string&#10;  &#125;&#41;&#41;&#10;  gateway_api         &#61; optional&#40;bool, false&#41;&#10;  groups_for_rbac     &#61; optional&#40;string&#41;&#10;  l4_ilb_subsetting   &#61; optional&#40;bool, false&#41;&#10;  mesh_certificates   &#61; optional&#40;bool&#41;&#10;  pod_security_policy &#61; optional&#40;bool, false&#41;&#10;  allow_net_admin     &#61; optional&#40;bool, false&#41;&#10;  resource_usage_export &#61; optional&#40;object&#40;&#123;&#10;    dataset                              &#61; string&#10;    enable_network_egress_metering       &#61; optional&#40;bool&#41;&#10;    enable_resource_consumption_metering &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  tpu &#61; optional&#40;bool, false&#41;&#10;  upgrade_notifications &#61; optional&#40;object&#40;&#123;&#10;    topic_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  vertical_pod_autoscaling &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [issue_client_certificate](variables.tf#L98) | Enable issuing client certificate. | <code>bool</code> |  | <code>false</code> |
 | [labels](variables.tf#L104) | Cluster resource labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [logging_config](variables.tf#L115) | Logging configuration. | <code title="object&#40;&#123;&#10;  enable_api_server_logging         &#61; optional&#40;bool, false&#41;&#10;  enable_scheduler_logging          &#61; optional&#40;bool, false&#41;&#10;  enable_controller_manager_logging &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_config](variables.tf#L115) | Logging configuration. | <code title="object&#40;&#123;&#10;  enable_api_server_logs         &#61; optional&#40;bool, false&#41;&#10;  enable_scheduler_logs          &#61; optional&#40;bool, false&#41;&#10;  enable_controller_manager_logs &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [maintenance_config](variables.tf#L126) | Maintenance window configuration. | <code title="object&#40;&#123;&#10;  daily_window_start_time &#61; optional&#40;string&#41;&#10;  recurring_window &#61; optional&#40;object&#40;&#123;&#10;    start_time &#61; string&#10;    end_time   &#61; string&#10;    recurrence &#61; string&#10;  &#125;&#41;&#41;&#10;  maintenance_exclusions &#61; optional&#40;list&#40;object&#40;&#123;&#10;    name       &#61; string&#10;    start_time &#61; string&#10;    end_time   &#61; string&#10;    scope      &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  daily_window_start_time &#61; &#34;03:00&#34;&#10;  recurring_window        &#61; null&#10;  maintenance_exclusion   &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [min_master_version](variables.tf#L149) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
 | [node_locations](variables.tf#L160) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |

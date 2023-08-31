@@ -123,9 +123,9 @@ resource "google_container_cluster" "cluster" {
 
   logging_config {
     enable_components = toset(compact([
-      var.logging_config.enable_api_server_logging ? "APISERVER" : null,
-      var.logging_config.enable_controller_manager_logging ? "CONTROLLER_MANAGER" : null,
-      var.logging_config.enable_scheduler_logging ? "SCHEDULER" : null,
+      var.logging_config.enable_api_server_logs ? "APISERVER" : null,
+      var.logging_config.enable_controller_manager_logs ? "CONTROLLER_MANAGER" : null,
+      var.logging_config.enable_scheduler_logs ? "SCHEDULER" : null,
       "SYSTEM_COMPONENTS",
       "WORKLOADS",
     ]))

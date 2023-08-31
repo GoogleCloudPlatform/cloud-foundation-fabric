@@ -115,9 +115,9 @@ variable "location" {
 variable "logging_config" {
   description = "Logging configuration."
   type = object({
-    enable_api_server_logging         = optional(bool, false)
-    enable_scheduler_logging          = optional(bool, false)
-    enable_controller_manager_logging = optional(bool, false)
+    enable_api_server_logs         = optional(bool, false)
+    enable_scheduler_logs          = optional(bool, false)
+    enable_controller_manager_logs = optional(bool, false)
   })
   default  = {}
   nullable = false
