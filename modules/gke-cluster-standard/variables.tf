@@ -142,8 +142,23 @@ variable "location" {
 
 variable "logging_config" {
   description = "Logging configuration."
-  type        = list(string)
-  default     = ["SYSTEM_COMPONENTS"]
+  type = object({
+    enable_system_logs             = optional(bool, true)
+    enable_workloads_logs          = optional(bool, false)
+    enable_api_server_logs         = optional(bool, false)
+    enable_scheduler_logs          = optional(bool, false)
+    enable_controller_manager_logs = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+  # System logs are the minimum required component for enabling log collection. 
+  # So either everything is off (false), or enable_system_logs must be true.
+  validation {
+    condition = (
+      !anytrue(values(var.logging_config)) || var.logging_config.enable_system_logs
+    )
+    error_message = "System logs are the minimum required component for enabling log collection."
+  }
 }
 
 variable "maintenance_config" {

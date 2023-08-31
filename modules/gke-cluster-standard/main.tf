@@ -181,10 +181,27 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  # Send GKE cluster logs from chosen sources to Cloud Logging.
+  # System logs must be enabled if any other source is enabled.
+  # This is validated by input variable validation rules.
   dynamic "logging_config" {
-    for_each = var.logging_config != null ? [""] : []
+    for_each = var.logging_config.enable_system_logs ? [""] : []
     content {
-      enable_components = var.logging_config
+      enable_components = toset(compact([
+        var.logging_config.enable_api_server_logs ? "APISERVER" : null,
+        var.logging_config.enable_controller_manager_logs ? "CONTROLLER_MANAGER" : null,
+        var.logging_config.enable_scheduler_logs ? "SCHEDULER" : null,
+        "SYSTEM_COMPONENTS",
+        var.logging_config.enable_workloads_logs ? "WORKLOADS" : null,
+      ]))
+    }
+  }
+  # Don't send any GKE cluster logs to Cloud Logging. Input variable validation 
+  # makes sure every other log source is false when enable_system_logs is false.
+  dynamic "logging_config" {
+    for_each = var.logging_config.enable_system_logs == false ? [""] : []
+    content {
+      enable_components = []
     }
   }
 

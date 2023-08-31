@@ -71,6 +71,58 @@ module "cluster-1" {
 # tftest modules=1 resources=1 inventory=dataplane-v2.yaml
 ```
 
+### Managing GKE logs
+
+This example shows you how to [control which logs are sent from your GKE cluster to Cloud Logging](https://cloud.google.com/stackdriver/docs/solutions/gke/installing). 
+
+When you create a new GKE cluster, [Cloud Operations for GKE](https://cloud.google.com/stackdriver/docs/solutions/gke) integration with Cloud Logging is enabled by default and [System logs](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-logs#what_logs) are collected. You can enable collection of several other [types of logs](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-logs#what_logs). The following example enables collection of *all* optional logs.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-standard"
+  project_id = "myproject"
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+  logging_config = {
+    enable_workloads_logs          = true
+    enable_api_server_logs         = true
+    enable_scheduler_logs          = true
+    enable_controller_manager_logs = true
+  }
+}
+# tftest modules=1 resources=1 inventory=logging-config-enable-all.yaml
+```
+
+### Disable GKE logs collection
+
+This example shows how to fully disable logs collection on a GKE Standard cluster. This is not recommended.
+
+> **Warning**
+> If you've disabled Cloud Logging or Cloud Monitoring, GKE customer support
+> is offered on a best-effort basis and might require additional effort
+> from your engineering team.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-standard"
+  project_id = "myproject"
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+  logging_config = {
+    enable_system_logs = false
+  }
+}
+# tftest modules=1 resources=1 inventory=logging-config-disable-all.yaml
+```
+
 ### Cloud DNS
 
 This example shows how to [use Cloud DNS as a Kubernetes DNS provider](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns) for GKE Standard clusters.
@@ -96,7 +148,6 @@ module "cluster-1" {
 }
 # tftest modules=1 resources=1 inventory=dns.yaml
 ```
-
 
 ### Backup for GKE
 
@@ -131,9 +182,9 @@ module "cluster-1" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [location](variables.tf#L138) | Cluster zone or region. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L195) | Cluster name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L221) | Cluster project id. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L238) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network                &#61; string&#10;  subnetwork             &#61; string&#10;  master_ipv4_cidr_block &#61; optional&#40;string&#41;&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;, &#123; pods &#61; &#34;pods&#34;, services &#61; &#34;services&#34; &#125;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;  stack_type               &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L210) | Cluster name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L236) | Cluster project id. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L253) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network                &#61; string&#10;  subnetwork             &#61; string&#10;  master_ipv4_cidr_block &#61; optional&#40;string&#41;&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;, &#123; pods &#61; &#34;pods&#34;, services &#61; &#34;services&#34; &#125;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;  stack_type               &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [backup_configs](variables.tf#L17) | Configuration for Backup for GKE. | <code title="object&#40;&#123;&#10;  enable_backup_agent &#61; optional&#40;bool, false&#41;&#10;  backup_plans &#61; optional&#40;map&#40;object&#40;&#123;&#10;    encryption_key                    &#61; optional&#40;string&#41;&#10;    include_secrets                   &#61; optional&#40;bool, true&#41;&#10;    include_volume_data               &#61; optional&#40;bool, true&#41;&#10;    namespaces                        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    region                            &#61; string&#10;    schedule                          &#61; string&#10;    retention_policy_days             &#61; optional&#40;string&#41;&#10;    retention_policy_lock             &#61; optional&#40;bool, false&#41;&#10;    retention_policy_delete_lock_days &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [cluster_autoscaling](variables.tf#L37) | Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler. | <code title="object&#40;&#123;&#10;  auto_provisioning_defaults &#61; optional&#40;object&#40;&#123;&#10;    boot_disk_kms_key &#61; optional&#40;string&#41;&#10;    image_type        &#61; optional&#40;string&#41;&#10;    oauth_scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    service_account   &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cpu_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  mem_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [description](variables.tf#L58) | Cluster description. | <code>string</code> |  | <code>null</code> |
@@ -141,15 +192,15 @@ module "cluster-1" {
 | [enable_features](variables.tf#L87) | Enable cluster-level features. Certain features allow configuration. | <code title="object&#40;&#123;&#10;  binary_authorization &#61; optional&#40;bool, false&#41;&#10;  cost_management      &#61; optional&#40;bool, false&#41;&#10;  dns &#61; optional&#40;object&#40;&#123;&#10;    provider &#61; optional&#40;string&#41;&#10;    scope    &#61; optional&#40;string&#41;&#10;    domain   &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  database_encryption &#61; optional&#40;object&#40;&#123;&#10;    state    &#61; string&#10;    key_name &#61; string&#10;  &#125;&#41;&#41;&#10;  dataplane_v2         &#61; optional&#40;bool, false&#41;&#10;  gateway_api          &#61; optional&#40;bool, false&#41;&#10;  groups_for_rbac      &#61; optional&#40;string&#41;&#10;  intranode_visibility &#61; optional&#40;bool, false&#41;&#10;  l4_ilb_subsetting    &#61; optional&#40;bool, false&#41;&#10;  mesh_certificates    &#61; optional&#40;bool&#41;&#10;  pod_security_policy  &#61; optional&#40;bool, false&#41;&#10;  resource_usage_export &#61; optional&#40;object&#40;&#123;&#10;    dataset                              &#61; string&#10;    enable_network_egress_metering       &#61; optional&#40;bool&#41;&#10;    enable_resource_consumption_metering &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  shielded_nodes &#61; optional&#40;bool, false&#41;&#10;  tpu            &#61; optional&#40;bool, false&#41;&#10;  upgrade_notifications &#61; optional&#40;object&#40;&#123;&#10;    topic_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  vertical_pod_autoscaling &#61; optional&#40;bool, false&#41;&#10;  workload_identity        &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  workload_identity &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [issue_client_certificate](variables.tf#L126) | Enable issuing client certificate. | <code>bool</code> |  | <code>false</code> |
 | [labels](variables.tf#L132) | Cluster resource labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [logging_config](variables.tf#L143) | Logging configuration. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;SYSTEM_COMPONENTS&#34;&#93;</code> |
-| [maintenance_config](variables.tf#L149) | Maintenance window configuration. | <code title="object&#40;&#123;&#10;  daily_window_start_time &#61; optional&#40;string&#41;&#10;  recurring_window &#61; optional&#40;object&#40;&#123;&#10;    start_time &#61; string&#10;    end_time   &#61; string&#10;    recurrence &#61; string&#10;  &#125;&#41;&#41;&#10;  maintenance_exclusions &#61; optional&#40;list&#40;object&#40;&#123;&#10;    name       &#61; string&#10;    start_time &#61; string&#10;    end_time   &#61; string&#10;    scope      &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  daily_window_start_time &#61; &#34;03:00&#34;&#10;  recurring_window        &#61; null&#10;  maintenance_exclusion   &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [max_pods_per_node](variables.tf#L172) | Maximum number of pods per node in this cluster. | <code>number</code> |  | <code>110</code> |
-| [min_master_version](variables.tf#L178) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
-| [monitoring_config](variables.tf#L184) | Monitoring components. | <code title="object&#40;&#123;&#10;  enable_components  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  managed_prometheus &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enable_components &#61; &#91;&#34;SYSTEM_COMPONENTS&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [node_locations](variables.tf#L200) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [private_cluster_config](variables.tf#L207) | Private cluster configuration. | <code title="object&#40;&#123;&#10;  enable_private_endpoint &#61; optional&#40;bool&#41;&#10;  master_global_access    &#61; optional&#40;bool&#41;&#10;  peering_config &#61; optional&#40;object&#40;&#123;&#10;    export_routes &#61; optional&#40;bool&#41;&#10;    import_routes &#61; optional&#40;bool&#41;&#10;    project_id    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [release_channel](variables.tf#L226) | Release channel for GKE upgrades. | <code>string</code> |  | <code>null</code> |
-| [tags](variables.tf#L232) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [logging_config](variables.tf#L143) | Logging configuration. | <code title="object&#40;&#123;&#10;  enable_system_logs             &#61; optional&#40;bool, true&#41;&#10;  enable_workloads_logs          &#61; optional&#40;bool, false&#41;&#10;  enable_api_server_logs         &#61; optional&#40;bool, false&#41;&#10;  enable_scheduler_logs          &#61; optional&#40;bool, false&#41;&#10;  enable_controller_manager_logs &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [maintenance_config](variables.tf#L164) | Maintenance window configuration. | <code title="object&#40;&#123;&#10;  daily_window_start_time &#61; optional&#40;string&#41;&#10;  recurring_window &#61; optional&#40;object&#40;&#123;&#10;    start_time &#61; string&#10;    end_time   &#61; string&#10;    recurrence &#61; string&#10;  &#125;&#41;&#41;&#10;  maintenance_exclusions &#61; optional&#40;list&#40;object&#40;&#123;&#10;    name       &#61; string&#10;    start_time &#61; string&#10;    end_time   &#61; string&#10;    scope      &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  daily_window_start_time &#61; &#34;03:00&#34;&#10;  recurring_window        &#61; null&#10;  maintenance_exclusion   &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [max_pods_per_node](variables.tf#L187) | Maximum number of pods per node in this cluster. | <code>number</code> |  | <code>110</code> |
+| [min_master_version](variables.tf#L193) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
+| [monitoring_config](variables.tf#L199) | Monitoring components. | <code title="object&#40;&#123;&#10;  enable_components  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  managed_prometheus &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enable_components &#61; &#91;&#34;SYSTEM_COMPONENTS&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [node_locations](variables.tf#L215) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [private_cluster_config](variables.tf#L222) | Private cluster configuration. | <code title="object&#40;&#123;&#10;  enable_private_endpoint &#61; optional&#40;bool&#41;&#10;  master_global_access    &#61; optional&#40;bool&#41;&#10;  peering_config &#61; optional&#40;object&#40;&#123;&#10;    export_routes &#61; optional&#40;bool&#41;&#10;    import_routes &#61; optional&#40;bool&#41;&#10;    project_id    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [release_channel](variables.tf#L241) | Release channel for GKE upgrades. | <code>string</code> |  | <code>null</code> |
+| [tags](variables.tf#L247) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
