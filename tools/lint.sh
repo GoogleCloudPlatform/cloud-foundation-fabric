@@ -16,8 +16,6 @@
 
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-echo $DIR
-
 echo -- Boilerplate check --
 python3 tools/check_boilerplate.py $PWD
 
