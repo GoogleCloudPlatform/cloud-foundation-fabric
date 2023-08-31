@@ -15,7 +15,7 @@
 values:
   module.cluster-1.google_container_cluster.cluster:
     logging_config:
-      enable_components: []
+    - enable_components: []
 
 counts:
   google_container_cluster: 1
