@@ -1,5 +1,7 @@
 # GKE Jumpstart Infrastructure
 
+This blueprint illustrates how to use GKE features to deploy a secure cluster that meets Google's best practices. The cluster deployed by this blueprint can be used to deploy specific the workloads other blueprints such as Redis, Kafka, PostgreSQL, etc.
+
 <!-- BEGIN TOC -->
 - [Examples](#examples)
   - [Existing cluster with local fleet](#existing-cluster-with-local-fleet)
@@ -13,6 +15,17 @@
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
+
+## Design Decisions
+
+The main purpose of this blueprint is to showcase how to use  GKE features to deploy a secure Cabernet's cluster according to Google best practices.
+
+- **No public IP addresses** both the control plane and the nodes use private IP addresses. To to simplify the deployment of workloads, we enable Connect gateway to securely access the control plane even from outside the cluster's VPC. We also use Remote Repositories to allow the download of container images by the cluster.
+
+- We provide **reasonable but secure defaults** that the user can override. For example, we prefer GKE Autopilot by default, but it is also possible to deploy a GKE Standard cluster.
+
+- **Bring your own infrastructure**: we understand that larger organizations have teams dedicated to the provisioning and management of centralized infrastructure. This blueprint allows you to deploy your own supporting infrastructure (GCP project, VPC, Artifact Registry, etc), or you can leverage existing resources by setting the appropriate variables.
+
 
 ## Examples
 
