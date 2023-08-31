@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,9 @@ module "folder" {
   name          = "Networking"
   folder_create = var.folder_ids.networking == null
   id            = var.folder_ids.networking
-  firewall_policy_associations = {
-    default = module.firewall-policy-default.id
+  firewall_policy = {
+    name   = "default"
+    policy = module.firewall-policy-default.id
   }
 }
 

@@ -63,7 +63,6 @@ module "nat" {
 # tftest modules=2 resources=5 inventory=rules.yaml
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -76,7 +75,7 @@ module "nat" {
 | [config_source_subnets](variables.tf#L39) | Subnetwork configuration (ALL_SUBNETWORKS_ALL_IP_RANGES, ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, LIST_OF_SUBNETWORKS). | <code>string</code> |  | <code>&#34;ALL_SUBNETWORKS_ALL_IP_RANGES&#34;</code> |
 | [config_timeouts](variables.tf#L45) | Timeout configurations. | <code title="object&#40;&#123;&#10;  icmp            &#61; optional&#40;number, 30&#41;&#10;  tcp_established &#61; optional&#40;number, 1200&#41;&#10;  tcp_transitory  &#61; optional&#40;number, 30&#41;&#10;  udp             &#61; optional&#40;number, 30&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_filter](variables.tf#L57) | Enables logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'. | <code>string</code> |  | <code>null</code> |
-| [router_asn](variables.tf#L78) | Router ASN used for auto-created router. | <code>number</code> |  | <code>64514</code> |
+| [router_asn](variables.tf#L78) | Router ASN used for auto-created router. | <code>number</code> |  | <code>null</code> |
 | [router_create](variables.tf#L84) | Create router. | <code>bool</code> |  | <code>true</code> |
 | [router_name](variables.tf#L90) | Router name, leave blank if router will be created to use auto generated name. | <code>string</code> |  | <code>null</code> |
 | [router_network](variables.tf#L96) | Name of the VPC used for auto-created router. | <code>string</code> |  | <code>null</code> |
@@ -93,5 +92,4 @@ module "nat" {
 | [region](outputs.tf#L32) | Cloud NAT region. |  |
 | [router](outputs.tf#L37) | Cloud NAT router resources (if auto created). |  |
 | [router_name](outputs.tf#L46) | Cloud NAT router name. |  |
-
 <!-- END TFDOC -->

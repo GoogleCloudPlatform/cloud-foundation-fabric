@@ -59,7 +59,8 @@ def _validate(path: Path, validator) -> ValidationResult:
 @click.argument('dirs', type=click.Path(exists=True, file_okay=False), nargs=-1)
 @click.option('-v', '--verbose', is_flag=True, default=False,
               help='Print additional validation details.')
-def main(dirs: list[str], verbose: bool) -> int:
+@click.option('--failed-only', is_flag=True, default=False)
+def main(dirs: list[str], verbose: bool, failed_only=False) -> int:
   instances = set()
   for dir_name in dirs:
     instances |= set(Path(dir_name).glob("**/metadata.yaml"))
@@ -72,7 +73,8 @@ def main(dirs: list[str], verbose: bool) -> int:
   for instance in instances:
     result = _validate(instance, validator)
     if result.state == State.OK:
-      print(f'[✓] {instance}')
+      if not failed_only:
+        print(f'[✓] {instance}')
     else:
       print(f'[✗] {instance}')
       failed_files[instance] = result.errors
