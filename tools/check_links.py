@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -77,20 +77,24 @@ def check_docs(dir_name, external=False):
 @click.argument('dirs', type=str, nargs=-1)
 @click.option('-e', '--external', is_flag=True, default=False,
               help='Whether to test external links.')
-def main(dirs, external):
+@click.option('--show-summary/--no-show-summary', default=True)
+def main(dirs, external, show_summary=True):
   'Checks links in Markdown files contained in dirs.'
   errors = []
   for dir_name in dirs:
-    print(f'----- {dir_name} -----')
+    if show_summary:
+      print(f'----- {dir_name} -----')
     for doc in check_docs(dir_name, external):
       state = '✓' if all(l.valid for l in doc.links) else '✗'
-      print(f'[{state}] {doc.relpath} ({len(doc.links)})')
+      if show_summary:
+        print(f'[{state}] {doc.relpath} ({len(doc.links)})')
       if state == '✗':
         error = [f'{dir_name}/{doc.relpath}']
         for l in doc.links:
           if not l.valid:
             error.append(f'  - {l.dest}')
-            print(f'  {l.dest}')
+            if show_summary:
+              print(f'  {l.dest}')
         errors.append('\n'.join(error))
   if errors:
     raise SystemExit('Errors found:\n{}'.format('\n'.join(errors)))
