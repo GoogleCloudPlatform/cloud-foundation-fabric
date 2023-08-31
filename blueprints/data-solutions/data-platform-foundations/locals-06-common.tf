@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-variable "project_create" {
-  description = "Parameters for the creation of the new project."
-  type = object({
-    billing_account_id = string
-    parent             = string
-  })
-  default = null
-}
-
-variable "project_id" {
-  description = "Identifier of the project."
-  type        = string
-}
-
-variable "regions" {
-  description = "List of regions to deploy the proxy in."
-  type        = list(string)
+locals {
+  _cmn_iam = flatten([
+    for principal, roles in local.cmn_iam : [
+      for role in roles : {
+        key       = "${principal}-${role}"
+        principal = principal
+        role      = role
+      }
+    ]
+  ])
+  cmn_iam_additive = {
+    for binding in local._cmn_iam : binding.key => {
+      role   = binding.role
+      member = local.iam_principals[binding.principal]
+    }
+  }
+  cmn_iam_auth = {
+    for binding in local._cmn_iam :
+    binding.role => local.iam_principals[binding.principal]...
+  }
 }

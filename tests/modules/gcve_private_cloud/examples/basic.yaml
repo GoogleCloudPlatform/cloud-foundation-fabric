@@ -1,0 +1,42 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.gcve-pc.google_vmwareengine_network.private-cloud-network[0]:
+    description: Terraform-managed.
+    location: europe-west8
+    name: europe-west8-default
+    project: gcve-test-project
+    timeouts: null
+    type: LEGACY
+  module.gcve-pc.google_vmwareengine_private_cloud.private-cloud:
+    description: Terraform-managed.
+    location: europe-west8-a
+    management_cluster:
+    - cluster_id: gcve-pc-mgmt-cluster
+      node_type_configs:
+      - custom_core_count: 0
+        node_count: 3
+        node_type_id: standard-72
+    name: gcve-pc
+    network_config:
+    - management_cidr: 192.168.0.0/24
+    project: gcve-test-project
+    timeouts: null
+
+counts:
+  google_vmwareengine_network: 1
+  google_vmwareengine_private_cloud: 1
+  modules: 1
+  resources: 2

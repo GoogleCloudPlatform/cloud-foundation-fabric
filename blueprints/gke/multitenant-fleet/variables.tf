@@ -33,7 +33,13 @@ variable "clusters" {
     issue_client_certificate = optional(bool, false)
     labels                   = optional(map(string))
     location                 = string
-    logging_config           = optional(list(string), ["SYSTEM_COMPONENTS"])
+    logging_config = optional(object({
+      enable_system_logs             = optional(bool, true)
+      enable_workloads_logs          = optional(bool, true)
+      enable_api_server_logs         = optional(bool, false)
+      enable_scheduler_logs          = optional(bool, false)
+      enable_controller_manager_logs = optional(bool, false)
+    }), {})
     maintenance_config = optional(any, {
       daily_window_start_time = "03:00"
       recurring_window        = null

@@ -20,23 +20,27 @@ locals {
   _file_prefix = "tenants/${var.tenant_config.short_name}"
   # derive identity pool names from identity providers for easy reference
   cicd_identity_pools = {
-    for k, v in local.cicd_identity_providers :
+    for k, v in local.cicd_providers :
     k => split("/providers/", v.name)[0]
   }
   # merge org-level and tenant-level identity providers
-  cicd_identity_providers = merge(
+  cicd_providers = merge(
     var.automation.federated_identity_providers,
     {
       for k, v in google_iam_workload_identity_pool_provider.default :
       k => {
+        audiences = concat(
+          v.oidc[0].allowed_audiences,
+          ["https://iam.googleapis.com/${v.name}"]
+        )
         issuer           = local.identity_providers[k].issuer
-        issuer_uri       = local.identity_providers[k].issuer_uri
+        issuer_uri       = try(v.oidc[0].issuer_uri, null)
         name             = v.name
         principal_tpl    = local.identity_providers[k].principal_tpl
         principalset_tpl = local.identity_providers[k].principalset_tpl
       }
-  })
-  # filter CI/CD repositories to only keep valid ones
+    }
+  )
   cicd_repositories = {
     for k, v in coalesce(var.cicd_repositories, {}) : k => v
     if(
@@ -46,7 +50,7 @@ locals {
         try(v.type, null) == "sourcerepo"
         ||
         contains(
-          keys(local.cicd_identity_providers),
+          keys(local.cicd_providers),
           coalesce(try(v.identity_provider, null), ":")
         )
       )
@@ -56,6 +60,9 @@ locals {
       )
     )
   }
+  cicd_sa_resman = try(
+    module.automation-tf-cicd-sa-bootstrap["0"].iam_email, null
+  )
 }
 
 # tenant bootstrap runs in the org scope and uses top-level automation project
@@ -111,12 +118,12 @@ module "automation-tf-cicd-sa-bootstrap" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.cicd_identity_providers[each.value.identity_provider].principalset_tpl,
+          local.cicd_providers[each.value.identity_provider].principalset_tpl,
           local.cicd_identity_pools[each.value.identity_provider],
           each.value.name
         )
         : format(
-          local.cicd_identity_providers[each.value.identity_provider].principal_tpl,
+          local.cicd_providers[each.value.identity_provider].principal_tpl,
           local.cicd_identity_pools[each.value.identity_provider],
           each.value.name,
           each.value.branch
@@ -141,10 +148,11 @@ module "automation-tf-org-resman-sa" {
   project_id             = var.automation.project_id
   name                   = local.resman_sa
   service_account_create = false
-  iam_additive = {
-    "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.automation-tf-cicd-sa-bootstrap["0"].iam_email, null)
-    ])
+  iam_bindings_additive = local.cicd_sa_resman == null ? {} : {
+    sa_resman_cicd = {
+      member = local.cicd_sa_resman
+      role   = "roles/iam.serviceAccountTokenCreator"
+    }
   }
 }
 
@@ -201,12 +209,12 @@ module "automation-tf-cicd-sa-resman" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.cicd_identity_providers[each.value.identity_provider].principalset_tpl,
+          local.cicd_providers[each.value.identity_provider].principalset_tpl,
           local.cicd_identity_pools[each.value.identity_provider],
           each.value.name
         )
         : format(
-          local.cicd_identity_providers[each.value.identity_provider].principal_tpl,
+          local.cicd_providers[each.value.identity_provider].principal_tpl,
           local.cicd_identity_pools[each.value.identity_provider],
           each.value.name,
           each.value.branch

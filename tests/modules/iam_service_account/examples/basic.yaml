@@ -27,7 +27,7 @@ values:
     display_name: Terraform-managed.
     project: myproject
     timeouts: null
-  module.myproject-default-service-accounts.google_service_account_iam_binding.roles["roles/iam.serviceAccountUser"]:
+  module.myproject-default-service-accounts.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]:
     condition: []
     members:
     - user:foo@example.com

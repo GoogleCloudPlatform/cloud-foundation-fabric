@@ -26,19 +26,45 @@ locals {
 module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
-  iam_additive = merge(
+  iam_bindings_additive = merge(
     {
-      "roles/resourcemanager.organizationViewer" = [
-        "group:${local.groups.gcp-admins}"
-      ]
+      admins_org_viewer = {
+        member = "group:${local.groups.gcp-admins}"
+        role   = "roles/resourcemanager.organizationViewer"
+      }
+      admins_org_policy_admin = {
+        member = "group:${local.groups.gcp-admins}"
+        role   = "roles/orgpolicy.policyAdmin"
+        condition = {
+          title       = "org_policy_tag_${var.tenant_config.short_name}_scoped_admins"
+          description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name}."
+          expression  = local.iam_tenant_condition
+        }
+      }
+      sa_resman_org_policy_admin = {
+        member = module.automation-tf-resman-sa.iam_email
+        role   = "roles/orgpolicy.policyAdmin"
+        condition = {
+          title       = "org_policy_tag_${var.tenant_config.short_name}_scoped_sa_resman"
+          description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name}."
+          expression  = local.iam_tenant_condition
+        }
+      }
     },
-    local.billing_mode == "org" ? {
-      "roles/billing.admin" = [
-        "group:${local.groups.gcp-admins}",
-        module.automation-tf-resman-sa.iam_email
-      ]
-      "roles/billing.costsManager" = ["group:${local.groups.gcp-admins}"]
-    } : {}
+    local.billing_mode != "org" ? {} : {
+      admins_billing_admin = {
+        member = "group:${local.groups.gcp-admins}"
+        role   = "roles/billing.admin"
+      }
+      admins_billing_costs_manager = {
+        member = "group:${local.groups.gcp-admins}"
+        role   = "roles/billing.costsManager"
+      }
+      sa_resman_billing_admin = {
+        member = module.automation-tf-resman-sa.iam_email
+        role   = "roles/billing.admin"
+      }
+    }
   )
   tags = {
     tenant = {
@@ -49,6 +75,8 @@ module "organization" {
     }
   }
 }
+
+# TODO: use tag IAM with id in the organization module
 
 resource "google_tags_tag_value_iam_member" "resman_tag_user" {
   for_each  = var.tag_values
@@ -62,23 +90,6 @@ resource "google_tags_tag_value_iam_member" "admins_tag_viewer" {
   tag_value = each.value
   role      = "roles/resourcemanager.tagViewer"
   member    = "group:${local.groups.gcp-admins}"
-}
-
-# assign org policy admin with a tag-based condition to admin group and stage 1 SA
-
-resource "google_organization_iam_member" "org_policy_admin_stage0" {
-  for_each = toset([
-    "group:${local.groups.gcp-admins}",
-    module.automation-tf-resman-sa.iam_email
-  ])
-  org_id = var.organization.id
-  role   = "roles/orgpolicy.policyAdmin"
-  member = each.key
-  condition {
-    title       = "org_policy_tag_${var.tenant_config.short_name}_scoped"
-    description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name}."
-    expression  = local.iam_tenant_condition
-  }
 }
 
 # tag-based condition for service accounts is in the automation-sa file

@@ -14,16 +14,6 @@
 
 locals {
   iam = {
-    "roles/iam.serviceAccountUser" = [
-      module.service-account-orch.iam_email
-    ]
-    "roles/iam.serviceAccountTokenCreator" = var.data_eng_principals
-    # GCS roles
-    "roles/storage.objectAdmin" = [
-      module.service-account-df.iam_email,
-      module.service-account-landing.iam_email
-    ]
-    # BigQuery roles
     "roles/bigquery.admin" = var.data_eng_principals
     "roles/bigquery.dataOwner" = [
       module.service-account-df.iam_email
@@ -34,9 +24,7 @@ locals {
     "roles/bigquery.jobUser" = [
       module.service-account-bq.iam_email
     ]
-    # Compute
     "roles/compute.viewer" = var.data_eng_principals
-    # Dataflow roles
     "roles/dataflow.admin" = concat(
       [module.service-account-orch.iam_email],
       var.data_eng_principals
@@ -45,6 +33,25 @@ locals {
     "roles/dataflow.worker" = [
       module.service-account-df.iam_email,
     ]
+    "roles/iam.serviceAccountUser" = [
+      module.service-account-orch.iam_email
+    ]
+    "roles/iam.serviceAccountTokenCreator" = var.data_eng_principals
+    "roles/storage.objectAdmin" = [
+      module.service-account-df.iam_email,
+      module.service-account-landing.iam_email
+    ]
+  }
+  # this only works because the service account module uses a static output
+  iam_additive = {
+    for k in flatten([
+      for role, members in local.iam : [
+        for member in members : {
+          role   = role
+          member = member
+        }
+      ]
+    ]) : "${k.member}-${k.role}" => k
   }
   network_subnet_selflink = try(
     module.vpc[0].subnets["${var.region}/subnet"].self_link,
@@ -75,8 +82,12 @@ module "project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  iam          = var.project_config.billing_account_id != null ? local.iam : {}
-  iam_additive = var.project_config.billing_account_id == null ? local.iam : {}
+  iam = (
+    var.project_config.billing_account_id != null ? local.iam : {}
+  )
+  iam_bindings_additive = (
+    var.project_config.billing_account_id == null ? local.iam_additive : {}
+  )
   shared_vpc_service_config = var.network_config.host_project == null ? null : {
     attach       = true
     host_project = var.network_config.host_project

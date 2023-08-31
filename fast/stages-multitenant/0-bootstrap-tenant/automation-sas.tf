@@ -106,6 +106,7 @@ module "automation-tf-resman-sa-stage2-3" {
 }
 
 # assign org policy admin with a tag-based condition to stage 2 and 3 SAs
+# TODO: move to new iam_bindings_additive in the organization module
 
 resource "google_organization_iam_member" "org_policy_admin_stage2_3" {
   for_each = {

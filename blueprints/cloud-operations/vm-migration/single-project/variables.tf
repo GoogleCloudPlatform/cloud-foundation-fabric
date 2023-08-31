@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "migration_admin_users" {
-  description = "List of users authorized to create a new M4CE sources and perform all other migration operations, in IAM format."
-  type        = list(string)
+variable "migration_admin" {
+  description = "User or group who can create a new M4CE sources and perform all other migration operations, in IAM format (`group:foo@example.com`)."
+  type        = string
 }
 
-variable "migration_viewer_users" {
-  description = "List of users authorized to retrieve information about M4CE in the Google Cloud Console, in IAM format."
-  type        = list(string)
-  default     = []
+variable "migration_viewer" {
+  description = "User or group authorized to retrieve information about M4CE in the Google Cloud Console, in IAM format (`group:foo@example.com`)."
+  type        = string
+  default     = null
 }
 
 variable "project_create" {

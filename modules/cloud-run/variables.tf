@@ -34,7 +34,7 @@ variable "containers" {
     })), {})
     liveness_probe = optional(object({
       action = object({
-        grcp = optional(object({
+        grpc = optional(object({
           port    = optional(number)
           service = optional(string)
         }))
@@ -65,7 +65,7 @@ variable "containers" {
     }))
     startup_probe = optional(object({
       action = object({
-        grcp = optional(object({
+        grpc = optional(object({
           port    = optional(number)
           service = optional(string)
         }))
@@ -188,6 +188,12 @@ variable "service_account" {
 
 variable "service_account_create" {
   description = "Auto-create service account."
+  type        = bool
+  default     = false
+}
+
+variable "startup_cpu_boost" {
+  description = "Enable startup cpu boost."
   type        = bool
   default     = false
 }

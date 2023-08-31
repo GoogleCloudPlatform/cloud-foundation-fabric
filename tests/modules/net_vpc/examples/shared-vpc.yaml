@@ -30,7 +30,7 @@ values:
       range_name: pods
     - ip_cidr_range: 192.168.0.0/24
       range_name: services
-  module.vpc-host.google_compute_subnetwork_iam_binding.binding["europe-west1/subnet-1.roles/compute.networkUser"]:
+  module.vpc-host.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.networkUser"]:
     condition: []
     members:
     - serviceAccount:cloudsvc
@@ -39,7 +39,7 @@ values:
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
-  module.vpc-host.google_compute_subnetwork_iam_binding.binding["europe-west1/subnet-1.roles/compute.securityAdmin"]:
+  module.vpc-host.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.securityAdmin"]:
     condition: []
     members:
     - serviceAccount:gke

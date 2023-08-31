@@ -32,7 +32,7 @@ output "endpoint" {
 }
 
 output "id" {
-  description = "FUlly qualified cluster id."
+  description = "Fully qualified cluster id."
   value       = google_container_cluster.cluster.id
 }
 
@@ -52,7 +52,7 @@ output "name" {
 }
 
 output "notifications" {
-  description = "GKE PubSub notifications topic."
+  description = "GKE Pub/Sub notifications topic."
   value       = try(google_pubsub_topic.notifications[0].id, null)
 }
 

@@ -26,16 +26,19 @@ module "root-folder" {
   )
   name = var.test_skip_data_sources ? "Test" : null
   # end test attributes
-  iam_additive = {
-    "roles/accesscontextmanager.policyAdmin" = [
-      local.automation_sas_iam.security
-    ]
-    "roles/compute.orgFirewallPolicyAdmin" = [
-      local.automation_sas_iam.networking
-    ]
-    "roles/compute.xpnAdmin" = [
-      local.automation_sas_iam.networking
-    ]
+  iam_bindings_additive = {
+    sa_net_fw_policy_admin = {
+      member = local.automation_sas_iam.networking
+      role   = "roles/compute.orgFirewallPolicyAdmin"
+    }
+    sa_net_xpn_admin = {
+      member = local.automation_sas_iam.networking
+      role   = "roles/compute.xpnAdmin"
+    }
+    sa_sec_vpcsc_admin = {
+      member = local.automation_sas_iam.security
+      role   = "roles/accesscontextmanager.policyAdmin"
+    }
   }
   org_policies_data_path = var.organization_policy_data_path
 }

@@ -25,7 +25,7 @@ values:
     project: my-project
     repository: my-repo
     role: roles/source.reader
-  module.repo.google_sourcerepo_repository_iam_member.members["am1-reader"]:
+  module.repo.google_sourcerepo_repository_iam_member.bindings["am1-reader"]:
     condition: []
     member: user:am1@example.com
     project: my-project
@@ -40,3 +40,4 @@ counts:
   resources: 3
 
 outputs: {}
+

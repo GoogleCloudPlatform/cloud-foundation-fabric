@@ -37,6 +37,7 @@ The final number of subnets, and their IP addressing will depend on the user-spe
   - [Design overview and choices](#design-overview-and-choices)
     - [Multi-regional deployment](#multi-regional-deployment)
     - [VPC design](#vpc-design)
+    - [NCC, NVAs and BGP sessions](#ncc-nvas-and-bgp-sessions)
     - [External connectivity](#external-connectivity)
     - [Internal connectivity](#internal-connectivity)
     - [IP ranges, subnetting, routing](#ip-ranges-subnetting-routing)
@@ -105,7 +106,7 @@ By default, the design assumes that:
 - cross-spoke (environment) traffic and traffic from any untrusted network to any trusted network (and vice versa) pass through the NVAs.
 - any traffic from a trusted network to an untrusted network (e.g. Internet) is natted by the NVAs. Users can configure further exclusions.
 
-The trusted landing VPC acts as a hub: it bridges internal resources with the outside world and it hosts the shared services consumed by the spoke VPCs, connected to the hub thorugh VPC network peerings. Spokes are used to partition the environments. By default:
+The trusted landing VPC acts as a hub: it bridges internal resources with the outside world and it hosts the shared services consumed by the spoke VPCs, connected to the hub through VPC network peerings. Spokes are used to partition the environments. By default:
 
 - one spoke VPC hosts the development environment resources
 - one spoke VPC hosts the production environment resources
@@ -487,7 +488,7 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> · <code>net-firewall-policy</code> |  |
 | [monitoring-vpn-onprem.tf](./monitoring-vpn-onprem.tf) | VPN monitoring alerts. |  | <code>google_monitoring_alert_policy</code> |
 | [monitoring.tf](./monitoring.tf) | Network monitoring dashboards. |  | <code>google_monitoring_dashboard</code> |
-| [ncc.tf](./ncc.tf) | None | <code>ncc-spoke-ra</code> |  |
+| [ncc.tf](./ncc.tf) | None | <code>ncc-spoke-ra</code> | <code>google_network_connectivity_hub</code> |
 | [nva.tf](./nva.tf) | None | <code>compute-vm</code> · <code>simple-nva</code> | <code>google_compute_address</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [regions.tf](./regions.tf) | Compute short names for regions. |  |  |
@@ -509,7 +510,7 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [alert_config](variables.tf#L17) | Configuration for monitoring alerts. | <code title="object&#40;&#123;&#10;  vpn_tunnel_established &#61; optional&#40;object&#40;&#123;&#10;    auto_close            &#61; optional&#40;string, null&#41;&#10;    duration              &#61; optional&#40;string, &#34;120s&#34;&#41;&#10;    enabled               &#61; optional&#40;bool, true&#41;&#10;    notification_channels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    user_labels           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  vpn_tunnel_bandwidth &#61; optional&#40;object&#40;&#123;&#10;    auto_close            &#61; optional&#40;string, null&#41;&#10;    duration              &#61; optional&#40;string, &#34;120s&#34;&#41;&#10;    enabled               &#61; optional&#40;bool, true&#41;&#10;    notification_channels &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    threshold_mbys        &#61; optional&#40;string, &#34;187.5&#34;&#41;&#10;    user_labels           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  vpn_tunnel_established &#61; &#123;&#125;&#10;  vpn_tunnel_bandwidth   &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [custom_roles](variables.tf#L63) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  service_project_network_admin &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
 | [dns](variables.tf#L72) | Onprem DNS resolvers. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  onprem &#61; &#91;&#34;10.0.200.3&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [factories_config](variables.tf#L80) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  data_dir              &#61; optional&#40;string, &#34;data&#34;&#41;&#10;  dns_policy_rules_file &#61; optional&#40;string, &#34;data&#47;dns-policy-rules.yaml&#34;&#41;&#10;  firewall_policy_name  &#61; optional&#40;string, &#34;factory&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_dir &#61; &#34;data&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [factories_config](variables.tf#L80) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  data_dir              &#61; optional&#40;string, &#34;data&#34;&#41;&#10;  dns_policy_rules_file &#61; optional&#40;string, &#34;data&#47;dns-policy-rules.yaml&#34;&#41;&#10;  firewall_policy_name  &#61; optional&#40;string, &#34;net-default&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_dir &#61; &#34;data&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [gcp_ranges](variables.tf#L111) | GCP address ranges in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp_dev_primary                 &#61; &#34;10.128.128.0&#47;19&#34;&#10;  gcp_dev_secondary               &#61; &#34;10.128.160.0&#47;19&#34;&#10;  gcp_landing_trusted_primary     &#61; &#34;10.128.64.0&#47;19&#34;&#10;  gcp_landing_trusted_secondary   &#61; &#34;10.128.96.0&#47;19&#34;&#10;  gcp_landing_untrusted_primary   &#61; &#34;10.128.0.0&#47;19&#34;&#10;  gcp_landing_untrusted_secondary &#61; &#34;10.128.32.0&#47;19&#34;&#10;  gcp_prod_primary                &#61; &#34;10.128.192.0&#47;19&#34;&#10;  gcp_prod_secondary              &#61; &#34;10.128.224.0&#47;19&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [ncc_asn](variables.tf#L126) | The NCC Cloud Routers ASN configuration. | <code>map&#40;number&#41;</code> |  | <code title="&#123;&#10;  nva_primary   &#61; 64513&#10;  nva_secondary &#61; 64514&#10;  trusted       &#61; 64515&#10;  untrusted     &#61; 64512&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [onprem_cidr](variables.tf#L137) | Onprem addresses in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  main &#61; &#34;10.0.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |

@@ -14,215 +14,84 @@
  * limitations under the License.
  */
 
-variable "billing_account_id" {
-  description = "Billing account id."
-  type        = string
-}
-
-variable "billing_alert" {
-  description = "Billing alert configuration."
+variable "data_defaults" {
+  description = "Optional default values used when corresponding project data from files are missing."
   type = object({
-    amount = number
-    thresholds = object({
-      current    = list(number)
-      forecasted = list(number)
-    })
-    credit_treatment = string
+    billing_account            = optional(string)
+    contacts                   = optional(map(list(string)), {})
+    labels                     = optional(map(string), {})
+    metric_scopes              = optional(list(string), [])
+    prefix                     = optional(string)
+    service_encryption_key_ids = optional(map(list(string)), {})
+    service_perimeter_bridges  = optional(list(string), [])
+    service_perimeter_standard = optional(string)
+    services                   = optional(list(string), [])
+    shared_vpc_service_config = optional(object({
+      host_project         = string
+      service_identity_iam = optional(map(list(string)), {})
+      service_iam_grants   = optional(list(string), [])
+    }), { host_project = null })
+    tag_bindings = optional(map(string), {})
+    # non-project resources
+    service_accounts = optional(map(object({
+      default_roles = optional(bool, true)
+    })), {})
   })
-  default = null
-}
-
-variable "defaults" {
-  description = "Project factory default values."
-  type = object({
-    billing_account_id = string
-    billing_alert = object({
-      amount = number
-      thresholds = object({
-        current    = list(number)
-        forecasted = list(number)
-      })
-      credit_treatment = string
-    })
-    environment_dns_zone  = string
-    essential_contacts    = list(string)
-    labels                = map(string)
-    notification_channels = list(string)
-    shared_vpc_self_link  = string
-    vpc_host_project      = string
-  })
-  default = null
-}
-
-variable "descriptive_name" {
-  description = "Name of the project name. Used for project name instead of `name` variable."
-  type        = string
-  default     = null
-}
-
-variable "dns_zones" {
-  description = "DNS private zones to create as child of var.defaults.environment_dns_zone."
-  type        = list(string)
-  default     = []
-}
-
-variable "essential_contacts" {
-  description = "Email contacts to be used for billing and GCP notifications."
-  type        = list(string)
-  default     = []
-}
-
-variable "folder_id" {
-  description = "Folder ID for the folder where the project will be created."
-  type        = string
-  default     = null
-}
-
-variable "group_iam" {
-  description = "Custom IAM settings in group => [role] format."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "group_iam_additive" {
-  description = "Custom additive IAM settings in group => [role] format."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "iam" {
-  description = "Custom IAM settings in role => [principal] format."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "iam_additive" {
-  description = "Custom additive IAM settings in role => [principal] format."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "kms_service_agents" {
-  description = "KMS IAM configuration in as service => [key]."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "labels" {
-  description = "Labels to be assigned at project level."
-  type        = map(string)
-  default     = {}
-}
-
-variable "org_policies" {
-  description = "Org-policy overrides at project level."
-  type = map(object({
-    inherit_from_parent = optional(bool) # for list policies only.
-    reset               = optional(bool)
-    rules = optional(list(object({
-      allow = optional(object({
-        all    = optional(bool)
-        values = optional(list(string))
-      }))
-      deny = optional(object({
-        all    = optional(bool)
-        values = optional(list(string))
-      }))
-      enforce = optional(bool) # for boolean policies only.
-      condition = optional(object({
-        description = optional(string)
-        expression  = optional(string)
-        location    = optional(string)
-        title       = optional(string)
-      }), {})
-    })), [])
-  }))
+  nullable = false
   default  = {}
-  nullable = false
 }
 
-variable "prefix" {
-  description = "Prefix used for resource names."
-  type        = string
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty."
-  }
-}
-
-variable "project_id" {
-  description = "Project id."
-  type        = string
-}
-
-variable "service_accounts" {
-  description = "Service accounts to be created, and roles assigned them on the project."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "service_accounts_additive" {
-  description = "Service accounts to be created, and roles assigned them on the project additively."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "service_accounts_iam" {
-  description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}."
-  type        = map(map(list(string)))
-  default     = {}
-  nullable    = false
-}
-
-variable "service_accounts_iam_additive" {
-  description = "IAM additive bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}."
-  type        = map(map(list(string)))
-  default     = {}
-  nullable    = false
-}
-
-variable "service_identities_iam" {
-  description = "Custom IAM settings for service identities in service => [role] format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "service_identities_iam_additive" {
-  description = "Custom additive IAM settings for service identities in service => [role] format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "services" {
-  description = "Services to be enabled for the project."
-  type        = list(string)
-  default     = []
-  nullable    = false
-}
-
-variable "vpc" {
-  description = "VPC configuration for the project."
+variable "data_merges" {
+  description = "Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`."
   type = object({
-    host_project = string
-    gke_setup = optional(object({
-      enable_security_admin     = optional(bool, false)
-      enable_host_service_agent = optional(bool, false)
-    }), {})
-    service_iam_grants   = optional(list(string), [])
-    service_identity_iam = optional(map(list(string)), {})
-    subnets_iam          = optional(map(list(string)), {})
+    contacts                   = optional(map(list(string)), {})
+    labels                     = optional(map(string), {})
+    metric_scopes              = optional(list(string), [])
+    service_encryption_key_ids = optional(map(list(string)), {})
+    service_perimeter_bridges  = optional(list(string), [])
+    services                   = optional(list(string), [])
+    tag_bindings               = optional(map(string), {})
+    # non-project resources
+    service_accounts = optional(map(object({
+      default_roles = optional(bool, true)
+    })), {})
   })
-  default = {
-    host_project = null
-  }
+  nullable = false
+  default  = {}
+}
+
+variable "data_overrides" {
+  description = "Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`."
+  type = object({
+    billing_account            = optional(string)
+    contacts                   = optional(map(list(string)))
+    prefix                     = optional(string)
+    service_encryption_key_ids = optional(map(list(string)))
+    service_perimeter_bridges  = optional(list(string))
+    service_perimeter_standard = optional(string)
+    tag_bindings               = optional(map(string))
+    services                   = optional(list(string))
+    # non-project resources
+    service_accounts = optional(map(object({
+      default_roles = optional(bool, true)
+    })))
+  })
+  nullable = false
+  default  = {}
+}
+
+variable "factory_data" {
+  description = "Project data from either YAML files or externally parsed data."
+  type = object({
+    data      = optional(map(any))
+    data_path = optional(string)
+  })
   nullable = false
   validation {
-    condition = var.vpc.host_project != null || (
-      var.vpc.host_project == null && length(var.vpc.gke_setup) == 0 && length(var.vpc.service_iam_grants) == 0 &&
-      length(var.vpc.service_identity_iam) == 0 && length(var.vpc.subnets_iam) == 0
-    )
-    error_message = "host_project is required if providing any additional configuration for vpc"
+    condition = (
+      (var.factory_data.data != null ? 1 : 0) +
+      (var.factory_data.data_path != null ? 1 : 0)
+    ) == 1
+    error_message = "One of data or data_path needs to be set."
   }
 }

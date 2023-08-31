@@ -95,6 +95,6 @@ module "tenant-folder-iam" {
       module.automation-tf-resman-sa.iam_email
     ]
   })
-  iam_additive = var.iam_additive
-  depends_on   = [module.automation-project]
+  iam_bindings_additive = var.iam_bindings_additive
+  depends_on            = [module.automation-project]
 }

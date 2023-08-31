@@ -133,6 +133,12 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
     # extract planned outputs
     outputs = plan.get('planned_values', {}).get('outputs', {})
 
+    # force the destruction of the tftest object, otherwise pytest
+    # will complain about unraisable exceptions caused by the context
+    # manager deleting temporary files, including the extra_files that
+    # tftest tries to remove on cleanup
+    del tf
+
     return PlanSummary(values, dict(counts), outputs)
 
 
@@ -148,7 +154,6 @@ def plan_summary_fixture(request):
             **tf_vars):
     if basedir is None:
       basedir = Path(request.fspath).parent
-      print(f"{basedir=}")
     return plan_summary(module_path=module_path, basedir=basedir,
                         tf_var_files=tf_var_files, extra_files=extra_files,
                         **tf_vars)

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-# TODO(): proper outputs
-
-output "project" {
-  description = "The project resource as return by the `project` module."
-  value       = module.project
-
-  depends_on = [
-    google_compute_subnetwork_iam_member.default,
-    module.dns
-  ]
+output "projects" {
+  description = "Project module outputs."
+  value       = module.projects
 }
 
-output "project_id" {
-  description = "Project ID."
-  value       = module.project.project_id
-  depends_on = [
-    google_compute_subnetwork_iam_member.default,
-    module.dns
-  ]
+output "service_accounts" {
+  description = "Service account emails."
+  # TODO: group by project
+  value = {
+    for k, v in module.service-accounts : k => v.email
+  }
 }

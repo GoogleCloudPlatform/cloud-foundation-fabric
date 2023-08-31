@@ -19,9 +19,6 @@ on:
   pull_request:
     branches:
       - master
-    tags:
-      - ci
-      - test
 
 env:
   GOOGLE_APPLICATION_CREDENTIALS: "/home/runner/credentials.json"
@@ -39,7 +36,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
       - name: Build lockfile and fetch providers
@@ -76,10 +73,10 @@ jobs:
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
+          TERRAFORM_VERSION: ${{ env.TF_VERSION }}
 
       - name: Run tests on documentation examples
-        run: pytest -vv -n4 -k blueprints/ tests/examples
+        run: pytest -vv -n4 --tb=line -k blueprints/ tests/examples
 
   examples-modules:
     runs-on: ubuntu-latest
@@ -91,10 +88,10 @@ jobs:
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
+          TERRAFORM_VERSION: ${{ env.TF_VERSION }}
 
       - name: Run tests on documentation examples
-        run: pytest -vv -n4 -k modules/ tests/examples
+        run: pytest -vv -n4 --tb=line -k modules/ tests/examples
 
   blueprints:
     runs-on: ubuntu-latest
@@ -106,10 +103,10 @@ jobs:
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
+          TERRAFORM_VERSION: ${{ env.TF_VERSION }}
 
       - name: Run tests environments
-        run: pytest -vv -n4 tests/blueprints
+        run: pytest -vv -n4 --tb=line tests/blueprints
 
   modules:
     runs-on: ubuntu-latest
@@ -121,10 +118,10 @@ jobs:
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
+          TERRAFORM_VERSION: ${{ env.TF_VERSION }}
 
       - name: Run tests modules
-        run: pytest -vv -n4 tests/modules
+        run: pytest -vv -n4 --tb=line tests/modules
 
   fast:
     runs-on: ubuntu-latest
@@ -136,7 +133,7 @@ jobs:
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
+          TERRAFORM_VERSION: ${{ env.TF_VERSION }}
 
       - name: Run tests on FAST stages
-        run: pytest -vv -n4 tests/fast
+        run: pytest -vv -n4 --tb=line tests/fast

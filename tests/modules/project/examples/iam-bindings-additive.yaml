@@ -18,31 +18,29 @@ values:
     billing_account: null
     folder_id: null
     labels: null
-    name: project-example
+    name: project-1
     org_id: null
-    project_id: project-example
+    project_id: project-1
     skip_delete: false
     timeouts: null
-  module.project.google_project_iam_member.members["one-owner"]:
+  module.project.google_project_iam_member.bindings["group-owner"]:
     condition: []
-    member: user:one@example.org
-    project: project-example
+    member: group:p1-owners@example.org
+    project: project-1
     role: roles/owner
-  module.project.google_project_iam_member.members["two-compute-admin"]:
-    condition: []
-    member: user:two@example.org
-    project: project-example
-    role: roles/compute.admin
-  module.project.google_project_iam_member.members["two-viewer"]:
-    condition: []
-    member: user:two@example.org
-    project: project-example
-    role: roles/viewer
+  module.project.google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: project-1
+    service: compute.googleapis.com
+    timeouts: null
 
 counts:
   google_project: 1
-  google_project_iam_member: 3
+  google_project_iam_member: 1
+  google_project_service: 1
   modules: 1
-  resources: 4
+  resources: 3
 
 outputs: {}
+

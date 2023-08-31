@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
-output "ip_address" {
-  description = "The reserved global IP address."
-  value       = module.glb.address
+locals {
+  _drp_iam = flatten([
+    for principal, roles in local.drp_iam : [
+      for role in roles : {
+        key       = "${principal}-${role}"
+        principal = principal
+        role      = role
+      }
+    ]
+  ])
+  drp_iam_additive = {
+    for binding in local._drp_iam : binding.key => {
+      role   = binding.role
+      member = local.iam_principals[binding.principal]
+    }
+  }
+  drp_iam_auth = {
+    for binding in local._drp_iam :
+    binding.role => local.iam_principals[binding.principal]...
+  }
 }
