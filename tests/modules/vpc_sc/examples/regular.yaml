@@ -53,7 +53,7 @@ values:
       - egress_from:
         - identities:
           - serviceAccount:foo@myproject.iam.gserviceaccount.com
-          identity_type: ANY_IDENTITY
+          identity_type: null
         egress_to:
         - external_resources: null
           operations:

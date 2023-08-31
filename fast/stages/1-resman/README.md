@@ -145,7 +145,7 @@ The first set of default tags cannot be overridden and defines the following key
 
 The second set is optional and allows defining a custom tag hierarchy, including IAM bindings that can refer to specific identities, or to the internally defined automation service accounts via their names, like in the following example:
 
-```hcl
+```tfvars
 tags = {
   my-custom-tag = {
     values = {
@@ -258,7 +258,7 @@ classDiagram
 
 This is an example that shows how to populate the relevant variables.
 
-```hcl
+```tfvars
 tenants = {
   tn0 = {
     admin_group_email = "tn-0-admins@tenant.example.org"

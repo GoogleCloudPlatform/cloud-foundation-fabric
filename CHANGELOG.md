@@ -1041,7 +1041,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** the variable for service identities IAM has changed in the project factory
 - add `data-catalog-policy-tag` module
 - new [workload identity federetion example](blueprints/cloud-operations/workload-identity-federation)
-- new `api-gateway` [module](./modules/api-gateway) and [example](blueprints/serverless/api-gateway).
+- new `api-gateway` [module](./modules/api-gateway) and example
 - **incompatible change** the `psn_ranges` variable has been renamed to `psa_ranges` in the `net-vpc` module and its type changed from `list(string)` to `map(string)`
 - **incompatible change** removed `iam` flag for organization and folder level sinks
 - **incompatible change** removed `ingress_settings` configuration option in the `cloud-functions` module.

@@ -78,7 +78,7 @@ variable "region" {
 variable "router_asn" {
   description = "Router ASN used for auto-created router."
   type        = number
-  default     = 64514
+  default     = null
 }
 
 variable "router_create" {
