@@ -78,7 +78,7 @@ module "cluster-1" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }
-  logging_config {
+  logging_config = {
     enable_api_server_logs         = true
     enable_scheduler_logs          = true
     enable_controller_manager_logs = true
