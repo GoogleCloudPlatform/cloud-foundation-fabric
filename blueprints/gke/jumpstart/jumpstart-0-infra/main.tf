@@ -66,7 +66,7 @@ module "project" {
       ]
     }
   }
-  iam_members = merge(
+  iam_bindings_additive = merge(
     # allow GKE fleet service identity to manage clusters in this project
     {
       gkehub-robot = {
