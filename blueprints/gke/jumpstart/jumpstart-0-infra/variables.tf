@@ -30,6 +30,9 @@ variable "create_cluster" {
         services = optional(string, "services")
       }), {})
     }))
+    options = optional(object({
+      release_channel = optional(string, "REGULAR")
+    }), {})
   })
   default = null
 }
