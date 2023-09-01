@@ -89,6 +89,13 @@ module "cluster" {
   service_account = module.cluster-service-account.0.email
   labels          = var.create_cluster.labels
   release_channel = var.create_cluster.options.release_channel
+  enable_features = {
+    dns = {
+      provider = "CLOUD_DNS"
+      scope    = "CLUSTER_SCOPE"
+      domain   = "cluster.local"
+    }
+  }
 }
 
 check "cluster_networking" {
