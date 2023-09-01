@@ -16,6 +16,7 @@
 
 locals {
   create_cluster = var.create_cluster != null || local.create_vpc
+  create_nat     = local.create_vpc && var.create_vpc.enable_cloud_nat
   create_vpc = (
     !local.use_shared_vpc && (
       var.create_vpc != null || var.create_project != null
@@ -141,4 +142,13 @@ module "registry" {
   name       = var.prefix
   format     = { docker = {} }
   mode       = { remote = true }
+}
+
+module "nat" {
+  source         = "../../../../modules/net-cloudnat"
+  count          = local.create_nat ? 1 : 0
+  project_id     = module.project.project_id
+  region         = var.region
+  name           = "default"
+  router_network = local.cluster_vpc.network
 }
