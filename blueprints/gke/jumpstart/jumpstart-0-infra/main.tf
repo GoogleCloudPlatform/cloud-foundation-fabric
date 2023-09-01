@@ -33,6 +33,15 @@ locals {
       number     = module.fleet-project.0.number
     }
   )
+  proxy_only_subnet = (local.create_vpc && var.create_vpc.proxy_only_subnet != null) ? [
+    {
+      ip_cidr_range = var.create_vpc.proxy_only_subnet
+      name          = "proxy"
+      region        = var.region
+      active        = true
+    }
+  ] : null
+
   use_shared_vpc = (
     try(var.create_project.shared_vpc_host, null) != null
   )
@@ -113,6 +122,7 @@ module "vpc" {
       )
     }
   }]
+  subnets_proxy_only = local.proxy_only_subnet
 }
 
 module "fleet-project" {

@@ -89,6 +89,9 @@ module "cluster" {
   service_account = module.cluster-service-account.0.email
   labels          = var.create_cluster.labels
   release_channel = var.create_cluster.options.release_channel
+  backup_configs = {
+    enable_backup_agent = var.create_cluster.options.enable_backup_agent
+  }
   enable_features = {
     dns = {
       provider = "CLOUD_DNS"

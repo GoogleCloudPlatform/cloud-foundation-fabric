@@ -31,7 +31,8 @@ variable "create_cluster" {
       }), {})
     }))
     options = optional(object({
-      release_channel = optional(string, "REGULAR")
+      release_channel     = optional(string, "REGULAR")
+      enable_backup_agent = optional(bool, false)
     }), {})
   })
   default = null
@@ -62,6 +63,7 @@ variable "create_vpc" {
     secondary_range_pods     = optional(string, "10.16.0.0/20")
     secondary_range_services = optional(string, "10.32.0.0/24")
     enable_cloud_nat         = optional(bool, false)
+    proxy_only_subnet        = optional(string)
   })
   default = null
 }
