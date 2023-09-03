@@ -238,11 +238,8 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic "release_channel" {
-    for_each = var.release_channel != null ? [""] : []
-    content {
-      channel = var.release_channel
-    }
+  release_channel {
+    channel = var.release_channel
   }
 
   dynamic "resource_usage_export_config" {
