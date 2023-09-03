@@ -203,6 +203,20 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  monitoring_config {
+    enable_components = toset(compact([
+      # System metrics collection cannot be disabled for Autopilot clusters.
+      "SYSTEM_COMPONENTS",
+      # Control plane metrics.
+      var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
+      var.monitoring_config.enable_controller_manager_metrics ? "CONTROLLER_MANAGER" : null,
+      var.monitoring_config.enable_scheduler_metrics ? "SCHEDULER" : null,
+    ]))
+    managed_prometheus {
+      enabled = var.monitoring_config.enable_managed_prometheus
+    }
+  }
+
   dynamic "notification_config" {
     for_each = var.enable_features.upgrade_notifications != null ? [""] : []
     content {
@@ -304,7 +318,6 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     }
   }
 }
-
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
   count = (
