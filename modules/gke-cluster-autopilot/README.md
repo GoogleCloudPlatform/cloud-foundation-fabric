@@ -89,13 +89,13 @@ module "cluster-1" {
 
 ### Monitoring configuration
 
+This example shows how to [configure collection of Kubernetes control plane metrics](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-metrics#enable-control-plane-metrics). The metrics for these components are not collected by default.
+
 > **Note**
-> [Cloud Monitoring integration](https://cloud.google.com/stackdriver/docs/solutions/gke) is pre-configured and cannot be disabled for Autopilot clusters. GKE **system metrics** collection is always on and cannot be disabled.
+> System metrics collection is pre-configured for Autopilot clusters and cannot be disabled.
 
 > **Warning**
 > GKE **workload metrics** is deprecated and removed in GKE 1.24 and later. Workload metrics is replaced by [Google Cloud Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus), which is Google's recommended way to monitor Kubernetes applications by using Cloud Monitoring.
-
-This example shows how to [configure collection of Kubernetes control plane metrics](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-metrics#enable-control-plane-metrics). The metrics for these components are not collected by default.
 
 ```hcl
 module "cluster-1" {
