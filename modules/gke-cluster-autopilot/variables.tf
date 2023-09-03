@@ -184,9 +184,14 @@ variable "project_id" {
 }
 
 variable "release_channel" {
-  description = "Release channel for GKE upgrades."
+  description = "Release channel for GKE upgrades. Clusters created in the Autopilot mode must use a release channel. Choose between \"RAPID\", \"REGULAR\", and \"STABLE\"."
   type        = string
-  default     = null
+  default     = "REGULAR"
+  nullable    = false
+  validation {
+    condition     = contains(["RAPID", "REGULAR", "STABLE"], var.release_channel)
+    error_message = "Must be one of: RAPID, REGULAR, STABLE."
+  }
 }
 
 variable "service_account" {
