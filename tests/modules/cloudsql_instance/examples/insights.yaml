@@ -44,6 +44,7 @@ values:
         enable_private_path_for_google_cloud_services: null
         ipv4_enabled: false
         private_network: projects/xxx/global/networks/aaa
+        psc_config: []
         require_ssl: null
       maintenance_window: []
       password_validation_policy: []

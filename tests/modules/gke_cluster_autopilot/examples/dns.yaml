@@ -14,10 +14,7 @@
 
 values:
   module.cluster-1.google_container_cluster.cluster:
-    dns_config:
-    - cluster_dns: CLOUD_DNS
-      cluster_dns_domain: gke.local
-      cluster_dns_scope: CLUSTER_SCOPE
+    dns_config: []
 
 counts:
   google_container_cluster: 1
