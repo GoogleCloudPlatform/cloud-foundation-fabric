@@ -16,7 +16,7 @@
 
 locals {
   create_cluster = var.create_cluster != null || local.vpc_create
-  create_nat     = local.vpc_create && try(var.vpc_create.enable_cloud_nat, null) != null
+  create_nat     = local.vpc_create && try(var.vpc_create.enable_cloud_nat, false) == true
   vpc_create = (
     !local.use_shared_vpc && (
       var.vpc_create != null || var.project_create != null

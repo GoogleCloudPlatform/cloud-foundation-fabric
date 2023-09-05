@@ -98,6 +98,21 @@ module "cluster" {
       scope    = "CLUSTER_SCOPE"
       domain   = "cluster.local"
     }
+    cost_management = true
+    gateway_api     = true
+  }
+  monitoring_config = {
+    enable_api_server_metrics         = true
+    enable_controller_manager_metrics = true
+    enable_scheduler_metrics          = true
+  }
+  logging_config = {
+    enable_api_server_logs         = true
+    enable_scheduler_logs          = true
+    enable_controller_manager_logs = true
+  }
+  maintenance_config = {
+    daily_window_start_time = "01:00"
   }
 }
 
