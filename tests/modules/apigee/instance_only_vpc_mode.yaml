@@ -13,30 +13,17 @@
 # limitations under the License.
 
 values:
-  google_apigee_envgroup.envgroups["prod"]:
-    hostnames:
-    - prod.example.com
-    name: prod
-  google_apigee_envgroup.envgroups["test"]:
-    hostnames:
-    - test.example.com
-    name: test
-  google_apigee_envgroup_attachment.envgroup_attachments["apis-prod-prod"]:
-    environment: apis-prod
-  google_apigee_envgroup_attachment.envgroup_attachments["apis-test-test"]:
-    environment: apis-test
-  google_apigee_environment.environments["apis-prod"]:
-    description: APIs prod
-    display_name: APIs prod
-    name: apis-prod
-  google_apigee_environment.environments["apis-test"]:
-    description: APIs Test
-    display_name: APIs test
-    name: apis-test
+  google_apigee_instance.instances["europe-west1"]:
+    description: Terraform-managed
+    disk_encryption_key_name: null
+    display_name: null
+    ip_range: 10.0.4.0/22,10.1.1.0/28
+    location: europe-west1
+    name: instance-europe-west1
   google_apigee_organization.organization[0]:
     analytics_region: europe-west1
     authorized_network: my-vpc
-    billing_type: PAYG
+    billing_type: Pay-as-you-go
     description: null
     display_name: null
     project_id: my-project
@@ -46,7 +33,5 @@ values:
     disable_vpc_peering: false
 
 counts:
-  google_apigee_envgroup: 2
-  google_apigee_envgroup_attachment: 2
-  google_apigee_environment: 2
+  google_apigee_instance: 1
   google_apigee_organization: 1

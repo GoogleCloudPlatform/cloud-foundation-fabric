@@ -71,6 +71,7 @@ values:
     retention: DELETION_RETENTION_UNSPECIFIED
     runtime_database_encryption_key_name: '123456789'
     runtime_type: CLOUD
+    disable_vpc_peering: false
 
 counts:
   google_apigee_endpoint_attachment: 2

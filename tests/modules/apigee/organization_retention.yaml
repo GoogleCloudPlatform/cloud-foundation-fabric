@@ -23,6 +23,7 @@ values:
     retention: MINIMUM
     runtime_database_encryption_key_name: '123456789'
     runtime_type: CLOUD
+    disable_vpc_peering: false
 
 counts:
   google_apigee_organization: 1

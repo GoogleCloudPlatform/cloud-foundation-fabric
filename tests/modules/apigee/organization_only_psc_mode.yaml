@@ -15,7 +15,7 @@
 values:
   google_apigee_organization.organization[0]:
     analytics_region: europe-west1
-    authorized_network: my-vpc
+    authorized_network: null
     billing_type: PAYG
     description: null
     display_name: null
@@ -23,6 +23,7 @@ values:
     retention: DELETION_RETENTION_UNSPECIFIED
     runtime_database_encryption_key_name: '123456789'
     runtime_type: CLOUD
+    disable_vpc_peering: true
 
 counts:
   google_apigee_organization: 1

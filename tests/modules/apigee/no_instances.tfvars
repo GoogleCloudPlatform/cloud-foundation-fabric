@@ -7,6 +7,7 @@ organization = {
   billing_type            = "PAYG"
   database_encryption_key = "123456789"
   analytics_region        = "europe-west1"
+  disable_vpc_peering     = false
 }
 envgroups = {
   test = ["test.example.com"]
