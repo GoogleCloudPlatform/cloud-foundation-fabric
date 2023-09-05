@@ -11,43 +11,43 @@ Platform Cloud Run serverless product. The web application can be exposed either
 publicly via Global Application Load Balancer or internally via Internal
 Application Load Balancer. More information on the architecture section.
 
-# Architecture
+## Architecture
 
 ![Serverless phpIPAM on Cloud Run](images/phpipam.png "Wordpress on Cloud Run")
 
 The main components that are deployed in this architecture are the following (
 you can learn about them by following the hyperlinks):
 
-* [Cloud Run](https://cloud.google.com/run): serverless PaaS offering to host
+- [Cloud Run](https://cloud.google.com/run): serverless PaaS offering to host
   containers for web-oriented applications, while offering security, scalability
   and easy versioning
-* [Cloud SQL](https://cloud.google.com/sql): Managed solution for SQL databases
-* [VPC Serverless Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access):
+- [Cloud SQL](https://cloud.google.com/sql): Managed solution for SQL databases
+- [VPC Serverless Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access):
   Solution to access the CloudSQL VPC from Cloud Run, using only internal IP
   addresses
-* \* [Global Application Load Balancer](https://cloud.google.com/load-balancing/docs/https):
+- [Global Application Load Balancer](https://cloud.google.com/load-balancing/docs/https) (\*):
   An external Application Load Balancer is a proxy-based Layer 7 load balancer
   that enables you to run and scale your services behind a single external IP
   address.
-* \* [Cloud Armor](https://cloud.google.com/armor/docs/cloud-armor-overview):
+- [Cloud Armor](https://cloud.google.com/armor/docs/cloud-armor-overview) (\*):
   Help protect your applications and websites against denial of service and web
   attacks.
-* \* [Identity Aware Proxy](https://cloud.google.com/iap/docs/concepts-overview):
+- [Identity Aware Proxy](https://cloud.google.com/iap/docs/concepts-overview) (\*):
   IAP lets you establish a central authorization layer for applications accessed
   by HTTPS, so you can use an application-level access control model instead of
   relying on network-level firewalls.
-* \* [Regional Internal Application Load Balancer](https://cloud.google.com/load-balancing/docs/l7-internal):
+- [Regional Internal Application Load Balancer](https://cloud.google.com/load-balancing/docs/l7-internal) (\*):
   A Google Cloud internal Application Load Balancer is a regional proxy-based
   layer 7 load balancer that enables you expose your services behind a single
   internal IP address.
 
-#####  * Product deployment depends on input variables
+> (\*) Product deployment depends on input variables
 
-# Setup
+## Setup
 
-## Prerequisites
+### Prerequisites
 
-### Setting up the project for the deployment
+#### Setting up the project for the deployment
 
 This example will deploy all its resources into the project defined by
 the `project_id` variable. Please note that we assume this project already
@@ -61,9 +61,9 @@ needs `resourcemanager.projectCreator` on the resource hierarchy node specified
 by `project_create.parent` and `billing.user` on the billing account specified
 by `project_create.billing_account_id`.
 
-## Deployment
+### Deployment
 
-### Step 0: Cloning the repository
+#### Step 0: Cloning the repository
 
 If you want to deploy from your Cloud Shell, click on the image below, sign in
 if required and when the prompt appears, click on “confirm”.
@@ -81,7 +81,7 @@ information (for more precise configuration see the Variables section):
 
 * The project ID.
 
-### Step 2: Prepare the variables
+#### Step 2: Prepare the variables
 
 Once you have the required information, head back to your cloned repository.
 Make sure you’re in the directory of this tutorial (where this README is in).
@@ -107,7 +107,7 @@ documentation below.
    allowing internal access through private network (via either VPN and/or
    Interconnect)
 
-### Step 3: Deploy resources
+#### Step 3: Deploy resources
 
 Initialize your Terraform environment and deploy the resources:
 
@@ -116,7 +116,7 @@ terraform init
 terraform apply
 ```
 
-### Step 4: Use the created resources
+#### Step 4: Use the created resources
 
 Upon completion, you will see the output with the values for the Cloud Run
 service and the user and password to access the application.
@@ -177,7 +177,7 @@ terraform output phpipam_password
 
 ![phpIPAM Homepage](images/phpipam_home.png "phpIPAM Homepage")
 
-## Cleaning up your environment
+### Cleaning up your environment
 
 The easiest way to remove all the deployed resources is to run the following
 command in Cloud Shell:
@@ -193,23 +193,23 @@ billable charges made afterwards.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L102) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L126) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [cloud_run_invoker](variables.tf#L18) | IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone). | <code>string</code> |  | <code>&#34;allUsers&#34;</code> |
-| [cloudsql_password](variables.tf#L24) | CloudSQL password (will be randomly generated by default). | <code>string</code> |  | <code>null</code> |
-| [connector](variables.tf#L30) | Existing VPC serverless connector to use if not creating a new one. | <code>string</code> |  | <code>null</code> |
-| [create_connector](variables.tf#L36) | Should a VPC serverless connector be created or not. | <code>bool</code> |  | <code>true</code> |
-| [custom_domain](variables.tf#L42) | Cloud Run service custom domain for GLB. | <code>string</code> |  | <code>null</code> |
-| [iap](variables.tf#L48) | Identity-Aware Proxy for Cloud Run in the LB. | <code title="object&#40;&#123;&#10;  enabled            &#61; optional&#40;bool, false&#41;&#10;  app_title          &#61; optional&#40;string, &#34;Cloud Run Explore Application&#34;&#41;&#10;  oauth2_client_name &#61; optional&#40;string, &#34;Test Client&#34;&#41;&#10;  email              &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ip_ranges](variables.tf#L60) | CIDR blocks: VPC serverless connector, Private Service Access(PSA) for CloudSQL, CloudSQL VPC. | <code title="object&#40;&#123;&#10;  connector &#61; string&#10;  psa       &#61; string&#10;  ilb       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  connector &#61; &#34;10.8.0.0&#47;28&#34;&#10;  psa       &#61; &#34;10.60.0.0&#47;24&#34;&#10;  ilb       &#61; &#34;10.128.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [phpipam_config](variables.tf#L74) | PHPIpam configuration. | <code title="object&#40;&#123;&#10;  image &#61; optional&#40;string, &#34;phpipam&#47;phpipam-www:latest&#34;&#41;&#10;  port  &#61; optional&#40;number, 80&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  image &#61; &#34;phpipam&#47;phpipam-www:latest&#34;&#10;  port  &#61; 80&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [phpipam_exposure](variables.tf#L86) | Whether to expose the application publicly via GLB or internally via ILB, default GLB. | <code>string</code> |  | <code>&#34;EXTERNAL&#34;</code> |
-| [phpipam_password](variables.tf#L96) | Password for the phpipam user (will be randomly generated by default). | <code>string</code> |  | <code>null</code> |
-| [principals](variables.tf#L111) | List of users to give rights to (CloudSQL admin, client and instanceUser, Logging admin, Service Account User and TokenCreator), eg 'user@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [project_create](variables.tf#L117) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L131) | Region for the created resources. | <code>string</code> |  | <code>&#34;europe-west4&#34;</code> |
-| [security_policy](variables.tf#L137) | Security policy (Cloud Armor) to enforce in the LB. | <code title="object&#40;&#123;&#10;  enabled      &#61; optional&#40;bool, false&#41;&#10;  ip_blacklist &#61; optional&#40;list&#40;string&#41;, &#91;&#34;&#42;&#34;&#93;&#41;&#10;  path_blocked &#61; optional&#40;string, &#34;&#47;login.html&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vpc_config](variables.tf#L147) | VPC Network and subnetwork self links for internal LB setup. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L117) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L136) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [admin_principals](variables.tf#L19) | Map of identities to give rights to (CloudSQL admin, client and instanceUser, Logging admin, Service Account User and TokenCreator) | <code title="object&#40;&#123;&#10;  groups           &#61; optional&#40;list&#40;string&#41;,&#91;&#93;&#41;&#10;  service_accounts &#61; optional&#40;list&#40;string&#41;,&#91;&#93;&#41;&#10;  users            &#61; optional&#40;list&#40;string&#41;,&#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  groups           &#61; &#91;&#93;&#10;  service_accounts &#61; &#91;&#93;&#10;  users            &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [cloud_run_invoker](variables.tf#L33) | IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone). | <code>string</code> |  | <code>&#34;allUsers&#34;</code> |
+| [cloudsql_password](variables.tf#L39) | CloudSQL password (will be randomly generated by default). | <code>string</code> |  | <code>null</code> |
+| [connector](variables.tf#L45) | Existing VPC serverless connector to use if not creating a new one. | <code>string</code> |  | <code>null</code> |
+| [create_connector](variables.tf#L51) | Should a VPC serverless connector be created or not. | <code>bool</code> |  | <code>true</code> |
+| [custom_domain](variables.tf#L57) | Cloud Run service custom domain for GLB. | <code>string</code> |  | <code>null</code> |
+| [iap](variables.tf#L63) | Identity-Aware Proxy for Cloud Run in the LB. | <code title="object&#40;&#123;&#10;  enabled            &#61; optional&#40;bool, false&#41;&#10;  app_title          &#61; optional&#40;string, &#34;Cloud Run Explore Application&#34;&#41;&#10;  oauth2_client_name &#61; optional&#40;string, &#34;Test Client&#34;&#41;&#10;  email              &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ip_ranges](variables.tf#L75) | CIDR blocks: VPC serverless connector, Private Service Access(PSA) for CloudSQL, CloudSQL VPC. | <code title="object&#40;&#123;&#10;  connector &#61; string&#10;  psa       &#61; string&#10;  ilb       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  connector &#61; &#34;10.8.0.0&#47;28&#34;&#10;  psa       &#61; &#34;10.60.0.0&#47;24&#34;&#10;  ilb       &#61; &#34;10.128.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [phpipam_config](variables.tf#L89) | PHPIpam configuration. | <code title="object&#40;&#123;&#10;  image &#61; optional&#40;string, &#34;phpipam&#47;phpipam-www:latest&#34;&#41;&#10;  port  &#61; optional&#40;number, 80&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  image &#61; &#34;phpipam&#47;phpipam-www:latest&#34;&#10;  port  &#61; 80&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [phpipam_exposure](variables.tf#L101) | Whether to expose the application publicly via GLB or internally via ILB, default GLB. | <code>string</code> |  | <code>&#34;EXTERNAL&#34;</code> |
+| [phpipam_password](variables.tf#L111) | Password for the phpipam user (will be randomly generated by default). | <code>string</code> |  | <code>null</code> |
+| [project_create](variables.tf#L127) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L141) | Region for the created resources. | <code>string</code> |  | <code>&#34;europe-west4&#34;</code> |
+| [security_policy](variables.tf#L147) | Security policy (Cloud Armor) to enforce in the LB. | <code title="object&#40;&#123;&#10;  enabled      &#61; optional&#40;bool, false&#41;&#10;  ip_blacklist &#61; optional&#40;list&#40;string&#41;, &#91;&#34;&#42;&#34;&#93;&#41;&#10;  path_blocked &#61; optional&#40;string, &#34;&#47;login.html&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpc_config](variables.tf#L157) | VPC Network and subnetwork self links for internal LB setup. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

@@ -15,17 +15,22 @@
  */
 
 locals {
-  all_principals_iam = [for k in var.principals : "user:${k}"]
+  all_principals_iam = concat(
+    [for k in var.admin_principals.users : "user:${k}"],
+    [for k in var.admin_principals.groups : "group:${k}"],
+    [for k in var.admin_principals.service_accounts : "serviceAccount:${k}"]
+  )
   cloudsql_conf = {
     database_version = "MYSQL_8_0"
     tier             = "db-g1-small"
     db               = "phpipam"
     user             = "admin"
   }
+  connector = var.connector == null ? module.cloud_run.vpc_connector : var.connector
   domain = (
     var.custom_domain != null ? var.custom_domain : (
       var.phpipam_exposure == "EXTERNAL" ?
-    "${module.addresses.global_addresses["phpipam"].address}.nip.io" : "phpipam.internal")
+    "${module.addresses.0.global_addresses["phpipam"].address}.nip.io" : "phpipam.internal")
   )
   iam = {
     # CloudSQL
@@ -37,9 +42,8 @@ locals {
     "roles/iam.serviceAccountUser"         = local.all_principals_iam
     "roles/iam.serviceAccountTokenCreator" = local.all_principals_iam
   }
-  connector        = var.connector == null ? module.cloud_run.vpc_connector : var.connector
-  phpipam_password = var.phpipam_password == null ? random_password.phpipam_password.result : var.phpipam_password
   network          = var.vpc_config == null ? module.vpc.0.self_link : var.vpc_config.network
+  phpipam_password = var.phpipam_password == null ? random_password.phpipam_password.result : var.phpipam_password
   subnetwork       = var.vpc_config == null ? module.vpc.0.subnet_self_links["${var.region}/ilb"] : var.vpc_config.subnetwork
 }
 
@@ -47,31 +51,36 @@ locals {
 # either create a project or set up the given one
 module "project" {
   source          = "../../../modules/project"
+  billing_account = try(var.project_create.billing_account_id, null)
+  iam             = var.project_create != null ? local.iam : {}
   name            = var.project_id
   parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
   prefix          = var.project_create == null ? null : var.prefix
-  iam             = var.project_create != null ? local.iam : {}
+  project_create  = var.project_create != null
   services = [
-    "run.googleapis.com",
+    "iap.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
+    "run.googleapis.com",
+    "servicenetworking.googleapis.com",
     "sqladmin.googleapis.com",
     "sql-component.googleapis.com",
-    "vpcaccess.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "iap.googleapis.com"
+    "vpcaccess.googleapis.com"
   ]
 }
 
 
 # create a VPC for CloudSQL and ILB
 module "vpc" {
-  count      = var.vpc_config == null ? 1 : 0
   source     = "../../../modules/net-vpc"
+  count      = var.vpc_config == null ? 1 : 0
   project_id = module.project.project_id
   name       = "${var.prefix}-sql-vpc"
+  psa_config = {
+    ranges = {
+      cloud-sql = var.ip_ranges.psa
+    }
+  }
   subnets = [
     {
       ip_cidr_range = var.ip_ranges.ilb
@@ -79,11 +88,6 @@ module "vpc" {
       region        = var.region
     }
   ]
-  psa_config = {
-    ranges = {
-      cloud-sql = var.ip_ranges.psa
-    }
-  }
 }
 
 resource "random_password" "phpipam_password" {
@@ -92,12 +96,12 @@ resource "random_password" "phpipam_password" {
 
 # create the Cloud Run service
 module "cloud_run" {
-  source     = "../../../modules/cloud-run"
-  project_id = module.project.project_id
-  prefix     = var.prefix
-  name       = "${var.prefix}-cr-phpipam"
-  region     = var.region
-
+  source           = "../../../modules/cloud-run"
+  project_id       = module.project.project_id
+  name             = "${var.prefix}-cr-phpipam"
+  prefix           = var.prefix
+  ingress_settings = "all"
+  region           = var.region
   containers = {
     phpipam = {
       image = var.phpipam_config.image
@@ -120,13 +124,11 @@ module "cloud_run" {
       }
     }
   }
-
   iam = local.glb_create && var.iap.enabled ? {
     "roles/run.invoker" : ["serviceAccount:${local.iap_sa_email}"]
     } : {
     "roles/run.invoker" : [var.cloud_run_invoker]
   }
-
   revision_annotations = {
     autoscaling = {
       min_scale = 1
@@ -138,8 +140,6 @@ module "cloud_run" {
     vpcaccess_egress    = "private-ranges-only"
     vpcaccess_connector = local.connector
   }
-  ingress_settings = "all"
-
   vpc_connector_create = var.create_connector ? {
     ip_cidr_range = var.ip_ranges.connector
     vpc_self_link = local.network

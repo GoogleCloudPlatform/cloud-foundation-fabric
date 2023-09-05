@@ -22,6 +22,7 @@ locals {
 # Reserved static IP for the Load Balancer
 module "addresses" {
   source           = "../../../modules/net-address"
+  count            = local.glb_create ? 1 : 0
   project_id       = var.project_id
   global_addresses = ["phpipam"]
 }
@@ -32,7 +33,8 @@ module "glb" {
   count      = local.glb_create ? 1 : 0
   project_id = module.project.project_id
   name       = "phpipam-glb"
-  address    = module.addresses.global_addresses["phpipam"].address
+  address    = module.addresses.0.global_addresses["phpipam"].address
+  protocol   = "HTTPS"
   backend_service_configs = {
     default = {
       backends = [
@@ -59,7 +61,6 @@ module "glb" {
       }
     }
   }
-  protocol = "HTTPS"
   ssl_certificates = {
     managed_configs = {
       default = {
@@ -72,8 +73,8 @@ module "glb" {
 # Cloud Armor configuration
 resource "google_compute_security_policy" "policy" {
   count   = local.glb_create && var.security_policy.enabled ? 1 : 0
-  name    = "cloud-run-policy"
   project = module.project.project_id
+  name    = "cloud-run-policy"
   rule {
     action   = "deny(403)"
     priority = 1000

@@ -25,17 +25,17 @@ resource "tls_private_key" "default" {
 }
 
 resource "tls_self_signed_cert" "default" {
-  private_key_pem = tls_private_key.default.private_key_pem
-  subject {
-    common_name  = local.domain
-    organization = "ACME Examples, Inc"
-  }
+  private_key_pem       = tls_private_key.default.private_key_pem
   validity_period_hours = 720
   allowed_uses = [
     "key_encipherment",
     "digital_signature",
     "server_auth",
   ]
+  subject {
+    common_name  = local.domain
+    organization = "ACME Examples, Inc"
+  }
 }
 
 module "ilb-l7" {
@@ -43,6 +43,7 @@ module "ilb-l7" {
   count      = local.ilb_create ? 1 : 0
   project_id = var.project_id
   name       = "ilb-l7-cr"
+  protocol   = "HTTPS"
   region     = var.region
   backend_service_configs = {
     default = {
@@ -53,6 +54,11 @@ module "ilb-l7" {
         }
       ]
       health_checks = []
+    }
+  }
+  health_check_configs = {
+    default = {
+      https = { port = 443 }
     }
   }
   neg_configs = {
@@ -66,12 +72,6 @@ module "ilb-l7" {
       }
     }
   }
-  health_check_configs = {
-    default = {
-      https = { port = 443 }
-    }
-  }
-  protocol = "HTTPS"
   ssl_certificates = {
     create_configs = {
       default = {

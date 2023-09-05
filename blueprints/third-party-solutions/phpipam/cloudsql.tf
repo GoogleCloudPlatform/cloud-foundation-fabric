@@ -18,13 +18,13 @@
 module "cloudsql" {
   source           = "../../../modules/cloudsql-instance"
   project_id       = module.project.project_id
-  prefix           = var.prefix
-  network          = local.network
   name             = "${var.prefix}-mysql"
-  region           = var.region
   database_version = local.cloudsql_conf.database_version
-  tier             = local.cloudsql_conf.tier
   databases        = [local.cloudsql_conf.db]
+  network          = local.network
+  prefix           = var.prefix
+  region           = var.region
+  tier             = local.cloudsql_conf.tier
   users = {
     "${local.cloudsql_conf.user}" = var.cloudsql_password
   }

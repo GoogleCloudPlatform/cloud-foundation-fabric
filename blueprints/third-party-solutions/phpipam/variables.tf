@@ -15,6 +15,21 @@
  */
 
 # Documentation: https://cloud.google.com/run/docs/securing/managing-access#making_a_service_public
+
+variable "admin_principals" {
+  description = "Map of identities to give rights to (CloudSQL admin, client and instanceUser, Logging admin, Service Account User and TokenCreator)"
+  type = object({
+    groups           = optional(list(string), [])
+    service_accounts = optional(list(string), [])
+    users            = optional(list(string), [])
+  })
+  default = {
+    groups           = []
+    service_accounts = []
+    users            = []
+  }
+}
+
 variable "cloud_run_invoker" {
   type        = string
   description = "IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone)."
@@ -102,16 +117,11 @@ variable "phpipam_password" {
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
+  nullable    = false
   validation {
     condition     = var.prefix != ""
     error_message = "Prefix cannot be empty."
   }
-}
-
-variable "principals" {
-  description = "List of users to give rights to (CloudSQL admin, client and instanceUser, Logging admin, Service Account User and TokenCreator), eg 'user@domain.com'."
-  type        = list(string)
-  default     = []
 }
 
 variable "project_create" {
