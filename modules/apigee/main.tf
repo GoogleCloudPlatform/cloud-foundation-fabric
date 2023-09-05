@@ -23,11 +23,12 @@ resource "google_apigee_organization" "organization" {
   count                                = var.organization == null ? 0 : 1
   analytics_region                     = var.organization.analytics_region
   project_id                           = var.project_id
-  authorized_network                   = var.organization.authorized_network
+  authorized_network                   = var.organization.disable_vpc_peering ? null : var.organization.authorized_network
   billing_type                         = var.organization.billing_type
   runtime_type                         = var.organization.runtime_type
   runtime_database_encryption_key_name = var.organization.database_encryption_key
   retention                            = var.organization.retention
+  disable_vpc_peering                  = var.organization.disable_vpc_peering
 }
 
 resource "google_apigee_envgroup" "envgroups" {
@@ -91,7 +92,7 @@ resource "google_apigee_instance" "instances" {
   description              = each.value.description
   location                 = each.key
   org_id                   = local.org_id
-  ip_range                 = "${each.value.runtime_ip_cidr_range},${each.value.troubleshooting_ip_cidr_range}"
+  ip_range                 = var.organization.disable_vpc_peering ? null : "${each.value.runtime_ip_cidr_range},${each.value.troubleshooting_ip_cidr_range}"
   disk_encryption_key_name = each.value.disk_encryption_key
   consumer_accept_list     = each.value.consumer_accept_list
 }
@@ -117,6 +118,9 @@ resource "google_apigee_instance_attachment" "instance_attachments" {
   instance_id = google_apigee_instance.instances[each.value.region].id
   environment = try(google_apigee_environment.environments[each.value.environment].name,
   "${local.org_id}/environments/${each.value.environment}")
+  lifecycle {
+    ignore_changes = [environment]
+  }
 }
 
 resource "google_apigee_endpoint_attachment" "endpoint_attachments" {

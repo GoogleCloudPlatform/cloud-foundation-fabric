@@ -67,8 +67,8 @@ variable "instances" {
   type = map(object({
     display_name                  = optional(string)
     description                   = optional(string, "Terraform-managed")
-    runtime_ip_cidr_range         = string
-    troubleshooting_ip_cidr_range = string
+    runtime_ip_cidr_range         = optional(string)
+    troubleshooting_ip_cidr_range = optional(string)
     disk_encryption_key           = optional(string)
     consumer_accept_list          = optional(list(string))
     enable_nat                    = optional(bool, false)
@@ -88,6 +88,7 @@ variable "organization" {
     database_encryption_key = optional(string)
     analytics_region        = optional(string, "europe-west1")
     retention               = optional(string)
+    disable_vpc_peering     = optional(bool, false)
   })
   default = null
 }
