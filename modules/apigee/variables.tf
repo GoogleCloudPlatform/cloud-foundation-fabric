@@ -66,6 +66,7 @@ variable "instances" {
   description = "Instances ([REGION] => [INSTANCE])."
   type = map(object({
     display_name                  = optional(string)
+    name                          = optional(string)
     description                   = optional(string, "Terraform-managed")
     runtime_ip_cidr_range         = string
     troubleshooting_ip_cidr_range = string
