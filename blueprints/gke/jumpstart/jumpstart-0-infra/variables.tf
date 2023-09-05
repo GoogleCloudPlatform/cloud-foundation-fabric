@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "create_cluster" {
+variable "cluster_create" {
   description = "Cluster configuration for newly created cluster. Set to null to use existing cluster, or create using defaults in new project."
   type = object({
     labels = optional(map(string))
@@ -48,7 +48,7 @@ variable "project_create" {
   default = null
 }
 
-variable "create_registry" {
+variable "registry_create" {
   description = "Create remote Docker Artifact Registry."
   type        = bool
   default     = true

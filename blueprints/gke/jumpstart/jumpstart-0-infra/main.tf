@@ -15,7 +15,7 @@
  */
 
 locals {
-  create_cluster = var.create_cluster != null || local.vpc_create
+  cluster_create = var.cluster_create != null || local.vpc_create
   create_nat     = local.vpc_create && try(var.vpc_create.enable_cloud_nat, false) == true
   vpc_create = (
     !local.use_shared_vpc && (
@@ -54,7 +54,7 @@ module "project" {
   project_create  = var.project_create != null
   services = compact([
     "anthos.googleapis.com",
-    var.create_registry ? "artifactregistry.googleapis.com" : null,
+    var.registry_create ? "artifactregistry.googleapis.com" : null,
     "cloudresourcemanager.googleapis.com",
     "connectgateway.googleapis.com",
     "container.googleapis.com",
@@ -136,7 +136,7 @@ module "fleet" {
   project_id = local.fleet_project.project_id
   clusters = {
     (var.cluster_name) = (
-      var.create_cluster != null
+      var.cluster_create != null
       ? module.cluster.0.id
       : "projects/${var.project_id}/locations/${var.region}/clusters/${var.cluster_name}"
     )
@@ -145,7 +145,7 @@ module "fleet" {
 
 module "registry" {
   source     = "../../../../modules/artifact-registry"
-  count      = var.create_registry ? 1 : 0
+  count      = var.registry_create ? 1 : 0
   project_id = module.project.project_id
   location   = var.region
   name       = var.prefix

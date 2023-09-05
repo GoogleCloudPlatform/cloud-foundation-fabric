@@ -48,7 +48,7 @@ module "jumpstart-0" {
   source       = "./fabric/blueprints/gke/jumpstart/jumpstart-0-infra/"
   project_id   = "tf-playground-svpc-gke-fleet"
   cluster_name = "test-01"
-  create_cluster = {
+  cluster_create = {
     vpc = {
       id =        "projects/ldj-dev-net-spoke-0/global/networks/dev-spoke-0"
       subnet_id = "projects/ldj-dev-net-spoke-0/regions/europe-west8/subnetworks/gke"
@@ -64,7 +64,7 @@ module "jumpstart-0" {
 module "jumpstart-0" {
   project_id     = "tf-playground-svpc-gke-fleet"
   cluster_name   = "test-01"
-  create_cluster = {}
+  cluster_create = {}
 }
 # tftest skip
 ```
@@ -75,7 +75,7 @@ module "jumpstart-0" {
 module "jumpstart-0" {
   project_id     = "tf-playground-svpc-gke-fleet"
   cluster_name   = "test-01"
-  create_cluster = {}
+  cluster_create = {}
   vpc_create     = {}
 }
 # tftest skip
@@ -87,7 +87,7 @@ module "jumpstart-0" {
 module "jumpstart-0" {
   project_id     = "tf-playground-svpc-gke-j0"
   cluster_name   = "test-00"
-  create_cluster = {}
+  cluster_create = {}
   project_create = {
     billing_account = "017479-47ADAB-670295"
     parent          = "folders/210938489642"
@@ -102,7 +102,7 @@ module "jumpstart-0" {
 module "jumpstart-0" {
   project_id     = "tf-playground-svpc-gke-j0"
   cluster_name   = "test-00"
-  create_cluster = {}
+  cluster_create = {}
   project_create = {
     billing_account = "017479-47ADAB-670295"
     parent          = "folders/210938489642"
@@ -117,7 +117,7 @@ module "jumpstart-0" {
 module "jumpstart-0" {
   project_id     = "tf-playground-svpc-gke-j1"
   cluster_name   = "test-00"
-  create_cluster = {}
+  cluster_create = {}
   project_create = {
     billing_account = "017479-47ADAB-670295"
     parent          = "folders/210938489642"
@@ -133,7 +133,7 @@ module "jumpstart-0" {
 module "jumpstart-0" {
   project_id   = "tf-playground-svpc-gke-j1"
   cluster_name = "test-00"
-  create_cluster = {
+  cluster_create = {
     vpc = {
       id        = "projects/ldj-dev-net-spoke-0/global/networks/dev-spoke-0"
       subnet_id = "projects/ldj-dev-net-spoke-0/regions/europe-west8/subnetworks/gke"
@@ -154,12 +154,12 @@ module "jumpstart-0" {
 |---|---|:---:|:---:|:---:|
 | [cluster_name](variables.tf#L71) | Name of new or existing cluster. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L91) | Project id of existing or created project. | <code>string</code> | ✓ |  |
-| [create_cluster](variables.tf#L17) | Cluster configuration for newly created cluster. Set to null to use existing cluster, or create using defaults in new project. | <code title="object&#40;&#123;&#10;  labels &#61; optional&#40;map&#40;string&#41;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;, &#123;&#10;    rfc-1918-10-8 &#61; &#34;10.0.0.0&#47;8&#34;&#10;  &#125;&#41;&#10;  master_ipv4_cidr_block &#61; optional&#40;string, &#34;172.16.255.0&#47;28&#34;&#41;&#10;  vpc &#61; optional&#40;object&#40;&#123;&#10;    id        &#61; string&#10;    subnet_id &#61; string&#10;    secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;      pods     &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;      services &#61; optional&#40;string, &#34;services&#34;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  options &#61; optional&#40;object&#40;&#123;&#10;    release_channel     &#61; optional&#40;string, &#34;REGULAR&#34;&#41;&#10;    enable_backup_agent &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [create_registry](variables.tf#L51) | Create remote Docker Artifact Registry. | <code>bool</code> |  | <code>true</code> |
+| [cluster_create](variables.tf#L17) | Cluster configuration for newly created cluster. Set to null to use existing cluster, or create using defaults in new project. | <code title="object&#40;&#123;&#10;  labels &#61; optional&#40;map&#40;string&#41;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;, &#123;&#10;    rfc-1918-10-8 &#61; &#34;10.0.0.0&#47;8&#34;&#10;  &#125;&#41;&#10;  master_ipv4_cidr_block &#61; optional&#40;string, &#34;172.16.255.0&#47;28&#34;&#41;&#10;  vpc &#61; optional&#40;object&#40;&#123;&#10;    id        &#61; string&#10;    subnet_id &#61; string&#10;    secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;      pods     &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;      services &#61; optional&#40;string, &#34;services&#34;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  options &#61; optional&#40;object&#40;&#123;&#10;    release_channel     &#61; optional&#40;string, &#34;REGULAR&#34;&#41;&#10;    enable_backup_agent &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [fleet_project_id](variables.tf#L78) | GKE Fleet project id. If null cluster project will also be used for fleet. | <code>string</code> |  | <code>null</code> |
 | [prefix](variables.tf#L84) | Prefix used for resource names. | <code>string</code> |  | <code>&#34;jump-0&#34;</code> |
 | [project_create](variables.tf#L41) | Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;  shared_vpc_host &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [region](variables.tf#L96) | Region used for cluster and network resources. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
+| [registry_create](variables.tf#L51) | Create remote Docker Artifact Registry. | <code>bool</code> |  | <code>true</code> |
 | [vpc_create](variables.tf#L57) | Project configuration for newly created VPC. Leave null to use existing VPC, or defaults when project creation is required. | <code title="object&#40;&#123;&#10;  name                     &#61; optional&#40;string&#41;&#10;  subnet_name              &#61; optional&#40;string&#41;&#10;  primary_range_nodes      &#61; optional&#40;string, &#34;10.0.0.0&#47;24&#34;&#41;&#10;  secondary_range_pods     &#61; optional&#40;string, &#34;10.16.0.0&#47;20&#34;&#41;&#10;  secondary_range_services &#61; optional&#40;string, &#34;10.32.0.0&#47;24&#34;&#41;&#10;  enable_cloud_nat         &#61; optional&#40;bool, false&#41;&#10;  proxy_only_subnet        &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
@@ -167,6 +167,6 @@ module "jumpstart-0" {
 | name | description | sensitive |
 |---|---|:---:|
 | [created_resources](outputs.tf#L17) | IDs of the resources created, if any. |  |
-| [fleet_host](outputs.tf#L37) | Fleet Connect Gateway host that can be used to configure the GKE provider. |  |
-| [get_credentials](outputs.tf#L46) | Run one of these commands to get cluster credentials. Credentials via fleet allow reaching private clusters without no direct connectivity. |  |
+| [fleet_host](outputs.tf#L44) | Fleet Connect Gateway host that can be used to configure the GKE provider. |  |
+| [get_credentials](outputs.tf#L53) | Run one of these commands to get cluster credentials. Credentials via fleet allow reaching private clusters without no direct connectivity. |  |
 <!-- END TFDOC -->
