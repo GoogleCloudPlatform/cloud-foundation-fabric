@@ -17,7 +17,10 @@ values:
     - entity: null
       resource: //bigquery.googleapis.com/projects/bigquery-public-data/datasets/austin_bikeshare/tables/bikeshare_stations
     data_profile_spec:
-    - row_filter: null
+    - exclude_fields: []
+      include_fields: []
+      post_scan_actions: []
+      row_filter: null
       sampling_percent: null
     data_quality_spec: []
     data_scan_id: test-datascan

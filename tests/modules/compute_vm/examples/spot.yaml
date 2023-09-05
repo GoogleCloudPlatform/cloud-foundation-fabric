@@ -20,6 +20,7 @@ values:
     - automatic_restart: false
       instance_termination_action: STOP
       maintenance_interval: null
+      local_ssd_recovery_timeout: []
       max_run_duration: []
       min_node_cpus: null
       node_affinities: []

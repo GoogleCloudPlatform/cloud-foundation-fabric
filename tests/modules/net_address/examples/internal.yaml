@@ -18,7 +18,6 @@ values:
     labels: null
     name: ilb-1
     network: null
-    prefix_length: null
     project: project-id
     purpose: SHARED_LOADBALANCER_VIP
     region: region
@@ -29,7 +28,6 @@ values:
     labels: null
     name: ilb-2
     network: null
-    prefix_length: null
     project: project-id
     region: region
     subnetwork: subnet_self_link

@@ -39,6 +39,7 @@ values:
         authorized_networks: []
         enable_private_path_for_google_cloud_services: null
         ipv4_enabled: false
+        psc_config: []
         require_ssl: null
       maintenance_window: []
       password_validation_policy: []

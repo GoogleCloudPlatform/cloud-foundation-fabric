@@ -28,6 +28,7 @@ values:
       credit_types_treatment: INCLUDE_ALL_CREDITS
       custom_period: []
       projects: null
+      resource_ancestors: null
     display_name: previous period budget
     threshold_rules:
     - spend_basis: CURRENT_SPEND
