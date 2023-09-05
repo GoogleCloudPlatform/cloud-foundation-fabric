@@ -17,7 +17,6 @@ values:
     address_type: INTERNAL
     name: one
     network: projects/xxx/global/networks/aaa
-    prefix_length: null
     project: project-id
     purpose: PRIVATE_SERVICE_CONNECT
   module.addresses.google_compute_global_address.psc["two"]:
@@ -25,7 +24,6 @@ values:
     address_type: INTERNAL
     name: two
     network: projects/xxx/global/networks/aaa
-    prefix_length: null
     project: project-id
     purpose: PRIVATE_SERVICE_CONNECT
 

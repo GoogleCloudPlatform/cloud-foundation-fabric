@@ -121,6 +121,16 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  logging_config {
+    enable_components = toset(compact([
+      var.logging_config.enable_api_server_logs ? "APISERVER" : null,
+      var.logging_config.enable_controller_manager_logs ? "CONTROLLER_MANAGER" : null,
+      var.logging_config.enable_scheduler_logs ? "SCHEDULER" : null,
+      "SYSTEM_COMPONENTS",
+      "WORKLOADS",
+    ]))
+  }
+
   dynamic "gateway_api_config" {
     for_each = var.enable_features.gateway_api ? [""] : []
     content {
@@ -193,6 +203,20 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  monitoring_config {
+    enable_components = toset(compact([
+      # System metrics collection cannot be disabled for Autopilot clusters.
+      "SYSTEM_COMPONENTS",
+      # Control plane metrics.
+      var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
+      var.monitoring_config.enable_controller_manager_metrics ? "CONTROLLER_MANAGER" : null,
+      var.monitoring_config.enable_scheduler_metrics ? "SCHEDULER" : null,
+    ]))
+    managed_prometheus {
+      enabled = var.monitoring_config.enable_managed_prometheus
+    }
+  }
+
   dynamic "notification_config" {
     for_each = var.enable_features.upgrade_notifications != null ? [""] : []
     content {
@@ -228,11 +252,8 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic "release_channel" {
-    for_each = var.release_channel != null ? [""] : []
-    content {
-      channel = var.release_channel
-    }
+  release_channel {
+    channel = var.release_channel
   }
 
   dynamic "resource_usage_export_config" {
@@ -297,7 +318,6 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     }
   }
 }
-
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
   count = (

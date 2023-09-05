@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,7 +72,8 @@ def get_names(dir_name):
 @click.command()
 @click.argument('dirs', type=str, nargs=-1)
 @click.option('--prefix-length', default=7, type=int)
-def main(dirs, prefix_length=None):
+@click.option('--failed-only', is_flag=True, default=False)
+def main(dirs, prefix_length=None, failed_only=False):
   'Parse names in dirs.'
   import json
   logging.basicConfig(level=logging.INFO)
@@ -87,18 +88,21 @@ def main(dirs, prefix_length=None):
   errors = []
   for name in names:
     name_length = name.length + prefix_length
+    do_print = True
     if name_length >= MOD_LIMITS[name.source]:
       flag = "✗"
       errors += [f"{name.source}:{name.name}:{name_length}"]
     else:
       flag = "✓"
+      do_print = not failed_only
 
-    print(f"[{flag}] {name.source.ljust(source_just)} "
-          f"{name.name.ljust(name_just)} "
-          f"{name.value.ljust(value_just)} "
-          f"({name_length})")
-  if errors:
-    raise ValueError(errors)
+    if do_print:
+      print(f"[{flag}] {name.source.ljust(source_just)} "
+            f"{name.name.ljust(name_just)} "
+            f"{name.value.ljust(value_just)} "
+            f"({name_length})")
+
+  return 0 if not errors else 1
 
 
 if __name__ == '__main__':

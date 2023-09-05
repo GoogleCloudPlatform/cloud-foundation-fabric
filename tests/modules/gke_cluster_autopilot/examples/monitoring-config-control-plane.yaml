@@ -13,21 +13,15 @@
 # limitations under the License.
 
 values:
-  module.spot-vm-example.google_compute_instance.default[0]:
-    name: test
-    project: project-id
-    scheduling:
-    - automatic_restart: false
-      instance_termination_action: STOP
-      maintenance_interval: null
-      local_ssd_recovery_timeout: []
-      max_run_duration: []
-      min_node_cpus: null
-      node_affinities: []
-      on_host_maintenance: TERMINATE
-      preemptible: true
-      provisioning_model: SPOT
-    zone: europe-west1-b
+  module.cluster-1.google_container_cluster.cluster:
+    monitoring_config:
+    - enable_components:
+      - APISERVER
+      - CONTROLLER_MANAGER
+      - SCHEDULER
+      - SYSTEM_COMPONENTS
+      managed_prometheus:
+      - enabled: true
 
 counts:
-  google_compute_instance: 1
+  google_container_cluster: 1

@@ -92,9 +92,7 @@ variable "enable_features" {
     }))
     vertical_pod_autoscaling = optional(bool, false)
   })
-  default = {
-
-  }
+  default = {}
 }
 
 variable "issue_client_certificate" {
@@ -114,6 +112,16 @@ variable "location" {
   type        = string
 }
 
+variable "logging_config" {
+  description = "Logging configuration."
+  type = object({
+    enable_api_server_logs         = optional(bool, false)
+    enable_scheduler_logs          = optional(bool, false)
+    enable_controller_manager_logs = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+}
 
 variable "maintenance_config" {
   description = "Maintenance window configuration."
@@ -142,6 +150,21 @@ variable "min_master_version" {
   description = "Minimum version of the master, defaults to the version of the most recent official release."
   type        = string
   default     = null
+}
+
+variable "monitoring_config" {
+  description = "Monitoring configuration. System metrics collection cannot be disabled for Autopilot clusters. Control plane metrics are optional. Google Cloud Managed Service for Prometheus is enabled by default."
+  type = object({
+    # Control plane metrics
+    enable_api_server_metrics         = optional(bool, false)
+    enable_controller_manager_metrics = optional(bool, false)
+    enable_scheduler_metrics          = optional(bool, false)
+    # Google Cloud Managed Service for Prometheus
+    # GKE Autopilot clusters running GKE version 1.25 or greater must have this on.
+    enable_managed_prometheus = optional(bool, true)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "name" {
@@ -176,9 +199,14 @@ variable "project_id" {
 }
 
 variable "release_channel" {
-  description = "Release channel for GKE upgrades."
+  description = "Release channel for GKE upgrades. Clusters created in the Autopilot mode must use a release channel. Choose between \"RAPID\", \"REGULAR\", and \"STABLE\"."
   type        = string
-  default     = null
+  default     = "REGULAR"
+  nullable    = false
+  validation {
+    condition     = contains(["RAPID", "REGULAR", "STABLE"], var.release_channel)
+    error_message = "Must be one of: RAPID, REGULAR, STABLE."
+  }
 }
 
 variable "service_account" {

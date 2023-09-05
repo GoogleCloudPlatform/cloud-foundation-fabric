@@ -669,6 +669,8 @@ Options:
   --help                          Show this message and exit.
 ```
 
+As a convenience, we provide a script that runs the same set of checks as our GitHub workflow. Before submitting a PR, run `tools/lint.sh` and fix any errors. You can use the tools described above to find out more about the failures.
+
 The test workflow runs test suites in parallel. Refer to the next section for more details on running and writing tests.
 
 ## Using and writing tests
