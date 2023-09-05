@@ -16,7 +16,7 @@
 
 locals {
   create_cluster = var.create_cluster != null || local.create_vpc
-  create_nat     = local.create_vpc && var.create_vpc.enable_cloud_nat
+  create_nat     = local.create_vpc && try(var.create_vpc.enable_cloud_nat, null) != null
   create_vpc = (
     !local.use_shared_vpc && (
       var.create_vpc != null || var.create_project != null
@@ -33,7 +33,7 @@ locals {
       number     = module.fleet-project.0.number
     }
   )
-  proxy_only_subnet = (local.create_vpc && var.create_vpc.proxy_only_subnet != null) ? [
+  proxy_only_subnet = (local.create_vpc && try(var.create_vpc.proxy_only_subnet, null) != null) ? [
     {
       ip_cidr_range = var.create_vpc.proxy_only_subnet
       name          = "proxy"
@@ -41,7 +41,6 @@ locals {
       active        = true
     }
   ] : null
-
   use_shared_vpc = (
     try(var.create_project.shared_vpc_host, null) != null
   )
