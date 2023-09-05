@@ -17,7 +17,7 @@
 # Documentation: https://cloud.google.com/run/docs/securing/managing-access#making_a_service_public
 
 variable "admin_principals" {
-  description = "Map of identities to give rights to (CloudSQL admin, client and instanceUser, Logging admin, Service Account User and TokenCreator)"
+  description = "Map of identities to give rights to (CloudSQL admin, client and instanceUser, Logging admin, Service Account User and TokenCreator)."
   type = object({
     groups           = optional(list(string), [])
     service_accounts = optional(list(string), [])
