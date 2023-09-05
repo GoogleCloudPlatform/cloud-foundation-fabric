@@ -60,6 +60,7 @@ values:
     scheduling:
     - automatic_restart: true
       instance_termination_action: null
+      local_ssd_recovery_timeout: []
       maintenance_interval: null
       max_run_duration: []
       min_node_cpus: null

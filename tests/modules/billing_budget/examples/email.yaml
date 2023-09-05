@@ -31,6 +31,7 @@ values:
       projects:
       - projects/123456789000
       - projects/123456789111
+      resource_ancestors: null
     display_name: $100 budget
     threshold_rules:
     - spend_basis: CURRENT_SPEND

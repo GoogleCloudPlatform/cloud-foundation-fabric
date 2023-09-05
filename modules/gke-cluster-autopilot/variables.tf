@@ -152,6 +152,21 @@ variable "min_master_version" {
   default     = null
 }
 
+variable "monitoring_config" {
+  description = "Monitoring configuration. System metrics collection cannot be disabled for Autopilot clusters. Control plane metrics are optional. Google Cloud Managed Service for Prometheus is enabled by default."
+  type = object({
+    # Control plane metrics
+    enable_api_server_metrics         = optional(bool, false)
+    enable_controller_manager_metrics = optional(bool, false)
+    enable_scheduler_metrics          = optional(bool, false)
+    # Google Cloud Managed Service for Prometheus
+    # GKE Autopilot clusters running GKE version 1.25 or greater must have this on.
+    enable_managed_prometheus = optional(bool, true)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "name" {
   description = "Cluster name."
   type        = string
@@ -184,9 +199,14 @@ variable "project_id" {
 }
 
 variable "release_channel" {
-  description = "Release channel for GKE upgrades."
+  description = "Release channel for GKE upgrades. Clusters created in the Autopilot mode must use a release channel. Choose between \"RAPID\", \"REGULAR\", and \"STABLE\"."
   type        = string
-  default     = null
+  default     = "REGULAR"
+  nullable    = false
+  validation {
+    condition     = contains(["RAPID", "REGULAR", "STABLE"], var.release_channel)
+    error_message = "Must be one of: RAPID, REGULAR, STABLE."
+  }
 }
 
 variable "service_account" {
