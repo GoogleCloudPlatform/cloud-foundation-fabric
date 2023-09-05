@@ -38,7 +38,7 @@ variable "create_cluster" {
   default = null
 }
 
-variable "create_project" {
+variable "project_create" {
   description = "Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation."
   type = object({
     billing_account = string
@@ -54,7 +54,7 @@ variable "create_registry" {
   default     = true
 }
 
-variable "create_vpc" {
+variable "vpc_create" {
   description = "Project configuration for newly created VPC. Leave null to use existing VPC, or defaults when project creation is required."
   type = object({
     name                     = optional(string)

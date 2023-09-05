@@ -15,11 +15,11 @@
  */
 
 locals {
-  create_cluster = var.create_cluster != null || local.create_vpc
-  create_nat     = local.create_vpc && try(var.create_vpc.enable_cloud_nat, null) != null
-  create_vpc = (
+  create_cluster = var.create_cluster != null || local.vpc_create
+  create_nat     = local.vpc_create && try(var.vpc_create.enable_cloud_nat, null) != null
+  vpc_create = (
     !local.use_shared_vpc && (
-      var.create_vpc != null || var.create_project != null
+      var.vpc_create != null || var.project_create != null
     )
   )
   fleet_project = (
@@ -33,25 +33,25 @@ locals {
       number     = module.fleet-project.0.number
     }
   )
-  proxy_only_subnet = (local.create_vpc && try(var.create_vpc.proxy_only_subnet, null) != null) ? [
+  proxy_only_subnet = (local.vpc_create && try(var.vpc_create.proxy_only_subnet, null) != null) ? [
     {
-      ip_cidr_range = var.create_vpc.proxy_only_subnet
+      ip_cidr_range = var.vpc_create.proxy_only_subnet
       name          = "proxy"
       region        = var.region
       active        = true
     }
   ] : null
   use_shared_vpc = (
-    try(var.create_project.shared_vpc_host, null) != null
+    try(var.project_create.shared_vpc_host, null) != null
   )
 }
 
 module "project" {
   source          = "../../../../modules/project"
-  parent          = try(var.create_project.parent, null)
-  billing_account = try(var.create_project.billing_account, null)
+  parent          = try(var.project_create.parent, null)
+  billing_account = try(var.project_create.billing_account, null)
   name            = var.project_id
-  project_create  = var.create_project != null
+  project_create  = var.project_create != null
   services = compact([
     "anthos.googleapis.com",
     var.create_registry ? "artifactregistry.googleapis.com" : null,
@@ -64,7 +64,7 @@ module "project" {
   ])
   shared_vpc_service_config = !local.use_shared_vpc ? null : {
     attach       = true
-    host_project = var.create_project.shared_vpc_host
+    host_project = var.project_create.shared_vpc_host
     # grant required roles on the host project to service identities
     service_identity_iam = {
       "roles/compute.networkUser" = [
@@ -99,25 +99,25 @@ module "project" {
 
 module "vpc" {
   source     = "../../../../modules/net-vpc"
-  count      = local.create_vpc ? 1 : 0
+  count      = local.vpc_create ? 1 : 0
   project_id = module.project.project_id
   name = coalesce(
-    try(var.create_vpc.name, null), var.prefix
+    try(var.vpc_create.name, null), var.prefix
   )
   subnets = [{
     name = coalesce(
-      try(var.create_vpc.subnet_name, null), "${var.prefix}-default"
+      try(var.vpc_create.subnet_name, null), "${var.prefix}-default"
     )
     region = var.region
     ip_cidr_range = try(
-      var.create_vpc.primary_range_nodes, "10.0.0.0/24"
+      var.vpc_create.primary_range_nodes, "10.0.0.0/24"
     )
     secondary_ip_ranges = {
       pods = try(
-        var.create_vpc.secondary_range_pods, "10.16.0.0/20"
+        var.vpc_create.secondary_range_pods, "10.16.0.0/20"
       )
       services = try(
-        var.create_vpc.secondary_range_services, "10.32.0.0/24"
+        var.vpc_create.secondary_range_services, "10.32.0.0/24"
       )
     }
   }]

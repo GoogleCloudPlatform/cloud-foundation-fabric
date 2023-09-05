@@ -17,10 +17,10 @@
 output "created_resources" {
   description = "IDs of the resources created, if any."
   value = merge(
-    var.create_project == null ? {} : {
+    var.project_create == null ? {} : {
       project = module.project.project_id
     },
-    !local.create_vpc ? {} : {
+    !local.vpc_create ? {} : {
       subnet_id = values(module.vpc.0.subnet_ids)[0]
       vpc_id    = module.vpc.0.id
     },

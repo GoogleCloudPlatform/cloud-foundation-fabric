@@ -33,7 +33,7 @@ locals {
     "roles/stackdriver.resourceMetadata.writer"
   ]
   cluster_vpc = (
-    local.use_shared_vpc || !local.create_vpc
+    local.use_shared_vpc || !local.vpc_create
     # cluster variable configures networking
     ? {
       network = try(
