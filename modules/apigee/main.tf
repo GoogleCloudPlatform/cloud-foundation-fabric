@@ -17,7 +17,7 @@
 locals {
   org_id   = try(google_apigee_organization.organization[0].id, "organizations/${var.project_id}")
   org_name = try(google_apigee_organization.organization[0].name, var.project_id)
-  instance_environment_list = merge(concat([for k1, v1 in local.instances : {
+  instance_environment_list = merge(concat([for k1, v1 in var.instances : {
     for v2 in v1.environments :
     "${k1}-${v2}" => {
       environment = v2
