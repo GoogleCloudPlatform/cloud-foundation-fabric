@@ -52,7 +52,7 @@ locals {
     for k, v in merge(
       try(var.composer_config.software_config.env_variables, null),
       local._env_variables
-    ): "AIRFLOW_VAR_${k}" => v
+    ) : "AIRFLOW_VAR_${k}" => v
   }
 }
 module "orch-sa-cmp-0" {
