@@ -223,7 +223,8 @@ variable "subnets" {
     }))
     secondary_ip_ranges = optional(map(string))
   }))
-  default = []
+  default  = []
+  nullable = false
 }
 
 variable "subnets_proxy_only" {
@@ -235,7 +236,8 @@ variable "subnets_proxy_only" {
     description   = optional(string)
     active        = bool
   }))
-  default = []
+  default  = []
+  nullable = false
 }
 
 variable "subnets_psc" {
@@ -246,7 +248,8 @@ variable "subnets_psc" {
     region        = string
     description   = optional(string)
   }))
-  default = []
+  default  = []
+  nullable = false
 }
 
 variable "vpc_create" {
