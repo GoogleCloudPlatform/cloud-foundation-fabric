@@ -233,7 +233,7 @@ module "test" {
     billing_account_id = "1234-ABCD-1234"
     parent             = "folders/1234563"
   }
-  project_id       = "test-prj"
+  project_id = "test-prj"
 }
 # tftest modules=7 resources=43
 ```
