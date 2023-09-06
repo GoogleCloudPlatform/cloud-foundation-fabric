@@ -17,6 +17,20 @@
 locals {
   org_id   = try(google_apigee_organization.organization[0].id, "organizations/${var.project_id}")
   org_name = try(google_apigee_organization.organization[0].name, var.project_id)
+  instance_environment_list = merge(concat([for k1, v1 in local.instances : {
+    for v2 in v1.environments :
+    "${k1}-${v2}" => {
+      environment = v2
+      region      = k1
+    }
+  }])...)
+  environment_region_list = merge(concat([for k1, v1 in var.environments : {
+    for v2 in coalesce(v1.regions, []) :
+    "${k1}-${v2}" => {
+      environment = k1
+      region      = v2
+    }
+  }])...)
 }
 
 resource "google_apigee_organization" "organization" {
@@ -107,13 +121,7 @@ resource "google_apigee_nat_address" "apigee_nat" {
 }
 
 resource "google_apigee_instance_attachment" "instance_attachments" {
-  for_each = merge(concat([for k1, v1 in var.environments : {
-    for v2 in coalesce(v1.regions, []) :
-    "${k1}-${v2}" => {
-      environment = k1
-      region      = v2
-    }
-  }])...)
+  for_each    = coalesce(local.environment_region_list, local.instance_environment_list)
   instance_id = google_apigee_instance.instances[each.value.region].id
   environment = try(google_apigee_environment.environments[each.value.environment].name,
   "${local.org_id}/environments/${each.value.environment}")
