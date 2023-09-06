@@ -121,7 +121,7 @@ resource "google_apigee_nat_address" "apigee_nat" {
 }
 
 resource "google_apigee_instance_attachment" "instance_attachments" {
-  for_each    = coalescelist(local.environment_region_list, local.instance_environment_list)
+  for_each    = coalesce(local.environment_region_list, local.instance_environment_list)
   instance_id = google_apigee_instance.instances[each.value.region].id
   environment = try(google_apigee_environment.environments[each.value.environment].name,
   "${local.org_id}/environments/${each.value.environment}")
