@@ -15,11 +15,6 @@
  */
 
 locals {
-  all_principals_iam = concat(
-    [for k in var.admin_principals.users : "user:${k}"],
-    [for k in var.admin_principals.groups : "group:${k}"],
-    [for k in var.admin_principals.service_accounts : "serviceAccount:${k}"]
-  )
   cloudsql_conf = {
     database_version = "MYSQL_8_0"
     tier             = "db-g1-small"
@@ -34,13 +29,13 @@ locals {
   )
   iam = {
     # CloudSQL
-    "roles/cloudsql.admin"        = local.all_principals_iam
-    "roles/cloudsql.client"       = local.all_principals_iam
-    "roles/cloudsql.instanceUser" = local.all_principals_iam
+    "roles/cloudsql.admin"        = var.admin_principals
+    "roles/cloudsql.client"       = var.admin_principals
+    "roles/cloudsql.instanceUser" = var.admin_principals
     # common roles
-    "roles/logging.admin"                  = local.all_principals_iam
-    "roles/iam.serviceAccountUser"         = local.all_principals_iam
-    "roles/iam.serviceAccountTokenCreator" = local.all_principals_iam
+    "roles/logging.admin"                  = var.admin_principals
+    "roles/iam.serviceAccountUser"         = var.admin_principals
+    "roles/iam.serviceAccountTokenCreator" = var.admin_principals
   }
   network          = var.vpc_config == null ? module.vpc.0.self_link : var.vpc_config.network
   phpipam_password = var.phpipam_password == null ? random_password.phpipam_password.result : var.phpipam_password
