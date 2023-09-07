@@ -68,12 +68,20 @@ variable "instances" {
     name                          = optional(string)
     display_name                  = optional(string)
     description                   = optional(string, "Terraform-managed")
-    runtime_ip_cidr_range         = string
-    troubleshooting_ip_cidr_range = string
+    runtime_ip_cidr_range         = optional(string)
+    troubleshooting_ip_cidr_range = optional(string)
     disk_encryption_key           = optional(string)
     consumer_accept_list          = optional(list(string))
     enable_nat                    = optional(bool, false)
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.instances :
+      # has troubleshooting_ip => has runtime_ip
+      v.runtime_ip_cidr_range != null || v.troubleshooting_ip_cidr_range == null
+    ])
+    error_message = "Using a troubleshooting range requires specifying a runtime range too."
+  }
   default  = {}
   nullable = false
 }
@@ -89,7 +97,20 @@ variable "organization" {
     database_encryption_key = optional(string)
     analytics_region        = optional(string, "europe-west1")
     retention               = optional(string)
+    disable_vpc_peering     = optional(bool, false)
   })
+  validation {
+    condition = var.organization == null || (
+      try(var.organization.runtime_type, null) == "CLOUD" || !try(var.organization.disable_vpc_peering, false)
+    )
+    error_message = "Disabling the VPC peering can only be done in organization using the CLOUD runtime"
+  }
+  validation {
+    condition = var.organization == null || (
+      try(var.organization.authorized_network, null) == null || !try(var.organization.disable_vpc_peering, false)
+    )
+    error_message = "Disabling the VPC peering is mutually exclusive with authorized_network."
+  }
   default = null
 }
 
