@@ -1,0 +1,50 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.apigee.google_apigee_envgroup.envgroups["prod"]:
+    hostnames:
+    - prod.example.com
+    name: prod
+  module.apigee.google_apigee_envgroup_attachment.envgroup_attachments["apis-prod-prod"]:
+    environment: apis-prod
+  module.apigee.google_apigee_environment.environments["apis-prod"]:
+    description: APIs Prod
+    display_name: APIs prod
+    name: apis-prod
+  module.apigee.google_apigee_instance.instances["europe-west1"]:
+    description: Terraform-managed
+    disk_encryption_key_name: null
+    display_name: null
+    ip_range: 10.32.0.0/22,10.64.0.0/28
+    location: europe-west1
+    name: instance-europe-west1
+  module.apigee.google_apigee_organization.organization[0]:
+    analytics_region: europe-west1
+    authorized_network: projects/xxx/global/networks/aaa
+    billing_type: PAYG
+    description: null
+    disable_vpc_peering: false
+    display_name: null
+    project_id: project-id
+    retention: DELETION_RETENTION_UNSPECIFIED
+    runtime_database_encryption_key_name: null
+    runtime_type: CLOUD
+
+counts:
+  google_apigee_envgroup: 1
+  google_apigee_envgroup_attachment: 1
+  google_apigee_environment: 1
+  google_apigee_instance: 1
+  google_apigee_organization: 1

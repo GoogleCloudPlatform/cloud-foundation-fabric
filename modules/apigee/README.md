@@ -2,7 +2,120 @@
 
 This module simplifies the creation of a Apigee resources (organization, environment groups, environment group attachments, environments, instances and instance attachments).
 
-## Example
+## Examples
+
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Minimal example (CLOUD)](#minimal-example-cloud)
+  - [Minimal example with existing organization (CLOUD)](#minimal-example-with-existing-organization-cloud)
+  - [Disable VPC Peering (CLOUD)](#disable-vpc-peering-cloud)
+  - [All resources (CLOUD)](#all-resources-cloud)
+  - [All resources (HYBRID control plane)](#all-resources-hybrid-control-plane)
+  - [New environment group](#new-environment-group)
+  - [New environment](#new-environment)
+  - [New instance](#new-instance)
+  - [New endpoint attachment](#new-endpoint-attachment)
+  - [Apigee add-ons](#apigee-add-ons)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
+### Minimal example (CLOUD)
+
+This example shows how to create to create an Apigee organization and deploy instance in it.
+
+```hcl
+module "apigee" {
+  source     = "./fabric/modules/apigee"
+  project_id = var.project_id
+  organization = {
+    display_name       = "Apigee"
+    billing_type       = "PAYG"
+    analytics_region   = "europe-west1"
+    authorized_network = var.vpc.id
+    runtime_type       = "CLOUD"
+  }
+  envgroups = {
+    prod = ["prod.example.com"]
+  }
+  environments = {
+    apis-prod = {
+      display_name = "APIs prod"
+      description  = "APIs Prod"
+      envgroups    = ["prod"]
+    }
+  }
+  instances = {
+    europe-west1 = {
+      environments                  = ["apis-prod"]
+      runtime_ip_cidr_range         = "10.32.0.0/22"
+      troubleshooting_ip_cidr_range = "10.64.0.0/28"
+    }
+  }
+}
+# tftest modules=1 resources=5 inventory=minimal-cloud.yaml
+```
+
+### Minimal example with existing organization (CLOUD)
+
+This example shows how to create to work with an existing organization in the project. Note that in this case we don't specify the IP ranges for the instance, so it requests and allocates an available /22 and /28 CIDR block from Service Networking to deploy the instance.
+
+```hcl
+module "apigee" {
+  source     = "./fabric/modules/apigee"
+  project_id = var.project_id
+  envgroups = {
+    prod = ["prod.example.com"]
+  }
+  environments = {
+    apis-prod = {
+      display_name = "APIs prod"
+      envgroups    = ["prod"]
+    }
+  }
+  instances = {
+    europe-west1 = {
+      environments = ["apis-prod"]
+    }
+  }
+}
+# tftest modules=1 resources=4 inventory=minimal-cloud-no-org.yaml
+```
+
+### Disable VPC Peering (CLOUD)
+
+When a new Apigee organization is created, it is automatically peered to the authorized network. You can prevent this from happening by using the `disable_vpc_peering` key in the `organization` variable, as shown below:
+
+
+```hcl
+module "apigee" {
+  source     = "./fabric/modules/apigee"
+  project_id = var.project_id
+  organization = {
+    display_name        = "Apigee"
+    billing_type        = "PAYG"
+    analytics_region    = "europe-west1"
+    runtime_type        = "CLOUD"
+    disable_vpc_peering = true
+  }
+  envgroups = {
+    prod = ["prod.example.com"]
+  }
+  environments = {
+    apis-prod = {
+      display_name = "APIs prod"
+      envgroups    = ["prod"]
+    }
+  }
+  instances = {
+    europe-west1 = {
+      environments = ["apis-prod"]
+    }
+  }
+}
+# tftest modules=1 resources=5 inventory=no-peering.yaml
+```
+
 
 ### All resources (CLOUD)
 
