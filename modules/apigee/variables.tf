@@ -65,6 +65,7 @@ variable "environments" {
 variable "instances" {
   description = "Instances ([REGION] => [INSTANCE])."
   type = map(object({
+    name                          = optional(string)
     display_name                  = optional(string)
     description                   = optional(string, "Terraform-managed")
     runtime_ip_cidr_range         = string

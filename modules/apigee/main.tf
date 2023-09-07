@@ -86,7 +86,7 @@ resource "google_apigee_environment_iam_binding" "binding" {
 
 resource "google_apigee_instance" "instances" {
   for_each                 = var.instances
-  name                     = "instance-${each.key}"
+  name                     = coalesce(each.value.name, "instance-${each.key}")
   display_name             = each.value.display_name
   description              = each.value.description
   location                 = each.key
