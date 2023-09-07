@@ -1,0 +1,35 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_apigee_instance.instances["europe-west1"]:
+    description: Terraform-managed
+    disk_encryption_key_name: null
+    display_name: null
+    location: europe-west1
+    name: instance-europe-west1
+  google_apigee_organization.organization[0]:
+    analytics_region: europe-west1
+    billing_type: Pay-as-you-go
+    description: null
+    display_name: null
+    project_id: my-project
+    retention: DELETION_RETENTION_UNSPECIFIED
+    runtime_database_encryption_key_name: '123456789'
+    runtime_type: CLOUD
+    disable_vpc_peering: true
+
+counts:
+  google_apigee_instance: 1
+  google_apigee_organization: 1
