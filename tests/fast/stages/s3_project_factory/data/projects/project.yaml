@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-parent_id: folders/012345678901
+parent: folders/012345678901
 services:
   - storage.googleapis.com
   - stackdriver.googleapis.com
