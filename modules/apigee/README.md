@@ -4,7 +4,7 @@ This module simplifies the creation of a Apigee resources (organization, environ
 
 ## Example
 
-### All resources (CLOUD)
+### All resources (CLOUD - VPC Peering Provisioning Mode)
 
 ```hcl
 module "apigee" {
@@ -18,6 +18,7 @@ module "apigee" {
     billing_type            = "PAYG"
     database_encryption_key = "123456789"
     analytics_region        = "europe-west1"
+    disable_vpc_peering     = false
   }
   envgroups = {
     test = ["test.example.com"]
@@ -49,6 +50,62 @@ module "apigee" {
       runtime_ip_cidr_range         = "10.0.8.0/22"
       troubleshooting_ip_cidr_range = "10.1.16.0/28"
       enable_nat                    = true
+    }
+  }
+  endpoint_attachments = {
+    endpoint-backend-1 = {
+      region             = "europe-west1"
+      service_attachment = "projects/my-project-1/serviceAttachments/gkebackend1"
+    }
+    endpoint-backend-2 = {
+      region             = "europe-west1"
+      service_attachment = "projects/my-project-2/serviceAttachments/gkebackend2"
+    }
+  }
+}
+# tftest modules=1 resources=15
+```
+
+### All resources (CLOUD - Non-VPC Peering Provisioning Mode)
+
+```hcl
+module "apigee" {
+  source     = "./fabric/modules/apigee"
+  project_id = "my-project"
+  organization = {
+    display_name            = "My Organization"
+    description             = "My Organization"
+    runtime_type            = "CLOUD"
+    billing_type            = "PAYG"
+    database_encryption_key = "123456789"
+    analytics_region        = "europe-west1"
+    disable_vpc_peering     = true
+  }
+  envgroups = {
+    test = ["test.example.com"]
+    prod = ["prod.example.com"]
+  }
+  environments = {
+    apis-test = {
+      display_name = "APIs test"
+      description  = "APIs Test"
+      envgroups    = ["test"]
+      regions      = ["europe-west1"]
+    }
+    apis-prod = {
+      display_name = "APIs prod"
+      description  = "APIs prod"
+      envgroups    = ["prod"]
+      regions      = ["europe-west3"]
+      iam = {
+        "roles/viewer" = ["group:devops@myorg.com"]
+      }
+    }
+  }
+  instances = {
+    europe-west1 = {}
+    europe-west3 = {
+      enable_nat = true
     }
   }
   endpoint_attachments = {
@@ -129,7 +186,23 @@ module "apigee" {
 # tftest modules=1 resources=1
 ```
 
-### New instance
+### New instance (VPC Peering Provisioning Mode)
+
+```hcl
+module "apigee" {
+  source     = "./fabric/modules/apigee"
+  project_id = "my-project"
+  instances = {
+    europe-west1 = {
+      runtime_ip_cidr_range         = "10.0.4.0/22"
+      troubleshooting_ip_cidr_range = "10.1.1.0/28"
+    }
+  }
+}
+# tftest modules=1 resources=1
+```
+
+### New instance (Non-VPC Peering Provisioning Mode)
 
 ```hcl
 module "apigee" {
@@ -138,18 +211,14 @@ module "apigee" {
   organization = {
     display_name            = "My Organization"
     description             = "My Organization"
-    authorized_network      = "my-vpc"
     runtime_type            = "CLOUD"
     billing_type            = "Pay-as-you-go"
     database_encryption_key = "123456789"
     analytics_region        = "europe-west1"
-    disable_vpc_peering     = false
+    disable_vpc_peering     = true
   }
   instances = {
-    europe-west1 = {
-      runtime_ip_cidr_range         = "10.0.4.0/22"
-      troubleshooting_ip_cidr_range = "10.1.1.0/28"
-    }
+    europe-west1 = {}
   }
 }
 # tftest modules=1 resources=2
@@ -212,3 +281,4 @@ module "apigee" {
 | [organization](outputs.tf#L55) | Organization. |  |
 | [service_attachments](outputs.tf#L60) | Service attachments. |  |
 <!-- END TFDOC -->
+

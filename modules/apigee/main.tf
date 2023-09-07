@@ -15,20 +15,28 @@
  */
 
 locals {
-  org_id   = try(google_apigee_organization.organization[0].id, "organizations/${var.project_id}")
-  org_name = try(google_apigee_organization.organization[0].name, var.project_id)
+  org_id              = try(google_apigee_organization.organization[0].id, "organizations/${var.project_id}")
+  org_name            = try(google_apigee_organization.organization[0].name, var.project_id)
+  disable_vpc_peering = try(var.organization.disable_vpc_peering, false)
 }
 
 resource "google_apigee_organization" "organization" {
   count                                = var.organization == null ? 0 : 1
   analytics_region                     = var.organization.analytics_region
   project_id                           = var.project_id
-  authorized_network                   = var.organization.disable_vpc_peering ? null : var.organization.authorized_network
+  authorized_network                   = var.organization.authorized_network
   billing_type                         = var.organization.billing_type
   runtime_type                         = var.organization.runtime_type
   runtime_database_encryption_key_name = var.organization.database_encryption_key
   retention                            = var.organization.retention
   disable_vpc_peering                  = var.organization.disable_vpc_peering
+
+  lifecycle {
+    precondition {
+      condition     = (var.organization.disable_vpc_peering == false && var.organization.authorized_network != null && var.organization.runtime_type == "CLOUD") || (var.organization.disable_vpc_peering == true && var.organization.authorized_network == null && var.organization.runtime_type == "CLOUD") || (var.organization.disable_vpc_peering == false && var.organization.authorized_network == null && var.organization.runtime_type == "HYBRID")
+      error_message = "For `var.organization.runtime_type = \"CLOUD\"`, if `var.organization.disable_vpc_peering` is set to `true`, `var.organization.authorized_network` should be `null`. If `var.organization.authorized_network` is set to name of some VPC Network, `var.organization.disable_vpc_peering` should be set to `false`. `var.organization.authorized_network` is used for Apigee X VPC Peering Provisioning Mode and `var.organization.disable_vpc_peering` is used for Apigee X Non-VPC Peering Provisioning Mode. For `var.organization.runtime_type = \"HYBRID\"`, `var.organization.disable_vpc_peering` cannot be set to `true` and `var.organization.authorized_network` cannot be `null`."
+    }
+  }
 }
 
 resource "google_apigee_envgroup" "envgroups" {
@@ -92,9 +100,16 @@ resource "google_apigee_instance" "instances" {
   description              = each.value.description
   location                 = each.key
   org_id                   = local.org_id
-  ip_range                 = var.organization.disable_vpc_peering ? null : "${each.value.runtime_ip_cidr_range},${each.value.troubleshooting_ip_cidr_range}"
+  ip_range                 = local.disable_vpc_peering ? null : "${each.value.runtime_ip_cidr_range},${each.value.troubleshooting_ip_cidr_range}"
   disk_encryption_key_name = each.value.disk_encryption_key
   consumer_accept_list     = each.value.consumer_accept_list
+
+  lifecycle {
+    precondition {
+      condition     = (local.disable_vpc_peering == true && each.value.runtime_ip_cidr_range == null && each.value.troubleshooting_ip_cidr_range == null) || (local.disable_vpc_peering == false && each.value.runtime_ip_cidr_range != null && each.value.troubleshooting_ip_cidr_range != null)
+      error_message = "When using Apigee X Non-VPC Peering Provisioning Mode i.e. when `var.organization.disable_vpc_peering = true`, Runtime IP CIDR Ranges are not required. However, when using Apigee X VPC Peering Provisioning Mode, Runtime IP CIDR Ranges are required and `var.organization.disable_vpc_peering = false` should be set."
+    }
+  }
 }
 
 resource "google_apigee_nat_address" "apigee_nat" {
@@ -116,11 +131,7 @@ resource "google_apigee_instance_attachment" "instance_attachments" {
     }
   }])...)
   instance_id = google_apigee_instance.instances[each.value.region].id
-  environment = try(google_apigee_environment.environments[each.value.environment].name,
-  "${local.org_id}/environments/${each.value.environment}")
-  lifecycle {
-    ignore_changes = [environment]
-  }
+  environment = google_apigee_environment.environments[each.value.environment].name
 }
 
 resource "google_apigee_endpoint_attachment" "endpoint_attachments" {

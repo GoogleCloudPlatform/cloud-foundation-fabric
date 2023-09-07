@@ -20,18 +20,6 @@ values:
     ip_range: 10.0.4.0/22,10.1.1.0/28
     location: europe-west1
     name: instance-europe-west1
-  google_apigee_organization.organization[0]:
-    analytics_region: europe-west1
-    authorized_network: my-vpc
-    billing_type: Pay-as-you-go
-    description: null
-    display_name: null
-    project_id: my-project
-    retention: DELETION_RETENTION_UNSPECIFIED
-    runtime_database_encryption_key_name: '123456789'
-    runtime_type: CLOUD
-    disable_vpc_peering: false
 
 counts:
   google_apigee_instance: 1
-  google_apigee_organization: 1
