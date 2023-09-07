@@ -23,7 +23,7 @@ essential_contacts:
   - team-a-contacts@example.com
 
 # Folder the project will be created as children of
-folder_id: folders/012345678901
+parent: folders/012345678901
 
 # [opt] Authoritative IAM bindings in group => [roles] format
 group_iam:
