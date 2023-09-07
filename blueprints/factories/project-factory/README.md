@@ -72,6 +72,7 @@ service_accounts:
 labels:
  app: app-1
  team: foo
+parent: folders/my-parent-folder
 service_accounts:
   app-2-be: {}
 
