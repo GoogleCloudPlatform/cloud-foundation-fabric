@@ -13,7 +13,8 @@ This module simplifies the creation of a Apigee resources (organization, environ
   - [All resources (HYBRID control plane)](#all-resources-hybrid-control-plane)
   - [New environment group](#new-environment-group)
   - [New environment](#new-environment)
-  - [New instance](#new-instance)
+  - [New instance (VPC Peering Provisioning Mode)](#new-instance-vpc-peering-provisioning-mode)
+  - [New instance (Non VPC Peering Provisioning Mode)](#new-instance-non-vpc-peering-provisioning-mode)
   - [New endpoint attachment](#new-endpoint-attachment)
   - [Apigee add-ons](#apigee-add-ons)
 - [Variables](#variables)
@@ -242,7 +243,7 @@ module "apigee" {
 # tftest modules=1 resources=1
 ```
 
-### New instance
+### New instance (VPC Peering Provisioning Mode)
 
 ```hcl
 module "apigee" {
@@ -256,6 +257,28 @@ module "apigee" {
   }
 }
 # tftest modules=1 resources=1
+```
+
+### New instance (Non VPC Peering Provisioning Mode)
+
+```hcl
+module "apigee" {
+  source     = "./fabric/modules/apigee"
+  project_id = "my-project"
+  organization = {
+    display_name            = "My Organization"
+    description             = "My Organization"
+    runtime_type            = "CLOUD"
+    billing_type            = "Pay-as-you-go"
+    database_encryption_key = "123456789"
+    analytics_region        = "europe-west1"
+    disable_vpc_peering     = true
+  }
+  instances = {
+    europe-west1 = {}
+  }
+}
+# tftest modules=1 resources=2
 ```
 
 ### New endpoint attachment
