@@ -103,7 +103,7 @@ variable "organization" {
     condition = var.organization == null || (
       try(var.organization.runtime_type, null) == "CLOUD" || !try(var.organization.disable_vpc_peering, false)
     )
-    error_message = "Disabling the VPC peering can only be done in organization using the CLOUD runtime"
+    error_message = "Disabling the VPC peering can only be done in organization using the CLOUD runtime."
   }
   validation {
     condition = var.organization == null || (
