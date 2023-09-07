@@ -107,7 +107,7 @@ resource "google_apigee_nat_address" "apigee_nat" {
 }
 
 resource "google_apigee_instance_attachment" "instance_attachments" {
-  for_each    = merge(concat([for k1, v1 in var.environments : {
+  for_each = merge(concat([for k1, v1 in var.environments : {
     for v2 in coalesce(v1.regions, []) :
     "${k1}-${v2}" => {
       environment = k1
