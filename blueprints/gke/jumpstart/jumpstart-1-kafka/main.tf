@@ -35,9 +35,7 @@ resource "kubernetes_namespace" "default" {
 resource "kubernetes_manifest" "default" {
   for_each = toset(local.wl_templates)
   manifest = yamldecode(templatefile(each.value, {
-    image              = var.image
-    namespace          = kubernetes_namespace.default.metadata.0.name
-    statefulset_config = var.statefulset_config
+    namespace = kubernetes_namespace.default.metadata.0.name
   }))
   dynamic "wait" {
     for_each = strcontains(each.key, "statefulset") ? [""] : []
@@ -50,19 +48,4 @@ resource "kubernetes_manifest" "default" {
   timeouts {
     create = "30m"
   }
-}
-
-resource "kubernetes_manifest" "cluster-start" {
-  manifest = yamldecode(templatefile("${local.wl_templates_path}/start-cluster.yaml", {
-    image     = var.image
-    namespace = kubernetes_namespace.default.metadata.0.name
-    nodes = [
-      for i in range(var.statefulset_config.replicas) :
-      "redis-${i}.redis-cluster.${var.namespace}.svc.cluster.local"
-    ]
-  }))
-  field_manager {
-    force_conflicts = true
-  }
-  depends_on = [kubernetes_manifest.default]
 }
