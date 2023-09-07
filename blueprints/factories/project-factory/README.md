@@ -55,7 +55,7 @@ billing_account: 012345-67890A-BCDEF0
 labels:
  app: app-1
  team: foo
-parent: folders/my-parent-folder
+parent: folders/12345678
 service_encryption_key_ids:
  compute:
  - projects/kms-central-prj/locations/europe-west3/keyRings/my-keyring/cryptoKeys/europe3-gce
@@ -72,7 +72,7 @@ service_accounts:
 labels:
  app: app-1
  team: foo
-parent: folders/my-parent-folder
+parent: folders/12345678
 service_accounts:
   app-2-be: {}
 
