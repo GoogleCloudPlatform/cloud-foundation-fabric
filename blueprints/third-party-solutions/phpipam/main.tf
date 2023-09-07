@@ -71,6 +71,7 @@ module "vpc" {
   count      = var.vpc_config == null ? 1 : 0
   project_id = module.project.project_id
   name       = "${var.prefix}-sql-vpc"
+
   psa_config = {
     ranges = {
       cloud-sql = var.ip_ranges.psa
@@ -97,6 +98,7 @@ module "cloud_run" {
   prefix           = var.prefix
   ingress_settings = "all"
   region           = var.region
+
   containers = {
     phpipam = {
       image = var.phpipam_config.image

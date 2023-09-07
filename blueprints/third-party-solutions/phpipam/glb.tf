@@ -35,6 +35,7 @@ module "glb" {
   name       = "phpipam-glb"
   address    = module.addresses.0.global_addresses["phpipam"].address
   protocol   = "HTTPS"
+
   backend_service_configs = {
     default = {
       backends = [
@@ -75,6 +76,7 @@ resource "google_compute_security_policy" "policy" {
   count   = local.glb_create && var.security_policy.enabled ? 1 : 0
   project = module.project.project_id
   name    = "cloud-run-policy"
+
   rule {
     action   = "deny(403)"
     priority = 1000

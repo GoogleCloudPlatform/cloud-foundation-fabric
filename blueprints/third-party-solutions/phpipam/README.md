@@ -99,7 +99,7 @@ documentation below.
    give it a value that will be accepted in accordance to your policy.
 2. By default, the application will be exposed externally through Global
    Application Load Balancer, for restricting access to specific identities
-   please check iap configuration or deploy the application internally via the
+   please check IAP configuration or deploy the application internally via the
    ILB
 3. Setting the `phpipam_exposure` variable to "INTERNAL" will deploy an Internal
    Application Load Balancer on the same VPC. This might be the preferred option
@@ -111,7 +111,7 @@ documentation below.
 
 Initialize your Terraform environment and deploy the resources:
 
-``` {shell}
+```shell
 terraform init
 terraform apply
 ```
@@ -122,13 +122,13 @@ Upon completion, you will see the output with the values for the Cloud Run
 service and the user and password to access the application.
 You can also view it later with:
 
-``` {shell}
+```shell
 terraform output
 # or for the concrete variable:
 terraform output cloud_run_service
 ```
 
-Please be aware that password created in the script is not yet configured in the
+Please be aware that the password created in the script is not yet configured in the
 application, you will be prompted to insert that during phpIPAM installation
 process at first login.
 To access the newly deployed application follow these instructions:
