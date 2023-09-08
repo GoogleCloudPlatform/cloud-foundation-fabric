@@ -55,7 +55,7 @@ gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-security.auto.
 
 If you're not using FAST, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
 
-Besides the values above, the project factory is drive by data files, with one file per project.
+Besides the values above, the project factory is driven by data files which closely follow the variables exposed by the [project module](../../../../modules/project/), with one file per project. Please refer to the underlying [project factory blueprint](../../../../blueprints/factories/project-factory/) documentation for details on the format.
 
 Once the configuration is complete, run the project factory with:
 
