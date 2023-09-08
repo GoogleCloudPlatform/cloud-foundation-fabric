@@ -23,7 +23,7 @@ values:
     project_id: foo-project-example
     skip_delete: false
     timeouts: null
-  module.project.google_project_iam_binding.bindings["roles/resourcemanager.projectIamAdmin"]:
+  module.project.google_project_iam_binding.bindings["iam_admin_conditional"]:
     condition:
     - description: null
       expression: "api.getAttribute(\n  'iam.googleapis.com/modifiedGrantsByRole',\
@@ -54,4 +54,3 @@ counts:
   resources: 4
 
 outputs: {}
-
