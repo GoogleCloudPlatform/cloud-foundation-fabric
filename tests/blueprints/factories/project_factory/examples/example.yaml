@@ -33,6 +33,7 @@ values:
     folder_id: "12345678"
     labels:
       app: app-1
+      environment: test
       team: foo
     name: test-pf-prj-app-1
     org_id: null
@@ -64,6 +65,7 @@ values:
     folder_id: "12345678"
     labels:
       app: app-1
+      environment: test
       team: foo
     name: test-pf-prj-app-2
     org_id: null
