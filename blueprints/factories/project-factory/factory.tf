@@ -28,11 +28,11 @@ locals {
   )
   projects = {
     for k, v in local._data : k => merge(v, {
-      billing_account = coalesce(
+      billing_account = try(coalesce(
         var.data_overrides.billing_account,
         try(v.billing_account, null),
         var.data_defaults.billing_account
-      )
+      ), null)
       contacts = coalesce(
         var.data_overrides.contacts,
         try(v.contacts, null),
@@ -45,6 +45,11 @@ locals {
       metric_scopes = coalesce(
         try(v.metric_scopes, null),
         var.data_defaults.metric_scopes
+      )
+      parent = coalesce(
+        var.data_overrides.parent,
+        try(v.parent, null),
+        var.data_defaults.parent
       )
       prefix = coalesce(
         var.data_overrides.prefix,

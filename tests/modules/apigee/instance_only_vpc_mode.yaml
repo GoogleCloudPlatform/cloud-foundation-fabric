@@ -12,19 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/apigee
+values:
+  google_apigee_instance.instances["europe-west1"]:
+    ip_range: 10.0.4.0/22,10.1.1.0/28
+    description: Terraform-managed
+    disk_encryption_key_name: null
+    display_name: null
+    location: europe-west1
+    name: "instance-europe-west1"
+    org_id: organizations/my-project
 
-tests:
-  all_psc_mode:
-  all_vpc_mode:
-  endpoint_attachment_only:
-  env_only:
-  env_only_with_api_proxy_type:
-  env_only_with_deployment_type:
-  envgroup_only:
-  instance_only_psc_mode:
-  instance_only_vpc_mode:
-  no_instances:
-  organization_only_psc_mode:
-  organization_only_vpc_mode:
-  organization_retention:
+counts:
+  google_apigee_instance: 1

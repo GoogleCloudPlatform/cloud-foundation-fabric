@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 values:
   google_apigee_endpoint_attachment.endpoint_attachments["endpoint-backend-1"]:
     endpoint_attachment_id: endpoint-backend-1
@@ -71,6 +72,7 @@ values:
     retention: DELETION_RETENTION_UNSPECIFIED
     runtime_database_encryption_key_name: '123456789'
     runtime_type: CLOUD
+    disable_vpc_peering: false
 
 counts:
   google_apigee_endpoint_attachment: 2

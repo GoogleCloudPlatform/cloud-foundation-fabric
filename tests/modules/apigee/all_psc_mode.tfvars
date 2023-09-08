@@ -2,11 +2,11 @@ project_id = "my-project"
 organization = {
   display_name            = "My Organization"
   description             = "My Organization"
-  authorized_network      = "my-vpc"
   runtime_type            = "CLOUD"
   billing_type            = "Pay-as-you-go"
   database_encryption_key = "123456789"
   analytics_region        = "europe-west1"
+  disable_vpc_peering     = true
 }
 envgroups = {
   test = ["test.example.com"]
@@ -30,14 +30,8 @@ environments = {
   }
 }
 instances = {
-  europe-west1 = {
-    runtime_ip_cidr_range         = "10.0.4.0/22"
-    troubleshooting_ip_cidr_range = "10.1.0.0/28"
-  }
-  europe-west3 = {
-    runtime_ip_cidr_range         = "10.0.6.0/22"
-    troubleshooting_ip_cidr_range = "10.1.0.16/28"
-  }
+  europe-west1 = {}
+  europe-west3 = {}
 }
 endpoint_attachments = {
   endpoint-backend-1 = {
