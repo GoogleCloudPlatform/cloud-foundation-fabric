@@ -1,0 +1,6 @@
+labels:
+ team: team-0
+parent: folders/1234567890
+services:
+- compute.googleapis.com
+- storage.googleapis.com
