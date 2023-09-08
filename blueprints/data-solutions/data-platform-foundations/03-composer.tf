@@ -15,7 +15,7 @@
 # tfdoc:file:description Orchestration Cloud Composer definition.
 
 locals {
-  env_variables = {
+  _env_variables = {
     BQ_LOCATION                 = var.location
     DATA_CAT_TAGS               = try(jsonencode(module.common-datacatalog.tags), "{}")
     DF_KMS_KEY                  = try(var.service_encryption_keys.dataflow, "")
@@ -48,6 +48,12 @@ locals {
     TRF_SA_DF                   = module.transf-sa-df-0.email
     TRF_SA_BQ                   = module.transf-sa-bq-0.email
   }
+  env_variables = {
+    for k, v in merge(
+      try(var.composer_config.software_config.env_variables, null),
+      local._env_variables
+    ) : "AIRFLOW_VAR_${k}" => v
+  }
 }
 module "orch-sa-cmp-0" {
   source       = "../../../modules/iam-service-account"
@@ -70,7 +76,7 @@ resource "google_composer_environment" "orch-cmp-0" {
     software_config {
       airflow_config_overrides = try(var.composer_config.software_config.airflow_config_overrides, null)
       pypi_packages            = try(var.composer_config.software_config.pypi_packages, null)
-      env_variables            = merge(try(var.composer_config.software_config.env_variables, null), local.env_variables)
+      env_variables            = local.env_variables
       image_version            = try(var.composer_config.software_config.image_version, null)
     }
     dynamic "workloads_config" {
