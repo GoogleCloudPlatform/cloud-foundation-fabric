@@ -6,6 +6,7 @@
 ## Status
 
 Implemented in [#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595).
+Authoritative bindings type changed as per [#1622](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/1622).
 
 ## Context
 
@@ -39,15 +40,18 @@ The new `iam_bindings` variable will look like this:
 
 ```hcl
 variable "iam_bindings" {
-  description = "Authoritative IAM bindings with support for conditions, in {ROLE => { members = [], condition = {}}} format."
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
   type = map(object({
-    members   = list(string)
+    members = list(string)
+    role    = string
     condition = optional(object({
       expression  = string
       title       = string
       description = optional(string)
     }))
   }))
+  nullable = false
+  default  = {}
 }
 ```
 

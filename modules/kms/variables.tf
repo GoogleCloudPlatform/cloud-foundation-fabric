@@ -21,9 +21,10 @@ variable "iam" {
 }
 
 variable "iam_bindings" {
-  description = "Keyring authoritative IAM bindings in {ROLE => {members = [], condition = {}}}."
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
   type = map(object({
     members = list(string)
+    role    = string
     condition = optional(object({
       expression  = string
       title       = string
@@ -56,9 +57,10 @@ variable "key_iam" {
 }
 
 variable "key_iam_bindings" {
-  description = "Key authoritative IAM bindings in {KEY => {ROLE => {members = [], condition = {}}}}."
+  description = "Key authoritative IAM bindings in {KEY => {BINDING_KEY => {role = ROLE, members = [], condition = {}}}}."
   type = map(object({
     members = list(string)
+    role    = string
     condition = optional(object({
       expression  = string
       title       = string
