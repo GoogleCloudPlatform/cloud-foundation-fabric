@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-###############################################################################
-#                                zone variables                               #
-###############################################################################
-
 variable "description" {
   description = "Domain description."
   type        = string
