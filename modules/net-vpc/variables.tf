@@ -227,8 +227,8 @@ variable "subnets" {
   nullable = false
 }
 
-variable "subnets_proxy_only" {
-  description = "List of proxy-only subnets for Regional HTTPS  or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active."
+variable "subnets_global_proxy_only" {
+  description = "List of proxy-only subnets for Cross-region Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active."
   type = list(object({
     name          = string
     ip_cidr_range = string
@@ -240,8 +240,8 @@ variable "subnets_proxy_only" {
   nullable = false
 }
 
-variable "subnets_global_proxy_only" {
-  description = "List of proxy-only subnets for Cross-region Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active."
+variable "subnets_proxy_only" {
+  description = "List of proxy-only subnets for Regional HTTPS  or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active."
   type = list(object({
     name          = string
     ip_cidr_range = string
