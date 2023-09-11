@@ -532,17 +532,6 @@ module "vpc" {
 # tftest modules=1 resources=5 inventory=ipv6.yaml
 ```
 <!-- BEGIN TFDOC -->
-## Files
-
-| name | description | resources |
-|---|---|---|
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_network</code> · <code>google_compute_network_peering</code> · <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_dns_policy</code> |
-| [outputs.tf](./outputs.tf) | Module outputs. |  |
-| [psa.tf](./psa.tf) | Private Service Access resources. | <code>google_compute_global_address</code> · <code>google_compute_network_peering_routes_config</code> · <code>google_service_networking_connection</code> |
-| [routes.tf](./routes.tf) | Route resources. | <code>google_compute_route</code> |
-| [subnets.tf](./subnets.tf) | Subnet resources. | <code>google_compute_subnetwork</code> · <code>google_compute_subnetwork_iam_binding</code> · <code>google_compute_subnetwork_iam_member</code> |
-| [variables.tf](./variables.tf) | Module variables. |  |
-| [versions.tf](./versions.tf) | Version pins. |  |
 
 ## Variables
 
