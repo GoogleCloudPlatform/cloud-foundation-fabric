@@ -20,7 +20,6 @@ This module allows creation and management of VPC networks including subnetworks
   - [Private Google Access routes](#private-google-access-routes)
   - [Allow Firewall Policy to be evaluated before Firewall Rules](#allow-firewall-policy-to-be-evaluated-before-firewall-rules)
   - [IPv6](#ipv6)
-- [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
