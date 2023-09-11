@@ -287,7 +287,7 @@ Along with common private subnets module supports creation more service specific
 - [Proxy-only subnets](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) for Regional HTTPS Internal HTTPS Load Balancers
 - [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) subnets
 
-- [Global Proxy-only subnet] (https://cloud.google.com/load-balancing/docs/proxy-only-subnets#envoy-lb) with purpose for Cross-region internal Application Load Balancers
+- [Global Proxy-only subnets](https://cloud.google.com/load-balancing/docs/proxy-only-subnets#envoy-lb) with purpose for Cross-region internal Application Load Balancers
 
 ```hcl
 module "vpc" {
@@ -393,6 +393,13 @@ flow_logs:                    # enable, set to empty map to use defaults
   flow_sampling: 0.5
   metadata: "INCLUDE_ALL_METADATA"
   filter_expression: null
+```
+
+```yaml
+# tftest-file id=subnet-global-proxy path=config/subnets/subnet-global-proxy.yaml
+region: europe-west4
+ip_cidr_range: 10.0.3.0/24
+purpose: GLOBAL_MANAGED_PROXY
 ```
 
 ```yaml
