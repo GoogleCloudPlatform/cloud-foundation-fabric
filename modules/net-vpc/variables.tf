@@ -252,6 +252,7 @@ variable "subnets_proxy_only" {
   default  = []
   nullable = false
 }
+
 variable "subnets_psc" {
   description = "List of subnets for Private Service Connect service producers."
   type = list(object({
