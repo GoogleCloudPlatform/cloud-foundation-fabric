@@ -140,6 +140,21 @@ resource "google_compute_subnetwork" "proxy_only" {
   purpose = "REGIONAL_MANAGED_PROXY"
   role    = each.value.active != false ? "ACTIVE" : "BACKUP"
 }
+resource "google_compute_subnetwork" "global_proxy_only" {
+  for_each      = local.subnets_global_proxy_only
+  project       = var.project_id
+  network       = local.network.name
+  name          = each.value.name
+  region        = each.value.region
+  ip_cidr_range = each.value.ip_cidr_range
+  description = (
+    each.value.description == null
+    ? "Terraform-managed proxy-only subnet for cross-regional Internal HTTPS LB."
+    : each.value.description
+  )
+  purpose = "GLOBAL_MANAGED_PROXY"
+  role    = each.value.active != false ? "ACTIVE" : "BACKUP"
+}
 
 resource "google_compute_subnetwork" "psc" {
   for_each      = local.subnets_psc

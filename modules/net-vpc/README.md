@@ -314,7 +314,7 @@ module "vpc" {
     {
       ip_cidr_range = "10.0.4.0/24"
       name          = "global-proxy"
-      region        = "australia-southeast2"
+      region        = "europe-west1"
       active        = true
     }
   ]
