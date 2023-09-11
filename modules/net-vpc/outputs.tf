@@ -137,3 +137,8 @@ output "subnets_psc" {
   description = "Private Service Connect subnet resources."
   value       = { for k, v in google_compute_subnetwork.psc : k => v }
 }
+
+output "subnets_global_proxy_only" {
+  description = "Cross-region internal L7 ILB"
+  value       = { for k, v in google_compute_subnetwork.global_proxy_only : k => v }
+}
