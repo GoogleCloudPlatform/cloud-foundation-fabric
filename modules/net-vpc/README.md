@@ -586,7 +586,7 @@ module "vpc" {
 | [subnet_secondary_ranges](outputs.tf#L110) | Map of subnet secondary ranges keyed by name. |  |
 | [subnet_self_links](outputs.tf#L121) | Map of subnet self links keyed by name. |  |
 | [subnets](outputs.tf#L126) | Subnet resources. |  |
-| [subnets_global_proxy_only](outputs.tf#L131) | Cross-region internal L7 ILB resources |  |
+| [subnets_global_proxy_only](outputs.tf#L131) | Cross-region internal L7 ILB resources. |  |
 | [subnets_proxy_only](outputs.tf#L136) | L7 ILB or L7 Regional LB subnet resources. |  |
 | [subnets_psc](outputs.tf#L141) | Private Service Connect subnet resources. |  |
 <!-- END TFDOC -->
