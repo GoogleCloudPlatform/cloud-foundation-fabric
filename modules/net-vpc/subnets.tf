@@ -79,6 +79,10 @@ locals {
     { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
     { for k, v in local._factory_subnets : k => v if v.purpose == "PRIVATE_SERVICE_CONNECT" }
   )
+  subnets_global_proxy_only = merge(
+    { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
+    { for k, v in local._factory_subnets : k => v if v.purpose == "GLOBAL_MANAGED_PROXY" }
+  )
 }
 
 resource "google_compute_subnetwork" "subnetwork" {

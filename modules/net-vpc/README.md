@@ -287,6 +287,8 @@ Along with common private subnets module supports creation more service specific
 - [Proxy-only subnets](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) for Regional HTTPS Internal HTTPS Load Balancers
 - [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) subnets
 
+- [Global Proxy-only subnet] (https://cloud.google.com/load-balancing/docs/proxy-only-subnets#envoy-lb) with purpose for Cross-region internal Application Load Balancers
+
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
@@ -306,6 +308,14 @@ module "vpc" {
       ip_cidr_range = "10.0.3.0/24"
       name          = "psc"
       region        = "europe-west1"
+    }
+  ]
+  subnets_global_proxy_only = [
+    {
+      ip_cidr_range = "10.0.4.0/24"
+      name          = "global-proxy"
+      region        = "australia-southeast2"
+      active        = true
     }
   ]
 }
