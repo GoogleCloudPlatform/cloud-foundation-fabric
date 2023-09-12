@@ -7,17 +7,17 @@ This module can be coupled with the [`compute-vm`](../compute-vm) module which c
 Stateful disks can be created directly, as shown in the last example below.
 
 <!-- BEGIN TOC -->
-- [Examples](#examples)
-  - [Simple Example](#simple-example)
-  - [Multiple Versions](#multiple-versions)
-  - [Health Check and Autohealing Policies](#health-check-and-autohealing-policies)
-  - [Autoscaling](#autoscaling)
-  - [Update Policy](#update-policy)
-  - [Stateful MIGs - MIG Config](#stateful-migs-mig-config)
-  - [Stateful MIGs - Instance Config](#stateful-migs-instance-config)
-- [Files](#files)
-- [Variables](#variables)
-- [Outputs](#outputs)
+- [GCE Managed Instance Group module](#gce-managed-instance-group-module)
+  - [Examples](#examples)
+    - [Simple Example](#simple-example)
+    - [Multiple Versions](#multiple-versions)
+    - [Health Check and Autohealing Policies](#health-check-and-autohealing-policies)
+    - [Autoscaling](#autoscaling)
+    - [Update Policy](#update-policy)
+    - [Stateful MIGs - MIG Config](#stateful-migs---mig-config)
+    - [Stateful MIGs - Instance Config](#stateful-migs---instance-config)
+  - [Variables](#variables)
+  - [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Examples
@@ -390,17 +390,6 @@ module "nginx-mig" {
 # tftest modules=2 resources=3 inventory=stateful.yaml
 ```
 <!-- BEGIN TFDOC -->
-## Files
-
-| name | description | resources |
-|---|---|---|
-| [autoscaler.tf](./autoscaler.tf) | Autoscaler resource. | <code>google_compute_autoscaler</code> · <code>google_compute_region_autoscaler</code> |
-| [health-check.tf](./health-check.tf) | Health check resource. | <code>google_compute_health_check</code> |
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_instance_group_manager</code> · <code>google_compute_region_instance_group_manager</code> |
-| [outputs.tf](./outputs.tf) | Module outputs. |  |
-| [stateful-config.tf](./stateful-config.tf) | Instance-level stateful configuration resources. | <code>google_compute_per_instance_config</code> · <code>google_compute_region_per_instance_config</code> |
-| [variables.tf](./variables.tf) | Module variables. |  |
-| [versions.tf](./versions.tf) | Version pins. |  |
 
 ## Variables
 
