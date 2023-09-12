@@ -33,7 +33,7 @@ locals {
       secondary_ip_ranges   = try(v.secondary_ip_ranges, null)
       iam                   = try(v.iam, [])
       iam_members           = try(v.iam_members, [])
-      purpose               = try(v.purpose, null)
+      purpose               = try(v.global, null)
       active                = try(v.active, null)
     }
   }
@@ -130,7 +130,7 @@ resource "google_compute_subnetwork" "proxy_only" {
   ip_cidr_range = each.value.ip_cidr_range
   description = (
     each.value.description == null
-    ? "Terraform-managed proxy-only subnet for Regional HTTPS, Internal HTTPS or Cross-Regional HTTPS Internal LB"
+    ? "Terraform-managed proxy-only subnet for Regional HTTPS, Internal HTTPS or Cross-Regional HTTPS Internal LB."
     : each.value.description
   )
   purpose = each.value.global != false ? "GLOBAL_MANAGED_PROXY" : "REGIONAL_MANAGED_PROXY"
