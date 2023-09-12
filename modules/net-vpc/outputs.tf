@@ -128,11 +128,6 @@ output "subnets" {
   value       = { for k, v in google_compute_subnetwork.subnetwork : k => v }
 }
 
-output "subnets_global_proxy_only" {
-  description = "Cross-region internal L7 ILB resources."
-  value       = { for k, v in google_compute_subnetwork.global_proxy_only : k => v }
-}
-
 output "subnets_proxy_only" {
   description = "L7 ILB or L7 Regional LB subnet resources."
   value       = { for k, v in google_compute_subnetwork.proxy_only : k => v }

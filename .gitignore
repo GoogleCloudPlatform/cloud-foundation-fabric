@@ -55,3 +55,4 @@ blueprints/gke/autopilot/ansible/vars/vars.yaml
 blueprints/gke/autopilot/bundle/monitoring/kustomization.yaml
 blueprints/gke/autopilot/bundle/locust/kustomization.yaml
 blueprints/gke/autopilot/bundle.tar.gz
+modules/net-vpc/README.md

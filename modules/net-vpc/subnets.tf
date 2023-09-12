@@ -79,10 +79,6 @@ locals {
     { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
     { for k, v in local._factory_subnets : k => v if v.purpose == "PRIVATE_SERVICE_CONNECT" }
   )
-  subnets_global_proxy_only = merge(
-    { for s in var.subnets_global_proxy_only : "${s.region}/${s.name}" => s },
-    { for k, v in local._factory_subnets : k => v if v.purpose == "GLOBAL_MANAGED_PROXY" }
-  )
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
@@ -134,25 +130,10 @@ resource "google_compute_subnetwork" "proxy_only" {
   ip_cidr_range = each.value.ip_cidr_range
   description = (
     each.value.description == null
-    ? "Terraform-managed proxy-only subnet for Regional HTTPS or Internal HTTPS LB."
+    ? "Terraform-managed proxy-only subnet for Regional HTTPS, Internal HTTPS or Cross-Regional HTTPS Internal LB"
     : each.value.description
   )
-  purpose = "REGIONAL_MANAGED_PROXY"
-  role    = each.value.active != false ? "ACTIVE" : "BACKUP"
-}
-resource "google_compute_subnetwork" "global_proxy_only" {
-  for_each      = local.subnets_global_proxy_only
-  project       = var.project_id
-  network       = local.network.name
-  name          = each.value.name
-  region        = each.value.region
-  ip_cidr_range = each.value.ip_cidr_range
-  description = (
-    each.value.description == null
-    ? "Terraform-managed proxy-only subnet for cross-regional Internal HTTPS LB."
-    : each.value.description
-  )
-  purpose = "GLOBAL_MANAGED_PROXY"
+  purpose = each.value.global != false ? "GLOBAL_MANAGED_PROXY" : "REGIONAL_MANAGED_PROXY"
   role    = each.value.active != false ? "ACTIVE" : "BACKUP"
 }
 
