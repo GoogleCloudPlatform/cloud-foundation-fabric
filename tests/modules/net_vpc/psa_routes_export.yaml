@@ -56,5 +56,4 @@ outputs:
   subnet_self_links: {}
   subnets: {}
   subnets_proxy_only: {}
-  subnets_global_proxy_only: {}
   subnets_psc: {}
