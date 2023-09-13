@@ -355,7 +355,7 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest modules=1 resources=9 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-psc inventory=factory.yaml
+# tftest modules=1 resources=10 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-proxy-global,subnet-psc inventory=factory.yaml
 ```
 
 ```yaml
@@ -397,6 +397,13 @@ flow_logs:                    # enable, set to empty map to use defaults
 region: europe-west4
 ip_cidr_range: 10.1.0.0/24
 purpose: REGIONAL_MANAGED_PROXY
+```
+
+```yaml
+# tftest-file id=subnet-proxy-global path=config/subnets/subnet-proxy-global.yaml
+region: australia-southeast2
+ip_cidr_range: 10.4.0.0/24
+purpose: GLOBAL_MANAGED_PROXY
 ```
 
 ```yaml

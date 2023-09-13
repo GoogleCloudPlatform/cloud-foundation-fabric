@@ -35,7 +35,7 @@ locals {
       iam_members           = try(v.iam_members, [])
       purpose               = try(v.purpose, null)
       active                = try(v.active, null)
-      global                = try(v.purpose, null)
+      global                = null
     }
   }
   _factory_subnets_iam = [
@@ -135,8 +135,13 @@ resource "google_compute_subnetwork" "proxy_only" {
     ? "Terraform-managed proxy-only subnet for Regional HTTPS, Internal HTTPS or Cross-Regional HTTPS Internal LB."
     : each.value.description
   )
-  purpose = each.value.global != false ? "GLOBAL_MANAGED_PROXY" : "REGIONAL_MANAGED_PROXY"
-  role    = each.value.active != false ? "ACTIVE" : "BACKUP"
+  purpose = try(
+    each.value.purpose,
+    each.value.global != false
+    ? "GLOBAL_MANAGED_PROXY"
+  : "REGIONAL_MANAGED_PROXY")
+
+  role = each.value.active != false ? "ACTIVE" : "BACKUP"
 }
 
 resource "google_compute_subnetwork" "psc" {
