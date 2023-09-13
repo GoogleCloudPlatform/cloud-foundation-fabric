@@ -112,15 +112,16 @@ resource "google_apigee_nat_address" "apigee_nat" {
 }
 
 resource "google_apigee_instance_attachment" "instance_attachments" {
-  for_each = merge(concat([for k1, v1 in var.environments : {
-    for v2 in coalesce(v1.regions, []) :
-    "${k1}-${v2}" => {
-      environment = k1
-      region      = v2
+  for_each = merge(concat([for k1, v1 in var.instances : {
+    for v2 in coalesce(v1.environments, []) :
+    "${v2}-${k1}" => {
+      instance    = k1
+      environment = v2
     }
   }])...)
-  instance_id = google_apigee_instance.instances[each.value.region].id
-  environment = google_apigee_environment.environments[each.value.environment].name
+  instance_id = google_apigee_instance.instances[each.value.instance].id
+  environment = try(google_apigee_environment.environments[each.value.environment].name,
+  "${local.org_id}/environments/${each.value.environment}")
 }
 
 resource "google_apigee_endpoint_attachment" "endpoint_attachments" {
@@ -131,7 +132,7 @@ resource "google_apigee_endpoint_attachment" "endpoint_attachments" {
   service_attachment     = each.value.service_attachment
 }
 
-resource "google_apigee_addons_config" "test_organization" {
+resource "google_apigee_addons_config" "addons_config" {
   for_each = toset(var.addons_config == null ? [] : [""])
   org      = local.org_name
   addons_config {
