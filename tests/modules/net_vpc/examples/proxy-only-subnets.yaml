@@ -17,13 +17,22 @@ values:
     name: my-network
     project: my-project
   module.vpc.google_compute_subnetwork.proxy_only["europe-west1/regional-proxy"]:
-    description: Terraform-managed proxy-only subnet for Regional HTTPS or Internal HTTPS LB.
+    description: Terraform-managed proxy-only subnet for Regional HTTPS, Internal HTTPS or Cross-Regional HTTPS Internal LB.
     ip_cidr_range: 10.0.1.0/24
     log_config: []
     name: regional-proxy
     project: my-project
     purpose: REGIONAL_MANAGED_PROXY
     region: europe-west1
+    role: ACTIVE
+  module.vpc.google_compute_subnetwork.proxy_only["australia-southeast2/global-proxy"]:
+    description: Terraform-managed proxy-only subnet for Regional HTTPS, Internal HTTPS or Cross-Regional HTTPS Internal LB.
+    ip_cidr_range: 10.0.4.0/24
+    log_config: []
+    name: global-proxy
+    project: my-project
+    purpose: GLOBAL_MANAGED_PROXY
+    region: australia-southeast2
     role: ACTIVE
   module.vpc.google_compute_subnetwork.psc["europe-west1/psc"]:
     description: Terraform-managed subnet for Private Service Connect (PSC NAT).
@@ -37,4 +46,4 @@ values:
 
 counts:
   google_compute_network: 1
-  google_compute_subnetwork: 2
+  google_compute_subnetwork: 3

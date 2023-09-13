@@ -35,6 +35,7 @@ locals {
       iam_members           = try(v.iam_members, [])
       purpose               = try(v.purpose, null)
       active                = try(v.active, null)
+      global                = null
     }
   }
   _factory_subnets_iam = [
@@ -73,7 +74,8 @@ locals {
   )
   subnets_proxy_only = merge(
     { for s in var.subnets_proxy_only : "${s.region}/${s.name}" => s },
-    { for k, v in local._factory_subnets : k => v if v.purpose == "REGIONAL_MANAGED_PROXY" }
+    { for k, v in local._factory_subnets : k => v if v.purpose == "REGIONAL_MANAGED_PROXY" },
+    { for k, v in local._factory_subnets : k => v if v.purpose == "GLOBAL_MANAGED_PROXY" }
   )
   subnets_psc = merge(
     { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
@@ -130,11 +132,17 @@ resource "google_compute_subnetwork" "proxy_only" {
   ip_cidr_range = each.value.ip_cidr_range
   description = (
     each.value.description == null
-    ? "Terraform-managed proxy-only subnet for Regional HTTPS or Internal HTTPS LB."
+    ? "Terraform-managed proxy-only subnet for Regional HTTPS, Internal HTTPS or Cross-Regional HTTPS Internal LB."
     : each.value.description
   )
-  purpose = "REGIONAL_MANAGED_PROXY"
-  role    = each.value.active != false ? "ACTIVE" : "BACKUP"
+  purpose = try(
+    each.value.purpose,
+    each.value.global != false
+    ? "GLOBAL_MANAGED_PROXY"
+    : "REGIONAL_MANAGED_PROXY"
+  )
+
+  role = each.value.active != false ? "ACTIVE" : "BACKUP"
 }
 
 resource "google_compute_subnetwork" "psc" {
