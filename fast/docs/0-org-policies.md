@@ -23,6 +23,8 @@ Automation service accounts are currently assigned the Organization Policy Admin
 
 A more secure way of doing this is via a dedicated resource management tag value hierarchy, and conditions on the organization policies that alter behaviour based on tags. This would allow centrally defining allowed exceptions to organization policies, and selectively granting access to specific exceptions to individual automation service accounts via tag values.
 
+The project factory will need to retain scoped grants, to set policies that enforce lists of resources which would be too cumbersome to maintain in stage 0.
+
 ### Reduce stage 1 complexity to allow simpler creation of hierarchy templates
 
 Stage 1 is currently too complex to allow easy cloning into different resource hierarchy templates, which are needed to account for all landing zone designs.
