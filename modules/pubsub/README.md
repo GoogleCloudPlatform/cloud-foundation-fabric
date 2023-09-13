@@ -131,7 +131,7 @@ Cloud Storage subscriptions need extra configuration in the `cloud_storage_subsc
 ```hcl
 module "pubsub" {
   source      = "./fabric/modules/pubsub"
-  pproject_id = "my-project"
+  project_id = "my-project"
   name        = "my-topic"
   subscriptions = {
     test-cloudstorage = null
