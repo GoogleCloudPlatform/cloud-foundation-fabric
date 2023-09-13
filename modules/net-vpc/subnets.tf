@@ -33,8 +33,9 @@ locals {
       secondary_ip_ranges   = try(v.secondary_ip_ranges, null)
       iam                   = try(v.iam, [])
       iam_members           = try(v.iam_members, [])
-      purpose               = try(v.global, null)
+      purpose               = try(v.purpose, null)
       active                = try(v.active, null)
+      global                = try(v.purpose, null)
     }
   }
   _factory_subnets_iam = [
@@ -73,7 +74,8 @@ locals {
   )
   subnets_proxy_only = merge(
     { for s in var.subnets_proxy_only : "${s.region}/${s.name}" => s },
-    { for k, v in local._factory_subnets : k => v if v.purpose == "REGIONAL_MANAGED_PROXY" }
+    { for k, v in local._factory_subnets : k => v if v.purpose == "REGIONAL_MANAGED_PROXY" },
+    { for k, v in local._factory_subnets : k => v if v.purpose == "GLOBAL_MANAGED_PROXY" }
   )
   subnets_psc = merge(
     { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
