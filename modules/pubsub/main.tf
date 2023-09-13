@@ -24,6 +24,9 @@ locals {
       }
     ]
   ])
+  metadata_config = {
+    for k, v in var.cloud_storage_subscription_configs : k => v.avro_config
+  }
   oidc_config = {
     for k, v in var.push_configs : k => v.oidc_token
   }
@@ -125,6 +128,25 @@ resource "google_pubsub_subscription" "default" {
       use_topic_schema    = var.bigquery_subscription_configs[each.key].use_topic_schema
       write_metadata      = var.bigquery_subscription_configs[each.key].write_metadata
       drop_unknown_fields = var.bigquery_subscription_configs[each.key].drop_unknown_fields
+    }
+  }
+
+  dynamic "cloud_storage_config" {
+    for_each = try(var.cloud_storage_subscription_configs[each.key], null) == null ? [] : [""]
+    content {
+      bucket          = var.cloud_storage_subscription_configs[each.key].bucket
+      filename_prefix = var.cloud_storage_subscription_configs[each.key].filename_prefix
+      filename_suffix = var.cloud_storage_subscription_configs[each.key].filename_suffix
+      max_duration    = var.cloud_storage_subscription_configs[each.key].max_duration
+      max_bytes       = var.cloud_storage_subscription_configs[each.key].max_bytes
+      dynamic "avro_config" {
+        for_each = (
+          local.metadata_config[each.key] == null ? [] : [""]
+        )
+        content {
+          write_metadata = local.metadata_config[each.key].write_metadata
+        }
+      }
     }
   }
 }
