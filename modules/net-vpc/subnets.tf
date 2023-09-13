@@ -139,7 +139,8 @@ resource "google_compute_subnetwork" "proxy_only" {
     each.value.purpose,
     each.value.global != false
     ? "GLOBAL_MANAGED_PROXY"
-  : "REGIONAL_MANAGED_PROXY")
+    : "REGIONAL_MANAGED_PROXY"
+  )
 
   role = each.value.active != false ? "ACTIVE" : "BACKUP"
 }
