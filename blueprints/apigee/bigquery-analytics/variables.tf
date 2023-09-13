@@ -38,7 +38,6 @@ variable "environments" {
     }))
     iam       = optional(map(list(string)))
     envgroups = optional(list(string))
-    regions   = optional(list(string))
   }))
   nullable = false
 }
@@ -52,6 +51,7 @@ variable "instances" {
     troubleshooting_ip_cidr_range = string
     disk_encryption_key           = optional(string)
     consumer_accept_list          = optional(list(string))
+    environments                  = optional(list(string))
   }))
   nullable = false
 }
