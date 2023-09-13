@@ -130,22 +130,22 @@ Cloud Storage subscriptions need extra configuration in the `cloud_storage_subsc
 
 ```hcl
 module "pubsub" {
-  source      = "./fabric/modules/pubsub"
+  source     = "./fabric/modules/pubsub"
   project_id = "my-project"
-  name        = "my-topic"
+  name       = "my-topic"
   subscriptions = {
     test-cloudstorage = null
   }
   cloud_storage_subscription_configs = {
     test-cloudstorage = {
-        bucket          = "my-bucket"
-        filename_prefix = "test_prefix"
-        filename_suffix = "test_suffix"
-        max_duration    = "100s"
-        max_bytes       = 1000
-        avro_config = {
-            write_metadata = true
-        }
+      bucket          = "my-bucket"
+      filename_prefix = "test_prefix"
+      filename_suffix = "test_suffix"
+      max_duration    = "100s"
+      max_bytes       = 1000
+      avro_config = {
+        write_metadata = true
+      }
     }
   }
 }
