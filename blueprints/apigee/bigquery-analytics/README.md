@@ -53,14 +53,13 @@ Do the following to verify that everything works as expected.
 
 4. At 4am (UTC) every day the Cloud Scheduler will run and will export the analytics to the BigQuery table. Double-check they are there.
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [envgroups](variables.tf#L24) | Environment groups (NAME => [HOSTNAMES]). | <code>map&#40;list&#40;string&#41;&#41;</code> | ✓ |  |
-| [environments](variables.tf#L30) | Environments. | <code title="map&#40;object&#40;&#123;&#10;  display_name &#61; optional&#40;string&#41;&#10;  description  &#61; optional&#40;string&#41;&#10;  node_config &#61; optional&#40;object&#40;&#123;&#10;    min_node_count &#61; optional&#40;number&#41;&#10;    max_node_count &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  iam       &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  envgroups &#61; optional&#40;list&#40;string&#41;&#41;&#10;  regions   &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [instances](variables.tf#L46) | Instance. | <code title="map&#40;object&#40;&#123;&#10;  display_name                  &#61; optional&#40;string&#41;&#10;  description                   &#61; optional&#40;string&#41;&#10;  runtime_ip_cidr_range         &#61; string&#10;  troubleshooting_ip_cidr_range &#61; string&#10;  disk_encryption_key           &#61; optional&#40;string&#41;&#10;  consumer_accept_list          &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [environments](variables.tf#L30) | Environments. | <code title="map&#40;object&#40;&#123;&#10;  display_name &#61; optional&#40;string&#41;&#10;  description  &#61; optional&#40;string&#41;&#10;  node_config &#61; optional&#40;object&#40;&#123;&#10;    min_node_count &#61; optional&#40;number&#41;&#10;    max_node_count &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  iam       &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  envgroups &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [instances](variables.tf#L45) | Instance. | <code title="map&#40;object&#40;&#123;&#10;  display_name                  &#61; optional&#40;string&#41;&#10;  description                   &#61; optional&#40;string&#41;&#10;  runtime_ip_cidr_range         &#61; string&#10;  troubleshooting_ip_cidr_range &#61; string&#10;  disk_encryption_key           &#61; optional&#40;string&#41;&#10;  consumer_accept_list          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  environments                  &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L91) | Project ID. | <code>string</code> | ✓ |  |
 | [psc_config](variables.tf#L97) | PSC configuration. | <code>map&#40;string&#41;</code> | ✓ |  |
 | [datastore_name](variables.tf#L17) | Datastore. | <code>string</code> |  | <code>&#34;gcs&#34;</code> |
@@ -74,7 +73,6 @@ Do the following to verify that everything works as expected.
 | name | description | sensitive |
 |---|---|:---:|
 | [ip_address](outputs.tf#L17) | IP address. |  |
-
 <!-- END TFDOC -->
 ## Test
 
@@ -92,13 +90,13 @@ module "test" {
   environments = {
     apis-test = {
       envgroups = ["test"]
-      regions   = ["europe-west1"]
     }
   }
   instances = {
     europe-west1 = {
       runtime_ip_cidr_range         = "10.0.4.0/22"
       troubleshooting_ip_cidr_range = "10.1.0.0/28"
+      environments                  = ["apis-test"]
     }
   }
   psc_config = {
