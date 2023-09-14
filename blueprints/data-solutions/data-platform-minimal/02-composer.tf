@@ -63,7 +63,7 @@ resource "google_composer_environment" "processing-cmp-0" {
       env_variables            = local.env_variables
       image_version            = var.composer_config.software_config.image_version
       cloud_data_lineage_integration {
-        enabled = var.composer_config.software_config.cloud_data_lineage_integration.enabled
+        enabled = var.composer_config.software_config.cloud_data_lineage_integration
       }
     }
     workloads_config {
