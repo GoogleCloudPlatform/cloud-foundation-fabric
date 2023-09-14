@@ -50,7 +50,10 @@ module "cluster-1" {
 
 ### Cloud DNS
 
-This example shows how to [use Cloud DNS as a Kubernetes DNS provider](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns) for GKE Standard clusters.
+This example shows how to [use Cloud DNS as a Kubernetes DNS provider](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns).
+
+> **Warning**
+> [Cloud DNS is the only DNS provider for Autopilot clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/service-discovery#cloud_dns) running version 1.25.9-gke.400 and later, and version 1.26.4-gke.500 and later. It is pre-configured by default for those clusters. The following example *only* applies to Autopilot clusters running *earlier* versions.
 
 ```hcl
 module "cluster-1" {
