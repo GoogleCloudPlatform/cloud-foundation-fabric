@@ -216,9 +216,10 @@ variable "service_account" {
 }
 
 variable "tags" {
-  description = "Network tags applied to nodes."
+  description = "Applies the specified network tags to all nodes in this Autopilot cluster. Network tags are metadata on Compute Engine virtual machines (VMs) that allow you to make firewall rules and routes applicable to specific VM instances. In GKE, you can use network tags to make firewall rules or routes applicable to the nodes in your cluster."
   type        = list(string)
-  default     = null
+  default     = []
+  nullable    = false
 }
 
 variable "vpc_config" {

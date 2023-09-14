@@ -231,6 +231,22 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  # FIXME there would be no need for a dynamic block if an empty list of tags were not treated as a diff you can't get rid of...
+  dynamic "node_pool_auto_config" {
+    for_each = length(var.tags) > 0 ? [""] : []
+    content {
+      network_tags {
+        tags = var.tags
+      }
+    }
+  }
+
+  # node_pool_auto_config {
+  #   network_tags {
+  #     tags = var.tags
+  #   }
+  # }
+
   dynamic "private_cluster_config" {
     for_each = (
       var.private_cluster_config != null ? [""] : []
