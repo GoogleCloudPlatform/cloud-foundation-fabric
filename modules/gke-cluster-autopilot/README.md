@@ -64,7 +64,7 @@ module "cluster-1" {
   vpc_config = {
     network               = var.vpc.self_link
     subnetwork            = var.subnet.self_link
-    secondary_range_names = { pods = "pods", services = "services" }
+    secondary_range_names = {} # use default names "pods" and "services"
   }
   enable_features = {
     dns = {
@@ -91,8 +91,9 @@ module "cluster-1" {
   name       = "cluster-1"
   location   = "europe-west1"
   vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {} # use default names "pods" and "services"
   }
   logging_config = {
     enable_api_server_logs         = true
@@ -120,8 +121,9 @@ module "cluster-1" {
   name       = "cluster-1"
   location   = "europe-west1"
   vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {} # use default names "pods" and "services"
   }
   monitoring_config = {
     enable_api_server_metrics         = true
@@ -155,7 +157,7 @@ module "cluster-1" {
   vpc_config = {
     network               = var.vpc.self_link
     subnetwork            = var.subnet.self_link
-    secondary_range_names = { pods = "pods", services = "services" }
+    secondary_range_names = { }
   }
   backup_configs = {
     enable_backup_agent = true

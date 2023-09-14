@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,9 +82,9 @@ variable "clusters" {
         services = string
       }))
       secondary_range_names = optional(object({
-        pods     = string
-        services = string
-      }), { pods = "pods", services = "services" })
+        pods     = optional(string, "pods")
+        services = optional(string, "services")
+      }))
       master_authorized_ranges = optional(map(string))
       master_ipv4_cidr_block   = optional(string)
     })

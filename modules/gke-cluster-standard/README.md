@@ -45,12 +45,9 @@ module "cluster-1" {
   name       = "cluster-dataplane-v2"
   location   = "europe-west1-b"
   vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
-    secondary_range_names = {
-      pods     = "pods"
-      services = "services"
-    }
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {} # use default names "pods" and "services"
     master_authorized_ranges = {
       internal-vms = "10.0.0.0/8"
     }
@@ -84,8 +81,9 @@ module "cluster-1" {
   name       = "cluster-1"
   location   = "europe-west1-b"
   vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {}
   }
   logging_config = {
     enable_workloads_logs          = true
@@ -113,8 +111,9 @@ module "cluster-1" {
   name       = "cluster-1"
   location   = "europe-west1-b"
   vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {}
   }
   logging_config = {
     enable_system_logs = false
@@ -136,7 +135,7 @@ module "cluster-1" {
   vpc_config = {
     network               = var.vpc.self_link
     subnetwork            = var.subnet.self_link
-    secondary_range_names = { pods = "pods", services = "services" }
+    secondary_range_names = {}
   }
   enable_features = {
     dns = {
@@ -162,7 +161,7 @@ module "cluster-1" {
   vpc_config = {
     network               = var.vpc.self_link
     subnetwork            = var.subnet.self_link
-    secondary_range_names = { pods = "pods", services = "services" }
+    secondary_range_names = { }
   }
   backup_configs = {
     enable_backup_agent = true
