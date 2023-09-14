@@ -175,6 +175,29 @@ module "cluster-1" {
 }
 # tftest modules=1 resources=2 inventory=backup.yaml
 ```
+
+### Automatic creation of new secondary ranges
+
+You can use `var.vpc_config.secondary_range_blocks` to let GKE create new secondary ranges for the cluster. The example below reserves an available /14 block for pods and a /20 for services.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-standard"
+  project_id = var.project_id
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    secondary_range_blocks = {
+      pods     = ""
+      services = "/20" # can be an empty string as well
+    }
+  }
+}
+# tftest modules=1 resources=1
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
