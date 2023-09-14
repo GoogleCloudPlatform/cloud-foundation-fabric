@@ -203,7 +203,7 @@ module "cluster-1" {
 | [ca_certificate](outputs.tf#L17) | Public certificate of the cluster (base64-encoded). | ✓ |
 | [cluster](outputs.tf#L23) | Cluster resource. | ✓ |
 | [endpoint](outputs.tf#L29) | Cluster endpoint. |  |
-| [id](outputs.tf#L34) | Fully qualified cluster id. |  |
+| [id](outputs.tf#L34) | Fully qualified cluster ID. |  |
 | [location](outputs.tf#L39) | Cluster location. |  |
 | [master_version](outputs.tf#L44) | Master version. |  |
 | [name](outputs.tf#L49) | Cluster name. |  |
