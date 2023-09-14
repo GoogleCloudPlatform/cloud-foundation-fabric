@@ -220,6 +220,30 @@ variable "tags" {
   type        = list(string)
   default     = []
   nullable    = false
+  validation {
+    condition     = length(var.tags) < 64
+    error_message = "The maximum number of tags per node is limited to 64. GKE auto-assigns a tag as well which reduces that number by one."
+  }
+  validation {
+    condition     = length(var.tags) == length(distinct(var.tags))
+    error_message = "All network tags provided must be unique within their VPC."
+  }
+  validation {
+    condition     = alltrue([for t in var.tags : length(t) < 64])
+    error_message = "Maximum number of characters for each network tag is 63."
+  }
+  validation {
+    condition     = alltrue([for t in var.tags : length(regexall("^[a-z]{1}", t)) > 0])
+    error_message = "All network tags must start with a lowercase letter."
+  }
+  validation {
+    condition     = alltrue([for t in var.tags : length(regexall("([a-z]|[0-9]){1}$", t)) > 0])
+    error_message = "All network tags must end with either a number or a lowercase letter."
+  }
+  validation {
+    condition     = alltrue([for t in var.tags : length(regexall("([a-z]|[0-9]|-)+$", t)) > 0])
+    error_message = "Acceptable characters for a network tag are: lowercase letters, numbers, dashes."
+  }
 }
 
 variable "vpc_config" {
