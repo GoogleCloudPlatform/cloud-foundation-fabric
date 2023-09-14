@@ -207,7 +207,7 @@ resource "google_container_cluster" "cluster" {
     enable_components = toset(compact([
       # System metrics collection cannot be disabled for Autopilot clusters.
       "SYSTEM_COMPONENTS",
-      # Control plane metrics.
+      # Control plane metrics:
       var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
       var.monitoring_config.enable_controller_manager_metrics ? "CONTROLLER_MANAGER" : null,
       var.monitoring_config.enable_scheduler_metrics ? "SCHEDULER" : null,

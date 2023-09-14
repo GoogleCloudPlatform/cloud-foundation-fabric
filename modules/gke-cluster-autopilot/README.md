@@ -50,10 +50,10 @@ module "cluster-1" {
 
 ### Cloud DNS
 
-This example shows how to [use Cloud DNS as a Kubernetes DNS provider](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns).
-
-> **Warning**
+> [!WARNING]
 > [Cloud DNS is the only DNS provider for Autopilot clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/service-discovery#cloud_dns) running version `1.25.9-gke.400` and later, and version `1.26.4-gke.500` and later. It is [pre-configured](https://cloud.google.com/kubernetes-engine/docs/resources/autopilot-standard-feature-comparison#feature-comparison) for those clusters. The following example *only* applies to Autopilot clusters running *earlier* versions.
+
+This example shows how to [use Cloud DNS as a Kubernetes DNS provider](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns).
 
 ```hcl
 module "cluster-1" {
@@ -79,10 +79,10 @@ module "cluster-1" {
 
 ### Logging configuration
 
-This example shows how to [collect logs for the Kubernetes control plane components](https://cloud.google.com/stackdriver/docs/solutions/gke/installing). The logs for these components are not collected by default. 
-
-> **Note**
+> [!NOTE]
 > System and workload logs collection is pre-configured for Autopilot clusters and cannot be disabled.
+
+This example shows how to [collect logs for the Kubernetes control plane components](https://cloud.google.com/stackdriver/docs/solutions/gke/installing). The logs for these components are not collected by default. 
 
 ```hcl
 module "cluster-1" {
@@ -106,13 +106,13 @@ module "cluster-1" {
 
 ### Monitoring configuration
 
-This example shows how to [configure collection of Kubernetes control plane metrics](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-metrics#enable-control-plane-metrics). The metrics for these components are not collected by default.
-
-> **Note**
+> [!NOTE]
 > System metrics collection is pre-configured for Autopilot clusters and cannot be disabled.
 
-> **Warning**
+> [!WARNING]
 > GKE **workload metrics** is deprecated and removed in GKE 1.24 and later. Workload metrics is replaced by [Google Cloud Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus), which is Google's recommended way to monitor Kubernetes applications by using Cloud Monitoring.
+
+This example shows how to [configure collection of Kubernetes control plane metrics](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-metrics#enable-control-plane-metrics). The metrics for these components are not collected by default.
 
 ```hcl
 module "cluster-1" {
@@ -136,13 +136,13 @@ module "cluster-1" {
 
 ### Backup for GKE
 
+> [!NOTE]
+> Although Backup for GKE can be enabled as an add-on when configuring your GKE clusters, it is a separate service from GKE.
+
 [Backup for GKE](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke) is a service for backing up and restoring workloads in GKE clusters. It has two components:
 
 * A [Google Cloud API](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/reference/rest) that serves as the control plane for the service.
 * A GKE add-on (the [Backup for GKE agent](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke#agent_overview)) that must be enabled in each cluster for which you wish to perform backup and restore operations.
-
-> **Note**
-> Although Backup for GKE can be enabled as an add-on when configuring your GKE clusters, it is a separate service from GKE.
 
 Backup for GKE is supported in GKE Autopilot clusters with [some restrictions](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/about-autopilot).
 
