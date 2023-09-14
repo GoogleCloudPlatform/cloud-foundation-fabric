@@ -45,12 +45,9 @@ module "cluster-1" {
   name       = "cluster-dataplane-v2"
   location   = "europe-west1-b"
   vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
-    secondary_range_names = {
-      pods     = "pods"
-      services = "services"
-    }
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {} # use default names "pods" and "services"
     master_authorized_ranges = {
       internal-vms = "10.0.0.0/8"
     }
@@ -84,8 +81,9 @@ module "cluster-1" {
   name       = "cluster-1"
   location   = "europe-west1-b"
   vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {}
   }
   logging_config = {
     enable_workloads_logs          = true
@@ -113,8 +111,9 @@ module "cluster-1" {
   name       = "cluster-1"
   location   = "europe-west1-b"
   vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {}
   }
   logging_config = {
     enable_system_logs = false
@@ -136,7 +135,7 @@ module "cluster-1" {
   vpc_config = {
     network               = var.vpc.self_link
     subnetwork            = var.subnet.self_link
-    secondary_range_names = { pods = "pods", services = "services" }
+    secondary_range_names = {}
   }
   enable_features = {
     dns = {
@@ -162,7 +161,7 @@ module "cluster-1" {
   vpc_config = {
     network               = var.vpc.self_link
     subnetwork            = var.subnet.self_link
-    secondary_range_names = { pods = "pods", services = "services" }
+    secondary_range_names = {}
   }
   backup_configs = {
     enable_backup_agent = true
@@ -176,6 +175,29 @@ module "cluster-1" {
 }
 # tftest modules=1 resources=2 inventory=backup.yaml
 ```
+
+### Automatic creation of new secondary ranges
+
+You can use `var.vpc_config.secondary_range_blocks` to let GKE create new secondary ranges for the cluster. The example below reserves an available /14 block for pods and a /20 for services.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-standard"
+  project_id = var.project_id
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    secondary_range_blocks = {
+      pods     = ""
+      services = "/20" # can be an empty string as well
+    }
+  }
+}
+# tftest modules=1 resources=1
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -184,7 +206,7 @@ module "cluster-1" {
 | [location](variables.tf#L138) | Cluster zone or region. | <code>string</code> | ✓ |  |
 | [name](variables.tf#L210) | Cluster name. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L236) | Cluster project id. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L253) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network                &#61; string&#10;  subnetwork             &#61; string&#10;  master_ipv4_cidr_block &#61; optional&#40;string&#41;&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;, &#123; pods &#61; &#34;pods&#34;, services &#61; &#34;services&#34; &#125;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;  stack_type               &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vpc_config](variables.tf#L253) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network                &#61; string&#10;  subnetwork             &#61; string&#10;  master_ipv4_cidr_block &#61; optional&#40;string&#41;&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;    services &#61; optional&#40;string, &#34;services&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;  stack_type               &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [backup_configs](variables.tf#L17) | Configuration for Backup for GKE. | <code title="object&#40;&#123;&#10;  enable_backup_agent &#61; optional&#40;bool, false&#41;&#10;  backup_plans &#61; optional&#40;map&#40;object&#40;&#123;&#10;    encryption_key                    &#61; optional&#40;string&#41;&#10;    include_secrets                   &#61; optional&#40;bool, true&#41;&#10;    include_volume_data               &#61; optional&#40;bool, true&#41;&#10;    namespaces                        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    region                            &#61; string&#10;    schedule                          &#61; string&#10;    retention_policy_days             &#61; optional&#40;string&#41;&#10;    retention_policy_lock             &#61; optional&#40;bool, false&#41;&#10;    retention_policy_delete_lock_days &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [cluster_autoscaling](variables.tf#L37) | Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler. | <code title="object&#40;&#123;&#10;  auto_provisioning_defaults &#61; optional&#40;object&#40;&#123;&#10;    boot_disk_kms_key &#61; optional&#40;string&#41;&#10;    image_type        &#61; optional&#40;string&#41;&#10;    oauth_scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    service_account   &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cpu_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  mem_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [description](variables.tf#L58) | Cluster description. | <code>string</code> |  | <code>null</code> |
