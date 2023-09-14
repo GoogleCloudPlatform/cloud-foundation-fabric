@@ -25,7 +25,7 @@ variable "composer_config" {
       image_version            = optional(string, "composer-2-airflow-2")
       cloud_data_lineage_integration = optional(object({
         enabled = bool
-      }), {enabled = true})      
+      }), { enabled = true })
     }), {})
     web_server_access_control = optional(map(string), {})
     workloads_config = optional(object({
