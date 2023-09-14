@@ -231,6 +231,15 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "node_pool_auto_config" {
+    for_each = length(var.tags) > 0 ? [""] : []
+    content {
+      network_tags {
+        tags = toset(var.tags)
+      }
+    }
+  }
+
   dynamic "private_cluster_config" {
     for_each = (
       var.private_cluster_config != null ? [""] : []

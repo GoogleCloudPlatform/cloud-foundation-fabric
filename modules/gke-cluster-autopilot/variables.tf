@@ -218,7 +218,8 @@ variable "service_account" {
 variable "tags" {
   description = "Network tags applied to nodes."
   type        = list(string)
-  default     = null
+  default     = []
+  nullable    = false
 }
 
 variable "vpc_config" {
