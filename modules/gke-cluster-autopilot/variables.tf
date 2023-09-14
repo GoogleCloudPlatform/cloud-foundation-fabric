@@ -108,7 +108,7 @@ variable "labels" {
 }
 
 variable "location" {
-  description = "Autopilot cluster are always regional."
+  description = "Autopilot clusters are always regional."
   type        = string
 }
 
@@ -194,7 +194,7 @@ variable "private_cluster_config" {
 }
 
 variable "project_id" {
-  description = "Cluster project id."
+  description = "Cluster project ID."
   type        = string
 }
 
