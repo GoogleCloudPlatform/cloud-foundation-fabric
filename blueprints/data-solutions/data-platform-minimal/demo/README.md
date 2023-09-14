@@ -54,5 +54,5 @@ source ./env.sh
 gsutil -i $LND_SA cp demo/data/*.csv gs://$LND_GCS
 gsutil -i $CMP_SA cp demo/data/*.j* gs://$PRC_GCS
 gsutil -i $CMP_SA cp demo/pyspark_* gs://$PRC_GCS
-gsutil -i $CMP_SA cp demo/dag_*.py $CMP_GCS
+gsutil -i $CMP_SA cp demo/dag_*.py gs://$CMP_GCS/dags
 ```
