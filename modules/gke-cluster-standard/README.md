@@ -1,10 +1,29 @@
-# GKE cluster Standard  module
+# GKE Standard cluster module
 
-This module allows simplified creation and management of GKE Standard clusters and should be used together with the GKE nodepool module, as the default nodepool is turned off here and cannot be re-enabled. Some sensible defaults are set initially, in order to allow less verbose usage for most use cases.
+This module offers a way to create and manage Google Kubernetes Engine (GKE) [Standard clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/choose-cluster-mode#why-standard). With its sensible default settings based on best practices and authors' experience as Google Cloud practitioners, the module accommodates for many common use cases out-of-the-box, without having to rely on verbose configuration.
+
+> [!IMPORTANT]
+> This module should be used together with the [`gke-nodepool`](../gke-nodepool/) module because the default node pool is deleted upon cluster creation and cannot be re-created.
+
+<!-- BEGIN TOC -->
+- [Example](#example)
+  - [GKE Standard cluster](#gke-standard-cluster)
+  - [Enable Dataplane V2](#enable-dataplane-v2)
+  - [Managing GKE logs](#managing-gke-logs)
+  - [Monitoring configuration](#monitoring-configuration)
+  - [Disable GKE logs or metrics collection](#disable-gke-logs-or-metrics-collection)
+  - [Cloud DNS](#cloud-dns)
+  - [Backup for GKE](#backup-for-gke)
+  - [Automatic creation of new secondary ranges](#automatic-creation-of-new-secondary-ranges)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Example
 
-### GKE Cluster
+### GKE Standard cluster
+
+This example shows how to [create a zonal GKE cluster in Standard mode](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-zonal-cluster).
 
 ```hcl
 module "cluster-1" {
@@ -36,7 +55,9 @@ module "cluster-1" {
 # tftest modules=1 resources=1 inventory=basic.yaml
 ```
 
-### GKE Cluster with Dataplane V2 enabled
+### Enable Dataplane V2
+
+This example shows how to [create a zonal GKE Cluster with Dataplane V2 enabled](https://cloud.google.com/kubernetes-engine/docs/how-to/dataplane-v2).
 
 ```hcl
 module "cluster-1" {
@@ -95,14 +116,39 @@ module "cluster-1" {
 # tftest modules=1 resources=1 inventory=logging-config-enable-all.yaml
 ```
 
-### Disable GKE logs collection
+### Monitoring configuration
 
-This example shows how to fully disable logs collection on a GKE Standard cluster. This is not recommended.
+This example shows how to [configure collection of Kubernetes control plane metrics](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-metrics#enable-control-plane-metrics). The metrics for these components are not collected by default.
 
-> **Warning**
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-standard"
+  project_id = "myproject"
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {}
+  }
+  monitoring_config = {
+    enable_api_server_metrics         = true
+    enable_controller_manager_metrics = true
+    enable_scheduler_metrics          = true
+  }
+}
+# tftest modules=1 resources=1 inventory=monitoring-config-control-plane.yaml
+```
+
+
+### Disable GKE logs or metrics collection
+
+> [!WARNING]
 > If you've disabled Cloud Logging or Cloud Monitoring, GKE customer support
 > is offered on a best-effort basis and might require additional effort
 > from your engineering team.
+
+This example shows how to fully disable logs collection on a zonal GKE Standard cluster. This is not recommended.
 
 ```hcl
 module "cluster-1" {
@@ -120,6 +166,27 @@ module "cluster-1" {
   }
 }
 # tftest modules=1 resources=1 inventory=logging-config-disable-all.yaml
+```
+
+This example shows how to fully disable metrics collection on a zonal GKE Standard cluster. This is not recommended.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-standard"
+  project_id = "myproject"
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {}
+  }
+  monitoring_config = {
+    enable_system_metrics     = false
+    enable_managed_prometheus = false
+  }
+}
+# tftest modules=1 resources=1 inventory=monitoring-config-disable-all.yaml
 ```
 
 ### Cloud DNS
@@ -150,7 +217,15 @@ module "cluster-1" {
 
 ### Backup for GKE
 
-This example shows how to [enable the Backup for GKE agent and configure a Backup Plan](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke) for GKE Standard clusters.
+> [!NOTE]
+> Although Backup for GKE can be enabled as an add-on when configuring your GKE clusters, it is a separate service from GKE.
+
+[Backup for GKE](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke) is a service for backing up and restoring workloads in GKE clusters. It has two components:
+
+* A [Google Cloud API](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/reference/rest) that serves as the control plane for the service.
+* A GKE add-on (the [Backup for GKE agent](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke#agent_overview)) that must be enabled in each cluster for which you wish to perform backup and restore operations.
+
+This example shows how to [enable Backup for GKE on a new zonal GKE Standard cluster](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/how-to/install#enable_on_a_new_cluster_optional) and [plan a set of backups](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/how-to/backup-plan).
 
 ```hcl
 module "cluster-1" {
@@ -197,16 +272,15 @@ module "cluster-1" {
 }
 # tftest modules=1 resources=1
 ```
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [location](variables.tf#L138) | Cluster zone or region. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L210) | Cluster name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L236) | Cluster project id. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L253) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network                &#61; string&#10;  subnetwork             &#61; string&#10;  master_ipv4_cidr_block &#61; optional&#40;string&#41;&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;    services &#61; optional&#40;string, &#34;services&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;  stack_type               &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L226) | Cluster name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L252) | Cluster project id. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L269) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network                &#61; string&#10;  subnetwork             &#61; string&#10;  master_ipv4_cidr_block &#61; optional&#40;string&#41;&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;    services &#61; optional&#40;string, &#34;services&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;  stack_type               &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [backup_configs](variables.tf#L17) | Configuration for Backup for GKE. | <code title="object&#40;&#123;&#10;  enable_backup_agent &#61; optional&#40;bool, false&#41;&#10;  backup_plans &#61; optional&#40;map&#40;object&#40;&#123;&#10;    encryption_key                    &#61; optional&#40;string&#41;&#10;    include_secrets                   &#61; optional&#40;bool, true&#41;&#10;    include_volume_data               &#61; optional&#40;bool, true&#41;&#10;    namespaces                        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    region                            &#61; string&#10;    schedule                          &#61; string&#10;    retention_policy_days             &#61; optional&#40;string&#41;&#10;    retention_policy_lock             &#61; optional&#40;bool, false&#41;&#10;    retention_policy_delete_lock_days &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [cluster_autoscaling](variables.tf#L37) | Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler. | <code title="object&#40;&#123;&#10;  auto_provisioning_defaults &#61; optional&#40;object&#40;&#123;&#10;    boot_disk_kms_key &#61; optional&#40;string&#41;&#10;    image_type        &#61; optional&#40;string&#41;&#10;    oauth_scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    service_account   &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cpu_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  mem_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [description](variables.tf#L58) | Cluster description. | <code>string</code> |  | <code>null</code> |
@@ -218,11 +292,11 @@ module "cluster-1" {
 | [maintenance_config](variables.tf#L164) | Maintenance window configuration. | <code title="object&#40;&#123;&#10;  daily_window_start_time &#61; optional&#40;string&#41;&#10;  recurring_window &#61; optional&#40;object&#40;&#123;&#10;    start_time &#61; string&#10;    end_time   &#61; string&#10;    recurrence &#61; string&#10;  &#125;&#41;&#41;&#10;  maintenance_exclusions &#61; optional&#40;list&#40;object&#40;&#123;&#10;    name       &#61; string&#10;    start_time &#61; string&#10;    end_time   &#61; string&#10;    scope      &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  daily_window_start_time &#61; &#34;03:00&#34;&#10;  recurring_window        &#61; null&#10;  maintenance_exclusion   &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [max_pods_per_node](variables.tf#L187) | Maximum number of pods per node in this cluster. | <code>number</code> |  | <code>110</code> |
 | [min_master_version](variables.tf#L193) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
-| [monitoring_config](variables.tf#L199) | Monitoring components. | <code title="object&#40;&#123;&#10;  enable_components  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  managed_prometheus &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enable_components &#61; &#91;&#34;SYSTEM_COMPONENTS&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [node_locations](variables.tf#L215) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [private_cluster_config](variables.tf#L222) | Private cluster configuration. | <code title="object&#40;&#123;&#10;  enable_private_endpoint &#61; optional&#40;bool&#41;&#10;  master_global_access    &#61; optional&#40;bool&#41;&#10;  peering_config &#61; optional&#40;object&#40;&#123;&#10;    export_routes &#61; optional&#40;bool&#41;&#10;    import_routes &#61; optional&#40;bool&#41;&#10;    project_id    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [release_channel](variables.tf#L241) | Release channel for GKE upgrades. | <code>string</code> |  | <code>null</code> |
-| [tags](variables.tf#L247) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [monitoring_config](variables.tf#L199) | Monitoring configuration. Google Cloud Managed Service for Prometheus is enabled by default. | <code title="object&#40;&#123;&#10;  enable_system_metrics &#61; optional&#40;bool, true&#41;&#10;  enable_api_server_metrics         &#61; optional&#40;bool, false&#41;&#10;  enable_controller_manager_metrics &#61; optional&#40;bool, false&#41;&#10;  enable_scheduler_metrics          &#61; optional&#40;bool, false&#41;&#10;  enable_managed_prometheus &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [node_locations](variables.tf#L231) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [private_cluster_config](variables.tf#L238) | Private cluster configuration. | <code title="object&#40;&#123;&#10;  enable_private_endpoint &#61; optional&#40;bool&#41;&#10;  master_global_access    &#61; optional&#40;bool&#41;&#10;  peering_config &#61; optional&#40;object&#40;&#123;&#10;    export_routes &#61; optional&#40;bool&#41;&#10;    import_routes &#61; optional&#40;bool&#41;&#10;    project_id    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [release_channel](variables.tf#L257) | Release channel for GKE upgrades. | <code>string</code> |  | <code>null</code> |
+| [tags](variables.tf#L263) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

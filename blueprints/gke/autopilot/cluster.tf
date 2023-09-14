@@ -30,8 +30,9 @@ module "cluster" {
   #   autopilot = true
   # }
   # monitoring_config = {
-  #   enenable_components = ["SYSTEM_COMPONENTS"]
-  #   managed_prometheus  = true
+  #   enable_api_server_metrics         = true
+  #   enable_controller_manager_metrics = true
+  #   enable_scheduler_metrics          = true
   # }
   # cluster_autoscaling = {
   #   auto_provisioning_defaults = {

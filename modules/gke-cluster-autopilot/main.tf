@@ -103,6 +103,13 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "gateway_api_config" {
+    for_each = var.enable_features.gateway_api ? [""] : []
+    content {
+      channel = "CHANNEL_STANDARD"
+    }
+  }
+
   dynamic "ip_allocation_policy" {
     for_each = var.vpc_config.secondary_range_blocks != null ? [""] : []
     content {
@@ -129,13 +136,6 @@ resource "google_container_cluster" "cluster" {
       "SYSTEM_COMPONENTS",
       "WORKLOADS",
     ]))
-  }
-
-  dynamic "gateway_api_config" {
-    for_each = var.enable_features.gateway_api ? [""] : []
-    content {
-      channel = "CHANNEL_STANDARD"
-    }
   }
 
   maintenance_policy {
@@ -207,7 +207,7 @@ resource "google_container_cluster" "cluster" {
     enable_components = toset(compact([
       # System metrics collection cannot be disabled for Autopilot clusters.
       "SYSTEM_COMPONENTS",
-      # Control plane metrics.
+      # Control plane metrics:
       var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
       var.monitoring_config.enable_controller_manager_metrics ? "CONTROLLER_MANAGER" : null,
       var.monitoring_config.enable_scheduler_metrics ? "SCHEDULER" : null,

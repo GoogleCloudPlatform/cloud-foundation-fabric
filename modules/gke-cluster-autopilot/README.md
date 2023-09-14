@@ -50,10 +50,10 @@ module "cluster-1" {
 
 ### Cloud DNS
 
-This example shows how to [use Cloud DNS as a Kubernetes DNS provider](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns).
-
-> **Warning**
+> [!WARNING]
 > [Cloud DNS is the only DNS provider for Autopilot clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/service-discovery#cloud_dns) running version `1.25.9-gke.400` and later, and version `1.26.4-gke.500` and later. It is [pre-configured](https://cloud.google.com/kubernetes-engine/docs/resources/autopilot-standard-feature-comparison#feature-comparison) for those clusters. The following example *only* applies to Autopilot clusters running *earlier* versions.
+
+This example shows how to [use Cloud DNS as a Kubernetes DNS provider](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns).
 
 ```hcl
 module "cluster-1" {
@@ -79,10 +79,10 @@ module "cluster-1" {
 
 ### Logging configuration
 
-This example shows how to [collect logs for the Kubernetes control plane components](https://cloud.google.com/stackdriver/docs/solutions/gke/installing). The logs for these components are not collected by default. 
-
-> **Note**
+> [!NOTE]
 > System and workload logs collection is pre-configured for Autopilot clusters and cannot be disabled.
+
+This example shows how to [collect logs for the Kubernetes control plane components](https://cloud.google.com/stackdriver/docs/solutions/gke/installing). The logs for these components are not collected by default. 
 
 ```hcl
 module "cluster-1" {
@@ -106,13 +106,13 @@ module "cluster-1" {
 
 ### Monitoring configuration
 
-This example shows how to [configure collection of Kubernetes control plane metrics](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-metrics#enable-control-plane-metrics). The metrics for these components are not collected by default.
-
-> **Note**
+> [!NOTE]
 > System metrics collection is pre-configured for Autopilot clusters and cannot be disabled.
 
-> **Warning**
+> [!WARNING]
 > GKE **workload metrics** is deprecated and removed in GKE 1.24 and later. Workload metrics is replaced by [Google Cloud Managed Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus), which is Google's recommended way to monitor Kubernetes applications by using Cloud Monitoring.
+
+This example shows how to [configure collection of Kubernetes control plane metrics](https://cloud.google.com/stackdriver/docs/solutions/gke/managing-metrics#enable-control-plane-metrics). The metrics for these components are not collected by default.
 
 ```hcl
 module "cluster-1" {
@@ -136,13 +136,13 @@ module "cluster-1" {
 
 ### Backup for GKE
 
+> [!NOTE]
+> Although Backup for GKE can be enabled as an add-on when configuring your GKE clusters, it is a separate service from GKE.
+
 [Backup for GKE](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke) is a service for backing up and restoring workloads in GKE clusters. It has two components:
 
 * A [Google Cloud API](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/reference/rest) that serves as the control plane for the service.
 * A GKE add-on (the [Backup for GKE agent](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke#agent_overview)) that must be enabled in each cluster for which you wish to perform backup and restore operations.
-
-> **Note**
-> Although Backup for GKE can be enabled as an add-on when configuring your GKE clusters, it is a separate service from GKE.
 
 Backup for GKE is supported in GKE Autopilot clusters with [some restrictions](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/about-autopilot).
 
@@ -176,9 +176,9 @@ module "cluster-1" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [location](variables.tf#L110) | Autopilot cluster are always regional. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L110) | Autopilot clusters are always regional. | <code>string</code> | ✓ |  |
 | [name](variables.tf#L170) | Cluster name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L196) | Cluster project id. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L196) | Cluster project ID. | <code>string</code> | ✓ |  |
 | [vpc_config](variables.tf#L225) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network                &#61; string&#10;  subnetwork             &#61; string&#10;  master_ipv4_cidr_block &#61; optional&#40;string&#41;&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;    services &#61; optional&#40;string, &#34;services&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;  stack_type               &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [backup_configs](variables.tf#L17) | Configuration for Backup for GKE. | <code title="object&#40;&#123;&#10;  enable_backup_agent &#61; optional&#40;bool, false&#41;&#10;  backup_plans &#61; optional&#40;map&#40;object&#40;&#123;&#10;    encryption_key                    &#61; optional&#40;string&#41;&#10;    include_secrets                   &#61; optional&#40;bool, true&#41;&#10;    include_volume_data               &#61; optional&#40;bool, true&#41;&#10;    namespaces                        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    region                            &#61; string&#10;    schedule                          &#61; string&#10;    retention_policy_days             &#61; optional&#40;string&#41;&#10;    retention_policy_lock             &#61; optional&#40;bool, false&#41;&#10;    retention_policy_delete_lock_days &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L37) | Cluster description. | <code>string</code> |  | <code>null</code> |
@@ -203,7 +203,7 @@ module "cluster-1" {
 | [ca_certificate](outputs.tf#L17) | Public certificate of the cluster (base64-encoded). | ✓ |
 | [cluster](outputs.tf#L23) | Cluster resource. | ✓ |
 | [endpoint](outputs.tf#L29) | Cluster endpoint. |  |
-| [id](outputs.tf#L34) | Fully qualified cluster id. |  |
+| [id](outputs.tf#L34) | Fully qualified cluster ID. |  |
 | [location](outputs.tf#L39) | Cluster location. |  |
 | [master_version](outputs.tf#L44) | Master version. |  |
 | [name](outputs.tf#L49) | Cluster name. |  |

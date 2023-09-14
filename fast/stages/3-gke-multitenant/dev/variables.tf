@@ -40,7 +40,7 @@ variable "billing_account" {
 }
 
 variable "clusters" {
-  description = "Clusters configuration. Refer to the gke-cluster module for type details."
+  description = "Clusters configuration. Refer to the gke-cluster-standard module for type details."
   type = map(object({
     cluster_autoscaling = optional(any)
     description         = optional(string)
@@ -68,9 +68,18 @@ variable "clusters" {
     max_pods_per_node  = optional(number, 110)
     min_master_version = optional(string)
     monitoring_config = optional(object({
-      enable_components  = optional(list(string), ["SYSTEM_COMPONENTS"])
-      managed_prometheus = optional(bool)
-    }))
+      enable_system_metrics = optional(bool, true)
+
+      # Control plane metrics
+      enable_api_server_metrics         = optional(bool, false)
+      enable_controller_manager_metrics = optional(bool, false)
+      enable_scheduler_metrics          = optional(bool, false)
+
+      # TODO add kube state metrics
+
+      # Google Cloud Managed Service for Prometheus
+      enable_managed_prometheus = optional(bool, true)
+    }), {})
     node_locations         = optional(list(string))
     private_cluster_config = optional(any)
     release_channel        = optional(string)
