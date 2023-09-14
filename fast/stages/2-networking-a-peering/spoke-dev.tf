@@ -46,12 +46,14 @@ module "dev-spoke-project" {
 }
 
 module "dev-spoke-vpc" {
-  source      = "../../../modules/net-vpc"
-  project_id  = module.dev-spoke-project.project_id
-  name        = "dev-spoke-0"
-  mtu         = 1500
-  data_folder = "${var.factories_config.data_dir}/subnets/dev"
-  psa_config  = try(var.psa_ranges.dev, null)
+  source     = "../../../modules/net-vpc"
+  project_id = module.dev-spoke-project.project_id
+  name       = "dev-spoke-0"
+  mtu        = 1500
+  factories_config = {
+    subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
+  }
+  psa_config = try(var.psa_ranges.dev, null)
   # set explicit routes for googleapis in case the default route is deleted
   create_googleapis_routes = {
     private    = true

@@ -55,7 +55,9 @@ module "landing-vpc" {
     private    = true
     restricted = true
   }
-  data_folder = "${var.factories_config.data_dir}/subnets/landing"
+  factories_config = {
+    subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
+  }
 }
 
 module "landing-firewall" {

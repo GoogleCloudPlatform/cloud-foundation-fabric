@@ -112,38 +112,34 @@ module "vpc" {
       name          = "subnet-1"
       region        = "europe-west1"
       ip_cidr_range = "10.0.1.0/24"
+      iam = {
+        "roles/compute.networkUser" = [
+          "user:user1@example.com", "group:group1@example.com"
+        ]
+      }
+      iam_bindings = {
+        "roles/compute.networkUser" = {
+          members = ["group:group2@example.com"]
+          condition = {
+            expression = "resource.matchTag('123456789012/env', 'prod')"
+            title      = "test_condition"
+          }
+        }
+      }
     },
     {
       name          = "subnet-2"
       region        = "europe-west1"
       ip_cidr_range = "10.0.1.0/24"
-    }
-  ]
-  subnet_iam = {
-    "europe-west1/subnet-1" = {
-      "roles/compute.networkUser" = [
-        "user:user1@example.com", "group:group1@example.com"
-      ]
-    }
-  }
-  subnet_iam_bindings = {
-    "europe-west1/subnet-1" = {
-      "roles/compute.networkUser" = {
-        members = ["group:group2@example.com"]
-        condition = {
-          expression = "resource.matchTag('123456789012/env', 'prod')"
-          title      = "test_condition"
+      iam_bindings_additive = {
+        subnet-2-am1 = {
+          member = "user:am1@example.com"
+          role   = "roles/compute.networkUser"
+          subnet = "europe-west1/subnet-2"
         }
       }
     }
-  }
-  subnet_iam_bindings_additive = {
-    subnet-2-am1 = {
-      member = "user:am1@example.com"
-      role   = "roles/compute.networkUser"
-      subnet = "europe-west1/subnet-2"
-    }
-  }
+  ]
 }
 # tftest modules=1 resources=8 inventory=subnet-iam.yaml
 ```
@@ -212,6 +208,15 @@ module "vpc-host" {
         pods     = "172.16.0.0/20"
         services = "192.168.0.0/24"
       }
+      iam = {
+        "roles/compute.networkUser" = [
+          local.service_project_1.cloud_services_service_account,
+          local.service_project_1.gke_service_account
+        ]
+        "roles/compute.securityAdmin" = [
+          local.service_project_1.gke_service_account
+        ]
+      }
     }
   ]
   shared_vpc_host = true
@@ -219,17 +224,6 @@ module "vpc-host" {
     local.service_project_1.project_id,
     local.service_project_2.project_id
   ]
-  subnet_iam = {
-    "europe-west1/subnet-1" = {
-      "roles/compute.networkUser" = [
-        local.service_project_1.cloud_services_service_account,
-        local.service_project_1.gke_service_account
-      ]
-      "roles/compute.securityAdmin" = [
-        local.service_project_1.gke_service_account
-      ]
-    }
-  }
 }
 # tftest modules=1 resources=9 inventory=shared-vpc.yaml
 ```
@@ -350,10 +344,12 @@ The `net-vpc` module includes a subnet factory (see [Resource Factories](../../b
 
 ```hcl
 module "vpc" {
-  source      = "./fabric/modules/net-vpc"
-  project_id  = "my-project"
-  name        = "my-network"
-  data_folder = "config/subnets"
+  source     = "./fabric/modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-network"
+  factories_config = {
+    subnets_folder = "config/subnets"
+  }
 }
 # tftest modules=1 resources=10 files=subnet-simple,subnet-simple-2,subnet-detailed,subnet-proxy,subnet-proxy-global,subnet-psc inventory=factory.yaml
 ```
@@ -379,38 +375,39 @@ description: Sample description
 ip_cidr_range: 10.0.0.0/24
 # optional attributes
 enable_private_access: false  # defaults to true
-iam:                          # grant roles/compute.networkUser
-  - group:lorem@example.com
-  - serviceAccount:fbz@prj.iam.gserviceaccount.com
-  - user:foobar@example.com
+iam:
+  roles/compute.networkUser:
+    - group:lorem@example.com
+    - serviceAccount:fbz@prj.iam.gserviceaccount.com
+    - user:foobar@example.com
 secondary_ip_ranges:          # map of secondary ip ranges
   secondary-range-a: 192.168.0.0/24
-flow_logs:                    # enable, set to empty map to use defaults
+flow_logs_config:             # enable, set to empty map to use defaults
   aggregation_interval: "INTERVAL_5_SEC"
   flow_sampling: 0.5
   metadata: "INCLUDE_ALL_METADATA"
-  filter_expression: null
 ```
 
 ```yaml
 # tftest-file id=subnet-proxy path=config/subnets/subnet-proxy.yaml
 region: europe-west4
 ip_cidr_range: 10.1.0.0/24
-purpose: REGIONAL_MANAGED_PROXY
+proxy_only: true
 ```
 
 ```yaml
 # tftest-file id=subnet-proxy-global path=config/subnets/subnet-proxy-global.yaml
 region: australia-southeast2
 ip_cidr_range: 10.4.0.0/24
-purpose: GLOBAL_MANAGED_PROXY
+proxy_only: true
+global: true
 ```
 
 ```yaml
 # tftest-file id=subnet-psc path=config/subnets/subnet-psc.yaml
 region: europe-west4
 ip_cidr_range: 10.2.0.0/24
-purpose: PRIVATE_SERVICE_CONNECT
+psc: true
 ```
 
 ### Custom Routes
