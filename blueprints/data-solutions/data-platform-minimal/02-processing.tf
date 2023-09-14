@@ -118,6 +118,7 @@ module "processing-project" {
     "compute.googleapis.com",
     "container.googleapis.com",
     "dataflow.googleapis.com",
+    "datalineage.googleapis.com",
     "dataproc.googleapis.com",
     "iam.googleapis.com",
     "servicenetworking.googleapis.com",
