@@ -137,7 +137,7 @@ resource "google_compute_subnetwork" "proxy_only" {
   )
   purpose = try(
     each.value.purpose,
-    each.value.global != false
+    each.value.global == true
     ? "GLOBAL_MANAGED_PROXY"
     : "REGIONAL_MANAGED_PROXY"
   )
