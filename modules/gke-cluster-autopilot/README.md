@@ -157,7 +157,7 @@ module "cluster-1" {
   vpc_config = {
     network               = var.vpc.self_link
     subnetwork            = var.subnet.self_link
-    secondary_range_names = { }
+    secondary_range_names = {}
   }
   backup_configs = {
     enable_backup_agent = true
