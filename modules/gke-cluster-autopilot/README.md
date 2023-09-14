@@ -1,10 +1,23 @@
-# GKE cluster Autopilot  module
+# GKE Autopilot cluster module
 
-This module allows simplified creation and management of GKE Autopilot clusters. Some sensible defaults are set initially, in order to allow less verbose usage for most use cases.
+This module offers an opinionated way to create and manage Google Kubernetes Engine (GKE) [Autopilot clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview). With its sensible default settings based on best practices and authors' experience as Google Cloud practitioners, the module accommodates for many common use cases out-of-the-box, without having to rely on verbose configuration.
 
-## Example
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [GKE Autopilot cluster](#gke-autopilot-cluster)
+  - [Cloud DNS](#cloud-dns)
+  - [Logging configuration](#logging-configuration)
+  - [Monitoring configuration](#monitoring-configuration)
+  - [Backup for GKE](#backup-for-gke)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
-### GKE Cluster
+## Examples
+
+### GKE Autopilot cluster
+
+This example shows how to [create a GKE cluster in Autopilot mode](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-an-autopilot-cluster).
 
 ```hcl
 module "cluster-1" {
@@ -118,7 +131,17 @@ module "cluster-1" {
 
 ### Backup for GKE
 
-This example shows how to [enable the Backup for GKE agent and configure a Backup Plan](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke) for GKE Standard clusters.
+[Backup for GKE](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke) is a service for backing up and restoring workloads in GKE clusters. It has two components:
+
+* A [Google Cloud API](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/reference/rest) that serves as the control plane for the service.
+* A GKE add-on (the [Backup for GKE agent](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke#agent_overview)) that must be enabled in each cluster for which you wish to perform backup and restore operations.
+
+> **Note**
+> Although Backup for GKE can be enabled as an add-on when configuring your GKE clusters, it is a separate service from GKE.
+
+Backup for GKE is supported in GKE Autopilot clusters with [some restrictions](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/about-autopilot).
+
+This example shows how to [enable Backup for GKE on a new Autopilot cluster](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/how-to/install#enable_on_a_new_cluster_optional) and [plan a set of backups](https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/how-to/backup-plan).
 
 ```hcl
 module "cluster-1" {
