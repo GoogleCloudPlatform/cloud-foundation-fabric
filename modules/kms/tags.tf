@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 resource "google_tags_tag_binding" "binding" {
-  for_each  = coalesce(var.tag_bindings, {})
+  for_each  = var.tag_bindings
   parent    = "//cloudresourcemanager.googleapis.com/${local.keyring.id}"
   tag_value = each.value
 }
