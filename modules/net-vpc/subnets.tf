@@ -36,36 +36,37 @@ locals {
       } : null
       global        = try(v.global, false)
       ip_cidr_range = v.ip_cidr_range
-      ipv6 = can(v.ipv6) ? {
+      ipv6 = !can(v.ipv6) ? null : {
         access_type = try(v.ipv6.access_type, "INTERNAL")
-      } : null
+      }
       name                = try(v.name, k)
       region              = v.region
       secondary_ip_ranges = try(v.secondary_ip_ranges, null)
       iam                 = try(v.iam, {})
-      iam_bindings = can(v.iam_bindings) ? {
+      iam_bindings = !can(v.iam_bindings) ? {} : {
         for k2, v2 in v.iam_bindings :
         k2 => {
+          role    = v2.role
           members = v2.members
-          condition = can(v2.condition) ? {
+          condition = !can(v2.condition) ? null : {
             expression  = v2.condition.expression
             title       = v2.condition.title
             description = try(v2.condition.description, null)
-          } : null
+          }
         }
-      } : {}
-      iam_bindings_additive = can(v.iam_bindings_additive) ? {
+      }
+      iam_bindings_additive = !can(v.iam_bindings_additive) ? {} : {
         for k2, v2 in v.iam_bindings_additive :
         k2 => {
           member = v2.member
           role   = v2.role
-          condition = can(v2.condition) ? {
+          condition = !can(v2.condition) ? null : {
             expression  = v2.condition.expression
             title       = v2.condition.title
             description = try(v2.condition.description, null)
-          } : null
+          }
         }
-      } : {}
+      }
       _is_regular    = !try(v.psc == true, false) && !try(v.proxy_only == true, false)
       _is_psc        = try(v.psc == true, false)
       _is_proxy_only = try(v.proxy_only == true, false)
@@ -89,16 +90,17 @@ locals {
       ]
     ],
   ))
-  subnet_iam_bindings = flatten([
-    for s in concat(var.subnets, var.subnets_psc, var.subnets_proxy_only, values(local._factory_subnets)) : [
-      for role, data in s.iam_bindings : {
-        role      = role
+  subnet_iam_bindings = merge([
+    for s in concat(var.subnets, var.subnets_psc, var.subnets_proxy_only, values(local._factory_subnets)) : {
+      for key, data in s.iam_bindings :
+      key => {
+        role      = data.role
         subnet    = "${s.region}/${s.name}"
         members   = data.members
         condition = data.condition
       }
-    ]
-  ])
+    }
+  ]...)
   # note: all additive bindings share a single namespace for the key.
   # In other words, if you have multiple additive bindings with the
   # same name, only one will be used
@@ -210,10 +212,7 @@ resource "google_compute_subnetwork_iam_binding" "authoritative" {
 }
 
 resource "google_compute_subnetwork_iam_binding" "bindings" {
-  for_each = {
-    for binding in local.subnet_iam_bindings :
-    "${binding.subnet}.${binding.role}.${try(binding.condition.title, "")}" => binding
-  }
+  for_each   = local.subnet_iam_bindings
   project    = var.project_id
   subnetwork = local.all_subnets[each.value.subnet].name
   region     = local.all_subnets[each.value.subnet].region

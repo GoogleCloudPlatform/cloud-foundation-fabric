@@ -191,6 +191,7 @@ variable "subnets" {
 
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
+      role    = string
       members = list(string)
       condition = optional(object({
         expression  = string
@@ -224,6 +225,7 @@ variable "subnets_proxy_only" {
 
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
+      role    = string
       members = list(string)
       condition = optional(object({
         expression  = string
@@ -255,6 +257,7 @@ variable "subnets_psc" {
 
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
+      role    = string
       members = list(string)
       condition = optional(object({
         expression  = string
