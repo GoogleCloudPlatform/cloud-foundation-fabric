@@ -206,7 +206,13 @@ variable "monitoring_config" {
     enable_controller_manager_metrics = optional(bool, false)
     enable_scheduler_metrics          = optional(bool, false)
 
-    # TODO add kube state metrics and validation
+    # Kube state metrics
+    enable_daemonset_metrics   = optional(bool, false)
+    enable_deployment_metrics  = optional(bool, false)
+    enable_hpa_metrics         = optional(bool, false)
+    enable_pod_metrics         = optional(bool, false)
+    enable_statefulset_metrics = optional(bool, false)
+    enable_storage_metrics     = optional(bool, false)
 
     # Google Cloud Managed Service for Prometheus
     enable_managed_prometheus = optional(bool, true)
@@ -218,8 +224,25 @@ variable "monitoring_config" {
       var.monitoring_config.enable_api_server_metrics,
       var.monitoring_config.enable_controller_manager_metrics,
       var.monitoring_config.enable_scheduler_metrics,
+      var.monitoring_config.enable_daemonset_metrics,
+      var.monitoring_config.enable_deployment_metrics,
+      var.monitoring_config.enable_hpa_metrics,
+      var.monitoring_config.enable_pod_metrics,
+      var.monitoring_config.enable_statefulset_metrics,
+      var.monitoring_config.enable_storage_metrics,
     ]) ? var.monitoring_config.enable_system_metrics : true
     error_message = "System metrics are the minimum required component for enabling metrics collection."
+  }
+  validation {
+    condition = anytrue([
+      var.monitoring_config.enable_daemonset_metrics,
+      var.monitoring_config.enable_deployment_metrics,
+      var.monitoring_config.enable_hpa_metrics,
+      var.monitoring_config.enable_pod_metrics,
+      var.monitoring_config.enable_statefulset_metrics,
+      var.monitoring_config.enable_storage_metrics,
+    ]) ? var.monitoring_config.enable_managed_prometheus : true
+    error_message = "Kube state metrics collection requires Google Cloud Managed Service for Prometheus to be enabled."
   }
 }
 
