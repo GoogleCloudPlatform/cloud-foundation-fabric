@@ -50,12 +50,18 @@ variable "clusters" {
     monitoring_config = optional(object({
       enable_system_metrics = optional(bool, true)
 
-      # Control plane metrics
+      # (Optional) control plane metrics
       enable_api_server_metrics         = optional(bool, false)
       enable_controller_manager_metrics = optional(bool, false)
       enable_scheduler_metrics          = optional(bool, false)
 
-      # TODO add kube state metrics
+      # (Optional) kube state metrics
+      enable_daemonset_metrics   = optional(bool, false)
+      enable_deployment_metrics  = optional(bool, false)
+      enable_hpa_metrics         = optional(bool, false)
+      enable_pod_metrics         = optional(bool, false)
+      enable_statefulset_metrics = optional(bool, false)
+      enable_storage_metrics     = optional(bool, false)
 
       # Google Cloud Managed Service for Prometheus
       enable_managed_prometheus = optional(bool, true)
