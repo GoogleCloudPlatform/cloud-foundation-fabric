@@ -1,0 +1,126 @@
+# TODO:
+# - expose volume size as variable
+# - repalce mysql1 with namespace
+# - expose image (version?) as variable
+# - expose number of replicas as variable
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dbc1
+  namespace: "${namespace}"
+  labels:
+    app: mysql
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mysql
+  serviceName: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: "topology.kubernetes.io/zone"
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: mysql
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mysql
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: mysql
+          image: mysql/mysql-server:8.0.28
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - >-
+              /entrypoint.sh
+              --server-id=$((20 +  $(echo $HOSTNAME | grep -o '[^-]*$') + 1))
+              --report-host=$${HOSTNAME}.mysql.mysql1.svc.cluster.local
+              --binlog-checksum=NONE
+              --enforce-gtid-consistency=ON
+              --gtid-mode=ON
+              --default-authentication-plugin=mysql_native_password
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: MYSQL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: admin-password
+            - name: MYSQL_ROOT_HOST
+              value: '%'
+          ports:
+            - name: mysql
+              containerPort: 3306
+            - name: mysqlx
+              containerPort: 33060
+            - name: xcom
+              containerPort: 33061
+          resources:
+            limits:
+              cpu: "500m"
+              ephemeral-storage: "1Gi"
+              memory: "1Gi"
+            requests:
+              cpu: "500m"
+              ephemeral-storage: "1Gi"
+              memory: "1Gi"
+          volumeMounts:
+            - name: mysql
+              mountPath: /var/lib/mysql
+              subPath: mysql
+          readinessProbe:
+            exec:
+              command:
+                - bash
+                - "-c"
+                - |
+                  mysql -h127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD -e'SELECT 1'
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            timeoutSeconds: 1
+          livenessProbe:
+            exec:
+              command:
+                - bash
+                - "-c"
+                - |
+                  mysqladmin -uroot -p$MYSQL_ROOT_PASSWORD ping
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql
+        labels:
+          app: mysql
+      spec:
+        storageClassName: fast-storageclass
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi

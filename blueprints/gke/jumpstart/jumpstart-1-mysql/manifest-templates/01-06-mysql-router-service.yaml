@@ -1,0 +1,24 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-router
+  namespace: "${namespace}"
+  labels:
+    app: mysql-router
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+spec:
+  type: LoadBalancer
+  selector:
+    app: mysql-router
+  ports:
+    - name: mysql-rw
+      port: 6446
+    - name: mysql-ro
+      port: 6447
+    - name: mysqlx-rw
+      port: 64460
+    - name: mysqlx-ro
+      port: 64470
+

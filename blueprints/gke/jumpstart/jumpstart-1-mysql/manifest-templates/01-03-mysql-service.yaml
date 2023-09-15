@@ -1,0 +1,15 @@
+# Headless service for mysql to provide network identity for pods
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: "${namespace}"
+  labels:
+    app: mysql
+spec:
+  ports:
+    - port: 3306
+      name: mysql
+  clusterIP: None
+  selector:
+    app: mysql
