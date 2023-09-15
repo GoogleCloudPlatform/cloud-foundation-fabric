@@ -211,6 +211,13 @@ resource "google_container_cluster" "cluster" {
       var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
       var.monitoring_config.enable_controller_manager_metrics ? "CONTROLLER_MANAGER" : null,
       var.monitoring_config.enable_scheduler_metrics ? "SCHEDULER" : null,
+      # Kube state metrics:
+      var.monitoring_config.enable_daemonset_metrics ? "DAEMONSET" : null,
+      var.monitoring_config.enable_deployment_metrics ? "DEPLOYMENT" : null,
+      var.monitoring_config.enable_hpa_metrics ? "HPA" : null,
+      var.monitoring_config.enable_pod_metrics ? "POD" : null,
+      var.monitoring_config.enable_statefulset_metrics ? "STATEFULSET" : null,
+      var.monitoring_config.enable_storage_metrics ? "STORAGE" : null,
     ]))
     managed_prometheus {
       enabled = var.monitoring_config.enable_managed_prometheus
