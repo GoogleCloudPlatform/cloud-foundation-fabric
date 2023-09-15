@@ -56,7 +56,6 @@ variable "environments" {
     }))
     iam       = optional(map(list(string)))
     envgroups = optional(list(string))
-    regions   = optional(list(string))
   }))
   default  = {}
   nullable = false
