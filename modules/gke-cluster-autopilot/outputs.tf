@@ -32,7 +32,7 @@ output "endpoint" {
 }
 
 output "id" {
-  description = "Fully qualified cluster id."
+  description = "Fully qualified cluster ID."
   value       = google_container_cluster.cluster.id
 }
 

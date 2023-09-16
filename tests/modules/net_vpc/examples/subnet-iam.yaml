@@ -80,7 +80,7 @@ values:
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
-  module.vpc.google_compute_subnetwork_iam_binding.bindings["europe-west1/subnet-1.roles/compute.networkUser.test_condition"]:
+  module.vpc.google_compute_subnetwork_iam_binding.bindings["subnet-1-iam"]:
     condition:
     - description: null
       expression: resource.matchTag('123456789012/env', 'prod')
@@ -91,7 +91,7 @@ values:
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
-  module.vpc.google_compute_subnetwork_iam_member.bindings["subnet-2-am1"]:
+  module.vpc.google_compute_subnetwork_iam_member.bindings["subnet-2-iam"]:
     condition: []
     member: user:am1@example.com
     project: my-project

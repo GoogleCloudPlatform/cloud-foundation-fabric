@@ -197,13 +197,52 @@ variable "min_master_version" {
 }
 
 variable "monitoring_config" {
-  description = "Monitoring components."
+  description = "Monitoring configuration. Google Cloud Managed Service for Prometheus is enabled by default."
   type = object({
-    enable_components  = optional(list(string))
-    managed_prometheus = optional(bool)
+    enable_system_metrics = optional(bool, true)
+
+    # Control plane metrics
+    enable_api_server_metrics         = optional(bool, false)
+    enable_controller_manager_metrics = optional(bool, false)
+    enable_scheduler_metrics          = optional(bool, false)
+
+    # Kube state metrics
+    enable_daemonset_metrics   = optional(bool, false)
+    enable_deployment_metrics  = optional(bool, false)
+    enable_hpa_metrics         = optional(bool, false)
+    enable_pod_metrics         = optional(bool, false)
+    enable_statefulset_metrics = optional(bool, false)
+    enable_storage_metrics     = optional(bool, false)
+
+    # Google Cloud Managed Service for Prometheus
+    enable_managed_prometheus = optional(bool, true)
   })
-  default = {
-    enable_components = ["SYSTEM_COMPONENTS"]
+  default  = {}
+  nullable = false
+  validation {
+    condition = anytrue([
+      var.monitoring_config.enable_api_server_metrics,
+      var.monitoring_config.enable_controller_manager_metrics,
+      var.monitoring_config.enable_scheduler_metrics,
+      var.monitoring_config.enable_daemonset_metrics,
+      var.monitoring_config.enable_deployment_metrics,
+      var.monitoring_config.enable_hpa_metrics,
+      var.monitoring_config.enable_pod_metrics,
+      var.monitoring_config.enable_statefulset_metrics,
+      var.monitoring_config.enable_storage_metrics,
+    ]) ? var.monitoring_config.enable_system_metrics : true
+    error_message = "System metrics are the minimum required component for enabling metrics collection."
+  }
+  validation {
+    condition = anytrue([
+      var.monitoring_config.enable_daemonset_metrics,
+      var.monitoring_config.enable_deployment_metrics,
+      var.monitoring_config.enable_hpa_metrics,
+      var.monitoring_config.enable_pod_metrics,
+      var.monitoring_config.enable_statefulset_metrics,
+      var.monitoring_config.enable_storage_metrics,
+    ]) ? var.monitoring_config.enable_managed_prometheus : true
+    error_message = "Kube state metrics collection requires Google Cloud Managed Service for Prometheus to be enabled."
   }
 }
 
@@ -261,9 +300,9 @@ variable "vpc_config" {
       services = string
     }))
     secondary_range_names = optional(object({
-      pods     = string
-      services = string
-    }), { pods = "pods", services = "services" })
+      pods     = optional(string, "pods")
+      services = optional(string, "services")
+    }))
     master_authorized_ranges = optional(map(string))
     stack_type               = optional(string)
   })

@@ -15,7 +15,7 @@
  */
 
 variable "billing_account_id" {
-  description = "Billing account id."
+  description = "Billing account ID."
   type        = string
 }
 
@@ -48,9 +48,25 @@ variable "clusters" {
     max_pods_per_node  = optional(number, 110)
     min_master_version = optional(string)
     monitoring_config = optional(object({
-      enable_components  = optional(list(string), ["SYSTEM_COMPONENTS"])
-      managed_prometheus = optional(bool)
-    }))
+      enable_system_metrics = optional(bool, true)
+
+      # (Optional) control plane metrics
+      enable_api_server_metrics         = optional(bool, false)
+      enable_controller_manager_metrics = optional(bool, false)
+      enable_scheduler_metrics          = optional(bool, false)
+
+      # (Optional) kube state metrics
+      enable_daemonset_metrics   = optional(bool, false)
+      enable_deployment_metrics  = optional(bool, false)
+      enable_hpa_metrics         = optional(bool, false)
+      enable_pod_metrics         = optional(bool, false)
+      enable_statefulset_metrics = optional(bool, false)
+      enable_storage_metrics     = optional(bool, false)
+
+      # Google Cloud Managed Service for Prometheus
+      enable_managed_prometheus = optional(bool, true)
+    }), {})
+
     node_locations         = optional(list(string))
     private_cluster_config = optional(any)
     release_channel        = optional(string)

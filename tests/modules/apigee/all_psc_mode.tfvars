@@ -17,21 +17,23 @@ environments = {
     display_name = "APIs test"
     description  = "APIs Test"
     envgroups    = ["test"]
-    regions      = ["europe-west1"]
   }
   apis-prod = {
     display_name = "APIs prod"
     description  = "APIs prod"
     envgroups    = ["prod"]
-    regions      = ["europe-west3"]
     iam = {
       "roles/viewer" = ["group:devops@myorg.com"]
     }
   }
 }
 instances = {
-  europe-west1 = {}
-  europe-west3 = {}
+  europe-west1 = {
+    environments = ["europe-west1"]
+  }
+  europe-west3 = {
+    environments = ["europe-west3"]
+  }
 }
 endpoint_attachments = {
   endpoint-backend-1 = {

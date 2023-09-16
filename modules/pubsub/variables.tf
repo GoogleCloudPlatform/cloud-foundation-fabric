@@ -25,6 +25,21 @@ variable "bigquery_subscription_configs" {
   default = {}
 }
 
+variable "cloud_storage_subscription_configs" {
+  description = "Configuration parameters for Cloud Storage subscriptions."
+  type = map(object({
+    bucket          = string
+    filename_prefix = string
+    filename_suffix = string
+    max_duration    = string
+    max_bytes       = number
+    avro_config = object({
+      write_metadata = bool
+    })
+  }))
+  default = {}
+}
+
 variable "dead_letter_configs" {
   description = "Per-subscription dead letter policy configuration."
   type = map(object({

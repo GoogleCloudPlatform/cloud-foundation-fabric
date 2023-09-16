@@ -56,7 +56,6 @@ variable "environments" {
     }))
     iam       = optional(map(list(string)))
     envgroups = optional(list(string))
-    regions   = optional(list(string))
   }))
   default  = {}
   nullable = false
@@ -73,6 +72,7 @@ variable "instances" {
     disk_encryption_key           = optional(string)
     consumer_accept_list          = optional(list(string))
     enable_nat                    = optional(bool, false)
+    environments                  = optional(list(string))
   }))
   validation {
     condition = alltrue([
