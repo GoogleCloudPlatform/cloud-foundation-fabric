@@ -61,16 +61,10 @@ module "pubsub" {
   project_id = "my-project"
   name       = "my-topic"
   subscriptions = {
-    test-pull = null
+    test-pull = {}
     test-pull-override = {
-      labels = { test = "override" }
-      options = {
-        ack_deadline_seconds       = null
-        message_retention_duration = null
-        retain_acked_messages      = true
-        expiration_policy_ttl      = null
-        filter                     = null
-      }
+      labels                = { test = "override" }
+      retain_acked_messages = true
     }
   }
 }
@@ -87,13 +81,10 @@ module "pubsub" {
   project_id = "my-project"
   name       = "my-topic"
   subscriptions = {
-    test-push = null
-  }
-  push_configs = {
     test-push = {
-      endpoint   = "https://example.com/foo"
-      attributes = null
-      oidc_token = null
+      push = {
+        endpoint = "https://example.com/foo"
+      }
     }
   }
 }
@@ -110,14 +101,13 @@ module "pubsub" {
   project_id = "my-project"
   name       = "my-topic"
   subscriptions = {
-    test-bigquery = null
-  }
-  bigquery_subscription_configs = {
     test-bigquery = {
-      table               = "my_project_id:my_dataset.my_table"
-      use_topic_schema    = true
-      write_metadata      = false
-      drop_unknown_fields = true
+      bigquery = {
+        table               = "my_project_id:my_dataset.my_table"
+        use_topic_schema    = true
+        write_metadata      = false
+        drop_unknown_fields = true
+      }
     }
   }
 }
@@ -134,17 +124,16 @@ module "pubsub" {
   project_id = "my-project"
   name       = "my-topic"
   subscriptions = {
-    test-cloudstorage = null
-  }
-  cloud_storage_subscription_configs = {
     test-cloudstorage = {
-      bucket          = "my-bucket"
-      filename_prefix = "test_prefix"
-      filename_suffix = "test_suffix"
-      max_duration    = "100s"
-      max_bytes       = 1000
-      avro_config = {
-        write_metadata = true
+      cloud_storage = {
+        bucket          = "my-bucket"
+        filename_prefix = "test_prefix"
+        filename_suffix = "test_suffix"
+        max_duration    = "100s"
+        max_bytes       = 1000
+        avro_config = {
+          write_metadata = true
+        }
       }
     }
   }
@@ -159,12 +148,10 @@ module "pubsub" {
   project_id = "my-project"
   name       = "my-topic"
   subscriptions = {
-    test-1 = null
-    test-1 = null
-  }
-  subscription_iam = {
     test-1 = {
-      "roles/pubsub.subscriber" = ["user:user1@ludomagno.net"]
+      iam = {
+        "roles/pubsub.subscriber" = ["user:user1@example.com"]
+      }
     }
   }
 }
