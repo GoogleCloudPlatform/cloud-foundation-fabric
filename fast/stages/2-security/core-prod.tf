@@ -32,6 +32,12 @@ module "prod-sec-project" {
   iam = {
     "roles/cloudkms.viewer" = local.prod_kms_restricted_admins
   }
+  iam_bindings_additive = {
+    for member in local.prod_kms_restricted_admins :
+    "kms_restricted_admin.${member}" => merge(local.kms_restricted_admin_template, {
+      member = member
+    })
+  }
   labels   = { environment = "prod", team = "security" }
   services = local.project_services
 }
@@ -45,25 +51,4 @@ module "prod-sec-kms" {
     name     = "prod-${each.key}"
   }
   keys = local.kms_locations_keys[each.key]
-}
-
-# TODO(ludo): add support for conditions to Fabric modules
-
-resource "google_project_iam_member" "prod_key_admin_delegated" {
-  for_each = toset(local.prod_kms_restricted_admins)
-  project  = module.prod-sec-project.project_id
-  role     = "roles/cloudkms.admin"
-  member   = each.key
-  condition {
-    title       = "kms_sa_delegated_grants"
-    description = "Automation service account delegated grants."
-    expression = format(
-      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s]) && resource.type == 'cloudkms.googleapis.com/CryptoKey'",
-      join(",", formatlist("'%s'", [
-        "roles/cloudkms.cryptoKeyEncrypterDecrypter",
-        "roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation"
-      ]))
-    )
-  }
-  depends_on = [module.prod-sec-project]
 }
