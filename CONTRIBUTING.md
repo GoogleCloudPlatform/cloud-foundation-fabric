@@ -686,8 +686,8 @@ Writing `pytest` unit tests to check plan results is really easy, but since wrap
 In the following sections we describe the three testing approaches we currently have:
 
 - [Example-based tests](#testing-via-readmemd-example-blocks): this is perhaps the easiest and most common way to test either a module or a blueprint. You simply have to provide an example call to your module and a few metadata values in the module's README.md.
-- [tfvars-based tests](#testing-via-tfvars-and-yaml): allows you to test a module or blueprint by providing variables via tfvar files and an expected plan result in form of an inventory. This type of test is useful, for example, for FAST stages that don't have any examples within their READMEs.
-- [Python-based (legacy) tests](#writing-tests-in-python--legacy-approach-): in some situations you might still want to interact directly with `tftest` via Python, if that's the case, use this method to write custom Python logic to test your module in any way you see fit.
+- [tfvars-based tests](#testing-via-tfvars-and-yaml-aka-tftest-based-tests): allows you to test a module or blueprint by providing variables via tfvar files and an expected plan result in form of an inventory. This type of test is useful, for example, for FAST stages that don't have any examples within their READMEs.
+- [Python-based (legacy) tests](#writing-tests-in-python-legacy-approach): in some situations you might still want to interact directly with `tftest` via Python, if that's the case, use this method to write custom Python logic to test your module in any way you see fit.
 
 ### Testing via README.md example blocks
 
