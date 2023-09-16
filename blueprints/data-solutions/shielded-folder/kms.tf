@@ -17,12 +17,17 @@
 # tfdoc:file:description Security project, Cloud KMS and Secret Manager resources.
 
 locals {
+  # list of locations with keys
   kms_locations = distinct(flatten([
     for k, v in var.kms_keys : v.locations
   ]))
+  # map { location -> { key_name -> key_details } }
   kms_locations_keys = {
-    for loc in local.kms_locations : loc => {
-      for k, v in var.kms_keys : k => v if contains(v.locations, loc)
+    for loc in local.kms_locations :
+    loc => {
+      for k, v in var.kms_keys :
+      k => v
+      if contains(v.locations, loc)
     }
   }
   kms_log_locations = distinct(flatten([
@@ -30,17 +35,14 @@ locals {
   ]))
   kms_log_sink_keys = {
     "storage" = {
-      labels          = {}
       locations       = [var.log_locations.storage]
       rotation_period = "7776000s"
     }
     "bq" = {
-      labels          = {}
       locations       = [var.log_locations.bq]
       rotation_period = "7776000s"
     }
     "pubsub" = {
-      labels          = {}
       locations       = [var.log_locations.pubsub]
       rotation_period = "7776000s"
     }
@@ -87,12 +89,6 @@ module "sec-kms" {
   keyring = {
     location = each.key
     name     = "sec-${each.key}"
-  }
-  key_iam = {
-    for k, v in local.kms_locations_keys[each.key] : k => v.iam
-  }
-  key_iam_bindings_additive = {
-    for k, v in local.kms_locations_keys[each.key] : k => v.iam_bindings_additive
   }
   keys = local.kms_locations_keys[each.key]
 }

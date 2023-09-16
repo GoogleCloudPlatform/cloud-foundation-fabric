@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,10 +43,6 @@ module "prod-sec-kms" {
   keyring = {
     location = each.key
     name     = "prod-${each.key}"
-  }
-  # rename to `key_iam` to switch to authoritative bindings
-  key_iam = {
-    for k, v in local.kms_locations_keys[each.key] : k => v.iam
   }
   keys = local.kms_locations_keys[each.key]
 }
