@@ -18,6 +18,7 @@ variable "iam" {
   description = "Keyring IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_bindings" {
