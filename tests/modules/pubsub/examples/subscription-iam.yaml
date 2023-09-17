@@ -13,10 +13,10 @@
 # limitations under the License.
 
 values:
-  module.pubsub.google_pubsub_subscription_iam_binding.default["test-1.roles/pubsub.subscriber"]:
+  module.pubsub.google_pubsub_subscription_iam_binding.authoritative["test-1.roles/pubsub.subscriber"]:
     condition: []
     members:
-    - user:user1@ludomagno.net
+    - user:user1@example.com
     project: my-project
     role: roles/pubsub.subscriber
     subscription: test-1

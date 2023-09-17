@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,36 @@
  */
 
 locals {
-  kms_keys = {
-    for k, v in var.kms_keys : k => {
-      iam    = coalesce(v.iam, {})
-      labels = coalesce(v.labels, {})
-      locations = (
-        v.locations == null
-        ? var.kms_defaults.locations
-        : v.locations
-      )
-      rotation_period = (
-        v.rotation_period == null
-        ? var.kms_defaults.rotation_period
-        : v.rotation_period
+  # additive IAM binding for delegated KMS admins
+  kms_restricted_admin_template = {
+    role = "roles/cloudkms.admin"
+    condition = {
+      title       = "kms_sa_delegated_grants"
+      description = "Automation service account delegated grants."
+      expression = format(
+        <<-EOT
+           api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s]) &&
+           resource.type == 'cloudkms.googleapis.com/CryptoKey'
+        EOT
+        , join(",", formatlist("'%s'", [
+          "roles/cloudkms.cryptoKeyEncrypterDecrypter",
+          "roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation"
+        ]))
       )
     }
   }
+
+  # list of locations with keys
   kms_locations = distinct(flatten([
-    for k, v in local.kms_keys : v.locations
+    for k, v in var.kms_keys : v.locations
   ]))
+  # map { location -> { key_name -> key_details } }
   kms_locations_keys = {
-    for loc in local.kms_locations : loc => {
-      for k, v in local.kms_keys : k => v if contains(v.locations, loc)
+    for loc in local.kms_locations :
+    loc => {
+      for k, v in var.kms_keys :
+      k => v
+      if contains(v.locations, loc)
     }
   }
   project_services = [
