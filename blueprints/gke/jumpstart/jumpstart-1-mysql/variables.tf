@@ -45,3 +45,14 @@ variable "templates_path" {
   type        = string
   default     = null
 }
+
+variable "registry_path" {
+  type = string
+  nullable = false
+}
+
+variable "replicas_count" {
+  type = number
+  default = 3
+  nullable = false
+}

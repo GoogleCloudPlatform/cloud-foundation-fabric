@@ -1,4 +1,9 @@
 # TODO: do we need more hosts for MYSQL_HOST ?
+# - no, but the question is, should the config directory be a persistent volume? otherwise, if during recreation of the pod
+# dbc1-0 is unavailable, then router will not bootstrap properly...
+# Storing bootstrap information in persistent volume won't help, as docker container is always bootstrapping on start 🤦
+# TODO: does router really needs to run on separate nodes than mysql itself?
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -54,10 +59,10 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       containers:
         - name: mysql-router
-          image: mysql/mysql-router:8.0.27
+          image: ${registry_path}/mysql/mysql-router:8.0.27  # need to explicitly use registry, otherwise randomly ImagePullError occurs
           env:
             - name: MYSQL_HOST
-              value: dbc1-0.mysql.mysql1.svc.cluster.local
+              value: dbc1-0.mysql.${namespace}.svc.cluster.local
             - name: MYSQL_PORT
               value: '3306'
             - name: MYSQL_USER
@@ -68,7 +73,7 @@ spec:
                   name: mysql-secret
                   key: password
             - name: MYSQL_INNODB_CLUSTER_MEMBERS
-              value: '3'
+              value: ${replicas_count}
           ports:
             - name: mysql-rw
               containerPort: 6446

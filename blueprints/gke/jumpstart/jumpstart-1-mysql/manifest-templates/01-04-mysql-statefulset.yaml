@@ -41,7 +41,7 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       containers:
         - name: mysql
-          image: mysql/mysql-server:8.0.28
+          image: ${registry_path}/mysql/mysql-server:8.0.28
           command:
             - /bin/bash
           args:
@@ -49,7 +49,7 @@ spec:
             - >-
               /entrypoint.sh
               --server-id=$((20 +  $(echo $HOSTNAME | grep -o '[^-]*$') + 1))
-              --report-host=$${HOSTNAME}.mysql.mysql1.svc.cluster.local
+              --report-host=$${HOSTNAME}.mysql.${namespace}.svc.cluster.local
               --binlog-checksum=NONE
               --enforce-gtid-consistency=ON
               --gtid-mode=ON
@@ -108,8 +108,6 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
   updateStrategy:
-    rollingUpdate:
-      partition: 0
     type: RollingUpdate
   volumeClaimTemplates:
     - metadata:

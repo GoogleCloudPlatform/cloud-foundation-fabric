@@ -43,13 +43,14 @@ resource "kubernetes_manifest" "stage1" {
   for_each = toset(local.stage_1_templates)
   manifest = yamldecode(templatefile(each.value, {
     namespace = kubernetes_namespace.default.metadata.0.name
-    replicas_count = 3
+    replicas_count = var.replicas_count
+    registry_path = var.registry_path
   }))
   dynamic "wait" {
     for_each = strcontains(each.key, "statefulset") ? [""] : []
     content {
       fields = {
-        "status.readyReplicas" = 3
+        "status.readyReplicas" = var.replicas_count
       }
     }
   }
@@ -62,13 +63,14 @@ resource "kubernetes_manifest" "stage2" {
   for_each = toset(local.stage_2_templates)
   manifest = yamldecode(templatefile(each.value, {
     namespace = kubernetes_namespace.default.metadata.0.name
-    replicas_count = 3
+    replicas_count = var.replicas_count
+    registry_path = var.registry_path
   }))
   dynamic "wait" {
     for_each = strcontains(each.key, "statefulset") ? [""] : []
     content {
       fields = {
-        "status.readyReplicas" = 3
+        "status.readyReplicas" = var.replicas_count
       }
     }
   }
