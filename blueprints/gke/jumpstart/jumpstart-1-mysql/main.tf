@@ -15,7 +15,11 @@
  */
 
 locals {
-  #  TODO: should just the prefix in the filename be the number of the stage?
+  manifest_template_parameters = {
+    mysql_config  = var.mysql_config
+    namespace     = kubernetes_namespace.default.metadata.0.name
+    registry_path = var.registry_path
+  }
   stage_1_templates = [
     for f in fileset(local.wl_templates_path, "01*yaml") :
     "${local.wl_templates_path}/${f}"
@@ -25,11 +29,10 @@ locals {
     "${local.wl_templates_path}/${f}"
   ]
 
-
   wl_templates_path = (
-  var.templates_path == null
-  ? "${path.module}/manifest-templates"
-  : pathexpand(var.templates_path)
+    var.templates_path == null
+    ? "${path.module}/manifest-templates"
+    : pathexpand(var.templates_path)
   )
 }
 
@@ -41,16 +44,12 @@ resource "kubernetes_namespace" "default" {
 
 resource "kubernetes_manifest" "stage1" {
   for_each = toset(local.stage_1_templates)
-  manifest = yamldecode(templatefile(each.value, {
-    namespace = kubernetes_namespace.default.metadata.0.name
-    replicas_count = var.replicas_count
-    registry_path = var.registry_path
-  }))
+  manifest = yamldecode(templatefile(each.value, local.manifest_template_parameters))
   dynamic "wait" {
     for_each = strcontains(each.key, "statefulset") ? [""] : []
     content {
       fields = {
-        "status.readyReplicas" = var.replicas_count
+        "status.readyReplicas" = var.mysql_config.db_replicas
       }
     }
   }
@@ -61,16 +60,12 @@ resource "kubernetes_manifest" "stage1" {
 
 resource "kubernetes_manifest" "stage2" {
   for_each = toset(local.stage_2_templates)
-  manifest = yamldecode(templatefile(each.value, {
-    namespace = kubernetes_namespace.default.metadata.0.name
-    replicas_count = var.replicas_count
-    registry_path = var.registry_path
-  }))
+  manifest = yamldecode(templatefile(each.value, local.manifest_template_parameters))
   dynamic "wait" {
     for_each = strcontains(each.key, "statefulset") ? [""] : []
     content {
       fields = {
-        "status.readyReplicas" = var.replicas_count
+        "status.readyReplicas" = var.mysql_config.db_replicas
       }
     }
   }

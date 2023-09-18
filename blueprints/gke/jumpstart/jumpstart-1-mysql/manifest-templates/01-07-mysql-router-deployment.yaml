@@ -12,7 +12,7 @@ metadata:
   labels:
     app: mysql-router
 spec:
-  replicas: 3
+  replicas: ${mysql_config.router_replicas}
   selector:
     matchLabels:
       app: mysql-router
@@ -59,10 +59,12 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       containers:
         - name: mysql-router
-          image: ${registry_path}/mysql/mysql-router:8.0.27  # need to explicitly use registry, otherwise randomly ImagePullError occurs
+          # need to explicitly use registry, otherwise randomly ImagePullError occurs
+          # Failed to pull image "mysql/mysql-router:8.0.32": rpc error: code = DeadlineExceeded desc = failed to pull and unpack image "docker.io/mysql/mysql-router:8.0.32": failed to resolve reference "docker.io/mysql/mysql-router:8.0.32": failed to do request: Head "https://registry-1.docker.io/v2/mysql/mysql-router/manifests/8.0.32": dial tcp 44.205.64.79:443: i/o timeout
+          image: ${registry_path}/mysql/mysql-router:${mysql_config.version}
           env:
             - name: MYSQL_HOST
-              value: dbc1-0.mysql.${namespace}.svc.cluster.local
+              value: mysql.${namespace}.svc.cluster.local
             - name: MYSQL_PORT
               value: '3306'
             - name: MYSQL_USER
@@ -73,7 +75,7 @@ spec:
                   name: mysql-secret
                   key: password
             - name: MYSQL_INNODB_CLUSTER_MEMBERS
-              value: ${replicas_count}
+              value: ${mysql_config.db_replicas}  # TODO: maybe this should be 2? This may result in invalid bootstraping, but it is better than not working at all when one of db instances is down?
           ports:
             - name: mysql-rw
               containerPort: 6446
@@ -85,13 +87,13 @@ spec:
               containerPort: 64470
           resources:
             limits:
-              cpu: "500m"
+              cpu: "${mysql_config.router_cpu}"
               ephemeral-storage: "1Gi"
-              memory: "2Gi"
+              memory: "${mysql_config.router_memory}"
             requests:
-              cpu: "500m"
+              cpu: "${mysql_config.router_cpu}"
               ephemeral-storage: "1Gi"
-              memory: "2Gi"
+              memory: "${mysql_config.router_memory}"
           readinessProbe:
             tcpSocket:
               port: 6446

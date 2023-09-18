@@ -33,11 +33,31 @@ variable "credentials_config" {
   }
 }
 
+variable "mysql_config" {
+  type = object({
+    version         = optional(string, "8.0.32") # latest is 8.0.32, originally was with 8.0.28 / 8.0.27
+    db_replicas     = optional(number, 3)  # cannot be higher than number of the zones in region
+    db_cpu    = optional(string, "500m")
+    db_memory = optional(string, "1Gi")
+    db_database_size = optional(string, "10Gi")
+    router_replicas = optional(number, 2)  # cannot be higher than number of the zones in region
+    router_cpu = optional(string, "500m")
+    router_memory = optional(string, "2Gi")
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "namespace" {
-  description = "Namespace used for Redis cluster resources."
+  description = "Namespace used for MySQL cluster resources."
   type        = string
   nullable    = false
   default     = "mysql1"
+}
+
+variable "registry_path" {
+  type     = string
+  nullable = false
 }
 
 variable "templates_path" {
@@ -46,13 +66,3 @@ variable "templates_path" {
   default     = null
 }
 
-variable "registry_path" {
-  type = string
-  nullable = false
-}
-
-variable "replicas_count" {
-  type = number
-  default = 3
-  nullable = false
-}

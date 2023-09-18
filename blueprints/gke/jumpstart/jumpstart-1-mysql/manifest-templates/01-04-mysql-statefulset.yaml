@@ -1,6 +1,5 @@
 # TODO:
 # - expose volume size as variable
-# - repalce mysql1 with namespace
 # - expose image (version?) as variable
 # - expose number of replicas as variable
 
@@ -12,7 +11,7 @@ metadata:
   labels:
     app: mysql
 spec:
-  replicas: 3
+  replicas: ${mysql_config.db_replicas}
   selector:
     matchLabels:
       app: mysql
@@ -41,7 +40,7 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       containers:
         - name: mysql
-          image: ${registry_path}/mysql/mysql-server:8.0.28
+          image: ${registry_path}/mysql/mysql-server:${mysql_config.version}
           command:
             - /bin/bash
           args:
@@ -76,13 +75,13 @@ spec:
               containerPort: 33061
           resources:
             limits:
-              cpu: "500m"
+              cpu: "${mysql_config.db_cpu}"
               ephemeral-storage: "1Gi"
-              memory: "1Gi"
+              memory: "${mysql_config.db_memory}"
             requests:
-              cpu: "500m"
+              cpu: "${mysql_config.db_cpu}"
               ephemeral-storage: "1Gi"
-              memory: "1Gi"
+              memory: "${mysql_config.db_memory}"
           volumeMounts:
             - name: mysql
               mountPath: /var/lib/mysql
@@ -121,4 +120,4 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 10Gi
+            storage: "${mysql_config.db_database_size}"
