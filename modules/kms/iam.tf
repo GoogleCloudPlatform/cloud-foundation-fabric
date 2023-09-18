@@ -16,24 +16,36 @@
 
 locals {
   key_iam = flatten([
-    for key, roles in var.key_iam : [
-      for role, members in roles : {
-        key     = key
+    for k, v in var.keys : [
+      for role, members in v.iam : {
+        key     = k
         role    = role
         members = members
       }
     ]
   ])
-  key_iam_bindings = flatten([
-    for key, roles in var.key_iam_bindings : [
-      for role, data in roles : {
-        key       = key
-        role      = role
+  key_iam_bindings = merge([
+    for k, v in var.keys : {
+      for binding_key, data in v.iam_bindings :
+      binding_key => {
+        key       = k
+        role      = data.role
         members   = data.members
         condition = data.condition
       }
-    ]
-  ])
+    }
+  ]...)
+  key_iam_bindings_additive = merge([
+    for k, v in var.keys : {
+      for binding_key, data in v.iam_bindings_additive :
+      binding_key => {
+        key       = k
+        role      = data.role
+        member    = data.member
+        condition = data.condition
+      }
+    }
+  ]...)
 }
 
 resource "google_kms_key_ring_iam_binding" "authoritative" {
@@ -46,7 +58,7 @@ resource "google_kms_key_ring_iam_binding" "authoritative" {
 resource "google_kms_key_ring_iam_binding" "bindings" {
   for_each    = var.iam_bindings
   key_ring_id = local.keyring.id
-  role        = each.key
+  role        = each.value.role
   members     = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
@@ -84,10 +96,7 @@ resource "google_kms_crypto_key_iam_binding" "authoritative" {
 }
 
 resource "google_kms_crypto_key_iam_binding" "bindings" {
-  for_each = {
-    for binding in local.key_iam_bindings :
-    "${binding.key}.${binding.role}" => binding
-  }
+  for_each      = local.key_iam_bindings
   role          = each.value.role
   crypto_key_id = google_kms_crypto_key.default[each.value.key].id
   members       = each.value.members
@@ -102,7 +111,7 @@ resource "google_kms_crypto_key_iam_binding" "bindings" {
 }
 
 resource "google_kms_crypto_key_iam_member" "members" {
-  for_each      = var.key_iam_bindings_additive
+  for_each      = local.key_iam_bindings_additive
   crypto_key_id = google_kms_crypto_key.default[each.value.key].id
   role          = each.value.role
   member        = each.value.member

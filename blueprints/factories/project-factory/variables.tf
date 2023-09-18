@@ -21,6 +21,7 @@ variable "data_defaults" {
     contacts                   = optional(map(list(string)), {})
     labels                     = optional(map(string), {})
     metric_scopes              = optional(list(string), [])
+    parent                     = optional(string)
     prefix                     = optional(string)
     service_encryption_key_ids = optional(map(list(string)), {})
     service_perimeter_bridges  = optional(list(string), [])
@@ -65,6 +66,7 @@ variable "data_overrides" {
   type = object({
     billing_account            = optional(string)
     contacts                   = optional(map(list(string)))
+    parent                     = optional(string)
     prefix                     = optional(string)
     service_encryption_key_ids = optional(map(list(string)))
     service_perimeter_bridges  = optional(list(string))

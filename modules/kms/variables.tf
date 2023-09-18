@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ variable "iam" {
   description = "Keyring IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_bindings" {
-  description = "Keyring authoritative IAM bindings in {ROLE => {members = [], condition = {}}}."
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
   type = map(object({
     members = list(string)
+    role    = string
     condition = optional(object({
       expression  = string
       title       = string
@@ -49,71 +51,6 @@ variable "iam_bindings_additive" {
   default  = {}
 }
 
-variable "key_iam" {
-  description = "Key IAM bindings in {KEY => {ROLE => [MEMBERS]}} format."
-  type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "key_iam_bindings" {
-  description = "Key authoritative IAM bindings in {KEY => {ROLE => {members = [], condition = {}}}}."
-  type = map(object({
-    members = list(string)
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "key_iam_bindings_additive" {
-  description = "Key individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    key    = string
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "key_purpose" {
-  description = "Per-key purpose, if not set defaults will be used. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required."
-  type = map(object({
-    purpose = string
-    version_template = object({
-      algorithm        = string
-      protection_level = string
-    })
-  }))
-  default = {}
-}
-
-variable "key_purpose_defaults" {
-  description = "Defaults used for key purpose when not defined at the key level. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required."
-  type = object({
-    purpose = string
-    version_template = object({
-      algorithm        = string
-      protection_level = string
-    })
-  })
-  default = {
-    purpose          = null
-    version_template = null
-  }
-}
-
-# cf https://cloud.google.com/kms/docs/locations
-
 variable "keyring" {
   description = "Keyring attributes."
   type = object({
@@ -131,10 +68,36 @@ variable "keyring_create" {
 variable "keys" {
   description = "Key names and base attributes. Set attributes to null if not needed."
   type = map(object({
-    rotation_period = string
-    labels          = map(string)
+    rotation_period               = optional(string)
+    labels                        = optional(map(string))
+    purpose                       = optional(string, "ENCRYPT_DECRYPT")
+    skip_initial_version_creation = optional(bool, false)
+    version_template = optional(object({
+      algorithm        = string
+      protection_level = optional(string, "SOFTWARE")
+    }))
+
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "project_id" {
@@ -145,5 +108,6 @@ variable "project_id" {
 variable "tag_bindings" {
   description = "Tag bindings for this keyring, in key => tag value id format."
   type        = map(string)
-  default     = null
+  default     = {}
+  nullable    = false
 }

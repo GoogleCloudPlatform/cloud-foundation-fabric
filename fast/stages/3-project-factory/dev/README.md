@@ -55,7 +55,7 @@ gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-security.auto.
 
 If you're not using FAST, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
 
-Besides the values above, the project factory is drive by data files, with one file per project.
+Besides the values above, the project factory is driven by data files which closely follow the variables exposed by the [project module](../../../../modules/project/), with one file per project. Please refer to the underlying [project factory blueprint](../../../../blueprints/factories/project-factory/) documentation for details on the format.
 
 Once the configuration is complete, run the project factory with:
 
@@ -79,8 +79,8 @@ terraform apply
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account](variables.tf#L19) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [factory_data](variables.tf#L32) | Project data from either YAML files or externally parsed data. | <code title="object&#40;&#123;&#10;  data      &#61; optional&#40;map&#40;any&#41;&#41;&#10;  data_path &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
-| [prefix](variables.tf#L48) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [prefix](variables.tf#L51) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [factory_data](variables.tf#L32) | Project data from either YAML files or externally parsed data. | <code title="object&#40;&#123;&#10;  data      &#61; optional&#40;map&#40;any&#41;&#41;&#10;  data_path &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_path &#61; &#34;data&#47;projects&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 
 ## Outputs
 

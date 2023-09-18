@@ -71,7 +71,7 @@ resource "google_service_account_iam_binding" "authoritative" {
 resource "google_service_account_iam_binding" "bindings" {
   for_each           = var.iam_bindings
   service_account_id = local.service_account.name
-  role               = each.key
+  role               = each.value.role
   members            = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]

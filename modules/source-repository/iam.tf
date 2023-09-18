@@ -44,7 +44,7 @@ resource "google_sourcerepo_repository_iam_binding" "bindings" {
   for_each   = var.iam_bindings
   project    = var.project_id
   repository = google_sourcerepo_repository.default.name
-  role       = each.key
+  role       = each.value.role
   members    = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]

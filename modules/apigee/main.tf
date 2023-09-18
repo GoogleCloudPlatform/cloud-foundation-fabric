@@ -28,6 +28,7 @@ resource "google_apigee_organization" "organization" {
   runtime_type                         = var.organization.runtime_type
   runtime_database_encryption_key_name = var.organization.database_encryption_key
   retention                            = var.organization.retention
+  disable_vpc_peering                  = var.organization.disable_vpc_peering
 }
 
 resource "google_apigee_envgroup" "envgroups" {
@@ -85,13 +86,17 @@ resource "google_apigee_environment_iam_binding" "binding" {
 }
 
 resource "google_apigee_instance" "instances" {
-  for_each                 = var.instances
-  name                     = coalesce(each.value.name, "instance-${each.key}")
-  display_name             = each.value.display_name
-  description              = each.value.description
-  location                 = each.key
-  org_id                   = local.org_id
-  ip_range                 = "${each.value.runtime_ip_cidr_range},${each.value.troubleshooting_ip_cidr_range}"
+  for_each     = var.instances
+  name         = coalesce(each.value.name, "instance-${each.key}")
+  display_name = each.value.display_name
+  description  = each.value.description
+  location     = each.key
+  org_id       = local.org_id
+  ip_range = (
+    compact([each.value.runtime_ip_cidr_range, each.value.troubleshooting_ip_cidr_range]) == []
+    ? null
+    : join(",", compact([each.value.runtime_ip_cidr_range, each.value.troubleshooting_ip_cidr_range]))
+  )
   disk_encryption_key_name = each.value.disk_encryption_key
   consumer_accept_list     = each.value.consumer_accept_list
 }
@@ -109,12 +114,12 @@ resource "google_apigee_nat_address" "apigee_nat" {
 resource "google_apigee_instance_attachment" "instance_attachments" {
   for_each = merge(concat([for k1, v1 in var.instances : {
     for v2 in coalesce(v1.environments, []) :
-    "${k1}-${v2}" => {
+    "${v2}-${k1}" => {
       instance    = k1
       environment = v2
     }
   }])...)
-  instance_id = google_apigee_instance.instances[each.value.region].id
+  instance_id = google_apigee_instance.instances[each.value.instance].id
   environment = try(google_apigee_environment.environments[each.value.environment].name,
   "${local.org_id}/environments/${each.value.environment}")
 }
@@ -127,7 +132,7 @@ resource "google_apigee_endpoint_attachment" "endpoint_attachments" {
   service_attachment     = each.value.service_attachment
 }
 
-resource "google_apigee_addons_config" "test_organization" {
+resource "google_apigee_addons_config" "addons_config" {
   for_each = toset(var.addons_config == null ? [] : [""])
   org      = local.org_name
   addons_config {

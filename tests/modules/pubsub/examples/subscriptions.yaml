@@ -16,22 +16,22 @@ values:
   module.pubsub.google_pubsub_subscription.default["test-pull"]:
     bigquery_config: []
     dead_letter_policy: []
-    enable_exactly_once_delivery: null
-    enable_message_ordering: null
+    enable_exactly_once_delivery: False
+    enable_message_ordering: False
     filter: null
     labels: null
     message_retention_duration: 604800s
     name: test-pull
     project: my-project
     push_config: []
-    retain_acked_messages: null
+    retain_acked_messages: False
     retry_policy: []
     topic: my-topic
   module.pubsub.google_pubsub_subscription.default["test-pull-override"]:
     bigquery_config: []
     dead_letter_policy: []
-    enable_exactly_once_delivery: null
-    enable_message_ordering: null
+    enable_exactly_once_delivery: False
+    enable_message_ordering: False
     filter: null
     labels:
       test: override
@@ -39,7 +39,7 @@ values:
     name: test-pull-override
     project: my-project
     push_config: []
-    retain_acked_messages: true
+    retain_acked_messages: True
     retry_policy: []
     topic: my-topic
   module.pubsub.google_pubsub_topic.default:

@@ -58,7 +58,7 @@ resource "google_project_iam_binding" "authoritative" {
 resource "google_project_iam_binding" "bindings" {
   for_each = var.iam_bindings
   project  = local.project.project_id
-  role     = each.key
+  role     = each.value.role
   members  = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]

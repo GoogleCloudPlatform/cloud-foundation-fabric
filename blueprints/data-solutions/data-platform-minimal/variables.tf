@@ -19,10 +19,11 @@ variable "composer_config" {
   type = object({
     environment_size = optional(string, "ENVIRONMENT_SIZE_SMALL")
     software_config = optional(object({
-      airflow_config_overrides = optional(map(string), {})
-      pypi_packages            = optional(map(string), {})
-      env_variables            = optional(map(string), {})
-      image_version            = optional(string, "composer-2-airflow-2")
+      airflow_config_overrides       = optional(map(string), {})
+      pypi_packages                  = optional(map(string), {})
+      env_variables                  = optional(map(string), {})
+      image_version                  = optional(string, "composer-2-airflow-2")
+      cloud_data_lineage_integration = optional(bool, true)
     }), {})
     web_server_access_control = optional(map(string), {})
     workloads_config = optional(object({

@@ -31,12 +31,6 @@ variable "create_googleapis_routes" {
   default = {}
 }
 
-variable "data_folder" {
-  description = "An optional folder containing the subnet configurations in YaML format."
-  type        = string
-  default     = null
-}
-
 variable "delete_default_routes_on_create" {
   description = "Set to true to delete the default routes at creation time."
   type        = bool
@@ -58,6 +52,14 @@ variable "dns_policy" {
       private_ns = list(string)
       public_ns  = list(string)
     }))
+  })
+  default = null
+}
+
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    subnets_folder = string
   })
   default = null
 }
@@ -164,42 +166,6 @@ variable "shared_vpc_service_projects" {
   default     = []
 }
 
-variable "subnet_iam" {
-  description = "Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format."
-  type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "subnet_iam_bindings" {
-  description = "Authoritative IAM bindings in {REGION/NAME => {ROLE => {members = [], condition = {}}}}."
-  type = map(map(object({
-    members = list(string)
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  })))
-  nullable = false
-  default  = {}
-}
-
-variable "subnet_iam_bindings_additive" {
-  description = "Individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    subnet = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
 variable "subnets" {
   description = "Subnet configuration."
   type = list(object({
@@ -222,20 +188,63 @@ variable "subnets" {
       # enable_private_access = optional(string)
     }))
     secondary_ip_ranges = optional(map(string))
+
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      role    = string
+      members = list(string)
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
   }))
-  default = []
+  default  = []
+  nullable = false
 }
 
 variable "subnets_proxy_only" {
-  description = "List of proxy-only subnets for Regional HTTPS  or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active."
+  description = "List of proxy-only subnets for Regional HTTPS or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active."
   type = list(object({
     name          = string
     ip_cidr_range = string
     region        = string
     description   = optional(string)
-    active        = bool
+    active        = optional(bool, true)
+    global        = optional(bool, false)
+
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      role    = string
+      members = list(string)
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
   }))
-  default = []
+  default  = []
+  nullable = false
 }
 
 variable "subnets_psc" {
@@ -245,8 +254,29 @@ variable "subnets_psc" {
     ip_cidr_range = string
     region        = string
     description   = optional(string)
+
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      role    = string
+      members = list(string)
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
   }))
-  default = []
+  default  = []
+  nullable = false
 }
 
 variable "vpc_create" {

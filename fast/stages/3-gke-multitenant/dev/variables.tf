@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ variable "billing_account" {
 }
 
 variable "clusters" {
-  description = "Clusters configuration. Refer to the gke-cluster module for type details."
+  description = "Clusters configuration. Refer to the gke-cluster-standard module for type details."
   type = map(object({
     cluster_autoscaling = optional(any)
     description         = optional(string)
@@ -68,9 +68,24 @@ variable "clusters" {
     max_pods_per_node  = optional(number, 110)
     min_master_version = optional(string)
     monitoring_config = optional(object({
-      enable_components  = optional(list(string), ["SYSTEM_COMPONENTS"])
-      managed_prometheus = optional(bool)
-    }))
+      enable_system_metrics = optional(bool, true)
+
+      # (Optional) control plane metrics
+      enable_api_server_metrics         = optional(bool, false)
+      enable_controller_manager_metrics = optional(bool, false)
+      enable_scheduler_metrics          = optional(bool, false)
+
+      # (Optional) kube state metrics
+      enable_daemonset_metrics   = optional(bool, false)
+      enable_deployment_metrics  = optional(bool, false)
+      enable_hpa_metrics         = optional(bool, false)
+      enable_pod_metrics         = optional(bool, false)
+      enable_statefulset_metrics = optional(bool, false)
+      enable_storage_metrics     = optional(bool, false)
+
+      # Google Cloud Managed Service for Prometheus
+      enable_managed_prometheus = optional(bool, true)
+    }), {})
     node_locations         = optional(list(string))
     private_cluster_config = optional(any)
     release_channel        = optional(string)
@@ -82,9 +97,9 @@ variable "clusters" {
         services = string
       }))
       secondary_range_names = optional(object({
-        pods     = string
-        services = string
-      }), { pods = "pods", services = "services" })
+        pods     = optional(string, "pods")
+        services = optional(string, "services")
+      }))
       master_authorized_ranges = optional(map(string))
       master_ipv4_cidr_block   = optional(string)
     })

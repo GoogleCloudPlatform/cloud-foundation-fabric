@@ -7,6 +7,7 @@ organization = {
   billing_type            = "Pay-as-you-go"
   database_encryption_key = "123456789"
   analytics_region        = "europe-west1"
+  disable_vpc_peering     = false
 }
 envgroups = {
   test = ["test.example.com"]
@@ -17,13 +18,11 @@ environments = {
     display_name = "APIs test"
     description  = "APIs Test"
     envgroups    = ["test"]
-    regions      = ["europe-west1"]
   }
   apis-prod = {
     display_name = "APIs prod"
     description  = "APIs prod"
     envgroups    = ["prod"]
-    regions      = ["europe-west3"]
     iam = {
       "roles/viewer" = ["group:devops@myorg.com"]
     }
@@ -33,10 +32,12 @@ instances = {
   europe-west1 = {
     runtime_ip_cidr_range         = "10.0.4.0/22"
     troubleshooting_ip_cidr_range = "10.1.0.0/28"
+    environments                  = ["apis-test"]
   }
   europe-west3 = {
     runtime_ip_cidr_range         = "10.0.6.0/22"
     troubleshooting_ip_cidr_range = "10.1.0.16/28"
+    environments                  = ["apis-prod"]
   }
 }
 endpoint_attachments = {

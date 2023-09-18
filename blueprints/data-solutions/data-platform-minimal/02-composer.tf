@@ -15,7 +15,7 @@
 # tfdoc:file:description Cloud Composer resources.
 
 locals {
-  env_variables = {
+  _env_variables = {
     BQ_LOCATION        = var.location
     CURATED_BQ_DATASET = module.cur-bq-0.dataset_id
     CURATED_GCS        = module.cur-cs-0.url
@@ -30,6 +30,11 @@ locals {
     PROCESSING_SA      = module.processing-sa-0.email
     PROCESSING_SUBNET  = local.processing_subnet
     PROCESSING_VPC     = local.processing_vpc
+  }
+  env_variables = {
+    for k, v in merge(
+      var.composer_config.software_config.env_variables, local._env_variables
+    ) : "AIRFLOW_VAR_${k}" => v
   }
 }
 
@@ -46,18 +51,20 @@ module "processing-sa-cmp-0" {
 }
 
 resource "google_composer_environment" "processing-cmp-0" {
-  count   = var.enable_services.composer == true ? 1 : 0
-  project = module.processing-project.project_id
-  name    = "${var.prefix}-prc-cmp-0"
-  region  = var.region
+  count    = var.enable_services.composer == true ? 1 : 0
+  provider = google-beta
+  project  = module.processing-project.project_id
+  name     = "${var.prefix}-prc-cmp-0"
+  region   = var.region
   config {
     software_config {
       airflow_config_overrides = var.composer_config.software_config.airflow_config_overrides
       pypi_packages            = var.composer_config.software_config.pypi_packages
-      env_variables = merge(
-        var.composer_config.software_config.env_variables, local.env_variables
-      )
-      image_version = var.composer_config.software_config.image_version
+      env_variables            = local.env_variables
+      image_version            = var.composer_config.software_config.image_version
+      cloud_data_lineage_integration {
+        enabled = var.composer_config.software_config.cloud_data_lineage_integration
+      }
     }
     workloads_config {
       scheduler {

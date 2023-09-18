@@ -42,7 +42,7 @@ resource "google_folder_iam_binding" "authoritative" {
 resource "google_folder_iam_binding" "bindings" {
   for_each = var.iam_bindings
   folder   = local.folder.name
-  role     = each.key
+  role     = each.value.role
   members  = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]

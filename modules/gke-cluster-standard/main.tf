@@ -40,8 +40,8 @@ resource "google_container_cluster" "cluster" {
     : "DATAPATH_PROVIDER_UNSPECIFIED"
   )
 
-  # the default nodepool is deleted here, use the gke-nodepool module instead
-  # default nodepool configuration based on a shielded_nodes variable
+  # the default node pool is deleted here, use the gke-nodepool module instead.
+  # the default node pool configuration is based on a shielded_nodes variable.
   node_config {
     dynamic "shielded_instance_config" {
       for_each = var.enable_features.shielded_nodes ? [""] : []
@@ -164,12 +164,19 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "gateway_api_config" {
+    for_each = var.enable_features.gateway_api ? [""] : []
+    content {
+      channel = "CHANNEL_STANDARD"
+    }
+  }
+
   dynamic "ip_allocation_policy" {
     for_each = var.vpc_config.secondary_range_blocks != null ? [""] : []
     content {
       cluster_ipv4_cidr_block  = var.vpc_config.secondary_range_blocks.pods
       services_ipv4_cidr_block = var.vpc_config.secondary_range_blocks.services
-      stack_type               = try(var.vpc_config.stack_type, null)
+      stack_type               = var.vpc_config.stack_type
     }
   }
   dynamic "ip_allocation_policy" {
@@ -177,7 +184,7 @@ resource "google_container_cluster" "cluster" {
     content {
       cluster_secondary_range_name  = var.vpc_config.secondary_range_names.pods
       services_secondary_range_name = var.vpc_config.secondary_range_names.services
-      stack_type                    = try(var.vpc_config.stack_type, null)
+      stack_type                    = var.vpc_config.stack_type
     }
   }
 
@@ -202,13 +209,6 @@ resource "google_container_cluster" "cluster" {
     for_each = var.logging_config.enable_system_logs == false ? [""] : []
     content {
       enable_components = []
-    }
-  }
-
-  dynamic "gateway_api_config" {
-    for_each = var.enable_features.gateway_api ? [""] : []
-    content {
-      channel = "CHANNEL_STANDARD"
     }
   }
 
@@ -277,22 +277,28 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic "monitoring_config" {
-    for_each = var.monitoring_config != null ? [""] : []
-    content {
-      enable_components = var.monitoring_config.enable_components
-      dynamic "managed_prometheus" {
-        for_each = (
-          try(var.monitoring_config.managed_prometheus, null) == true ? [""] : []
-        )
-        content {
-          enabled = true
-        }
-      }
+  monitoring_config {
+    enable_components = toset(compact([
+      # System metrics is the minimum requirement if any other metrics are enabled. This is checked by input var validation.
+      var.monitoring_config.enable_system_metrics ? "SYSTEM_COMPONENTS" : null,
+      # Control plane metrics
+      var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
+      var.monitoring_config.enable_controller_manager_metrics ? "CONTROLLER_MANAGER" : null,
+      var.monitoring_config.enable_scheduler_metrics ? "SCHEDULER" : null,
+      # Kube state metrics
+      var.monitoring_config.enable_daemonset_metrics ? "DAEMONSET" : null,
+      var.monitoring_config.enable_deployment_metrics ? "DEPLOYMENT" : null,
+      var.monitoring_config.enable_hpa_metrics ? "HPA" : null,
+      var.monitoring_config.enable_pod_metrics ? "POD" : null,
+      var.monitoring_config.enable_statefulset_metrics ? "STATEFULSET" : null,
+      var.monitoring_config.enable_storage_metrics ? "STORAGE" : null,
+    ]))
+    managed_prometheus {
+      enabled = var.monitoring_config.enable_managed_prometheus
     }
   }
 
-  # dataplane v2 has built-in network policies
+  # Dataplane V2 has built-in network policies
   dynamic "network_policy" {
     for_each = (
       var.enable_addons.network_policy && !var.enable_features.dataplane_v2

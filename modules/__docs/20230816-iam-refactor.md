@@ -6,6 +6,7 @@
 ## Status
 
 Implemented in [#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595).
+Authoritative bindings type changed as per [#1622](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/1622).
 
 ## Context
 
@@ -39,15 +40,18 @@ The new `iam_bindings` variable will look like this:
 
 ```hcl
 variable "iam_bindings" {
-  description = "Authoritative IAM bindings with support for conditions, in {ROLE => { members = [], condition = {}}} format."
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
   type = map(object({
-    members   = list(string)
+    members = list(string)
+    role    = string
     condition = optional(object({
       expression  = string
       title       = string
       description = optional(string)
     }))
   }))
+  nullable = false
+  default  = {}
 }
 ```
 
@@ -94,8 +98,8 @@ The new variable will closely follow the type of the authoritative `iam_bindings
 variable "iam_bindings_additive" {
   description = "Additive IAM bindings with support for conditions, in {KEY => { role = ROLE, members = [], condition = {}}} format."
   type = map(object({
-    member    = string
-    role      = string
+    member = string
+    role   = string
     condition = optional(object({
       expression  = string
       title       = string
@@ -128,3 +132,213 @@ This brings several advantages over the previous handling of IAM:
 ### Blueprints
 
 A few data blueprints that leverage `iam_additive` have been refactored to use the new variable. This is most notable in data blueprints, where extra files have been added to the more complex examples like data foundations, to abstract IAM bindings in a way similar to what is described above for FAST.
+
+## Implementation
+
+The following sections provide a template for IAM-related variables and resources to ensure a consistent implementation of IAM across the repository. Use these code snippets to add IAM support to your module.
+
+### Top-level module IAM
+
+Use this template if your module manages a single instance of a given resource (e.g. a KMS keyring).
+
+```terraform
+# variables.tf
+
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iam_bindings" {
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
+  type = map(object({
+    members = list(string)
+    role    = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "iam_bindings_additive" {
+  description = "Keyring individual additive IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+}
+```
+
+```terraform
+# iam.tf
+
+resource "google_RESOURCE_TYPE_iam_binding" "authoritative" {
+  for_each = var.iam
+  role     = each.key
+  members  = each.value
+  // add extra attributes (e.g. resource id)
+}
+
+resource "google_RESOURCE_TYPE_iam_binding" "bindings" {
+  for_each = var.iam_bindings
+  role     = each.value.role
+  members  = each.value.members
+  // add extra attributes (e.g. resource id)
+
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_RESOURCE_TYPE_iam_member" "bindings" {
+  for_each = var.iam_bindings_additive
+  role     = each.value.role
+  member   = each.value.member
+  // add extra attributes (e.g. resource id)
+
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+```
+
+### Sub-resources IAM
+
+Use this template if your module manages multiple instances of a resource (e.g. keys in KMS keyring).
+
+```terraform
+# variables.tf
+variable "sub_resources" {
+  type = map(object({
+    # sub-resource configuration here
+
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+  }))
+  default  = {}
+  nullable = false
+}
+```
+
+```terraform
+# iam.tf
+locals {
+  SUB_RESOURCE_iam = flatten([
+    for k, v in var.SUB_RESOURCEs : [
+      for role, members in v.iam : {
+        key     = k
+        role    = role
+        members = members
+      }
+    ]
+  ])
+  SUB_RESOURCE_iam_bindings = merge([
+    for k, v in var.SUB_RESOURCEs : {
+      for binding_key, data in v.iam_bindings :
+      binding_key => {
+        SUB_RESOURCE = k
+        role         = data.role
+        members      = data.members
+        condition    = data.condition
+      }
+    }
+  ]...)
+  SUB_RESOURCE_iam_bindings_additive = merge([
+    for k, v in var.subresources : {
+      for binding_key, data in v.iam_bindings_additive :
+      binding_key => {
+        SUB_RESOURCE = k
+        role         = data.role
+        member       = data.member
+        condition    = data.condition
+      }
+    }
+  ]...)
+}
+```
+
+```terraform
+# iam.tf
+
+resource "google_SUB_RESOURCE_iam_binding" "authoritative" {
+  for_each = {
+    for binding in local.SUB_RESOURCE_iam :
+    "${binding.key}.${binding.role}" => binding
+  }
+  role    = each.value.role
+  members = each.value.members
+  // add extra attributes (e.g. sub resource id)
+}
+
+resource "google_SUB_RESOURCE_iam_binding" "bindings" {
+  for_each = local.SUB_RESOURCE_iam_bindings
+  role     = each.value.role
+  members  = each.value.members
+  // add extra attributes (e.g. sub resource id)
+
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+resource "google_SUB_RESOURCE_iam_member" "members" {
+  for_each = local.SUB_RESOURCE_iam_bindings_additive
+  role     = each.value.role
+  member   = each.value.member
+  // add extra attributes (e.g. sub resource id)
+
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
+
+```

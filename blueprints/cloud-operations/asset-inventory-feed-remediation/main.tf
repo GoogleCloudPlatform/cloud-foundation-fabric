@@ -55,10 +55,12 @@ module "vpc" {
 }
 
 module "pubsub" {
-  source        = "../../../modules/pubsub"
-  project_id    = module.project.project_id
-  name          = var.name
-  subscriptions = { "${var.name}-default" = null }
+  source     = "../../../modules/pubsub"
+  project_id = module.project.project_id
+  name       = var.name
+  subscriptions = {
+    "${var.name}-default" = {}
+  }
   iam = {
     "roles/pubsub.publisher" = [
       "serviceAccount:${module.project.service_accounts.robots.cloudasset}"
