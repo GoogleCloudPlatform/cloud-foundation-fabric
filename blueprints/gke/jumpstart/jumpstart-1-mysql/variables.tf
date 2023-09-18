@@ -46,6 +46,10 @@ variable "mysql_config" {
   })
   nullable = false
   default  = {}
+  validation {
+    condition = var.mysql_config.db_replicas >= 3
+    error_message = "db_replicas must be 3 or greater (but no larger than number of available zones in the region)"
+  }
 }
 
 variable "namespace" {

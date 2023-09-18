@@ -75,7 +75,7 @@ spec:
                   name: mysql-secret
                   key: password
             - name: MYSQL_INNODB_CLUSTER_MEMBERS
-              value: ${mysql_config.db_replicas}  # TODO: maybe this should be 2? This may result in invalid bootstraping, but it is better than not working at all when one of db instances is down?
+              value: ${floor(mysql_config.db_replicas / 2) + 1}  # TODO: maybe this should be 2? This may result in invalid bootstraping, but it is better than not working at all when one of db instances is down?
           ports:
             - name: mysql-rw
               containerPort: 6446
