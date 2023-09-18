@@ -29,7 +29,6 @@ values:
     - device_name: data1
       disk_encryption_key_raw: null
       mode: READ_WRITE
-      source: test-data1
     boot_disk:
     - auto_delete: true
       disk_encryption_key_raw: null
