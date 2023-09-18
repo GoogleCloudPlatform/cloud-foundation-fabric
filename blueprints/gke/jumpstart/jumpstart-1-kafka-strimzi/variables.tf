@@ -37,13 +37,14 @@ variable "namespace" {
   description = "Namespace used for Redis cluster resources."
   type        = string
   nullable    = false
-  default     = "kafka"
+  default     = "strimzi"
 }
 
 variable "statefulset_config" {
   description = "Configure Kafka cluster statefulset parameters."
   type = object({
-    name = optional(string, "test-00")
+    name      = optional(string, "test-00")
+    namespace = optional(string, "kafka")
     # replicas = optional(number, 6)
     resource_requests = optional(object({
       cpu    = optional(string, "1")

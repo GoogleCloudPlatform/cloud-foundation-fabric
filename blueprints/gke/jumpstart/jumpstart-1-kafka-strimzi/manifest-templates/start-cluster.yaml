@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+# helm -n kafka template kafka ./h^Cm  > kafka-2.yml
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:

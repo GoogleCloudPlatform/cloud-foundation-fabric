@@ -32,41 +32,27 @@ resource "kubernetes_namespace" "default" {
   }
 }
 
-resource "helm_release" "strimzi_operator" {
-  name       = "strimzi-operator"
-  repository = "https://strimzi.io/charts"
-  chart      = "strimzi-kafka-operator"
-  namespace  = kubernetes_namespace.default.metadata.0.name
-
-  # TODO: to understand
-  # set {
-  #   name  = "watchNamespaces"
-  #   value = "{${var.namespace}}"
-  # }
-}
-
-# resource "kubernetes_manifest" "default" {
-#   for_each = toset(local.wl_templates)
-#   manifest = yamldecode(templatefile(each.value, {
-#     namespace = kubernetes_namespace.default.metadata.0.name
-#     name      = var.statefulset_config.name
-#     version   = var.statefulset_config.version
-#   }))
-#   timeouts {
-#     create = "30m"
-#   }
-#   depends_on = [helm_release.strimzi_operator]
-# }
-
-resource "kubectl_manifest" "default" {
+resource "kubernetes_manifest" "default" {
   for_each = toset(local.wl_templates)
-  yaml_body = format("%#v", yamldecode(templatefile(each.value, {
-    namespace = kubernetes_namespace.default.metadata.0.name
-    name      = var.statefulset_config.name
-    version   = var.statefulset_config.version
-  })))
+  manifest = yamldecode(templatefile(each.value, {
+    namespace = var.namespace
+  }))
   timeouts {
     create = "30m"
   }
-  depends_on = [helm_release.strimzi_operator]
+  depends_on = [kubernetes_namespace.default]
+}
+
+
+resource "kubernetes_manifest" "stateful" {
+  for_each = toset(local.wl_templates)
+  manifest = yamldecode(templatefile("${local.wl_templates_path}/start-cluster.yaml", {
+    name      = var.statefulset_config.name
+    namespace = var.statefulset_config.namespace
+    version   = var.statefulset_config.version
+  }))
+  timeouts {
+    create = "30m"
+  }
+  depends_on = [kubernetes_manifest.default]
 }
