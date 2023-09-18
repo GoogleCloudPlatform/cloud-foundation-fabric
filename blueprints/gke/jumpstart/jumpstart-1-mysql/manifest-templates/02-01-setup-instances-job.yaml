@@ -1,0 +1,61 @@
+# use mysql and connect remotely?
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: setup-instances
+  namespace: ${namespace}
+spec:
+  suspend: false
+  completions: 1
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: shared-data
+          emptyDir: {}
+
+      containers:
+        - name: setup-mysql
+          image: ${registry_path}/mysql/mysql-server:8.0.28
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: MYSQL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: admin-password
+          command:
+            - /bin/sh
+            - -c
+            - |
+              for i in $(seq 0 $((${replicas_count} - 1))); do
+                echo "Configuring pod ${namespace}/dbc1-$${i}"
+                  cat <<'  EOF' | mysql -hdbc1-$${i}.mysql.${namespace}.svc.cluster.local -uroot -proot --password=$${MYSQL_ROOT_PASSWORD}
+                  INSTALL PLUGIN group_replication SONAME 'group_replication.so';
+                  RESET PERSIST IF EXISTS group_replication_ip_allowlist;
+                  RESET PERSIST IF EXISTS binlog_transaction_dependency_tracking;
+                  SET @@PERSIST.group_replication_ip_allowlist = '%{ for index in range(0, replicas_count) ~}dbc1-${index}.mysql.${namespace}.svc.cluster.local,%{ endfor ~}';
+                  SET @@PERSIST.binlog_transaction_dependency_tracking = 'WRITESET';
+                EOF
+              done
+              echo "Configuring MySQL cluster using dbc1-0"
+              cat <<'  EOF' | mysqlsh -hdbc1-0.mysql.${namespace}.svc.cluster.local -uroot -proot --password=$${MYSQL_ROOT_PASSWORD}
+                %{ for index in range(0, replicas_count) ~}
+                dba.configureInstance('root@dbc1-${index}.mysql.${namespace}.svc.cluster.local', {password: os.getenv("MYSQL_ROOT_PASSWORD"),clusterAdmin: 'icadmin', clusterAdminPassword: os.getenv("MYSQL_ADMIN_PASSWORD")});
+                %{ endfor ~}
+
+                var cluster=dba.createCluster('mycluster');
+
+                %{ for index in range(1, replicas_count) ~}
+                cluster.addInstance('icadmin@dbc1-${index}.mysql', {password: os.getenv("MYSQL_ROOT_PASSWORD"), recoveryMethod: 'clone'});
+                %{ endfor ~}
+
+                cluster.status();
+
+                clusterset=cluster.createClusterSet('clusterset');
+                clusterset.status();
+                EOF

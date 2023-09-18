@@ -1,0 +1,108 @@
+# TODO: do we need more hosts for MYSQL_HOST ?
+# - no, but the question is, should the config directory be a persistent volume? otherwise, if during recreation of the pod
+# dbc1-0 is unavailable, then router will not bootstrap properly...
+# Storing bootstrap information in persistent volume won't help, as docker container is always bootstrapping on start 🤦
+# TODO: does router really needs to run on separate nodes than mysql itself?
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-router
+  namespace: "${namespace}"
+  labels:
+    app: mysql-router
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mysql-router
+  template:
+    metadata:
+      labels:
+        app: mysql-router
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mysql
+              topologyKey: topology.kubernetes.io/zone
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - mysql-router
+                topologyKey: "topology.kubernetes.io/zone"
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mysql
+              topologyKey: "kubernetes.io/hostname"
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mysql-router
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: mysql-router
+          image: ${registry_path}/mysql/mysql-router:8.0.27  # need to explicitly use registry, otherwise randomly ImagePullError occurs
+          env:
+            - name: MYSQL_HOST
+              value: dbc1-0.mysql.${namespace}.svc.cluster.local
+            - name: MYSQL_PORT
+              value: '3306'
+            - name: MYSQL_USER
+              value: root
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: MYSQL_INNODB_CLUSTER_MEMBERS
+              value: ${replicas_count}
+          ports:
+            - name: mysql-rw
+              containerPort: 6446
+            - name: mysql-ro
+              containerPort: 6447
+            - name: mysqlx-rw
+              containerPort: 64460
+            - name: mysqlx-ro
+              containerPort: 64470
+          resources:
+            limits:
+              cpu: "500m"
+              ephemeral-storage: "1Gi"
+              memory: "2Gi"
+            requests:
+              cpu: "500m"
+              ephemeral-storage: "1Gi"
+              memory: "2Gi"
+          readinessProbe:
+            tcpSocket:
+              port: 6446
+            initialDelaySeconds: 150
+            periodSeconds: 30
+            timeoutSeconds: 30
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket:
+              port: 6446
+            initialDelaySeconds: 150
+            periodSeconds: 30
+            timeoutSeconds: 30
+            failureThreshold: 60
