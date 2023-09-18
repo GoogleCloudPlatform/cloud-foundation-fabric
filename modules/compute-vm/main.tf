@@ -187,7 +187,7 @@ resource "google_compute_instance" "default" {
       source = (
         config.value.source_type == "attach"
         ? config.value.source
-        : google_compute_region_disk.disks[config.key].name
+        : google_compute_region_disk.disks[config.key].id
       )
     }
   }
