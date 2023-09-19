@@ -11,15 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# helm -n kafka template kafka ./h^Cm  > kafka-2.yml
+
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:
-  name: "${name}"
-  namespace: "${namespace}"
+  name: {{ .Release.Name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
 spec:
   kafka:
-    version: "${version}"
+    version: 3.4.0
     replicas: 3
     template:
       pod:
@@ -45,7 +45,7 @@ spec:
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: kafka
-              strimzi.io/cluster:  "${name}"
+              strimzi.io/cluster:  {{ .Release.Name | quote }}
               strimzi.io/component-type: kafka
     resources:
       requests:
@@ -79,7 +79,7 @@ spec:
       - id: 0
         type: persistent-claim
         size: 100Gi
-        class: premium-rwo
+        class: regional-pd
         deleteClaim: false
   zookeeper:
     template:
@@ -101,7 +101,7 @@ spec:
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: zookeeper
-              strimzi.io/cluster:  "${name}"
+              strimzi.io/cluster:  {{ .Release.Name | quote }}
               strimzi.io/component-type: zookeeper
     replicas: 3
     resources:
@@ -117,7 +117,7 @@ spec:
     storage:
       type: persistent-claim
       size: 100Gi
-      class: premium-rwo
+      class: regional-pd
       deleteClaim: false
   entityOperator:
     tlsSidecar:

@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-locals {
-  wl_templates = [
-    for f in fileset(local.wl_templates_path, "[0-9]*yaml") :
-    "${local.wl_templates_path}/${f}"
-  ]
-  wl_templates_path = (
-    var.templates_path == null
-    ? "${path.module}/manifest-templates"
-    : pathexpand(var.templates_path)
-  )
-}
-
 resource "kubernetes_namespace" "default" {
   metadata {
     name = var.namespace
@@ -37,15 +25,10 @@ resource "helm_release" "strimzi-operator" {
   repository = "https://strimzi.io/charts"
   chart      = "strimzi-kafka-operator"
   namespace  = kubernetes_namespace.default.metadata.0.name
-
-  # set {
-  #   name  = "watchNamespaces"
-  #   value = "{${var.namespace}}"
-  # }
 }
 
 resource "helm_release" "kafka-cluster" {
-  name       = "kafka-cluster"
+  name       = "kafka-cluster2"
   chart      = "./kafka-cluster-chart"
   namespace  = kubernetes_namespace.default.metadata.0.name
   depends_on = [helm_release.strimzi-operator]
