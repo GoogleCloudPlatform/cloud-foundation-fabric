@@ -28,8 +28,14 @@ resource "helm_release" "strimzi-operator" {
 }
 
 resource "helm_release" "kafka-cluster" {
-  name       = "kafka-cluster2"
-  chart      = "./kafka-cluster-chart"
-  namespace  = kubernetes_namespace.default.metadata.0.name
+  name      = "kafka-cluster"
+  chart     = "./kafka-cluster-chart"
+  namespace = kubernetes_namespace.default.metadata.0.name
+  values = [
+    yamlencode({
+      kafka     = var.kafka_config
+      zookeeper = var.zookeeper_config
+    })
+  ]
   depends_on = [helm_release.strimzi-operator]
 }

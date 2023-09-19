@@ -40,18 +40,24 @@ variable "namespace" {
   default     = "strimzi"
 }
 
-variable "statefulset_config" {
+variable "kafka_config" {
   description = "Configure Kafka cluster statefulset parameters."
   type = object({
-    name      = optional(string, "test-00")
-    namespace = optional(string, "kafka")
-    # replicas = optional(number, 6)
-    resource_requests = optional(object({
-      cpu    = optional(string, "1")
-      memory = optional(string, "1Gi")
-    }), {})
-    # volume_claim_size = optional(string, "10Gi")
-    version = optional(string, "3.4.0")
+    replicas          = optional(number, 3)
+    volume_claim_size = optional(string, "10Gi")
+    version           = optional(string, "3.4.0")
+    jvm_memory        = optional(string, "4096m")
+  })
+  nullable = false
+  default  = {}
+}
+
+variable "zookeeper_config" {
+  description = "Configure Kafka cluster statefulset parameters."
+  type = object({
+    replicas          = optional(number, 3)
+    volume_claim_size = optional(string, "10Gi")
+    jvm_memory        = optional(string, "2048m")
   })
   nullable = false
   default  = {}

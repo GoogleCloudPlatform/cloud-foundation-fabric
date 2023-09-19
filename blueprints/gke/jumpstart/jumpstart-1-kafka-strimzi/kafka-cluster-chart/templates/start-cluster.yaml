@@ -19,8 +19,8 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 spec:
   kafka:
-    version: 3.4.0
-    replicas: 3
+    version: {{ .Values.kafka.version | quote }}
+    replicas: {{ .Values.kafka.replicas }}
     template:
       pod:
         tolerations:
@@ -55,8 +55,8 @@ spec:
         memory: 5Gi
         cpu: "2"
     jvmOptions:
-      -Xms: 4096m
-      -Xmx: 4096m
+      -Xms: {{ .Values.kafka.jvm_memory | quote }}
+      -Xmx: {{ .Values.kafka.jvm_memory | quote }}
     listeners:
       - name: plain
         port: 9092
@@ -78,8 +78,8 @@ spec:
       volumes:
       - id: 0
         type: persistent-claim
-        size: 100Gi
-        class: regional-pd
+        size: {{ .Values.kafka.volume_claim_size | quote }}
+        class: premium-rwo
         deleteClaim: false
   zookeeper:
     template:
@@ -103,7 +103,7 @@ spec:
               app.kubernetes.io/name: zookeeper
               strimzi.io/cluster:  {{ .Release.Name | quote }}
               strimzi.io/component-type: zookeeper
-    replicas: 3
+    replicas: {{ .Values.zookeeper.replicas }}
     resources:
       requests:
         memory: 2560Mi
@@ -112,12 +112,12 @@ spec:
         memory: 2560Mi
         cpu: 2000m
     jvmOptions:
-      -Xms: 2048m
-      -Xmx: 2048m
+      -Xms: {{ .Values.zookeeper.jvm_memory | quote }}
+      -Xmx: {{ .Values.zookeeper.jvm_memory | quote }}
     storage:
       type: persistent-claim
-      size: 100Gi
-      class: regional-pd
+      size: {{ .Values.zookeeper.volume_claim_size | quote }}
+      class: premium-rwo
       deleteClaim: false
   entityOperator:
     tlsSidecar:
