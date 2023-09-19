@@ -9,7 +9,6 @@ In both modes, an optional service account can be created and assigned to either
 
 ## Examples
 
-
 <!-- BEGIN TOC -->
 - [Examples](#examples)
   - [Instance using defaults](#instance-using-defaults)
@@ -50,18 +49,22 @@ module "simple-vm-example" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account_create = true
 }
-# tftest modules=1 resources=2 inventory=simple.yaml
+# tftest modules=1 resources=1 inventory=defaults.yaml
 ```
 
 ### Service account management
 
-VM service accounts can be managed in three different ways:
+VM service accounts can be managed in four different ways:
 
-- You can let the module create a service account for you by setting `service_account_create = true`
-- You can use an existing service account by setting `service_account_create = false` (the default value) and passing the full email address of the service account to the `service_account` variable. This is useful, for example, if you want to reuse the service account from another previously created instance, or if you want to create the service account manually with the `iam-service-account` module. In this case, you probably also want to set `service_account_scopes` to `cloud-platform`.
-- Lastly, you can use the default compute service account by setting `service_account_crate = false`. Please note that using the default compute service account is not recommended.
+- in its default configuration, the module uses the Compute default service account with a basic set of scopes (`devstorage.read_only`, `logging.write`, `monitoring.write`)
+- a custom service account can be used by passing its email in the `service_account.email` variable
+- a custom service account can be created by the module and used by setting the `service_account.auto_create` variable to `true`
+- the instance can be created with no service account by setting the `service_account` variable to `null`
+
+Scopes for custom service accounts are set by default to `cloud-platform` and `userinfo.email`, and can be further customized regardless of which service account is used by directly setting the `service_account.scopes` variable.
+
+#### Compute default service account
 
 ```hcl
 module "vm-managed-sa-example" {
@@ -73,9 +76,13 @@ module "vm-managed-sa-example" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account_create = true
 }
+# tftest modules=1 resources=1 inventory=sa-default.yaml
+```
 
+#### Custom service account
+
+```hcl
 module "vm-managed-sa-example2" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
@@ -85,24 +92,47 @@ module "vm-managed-sa-example2" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account        = module.vm-managed-sa-example.service_account_email
-  service_account_scopes = ["cloud-platform"]
+  service_account = {
+    email = "sa-0@myproj.iam.gserviceaccount.com"
+  }
 }
+# tftest modules=1 resources=1 inventory=sa-custom.yaml
+```
 
-# not recommended
-module "vm-default-sa-example2" {
+#### Custom service account, auto created
+
+```hcl
+module "vm-managed-sa-example2" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone       = "europe-west1-b"
-  name       = "test3"
+  name       = "test2"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account_create = false
+  service_account = {
+    auto_create = true
+  }
 }
+# tftest modules=1 resources=2 inventory=sa-managed.yaml
+```
 
-# tftest modules=3 resources=4 inventory=sas.yaml
+#### No service account
+
+```hcl
+module "vm-managed-sa-example2" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "europe-west1-b"
+  name       = "test2"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  service_account = null
+}
+# tftest modules=1 resources=1 inventory=sa-none.yaml
 ```
 
 ### Disk management
@@ -137,7 +167,9 @@ module "vm-disks-example" {
       replica_zone = "${var.region}-c"
     }
   }]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 # tftest modules=1 resources=2
 ```
@@ -163,8 +195,10 @@ module "vm-disks-example" {
       replica_zone = "${var.region}-c"
     }
   }]
-  service_account_create = true
-  create_template        = true
+  service_account = {
+    auto_create = true
+  }
+  create_template = true
 }
 # tftest modules=1 resources=2
 ```
@@ -205,7 +239,9 @@ module "vm-disk-options-example" {
       }
     }
   ]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 # tftest modules=1 resources=4 inventory=disk-options.yaml
 ```
@@ -230,7 +266,9 @@ module "simple-vm-example" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 # tftest modules=1 resources=3 inventory=independent-boot-disk.yaml
 ```
@@ -331,7 +369,9 @@ module "vm-with-gvnic" {
     subnetwork = var.subnet.self_link
     nic_type   = "GVNIC"
   }]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 # tftest modules=1 resources=3 inventory=gvnic.yaml
 ```
@@ -361,7 +401,9 @@ module "vm-metadata-example" {
       apt-get install -y nginx
     EOF
   }
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 # tftest modules=1 resources=2 inventory=metadata.yaml
 ```
@@ -465,7 +507,9 @@ module "kms-vm-example" {
     name = "attached-disk"
     size = 10
   }]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
   encryption = {
     encrypt_boot      = true
     kms_key_self_link = var.kms_key.self_link
@@ -499,7 +543,9 @@ module "cos-test" {
       size = 10
     }
   ]
-  service_account = "vm-default@my-project.iam.gserviceaccount.com"
+  service_account = {
+    email = "vm-default@my-project.iam.gserviceaccount.com"
+  }
   create_template = true
 }
 # tftest modules=1 resources=1 inventory=template.yaml
@@ -526,8 +572,10 @@ module "instance-group" {
   boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
   }
-  service_account        = var.service_account.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account = {
+    email  = var.service_account.email
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
   metadata = {
     user-data = local.cloud_config
   }

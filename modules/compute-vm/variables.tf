@@ -292,9 +292,13 @@ variable "scratch_disks" {
 }
 
 variable "service_account" {
-  description = "Service account email. Unused if service account is auto-created."
-  type        = string
-  default     = null
+  description = "Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created."
+  type = object({
+    auto_create = optional(bool, false)
+    email       = optional(string)
+    scopes      = optional(list(string))
+  })
+  default = {}
 }
 
 variable "service_account_create" {
