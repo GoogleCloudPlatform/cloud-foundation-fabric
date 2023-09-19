@@ -90,13 +90,14 @@ module "nats_spoke_01" {
 }
 
 module "test_vms" {
-  for_each               = var.regions
-  source                 = "../../../modules/compute-vm"
-  name                   = "spoke-01-${each.value}"
-  project_id             = module.project_spoke_01.project_id
-  create_template        = var.ilb_create
-  service_account_create = true
-  zone                   = local.zones[each.key]
+  for_each   = var.regions
+  source     = "../../../modules/compute-vm"
+  name       = "spoke-01-${each.value}"
+  project_id = module.project_spoke_01.project_id
+  zone       = local.zones[each.key]
+  service_account = {
+    auto_create = true
+  }
   metadata = {
     startup-script = "apt update && apt install -y nginx"
   }
@@ -109,6 +110,7 @@ module "test_vms" {
     "https-server",
     "ssh"
   ]
+  create_template = var.ilb_create
 }
 
 module "test_vm_migs" {
