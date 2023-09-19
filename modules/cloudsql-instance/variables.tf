@@ -85,6 +85,12 @@ variable "deletion_protection" {
   default     = false
 }
 
+variable "deletion_protection_enabled" {
+  description = "Set Google's deletion protection attribute which applies across all surfaces (UI, API, & Terraform)."
+  type        = bool
+  default     = false
+}
+
 variable "disk_size" {
   description = "Disk size in GB. Set to null to enable autoresize."
   type        = number
