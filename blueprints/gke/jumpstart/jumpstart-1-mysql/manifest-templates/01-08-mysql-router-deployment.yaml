@@ -1,7 +1,3 @@
-# TODO: do we need more hosts for MYSQL_HOST ?
-# - no, but the question is, should the config directory be a persistent volume? otherwise, if during recreation of the pod
-# dbc1-0 is unavailable, then router will not bootstrap properly...
-# Storing bootstrap information in persistent volume won't help, as docker container is always bootstrapping on start 🤦
 # TODO: does router really needs to run on separate nodes than mysql itself?
 
 apiVersion: apps/v1
@@ -43,13 +39,14 @@ spec:
                         - mysql-router
                 topologyKey: "topology.kubernetes.io/zone"
           requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - mysql
-              topologyKey: "kubernetes.io/hostname"
+# TODO: do we really need to run mysql-router on different node than mysql-server?
+#            - labelSelector:
+#                matchExpressions:
+#                  - key: app
+#                    operator: In
+#                    values:
+#                      - mysql
+#              topologyKey: "kubernetes.io/hostname"
             - labelSelector:
                 matchExpressions:
                   - key: app
@@ -64,7 +61,7 @@ spec:
           image: ${registry_path}/mysql/mysql-router:${mysql_config.version}
           env:
             - name: MYSQL_HOST
-              value: mysql.${namespace}.svc.cluster.local
+              value: mysql-bootstrap.${namespace}.svc.cluster.local
             - name: MYSQL_PORT
               value: '3306'
             - name: MYSQL_USER
@@ -75,7 +72,7 @@ spec:
                   name: mysql-secret
                   key: password
             - name: MYSQL_INNODB_CLUSTER_MEMBERS
-              value: ${floor(mysql_config.db_replicas / 2) + 1}  # TODO: maybe this should be 2? This may result in invalid bootstraping, but it is better than not working at all when one of db instances is down?
+              value: ${floor(mysql_config.db_replicas / 2) + 1}
           ports:
             - name: mysql-rw
               containerPort: 6446

@@ -1,7 +1,3 @@
-# TODO:
-# - expose volume size as variable
-# - expose image (version?) as variable
-# - expose number of replicas as variable
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -23,6 +19,7 @@ spec:
     spec:
       topologySpreadConstraints:
         - maxSkew: 1
+          minDomains: 3  # ensure that at least three different zones are in use
           topologyKey: "topology.kubernetes.io/zone"
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
