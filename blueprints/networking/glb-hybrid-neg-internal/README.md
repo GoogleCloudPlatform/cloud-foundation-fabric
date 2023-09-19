@@ -97,5 +97,5 @@ module "test" {
   }
 }
 
-# tftest modules=21 resources=68
+# tftest modules=21 resources=70
 ```
