@@ -192,7 +192,9 @@ module "vm-bastion" {
       "service tinyproxy restart"
     ])
   }
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 
 ################################################################################

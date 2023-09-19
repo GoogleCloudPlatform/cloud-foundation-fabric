@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.simple-vm-example.google_compute_instance.default[0]:
+  module.vm-managed-sa-example2.google_compute_instance.default[0]:
     advanced_machine_features: []
     allow_stopping_for_update: true
     attached_disk: []
@@ -22,20 +22,21 @@ values:
       disk_encryption_key_raw: null
       initialize_params:
       - image: projects/debian-cloud/global/images/family/debian-11
-        resource_manager_tags:
+        resource_manager_tags: null
         size: 10
         type: pd-balanced
       mode: READ_WRITE
     can_ip_forward: false
     deletion_protection: false
     description: Managed by the compute-vm Terraform module.
+    desired_status: null
     enable_display: false
     hostname: null
     labels: null
     machine_type: f1-micro
     metadata: null
     metadata_startup_script: null
-    name: test
+    name: test2
     network_interface:
     - access_config: []
       alias_ip_range: []
@@ -44,7 +45,10 @@ values:
       nic_type: null
       queue_count: null
       subnetwork: subnet_self_link
+    network_performance_config: []
+    params: []
     project: project-id
+    resource_policies: null
     scheduling:
     - automatic_restart: true
       instance_termination_action: null
@@ -58,18 +62,18 @@ values:
       provisioning_model: STANDARD
     scratch_disk: []
     service_account:
-    - scopes:
+    - email: sa-0@myproj.iam.gserviceaccount.com
+      scopes:
       - https://www.googleapis.com/auth/cloud-platform
       - https://www.googleapis.com/auth/userinfo.email
     shielded_instance_config: []
     tags: null
+    timeouts: null
     zone: europe-west1-b
-  module.simple-vm-example.google_service_account.service_account[0]:
-    account_id: tf-vm-test
-    display_name: Terraform VM test.
-    project: project-id
-
 
 counts:
   google_compute_instance: 1
-  google_service_account: 1
+  modules: 1
+  resources: 1
+
+outputs: {}

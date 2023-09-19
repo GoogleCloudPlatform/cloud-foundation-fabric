@@ -9,11 +9,14 @@ In both modes, an optional service account can be created and assigned to either
 
 ## Examples
 
-
 <!-- BEGIN TOC -->
 - [Examples](#examples)
   - [Instance using defaults](#instance-using-defaults)
   - [Service account management](#service-account-management)
+    - [Compute default service account](#compute-default-service-account)
+    - [Custom service account](#custom-service-account)
+    - [Custom service account, auto created](#custom-service-account-auto-created)
+    - [No service account](#no-service-account)
   - [Disk management](#disk-management)
     - [Disk sources](#disk-sources)
     - [Disk types and options](#disk-types-and-options)
@@ -50,18 +53,22 @@ module "simple-vm-example" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account_create = true
 }
-# tftest modules=1 resources=2 inventory=simple.yaml
+# tftest modules=1 resources=1 inventory=defaults.yaml
 ```
 
 ### Service account management
 
-VM service accounts can be managed in three different ways:
+VM service accounts can be managed in four different ways:
 
-- You can let the module create a service account for you by setting `service_account_create = true`
-- You can use an existing service account by setting `service_account_create = false` (the default value) and passing the full email address of the service account to the `service_account` variable. This is useful, for example, if you want to reuse the service account from another previously created instance, or if you want to create the service account manually with the `iam-service-account` module. In this case, you probably also want to set `service_account_scopes` to `cloud-platform`.
-- Lastly, you can use the default compute service account by setting `service_account_crate = false`. Please note that using the default compute service account is not recommended.
+- in its default configuration, the module uses the Compute default service account with a basic set of scopes (`devstorage.read_only`, `logging.write`, `monitoring.write`)
+- a custom service account can be used by passing its email in the `service_account.email` variable
+- a custom service account can be created by the module and used by setting the `service_account.auto_create` variable to `true`
+- the instance can be created with no service account by setting the `service_account` variable to `null`
+
+Scopes for custom service accounts are set by default to `cloud-platform` and `userinfo.email`, and can be further customized regardless of which service account is used by directly setting the `service_account.scopes` variable.
+
+#### Compute default service account
 
 ```hcl
 module "vm-managed-sa-example" {
@@ -73,9 +80,13 @@ module "vm-managed-sa-example" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account_create = true
 }
+# tftest modules=1 resources=1 inventory=sa-default.yaml
+```
 
+#### Custom service account
+
+```hcl
 module "vm-managed-sa-example2" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
@@ -85,24 +96,47 @@ module "vm-managed-sa-example2" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account        = module.vm-managed-sa-example.service_account_email
-  service_account_scopes = ["cloud-platform"]
+  service_account = {
+    email = "sa-0@myproj.iam.gserviceaccount.com"
+  }
 }
+# tftest modules=1 resources=1 inventory=sa-custom.yaml
+```
 
-# not recommended
-module "vm-default-sa-example2" {
+#### Custom service account, auto created
+
+```hcl
+module "vm-managed-sa-example2" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone       = "europe-west1-b"
-  name       = "test3"
+  name       = "test2"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account_create = false
+  service_account = {
+    auto_create = true
+  }
 }
+# tftest modules=1 resources=2 inventory=sa-managed.yaml
+```
 
-# tftest modules=3 resources=4 inventory=sas.yaml
+#### No service account
+
+```hcl
+module "vm-managed-sa-example2" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "europe-west1-b"
+  name       = "test2"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  service_account = null
+}
+# tftest modules=1 resources=1 inventory=sa-none.yaml
 ```
 
 ### Disk management
@@ -137,7 +171,9 @@ module "vm-disks-example" {
       replica_zone = "${var.region}-c"
     }
   }]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 # tftest modules=1 resources=2
 ```
@@ -163,8 +199,10 @@ module "vm-disks-example" {
       replica_zone = "${var.region}-c"
     }
   }]
-  service_account_create = true
-  create_template        = true
+  service_account = {
+    auto_create = true
+  }
+  create_template = true
 }
 # tftest modules=1 resources=2
 ```
@@ -205,7 +243,9 @@ module "vm-disk-options-example" {
       }
     }
   ]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 # tftest modules=1 resources=4 inventory=disk-options.yaml
 ```
@@ -230,7 +270,9 @@ module "simple-vm-example" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 # tftest modules=1 resources=3 inventory=independent-boot-disk.yaml
 ```
@@ -331,7 +373,9 @@ module "vm-with-gvnic" {
     subnetwork = var.subnet.self_link
     nic_type   = "GVNIC"
   }]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 # tftest modules=1 resources=3 inventory=gvnic.yaml
 ```
@@ -361,7 +405,9 @@ module "vm-metadata-example" {
       apt-get install -y nginx
     EOF
   }
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 # tftest modules=1 resources=2 inventory=metadata.yaml
 ```
@@ -465,7 +511,9 @@ module "kms-vm-example" {
     name = "attached-disk"
     size = 10
   }]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
   encryption = {
     encrypt_boot      = true
     kms_key_self_link = var.kms_key.self_link
@@ -499,7 +547,9 @@ module "cos-test" {
       size = 10
     }
   ]
-  service_account = "vm-default@my-project.iam.gserviceaccount.com"
+  service_account = {
+    email = "vm-default@my-project.iam.gserviceaccount.com"
+  }
   create_template = true
 }
 # tftest modules=1 resources=1 inventory=template.yaml
@@ -526,8 +576,10 @@ module "instance-group" {
   boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
   }
-  service_account        = var.service_account.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account = {
+    email  = var.service_account.email
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
   metadata = {
     user-data = local.cloud_config
   }
@@ -633,7 +685,7 @@ module "instance" {
 | [name](variables.tf#L235) | Instance name. | <code>string</code> | ✓ |  |
 | [network_interfaces](variables.tf#L240) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;  nat        &#61; optional&#40;bool, false&#41;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;  addresses &#61; optional&#40;object&#40;&#123;&#10;    internal &#61; optional&#40;string&#41;&#10;    external &#61; optional&#40;string&#41;&#10;  &#125;&#41;, null&#41;&#10;  alias_ips &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  nic_type  &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L277) | Project id. | <code>string</code> | ✓ |  |
-| [zone](variables.tf#L379) | Compute zone. | <code>string</code> | ✓ |  |
+| [zone](variables.tf#L369) | Compute zone. | <code>string</code> | ✓ |  |
 | [attached_disk_defaults](variables.tf#L17) | Defaults for attached disks options. | <code title="object&#40;&#123;&#10;  auto_delete  &#61; optional&#40;bool, false&#41;&#10;  mode         &#61; string&#10;  replica_zone &#61; string&#10;  type         &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  auto_delete  &#61; true&#10;  mode         &#61; &#34;READ_WRITE&#34;&#10;  replica_zone &#61; null&#10;  type         &#61; &#34;pd-balanced&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [attached_disks](variables.tf#L37) | Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null. | <code title="list&#40;object&#40;&#123;&#10;  name        &#61; string&#10;  device_name &#61; optional&#40;string&#41;&#10;  size              &#61; string&#10;  snapshot_schedule &#61; optional&#40;string&#41;&#10;  source            &#61; optional&#40;string&#41;&#10;  source_type       &#61; optional&#40;string&#41;&#10;  options &#61; optional&#40;&#10;    object&#40;&#123;&#10;      auto_delete  &#61; optional&#40;bool, false&#41;&#10;      mode         &#61; optional&#40;string, &#34;READ_WRITE&#34;&#41;&#10;      replica_zone &#61; optional&#40;string&#41;&#10;      type         &#61; optional&#40;string, &#34;pd-balanced&#34;&#41;&#10;    &#125;&#41;,&#10;    &#123;&#10;      auto_delete  &#61; true&#10;      mode         &#61; &#34;READ_WRITE&#34;&#10;      replica_zone &#61; null&#10;      type         &#61; &#34;pd-balanced&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 | [boot_disk](variables.tf#L83) | Boot disk properties. | <code title="object&#40;&#123;&#10;  auto_delete       &#61; optional&#40;bool, true&#41;&#10;  snapshot_schedule &#61; optional&#40;string&#41;&#10;  source            &#61; optional&#40;string&#41;&#10;  initialize_params &#61; optional&#40;object&#40;&#123;&#10;    image &#61; optional&#40;string, &#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-11&#34;&#41;&#10;    size  &#61; optional&#40;number, 10&#41;&#10;    type  &#61; optional&#40;string, &#34;pd-balanced&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  use_independent_disk &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  initialize_params &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -653,13 +705,11 @@ module "instance" {
 | [min_cpu_platform](variables.tf#L229) | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
 | [options](variables.tf#L255) | Instance options. | <code title="object&#40;&#123;&#10;  allow_stopping_for_update &#61; optional&#40;bool, true&#41;&#10;  deletion_protection       &#61; optional&#40;bool, false&#41;&#10;  spot                      &#61; optional&#40;bool, false&#41;&#10;  termination_action        &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_stopping_for_update &#61; true&#10;  deletion_protection       &#61; false&#10;  spot                      &#61; false&#10;  termination_action        &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [scratch_disks](variables.tf#L282) | Scratch disks configuration. | <code title="object&#40;&#123;&#10;  count     &#61; number&#10;  interface &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  count     &#61; 0&#10;  interface &#61; &#34;NVME&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [service_account](variables.tf#L294) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L300) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [service_account_scopes](variables.tf#L308) | Scopes applied to service account. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [shielded_config](variables.tf#L314) | Shielded VM configuration of the instances. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; bool&#10;  enable_vtpm                 &#61; bool&#10;  enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [snapshot_schedules](variables.tf#L324) | Snapshot schedule resource policies that can be attached to disks. | <code title="map&#40;object&#40;&#123;&#10;  schedule &#61; object&#40;&#123;&#10;    daily &#61; optional&#40;object&#40;&#123;&#10;      days_in_cycle &#61; number&#10;      start_time    &#61; string&#10;    &#125;&#41;&#41;&#10;    hourly &#61; optional&#40;object&#40;&#123;&#10;      hours_in_cycle &#61; number&#10;      start_time     &#61; string&#10;    &#125;&#41;&#41;&#10;    weekly &#61; optional&#40;list&#40;object&#40;&#123;&#10;      day        &#61; string&#10;      start_time &#61; string&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  retention_policy &#61; optional&#40;object&#40;&#123;&#10;    max_retention_days         &#61; number&#10;    on_source_disk_delete_keep &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  snapshot_properties &#61; optional&#40;object&#40;&#123;&#10;    chain_name        &#61; optional&#40;string&#41;&#10;    guest_flush       &#61; optional&#40;bool&#41;&#10;    labels            &#61; optional&#40;map&#40;string&#41;&#41;&#10;    storage_locations &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L367) | Tag bindings for this instance, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [tags](variables.tf#L373) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [service_account](variables.tf#L294) | Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account. | <code title="object&#40;&#123;&#10;  auto_create &#61; optional&#40;bool, false&#41;&#10;  email       &#61; optional&#40;string&#41;&#10;  scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [shielded_config](variables.tf#L304) | Shielded VM configuration of the instances. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; bool&#10;  enable_vtpm                 &#61; bool&#10;  enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [snapshot_schedules](variables.tf#L314) | Snapshot schedule resource policies that can be attached to disks. | <code title="map&#40;object&#40;&#123;&#10;  schedule &#61; object&#40;&#123;&#10;    daily &#61; optional&#40;object&#40;&#123;&#10;      days_in_cycle &#61; number&#10;      start_time    &#61; string&#10;    &#125;&#41;&#41;&#10;    hourly &#61; optional&#40;object&#40;&#123;&#10;      hours_in_cycle &#61; number&#10;      start_time     &#61; string&#10;    &#125;&#41;&#41;&#10;    weekly &#61; optional&#40;list&#40;object&#40;&#123;&#10;      day        &#61; string&#10;      start_time &#61; string&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  retention_policy &#61; optional&#40;object&#40;&#123;&#10;    max_retention_days         &#61; number&#10;    on_source_disk_delete_keep &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  snapshot_properties &#61; optional&#40;object&#40;&#123;&#10;    chain_name        &#61; optional&#40;string&#41;&#10;    guest_flush       &#61; optional&#40;bool&#41;&#10;    labels            &#61; optional&#40;map&#40;string&#41;&#41;&#10;    storage_locations &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L357) | Tag bindings for this instance, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L363) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
@@ -668,13 +718,13 @@ module "instance" {
 | [external_ip](outputs.tf#L17) | Instance main interface external IP addresses. |  |
 | [group](outputs.tf#L26) | Instance group resource. |  |
 | [id](outputs.tf#L31) | Fully qualified instance id. |  |
-| [instance](outputs.tf#L36) | Instance resource. |  |
-| [internal_ip](outputs.tf#L41) | Instance main interface internal IP address. |  |
-| [internal_ips](outputs.tf#L49) | Instance interfaces internal IP addresses. |  |
-| [self_link](outputs.tf#L57) | Instance self links. |  |
-| [service_account](outputs.tf#L62) | Service account resource. |  |
-| [service_account_email](outputs.tf#L69) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L74) | Service account email. |  |
+| [instance](outputs.tf#L36) | Instance resource. | ✓ |
+| [internal_ip](outputs.tf#L42) | Instance main interface internal IP address. |  |
+| [internal_ips](outputs.tf#L50) | Instance interfaces internal IP addresses. |  |
+| [self_link](outputs.tf#L58) | Instance self links. |  |
+| [service_account](outputs.tf#L63) | Service account resource. |  |
+| [service_account_email](outputs.tf#L68) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L73) | Service account email. |  |
 | [template](outputs.tf#L82) | Template resource. |  |
 | [template_name](outputs.tf#L87) | Template name. |  |
 <!-- END TFDOC -->

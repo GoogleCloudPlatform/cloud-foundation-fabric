@@ -298,8 +298,9 @@ module "proxy-vm" {
     user-data              = !var.tls ? module.cos-nginx.0.cloud_config : module.cos-nginx-tls.0.cloud_config
     google-logging-enabled = true
   }
-  service_account        = module.service-account-proxy.email
-  service_account_create = false
+  service_account = {
+    email = module.service-account-proxy.email
+  }
 }
 
 module "glb" {
