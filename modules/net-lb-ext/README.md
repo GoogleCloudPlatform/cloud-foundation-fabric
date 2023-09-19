@@ -14,12 +14,12 @@ This example shows how to reference existing Managed Infrastructure Groups (MIGs
 
 ```hcl
 module "instance_template" {
-  source                 = "./fabric/modules/compute-vm"
-  project_id             = var.project_id
-  zone                   = "europe-west1-b"
-  name                   = "vm-test"
-  create_template        = true
-  service_account {
+  source          = "./fabric/modules/compute-vm"
+  project_id      = var.project_id
+  zone            = "europe-west1-b"
+  name            = "vm-test"
+  create_template = true
+  service_account = {
     auto_create = true
   }
   network_interfaces = [
