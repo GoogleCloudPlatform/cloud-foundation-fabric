@@ -188,10 +188,11 @@ module "vm-hub" {
     nat        = false
     addresses  = null
   }]
-  metadata               = { startup-script = local.vm-startup-script }
-  service_account        = module.service-account-gce.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  tags                   = ["ssh"]
+  metadata = { startup-script = local.vm-startup-script }
+  service_account = {
+    email = module.service-account-gce.email
+  }
+  tags = ["ssh"]
 }
 
 module "vm-spoke-1" {
@@ -205,10 +206,11 @@ module "vm-spoke-1" {
     nat        = false
     addresses  = null
   }]
-  metadata               = { startup-script = local.vm-startup-script }
-  service_account        = module.service-account-gce.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  tags                   = ["ssh"]
+  metadata = { startup-script = local.vm-startup-script }
+  service_account = {
+    email = module.service-account-gce.email
+  }
+  tags = ["ssh"]
 }
 
 module "vm-spoke-2" {
@@ -222,10 +224,11 @@ module "vm-spoke-2" {
     nat        = false
     addresses  = null
   }]
-  metadata               = { startup-script = local.vm-startup-script }
-  service_account        = module.service-account-gce.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  tags                   = ["ssh"]
+  metadata = { startup-script = local.vm-startup-script }
+  service_account = {
+    email = module.service-account-gce.email
+  }
+  tags = ["ssh"]
 }
 
 
