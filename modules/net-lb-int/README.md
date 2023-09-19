@@ -28,7 +28,7 @@ module "instance_template" {
   name                   = "vm-test"
   create_template        = true
   service_account = {
-    create = true
+    auto_create = true
   }
   network_interfaces = [
     {
