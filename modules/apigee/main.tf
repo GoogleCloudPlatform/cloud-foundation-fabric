@@ -136,35 +136,20 @@ resource "google_apigee_addons_config" "addons_config" {
   for_each = toset(var.addons_config == null ? [] : [""])
   org      = local.org_name
   addons_config {
-    dynamic "advanced_api_ops_config" {
-      for_each = var.addons_config.advanced_api_ops ? [""] : []
-      content {
-        enabled = true
-      }
+    advanced_api_ops_config {
+      enabled = var.addons_config.advanced_api_ops
     }
-    dynamic "api_security_config" {
-      for_each = var.addons_config.api_security ? [""] : []
-      content {
-        enabled = true
-      }
+    api_security_config {
+      enabled = var.addons_config.api_security
     }
-    dynamic "connectors_platform_config" {
-      for_each = var.addons_config.connectors_platform ? [""] : []
-      content {
-        enabled = true
-      }
+    connectors_platform_config {
+      enabled = var.addons_config.connectors_platform
     }
-    dynamic "integration_config" {
-      for_each = var.addons_config.integration ? [""] : []
-      content {
-        enabled = true
-      }
+    integration_config {
+      enabled = var.addons_config.integration
     }
-    dynamic "monetization_config" {
-      for_each = var.addons_config.monetization ? [""] : []
-      content {
-        enabled = true
-      }
+    monetization_config {
+      enabled = var.addons_config.monetization
     }
   }
 }
