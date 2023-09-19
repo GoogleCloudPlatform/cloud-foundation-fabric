@@ -97,16 +97,13 @@ module "test_vms" {
   create_template        = var.ilb_create
   service_account_create = true
   zone                   = local.zones[each.key]
-
   metadata = {
     startup-script = "apt update && apt install -y nginx"
   }
-
   network_interfaces = [{
     network    = module.vpc_spoke_01.self_link
     subnetwork = module.vpc_spoke_01.subnet_self_links["${each.value}/spoke-01-${each.value}"]
   }]
-
   tags = [
     "http-server",
     "https-server",

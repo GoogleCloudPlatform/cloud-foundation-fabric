@@ -48,7 +48,9 @@ module "test-vm-consumer" {
     nat        = false
     addresses  = null
   }]
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
   metadata = {
     startup-script = templatefile("${path.module}/startup.sh", { proxy_url = "http://proxy.internal:3128" })
   }

@@ -240,10 +240,11 @@ module "vm-test1" {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region.gcp1}/subnet1"]
   }]
-  metadata               = { startup-script = local.vm-startup-script }
-  service_account        = module.service-account-gce.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  tags                   = ["ssh"]
+  metadata = { startup-script = local.vm-startup-script }
+  service_account = {
+    email = module.service-account-gce.email
+  }
+  tags = ["ssh"]
 }
 
 module "vm-test2" {
@@ -257,10 +258,11 @@ module "vm-test2" {
     nat        = false
     addresses  = null
   }]
-  metadata               = { startup-script = local.vm-startup-script }
-  service_account        = module.service-account-gce.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  tags                   = ["ssh"]
+  metadata = { startup-script = local.vm-startup-script }
+  service_account = {
+    email = module.service-account-gce.email
+  }
+  tags = ["ssh"]
 }
 
 ################################################################################
@@ -322,7 +324,8 @@ module "vm-onprem" {
     network    = module.vpc.name
     subnetwork = module.vpc.subnet_self_links["${var.region.gcp1}/subnet1"]
   }]
-  service_account        = module.service-account-onprem.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  tags                   = ["ssh"]
+  service_account = {
+    email = module.service-account-onprem.email
+  }
+  tags = ["ssh"]
 }
