@@ -36,6 +36,12 @@ locals {
   )
 }
 
+#resource "null_resource" "recreation_trigger" {
+#  triggers = {
+#    replicas = var.mysql_config.db_replicas
+#  }
+#}
+
 resource "kubernetes_namespace" "default" {
   metadata {
     name = var.namespace
@@ -56,6 +62,11 @@ resource "kubernetes_manifest" "stage1" {
   timeouts {
     create = "30m"
   }
+  #  lifecycle {
+  #    replace_triggered_by = [
+  #      null_resource.recreation_trigger
+  #    ]
+  #  }
 }
 
 resource "kubernetes_manifest" "stage2" {
@@ -73,4 +84,9 @@ resource "kubernetes_manifest" "stage2" {
     create = "30m"
   }
   depends_on = [kubernetes_manifest.stage1]
+  #  lifecycle {
+  #    replace_triggered_by = [
+  #      null_resource.recreation_trigger
+  #    ]
+  #  }
 }

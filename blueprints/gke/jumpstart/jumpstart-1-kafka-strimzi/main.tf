@@ -14,45 +14,28 @@
  * limitations under the License.
  */
 
-locals {
-  wl_templates = [
-    for f in fileset(local.wl_templates_path, "[0-9]*yaml") :
-    "${local.wl_templates_path}/${f}"
-  ]
-  wl_templates_path = (
-    var.templates_path == null
-    ? "${path.module}/manifest-templates"
-    : pathexpand(var.templates_path)
-  )
-}
-
 resource "kubernetes_namespace" "default" {
   metadata {
     name = var.namespace
   }
 }
 
-resource "kubernetes_manifest" "default" {
-  for_each = toset(local.wl_templates)
-  manifest = yamldecode(templatefile(each.value, {
-    namespace = var.namespace
-  }))
-  timeouts {
-    create = "30m"
-  }
-  depends_on = [kubernetes_namespace.default]
+resource "helm_release" "strimzi-operator" {
+  name       = "strimzi-operator"
+  repository = "https://strimzi.io/charts"
+  chart      = "strimzi-kafka-operator"
+  namespace  = kubernetes_namespace.default.metadata.0.name
 }
 
-
-resource "kubernetes_manifest" "stateful" {
-  for_each = toset(local.wl_templates)
-  manifest = yamldecode(templatefile("${local.wl_templates_path}/start-cluster.yaml", {
-    name      = var.statefulset_config.name
-    namespace = var.statefulset_config.namespace
-    version   = var.statefulset_config.version
-  }))
-  timeouts {
-    create = "30m"
-  }
-  depends_on = [kubernetes_manifest.default]
+resource "helm_release" "kafka-cluster" {
+  name      = "kafka-cluster"
+  chart     = "./kafka-cluster-chart"
+  namespace = kubernetes_namespace.default.metadata.0.name
+  values = [
+    yamlencode({
+      kafka     = var.kafka_config
+      zookeeper = var.zookeeper_config
+    })
+  ]
+  depends_on = [helm_release.strimzi-operator]
 }
