@@ -97,6 +97,12 @@ variable "custom_roles" {
   default     = {}
 }
 
+variable "data_dir" {
+  description = "Relative path for the folder storing configuration data."
+  type        = string
+  default     = "data"
+}
+
 variable "fast_features" {
   description = "Selective control for top-level FAST features."
   type = object({
@@ -135,7 +141,6 @@ variable "group_iam" {
   default     = {}
   nullable    = false
 }
-
 
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
@@ -214,6 +219,22 @@ variable "log_sinks" {
     ])
     error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
   }
+}
+
+variable "org_policies_config" {
+  description = "Organization policies customization."
+  type = object({
+    constraints = optional(object({
+      allowed_policy_member_domains = optional(list(string), [])
+    }), {})
+    tag_name = optional(string, "org-policies")
+    tag_values = optional(map(object({
+      description = optional(string, "Managed by the Terraform organization module.")
+      iam         = optional(map(list(string)), {})
+      id          = optional(string)
+    })), {})
+  })
+  default = {}
 }
 
 variable "organization" {

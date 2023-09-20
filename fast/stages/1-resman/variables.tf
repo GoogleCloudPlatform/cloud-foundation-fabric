@@ -199,14 +199,6 @@ variable "organization" {
   })
 }
 
-variable "organization_policy_configs" {
-  description = "Organization policies customization."
-  type = object({
-    allowed_policy_member_domains = list(string)
-  })
-  default = null
-}
-
 variable "outputs_location" {
   description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable."
   type        = string
@@ -227,16 +219,14 @@ variable "prefix" {
 variable "tag_names" {
   description = "Customized names for resource management tags."
   type = object({
-    context      = string
-    environment  = string
-    org-policies = string
-    tenant       = string
+    context     = string
+    environment = string
+    tenant      = string
   })
   default = {
-    context      = "context"
-    environment  = "environment"
-    org-policies = "org-policies"
-    tenant       = "tenant"
+    context     = "context"
+    environment = "environment"
+    tenant      = "tenant"
   }
   nullable = false
   validation {
