@@ -59,6 +59,7 @@ locals {
         "roles/resourcemanager.folderAdmin",
         "roles/resourcemanager.organizationAdmin",
         "roles/resourcemanager.projectCreator",
+        "roles/resourcemanager.tagAdmin"
       ]
       additive = concat(
         [
@@ -102,6 +103,7 @@ locals {
         "roles/resourcemanager.organizationAdmin",
         "roles/resourcemanager.projectCreator",
         "roles/resourcemanager.projectMover",
+        "roles/resourcemanager.tagAdmin"
       ]
       additive = concat(
         [
