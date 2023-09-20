@@ -66,12 +66,12 @@ locals {
     stage_2 = [
       "0-bootstrap.auto.tfvars.json",
       "1-resman.auto.tfvars.json",
-      "globals.auto.tfvars.json"
+      "0-globals.auto.tfvars.json"
     ]
     stage_3 = [
       "0-bootstrap.auto.tfvars.json",
       "1-resman.auto.tfvars.json",
-      "globals.auto.tfvars.json",
+      "0-globals.auto.tfvars.json",
       "2-networking.auto.tfvars.json",
       "2-security.auto.tfvars.json"
     ]
