@@ -37,7 +37,7 @@ variable "namespace" {
   description = "Namespace used for Redis cluster resources."
   type        = string
   nullable    = false
-  default     = "strimzi"
+  default     = "kafka"
 }
 
 variable "kafka_config" {

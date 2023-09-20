@@ -11,16 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+# helm -n kafka template kafka ./h^Cm  > kafka-2.yml
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:
-  name: {{ .Release.Name | quote }}
-  namespace: {{ .Release.Namespace | quote }}
+  name: "${name}"
+  namespace: "${namespace}"
 spec:
   kafka:
-    version: {{ .Values.kafka.version | quote }}
-    replicas: {{ .Values.kafka.replicas }}
+    version: "${version}"
+    replicas: 3
     template:
       pod:
         tolerations:
@@ -45,7 +45,7 @@ spec:
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: kafka
-              strimzi.io/cluster:  {{ .Release.Name | quote }}
+              strimzi.io/cluster:  "${name}"
               strimzi.io/component-type: kafka
     resources:
       requests:
@@ -55,8 +55,8 @@ spec:
         memory: 5Gi
         cpu: "2"
     jvmOptions:
-      -Xms: {{ .Values.kafka.jvm_memory | quote }}
-      -Xmx: {{ .Values.kafka.jvm_memory | quote }}
+      -Xms: 4096m
+      -Xmx: 4096m
     listeners:
       - name: plain
         port: 9092
@@ -78,7 +78,7 @@ spec:
       volumes:
       - id: 0
         type: persistent-claim
-        size: {{ .Values.kafka.volume_claim_size | quote }}
+        size: 100Gi
         class: premium-rwo
         deleteClaim: false
   zookeeper:
@@ -101,9 +101,9 @@ spec:
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: zookeeper
-              strimzi.io/cluster:  {{ .Release.Name | quote }}
+              strimzi.io/cluster:  "${name}"
               strimzi.io/component-type: zookeeper
-    replicas: {{ .Values.zookeeper.replicas }}
+    replicas: 3
     resources:
       requests:
         memory: 2560Mi
@@ -112,11 +112,11 @@ spec:
         memory: 2560Mi
         cpu: 2000m
     jvmOptions:
-      -Xms: {{ .Values.zookeeper.jvm_memory | quote }}
-      -Xmx: {{ .Values.zookeeper.jvm_memory | quote }}
+      -Xms: 2048m
+      -Xmx: 2048m
     storage:
       type: persistent-claim
-      size: {{ .Values.zookeeper.volume_claim_size | quote }}
+      size: 100Gi
       class: premium-rwo
       deleteClaim: false
   entityOperator:

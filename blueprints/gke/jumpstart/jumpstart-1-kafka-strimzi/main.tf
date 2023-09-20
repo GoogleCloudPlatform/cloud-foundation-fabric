@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+locals {
+  wl_templates = [
+    for f in fileset(local.wl_templates_path, "*yaml") :
+    "${local.wl_templates_path}/${f}"
+  ]
+  wl_templates_path = (
+    var.templates_path == null
+    ? "${path.module}/manifest-templates"
+    : pathexpand(var.templates_path)
+  )
+}
+
 resource "kubernetes_namespace" "default" {
   metadata {
     name = var.namespace
@@ -27,15 +39,15 @@ resource "helm_release" "strimzi-operator" {
   namespace  = kubernetes_namespace.default.metadata.0.name
 }
 
-resource "helm_release" "kafka-cluster" {
-  name      = "kafka-cluster"
-  chart     = "./kafka-cluster-chart"
-  namespace = kubernetes_namespace.default.metadata.0.name
-  values = [
-    yamlencode({
-      kafka     = var.kafka_config
-      zookeeper = var.zookeeper_config
-    })
-  ]
+resource "kubectl_manifest" "default" {
+  for_each = toset(local.wl_templates)
+  yaml_body = format("%#v", yamldecode(templatefile(each.value, {
+    namespace = kubernetes_namespace.default.metadata.0.name
+    name      = "kafka00"
+    version   = "3.4.0"
+  })))
+  timeouts {
+    create = "30m"
+  }
   depends_on = [helm_release.strimzi-operator]
 }
