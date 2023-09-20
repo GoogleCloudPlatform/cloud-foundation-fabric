@@ -57,9 +57,8 @@ values:
     service_account:
     - email: vm-default@my-project.iam.gserviceaccount.com
       scopes:
-      - https://www.googleapis.com/auth/devstorage.read_only
-      - https://www.googleapis.com/auth/logging.write
-      - https://www.googleapis.com/auth/monitoring.write
+      - https://www.googleapis.com/auth/cloud-platform
+      - https://www.googleapis.com/auth/userinfo.email
 
 counts:
   google_compute_instance_template: 1

@@ -686,8 +686,8 @@ Writing `pytest` unit tests to check plan results is really easy, but since wrap
 In the following sections we describe the three testing approaches we currently have:
 
 - [Example-based tests](#testing-via-readmemd-example-blocks): this is perhaps the easiest and most common way to test either a module or a blueprint. You simply have to provide an example call to your module and a few metadata values in the module's README.md.
-- [tfvars-based tests](#testing-via-tfvars-and-yaml): allows you to test a module or blueprint by providing variables via tfvar files and an expected plan result in form of an inventory. This type of test is useful, for example, for FAST stages that don't have any examples within their READMEs.
-- [Python-based (legacy) tests](#writing-tests-in-python--legacy-approach-): in some situations you might still want to interact directly with `tftest` via Python, if that's the case, use this method to write custom Python logic to test your module in any way you see fit.
+- [tfvars-based tests](#testing-via-tfvars-and-yaml-aka-tftest-based-tests): allows you to test a module or blueprint by providing variables via tfvar files and an expected plan result in form of an inventory. This type of test is useful, for example, for FAST stages that don't have any examples within their READMEs.
+- [Python-based (legacy) tests](#writing-tests-in-python-legacy-approach): in some situations you might still want to interact directly with `tftest` via Python, if that's the case, use this method to write custom Python logic to test your module in any way you see fit.
 
 ### Testing via README.md example blocks
 
@@ -818,27 +818,47 @@ Example-based test are named based on the section within the README.md that cont
 Here we show a few commonly used selection commands:
 
 - Run all examples:
-  - `pytest tests/examples/`
-- Run all examples for modules:
-  - `pytest -k modules/ tests/examples`
+  - `pytest tests/examples`
+- Run all examples for blueprints only:
+  - `pytest -k blueprints tests/examples`
+- Run all examples for modules only:
+  - `pytest -k modules tests/examples`
 - Run all examples for the `net-vpc` module:
-  - `pytest -k 'net and vpc' tests/examples`
-- Run a specific example in module `net-vpc`:
-  - `pytest -k 'modules and dns and private'`
-  - `pytest -v 'tests/examples/test_plan.py::test_example[modules/dns:Private Zone]'`
+  - `pytest -k 'modules and net-vpc:' tests/examples`
+- Run a specific example (identified by a substring match on its name) from the `net-vpc` module:
+  - `pytest -k 'modules and net-vpc: and ipv6' tests/examples`
+- Run a specific example (identified by its full name) from the `net-vpc` module:
+  - `pytest -v 'tests/examples/test_plan.py::test_example[modules/net-vpc:IPv6:1]'`
 - Run tests for all blueprints except those under the gke directory:
-  - `pytest -k 'blueprints and not gke'`
+  - `pytest -k 'blueprints and not gke' tests/examples`
 
-Tip: you can use `pytest --collect-only` to fine tune your selection query without actually running the tests. Once you find the expression matching your desired tests, remove the `collect-only` flag.
+> [!NOTE]
+> The colon symbol (`:`) in `pytest` keyword expression `'modules and net-vpc:'` makes sure that `net-vpc` is matched but `net-vpc-firewall` or `net-vpc-peering` are not.
+
+Tip: to list all tests matched by your keyword expression (`-k ...`) without actually running them, you can use the `--collect-only` flag.
+
+The following command executes a dry run that *lists* all example-based tests for the `gke-cluster-autopilot` module:
+
+```bash
+pytest -k 'modules and gke-cluster-autopilot:' tests/examples --collect-only
+```
+
+Once you find the expression matching your desired test(s), remove the `--collect-only` flag.
+
+The next command executes an example-based test found in the *Monitoring Configuration* section of the README file for the `gke-cluster-autopilot` module. That section actually has two tests, so the `:2` part selects the second test only:
+
+```bash
+pytest -k 'modules and gke-cluster-autopilot: and monitoring and :2' tests/examples
+```
 
 #### Generating the inventory automatically
 
 Building an inventory file by hand is difficult. To simplify this task, the default test runner for examples prints the inventory for the full plan if it succeeds. Therefore, you can start without an inventory and then run a test to get the full plan and extract the pieces you want to build the inventory file.
 
-Suppose you want to generate the inventory for the last DNS example above (the one creating the recordsets from a YAML file). Assuming that example is under the "Private Zone" section in the README for the `dns`, you can run the following command to build the inventory:
+Suppose you want to generate the inventory for the last DNS example above (the one creating the recordsets from a YAML file). Assuming that example is the first code block under the "Private Zone" section in the README for the `dns` module, you can run the following command to build the inventory:
 
 ```bash
-pytest -s 'tests/examples/test_plan.py::test_example[modules/dns:Private Zone]'
+pytest -s 'tests/examples/test_plan.py::test_example[modules/dns:Private Zone:1]'
 ```
 
 which will generate a output similar to this:

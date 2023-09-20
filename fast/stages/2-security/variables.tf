@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,27 +58,40 @@ variable "groups" {
   }
 }
 
-variable "kms_defaults" {
-  description = "Defaults used for KMS keys."
-  type = object({
-    locations       = list(string)
-    rotation_period = string
-  })
-  default = {
-    locations       = ["europe", "europe-west1", "europe-west3", "global"]
-    rotation_period = "7776000s"
-  }
-}
-
 variable "kms_keys" {
-  description = "KMS keys to create, keyed by name. Null attributes will be interpolated with defaults."
+  description = "KMS keys to create, keyed by name."
   type = map(object({
-    iam             = map(list(string))
-    labels          = map(string)
-    locations       = list(string)
-    rotation_period = string
+    rotation_period               = optional(string, "7776000s")
+    labels                        = optional(map(string))
+    locations                     = optional(list(string), ["europe", "europe-west1", "europe-west3", "global"])
+    purpose                       = optional(string, "ENCRYPT_DECRYPT")
+    skip_initial_version_creation = optional(bool, false)
+    version_template = optional(object({
+      algorithm        = string
+      protection_level = optional(string, "SOFTWARE")
+    }))
+
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "organization" {

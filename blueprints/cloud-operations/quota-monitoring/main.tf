@@ -39,7 +39,7 @@ module "pubsub" {
   project_id = module.project.project_id
   name       = var.name
   subscriptions = {
-    "${var.name}-default" = null
+    "${var.name}-default" = {}
   }
   # the Cloud Scheduler robot service account already has pubsub.topics.publish
   # at the project level via roles/cloudscheduler.serviceAgent

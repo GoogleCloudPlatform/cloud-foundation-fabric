@@ -116,13 +116,12 @@ module "kms" {
     location = var.region
   }
   keys = {
-    key-sql = null
-  }
-  key_iam = {
     key-sql = {
-      "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project.service_accounts.robots.sqladmin}"
-      ]
+      iam = {
+        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+          "serviceAccount:${module.project.service_accounts.robots.sqladmin}"
+        ]
+      }
     }
   }
 }

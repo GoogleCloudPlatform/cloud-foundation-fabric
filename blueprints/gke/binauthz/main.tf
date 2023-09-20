@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,20 +115,16 @@ module "kms" {
   project_id     = module.project.project_id
   keyring        = { location = var.region, name = "test-keyring" }
   keyring_create = true
-  keys           = { test-key = null }
-  key_purpose = {
+  keys = {
     test-key = {
       purpose = "ASYMMETRIC_SIGN"
       version_template = {
-        algorithm        = "RSA_SIGN_PKCS1_4096_SHA512"
-        protection_level = null
+        algorithm = "RSA_SIGN_PKCS1_4096_SHA512"
       }
-    }
-  }
-  key_iam = {
-    test-key = {
-      "roles/cloudkms.publicKeyViewer" = [module.image_cb_sa.iam_email]
-      "roles/cloudkms.signer"          = [module.image_cb_sa.iam_email]
+      iam = {
+        "roles/cloudkms.publicKeyViewer" = [module.image_cb_sa.iam_email]
+        "roles/cloudkms.signer"          = [module.image_cb_sa.iam_email]
+      }
     }
   }
 }
