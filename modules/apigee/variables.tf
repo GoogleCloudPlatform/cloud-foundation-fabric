@@ -66,13 +66,11 @@ variable "instances" {
   type = map(object({
     name                          = optional(string)
     display_name                  = optional(string)
-    name                          = optional(string)
     description                   = optional(string, "Terraform-managed")
     runtime_ip_cidr_range         = optional(string)
     troubleshooting_ip_cidr_range = optional(string)
     disk_encryption_key           = optional(string)
     consumer_accept_list          = optional(list(string))
-    environments                  = optional(list(string))
     enable_nat                    = optional(bool, false)
     environments                  = optional(list(string))
   }))
