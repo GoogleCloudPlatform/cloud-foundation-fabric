@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,14 +112,14 @@ variable "gcp_ranges" {
   description = "GCP address ranges in name => range format."
   type        = map(string)
   default = {
-    gcp_dev_primary                 = "10.128.128.0/19"
-    gcp_dev_secondary               = "10.128.160.0/19"
-    gcp_landing_trusted_primary     = "10.128.64.0/19"
-    gcp_landing_trusted_secondary   = "10.128.96.0/19"
-    gcp_landing_untrusted_primary   = "10.128.0.0/19"
-    gcp_landing_untrusted_secondary = "10.128.32.0/19"
-    gcp_prod_primary                = "10.128.192.0/19"
-    gcp_prod_secondary              = "10.128.224.0/19"
+    gcp_dev_primary                 = "10.68.0.0/16"
+    gcp_dev_secondary               = "10.84.0.0/16"
+    gcp_landing_trusted_primary     = "10.64.0.0/17"
+    gcp_landing_trusted_secondary   = "10.80.0.0/17"
+    gcp_landing_untrusted_primary   = "10.64.127.0/17"
+    gcp_landing_untrusted_secondary = "10.80.127.0/17"
+    gcp_prod_primary                = "10.72.0.0/16"
+    gcp_prod_secondary              = "10.88.0.0/16"
   }
 }
 
