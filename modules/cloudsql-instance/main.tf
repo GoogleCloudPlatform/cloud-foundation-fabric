@@ -53,13 +53,14 @@ resource "google_sql_database_instance" "primary" {
   root_password       = var.root_password
 
   settings {
-    tier              = var.tier
-    disk_autoresize   = var.disk_size == null
-    disk_size         = var.disk_size
-    disk_type         = var.disk_type
-    availability_type = var.availability_type
-    user_labels       = var.labels
-    activation_policy = var.activation_policy
+    tier                        = var.tier
+    deletion_protection_enabled = var.deletion_protection_enabled
+    disk_autoresize             = var.disk_size == null
+    disk_size                   = var.disk_size
+    disk_type                   = var.disk_type
+    availability_type           = var.availability_type
+    user_labels                 = var.labels
+    activation_policy           = var.activation_policy
 
     ip_configuration {
       ipv4_enabled       = var.ipv4_enabled
@@ -133,10 +134,11 @@ resource "google_sql_database_instance" "replicas" {
   master_instance_name = google_sql_database_instance.primary.name
 
   settings {
-    tier            = var.tier
-    disk_autoresize = var.disk_size == null
-    disk_size       = var.disk_size
-    disk_type       = var.disk_type
+    tier                        = var.tier
+    deletion_protection_enabled = var.deletion_protection_enabled
+    disk_autoresize             = var.disk_size == null
+    disk_size                   = var.disk_size
+    disk_type                   = var.disk_type
     # availability_type = var.availability_type
     user_labels       = var.labels
     activation_policy = var.activation_policy

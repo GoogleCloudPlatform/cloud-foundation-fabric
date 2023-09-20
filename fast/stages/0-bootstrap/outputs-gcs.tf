@@ -32,7 +32,7 @@ resource "google_storage_bucket_object" "tfvars" {
 
 resource "google_storage_bucket_object" "tfvars_globals" {
   bucket  = module.automation-tf-output-gcs.name
-  name    = "tfvars/globals.auto.tfvars.json"
+  name    = "tfvars/0-globals.auto.tfvars.json"
   content = jsonencode(local.tfvars_globals)
 }
 
