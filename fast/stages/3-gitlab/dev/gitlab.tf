@@ -77,5 +77,7 @@ module "gitlab-instance" {
       gitlab_sshd_config = indent(6, file("assets/sshd_config"))
     })
   }
-  service_account = module.gitlab-sa.email
+  service_account = {
+    email = module.gitlab-sa.email
+  }
 }
