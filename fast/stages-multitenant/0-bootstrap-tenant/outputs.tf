@@ -33,7 +33,7 @@ locals {
           tf_var_files = [
             "0-bootstrap.auto.tfvars.json",
             "1-resman.auto.tfvars.json",
-            "globals.auto.tfvars.json"
+            "0-globals.auto.tfvars.json"
           ]
         }
         : {

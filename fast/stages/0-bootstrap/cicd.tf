@@ -58,7 +58,7 @@ locals {
     bootstrap = []
     resman = [
       "0-bootstrap.auto.tfvars.json",
-      "globals.auto.tfvars.json"
+      "0-globals.auto.tfvars.json"
     ]
   }
 }
