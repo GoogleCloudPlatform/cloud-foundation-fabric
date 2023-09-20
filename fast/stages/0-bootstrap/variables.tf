@@ -97,10 +97,12 @@ variable "custom_roles" {
   default     = {}
 }
 
-variable "data_dir" {
-  description = "Relative path for the folder storing configuration data."
-  type        = string
-  default     = "data"
+variable "factories_config" {
+  description = "Configuration for the organization policies factory."
+  type = object({
+    data_dir = optional(string, "data/org-policies")
+  })
+  default = {}
 }
 
 variable "fast_features" {

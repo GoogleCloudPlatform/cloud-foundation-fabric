@@ -156,7 +156,7 @@ module "organization" {
       type                 = attrs.type
     }
   }
-  org_policies_data_path = "${var.data_dir}/org-policies"
+  org_policies_data_path = var.factories_config.data_dir
   org_policies = {
     "iam.allowedPolicyMemberDomains" = {
       rules = [
