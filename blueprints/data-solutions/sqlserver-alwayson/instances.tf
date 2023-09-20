@@ -53,15 +53,12 @@ locals {
 
 # Nodes
 module "nodes" {
-  source   = "../../../modules/compute-vm"
-  for_each = toset(local.node_netbios_names)
-
-  project_id = var.project_id
-  zone       = local.node_zones[each.value]
-  name       = each.value
-
+  source        = "../../../modules/compute-vm"
+  for_each      = toset(local.node_netbios_names)
+  project_id    = var.project_id
+  zone          = local.node_zones[each.value]
+  name          = each.value
   instance_type = var.node_instance_type
-
   network_interfaces = [{
     network    = local.network
     subnetwork = local.subnetwork
@@ -70,7 +67,6 @@ module "nodes" {
       internal = module.ip-addresses.internal_addresses[each.value].address
     }
   }]
-
   boot_disk = {
     initialize_params = {
       image = var.node_image
@@ -78,7 +74,6 @@ module "nodes" {
       size  = var.boot_disk_size
     }
   }
-
   attached_disks = [{
     name        = "${each.value}-datadisk"
     size        = var.data_disk_size
@@ -86,35 +81,28 @@ module "nodes" {
     source      = null
     options     = null
   }]
-
-  service_account        = module.compute-service-account.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account = {
+    email = module.compute-service-account.email
+  }
   metadata = {
     enable-wsfc                   = "true"
     sysprep-specialize-script-ps1 = local.scripts["specialize-node"]
     windows-startup-script-ps1    = local.scripts["windows-startup-node"]
   }
-
   group = {
     named_ports = {
     }
   }
-
-  service_account_create = false
-  create_template        = false
 }
 
 # Witness
 module "witness" {
-  source   = "../../../modules/compute-vm"
-  for_each = toset([local.witness_netbios_name])
-
-  project_id = var.project_id
-  zone       = local.node_zones[each.value]
-  name       = each.value
-
+  source        = "../../../modules/compute-vm"
+  for_each      = toset([local.witness_netbios_name])
+  project_id    = var.project_id
+  zone          = local.node_zones[each.value]
+  name          = each.value
   instance_type = var.witness_instance_type
-
   network_interfaces = [{
     network    = local.network
     subnetwork = local.subnetwork
@@ -123,20 +111,16 @@ module "witness" {
       internal = module.ip-addresses.internal_addresses[each.value].address
     }
   }]
-
   boot_disk = {
     image = var.witness_image
     type  = "pd-ssd"
     size  = var.boot_disk_size
   }
-
-  service_account        = module.witness-service-account.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account = {
+    email = module.witness-service-account.email
+  }
   metadata = {
     sysprep-specialize-script-ps1 = local.scripts["specialize-witness"]
     windows-startup-script-ps1    = local.scripts["windows-startup-witness"]
   }
-
-  service_account_create = false
-  create_template        = false
 }

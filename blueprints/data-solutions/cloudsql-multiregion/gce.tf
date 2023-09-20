@@ -43,8 +43,9 @@ module "test-vm" {
       options     = null
     }
   ]
-  service_account        = module.service-account-sql.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account = {
+    email = module.service-account-sql.email
+  }
   boot_disk = {
     initialize_params = {
       image = "projects/debian-cloud/global/images/family/debian-10"

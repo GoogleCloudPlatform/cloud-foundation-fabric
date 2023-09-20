@@ -79,7 +79,9 @@ module "server" {
       -Force
     EOT
   }
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
   boot_disk = {
     initialize_params = {
       image = var.image
