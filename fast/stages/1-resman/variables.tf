@@ -138,12 +138,6 @@ variable "custom_roles" {
   default = null
 }
 
-variable "data_dir" {
-  description = "Relative path for the folder storing configuration data."
-  type        = string
-  default     = "data"
-}
-
 variable "fast_features" {
   # tfdoc:variable:source 0-0-bootstrap
   description = "Selective control for top-level FAST features."
@@ -189,6 +183,18 @@ variable "locations" {
   nullable = false
 }
 
+variable "org_policy_tags" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Resource management tags for organization policy exceptions."
+  type = object({
+    key_id   = optional(string)
+    key_name = optional(string)
+    values   = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
@@ -197,14 +203,6 @@ variable "organization" {
     id          = number
     customer_id = string
   })
-}
-
-variable "organization_policy_configs" {
-  description = "Organization policies customization."
-  type = object({
-    allowed_policy_member_domains = list(string)
-  })
-  default = null
 }
 
 variable "outputs_location" {
@@ -227,17 +225,11 @@ variable "prefix" {
 variable "tag_names" {
   description = "Customized names for resource management tags."
   type = object({
-    context      = string
-    environment  = string
-    org-policies = string
-    tenant       = string
+    context     = optional(string, "context")
+    environment = optional(string, "environment")
+    tenant      = optional(string, "tenant")
   })
-  default = {
-    context      = "context"
-    environment  = "environment"
-    org-policies = "org-policies"
-    tenant       = "tenant"
-  }
+  default  = {}
   nullable = false
   validation {
     condition     = alltrue([for k, v in var.tag_names : v != null])

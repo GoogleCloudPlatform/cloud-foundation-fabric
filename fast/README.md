@@ -24,7 +24,7 @@ Please refer to the [stages](./stages/) section for further details on each stag
 
 ### Security-first design
 
-Security was, from the beginning, one of the most critical elements in the design of Fabric FAST. Many of FAST's design decisions aim to build the foundations of a secure organization. In fact, the first two stages deal mainly with the organization-wide security setup.
+Security was, from the beginning, one of the most critical elements in the design of Fabric FAST. Many of FAST's design decisions aim to build the foundations of a secure organization. In fact, the first stage deals mainly with the organization-wide security setup, and the second stage partitions the organization hierarchy and puts guardrails in place for each hierarchy branch.
 
 FAST also aims to minimize the number of permissions granted to principals according to the security-first approach previously mentioned. We achieve this through the meticulous use of groups, service accounts, custom roles, and [Cloud IAM Conditions](https://cloud.google.com/iam/docs/conditions-overview), among other things.
 
@@ -40,9 +40,14 @@ One of our objectives with FAST is to provide a lightweight reference design for
 
 ### Multitenant organizations
 
-FAST has built-in support for complex multitenant organizations, where each tenant has complete control over a separate hierarchy rooted in a top-level folder. This approach is particularly suited for large enterprises or governments, where country-level subsidiaries or government agencies have a wide degree of autonomy within a shared GCP organization managed by a central entity.
+FAST has built-in support for two types of multitenancy implemented in [stage 1](stages/1-resman/README.md):
 
-FAST implements multitenancy via [dedicated stages](stages-multitenant) for tenant-level bootstrap and resource management, which configure separate hierarchies within the organization rooted in top-level folders, so that subsequent FAST stages (networking, security, data, etc.) can be used directly for each tenant. The diagram below shows the relationships between organization-level and tenant-level stages.
+- lightweight tenants that need extensive control over part of the organizational hierarchy, including potential use of their own billing account
+- complex tenants that need to behave like their own landing zone inside a shared GCP organization
+
+The first approach allows easy creation of branches with loose guardrails in place and wide control over their resources, and is suited where tenants implement highly specialized, custom architectures and don't need FAST compliance inside their own branch.
+
+The second approach is used when tenants need to behave as their own landing zone, and direct use of FAST stage 2s and 3s inside the tenant space is desired to achieve a full Landing Zone for each tenant. This approach leverages [dedicated stages](stages-multitenant) for tenant-level bootstrap and resource management that are run after organization-wide bootstrap and resource management. The diagram below shows the relationships between organization-level and tenant-level stages.
 
 <p align="center">
   <img src="stages-multitenant/stages.svg" alt="Stages diagram">
