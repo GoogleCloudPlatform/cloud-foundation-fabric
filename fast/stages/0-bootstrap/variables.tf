@@ -100,7 +100,7 @@ variable "custom_roles" {
 variable "factories_config" {
   description = "Configuration for the organization policies factory."
   type = object({
-    data_dir = optional(string, "data/org-policies")
+    org_policy_data_path = optional(string, "data/org-policies")
   })
   nullable = false
   default  = {}
