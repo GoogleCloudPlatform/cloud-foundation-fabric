@@ -5,7 +5,7 @@
 
 ## Status
 
-Under discussion.
+Implemented.
 
 ## Context
 
@@ -43,8 +43,12 @@ The approach fattens stage 0 and lessens its decoupling role in the overall FAST
 
 ## Decision
 
-No decision yet, this will need to be discussed.
+Decision is to implement this.
 
 ## Consequences
 
-TBD
+Organization policies and related tags will need to be moved from stage 1 to stage 0 state. One approach is to
+
+- switch both states to local state
+- use `terraform state mv -state-out` to temporarily move resources from stage 1 to stage 0
+- push stage 0 and stage 1 state
