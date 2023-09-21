@@ -164,7 +164,7 @@ This is a summary of the subnets allocated by default in this setup:
 | prod-default-ew4 (PSA SQL Server) | PSA subnet for Postgres in prod spoke - europe-west4 | 10.88.254.0/24 |
 | prod-default-ew4 (L7 ILB) | L7 ILB subnet for prod spoke - europe-west4 | 10.88.255.0/24 |
 
-These subnets are advertised to on-premises as a whole /11 range (10.64.0.0/11).
+These subnets can advertised to on-premises as an aggregate /11 range (10.64.0.0/11). Refer to the `var.vpn_onprem_primary_config.router_config` and `var.vpn_onprem_secondary_config.router_config` variables to configure it.
 
 Routes in GCP are either automatically created (for example, when a subnet is added to a VPC), manually created via static routes, dynamically exchanged through VPC peerings, or dynamically programmed by [Cloud Routers](https://cloud.google.com/network-connectivity/docs/router#docs) when a BGP session is established. BGP sessions can be configured to advertise VPC ranges, and/or custom ranges via custom advertisements.
 
