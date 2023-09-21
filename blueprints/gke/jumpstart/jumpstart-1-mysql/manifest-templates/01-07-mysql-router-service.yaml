@@ -10,6 +10,9 @@ metadata:
     networking.gke.io/load-balancer-type: "Internal"
 spec:
   type: LoadBalancer
+  %{ if mysql_config.ip_address != null }
+  loadBalancerIP: "${mysql_config.ip_address}"
+  %{ endif }
   selector:
     app: mysql-router
   ports:
