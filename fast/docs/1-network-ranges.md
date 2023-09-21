@@ -23,12 +23,12 @@ We adopted an IP plan based on regions and environments with the following key p
 
 The following table summarizes the agreed IP plan:
 
-| |Aggregate| landing | dev | prod|
-|---|---:|---:|---:|---:|
-|Region 1, primary ranges|10.64.0.0/12|10.64.0.0/16<br>Trusted: 10.64.0.0/17<br>Untrusted: 10.64.128.0/17|10.68.0.0/16|10.72.0.0/16|
-|Region 2, primary ranges|10.80.0.0/12|10.80.0.0/16<br>Trusted: 10.80.0.0/17<br>Untrusted: 10.80.128.0/17|10.68.0.0/16|10.72.0.0/16|10.84.0.0/16|10.88.0.0/16|
-|Region 1, secondary ranges|100.64.0.0/12|100.64.0.0/14|100.68.0.0/14|100.72.0.0/14|
-|Region 2, secondary ranges|100.80.0.0/12|100.80.0.0/14|100.84.0.0/16|100.88.0.0/14|
+|                            |     aggregate |                                                            landing |           dev |          prod |
+|----------------------------|--------------:|-------------------------------------------------------------------:|--------------:|--------------:|
+| Region 1, primary ranges   |  10.64.0.0/12 | 10.64.0.0/16<br>Trusted: 10.64.0.0/17<br>Untrusted: 10.64.128.0/17 |  10.68.0.0/16 |  10.72.0.0/16 |
+| Region 2, primary ranges   |  10.80.0.0/12 | 10.80.0.0/16<br>Trusted: 10.80.0.0/17<br>Untrusted: 10.80.128.0/17 |  10.84.0.0/16 |  10.88.0.0/16 |
+| Region 1, secondary ranges | 100.64.0.0/12 |                                                      100.64.0.0/14 | 100.68.0.0/14 | 100.72.0.0/14 |
+| Region 2, secondary ranges | 100.80.0.0/12 |                                                      100.80.0.0/14 | 100.84.0.0/16 | 100.88.0.0/14 |
 
 To allocate additional secondary ranges for GKE clusters:
 - For the pods range, use the next available /16 in the secondary range of its region/environment pair.
