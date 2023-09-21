@@ -121,13 +121,13 @@ This is an options summary:
 
 Minimizing the number of routes (and subnets) in the cloud environment is important, as it simplifies management and it avoids hitting [Cloud Router](https://cloud.google.com/network-connectivity/docs/router/quotas) and [VPC](https://cloud.google.com/vpc/docs/quota) quotas and limits. For this reason, we recommend to carefully plan the IP space used in your cloud environment. This allows the use of larger IP CIDR blocks in routes, whenever possible.
 
-This stage uses a dedicated /16 block (10.128.0.0/16), which should be sized to the own needs. The subnets created in each VPC derive from this range.
+This stage uses a dedicated /11 block (10.64.0.0/11), which should be sized to the own needs. The subnets created in each VPC derive from this range.
 
-The /16 block is evenly split in eight, smaller /19 blocks, assigned to different areas of the GCP network: *landing untrusted europe-west1*, *landing untrusted europe-west4*, *landing trusted europe-west1*, *landing untrusted europe-west4*, *development europe-west1*, *development europe-west4*, *production europe-west1*, *production europe-west4*.
+The /11 block is evenly split in eight, smaller /16 blocks, assigned to different areas of the GCP network: *landing untrusted europe-west1*, *landing untrusted europe-west4*, *landing trusted europe-west1*, *landing untrusted europe-west4*, *development europe-west1*, *development europe-west4*, *production europe-west1*, *production europe-west4*.
 
 The first /24 range in every area is allocated for a default subnet, which can be removed or modified as needed.
 
-Spoke VPCs also define and reserve three "special" CIDR ranges, derived from the respective /19, dedicated to
+Spoke VPCs also define and reserve three "special" CIDR ranges, derived from their respective /16, dedicated to
 
 - [PSA (Private Service Access)](https://cloud.google.com/vpc/docs/private-services-access):
 
@@ -147,24 +147,24 @@ This is a summary of the subnets allocated by default in this setup:
 | landing-trusted-default-ew4 | Trusted landing subnet - europe-west4 | 10.128.96.0/24 |
 | landing-untrusted-default-ew1 | Untrusted landing subnet - europe-west1 | 10.128.0.0/24 |
 | landing-untrusted-default-ew4 | Untrusted landing subnet - europe-west4 | 10.128.32.0/24 |
-| dev-default-ew1 | Dev spoke subnet - europe-west1 | 10.128.128.0/24 |
-| dev-default-ew1 (PSA MySQL) | PSA subnet for MySQL in dev spoke - europe-west1 | 10.128.157.0/24 |
-| dev-default-ew1 (PSA SQL Server) | PSA subnet for Postgres in dev spoke - europe-west1 | 10.128.158.0/24 |
-| dev-default-ew1 (L7 ILB) | L7 ILB subnet for dev spoke - europe-west1 | 10.128.92.0/24 |
-| dev-default-ew4 | Dev spoke subnet - europe-west4 | 10.128.160.0/24 |
-| dev-default-ew4 (PSA MySQL) | PSA subnet for MySQL in dev spoke - europe-west4 | 10.128.189.0/24 |
-| dev-default-ew4 (PSA SQL Server) | PSA subnet for Postgres in dev spoke - europe-west4 | 10.128.190.0/24 |
-| dev-default-ew4 (L7 ILB) | L7 ILB subnet for dev spoke - europe-west4 | 10.128.93.0/24 |
-| prod-default-ew1 | Prod spoke subnet - europe-west1 | 10.128.192.0/24 |
-| prod-default-ew1 (PSA MySQL) | PSA subnet for MySQL in prod spoke - europe-west1 | 10.128.221.0/24 |
-| prod-default-ew1 (PSA SQL Server) | PSA subnet for Postgres in prod spoke - europe-west1 | 10.128.253.0/24 |
-| prod-default-ew1 (L7 ILB) | L7 ILB subnet for prod spoke - europe-west1 | 10.128.60.0/24 |
-| prod-default-ew4 | Prod spoke subnet - europe-west4 | 10.128.224.0/24 |
-| prod-default-ew4 (PSA MySQL) | PSA subnet for MySQL in prod spoke - europe-west4 | 10.128.222.0/24 |
-| prod-default-ew4 (PSA SQL Server) | PSA subnet for Postgres in prod spoke - europe-west4 | 10.128.254.0/24 |
-| prod-default-ew4 (L7 ILB) | L7 ILB subnet for prod spoke - europe-west4 | 10.128.61.0/24 |
+| dev-default-ew1 | Dev spoke subnet - europe-west1 | 10.68.0.0/24 |
+| dev-default-ew1 (PSA MySQL) | PSA subnet for MySQL in dev spoke - europe-west1 | 10.68.253.0/24 |
+| dev-default-ew1 (PSA SQL Server) | PSA subnet for Postgres in dev spoke - europe-west1 | 10.68.254.0/24 |
+| dev-default-ew1 (L7 ILB) | L7 ILB subnet for dev spoke - europe-west1 | 10.68.255.0/24 |
+| dev-default-ew4 | Dev spoke subnet - europe-west4 | 10.84.0.0/24 |
+| dev-default-ew4 (PSA MySQL) | PSA subnet for MySQL in dev spoke - europe-west4 | 10.84.253.0/24 |
+| dev-default-ew4 (PSA SQL Server) | PSA subnet for Postgres in dev spoke - europe-west4 | 10.84.254.0/24 |
+| dev-default-ew4 (L7 ILB) | L7 ILB subnet for dev spoke - europe-west4 | 10.84.255.0/24 |
+| prod-default-ew1 | Prod spoke subnet - europe-west1 | 10.72.0.0/24 |
+| prod-default-ew1 (PSA MySQL) | PSA subnet for MySQL in prod spoke - europe-west1 | 10.72.253.0/24 |
+| prod-default-ew1 (PSA SQL Server) | PSA subnet for Postgres in prod spoke - europe-west1 | 10.72.254.0/24 |
+| prod-default-ew1 (L7 ILB) | L7 ILB subnet for prod spoke - europe-west1 | 10.72.255.0/24 |
+| prod-default-ew4 | Prod spoke subnet - europe-west4 | 10.88.0.0/24 |
+| prod-default-ew4 (PSA MySQL) | PSA subnet for MySQL in prod spoke - europe-west4 | 10.88.253.0/24 |
+| prod-default-ew4 (PSA SQL Server) | PSA subnet for Postgres in prod spoke - europe-west4 | 10.88.254.0/24 |
+| prod-default-ew4 (L7 ILB) | L7 ILB subnet for prod spoke - europe-west4 | 10.88.255.0/24 |
 
-These subnets are advertised to on-premises as a whole /16 range (10.128.0.0/16).
+These subnets can advertised to on-premises as an aggregate /11 range (10.64.0.0/11). Refer to the `var.vpn_onprem_primary_config.router_config` and `var.vpn_onprem_secondary_config.router_config` variables to configure it.
 
 Routes in GCP are either automatically created (for example, when a subnet is added to a VPC), manually created via static routes, dynamically exchanged through VPC peerings, or dynamically programmed by [Cloud Routers](https://cloud.google.com/network-connectivity/docs/router#docs) when a BGP session is established. BGP sessions can be configured to advertise VPC ranges, and/or custom ranges via custom advertisements.
 
@@ -485,7 +485,7 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [custom_roles](variables.tf#L63) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  service_project_network_admin &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-bootstrap</code> |
 | [dns](variables.tf#L72) | Onprem DNS resolvers. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  onprem &#61; &#91;&#34;10.0.200.3&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [factories_config](variables.tf#L80) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  data_dir              &#61; optional&#40;string, &#34;data&#34;&#41;&#10;  dns_policy_rules_file &#61; optional&#40;string, &#34;data&#47;dns-policy-rules.yaml&#34;&#41;&#10;  firewall_policy_name  &#61; optional&#40;string, &#34;net-default&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_dir &#61; &#34;data&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [gcp_ranges](variables.tf#L111) | GCP address ranges in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp_dev_primary                 &#61; &#34;10.128.128.0&#47;19&#34;&#10;  gcp_dev_secondary               &#61; &#34;10.128.160.0&#47;19&#34;&#10;  gcp_landing_trusted_primary     &#61; &#34;10.128.64.0&#47;19&#34;&#10;  gcp_landing_trusted_secondary   &#61; &#34;10.128.96.0&#47;19&#34;&#10;  gcp_landing_untrusted_primary   &#61; &#34;10.128.0.0&#47;19&#34;&#10;  gcp_landing_untrusted_secondary &#61; &#34;10.128.32.0&#47;19&#34;&#10;  gcp_prod_primary                &#61; &#34;10.128.192.0&#47;19&#34;&#10;  gcp_prod_secondary              &#61; &#34;10.128.224.0&#47;19&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [gcp_ranges](variables.tf#L111) | GCP address ranges in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp_dev_primary                 &#61; &#34;10.68.0.0&#47;16&#34;&#10;  gcp_dev_secondary               &#61; &#34;10.84.0.0&#47;16&#34;&#10;  gcp_landing_trusted_primary     &#61; &#34;10.64.0.0&#47;17&#34;&#10;  gcp_landing_trusted_secondary   &#61; &#34;10.80.0.0&#47;17&#34;&#10;  gcp_landing_untrusted_primary   &#61; &#34;10.64.127.0&#47;17&#34;&#10;  gcp_landing_untrusted_secondary &#61; &#34;10.80.127.0&#47;17&#34;&#10;  gcp_prod_primary                &#61; &#34;10.72.0.0&#47;16&#34;&#10;  gcp_prod_secondary              &#61; &#34;10.88.0.0&#47;16&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [onprem_cidr](variables.tf#L126) | Onprem addresses in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  main &#61; &#34;10.0.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [outputs_location](variables.tf#L144) | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
 | [psa_ranges](variables.tf#L161) | IP ranges used for Private Service Access (e.g. CloudSQL). Ranges is in name => range format. | <code title="object&#40;&#123;&#10;  dev &#61; object&#40;&#123;&#10;    ranges        &#61; map&#40;string&#41;&#10;    export_routes &#61; optional&#40;bool, false&#41;&#10;    import_routes &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#10;  prod &#61; object&#40;&#123;&#10;    ranges        &#61; map&#40;string&#41;&#10;    export_routes &#61; optional&#40;bool, false&#41;&#10;    import_routes &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
