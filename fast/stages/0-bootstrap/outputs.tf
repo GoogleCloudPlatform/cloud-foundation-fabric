@@ -88,11 +88,15 @@ locals {
       project_number    = module.log-export-project.number
       writer_identities = module.organization.sink_writer_identities
     }
-    tag_keys = {
-      for k, v in module.organization.tag_keys : k => v.id
-    }
-    tag_values = {
-      for k, v in module.organization.tag_values : k => v.id
+    org_policy_tags = {
+      key_id = (
+        module.organization.tag_keys[var.org_policies_config.tag_name].id
+      )
+      key_name = var.org_policies_config.tag_name
+      values = {
+        for k, v in module.organization.tag_values :
+        split("/", k)[1] => v.id
+      }
     }
   }
   tfvars_globals = {
