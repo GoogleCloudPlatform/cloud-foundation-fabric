@@ -1,6 +1,6 @@
 # Move organization policies to bootstrap stage
 
-**authors:** [Ludo](https://github.com/ludoo), [Roberto](https://github.com/drebes) \
+**authors:** [Julio](https://github.com/juliocc), [Ludo](https://github.com/ludoo), [Roberto](https://github.com/drebes) \
 **date:** September 13, 2023
 
 ## Status
