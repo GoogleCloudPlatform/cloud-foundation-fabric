@@ -62,7 +62,19 @@ A full reference of IAM roles managed by this stage [is available here](./IAM.md
 
 ### Organization policies and tag-based conditions
 
-Several organization policies are often required before any other resource in the org is created, to ensure compliance to specific requirements (e.g. location restrictions), or control configuration of specific resources (e.g. default network at project creation or service account grants).
+It's often desirable to have organization policies deployed before any other resource in the org, so as to ensure compliance with specific requirements (e.g. location restrictions), or control the configuration of specific resources (e.g. default network at project creation or service account grants).
+
+To cover this use case, organization policies have been moved from the resource management to the bootstrap stage in FAST versions after 26.0.0. They are managed via the usual factory aopproach, and a [sample set of data files](./data/org-policies/) is included with this stage.
+
+The only current exception to the factory approach is the `iam.allowedPolicyMemberDomains` constraint, which is managed in code so as to be able to auto-allow the organization's domain. More domains can be added via the `org_policies_config` variable, which also serves as an umbrella for future policies that will need to be managed in code.
+
+Organization policy exceptions are managed via a dedicated resource management tag hierarchy, rooted in the `org-policies` tag key. A default condition is already present for the the `iam.allowedPolicyMemberDomains` constraint, that relaxes the policy on resources that have the `org-policies/allowed-policy-member-domains-all` tag value bound or inherited.
+
+Further tag values can be defined via the `org_policies_config.tag_values` variable, and IAM access can be granted on them via the same variable. Once a tag value has been created, its id can be used in constraint rule conditions.
+
+Management of the rest of the tag hierarchy is delegated to the resource management stage, as that is often intimately tied to the folder hierarchy design.
+
+The organization policy tag key and values managed by this stage have been added to the `0-bootstrap.auto.tfvars` stage, so that IAM can be delegated to the resource management or successive stages via their ids.
 
 ### Automation project and resources
 

@@ -140,7 +140,6 @@ The first set of default tags cannot be overridden and defines the following key
 
 - `context` to identify parts of the resource hierarchy, with `data`, `gke`, `networking`, `sandbox`, `security` and `teams` values
 - `environment` to identify folders and projects belonging to specific environments, with `development` and `production` values
-- `org-policies` that holds values designed to be used in organization policy conditions, with a single value `allowed-policy-member-domains-all` used to allow all in the Domain Restricted Sharing policy via tag bindings; more values can be added by using the same tag key and specifying new values via the custom variable described below
 - `tenant` for FAST multitenant, with one value for each defined tenant that identifies their specific set of resources
 
 The second set is optional and allows defining a custom tag hierarchy, including IAM bindings that can refer to specific identities, or to the internally defined automation service accounts via their names, like in the following example:
@@ -150,14 +149,8 @@ tags = {
   my-custom-tag = {
     values = {
       eggs = {}
-      spam = {}
-    }
-  }
-  org-policies = {
-    description = "Tag values used in organization policy conditions."
-    values = {
-      allowed-policy-member-domains-all = {
-        description = "Allow all in Domain Restricted Sharing."
+      spam = {
+        description = "Example tag value."
         iam = {
           "roles/resourcemanager.tagUser" = ["sandbox"]
         }
@@ -315,12 +308,6 @@ This will result in
 - a IAM policy on the service account that allows `team-a` to impersonate it
 
 This allows to centralize the minimum set of resources to delegate control of each team's folder to a pipeline, and/or to the team group. This can be used as a starting point for scenarios that implement more complex requirements (e.g. environment folders per team, etc.).
-
-### Organization policies
-
-Organization policies leverage -- with one exception -- the built-in factory implemented in the organization module, and configured via the yaml files in the `data` folder. To edit organization policies, check and edit the files there.
-
-The one exception is [Domain Restricted Sharing](https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains), which is made dynamic and implemented in code so as to auto-add the current organization's customer id. The `organization_policy_configs` variable allow to easily add ids from third party organizations if needed.
 
 ### IAM
 
