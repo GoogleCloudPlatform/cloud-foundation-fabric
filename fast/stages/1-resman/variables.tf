@@ -225,15 +225,11 @@ variable "prefix" {
 variable "tag_names" {
   description = "Customized names for resource management tags."
   type = object({
-    context     = string
-    environment = string
-    tenant      = string
+    context     = optional(string, "context")
+    environment = optional(string, "environment")
+    tenant      = optional(string, "tenant")
   })
-  default = {
-    context     = "context"
-    environment = "environment"
-    tenant      = "tenant"
-  }
+  default  = {}
   nullable = false
   validation {
     condition     = alltrue([for k, v in var.tag_names : v != null])
