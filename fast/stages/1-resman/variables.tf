@@ -138,12 +138,6 @@ variable "custom_roles" {
   default = null
 }
 
-variable "data_dir" {
-  description = "Relative path for the folder storing configuration data."
-  type        = string
-  default     = "data"
-}
-
 variable "fast_features" {
   # tfdoc:variable:source 0-0-bootstrap
   description = "Selective control for top-level FAST features."
@@ -187,6 +181,18 @@ variable "locations" {
     pubsub  = []
   }
   nullable = false
+}
+
+variable "org_policy_tags" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Resource management tags for organization policy exceptions."
+  type = object({
+    key_id   = optional(string)
+    key_name = optional(string)
+    values   = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "organization" {

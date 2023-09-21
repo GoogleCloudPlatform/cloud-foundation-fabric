@@ -40,8 +40,7 @@ module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
   # additive bindings via delegated IAM grant set in stage 0
-  iam_bindings_additive  = local.iam_bindings_additive
-  org_policies_data_path = "${var.data_dir}/org-policies"
+  iam_bindings_additive = local.iam_bindings_additive
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages
   tags = merge(local.tags, {
@@ -64,16 +63,6 @@ module "organization" {
       values = {
         development = null
         production  = null
-      }
-    }
-    (var.tag_names.org-policies) = {
-      description = "Organization policy conditions."
-      iam         = {}
-      values = {
-        allowed-policy-member-domains-all = merge({}, try(
-          local.tags[var.tag_names.org-policies].values.allowed-policy-member-domains-all,
-          {}
-        ))
       }
     }
     (var.tag_names.tenant) = {

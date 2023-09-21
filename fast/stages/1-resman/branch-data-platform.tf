@@ -137,22 +137,3 @@ module "branch-dp-prod-gcs" {
     "roles/storage.objectAdmin" = [module.branch-dp-prod-sa.0.iam_email]
   }
 }
-
-resource "google_organization_iam_member" "org_policy_admin_dp" {
-  for_each = !var.fast_features.data_platform ? {} : {
-    data-dev  = ["data", "development", module.branch-dp-dev-sa.0.iam_email]
-    data-prod = ["data", "production", module.branch-dp-prod-sa.0.iam_email]
-  }
-  org_id = var.organization.id
-  role   = "roles/orgpolicy.policyAdmin"
-  member = each.value.2
-  condition {
-    title       = "org_policy_tag_dp_scoped"
-    description = "Org policy tag scoped grant for ${each.value.0}/${each.value.1}."
-    expression  = <<-END
-    resource.matchTag('${var.organization.id}/${var.tag_names.context}', '${each.value.0}')
-    &&
-    resource.matchTag('${var.organization.id}/${var.tag_names.environment}', '${each.value.1}')
-    END
-  }
-}
