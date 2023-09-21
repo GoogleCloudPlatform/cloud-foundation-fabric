@@ -102,7 +102,8 @@ variable "factories_config" {
   type = object({
     data_dir = optional(string, "data/org-policies")
   })
-  default = {}
+  nullable = false
+  default  = {}
 }
 
 variable "fast_features" {
