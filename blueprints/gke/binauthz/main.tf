@@ -43,6 +43,7 @@ module "project" {
     "cloudresourcemanager.googleapis.com",
     "container.googleapis.com",
     "containeranalysis.googleapis.com",
+    "serviceusage.googleapis.com",
     "sourcerepo.googleapis.com"
   ]
   iam = {
