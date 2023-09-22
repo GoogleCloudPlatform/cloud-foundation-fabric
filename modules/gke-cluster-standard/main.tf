@@ -43,6 +43,7 @@ resource "google_container_cluster" "cluster" {
   # the default node pool is deleted here, use the gke-nodepool module instead.
   # the default node pool configuration is based on a shielded_nodes variable.
   node_config {
+    service_account = var.service_account
     dynamic "shielded_instance_config" {
       for_each = var.enable_features.shielded_nodes ? [""] : []
       content {
@@ -203,7 +204,7 @@ resource "google_container_cluster" "cluster" {
       ]))
     }
   }
-  # Don't send any GKE cluster logs to Cloud Logging. Input variable validation 
+  # Don't send any GKE cluster logs to Cloud Logging. Input variable validation
   # makes sure every other log source is false when enable_system_logs is false.
   dynamic "logging_config" {
     for_each = var.logging_config.enable_system_logs == false ? [""] : []

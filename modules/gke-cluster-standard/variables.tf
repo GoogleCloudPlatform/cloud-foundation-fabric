@@ -151,7 +151,7 @@ variable "logging_config" {
   })
   default  = {}
   nullable = false
-  # System logs are the minimum required component for enabling log collection. 
+  # System logs are the minimum required component for enabling log collection.
   # So either everything is off (false), or enable_system_logs must be true.
   validation {
     condition = (
@@ -279,6 +279,12 @@ variable "project_id" {
 
 variable "release_channel" {
   description = "Release channel for GKE upgrades."
+  type        = string
+  default     = null
+}
+
+variable "service_account" {
+  description = "Service account used for the default node pool, only useful if the default GCE service account has been disabled."
   type        = string
   default     = null
 }
