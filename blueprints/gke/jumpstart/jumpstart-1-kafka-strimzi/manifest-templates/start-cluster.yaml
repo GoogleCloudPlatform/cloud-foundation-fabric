@@ -19,8 +19,8 @@ metadata:
   namespace: "${namespace}"
 spec:
   kafka:
-    version: "${version}"
-    replicas: 3
+    version: "${kafka_config.version}"
+    replicas: ${kafka_config.replicas}
     template:
       pod:
         tolerations:
@@ -55,8 +55,8 @@ spec:
         memory: 5Gi
         cpu: "2"
     jvmOptions:
-      -Xms: 4096m
-      -Xmx: 4096m
+      -Xms: ${kafka_config.jvm_memory}
+      -Xmx: ${kafka_config.jvm_memory}
     listeners:
       - name: plain
         port: 9092
@@ -78,7 +78,7 @@ spec:
       volumes:
       - id: 0
         type: persistent-claim
-        size: 100Gi
+        size: ${kafka_config.volume_claim_size}
         class: premium-rwo
         deleteClaim: false
   zookeeper:
@@ -103,7 +103,7 @@ spec:
               app.kubernetes.io/name: zookeeper
               strimzi.io/cluster:  "${name}"
               strimzi.io/component-type: zookeeper
-    replicas: 3
+    replicas: ${zookeeper_config.replicas}
     resources:
       requests:
         memory: 2560Mi
@@ -112,11 +112,11 @@ spec:
         memory: 2560Mi
         cpu: 2000m
     jvmOptions:
-      -Xms: 2048m
-      -Xmx: 2048m
+      -Xms: ${zookeeper_config.jvm_memory}
+      -Xmx: ${zookeeper_config.jvm_memory}
     storage:
       type: persistent-claim
-      size: 100Gi
+      size: ${zookeeper_config.volume_claim_size}
       class: premium-rwo
       deleteClaim: false
   entityOperator:
