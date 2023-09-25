@@ -4,6 +4,22 @@ Cloud Function management, with support for IAM roles and optional bucket creati
 
 The GCS object used for deployment uses a hash of the bundle zip contents in its name, which ensures change tracking and avoids recreating the function if the GCS object is deleted and needs recreating.
 
+<!-- BEGIN TOC -->
+- [TODO](#todo)
+- [Examples](#examples)
+  - [HTTP trigger](#http-trigger)
+  - [PubSub and non-HTTP triggers](#pubsub-and-non-http-triggers)
+  - [Controlling HTTP access](#controlling-http-access)
+  - [GCS bucket creation](#gcs-bucket-creation)
+  - [Service account management](#service-account-management)
+  - [Custom bundle config](#custom-bundle-config)
+  - [Private Cloud Build Pool](#private-cloud-build-pool)
+  - [Multiple Cloud Functions within project](#multiple-cloud-functions-within-project)
+  - [Mounting secrets from Secret Manager](#mounting-secrets-from-secret-manager)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## TODO
 
 - [ ] add support for `source_repository`
@@ -191,6 +207,46 @@ module "cf-http-two" {
 }
 # tftest modules=2 resources=4 inventory=multiple_functions.yaml
 ```
+
+### Mounting secrets from Secret Manager
+This provides the latest value of the secret `var_secret` as `VARIABLE_SECRET` environment variable and three values of `path_secret` mounted in filesystem:
+* `/app/secret/first` contains version 1
+* `/app/secret/second` contains version 2
+* `/app/secret/latest` contains latest version of the secret
+```hcl
+module "cf-http" {
+  source      = "./fabric/modules/cloud-function-v1"
+  project_id  = "my-project"
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
+  bundle_config = {
+    source_dir  = "fabric/assets"
+    output_path = "bundle.zip"
+  }
+  secrets = {
+    VARIABLE_SECRET = {
+      is_volume  = false
+      project_id = 1234567890
+      secret     = "var_secret"
+      versions = [
+        "latest"
+      ]
+    }
+    "/app/secret" = {
+      is_volume  = true
+      project_id = 1234567890
+      secret     = "path_secret"
+      versions = [
+        "1:first",
+        "2:second",
+        "latest:latest"
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=2  inventory=secrets.yaml
+```
+
 
 <!-- BEGIN TFDOC -->
 
