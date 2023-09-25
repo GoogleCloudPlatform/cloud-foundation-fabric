@@ -189,23 +189,8 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
     #   side of any comparison operators.
     # - include a descriptive error message to the assert
 
-    # for values:
-    # - verify each address in the user's inventory exists in the plan
-    # - for those address that exist on both the user's inventory and
-    #   the plan output, ensure the set of keys on the inventory are a
-    #   subset of the keys in the plan, and compare their values by
-    #   equality
     if 'values' in inventory:
-      expected_values = inventory['values']
-      for address, expected_value in expected_values.items():
-        assert address in summary.values, \
-            f'{relative_path}: {address} is not a valid address in the plan'
-        for k, v in expected_value.items():
-          assert k in summary.values[address], \
-              f'{relative_path}: {k} not found at {address}'
-          plan_value = summary.values[address][k]
-          assert plan_value == v, \
-              f'{relative_path}: {k} at {address} failed. Got `{plan_value}`, expected `{v}`'
+      validate_plan_object(inventory['values'], summary.values, relative_path, "")
 
     if 'counts' in inventory:
       expected_counts = inventory['counts']
@@ -229,6 +214,39 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
             f'{relative_path}: output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
 
   return summary
+
+
+def validate_plan_object(expected_value, plan_value, relative_path, relative_address):
+  """
+  Validate that plan object matches inventory
+
+  1. Verify each address in the user's inventory exists in the plan
+  2. For those address that exist on both the user's inventory and
+     the plan output, ensure the set of keys on the inventory are a
+     subset of the keys in the plan, and compare their values by
+     equality
+  3. For lists, verify that they have the same length and check
+     whether its members are equal (according to this function)
+  """
+  # dictionaries / objects
+  if isinstance(expected_value, dict) and isinstance(plan_value, dict):
+    for k, v in expected_value.items():
+      assert k in plan_value, \
+        f'{relative_path}: {k} is not a valid address in the plan'
+      validate_plan_object(v, plan_value[k], relative_path, f'{relative_address}.{k}')
+
+  # lists
+  elif isinstance(expected_value, list) and isinstance(plan_value, list):
+    assert len(plan_value) == len(expected_value), \
+      f'{relative_path}: {relative_address} has different length. Got {plan_value}, expected {expected_value}'
+
+    for i, (exp, actual) in enumerate(zip(expected_value, plan_value)):
+      validate_plan_object(exp, actual, relative_path, f'{relative_address}[{i}]')
+
+  # all other objects
+  else:
+    assert plan_value == expected_value, \
+      f'{relative_path}: {relative_address} failed. Got `{plan_value}`, expected `{expected_value}`'
 
 
 @pytest.fixture(name='plan_validator')
