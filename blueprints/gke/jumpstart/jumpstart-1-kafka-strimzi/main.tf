@@ -26,26 +26,22 @@ locals {
   )
 }
 
-resource "kubernetes_namespace" "default" {
-  metadata {
-    name = var.namespace
-  }
-}
-
 resource "helm_release" "strimzi-operator" {
-  name       = "strimzi-operator"
-  repository = "https://strimzi.io/charts"
-  chart      = "strimzi-kafka-operator"
-  namespace  = kubernetes_namespace.default.metadata.0.name
+  name             = "strimzi-operator"
+  repository       = "https://strimzi.io/charts"
+  chart            = "strimzi-kafka-operator"
+  namespace        = var.namespace
+  create_namespace = true
 }
 
-resource "kubectl_manifest" "default" {
+resource "kubectl_manifest" "kafka-cluster" {
   for_each = toset(local.wl_templates)
-  yaml_body = format("%#v", yamldecode(templatefile(each.value, {
-    namespace = kubernetes_namespace.default.metadata.0.name
-    name      = "kafka00"
-    version   = "3.4.0"
-  })))
+  yaml_body = templatefile(each.value, {
+    name             = "kafka"
+    namespace        = var.namespace
+    kafka_config     = var.kafka_config
+    zookeeper_config = var.zookeeper_config
+  })
   timeouts {
     create = "30m"
   }
