@@ -16,7 +16,7 @@
 
 locals {
   wl_templates = [
-    for f in fileset(local.wl_templates_path, "[0-9]*yaml") :
+    for f in fileset(local.wl_templates_path, "*yaml") :
     "${local.wl_templates_path}/${f}"
   ]
   wl_templates_path = (
@@ -26,26 +26,24 @@ locals {
   )
 }
 
-resource "kubernetes_namespace" "default" {
-  metadata {
-    name = var.namespace
-  }
+resource "helm_release" "strimzi-operator" {
+  name             = "strimzi-operator"
+  repository       = "https://strimzi.io/charts"
+  chart            = "strimzi-kafka-operator"
+  namespace        = var.namespace
+  create_namespace = true
 }
 
-resource "kubernetes_manifest" "default" {
+resource "kubectl_manifest" "kafka-cluster" {
   for_each = toset(local.wl_templates)
-  manifest = yamldecode(templatefile(each.value, {
-    namespace = kubernetes_namespace.default.metadata.0.name
-  }))
-  dynamic "wait" {
-    for_each = strcontains(each.key, "statefulset") ? [""] : []
-    content {
-      fields = {
-        "status.readyReplicas" = var.statefulset_config.replicas
-      }
-    }
-  }
+  yaml_body = templatefile(each.value, {
+    name             = "kafka"
+    namespace        = var.namespace
+    kafka_config     = var.kafka_config
+    zookeeper_config = var.zookeeper_config
+  })
   timeouts {
     create = "30m"
   }
+  depends_on = [helm_release.strimzi-operator]
 }
