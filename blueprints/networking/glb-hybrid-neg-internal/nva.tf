@@ -17,15 +17,16 @@
 # tfdoc:file:description Network Virtual Appliances (NVAs).
 
 module "nva_instance_templates" {
-  for_each               = var.regions
-  source                 = "../../../modules/compute-vm"
-  project_id             = module.project_landing.project_id
-  can_ip_forward         = true
-  create_template        = true
-  name                   = "nva-${each.value}"
-  service_account_create = true
-  zone                   = local.zones[each.key]
-
+  for_each        = var.regions
+  source          = "../../../modules/compute-vm"
+  project_id      = module.project_landing.project_id
+  can_ip_forward  = true
+  create_template = true
+  name            = "nva-${each.value}"
+  service_account = {
+    auto_create = true
+  }
+  zone = local.zones[each.key]
   metadata = {
     startup-script = templatefile(
       "${path.module}/data/nva-startup-script.tftpl",
@@ -36,7 +37,6 @@ module "nva_instance_templates" {
       }
     )
   }
-
   network_interfaces = [
     {
       network    = module.vpc_landing_untrusted.self_link
@@ -47,7 +47,6 @@ module "nva_instance_templates" {
       subnetwork = module.vpc_landing_trusted.subnet_self_links["${each.value}/trusted-${each.value}"]
     }
   ]
-
   tags = [
     "http-server",
     "https-server",

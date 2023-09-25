@@ -155,8 +155,9 @@ module "squid-vm" {
       image = "cos-cloud/cos-stable"
     }
   }
-  service_account        = module.service-account-squid.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account = {
+    email = module.service-account-squid.email
+  }
   metadata = {
     user-data              = module.cos-squid.cloud_config
     google-logging-enabled = true

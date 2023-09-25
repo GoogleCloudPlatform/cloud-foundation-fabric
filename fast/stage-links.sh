@@ -42,7 +42,7 @@ else
   CP_CMD="cp $1"
 fi
 
-GLOBALS="tfvars/globals.auto.tfvars.json"
+GLOBALS="tfvars/0-globals.auto.tfvars.json"
 PROVIDER_CMD=$CMD
 STAGE_NAME=$(basename "$(pwd)")
 

@@ -35,6 +35,7 @@ output "id" {
 
 output "instance" {
   description = "Instance resource."
+  sensitive   = true
   value       = try(google_compute_instance.default.0, null)
 }
 
@@ -61,22 +62,21 @@ output "self_link" {
 
 output "service_account" {
   description = "Service account resource."
-  value = (
-    var.service_account_create ? google_service_account.service_account.0 : null
-  )
+  value       = try(google_service_account.service_account.0, null)
 }
 
 output "service_account_email" {
   description = "Service account email."
-  value       = local.service_account_email
+  value       = try(local.service_account.email, null)
 }
 
 output "service_account_iam_email" {
   description = "Service account email."
-  value = join("", [
-    "serviceAccount:",
-    local.service_account_email == null ? "" : local.service_account_email
-  ])
+  value = (
+    try(local.service_account.email, null) == null
+    ? null
+    : "serviceAccount:${local.service_account.email}"
+  )
 }
 
 output "template" {

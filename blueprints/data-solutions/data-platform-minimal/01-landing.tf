@@ -64,6 +64,7 @@ module "land-project" {
     "bigquerystorage.googleapis.com",
     "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
+    "datalineage.googleapis.com",
     "iam.googleapis.com",
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com",

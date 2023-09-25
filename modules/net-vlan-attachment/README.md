@@ -81,7 +81,7 @@ module "example-va" {
     name   = google_compute_router.interconnect-router.name
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=2
 ```
 
 ### Dedicated Interconnect - Two VLAN Attachments on a single region (99.9% SLA)
@@ -201,7 +201,7 @@ module "example-va-b" {
     edge_availability_domain = "AVAILABILITY_DOMAIN_2"
   }
 }
-# tftest modules=2 resources=5
+# tftest modules=2 resources=3
 ```
 
 ### Dedicated Interconnect - Four VLAN Attachments on two regions (99.99% SLA)
@@ -431,10 +431,10 @@ module "example-va-b-ew12" {
     edge_availability_domain = "AVAILABILITY_DOMAIN_2"
   }
 }
-# tftest modules=4 resources=10
+# tftest modules=4 resources=6
 ```
 
-### IPSec over Interconnect enabled setup
+### IPSec for Dedicated Interconnect 
 
 Refer to the [HA VPN over Interconnect Blueprint](../../blueprints/networking/ha-vpn-over-interconnect/) for an all-encompassing example.
 
@@ -494,6 +494,47 @@ module "example-va-b" {
 }
 # tftest modules=2 resources=9
 ```
+
+### IPSec for Partner Interconnect 
+
+```hcl
+module "example-va-a" {
+  source      = "./fabric/modules/net-vlan-attachment"
+  project_id  = "myproject"
+  network     = "mynet"
+  region      = "europe-west8"
+  name        = "encrypted-vlan-attachment-a"
+  description = "example-va-a vlan attachment"
+  peer_asn    = "65001"
+  router_config = {
+    create = true
+  }
+  partner_interconnect_config = {
+    edge_availability_domain = "AVAILABILITY_DOMAIN_1"
+  }
+  vpn_gateways_ip_range = "10.255.255.0/29" # Allows for up to 8 tunnels
+}
+
+module "example-va-b" {
+  source      = "./fabric/modules/net-vlan-attachment"
+  project_id  = "myproject"
+  network     = "mynet"
+  region      = "europe-west8"
+  name        = "encrypted-vlan-attachment-b"
+  description = "example-va-b vlan attachment"
+  peer_asn    = "65001"
+  router_config = {
+    create = true
+  }
+  partner_interconnect_config = {
+    edge_availability_domain = "AVAILABILITY_DOMAIN_2"
+  }
+  vpn_gateways_ip_range = "10.255.255.8/29" # Allows for up to 8 tunnels
+}
+# tftest modules=2 resources=6
+```
+
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

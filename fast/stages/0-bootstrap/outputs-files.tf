@@ -33,7 +33,7 @@ resource "local_file" "tfvars" {
 resource "local_file" "tfvars_globals" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${try(pathexpand(var.outputs_location), "")}/tfvars/globals.auto.tfvars.json"
+  filename        = "${try(pathexpand(var.outputs_location), "")}/tfvars/0-globals.auto.tfvars.json"
   content         = jsonencode(local.tfvars_globals)
 }
 

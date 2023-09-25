@@ -35,6 +35,7 @@ resource "google_compute_autoscaler" "default" {
     max_replicas    = var.autoscaler_config.max_replicas
     min_replicas    = var.autoscaler_config.min_replicas
     cooldown_period = var.autoscaler_config.cooldown_period
+    mode            = var.autoscaler_config.mode
 
     dynamic "scale_down_control" {
       for_each = local.as_scaling.down == null ? [] : [""]
@@ -138,6 +139,7 @@ resource "google_compute_region_autoscaler" "default" {
     max_replicas    = var.autoscaler_config.max_replicas
     min_replicas    = var.autoscaler_config.min_replicas
     cooldown_period = var.autoscaler_config.cooldown_period
+    mode            = var.autoscaler_config.mode
 
     dynamic "scale_down_control" {
       for_each = local.as_scaling.down == null ? [] : [""]

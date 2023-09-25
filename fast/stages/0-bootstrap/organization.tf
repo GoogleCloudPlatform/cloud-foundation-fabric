@@ -45,6 +45,11 @@ locals {
       }
     ]
   ])
+  drs_domains = concat(
+    [var.organization.customer_id],
+    var.org_policies_config.constraints.allowed_policy_member_domains
+  )
+  drs_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
   group_iam = {
     for k, v in local.iam_group_bindings : k => v.authoritative
   }
@@ -88,8 +93,9 @@ module "organization" {
   )
   # delegated role grant for resource manager service account
   iam_bindings = {
-    (module.organization.custom_role_id[var.custom_role_names.organization_iam_admin]) = {
+    organization_iam_admin_conditional = {
       members = [module.automation-tf-resman-sa.iam_email]
+      role    = module.organization.custom_role_id[var.custom_role_names.organization_iam_admin]
       condition = {
         expression = format(
           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
@@ -148,6 +154,42 @@ module "organization" {
       destination          = local.log_sink_destinations[name].id
       filter               = attrs.filter
       type                 = attrs.type
+    }
+  }
+  org_policies_data_path = var.factories_config.org_policy_data_path
+  org_policies = {
+    "iam.allowedPolicyMemberDomains" = {
+      rules = [
+        {
+          allow = { values = local.drs_domains }
+          condition = {
+            expression = (
+              "!resource.matchTag('${local.drs_tag_name}', 'allowed-policy-member-domains-all')"
+            )
+          }
+        },
+        {
+          allow = { all = true }
+          condition = {
+            expression = (
+              "resource.matchTag('${local.drs_tag_name}', 'allowed-policy-member-domains-all')"
+            )
+            title = "allow-all"
+          }
+        },
+      ]
+    }
+    # "gcp.resourceLocations" = {}
+    # "iam.workloadIdentityPoolProviders" = {}
+  }
+  tags = {
+    (var.org_policies_config.tag_name) = {
+      description = "Organization policy conditions."
+      iam         = {}
+      values = merge(
+        { allowed-policy-member-domains-all = {} },
+        var.org_policies_config.tag_values
+      )
     }
   }
 }

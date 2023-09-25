@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,6 @@
  */
 
 locals {
-  key_purpose = {
-    for key, attrs in var.keys : key => try(
-      var.key_purpose[key], var.key_purpose_defaults
-    )
-  }
   keyring = (
     var.keyring_create
     ? google_kms_key_ring.default.0
@@ -42,17 +37,19 @@ resource "google_kms_key_ring" "default" {
 }
 
 resource "google_kms_crypto_key" "default" {
-  for_each        = var.keys
-  key_ring        = local.keyring.id
-  name            = each.key
-  rotation_period = try(each.value.rotation_period, null)
-  labels          = try(each.value.labels, null)
-  purpose         = try(local.key_purpose[each.key].purpose, null)
+  for_each                      = var.keys
+  key_ring                      = local.keyring.id
+  name                          = each.key
+  rotation_period               = each.value.rotation_period
+  labels                        = each.value.labels
+  purpose                       = each.value.purpose
+  skip_initial_version_creation = each.value.skip_initial_version_creation
+
   dynamic "version_template" {
-    for_each = local.key_purpose[each.key].version_template == null ? [] : [""]
+    for_each = each.value.version_template == null ? [] : [""]
     content {
-      algorithm        = local.key_purpose[each.key].version_template.algorithm
-      protection_level = local.key_purpose[each.key].version_template.protection_level
+      algorithm        = each.value.version_template.algorithm
+      protection_level = each.value.version_template.protection_level
     }
   }
 }

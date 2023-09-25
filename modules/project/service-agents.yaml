@@ -221,6 +221,7 @@
   service_agent: "service-%s@gcp-sa-healthcare.iam.gserviceaccount.com"
 - name: "iap"
   service_agent: "service-%s@gcp-sa-iap.iam.gserviceaccount.com"
+  jit: true
 - name: "identitytoolkit"
   service_agent: "service-%s@gcp-sa-identitytoolkit.iam.gserviceaccount.com"
 - name: "ids"

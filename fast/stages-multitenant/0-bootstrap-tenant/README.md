@@ -74,7 +74,7 @@ The script output can be copy/pasted to a terminal:
 # copy and paste the following commands for '0-bootstrap-tenant'
 
 cp ~/fast-config/providers/0-bootstrap-tenant-providers.tf ./
-ln -s ~/fast-config/tfvars/globals.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 
@@ -158,7 +158,7 @@ Once the configuration is done just go through the usual `init/apply` cycle. On 
 
 This configuration is possible but unsupported and only exists for development purposes, use at your own risk:
 
-- temporarily switch `billing_account.id` to `null` in `globals.auto.tfvars.json`
+- temporarily switch `billing_account.id` to `null` in `0-globals.auto.tfvars.json`
 - for each project resources in the project modules used in this stage (`automation-project`, `log-export-project`)
   - apply using `-target`, for example
     `terraform apply -target 'module.automation-project.google_project.project[0]'`

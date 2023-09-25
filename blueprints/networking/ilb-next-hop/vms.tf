@@ -39,10 +39,9 @@ module "vm-left" {
   metadata = {
     startup-script = local.vm_startup_script
   }
-  service_account = try(
-    module.service-accounts.email, null
-  )
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account = {
+    email = try(module.service-accounts.email, null)
+  }
 }
 
 module "vm-right" {
@@ -62,8 +61,7 @@ module "vm-right" {
   metadata = {
     startup-script = local.vm_startup_script
   }
-  service_account = try(
-    module.service-accounts.email, null
-  )
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account = {
+    email = try(module.service-accounts.email, null)
+  }
 }

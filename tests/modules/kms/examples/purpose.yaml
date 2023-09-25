@@ -15,25 +15,19 @@
 values:
   module.kms.google_kms_crypto_key.default["key-a"]:
     name: key-a
-    purpose: ENCRYPT_DECRYPT
-  module.kms.google_kms_crypto_key.default["key-b"]:
-    name: key-b
-    purpose: ENCRYPT_DECRYPT
-  module.kms.google_kms_crypto_key.default["key-c"]:
-    name: key-c
     purpose: ASYMMETRIC_SIGN
     version_template:
     - algorithm: EC_SIGN_P384_SHA384
-      protection_level: SOFTWARE
+      protection_level: HSM
   module.kms.google_kms_key_ring.default[0]:
     location: europe-west1
     name: test
     project: my-project
 
 counts:
-  google_kms_crypto_key: 3
+  google_kms_crypto_key: 1
   google_kms_key_ring: 1
   modules: 1
-  resources: 4
+  resources: 2
 
 outputs: {}

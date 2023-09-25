@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,26 +21,27 @@ module "kms" {
     location = var.region
   }
   keys = {
-    key-df  = null
-    key-gcs = null
-    key-bq  = null
-  }
-  key_iam = {
-    key-gcs = {
-      "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project.service_accounts.robots.storage}"
-      ]
-    },
-    key-bq = {
-      "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project.service_accounts.robots.bq}"
-      ]
-    },
     key-df = {
-      "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project.service_accounts.robots.dataflow}",
-        "serviceAccount:${module.project.service_accounts.robots.compute}",
-      ]
+      iam = {
+        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+          "serviceAccount:${module.project.service_accounts.robots.dataflow}",
+          "serviceAccount:${module.project.service_accounts.robots.compute}",
+        ]
+      }
+    }
+    key-gcs = {
+      iam = {
+        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+          "serviceAccount:${module.project.service_accounts.robots.storage}"
+        ]
+      }
+    }
+    key-bq = {
+      iam = {
+        "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+          "serviceAccount:${module.project.service_accounts.robots.bq}"
+        ]
+      }
     }
   }
 }

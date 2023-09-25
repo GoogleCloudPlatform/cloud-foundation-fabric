@@ -33,11 +33,13 @@ module "projects" {
   iam                     = try(each.value.iam, {})
   iam_bindings            = try(each.value.iam_bindings, {})
   iam_bindings_additive   = try(each.value.iam_bindings_additive, {})
-  labels                  = each.value.labels
-  lien_reason             = try(each.value.lien_reason, null)
-  logging_data_access     = try(each.value.logging_data_access, {})
-  logging_exclusions      = try(each.value.logging_exclusions, {})
-  logging_sinks           = try(each.value.logging_sinks, {})
+  labels = merge(
+    each.value.labels, var.data_merges.labels
+  )
+  lien_reason         = try(each.value.lien_reason, null)
+  logging_data_access = try(each.value.logging_data_access, {})
+  logging_exclusions  = try(each.value.logging_exclusions, {})
+  logging_sinks       = try(each.value.logging_sinks, {})
   metric_scopes = distinct(concat(
     each.value.metric_scopes, var.data_merges.metric_scopes
   ))

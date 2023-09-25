@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -102,6 +102,11 @@ module "vpc-shared" {
       ip_cidr_range = var.ip_ranges.gce
       name          = "gce"
       region        = var.region
+      iam = {
+        "roles/compute.networkUser" = concat(var.owners_gce, [
+          "serviceAccount:${module.project-svc-gce.service_accounts.cloud_services}",
+        ])
+      }
     },
     {
       ip_cidr_range = var.ip_ranges.gke
@@ -111,24 +116,17 @@ module "vpc-shared" {
         pods     = var.ip_secondary_ranges.gke-pods
         services = var.ip_secondary_ranges.gke-services
       }
+      iam = {
+        "roles/compute.networkUser" = concat(var.owners_gke, [
+          "serviceAccount:${module.project-svc-gke.service_accounts.cloud_services}",
+          "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}",
+        ])
+        "roles/compute.securityAdmin" = [
+          "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}",
+        ]
+      }
     }
   ]
-  subnet_iam = {
-    "${var.region}/gce" = {
-      "roles/compute.networkUser" = concat(var.owners_gce, [
-        "serviceAccount:${module.project-svc-gce.service_accounts.cloud_services}",
-      ])
-    }
-    "${var.region}/gke" = {
-      "roles/compute.networkUser" = concat(var.owners_gke, [
-        "serviceAccount:${module.project-svc-gke.service_accounts.cloud_services}",
-        "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}",
-      ])
-      "roles/compute.securityAdmin" = [
-        "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}",
-      ]
-    }
-  }
 }
 
 module "vpc-shared-firewall" {
@@ -194,7 +192,9 @@ module "vm-bastion" {
       "service tinyproxy restart"
     ])
   }
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
 }
 
 ################################################################################

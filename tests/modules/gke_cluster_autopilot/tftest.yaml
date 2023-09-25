@@ -12,12 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  google_apigee_instance.instances["europe-west1"]:
-    ip_range: 10.0.4.0/22,10.1.1.0.0/28
-    location: europe-west1
-    name: "instance-europe-west1"
-    org_id: organizations/my-project
+module: modules/gke-cluster-autopilot
 
-counts:
-  google_apigee_instance: 1
+tests:
+  network_tags:

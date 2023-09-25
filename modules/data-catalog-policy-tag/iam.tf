@@ -53,7 +53,7 @@ resource "google_data_catalog_taxonomy_iam_binding" "bindings" {
   provider = google-beta
   for_each = var.iam_bindings
   taxonomy = google_data_catalog_taxonomy.default.id
-  role     = each.key
+  role     = each.value.role
   members  = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]

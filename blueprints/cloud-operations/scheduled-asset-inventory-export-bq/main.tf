@@ -63,7 +63,7 @@ module "pubsub" {
   project_id = module.project.project_id
   name       = var.name
   subscriptions = {
-    "${var.name}-default" = null
+    "${var.name}-default" = {}
   }
   # the Cloud Scheduler robot service account already has pubsub.topics.publish
   # at the project level via roles/cloudscheduler.serviceAgent
@@ -74,7 +74,7 @@ module "pubsub_file" {
   project_id = module.project.project_id
   name       = var.name_cffile
   subscriptions = {
-    "${var.name_cffile}-default" = null
+    "${var.name_cffile}-default" = {}
   }
   # the Cloud Scheduler robot service account already has pubsub.topics.publish
   # at the project level via roles/cloudscheduler.serviceAgent

@@ -103,12 +103,19 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "gateway_api_config" {
+    for_each = var.enable_features.gateway_api ? [""] : []
+    content {
+      channel = "CHANNEL_STANDARD"
+    }
+  }
+
   dynamic "ip_allocation_policy" {
     for_each = var.vpc_config.secondary_range_blocks != null ? [""] : []
     content {
       cluster_ipv4_cidr_block  = var.vpc_config.secondary_range_blocks.pods
       services_ipv4_cidr_block = var.vpc_config.secondary_range_blocks.services
-      stack_type               = try(var.vpc_config.stack_type, null)
+      stack_type               = var.vpc_config.stack_type
     }
   }
 
@@ -117,7 +124,7 @@ resource "google_container_cluster" "cluster" {
     content {
       cluster_secondary_range_name  = var.vpc_config.secondary_range_names.pods
       services_secondary_range_name = var.vpc_config.secondary_range_names.services
-      stack_type                    = try(var.vpc_config.stack_type, null)
+      stack_type                    = var.vpc_config.stack_type
     }
   }
 
@@ -129,13 +136,6 @@ resource "google_container_cluster" "cluster" {
       "SYSTEM_COMPONENTS",
       "WORKLOADS",
     ]))
-  }
-
-  dynamic "gateway_api_config" {
-    for_each = var.enable_features.gateway_api ? [""] : []
-    content {
-      channel = "CHANNEL_STANDARD"
-    }
   }
 
   maintenance_policy {
@@ -207,10 +207,17 @@ resource "google_container_cluster" "cluster" {
     enable_components = toset(compact([
       # System metrics collection cannot be disabled for Autopilot clusters.
       "SYSTEM_COMPONENTS",
-      # Control plane metrics.
+      # Control plane metrics:
       var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
       var.monitoring_config.enable_controller_manager_metrics ? "CONTROLLER_MANAGER" : null,
       var.monitoring_config.enable_scheduler_metrics ? "SCHEDULER" : null,
+      # Kube state metrics:
+      var.monitoring_config.enable_daemonset_metrics ? "DAEMONSET" : null,
+      var.monitoring_config.enable_deployment_metrics ? "DEPLOYMENT" : null,
+      var.monitoring_config.enable_hpa_metrics ? "HPA" : null,
+      var.monitoring_config.enable_pod_metrics ? "POD" : null,
+      var.monitoring_config.enable_statefulset_metrics ? "STATEFULSET" : null,
+      var.monitoring_config.enable_storage_metrics ? "STORAGE" : null,
     ]))
     managed_prometheus {
       enabled = var.monitoring_config.enable_managed_prometheus
@@ -227,6 +234,15 @@ resource "google_container_cluster" "cluster" {
           ? var.enable_features.upgrade_notifications.topic_id
           : google_pubsub_topic.notifications[0].id
         )
+      }
+    }
+  }
+
+  dynamic "node_pool_auto_config" {
+    for_each = length(var.tags) > 0 ? [""] : []
+    content {
+      network_tags {
+        tags = toset(var.tags)
       }
     }
   }

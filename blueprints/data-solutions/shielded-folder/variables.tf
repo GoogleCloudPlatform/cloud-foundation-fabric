@@ -75,11 +75,35 @@ variable "groups" {
 variable "kms_keys" {
   description = "KMS keys to create, keyed by name."
   type = map(object({
-    iam                   = optional(map(list(string)), {})
-    iam_bindings_additive = optional(map(map(any)), {})
-    labels                = optional(map(string), {})
-    locations             = optional(list(string), ["global", "europe", "europe-west1"])
-    rotation_period       = optional(string, "7776000s")
+    labels                        = optional(map(string))
+    locations                     = optional(list(string), ["global", "europe", "europe-west1"])
+    rotation_period               = optional(string, "7776000s")
+    purpose                       = optional(string, "ENCRYPT_DECRYPT")
+    skip_initial_version_creation = optional(bool, false)
+    version_template = optional(object({
+      algorithm        = string
+      protection_level = optional(string, "SOFTWARE")
+    }))
+
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+
   }))
   default = {}
 }
@@ -92,12 +116,7 @@ variable "log_locations" {
     logging = optional(string, "global")
     pubsub  = optional(string, "global")
   })
-  default = {
-    bq      = "europe"
-    storage = "europe"
-    logging = "global"
-    pubsub  = null
-  }
+  default  = {}
   nullable = false
 }
 
