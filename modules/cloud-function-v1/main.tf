@@ -111,8 +111,8 @@ resource "google_cloudfunctions_function" "function" {
         for_each = secret.value.versions
         iterator = version
         content {
-          path    = split(":", version)[1]
-          version = split(":", version)[0]
+          path    = split(":", version.value)[1]
+          version = split(":", version.value)[0]
         }
       }
     }
