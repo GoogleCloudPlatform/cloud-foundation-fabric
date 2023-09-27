@@ -21,11 +21,6 @@ output "bucket" {
   )
 }
 
-output "bucket_name" {
-  description = "Bucket name."
-  value       = local.bucket
-}
-
 output "function" {
   description = "Cloud function resources."
   value       = google_cloudfunctions2_function.function

@@ -15,15 +15,6 @@
  */
 
 locals {
-  bucket = (
-    var.bucket_name != null
-    ? var.bucket_name
-    : (
-      length(google_storage_bucket.bucket) > 0
-      ? google_storage_bucket.bucket[0].name
-      : null
-    )
-  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   service_account_email = (
     var.service_account_create
@@ -69,7 +60,7 @@ resource "google_cloudfunctions2_function" "function" {
     environment_variables = var.environment_variables
     source {
       storage_source {
-        bucket = local.bucket
+        bucket = var.bucket_config == null ? var.bucket_name : google_storage_bucket.bucket[0].name
         object = google_storage_bucket_object.bundle.name
       }
     }
@@ -220,7 +211,7 @@ resource "google_storage_bucket" "bucket" {
 
 resource "google_storage_bucket_object" "bundle" {
   name   = "bundle-${data.archive_file.bundle.output_md5}.zip"
-  bucket = local.bucket
+  bucket = var.bucket_config == null ? var.bucket_name : google_storage_bucket.bucket[0].name
   source = data.archive_file.bundle.output_path
 }
 
