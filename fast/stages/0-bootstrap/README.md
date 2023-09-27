@@ -170,7 +170,7 @@ export FAST_ORG_ID=123456
 # set needed roles
 export FAST_ROLES="roles/billing.admin roles/logging.admin \
   roles/iam.organizationRoleAdmin roles/resourcemanager.projectCreator \
-  roles/resourcemanager.tagAdmin"
+  roles/resourcemanager.tagAdmin roles/orgpolicy.policyAdmin"
 
 for role in $FAST_ROLES; do
   gcloud organizations add-iam-policy-binding $FAST_ORG_ID \
