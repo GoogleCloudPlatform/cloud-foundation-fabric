@@ -92,7 +92,7 @@ When the destroy fails, continue with the steps below. Again, make sure your use
 # to finish the destruction
 export FAST_DESTROY_ROLES="roles/billing.admin roles/logging.admin \
   roles/iam.organizationRoleAdmin roles/resourcemanager.projectDeleter \
-  roles/resourcemanager.folderAdmin roles/owner"
+  roles/resourcemanager.folderAdmin roles/owner roles/resourcemanager.organizationAdmin"
 
 export FAST_BU=$(gcloud config list --format 'value(core.account)')
 
@@ -102,9 +102,12 @@ gcloud organizations list --filter display_name:[part of your domain]
 # set your org id
 export FAST_ORG_ID=XXXX
 
+terraform destroy -var boostrap_user=$FAST_BU
+terraform destroy
+
 for role in $FAST_DESTROY_ROLES; do
   gcloud organizations add-iam-policy-binding $FAST_ORG_ID \
-    --member user:$FAST_BU --role $role
+    --member user:$FAST_BU --role $role --condition None
 done
 
 terraform destroy
