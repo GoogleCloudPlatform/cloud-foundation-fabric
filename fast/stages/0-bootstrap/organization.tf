@@ -156,8 +156,12 @@ module "organization" {
       type                 = attrs.type
     }
   }
-  org_policies_data_path = var.factories_config.org_policy_data_path
-  org_policies = {
+  org_policies_data_path = (
+    var.bootstrap_user != null
+    ? null
+    : var.factories_config.org_policy_data_path
+  )
+  org_policies = var.bootstrap_user != null ? {} : {
     "iam.allowedPolicyMemberDomains" = {
       rules = [
         {
