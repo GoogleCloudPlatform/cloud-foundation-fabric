@@ -156,6 +156,7 @@ The roles that the Organization Admin used in the first `apply` needs to self-gr
 - Organization Administrator (`roles/resourcemanager.organizationAdmin`)
 - Project Creator (`roles/resourcemanager.projectCreator`)
 - Tag Admin (`roles/resourcemanager.tagAdmin`)
+- Owner (`roles/owner`)
 
 To quickly self-grant the above roles, run the following code snippet as the initial Organization Admin:
 
@@ -170,11 +171,12 @@ export FAST_ORG_ID=123456
 # set needed roles
 export FAST_ROLES="roles/billing.admin roles/logging.admin \
   roles/iam.organizationRoleAdmin roles/resourcemanager.projectCreator \
-  roles/resourcemanager.tagAdmin roles/orgpolicy.policyAdmin"
+  roles/resourcemanager.organizationAdmin roles/resourcemanager.tagAdmin \
+  roles/owner"
 
 for role in $FAST_ROLES; do
   gcloud organizations add-iam-policy-binding $FAST_ORG_ID \
-    --member user:$FAST_BU --role $role
+    --member user:$FAST_BU --role $role --condition None
 done
 ```
 
