@@ -65,14 +65,11 @@ Just like before, we manually remove several resources (GCS buckets and BQ datas
 
 ```bash
 cd $FAST_PWD/0-bootstrap/
+export FAST_BU=$(gcloud config list --format 'value(core.account)')
 
-# remove provider config to execute without SA impersonation
-rm 0-bootstrap-providers.tf
+terraform apply -var bootstrap_user=$FAST_BU
 
-# migrate to local state
-terraform init -migrate-state
-
-# remove GCS buckets and BQ dataset manually
+# remove GCS buckets and BQ dataset manually. Projects will be destroyed anyway
 for x in $(terraform state list | grep google_storage_bucket.bucket); do  
   terraform state rm "$x"; 
 done
@@ -81,7 +78,13 @@ for x in $(terraform state list | grep google_bigquery_dataset); do
   terraform state rm "$x"; 
 done
 
+## remove the providers file and migrate state
+rm 0-bootstrap-providers.tf
+
+# migrate to local state
+terraform init -migrate-state
 terraform destroy
+
 ```
 
 When the destroy fails, continue with the steps below. Again, make sure your user (the one you are using to execute this step) has the Organization Administrator role, as we will remove the permissions for the organization-admins group
@@ -90,20 +93,11 @@ When the destroy fails, continue with the steps below. Again, make sure your use
 # Add the Organization Admin role to $BU_USER in the GCP Console
 # then execute the command below to grant yourself the permissions needed 
 # to finish the destruction
-export FAST_DESTROY_ROLES="roles/billing.admin roles/logging.admin \
-  roles/iam.organizationRoleAdmin roles/resourcemanager.projectDeleter \
-  roles/resourcemanager.folderAdmin roles/owner roles/resourcemanager.organizationAdmin"
-
-export FAST_BU=$(gcloud config list --format 'value(core.account)')
-
-# find your org id
-gcloud organizations list --filter display_name:[part of your domain]
+export FAST_DESTROY_ROLES="roles/resourcemanager.projectDeleter \
+  roles/owner roles/resourcemanager.organizationAdmin"
 
 # set your org id
 export FAST_ORG_ID=XXXX
-
-terraform destroy -var boostrap_user=$FAST_BU
-terraform destroy
 
 for role in $FAST_DESTROY_ROLES; do
   gcloud organizations add-iam-policy-binding $FAST_ORG_ID \
