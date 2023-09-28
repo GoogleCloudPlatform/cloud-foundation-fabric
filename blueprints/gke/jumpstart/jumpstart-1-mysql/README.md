@@ -14,12 +14,16 @@ TODO:
 
 - should the Job that did the setup be removed in the end?
 
+Other reading:
+* https://dev.mysql.com/doc/mysql-operator/en/mysql-operator-introduction.html
+
 
 Caveats:
 * db cluster resize is not properly handled by scripts (changing number of cluster members) 
 * resizing the cluster requires manually adding new members to the cluster / removing members. Adding can be done by rerun of the configuration Job 
 * GKE may schedule the 2 pods within the same zone of 3-pod-cluster, which is undesirable for a long run TODO: (should add anti-affinity to not allow pods to run in the same zone?)
 * GKE may schedule 2 `mysql-router` in the same zone TODO: (should add anti-affinity to not allow pods to run in the same zone?)
+
 
 ## Architecture
 MySQL cluster is exposed using Regional Internal TCP Passthrough Load Balancer either on random or on provided static IP address. Services are listening on four different ports depending on protocol and intended usage:
@@ -34,7 +38,7 @@ MySQL instances are provisioned using StatefulSet and their Pod DNS identity is 
 
 Database admin password is stored either as a Kubernetes Secret or accessed from GCP Secret Manager.
 
-`mysql-server` Pods are spread across different zones using `topologySpreadConstraints`  with `maxSkew` of 1 and Pod antiAffinity preventing the Pods to run on the same node. This permits running two nodes in one zone in case of one zone failure in 3-zoned region, but is undesirable in long run, as loss of this zone will result in cluster unavailability.
+`mysql-server` Pods are spread across different zones using `topologySpreadConstraints`  with `maxSkew` of 1, `minDomains` of 3 and Pod antiAffinity preventing the Pods to run on the same host. This permits running two nodes in one zone (but on different hosts) in case of one zone failure in 3-zoned region.
 
 `mysql-router` Pods hava affinity to run in the same zones as `mysql-server` nodes and antiAffinity to run on the same host (required) or zone (preferred) as other `mysql-router` . With two instances of `mysql-router` this might result in 2 instances running in the same region
 

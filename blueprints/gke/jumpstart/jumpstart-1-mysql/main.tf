@@ -17,7 +17,7 @@
 locals {
   manifest_template_parameters = {
     mysql_config  = var.mysql_config
-    namespace     = kubernetes_namespace.default.metadata.0.name
+    namespace     = helm_release.mysql-operator.namespace
     registry_path = var.registry_path
   }
   stage_1_templates = [
@@ -25,7 +25,7 @@ locals {
     "${local.wl_templates_path}/${f}"
   ]
   stage_2_templates = [
-    for f in fileset(local.wl_templates_path, "02*yaml") :
+    for f in fileset(local.wl_templates_path, "01*yaml") :
     "${local.wl_templates_path}/${f}"
   ]
 
@@ -36,41 +36,36 @@ locals {
   )
 }
 
-resource "kubernetes_namespace" "default" {
-  metadata {
-    name = var.namespace
+resource "helm_release" "mysql-operator" {
+  name             = "my-mysql-operator"
+  repository       = "https://mysql.github.io/mysql-operator/"
+  chart            = "mysql-operator"
+  namespace        = var.namespace
+  create_namespace = true
+  set {
+    name  = "image.registry"
+    value = var.registry_path
+  }
+  set {
+    name  = "image.repository"
+    value = "mysql"
+  }
+  set {
+    name = "envs.imagesDefaultRegistry"
+    value = var.registry_path
+  }
+  set {
+    name = "envs.imagesDefaultRepository"
+    value = "mysql"
   }
 }
 
-resource "kubernetes_manifest" "stage1" {
-  for_each = toset(local.stage_1_templates)
-  manifest = yamldecode(templatefile(each.value, local.manifest_template_parameters))
-  dynamic "wait" {
-    for_each = strcontains(each.key, "statefulset") ? [""] : []
-    content {
-      fields = {
-        "status.readyReplicas" = var.mysql_config.db_replicas
-      }
-    }
-  }
-  timeouts {
-    create = "30m"
-  }
-}
-
-resource "kubernetes_manifest" "stage2" {
+resource "kubectl_manifest" "deploy_cluster" {
   for_each = toset(local.stage_2_templates)
-  manifest = yamldecode(templatefile(each.value, local.manifest_template_parameters))
-  dynamic "wait" {
-    for_each = strcontains(each.key, "statefulset") ? [""] : []
-    content {
-      fields = {
-        "status.readyReplicas" = var.mysql_config.db_replicas
-      }
-    }
-  }
+  yaml_body = templatefile(each.value, local.manifest_template_parameters)
+
   timeouts {
     create = "30m"
   }
-  depends_on = [kubernetes_manifest.stage1]
+  depends_on = [helm_release.mysql-operator]
 }

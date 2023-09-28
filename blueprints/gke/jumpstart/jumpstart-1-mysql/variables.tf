@@ -36,22 +36,18 @@ variable "credentials_config" {
 variable "mysql_config" {
   description = "Configure MySQL server and router instances"
   type = object({
-    db_replicas      = optional(number, 3)        # cannot be higher than number of the zones in region
     db_cpu           = optional(string, "500m")
-    db_memory        = optional(string, "1Gi")
     db_database_size = optional(string, "10Gi")
+    db_memory        = optional(string, "1Gi")
+    db_replicas      = optional(number, 3)
     ip_address       = optional(string)
     router_replicas  = optional(number, 2) # cannot be higher than number of the zones in region
     router_cpu       = optional(string, "500m")
     router_memory    = optional(string, "2Gi")
-    version          = optional(string, "8.0.32") # latest is 8.0.32, originally was with 8.0.28 / 8.0.27
+    version          = optional(string, "8.0.34") # latest is 8.0.34, originally was with 8.0.28 / 8.0.27,
   })
   nullable = false
   default  = {}
-  validation {
-    condition     = var.mysql_config.db_replicas >= 3
-    error_message = "db_replicas must be 3 or greater (but no larger than number of available zones in the region)"
-  }
 }
 
 variable "namespace" {
