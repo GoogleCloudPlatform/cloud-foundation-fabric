@@ -26,6 +26,7 @@ variable "bucket_config" {
 variable "bucket_name" {
   description = "Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null."
   type        = string
+  nullable    = false
 }
 
 variable "build_worker_pool" {
@@ -171,5 +172,3 @@ variable "vpc_connector_config" {
   })
   default = null
 }
-
-
