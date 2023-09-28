@@ -32,7 +32,7 @@ module "tenant-tenants-folder" {
   parent = "organizations/${var.organization.id}"
   name   = "Tenants"
   tag_bindings = {
-    context = module.organization.tag_values["context/tenant"].id
+    context = module.organization.tag_values["${var.tag_names.context}/tenant"].id
   }
 }
 
