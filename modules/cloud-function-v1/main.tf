@@ -16,7 +16,7 @@
 
 locals {
   bucket = (
-    var.bucket_name != null
+    var.bucket_config == null
     ? var.bucket_name
     : (
       length(google_storage_bucket.bucket) > 0
