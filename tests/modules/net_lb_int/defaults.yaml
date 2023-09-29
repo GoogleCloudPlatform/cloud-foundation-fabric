@@ -54,7 +54,7 @@ values:
     name: ilb-test
     network: default
     project: my-project
-    protocol: TCP
+    protocol: UNSPECIFIED
     region: europe-west1
 
 counts:
