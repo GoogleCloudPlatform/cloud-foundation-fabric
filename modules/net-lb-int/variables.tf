@@ -36,7 +36,7 @@ variable "backend_service_config" {
       ratio                     = optional(number)
     }))
     log_sample_rate  = optional(number)
-    protocol         = optional(string, "TCP")
+    protocol         = optional(string, "UNSPECIFIED")
     session_affinity = optional(string)
     timeout_sec      = optional(number)
   })
