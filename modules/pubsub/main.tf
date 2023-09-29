@@ -80,8 +80,8 @@ resource "google_pubsub_subscription" "default" {
   dynamic "retry_policy" {
     for_each = each.value.retry_policy == null ? [] : [""]
     content {
-      maximum_backoff = each.value.retry_policy.max_backoff
-      minimum_backoff = each.value.retry_policy.min_backoff
+      maximum_backoff = each.value.retry_policy.maximum_backoff
+      minimum_backoff = each.value.retry_policy.minimum_backoff
     }
   }
 

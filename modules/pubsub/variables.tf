@@ -113,8 +113,8 @@ variable "subscriptions" {
       max_delivery_attempts = optional(number)
     }))
     retry_policy = optional(object({
-      min_backoff = optional(number)
-      max_backoff = optional(number)
+      minimum_backoff = optional(number)
+      maximum_backoff = optional(number)
     }))
 
     bigquery = optional(object({
