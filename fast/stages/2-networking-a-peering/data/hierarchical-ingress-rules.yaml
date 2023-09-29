@@ -13,9 +13,9 @@ allow-healthchecks:
   match:
     source_ranges:
       - healthchecks
-  layer4_configs:
-  - protocol: tcp
-    ports: ["80", "443"]
+    layer4_configs:
+    - protocol: tcp
+      ports: ["80", "443"]
 
 allow-ssh-from-iap:
   description: Enable SSH from IAP
@@ -23,9 +23,9 @@ allow-ssh-from-iap:
   match:
     source_ranges:
       - 35.235.240.0/20
-  layer4_configs:
-  - protocol: tcp
-    ports: ["22"]
+    layer4_configs:
+    - protocol: tcp
+      ports: ["22"]
 
 allow-icmp:
   description: Enable ICMP
@@ -33,5 +33,5 @@ allow-icmp:
   match:
     source_ranges:
       - 0.0.0.0/0
-  layer4_configs:
-  - protocol: icmp
+    layer4_configs:
+    - protocol: icmp
