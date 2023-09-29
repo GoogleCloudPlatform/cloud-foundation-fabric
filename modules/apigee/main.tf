@@ -67,7 +67,7 @@ resource "google_apigee_envgroup_attachment" "envgroup_attachments" {
       envgroup    = v2
     }
   }])...)
-  envgroup_id = each.value.envgroup
+  envgroup_id = "${local.org_id}/envgroups/${each.value.envgroup}"
   environment = google_apigee_environment.environments[each.value.environment].name
   depends_on  = [google_apigee_envgroup.envgroups]
 }
