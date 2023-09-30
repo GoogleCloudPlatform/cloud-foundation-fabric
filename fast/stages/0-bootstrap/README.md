@@ -105,7 +105,7 @@ org_policies_config = {
 # tftest skip
 ```
 
-The above tag can be used to define a constraint condition via the `data/org-policies/compute.yaml` or similar factory file. The id in the condition is the organization id, followeb by the name of the organization policy tag key (defaults to `org-policies`).
+The above tag can be used to define a constraint condition via the `data/org-policies/compute.yaml` or similar factory file. The id in the condition is the organization id, followed by the name of the organization policy tag key (defaults to `org-policies`).
 
 ```yaml
 compute.requireOsLogin:
