@@ -93,7 +93,7 @@ This snippet defines a new tag value under the `org-policies` tag key via the `o
 org_policies_config = {
   tag_values = {
     compute-require-oslogin-false = {
-      description = "Bind this tag to set oslogin to false"
+      description = "Bind this tag to set oslogin to false."
       iam = {
         "roles/resourcemanager.tagUser" = [
           "group:foo@example.com"
@@ -105,7 +105,7 @@ org_policies_config = {
 # tftest skip
 ```
 
-Once `terraform apply` has run and the tag value has been created, it can be used to define a constraint condition via the `data/org-policies/compute.yaml` or similar factory file. The id in the condition is the organization id, followeb by the name of the organization policy tag key (defaults to `org-policies`).
+The above tag can be used to define a constraint condition via the `data/org-policies/compute.yaml` or similar factory file. The id in the condition is the organization id, followeb by the name of the organization policy tag key (defaults to `org-policies`).
 
 ```yaml
 compute.requireOsLogin:
