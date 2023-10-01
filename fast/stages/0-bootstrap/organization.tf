@@ -191,7 +191,9 @@ module "organization" {
       description = "Organization policy conditions."
       iam         = {}
       values = merge(
-        { allowed-policy-member-domains-all = {} },
+        {
+          allowed-policy-member-domains-all = {}
+        },
         var.org_policies_config.tag_values
       )
     }
