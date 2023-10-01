@@ -67,8 +67,9 @@ resource "google_apigee_envgroup_attachment" "envgroup_attachments" {
       envgroup    = v2
     }
   }])...)
-  envgroup_id = try(google_apigee_envgroup.envgroups[each.value.envgroup].id, each.value.envgroup)
+  envgroup_id = "${local.org_id}/envgroups/${each.value.envgroup}"
   environment = google_apigee_environment.environments[each.value.environment].name
+  depends_on  = [google_apigee_envgroup.envgroups]
 }
 
 resource "google_apigee_environment_iam_binding" "binding" {
@@ -120,8 +121,8 @@ resource "google_apigee_instance_attachment" "instance_attachments" {
     }
   }])...)
   instance_id = google_apigee_instance.instances[each.value.instance].id
-  environment = try(google_apigee_environment.environments[each.value.environment].name,
-  "${local.org_id}/environments/${each.value.environment}")
+  environment = each.value.environment
+  depends_on  = [google_apigee_environment.environments]
 }
 
 resource "google_apigee_endpoint_attachment" "endpoint_attachments" {
