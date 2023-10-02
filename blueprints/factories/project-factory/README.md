@@ -13,22 +13,32 @@ The code is meant to be executed by a high level service accounts with powerful 
 - Shared VPC connection if service project attachment is desired
 - project creation on the nodes (folder or org) where projects will be defined
 
-The module also supports optional creation of specific resources that usually part of the project creation flow:
+The module also supports optional creation of specific resources that are usually part of the project creation flow:
 
 - service accounts used for VM instances, and associated basic roles
 - KMS key encrypt/decrypt permissions for service identities in the project
 - membership in VPC SC standard or bridge perimeters
 
-Compared to the previous version of this code, network-related resources (DNS zones, VPC subnets, etc.) have been removed as they are not typically in scope for the team who manages project creation, and adding them when needed requires just a few trivial code changes.
+## Leveraging data defaults, merges, optionals
+
+In addition to the yaml files describing projects, the project factory accepts three additional sets of inputs:
+
+- the `data_defaults` variable allows specifying defaults for specific project attributes, which are only used if the attributes are not present in a project yaml
+- the `data_overrides` variable works similarly to defaults, but the values specified here take precedence over those in yaml files
+- the `data_merges` variable allows specifying additional values that are merged to sets of maps present in the yaml file, which are preserved
+
+Some examples on where to use each of the three sets are provided below.
 
 ## Example
 
 ```hcl
 module "project-factory" {
   source = "./fabric/blueprints/factories/project-factory"
+  # use a default billing account if none is specified via yaml
   data_defaults = {
     billing_account = "012345-67890A-ABCDEF"
   }
+  # make sure the environment label and stackdriver service are always added
   data_merges = {
     labels = {
       environment = "test"
@@ -37,17 +47,19 @@ module "project-factory" {
       "stackdriver.googleapis.com"
     ]
   }
+  # always use this contaxt and prefix, regardless of what is in the yaml file
   data_overrides = {
     contacts = {
       "admin@example.com" = ["ALL"]
     }
     prefix = "test-pf"
   }
+  # location where the yaml files are read from
   factory_data = {
     data_path = "data"
   }
 }
-# tftest modules=6 resources=12 files=prj-app-1,prj-app-2 inventory=example.yaml
+# tftest modules=6 resources=14 files=prj-app-1,prj-app-2
 ```
 
 ```yaml
@@ -75,6 +87,13 @@ labels:
 parent: folders/12345678
 service_accounts:
   app-2-be: {}
+org_policies:
+  compute.disableGuestAttributesAccess:
+    rules:
+      - enforce: false
+  iam.disableServiceAccountKeyCreation:
+    rules:
+      - enforce: false
 
 # tftest-file id=prj-app-2 path=data/prj-app-2.yaml
 ```

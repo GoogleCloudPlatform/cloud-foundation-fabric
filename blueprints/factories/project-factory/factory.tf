@@ -46,6 +46,7 @@ locals {
         try(v.metric_scopes, null),
         var.data_defaults.metric_scopes
       )
+      org_policies = try(v.org_policies, {})
       parent = coalesce(
         var.data_overrides.parent,
         try(v.parent, null),
