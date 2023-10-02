@@ -30,7 +30,7 @@ values:
   module.project-factory.module.projects["prj-app-1"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-67890A-BCDEF0
-    folder_id: "12345678"
+    folder_id: '12345678'
     labels:
       app: app-1
       environment: test
@@ -59,10 +59,36 @@ values:
     - ALL
     parent: projects/test-pf-prj-app-2
     timeouts: null
+  ? module.project-factory.module.projects["prj-app-2"].google_org_policy_policy.default["compute.disableGuestAttributesAccess"]
+  : name: projects/test-pf-prj-app-2/policies/compute.disableGuestAttributesAccess
+    parent: projects/test-pf-prj-app-2
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        values: []
+    timeouts: null
+  ? module.project-factory.module.projects["prj-app-2"].google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]
+  : name: projects/test-pf-prj-app-2/policies/iam.disableServiceAccountKeyCreation
+    parent: projects/test-pf-prj-app-2
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        values: []
+    timeouts: null
   module.project-factory.module.projects["prj-app-2"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-67890A-ABCDEF
-    folder_id: "12345678"
+    folder_id: '12345678'
     labels:
       app: app-1
       environment: test
@@ -103,12 +129,12 @@ values:
 counts:
   google_essential_contacts_contact: 2
   google_kms_crypto_key_iam_member: 1
+  google_org_policy_policy: 2
   google_project: 2
   google_project_service: 3
   google_service_account: 3
   google_storage_project_service_account: 1
   modules: 6
-  resources: 12
+  resources: 14
 
 outputs: {}
-
