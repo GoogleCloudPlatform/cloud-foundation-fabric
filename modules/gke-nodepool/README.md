@@ -104,7 +104,6 @@ module "cluster-1-nodepool-1" {
 # tftest modules=1 resources=2 inventory=config.yaml
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -126,7 +125,7 @@ module "cluster-1-nodepool-1" {
 | [service_account](variables.tf#L164) | Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used. | <code title="object&#40;&#123;&#10;  create       &#61; optional&#40;bool, false&#41;&#10;  email        &#61; optional&#40;string&#41;&#10;  oauth_scopes &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [sole_tenant_nodegroup](variables.tf#L175) | Sole tenant node group. | <code>string</code> |  | <code>null</code> |
 | [tags](variables.tf#L181) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [taints](variables.tf#L187) | Kubernetes taints applied to all nodes. | <code title="list&#40;object&#40;&#123;&#10;  key    &#61; string&#10;  value  &#61; string&#10;  effect &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [taints](variables.tf#L187) | Kubernetes taints applied to all nodes. | <code title="map&#40;object&#40;&#123;&#10;  value  &#61; string&#10;  effect &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -136,5 +135,4 @@ module "cluster-1-nodepool-1" {
 | [name](outputs.tf#L22) | Nodepool name. |  |
 | [service_account_email](outputs.tf#L27) | Service account email. |  |
 | [service_account_iam_email](outputs.tf#L32) | Service account email. |  |
-
 <!-- END TFDOC -->

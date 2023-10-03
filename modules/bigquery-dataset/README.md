@@ -117,6 +117,7 @@ module "bigquery-authorized-authorized-routine-dataset-public" {
 }
 
 resource "google_bigquery_routine" "public-routine" {
+  project         = "private_project"
   dataset_id      = module.bigquery-authorized-authorized-routine-dataset-public.dataset_id
   routine_id      = "auth_routine"
   routine_type    = "TABLE_VALUED_FUNCTION"
