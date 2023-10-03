@@ -269,7 +269,7 @@ module "cluster-1" {
   private_cluster_config = {
     enable_private_endpoint = true
     master_global_access    = true
-    peering_config = {
+    peering_config = !var.gke_peering_config ? null : {
       export_routes = true
       import_routes = false
     }
