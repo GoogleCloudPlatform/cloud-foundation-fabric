@@ -174,3 +174,36 @@ variable "views" {
   }))
   default = {}
 }
+
+variable "materialized_views" {
+  description = "Materialized views definitions."
+  type = map(object({
+    query                            = string
+    deletion_protection              = optional(bool)
+    description                      = optional(string, "Terraform managed.")
+    friendly_name                    = optional(string)
+    labels                           = optional(map(string), {})
+    enable_refresh                   = optional(bool)
+    refresh_interval_ms              = optional(bool)
+    allow_non_incremental_definition = optional(bool)
+    options = optional(object({
+      clustering      = optional(list(string))
+      expiration_time = optional(number)
+    }), {})
+    partitioning = optional(object({
+      field = optional(string)
+      range = optional(object({
+        end      = number
+        interval = number
+        start    = number
+      }))
+      time = optional(object({
+        expiration_ms            = number
+        field                    = string
+        type                     = string
+        require_partition_filter = bool
+      }))
+    }))
+  }))
+  default = {}
+}
