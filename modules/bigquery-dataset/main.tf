@@ -244,9 +244,10 @@ resource "google_bigquery_table" "default" {
   dynamic "time_partitioning" {
     for_each = try(each.value.partitioning.time, null) != null ? [""] : []
     content {
-      expiration_ms = each.value.partitioning.time.expiration_ms
-      field         = each.value.partitioning.field
-      type          = each.value.partitioning.time.type
+      expiration_ms            = each.value.partitioning.time.expiration_ms
+      field                    = each.value.partitioning.time.field
+      type                     = each.value.partitioning.time.type
+      require_partition_filter = each.value.partitioning.time.require_partition_filter
     }
   }
 }

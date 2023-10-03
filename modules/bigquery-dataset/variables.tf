@@ -152,8 +152,10 @@ variable "tables" {
         start    = number
       }))
       time = optional(object({
-        expiration_ms = number
-        type          = string
+        expiration_ms            = number
+        field                    = string
+        type                     = string
+        require_partition_filter = bool
       }))
     }))
   }))
