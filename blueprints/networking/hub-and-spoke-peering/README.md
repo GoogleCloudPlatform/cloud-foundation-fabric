@@ -18,7 +18,6 @@ The blueprint has been purposefully kept simple to show how to use and wire the 
 
 ![High-level diagram](diagram.png "High-level diagram")
 
-
 ## Managed resources and services
 
 This sample creates several distinct groups of resources:
@@ -62,7 +61,6 @@ Change the GKE cluster module and add a new variable after `private_cluster_conf
 
 If you added the variable after applying, simply apply Terraform again.
 
-
 ### Export routes via gcloud (alternative)
 
 If you prefer to use `gcloud` to export routes on the peering, first identify the peering (it has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`) in the Cloud Console from the *VPC network peering* page, or using `gcloud`, then configure it to export routes:
@@ -88,18 +86,18 @@ You can connect your hub to on-premises using Cloud Interconnect or HA VPN. On-p
 
 You can add additional spoke to the architecture. All of these spokes have networking similar to spoke-1: They will have connectivity to the hub and to spoke-2, but not to each other unless you also create VPN tunnels for the new spokes.
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L34) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L69) | Project id used for all resources. | <code>string</code> | ✓ |  |
-| [ip_ranges](variables.tf#L15) | IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  hub     &#61; &#34;10.0.0.0&#47;24&#34;&#10;  spoke-1 &#61; &#34;10.0.16.0&#47;24&#34;&#10;  spoke-2 &#61; &#34;10.0.32.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [ip_secondary_ranges](variables.tf#L25) | Secondary IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  spoke-2-pods     &#61; &#34;10.128.0.0&#47;18&#34;&#10;  spoke-2-services &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [private_service_ranges](variables.tf#L43) | Private service IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  spoke-2-cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [project_create](variables.tf#L51) | Set to non null if project needs to be created. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  oslogin         &#61; bool&#10;  parent          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L74) | VPC region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [prefix](variables.tf#L41) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L76) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [gke_peering_config](variables.tf#L15) | Enable route export for GKE peering. | <code>bool</code> |  | <code>true</code> |
+| [ip_ranges](variables.tf#L22) | IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  hub     &#61; &#34;10.0.0.0&#47;24&#34;&#10;  spoke-1 &#61; &#34;10.0.16.0&#47;24&#34;&#10;  spoke-2 &#61; &#34;10.0.32.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [ip_secondary_ranges](variables.tf#L32) | Secondary IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  spoke-2-pods     &#61; &#34;10.128.0.0&#47;18&#34;&#10;  spoke-2-services &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [private_service_ranges](variables.tf#L50) | Private service IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  spoke-2-cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_create](variables.tf#L58) | Set to non null if project needs to be created. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  oslogin         &#61; bool&#10;  parent          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L81) | VPC region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 
@@ -107,21 +105,21 @@ You can add additional spoke to the architecture. All of these spokes have netwo
 |---|---|:---:|
 | [project](outputs.tf#L15) | Project id. |  |
 | [vms](outputs.tf#L20) | GCE VMs. |  |
-
 <!-- END TFDOC -->
 ## Test
 
 ```hcl
 module "test" {
-  source = "./fabric/blueprints/networking/hub-and-spoke-peering"
-  prefix = "prefix"
+  source             = "./fabric/blueprints/networking/hub-and-spoke-peering"
+  project_id         = "project-1"
+  prefix             = "prefix"
+  gke_peering_config = false
   project_create = {
     billing_account = "123456-123456-123456"
     oslogin         = true
     parent          = "folders/123456789"
   }
-  project_id = "project-1"
 }
 
-# tftest modules=22 resources=69
+# tftest modules=22 resources=68
 ```

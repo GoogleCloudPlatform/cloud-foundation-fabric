@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "gke_peering_config" {
+  description = "Enable route export for GKE peering."
+  type        = bool
+  nullable    = false
+  default     = true
+}
+
 variable "ip_ranges" {
   description = "IP CIDR ranges."
   type        = map(string)
