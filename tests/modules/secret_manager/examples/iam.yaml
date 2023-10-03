@@ -20,6 +20,7 @@ values:
     - auto:
       - customer_managed_encryption: []
       user_managed: []
+    secret_id: test-auto
   module.secret-manager.google_secret_manager_secret.default["test-manual"]:
     project: my-project
     secret_id: test-manual
@@ -31,6 +32,7 @@ values:
           location: europe-west1
         - customer_managed_encryption: []
           location: europe-west4
+    secret_id: test-manual
   module.secret-manager.google_secret_manager_secret_iam_binding.default["test-auto.roles/secretmanager.secretAccessor"]:
     condition: []
     members:
