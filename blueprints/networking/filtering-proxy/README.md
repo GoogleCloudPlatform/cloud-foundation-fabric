@@ -47,7 +47,7 @@ module "test1" {
   prefix          = "fabric"
   root_node       = "folders/123456789"
 }
-# tftest modules=14 resources=39
+# tftest modules=14 resources=38
 ```
 
 ```hcl
@@ -58,5 +58,5 @@ module "test2" {
   prefix          = "fabric"
   root_node       = "folders/123456789"
 }
-# tftest modules=12 resources=33
+# tftest modules=12 resources=32
 ```
