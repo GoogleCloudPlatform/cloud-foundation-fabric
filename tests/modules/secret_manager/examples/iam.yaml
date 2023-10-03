@@ -15,7 +15,6 @@
 values:
   module.secret-manager.google_secret_manager_secret.default["test-auto"]:
     project: my-project
-    secret_id: test-auto
     replication:
     - auto:
       - customer_managed_encryption: []
@@ -23,7 +22,6 @@ values:
     secret_id: test-auto
   module.secret-manager.google_secret_manager_secret.default["test-manual"]:
     project: my-project
-    secret_id: test-manual
     replication:
     - auto: []
       user_managed:
