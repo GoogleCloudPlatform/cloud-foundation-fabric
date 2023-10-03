@@ -158,7 +158,9 @@ resource "google_dns_managed_zone_iam_binding" "iam_bindings" {
 }
 
 data "google_dns_keys" "dns_keys" {
+  count        = try(var.zone_config.public.dnssec_config, null) != null ? 1 : 0
   managed_zone = local.managed_zone.id
+  project      = var.project_id
 }
 
 resource "google_dns_record_set" "dns_record_set" {

@@ -29,11 +29,6 @@ values:
     type: A
 
 counts:
-  google_dns_keys: 1
   google_dns_managed_zone: 1
   google_dns_record_set: 1
   google_dns_managed_zone_iam_binding: 1
-  modules: 1
-  resources: 4
-
-outputs: {}
