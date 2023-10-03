@@ -88,7 +88,7 @@ module "dns-sd" {
     }
   }
 }
-# tftest modules=2 resources=6 inventory=dns.yaml
+# tftest modules=2 resources=5 inventory=dns.yaml
 ```
 <!-- BEGIN TFDOC -->
 

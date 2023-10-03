@@ -30,5 +30,3 @@ values:
 
 counts:
   google_dns_managed_zone: 1
-
-outputs: {}

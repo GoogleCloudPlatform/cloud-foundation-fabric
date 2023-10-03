@@ -27,7 +27,7 @@ module "private-dns" {
     "roles/dns.admin" = ["group:dns-administrators@myorg.com"]
   }
 }
-# tftest modules=1 resources=5 inventory=private-zone.yaml
+# tftest modules=1 resources=4 inventory=private-zone.yaml
 ```
 
 ### Forwarding Zone
@@ -45,7 +45,7 @@ module "private-dns" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=forwarding-zone.yaml
+# tftest modules=1 resources=1 inventory=forwarding-zone.yaml
 ```
 
 ### Peering Zone
@@ -63,7 +63,7 @@ module "private-dns" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=peering-zone.yaml
+# tftest modules=1 resources=1 inventory=peering-zone.yaml
 ```
 
 ### Routing Policies
@@ -99,7 +99,7 @@ module "private-dns" {
     }
   }
 }
-# tftest modules=1 resources=5 inventory=routing-policies.yaml
+# tftest modules=1 resources=4 inventory=routing-policies.yaml
 ```
 
 ### Reverse Lookup Zone
@@ -116,7 +116,7 @@ module "private-dns" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=reverse-zone.yaml
+# tftest modules=1 resources=1 inventory=reverse-zone.yaml
 ```
 
 ### Public Zone
@@ -137,7 +137,7 @@ module "public-dns" {
     "roles/dns.admin" = ["group:dns-administrators@myorg.com"]
   }
 }
-# tftest modules=1 resources=4 inventory=public-zone.yaml
+# tftest modules=1 resources=3 inventory=public-zone.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
