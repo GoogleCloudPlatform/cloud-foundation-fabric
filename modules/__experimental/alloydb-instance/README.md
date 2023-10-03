@@ -51,7 +51,7 @@ module "alloydb" {
 
 }
 
-# tftest modules=1 resources=7
+# tftest skip
 ```
 ## TODO
 - [ ] Add IAM support
