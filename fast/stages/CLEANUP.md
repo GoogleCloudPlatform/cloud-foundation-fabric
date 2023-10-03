@@ -26,6 +26,25 @@ done
 terraform destroy
 ```
 
+## Stage 3 (Data Platform)
+
+Terraform refuses to delete non-empty GCS buckets and BigQuery datasets, so they need to be removed manually from the state.
+
+```bash
+cd $FAST_PWD/3-data-platform/dev/
+
+# remove GCS buckets and BQ dataset manually. Projects will be destroyed anyway
+for x in $(terraform state list | grep google_storage_bucket.bucket); do  
+  terraform state rm "$x"; 
+done
+
+for x in $(terraform state list | grep google_bigquery_dataset); do  
+  terraform state rm "$x"; 
+done
+
+terraform destroy
+```
+
 ## Stage 2 (Security)
 
 ```bash
