@@ -128,13 +128,6 @@ resource "google_storage_bucket_object" "objects" {
   }
 }
 
-resource "google_storage_bucket_iam_binding" "bindings" {
-  for_each = var.iam
-  bucket   = google_storage_bucket.bucket.name
-  role     = each.key
-  members  = each.value
-}
-
 resource "google_storage_notification" "notification" {
   count              = local.notification ? 1 : 0
   bucket             = google_storage_bucket.bucket.name
