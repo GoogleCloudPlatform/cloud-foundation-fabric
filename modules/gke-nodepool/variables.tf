@@ -68,6 +68,9 @@ variable "node_config" {
       type               = string
       gpu_partition_size = optional(string)
     }))
+    local_nvme_ssd_block_config = optional(object({
+      local_ssd_count = number
+    }))
     gvnic      = optional(bool, false)
     image_type = optional(string)
     kubelet_config = optional(object({

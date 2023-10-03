@@ -168,6 +168,12 @@ resource "google_container_node_pool" "nodepool" {
         gpu_partition_size = var.node_config.guest_accelerator.gpu_partition_size
       }
     }
+    dynamic "local_nvme_ssd_block_config" {
+      for_each = var.node_config.local_nvme_ssd_block_config != null ? [""] : []
+      content {
+        local_ssd_count    = var.node_config.local_nvme_ssd_block_config.local_ssd_count
+      }
+    }
     dynamic "gvnic" {
       for_each = var.node_config.gvnic && local.image.is_cos ? [""] : []
       content {
