@@ -17,7 +17,8 @@
 locals {
   load_iam = {
     data_engineers = [
-      "roles/dataflow.admin"
+      "roles/dataflow.admin",
+      "roles/dataflow.developer"
     ]
     robots_dataflow_load = [
       "roles/storage.objectAdmin"
@@ -54,6 +55,7 @@ module "load-project" {
     "cloudkms.googleapis.com",
     "compute.googleapis.com",
     "dataflow.googleapis.com",
+    "datalineage.googleapis.com",
     "dlp.googleapis.com",
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",

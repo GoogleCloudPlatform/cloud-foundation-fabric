@@ -68,16 +68,20 @@ module "orch-sa-cmp-0" {
 }
 
 resource "google_composer_environment" "orch-cmp-0" {
-  count   = var.composer_config.disable_deployment == true ? 0 : 1
-  project = module.orch-project.project_id
-  name    = "${var.prefix}-orc-cmp-0"
-  region  = var.region
+  count    = var.composer_config.disable_deployment == true ? 0 : 1
+  provider = google-beta
+  project  = module.orch-project.project_id
+  name     = "${var.prefix}-orc-cmp-0"
+  region   = var.region
   config {
     software_config {
       airflow_config_overrides = try(var.composer_config.software_config.airflow_config_overrides, null)
       pypi_packages            = try(var.composer_config.software_config.pypi_packages, null)
       env_variables            = local.env_variables
       image_version            = try(var.composer_config.software_config.image_version, null)
+      cloud_data_lineage_integration {
+        enabled = var.composer_config.software_config.cloud_data_lineage_integration
+      }
     }
     dynamic "workloads_config" {
       for_each = (try(var.composer_config.workloads_config, null) != null ? { 1 = 1 } : {})
