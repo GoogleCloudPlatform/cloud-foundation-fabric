@@ -20,12 +20,11 @@ values:
     default_event_based_hold: null
     encryption: []
     force_destroy: false
-    labels:
-      cost-center: devops
+    labels: null
     lifecycle_rule: []
     location: EU
     logging: []
-    name: test-my-bucket
+    name: my-bucket
     project: myproject
     requester_pays: null
     retention_policy: []
@@ -33,7 +32,18 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
-    - enabled: true
+    - enabled: false
+  module.bucket.google_storage_bucket_iam_member.bindings["storage-admin-with-delegated_roles"]:
+    bucket: my-bucket
+    condition:
+    - description: null
+      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/storage.objectAdmin','roles/storage.objectViewer'])
+      title: delegated-role-grants
+    member: group:storage@example.com
+    role: roles/storage.admin
 
 counts:
   google_storage_bucket: 1
+  google_storage_bucket_iam_member: 1
+  modules: 1
+  resources: 2
