@@ -253,11 +253,10 @@ resource "google_bigquery_table" "default" {
 }
 
 resource "google_bigquery_table" "views" {
-  depends_on          = [google_bigquery_table.default]
   for_each            = var.views
   project             = var.project_id
   dataset_id          = google_bigquery_dataset.default.dataset_id
-  table_id            = each.key
+  table_id            = google_bigquery_table.default.table_id
   friendly_name       = each.value.friendly_name
   description         = each.value.description
   labels              = each.value.labels
@@ -270,11 +269,10 @@ resource "google_bigquery_table" "views" {
 }
 
 resource "google_bigquery_table" "materialized_view" {
-  depends_on          = [google_bigquery_table.default]
   for_each            = var.materialized_views
   project             = var.project_id
   dataset_id          = google_bigquery_dataset.default.dataset_id
-  table_id            = each.key
+  table_id            = google_bigquery_table.default.table_id
   friendly_name       = each.value.friendly_name
   description         = each.value.description
   labels              = each.value.labels
