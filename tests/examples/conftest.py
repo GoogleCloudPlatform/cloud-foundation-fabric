@@ -14,6 +14,8 @@
 """Pytest configuration for testing code examples."""
 
 import collections
+import os
+import typing
 import re
 from pathlib import Path
 
@@ -27,9 +29,19 @@ Example = collections.namedtuple('Example', 'name code module files')
 File = collections.namedtuple('File', 'path content')
 
 
-def pytest_generate_tests(metafunc):
+def get_tftest_directive(s: str) -> typing.Optional[str]:
+  tftest = [x for x in s.split(os.linesep) if x.strip().startswith("#") and 'tftest' in x]
+
+  if len(tftest) > 0:
+    return tftest[0]
+  else:
+    return None
+
+
+def pytest_generate_tests(metafunc, test_group: str='example', filter_tests=lambda x: True):
   """Find all README.md files and collect code examples tagged for testing."""
   if 'example' in metafunc.fixturenames:
+  #if True:
     readmes = FABRIC_ROOT.glob('**/README.md')
     examples = []
     ids = []
@@ -59,7 +71,8 @@ def pytest_generate_tests(metafunc):
         if isinstance(child, marko.block.FencedCode):
           index += 1
           code = child.children[0].children
-          if 'tftest skip' in code:
+          tftest_tag = get_tftest_directive(code)
+          if tftest_tag and 'skip' in tftest_tag or not filter_tests(tftest_tag):
             continue
           if child.lang == 'hcl':
             path = module.relative_to(FABRIC_ROOT)
@@ -72,4 +85,4 @@ def pytest_generate_tests(metafunc):
           last_header = child.children[0].children
           index = 0
 
-    metafunc.parametrize('example', examples, ids=ids)
+    metafunc.parametrize(test_group, examples, ids=ids)
