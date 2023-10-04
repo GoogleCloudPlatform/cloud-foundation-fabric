@@ -280,8 +280,8 @@ module "bigquery-dataset" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [id](variables.tf#L98) | Dataset id. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L162) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
+| [id](variables.tf#L162) | Dataset id. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L129) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
 | [access](variables.tf#L17) | Map of access rules with role and identity type. Keys are arbitrary and must match those in the `access_identities` variable, types are `domain`, `group`, `special_group`, `user`, `view`. | <code title="map&#40;object&#40;&#123;&#10;  role &#61; string&#10;  type &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [access_identities](variables.tf#L33) | Map of access identities used for basic access roles. View identities have the format 'project_id\|dataset_id\|table_id'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [authorized_datasets](variables.tf#L39) | An array of datasets to be authorized on the dataset. | <code title="list&#40;object&#40;&#123;&#10;  dataset_id &#61; string,&#10;  project_id &#61; string,&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |

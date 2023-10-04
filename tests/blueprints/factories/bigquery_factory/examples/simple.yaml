@@ -30,7 +30,7 @@ values:
     labels:
       env: prod
     project: project-id
-    table_id: countries #department
+    table_id: department
     view:
     - query: SELECT SUM(population) from  my_dataset.countries
       use_legacy_sql: false
