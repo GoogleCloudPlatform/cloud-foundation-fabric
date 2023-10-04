@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description IAM bindings
+
 resource "google_storage_bucket_iam_binding" "authoritative" {
   for_each = var.iam
   bucket   = google_storage_bucket.bucket.name
