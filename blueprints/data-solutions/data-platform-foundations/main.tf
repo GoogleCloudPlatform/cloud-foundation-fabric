@@ -43,6 +43,7 @@ locals {
     robots_composer      = "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
     robots_dataflow_load = "serviceAccount:${module.load-project.service_accounts.robots.dataflow}"
     robots_dataflow_trf  = "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
+    sa_df_build          = module.orch-sa-df-build.iam_email
     sa_drop_bq           = module.drop-sa-bq-0.iam_email
     sa_drop_cs           = module.drop-sa-cs-0.iam_email
     sa_drop_ps           = module.drop-sa-ps-0.iam_email

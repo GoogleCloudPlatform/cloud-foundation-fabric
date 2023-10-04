@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ values:
     filter: severity=DEBUG
     name: debug
     project: my-project
-    unique_writer_identity: false
+    unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["info"]:
     description: info (Terraform-managed).
     disabled: false
@@ -41,7 +41,7 @@ values:
     filter: severity=INFO
     name: info
     project: my-project
-    unique_writer_identity: false
+    unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["notice"]:
     description: notice (Terraform-managed).
     disabled: false
@@ -49,7 +49,7 @@ values:
     filter: severity=NOTICE
     name: notice
     project: my-project
-    unique_writer_identity: false
+    unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["warnings"]:
     description: warnings (Terraform-managed).
     destination: storage.googleapis.com/gcs_sink
@@ -58,7 +58,7 @@ values:
     filter: severity=WARNING
     name: warnings
     project: my-project
-    unique_writer_identity: false
+    unique_writer_identity: true
   module.project-host.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456

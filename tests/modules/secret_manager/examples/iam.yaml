@@ -16,13 +16,14 @@ values:
   module.secret-manager.google_secret_manager_secret.default["test-auto"]:
     project: my-project
     replication:
-    - automatic: true
+    - auto:
+      - customer_managed_encryption: []
       user_managed: []
     secret_id: test-auto
   module.secret-manager.google_secret_manager_secret.default["test-manual"]:
     project: my-project
     replication:
-    - automatic: null
+    - auto: []
       user_managed:
       - replicas:
         - customer_managed_encryption: []

@@ -432,11 +432,7 @@ resource "google_compute_network_peering_routes_config" "gke_master" {
   count = (
     try(var.private_cluster_config.peering_config, null) != null ? 1 : 0
   )
-  project = (
-    try(var.private_cluster_config.peering_config, null) == null
-    ? var.project_id
-    : var.private_cluster_config.peering_config.project_id
-  )
+  project = coalesce(var.private_cluster_config.peering_config.project_id, var.project_id)
   peering = try(
     google_container_cluster.cluster.private_cluster_config.0.peering_name,
     null

@@ -156,7 +156,7 @@ variable "logging_sinks" {
     filter               = string
     iam                  = optional(bool, true)
     type                 = string
-    unique_writer        = optional(bool)
+    unique_writer        = optional(bool, true)
   }))
   default  = {}
   nullable = false

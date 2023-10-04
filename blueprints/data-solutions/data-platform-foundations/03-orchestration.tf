@@ -21,16 +21,23 @@ locals {
       "roles/bigquery.dataEditor",
       "roles/bigquery.jobUser",
       "roles/cloudbuild.builds.editor",
+      "roles/composer.admin",
+      "roles/composer.user",
       "roles/composer.environmentAndStorageObjectAdmin",
       "roles/iam.serviceAccountUser",
       "roles/iap.httpsResourceAccessor",
-      "roles/serviceusage.serviceUsageConsumer"
+      "roles/serviceusage.serviceUsageConsumer",
+      "roles/storage.objectAdmin"
     ]
     robots_cloudbuild = [
       "roles/storage.objectAdmin"
     ]
     robots_composer = [
       "roles/composer.ServiceAgentV2Ext",
+      "roles/storage.objectAdmin"
+    ]
+    sa_df_build = [
+      "roles/cloudbuild.serviceAgent",
       "roles/storage.objectAdmin"
     ]
     sa_load = [
@@ -63,9 +70,7 @@ module "orch-project" {
   )
   iam                   = local.use_projects ? {} : local.orch_iam_auth
   iam_bindings_additive = !local.use_projects ? {} : local.orch_iam_additive
-  compute_metadata = {
-    enable-oslogin = "false"
-  }
+
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",
@@ -79,6 +84,7 @@ module "orch-project" {
     "containerregistry.googleapis.com",
     "artifactregistry.googleapis.com",
     "dataflow.googleapis.com",
+    "datalineage.googleapis.com",
     "orgpolicy.googleapis.com",
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",

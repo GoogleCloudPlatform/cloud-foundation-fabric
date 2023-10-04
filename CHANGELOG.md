@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1722](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1722)] Add support for org policies to project factory ([ludoo](https://github.com/ludoo)) <!-- 2023-10-02 14:13:57+00:00 -->
 - [[#1692](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1692)] **incompatible change:** Allow using no service account in compute-vm ([ludoo](https://github.com/ludoo)) <!-- 2023-09-19 16:56:51+00:00 -->
 
 ### DOCUMENTATION
@@ -19,6 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1718](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1718)] FAST: add example of custom org policy condition to bootstrap README ([ludoo](https://github.com/ludoo)) <!-- 2023-09-30 08:22:56+00:00 -->
 - [[#1715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1715)] Fix indentation in FAST hierarchical firewall rules ([juliocc](https://github.com/juliocc)) <!-- 2023-09-29 13:37:41+00:00 -->
 - [[#1711](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1711)] [FAST] Fix tenant folder tag ([lcaggio](https://github.com/lcaggio)) <!-- 2023-09-28 21:48:15+00:00 -->
 - [[#1707](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1707)] Only apply org policies when bootstrap user is not set ([ludoo](https://github.com/ludoo)) <!-- 2023-09-27 21:24:41+00:00 -->
@@ -29,6 +31,9 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1723](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1723)] Add storage billing model ([devuonocar](https://github.com/devuonocar)) <!-- 2023-10-02 17:37:40+00:00 -->
+- [[#1719](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1719)] Add GLB HTTP to HTTPS redirect example ([ludoo](https://github.com/ludoo)) <!-- 2023-10-02 10:10:24+00:00 -->
+- [[#1717](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1717)] Apigee module fix try ([apichick](https://github.com/apichick)) <!-- 2023-10-01 12:26:22+00:00 -->
 - [[#1716](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1716)] Add retry policy for subscriptions ([devuonocar](https://github.com/devuonocar)) <!-- 2023-09-29 14:46:26+00:00 -->
 - [[#1709](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1709)] Add bug fix in bucket local variable ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2023-09-28 10:17:53+00:00 -->
 - [[#1704](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1704)] Add cloud function secrets tests ([wiktorn](https://github.com/wiktorn)) <!-- 2023-09-26 09:22:36+00:00 -->

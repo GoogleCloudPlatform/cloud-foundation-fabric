@@ -223,8 +223,7 @@ variable "nodepools" {
     service_account       = optional(any)
     sole_tenant_nodegroup = optional(string)
     tags                  = optional(list(string))
-    taints = optional(list(object({
-      key    = string
+    taints = optional(map(object({
       value  = string
       effect = string
     })))
