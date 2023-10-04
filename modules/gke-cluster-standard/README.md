@@ -8,7 +8,7 @@ This module offers a way to create and manage Google Kubernetes Engine (GKE) [St
 <!-- BEGIN TOC -->
 - [Example](#example)
   - [GKE Standard cluster](#gke-standard-cluster)
-  - [Enable Dataplane V2](#enable-dataplane-v2)
+  - [Enable Dataplane](#enable-dataplane)
   - [Managing GKE logs](#managing-gke-logs)
   - [Monitoring configuration](#monitoring-configuration)
   - [Disable GKE logs or metrics collection](#disable-gke-logs-or-metrics-collection)
@@ -55,7 +55,7 @@ module "cluster-1" {
 # tftest modules=1 resources=1 inventory=basic.yaml
 ```
 
-### Enable Dataplane V2
+### Enable Dataplane
 
 This example shows how to [create a zonal GKE Cluster with Dataplane V2 enabled](https://cloud.google.com/kubernetes-engine/docs/how-to/dataplane-v2).
 
@@ -79,8 +79,9 @@ module "cluster-1" {
     master_global_access    = false
   }
   enable_features = {
-    dataplane_v2      = true
-    workload_identity = true
+    dataplane_v2        = true
+    fqdn_network_policy = true
+    workload_identity   = true
   }
   labels = {
     environment = "dev"

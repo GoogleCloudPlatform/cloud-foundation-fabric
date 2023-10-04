@@ -106,6 +106,7 @@ variable "enable_features" {
       key_name = string
     }))
     dataplane_v2         = optional(bool, false)
+    fqdn_network_policy  = optional(bool, false)
     gateway_api          = optional(bool, false)
     groups_for_rbac      = optional(string)
     intranode_visibility = optional(bool, false)
