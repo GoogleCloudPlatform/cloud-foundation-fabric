@@ -378,7 +378,7 @@ Running `diff spoke-dev.tf spoke-prod.tf` can help to see how environment files 
 The new VPC requires a set of dedicated CIDRs, one per region, added to variable `custom_adv` (for example as `spoke_staging_ew1` and `spoke_staging_ew4`).
 >`custom_adv` is a map that "resolves" CIDR names to actual addresses, and will be used later to configure routing.
 >
-Variables managing L7 Interal Load Balancers (`l7ilb_subnets`) and Private Service Access (`psa_ranges`) should also be adapted, and subnets and firewall rules for the new spoke should be added as described above.
+Variables managing L7 Internal Load Balancers (`l7ilb_subnets`) and Private Service Access (`psa_ranges`) should also be adapted, also subnets and firewall rules for the new spoke should be added as described above.
 
 HA VPN connectivity (see also [VPNs](#vpns)) to `landing` is managed by the `vpn-spoke-*.tf` files.
 Copy `vpn-spoke-dev.tf` to `vpn-spoke-staging.tf` - replace `dev` with `staging` where relevant.
