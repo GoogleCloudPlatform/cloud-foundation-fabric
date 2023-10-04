@@ -25,7 +25,7 @@ module "data-platform" {
     billing_account_id = var.billing_account.id
     parent             = var.folder_ids.data-platform-dev
   }
-  groups   = var.groups
+  groups   = var.groups-dp
   location = var.location
   network_config = {
     host_project      = var.host_project_ids.dev-spoke-0
@@ -46,9 +46,9 @@ module "data-platform" {
     }
   }
   organization_domain     = var.organization.domain
-  prefix                  = "${var.prefix}-dev-dt"
+  prefix                  = "${var.prefix}-dev-dp"
   project_services        = var.project_services
-  project_suffix          = "0"
+  project_suffix          = var.project_suffix
   region                  = var.region
   service_encryption_keys = var.service_encryption_keys
 }
