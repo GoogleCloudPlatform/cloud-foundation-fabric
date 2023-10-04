@@ -36,6 +36,7 @@ variable "backend_service_config" {
       ratio                     = optional(number)
     }))
     log_sample_rate  = optional(number)
+    protocol         = optional(string, "UNSPECIFIED")
     session_affinity = optional(string)
     timeout_sec      = optional(number)
   })
@@ -202,7 +203,7 @@ variable "project_id" {
 }
 
 variable "protocol" {
-  description = "IP protocol used, defaults to TCP."
+  description = "Forwarding rule protocol used, defaults to TCP."
   type        = string
   default     = "TCP"
 }
