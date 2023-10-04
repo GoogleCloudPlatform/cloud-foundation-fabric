@@ -244,9 +244,10 @@ resource "google_bigquery_table" "default" {
   dynamic "time_partitioning" {
     for_each = try(each.value.partitioning.time, null) != null ? [""] : []
     content {
-      expiration_ms = each.value.partitioning.time.expiration_ms
-      field         = each.value.partitioning.field
-      type          = each.value.partitioning.time.type
+      expiration_ms            = each.value.partitioning.time.expiration_ms
+      field                    = each.value.partitioning.time.field
+      type                     = each.value.partitioning.time.type
+      require_partition_filter = each.value.partitioning.time.require_partition_filter
     }
   }
 }
@@ -265,5 +266,48 @@ resource "google_bigquery_table" "views" {
   view {
     query          = each.value.query
     use_legacy_sql = each.value.use_legacy_sql
+  }
+}
+
+resource "google_bigquery_table" "materialized_view" {
+  depends_on          = [google_bigquery_table.default]
+  for_each            = var.materialized_views
+  project             = var.project_id
+  dataset_id          = google_bigquery_dataset.default.dataset_id
+  table_id            = each.key
+  friendly_name       = each.value.friendly_name
+  description         = each.value.description
+  labels              = each.value.labels
+  clustering          = each.value.options.clustering
+  expiration_time     = each.value.options.expiration_time
+  deletion_protection = each.value.deletion_protection
+
+  dynamic "range_partitioning" {
+    for_each = try(each.value.partitioning.range, null) != null ? [""] : []
+    content {
+      field = each.value.partitioning.field
+      range {
+        start    = each.value.partitioning.range.start
+        end      = each.value.partitioning.range.end
+        interval = each.value.partitioning.range.interval
+      }
+    }
+  }
+
+  dynamic "time_partitioning" {
+    for_each = try(each.value.partitioning.time, null) != null ? [""] : []
+    content {
+      expiration_ms            = each.value.partitioning.time.expiration_ms
+      field                    = each.value.partitioning.time.field
+      type                     = each.value.partitioning.time.type
+      require_partition_filter = each.value.partitioning.time.require_partition_filter
+    }
+  }
+
+  materialized_view {
+    query                            = each.value.query
+    enable_refresh                   = each.value.enable_refresh
+    refresh_interval_ms              = each.value.refresh_interval_ms
+    allow_non_incremental_definition = each.value.allow_non_incremental_definition
   }
 }
