@@ -24,6 +24,7 @@ locals {
     DP_REGION          = var.region
     LAND_PRJ           = module.land-project.project_id
     LAND_GCS           = module.land-cs-0.url
+    LAND_BQ_DATASET    = module.land-bq-0.dataset_id
     PHS_CLUSTER_NAME   = try(module.processing-dp-historyserver[0].name, "")
     PROCESSING_GCS     = module.processing-cs-0.url
     PROCESSING_PRJ     = module.processing-project.project_id
