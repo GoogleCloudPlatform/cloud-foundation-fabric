@@ -8,11 +8,16 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1730](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1730)] Minimal Data Platform - Fix ([lcaggio](https://github.com/lcaggio)) <!-- 2023-10-04 10:15:51+00:00 -->
+- [[#1725](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1725)] Fix data platform roles ([lcaggio](https://github.com/lcaggio)) <!-- 2023-10-04 05:31:41+00:00 -->
+- [[#1724](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1724)] Bump provider versions to v5.0.0 ([ludoo](https://github.com/ludoo)) <!-- 2023-10-03 12:15:36+00:00 -->
 - [[#1722](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1722)] Add support for org policies to project factory ([ludoo](https://github.com/ludoo)) <!-- 2023-10-02 14:13:57+00:00 -->
 - [[#1692](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1692)] **incompatible change:** Allow using no service account in compute-vm ([ludoo](https://github.com/ludoo)) <!-- 2023-09-19 16:56:51+00:00 -->
 
 ### DOCUMENTATION
 
+- [[#1725](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1725)] Fix data platform roles ([lcaggio](https://github.com/lcaggio)) <!-- 2023-10-04 05:31:41+00:00 -->
+- [[#1724](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1724)] Bump provider versions to v5.0.0 ([ludoo](https://github.com/ludoo)) <!-- 2023-10-03 12:15:36+00:00 -->
 - [[#1707](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1707)] Only apply org policies when bootstrap user is not set ([ludoo](https://github.com/ludoo)) <!-- 2023-09-27 21:24:41+00:00 -->
 - [[#1697](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1697)] Define and adopt standard IP ranges for FAST networking ([juliocc](https://github.com/juliocc)) <!-- 2023-09-21 14:27:54+00:00 -->
 - [[#1698](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1698)] **incompatible change:** FAST: move organization policies to stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2023-09-21 14:03:22+00:00 -->
@@ -20,6 +25,8 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1725](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1725)] Fix data platform roles ([lcaggio](https://github.com/lcaggio)) <!-- 2023-10-04 05:31:41+00:00 -->
+- [[#1724](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1724)] Bump provider versions to v5.0.0 ([ludoo](https://github.com/ludoo)) <!-- 2023-10-03 12:15:36+00:00 -->
 - [[#1718](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1718)] FAST: add example of custom org policy condition to bootstrap README ([ludoo](https://github.com/ludoo)) <!-- 2023-09-30 08:22:56+00:00 -->
 - [[#1715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1715)] Fix indentation in FAST hierarchical firewall rules ([juliocc](https://github.com/juliocc)) <!-- 2023-09-29 13:37:41+00:00 -->
 - [[#1711](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1711)] [FAST] Fix tenant folder tag ([lcaggio](https://github.com/lcaggio)) <!-- 2023-09-28 21:48:15+00:00 -->
@@ -31,7 +38,11 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
-- [[#1723](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1723)] Add storage billing model ([devuonocar](https://github.com/devuonocar)) <!-- 2023-10-02 17:37:40+00:00 -->
+- [[#1714](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1714)] Support multiple protocols (L3_DEFAULT) through `net-ilb-in` ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-04 08:30:11+00:00 -->
+- [[#1727](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1727)] Update GCS IAM ([apichick](https://github.com/apichick)) <!-- 2023-10-04 06:43:08+00:00 -->
+- [[#1728](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1728)] Fix dnssec keys lookup ([juliocc](https://github.com/juliocc)) <!-- 2023-10-03 19:37:22+00:00 -->
+- [[#1724](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1724)] Bump provider versions to v5.0.0 ([ludoo](https://github.com/ludoo)) <!-- 2023-10-03 12:15:36+00:00 -->
+- [[#1723](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1723)] Add storage billing model to `bigquery-dataset` ([devuonocar](https://github.com/devuonocar)) <!-- 2023-10-02 17:37:40+00:00 -->
 - [[#1719](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1719)] Add GLB HTTP to HTTPS redirect example ([ludoo](https://github.com/ludoo)) <!-- 2023-10-02 10:10:24+00:00 -->
 - [[#1717](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1717)] Apigee module fix try ([apichick](https://github.com/apichick)) <!-- 2023-10-01 12:26:22+00:00 -->
 - [[#1716](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1716)] Add retry policy for subscriptions ([devuonocar](https://github.com/devuonocar)) <!-- 2023-09-29 14:46:26+00:00 -->
