@@ -32,7 +32,7 @@ resource "google_compute_forwarding_rule" "default" {
   name        = var.name
   description = var.description
   ip_address  = var.address
-  ip_protocol = var.protocol # TCP | UDP
+  ip_protocol = var.protocol
   backend_service = (
     google_compute_region_backend_service.default.self_link
   )
@@ -54,7 +54,7 @@ resource "google_compute_region_backend_service" "default" {
   name                            = var.name
   description                     = var.description
   load_balancing_scheme           = "INTERNAL"
-  protocol                        = var.protocol
+  protocol                        = var.backend_service_config.protocol
   network                         = var.vpc_config.network
   health_checks                   = [local.health_check]
   connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
