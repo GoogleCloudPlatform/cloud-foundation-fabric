@@ -25,7 +25,7 @@ values:
     deletion_protection: true
     friendly_name: Population
     project: my-project
-    table_id: population
+    table_id: countries #population
     view:
     - query: SELECT SUM(population) FROM my_dataset.countries
       use_legacy_sql: false
