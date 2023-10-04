@@ -19,12 +19,14 @@ locals {
     data_analysts = [
       "roles/bigquery.dataViewer",
       "roles/bigquery.jobUser",
+      "roles/datacatalog.tagTemplateViewer",
       "roles/datacatalog.viewer",
       "roles/storage.objectViewer"
     ]
     data_engineers = [
       "roles/bigquery.dataViewer",
       "roles/bigquery.jobUser",
+      "roles/datacatalog.tagTemplateViewer",
       "roles/datacatalog.viewer",
       "roles/storage.objectViewer"
     ]
@@ -41,10 +43,13 @@ locals {
     data_engineers = [
       "roles/bigquery.dataViewer",
       "roles/bigquery.jobUser",
+      "roles/datacatalog.tagTemplateViewer",
       "roles/datacatalog.viewer",
       "roles/storage.objectViewer"
     ]
     sa_load = [
+      "roles/bigquery.dataOwner",
+      "roles/bigquery.jobUser",
       "roles/storage.objectCreator"
     ]
     sa_transf_bq = [
@@ -52,9 +57,7 @@ locals {
       "roles/datacatalog.categoryAdmin"
     ]
     sa_transf_df = [
-      "roles/bigquery.dataOwner",
-      "roles/bigquery.dataViewer",
-      "roles/bigquery.jobUser"
+      "roles/bigquery.dataViewer"
     ]
   }
 }

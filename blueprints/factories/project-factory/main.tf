@@ -43,6 +43,7 @@ module "projects" {
   metric_scopes = distinct(concat(
     each.value.metric_scopes, var.data_merges.metric_scopes
   ))
+  org_policies = each.value.org_policies
   service_encryption_key_ids = merge(
     each.value.service_encryption_key_ids,
     var.data_merges.service_encryption_key_ids

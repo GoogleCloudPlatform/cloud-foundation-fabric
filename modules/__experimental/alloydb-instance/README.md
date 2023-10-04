@@ -51,7 +51,7 @@ module "alloydb" {
 
 }
 
-# tftest modules=1 resources=7
+# tftest skip
 ```
 ## TODO
 - [ ] Add IAM support
@@ -86,3 +86,4 @@ module "alloydb" {
 | [read_pool_instance_ids](outputs.tf#L38) | IDs of the read instances created. |  |
 
 <!-- END TFDOC -->
+

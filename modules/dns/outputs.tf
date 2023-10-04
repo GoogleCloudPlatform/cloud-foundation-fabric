@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 output "dns_keys" {
   description = "DNSKEY and DS records of DNSSEC-signed managed zones."
-  value       = data.google_dns_keys.dns_keys
+  value       = try(data.google_dns_keys.dns_keys, null)
 }
 
 output "domain" {
