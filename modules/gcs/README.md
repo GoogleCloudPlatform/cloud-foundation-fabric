@@ -9,14 +9,11 @@ module "bucket" {
   prefix     = "test"
   name       = "my-bucket"
   versioning = true
-  iam = {
-    "roles/storage.admin" = ["group:storage@example.com"]
-  }
   labels = {
     cost-center = "devops"
   }
 }
-# tftest modules=1 resources=2 inventory=simple.yaml
+# tftest modules=1 resources=1 inventory=simple.yaml
 ```
 
 ### Example with Cloud KMS
@@ -108,29 +105,99 @@ module "bucket" {
 }
 # tftest modules=1 resources=2 inventory=object-upload.yaml
 ```
+
+### Examples of IAM
+
+```hcl
+module "bucket" {
+  source     = "./fabric/modules/gcs"
+  project_id = "myproject"
+  name       = "my-bucket"
+  iam = {
+    "roles/storage.admin" = ["group:storage@example.com"]
+  }
+}
+# tftest modules=1 resources=2 inventory=iam-authoritative.yaml
+```
+
+```hcl
+module "bucket" {
+  source     = "./fabric/modules/gcs"
+  project_id = "myproject"
+  name       = "my-bucket"
+  iam_bindings = {
+    storage-admin-with-delegated_roles = {
+      role    = "roles/storage.admin"
+      members = ["group:storage@example.com"]
+      condition = {
+        title = "delegated-role-grants"
+        expression = format(
+          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+          join(",", formatlist("'%s'",
+            [
+              "roles/storage.objectAdmin",
+              "roles/storage.objectViewer",
+            ]
+          ))
+        )
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=iam-bindings.yaml
+```
+
+```hcl
+module "bucket" {
+  source     = "./fabric/modules/gcs"
+  project_id = "myproject"
+  name       = "my-bucket"
+  iam_bindings_additive = {
+    storage-admin-with-delegated_roles = {
+      role   = "roles/storage.admin"
+      member = "group:storage@example.com"
+      condition = {
+        title = "delegated-role-grants"
+        expression = format(
+          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+          join(",", formatlist("'%s'",
+            [
+              "roles/storage.objectAdmin",
+              "roles/storage.objectViewer",
+            ]
+          ))
+        )
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=iam-bindings-additive.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L116) | Bucket name suffix. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L171) | Bucket project id. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L146) | Bucket name suffix. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L201) | Bucket project id. | <code>string</code> | ✓ |  |
 | [cors](variables.tf#L17) | CORS configuration for the bucket. Defaults to null. | <code title="object&#40;&#123;&#10;  origin          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  method          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  response_header &#61; optional&#40;list&#40;string&#41;&#41;&#10;  max_age_seconds &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [encryption_key](variables.tf#L28) | KMS key that will be used for encryption. | <code>string</code> |  | <code>null</code> |
 | [force_destroy](variables.tf#L34) | Optional map to set force destroy keyed by name, defaults to false. | <code>bool</code> |  | <code>false</code> |
 | [iam](variables.tf#L40) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L46) | Labels to be attached to all buckets. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [lifecycle_rules](variables.tf#L52) | Bucket lifecycle rule. | <code title="map&#40;object&#40;&#123;&#10;  action &#61; object&#40;&#123;&#10;    type          &#61; string&#10;    storage_class &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;  condition &#61; object&#40;&#123;&#10;    age                        &#61; optional&#40;number&#41;&#10;    created_before             &#61; optional&#40;string&#41;&#10;    custom_time_before         &#61; optional&#40;string&#41;&#10;    days_since_custom_time     &#61; optional&#40;number&#41;&#10;    days_since_noncurrent_time &#61; optional&#40;number&#41;&#10;    matches_prefix             &#61; optional&#40;list&#40;string&#41;&#41;&#10;    matches_storage_class      &#61; optional&#40;list&#40;string&#41;&#41; &#35; STANDARD, MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE, DURABLE_REDUCED_AVAILABILITY&#10;    matches_suffix             &#61; optional&#40;list&#40;string&#41;&#41;&#10;    noncurrent_time_before     &#61; optional&#40;string&#41;&#10;    num_newer_versions         &#61; optional&#40;number&#41;&#10;    with_state                 &#61; optional&#40;string&#41; &#35; &#34;LIVE&#34;, &#34;ARCHIVED&#34;, &#34;ANY&#34;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L101) | Bucket location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
-| [logging_config](variables.tf#L107) | Bucket logging configuration. | <code title="object&#40;&#123;&#10;  log_bucket        &#61; string&#10;  log_object_prefix &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [notification_config](variables.tf#L121) | GCS Notification configuration. | <code title="object&#40;&#123;&#10;  enabled            &#61; bool&#10;  payload_format     &#61; string&#10;  topic_name         &#61; string&#10;  sa_email           &#61; string&#10;  event_types        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  custom_attributes  &#61; optional&#40;map&#40;string&#41;&#41;&#10;  object_name_prefix &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [objects_to_upload](variables.tf#L135) | Objects to be uploaded to bucket. | <code title="map&#40;object&#40;&#123;&#10;  name                &#61; string&#10;  metadata            &#61; optional&#40;map&#40;string&#41;&#41;&#10;  content             &#61; optional&#40;string&#41;&#10;  source              &#61; optional&#40;string&#41;&#10;  cache_control       &#61; optional&#40;string&#41;&#10;  content_disposition &#61; optional&#40;string&#41;&#10;  content_encoding    &#61; optional&#40;string&#41;&#10;  content_language    &#61; optional&#40;string&#41;&#10;  content_type        &#61; optional&#40;string&#41;&#10;  event_based_hold    &#61; optional&#40;bool&#41;&#10;  temporary_hold      &#61; optional&#40;bool&#41;&#10;  detect_md5hash      &#61; optional&#40;string&#41;&#10;  storage_class       &#61; optional&#40;string&#41;&#10;  kms_key_name        &#61; optional&#40;string&#41;&#10;  customer_encryption &#61; optional&#40;object&#40;&#123;&#10;    encryption_algorithm &#61; optional&#40;string&#41;&#10;    encryption_key       &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L161) | Optional prefix used to generate the bucket name. | <code>string</code> |  | <code>null</code> |
-| [retention_policy](variables.tf#L176) | Bucket retention policy. | <code title="object&#40;&#123;&#10;  retention_period &#61; number&#10;  is_locked        &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [storage_class](variables.tf#L185) | Bucket storage class. | <code>string</code> |  | <code>&#34;MULTI_REGIONAL&#34;</code> |
-| [uniform_bucket_level_access](variables.tf#L195) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
-| [versioning](variables.tf#L201) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>false</code> |
-| [website](variables.tf#L207) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; optional&#40;string&#41;&#10;  not_found_page   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [iam_bindings](variables.tf#L46) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_bindings_additive](variables.tf#L61) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L76) | Labels to be attached to all buckets. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [lifecycle_rules](variables.tf#L82) | Bucket lifecycle rule. | <code title="map&#40;object&#40;&#123;&#10;  action &#61; object&#40;&#123;&#10;    type          &#61; string&#10;    storage_class &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;  condition &#61; object&#40;&#123;&#10;    age                        &#61; optional&#40;number&#41;&#10;    created_before             &#61; optional&#40;string&#41;&#10;    custom_time_before         &#61; optional&#40;string&#41;&#10;    days_since_custom_time     &#61; optional&#40;number&#41;&#10;    days_since_noncurrent_time &#61; optional&#40;number&#41;&#10;    matches_prefix             &#61; optional&#40;list&#40;string&#41;&#41;&#10;    matches_storage_class      &#61; optional&#40;list&#40;string&#41;&#41; &#35; STANDARD, MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE, DURABLE_REDUCED_AVAILABILITY&#10;    matches_suffix             &#61; optional&#40;list&#40;string&#41;&#41;&#10;    noncurrent_time_before     &#61; optional&#40;string&#41;&#10;    num_newer_versions         &#61; optional&#40;number&#41;&#10;    with_state                 &#61; optional&#40;string&#41; &#35; &#34;LIVE&#34;, &#34;ARCHIVED&#34;, &#34;ANY&#34;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L131) | Bucket location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
+| [logging_config](variables.tf#L137) | Bucket logging configuration. | <code title="object&#40;&#123;&#10;  log_bucket        &#61; string&#10;  log_object_prefix &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [notification_config](variables.tf#L151) | GCS Notification configuration. | <code title="object&#40;&#123;&#10;  enabled            &#61; bool&#10;  payload_format     &#61; string&#10;  topic_name         &#61; string&#10;  sa_email           &#61; string&#10;  event_types        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  custom_attributes  &#61; optional&#40;map&#40;string&#41;&#41;&#10;  object_name_prefix &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [objects_to_upload](variables.tf#L165) | Objects to be uploaded to bucket. | <code title="map&#40;object&#40;&#123;&#10;  name                &#61; string&#10;  metadata            &#61; optional&#40;map&#40;string&#41;&#41;&#10;  content             &#61; optional&#40;string&#41;&#10;  source              &#61; optional&#40;string&#41;&#10;  cache_control       &#61; optional&#40;string&#41;&#10;  content_disposition &#61; optional&#40;string&#41;&#10;  content_encoding    &#61; optional&#40;string&#41;&#10;  content_language    &#61; optional&#40;string&#41;&#10;  content_type        &#61; optional&#40;string&#41;&#10;  event_based_hold    &#61; optional&#40;bool&#41;&#10;  temporary_hold      &#61; optional&#40;bool&#41;&#10;  detect_md5hash      &#61; optional&#40;string&#41;&#10;  storage_class       &#61; optional&#40;string&#41;&#10;  kms_key_name        &#61; optional&#40;string&#41;&#10;  customer_encryption &#61; optional&#40;object&#40;&#123;&#10;    encryption_algorithm &#61; optional&#40;string&#41;&#10;    encryption_key       &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L191) | Optional prefix used to generate the bucket name. | <code>string</code> |  | <code>null</code> |
+| [retention_policy](variables.tf#L206) | Bucket retention policy. | <code title="object&#40;&#123;&#10;  retention_period &#61; number&#10;  is_locked        &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [storage_class](variables.tf#L215) | Bucket storage class. | <code>string</code> |  | <code>&#34;MULTI_REGIONAL&#34;</code> |
+| [uniform_bucket_level_access](variables.tf#L225) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
+| [versioning](variables.tf#L231) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>false</code> |
+| [website](variables.tf#L237) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; optional&#40;string&#41;&#10;  not_found_page   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
