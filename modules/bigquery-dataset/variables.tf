@@ -152,10 +152,10 @@ variable "tables" {
         start    = number
       }))
       time = optional(object({
-        expiration_ms            = number
-        field                    = string
+        expiration_ms            = optional(number)
+        field                    = optional(string)
         type                     = string
-        require_partition_filter = bool
+        require_partition_filter = optional(bool)
       }))
     }))
   }))
@@ -198,10 +198,10 @@ variable "materialized_views" {
         start    = number
       }))
       time = optional(object({
-        expiration_ms            = number
-        field                    = string
+        expiration_ms            = optional(number)
+        field                    = optional(string)
         type                     = string
-        require_partition_filter = bool
+        require_partition_filter = optional(bool)
       }))
     }))
   }))
