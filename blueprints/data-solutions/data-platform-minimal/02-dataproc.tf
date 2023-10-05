@@ -41,7 +41,6 @@ module "processing-sa-0" {
       module.processing-sa-cmp-0.iam_email
     ]
   }
-  force_destroy = !var.deletion_protection
 }
 
 module "processing-staging-0" {
