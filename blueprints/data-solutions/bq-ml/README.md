@@ -64,7 +64,7 @@ To run the demo:
 |---|---|:---:|:---:|:---:|
 | [prefix](variables.tf#L30) | Prefix used for resource names. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L48) | Project id references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [deletion_protection](variables.tf#L17) | Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail. | <code>true</code> |  | <code>false</code> |
+| [deletion_protection](variables.tf#L17) | Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail. | <code>bool</code> |  | <code>false</code> |
 | [location](variables.tf#L24) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;US&#34;</code> |
 | [project_create](variables.tf#L39) | Provide values if project creation is needed, use existing project if null. Parent format:  folders/folder_id or organizations/org_id. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [region](variables.tf#L53) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;us-central1&#34;</code> |

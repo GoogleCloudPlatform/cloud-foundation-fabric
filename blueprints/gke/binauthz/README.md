@@ -108,7 +108,7 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 |---|---|:---:|:---:|:---:|
 | [prefix](variables.tf#L36) | Prefix used for resource names. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L54) | Project ID. | <code>string</code> | ✓ |  |
-| [deletion_protection](variables.tf#L17) | Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail. | <code>true</code> |  | <code>false</code> |
+| [deletion_protection](variables.tf#L17) | Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail. | <code>bool</code> |  | <code>false</code> |
 | [master_cidr_block](variables.tf#L24) | Master CIDR block. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;28&#34;</code> |
 | [pods_cidr_block](variables.tf#L30) | Pods CIDR block. | <code>string</code> |  | <code>&#34;172.16.0.0&#47;20&#34;</code> |
 | [project_create](variables.tf#L45) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
