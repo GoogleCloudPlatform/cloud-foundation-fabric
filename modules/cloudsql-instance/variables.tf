@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,15 +80,17 @@ variable "databases" {
 }
 
 variable "deletion_protection" {
-  description = "Allow terraform to delete instances."
+  description = "Prevent terraform from deleting instances."
   type        = bool
-  default     = false
+  default     = true
+  nullable    = false
 }
 
 variable "deletion_protection_enabled" {
   description = "Set Google's deletion protection attribute which applies across all surfaces (UI, API, & Terraform)."
   type        = bool
-  default     = false
+  default     = true
+  nullable    = false
 }
 
 variable "disk_size" {
