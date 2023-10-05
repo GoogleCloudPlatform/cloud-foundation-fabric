@@ -38,4 +38,4 @@ yapf --style="{based_on_style: google, indent_width: 2, SPLIT_BEFORE_NAMED_ASSIG
      blueprints/cloud-operations/network-dashboard/src/plugins/*py
 
 echo -- Blueprint metadata --
-python tools/validate_metadata.py -v blueprints --verbose --failed-only
+python3 tools/validate_metadata.py -v blueprints --verbose --failed-only
