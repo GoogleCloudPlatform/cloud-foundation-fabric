@@ -22,6 +22,6 @@ import marko
 from ..examples.conftest import pytest_generate_tests as _examples_generate_test
 
 
-def pytest_generate_tests(metafunc, skip_detector=lambda x: 'tftest skip' not in x):
+def pytest_generate_tests(metafunc):
   """Find all README.md files and collect code examples tagged for testing."""
   _examples_generate_test(metafunc, "examples_e2e", lambda x: 'e2e' in x)

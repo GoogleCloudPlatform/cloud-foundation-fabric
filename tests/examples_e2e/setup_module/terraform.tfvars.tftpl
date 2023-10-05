@@ -1,0 +1,36 @@
+bucket= "${bucket}"
+billing_account_id = "${billing_account_id}"
+kms_key= {
+    self_link = "kms_key_self_link"
+}
+organization_id = "${organization_id}"
+folder_id = "${folder_id}"
+prefix = "${prefix}"
+project_id = "${project_id}"
+region = "${region}"
+service_account = {
+    id        = "${service_account.id}"
+    email     = "${service_account.email}"
+    iam_email = "${service_account.iam_email}"
+  }
+subnet = {
+    name      = "${subnet.name}"
+    region    = "${subnet.region}"
+    cidr      = "${subnet.ip_cidr_range}"
+    self_link = "${subnet.self_link}"
+  }
+vpc = {
+    name      = "${vpc.name}"
+    self_link = "${vpc.self_link}"
+    id        = "${vpc.id}"
+  }
+
+# vpc1 =  {
+#    name      = "vpc_name"
+#    self_link = "projects/xxx/global/networks/bbb"
+#  }
+#vpc2 = {
+#    name      = "vpc2_name"
+#    self_link = "projects/xxx/global/networks/ccc"
+#  }
+zone = "${region}-a"

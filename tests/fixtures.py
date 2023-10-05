@@ -269,6 +269,36 @@ def plan_validator_fixture(request):
   return inner
 
 
+def e2e_validator(module_path: str, extra_files: list, tf_var_files: list, basedir: os.PathLike = None):
+  module_path = _REPO_ROOT / module_path
+  with _prepare_root_module(module_path) as test_path:
+    binary = os.environ.get('TERRAFORM', 'terraform')
+    tf = tftest.TerraformTest(test_path, binary=binary)
+    extra_files = [(module_path / filename).resolve()
+                   for x in extra_files or []
+                   for filename in glob.glob(x, root_dir=module_path)]
+    tf.setup(extra_files=extra_files, upgrade=True)
+    tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
+
+    try:
+      apply = tf.apply(tf_var_file=tf_var_files)  # type: tftest.TerraformCommandOutput.out
+      plan = tf.plan(output=True, tf_var_file=tf_var_files)  # type: tftest.TerraformPlanOutput
+      changes = dict((k, v['change'])for k, v in plan.resource_changes.items() if v.get('change', {}).get('actions') != ['no-op'])
+      assert dict((k, v['before']) for k, v in changes.items()) == dict((k, v['after']) for k, v in changes.items())
+      assert dict((k, v['before_sensitive']) for k, v in changes.items()) == dict((k, v['after_sensitive']) for k, v in changes.items())
+      assert changes == {}, f'Plan not empty for following resources: {", ".join(changes.keys())}'
+    finally:
+      destroy = tf.destroy(tf_var_file=tf_var_files)  # type: tftest.TerraformCommandOutput.out
+
+
+@pytest.fixture(name='e2e_validator')
+def e2e_validator_fixture(request):
+  def inner(module_path: str, extra_files: list, tf_var_files: list, basedir: os.PathLike = None):
+    if basedir is None:
+      basedir = Path(request.fspath).parent
+    return e2e_validator(module_path, extra_files, tf_var_files, basedir)
+  return inner
+
 # @pytest.fixture
 # def repo_root():
 #   'Return a pathlib.Path to the root of the repository'
