@@ -129,6 +129,12 @@ variable "enable_features" {
   default = {
     workload_identity = true
   }
+  validation {
+    condition = (
+      var.enable_features.fqdn_network_policy ? var.enable_features.dataplane_v2 : true
+    )
+    error_message = "FQDN network policy is only supported for clusters with Dataplane v2."
+  }
 }
 
 variable "issue_client_certificate" {
