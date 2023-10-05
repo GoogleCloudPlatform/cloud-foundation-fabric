@@ -57,20 +57,19 @@ To run the demo:
 | [versions.tf](./versions.tf) | Version pins. |  |  |
 | [vertex.tf](./vertex.tf) | Vertex resources. | <code>iam-service-account</code> | <code>google_notebooks_instance</code> · <code>google_vertex_ai_metadata_store</code> |
 | [vpc.tf](./vpc.tf) | VPC resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> | <code>google_project_iam_member</code> |
-
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L23) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L41) | Project id references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [location](variables.tf#L17) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;US&#34;</code> |
-| [project_create](variables.tf#L32) | Provide values if project creation is needed, use existing project if null. Parent format:  folders/folder_id or organizations/org_id. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L46) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;us-central1&#34;</code> |
-| [service_encryption_keys](variables.tf#L52) | Cloud KMS to use to encrypt different services. The key location should match the service region. | <code title="object&#40;&#123;&#10;  aiplatform &#61; optional&#40;string, null&#41;&#10;  bq         &#61; optional&#40;string, null&#41;&#10;  compute    &#61; optional&#40;string, null&#41;&#10;  storage    &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_config](variables.tf#L63) | Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L30) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L48) | Project id references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [deletion_protection](variables.tf#L17) | Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail. | <code>bool</code> |  | <code>false</code> |
+| [location](variables.tf#L24) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;US&#34;</code> |
+| [project_create](variables.tf#L39) | Provide values if project creation is needed, use existing project if null. Parent format:  folders/folder_id or organizations/org_id. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L53) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;us-central1&#34;</code> |
+| [service_encryption_keys](variables.tf#L59) | Cloud KMS to use to encrypt different services. The key location should match the service region. | <code title="object&#40;&#123;&#10;  aiplatform &#61; optional&#40;string, null&#41;&#10;  bq         &#61; optional&#40;string, null&#41;&#10;  compute    &#61; optional&#40;string, null&#41;&#10;  storage    &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_config](variables.tf#L70) | Shared VPC network configurations to use. If null networks will be created in projects with pre-configured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -83,7 +82,6 @@ To run the demo:
 | [service-account-vertex](outputs.tf#L40) | Service account to be used for Vertex AI pipelines. |  |
 | [vertex-ai-metadata-store](outputs.tf#L45) | Vertex AI Metadata Store ID. |  |
 | [vpc](outputs.tf#L50) | VPC Network. |  |
-
 <!-- END TFDOC -->
 ## Test
 

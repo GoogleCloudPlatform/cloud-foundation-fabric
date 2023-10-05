@@ -30,9 +30,9 @@ resource "google_container_cluster" "cluster" {
   enable_l4_ilb_subsetting = var.enable_features.l4_ilb_subsetting
   enable_tpu               = var.enable_features.tpu
   initial_node_count       = 1
-
-  enable_autopilot = true
-  allow_net_admin  = var.enable_features.allow_net_admin
+  enable_autopilot         = true
+  allow_net_admin          = var.enable_features.allow_net_admin
+  deletion_protection      = var.deletion_protection
 
   addons_config {
     http_load_balancing {

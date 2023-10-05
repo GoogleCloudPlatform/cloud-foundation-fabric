@@ -16,15 +16,16 @@
 
 # Set up CloudSQL
 module "cloudsql" {
-  source           = "../../../modules/cloudsql-instance"
-  project_id       = module.project.project_id
-  name             = "${var.prefix}-mysql"
-  database_version = local.cloudsql_conf.database_version
-  databases        = [local.cloudsql_conf.db]
-  network          = local.network
-  prefix           = var.prefix
-  region           = var.region
-  tier             = local.cloudsql_conf.tier
+  source              = "../../../modules/cloudsql-instance"
+  project_id          = module.project.project_id
+  name                = "${var.prefix}-mysql"
+  database_version    = local.cloudsql_conf.database_version
+  deletion_protection = var.deletion_protection
+  databases           = [local.cloudsql_conf.db]
+  network             = local.network
+  prefix              = var.prefix
+  region              = var.region
+  tier                = local.cloudsql_conf.tier
   users = {
     "${local.cloudsql_conf.user}" = var.cloudsql_password
   }

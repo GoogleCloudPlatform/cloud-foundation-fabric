@@ -34,6 +34,7 @@ resource "google_container_cluster" "cluster" {
   enable_tpu                  = var.enable_features.tpu
   initial_node_count          = 1
   remove_default_node_pool    = true
+  deletion_protection         = var.deletion_protection
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"

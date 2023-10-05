@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -67,10 +67,11 @@ variable "data_catalog_tags" {
   }
 }
 
-variable "data_force_destroy" {
-  description = "Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage."
+variable "deletion_protection" {
+  description = "Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail."
   type        = bool
   default     = false
+  nullable    = false
 }
 
 variable "enable_services" {

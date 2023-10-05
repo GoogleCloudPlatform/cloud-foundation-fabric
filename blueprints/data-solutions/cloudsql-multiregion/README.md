@@ -142,17 +142,18 @@ The above command will delete the associated resources so there will be no billa
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [postgres_user_password](variables.tf#L40) | `postgres` user password. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L45) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L63) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [postgres_user_password](variables.tf#L47) | `postgres` user password. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L52) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L70) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
 | [data_eng_principal](variables.tf#L17) | Group or user in IAM format (`group:foo@example.com`) with permissions to access resources and impersonate service accounts. | <code>string</code> |  | <code>null</code> |
-| [network_config](variables.tf#L23) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project       &#61; string&#10;  network_self_link  &#61; string&#10;  subnet_self_link   &#61; string&#10;  cloudsql_psa_range &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [postgres_database](variables.tf#L34) | `postgres` database. | <code>string</code> |  | <code>&#34;guestbook&#34;</code> |
-| [project_create](variables.tf#L54) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [regions](variables.tf#L68) | Map of instance_name => location where instances will be deployed. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  primary &#61; &#34;europe-west1&#34;&#10;  replica &#61; &#34;europe-west3&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [service_encryption_keys](variables.tf#L81) | Cloud KMS keys to use to encrypt resources. Provide a key for each reagion configured. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [sql_configuration](variables.tf#L87) | Cloud SQL configuration. | <code title="object&#40;&#123;&#10;  availability_type &#61; string&#10;  database_version  &#61; string&#10;  psa_range         &#61; string&#10;  tier              &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  availability_type &#61; &#34;REGIONAL&#34;&#10;  database_version  &#61; &#34;POSTGRES_13&#34;&#10;  psa_range         &#61; &#34;10.60.0.0&#47;16&#34;&#10;  tier              &#61; &#34;db-g1-small&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [sql_users](variables.tf#L103) | Cloud SQL user emails. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [deletion_protection](variables.tf#L23) | Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail. | <code>bool</code> |  | <code>false</code> |
+| [network_config](variables.tf#L30) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project       &#61; string&#10;  network_self_link  &#61; string&#10;  subnet_self_link   &#61; string&#10;  cloudsql_psa_range &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [postgres_database](variables.tf#L41) | `postgres` database. | <code>string</code> |  | <code>&#34;guestbook&#34;</code> |
+| [project_create](variables.tf#L61) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [regions](variables.tf#L75) | Map of instance_name => location where instances will be deployed. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  primary &#61; &#34;europe-west1&#34;&#10;  replica &#61; &#34;europe-west3&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [service_encryption_keys](variables.tf#L88) | Cloud KMS keys to use to encrypt resources. Provide a key for each reagion configured. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [sql_configuration](variables.tf#L94) | Cloud SQL configuration. | <code title="object&#40;&#123;&#10;  availability_type &#61; string&#10;  database_version  &#61; string&#10;  psa_range         &#61; string&#10;  tier              &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  availability_type &#61; &#34;REGIONAL&#34;&#10;  database_version  &#61; &#34;POSTGRES_13&#34;&#10;  psa_range         &#61; &#34;10.60.0.0&#47;16&#34;&#10;  tier              &#61; &#34;db-g1-small&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [sql_users](variables.tf#L110) | Cloud SQL user emails. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 

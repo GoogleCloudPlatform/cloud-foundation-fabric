@@ -109,6 +109,7 @@ module "gcs-bucket" {
   storage_class  = "REGIONAL"
   versioning     = false
   encryption_key = var.service_encryption_keys.storage
+  force_destroy  = !var.deletion_protection
 }
 
 # Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘gcp.resourceLocations’"
@@ -121,6 +122,7 @@ module "gcs-bucket-cloudbuild" {
   storage_class  = "REGIONAL"
   versioning     = false
   encryption_key = var.service_encryption_keys.storage
+  force_destroy  = !var.deletion_protection
 }
 
 module "bq-dataset" {

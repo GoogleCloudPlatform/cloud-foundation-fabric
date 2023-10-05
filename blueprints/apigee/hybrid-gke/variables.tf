@@ -40,6 +40,13 @@ variable "cluster_network_config" {
   }
 }
 
+variable "deletion_protection" {
+  description = "Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail."
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "hostname" {
   description = "Host name."
   type        = string

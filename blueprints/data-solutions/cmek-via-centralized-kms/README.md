@@ -30,18 +30,18 @@ This sample creates several distinct groups of resources:
 - GCS
   - One bucket encrypted with a CMEK Cryptokey hosted in Cloud KMS
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L21) | Optional prefix used to generate resources names. | <code>string</code> | ✓ |  |
-| [project_config](variables.tf#L27) | Provide 'billing_account_id' and 'parent' values if project creation is needed, uses existing 'projects_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string, null&#41;&#10;  parent             &#61; optional&#40;string, null&#41;&#10;  project_ids &#61; optional&#40;object&#40;&#123;&#10;    encryption &#61; string&#10;    service    &#61; string&#10;    &#125;&#41;, &#123;&#10;    encryption &#61; &#34;encryption&#34;,&#10;    service    &#61; &#34;service&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [location](variables.tf#L15) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;europe&#34;</code> |
-| [region](variables.tf#L44) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [vpc_ip_cidr_range](variables.tf#L50) | Ip range used in the subnet deployef in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
-| [vpc_name](variables.tf#L56) | Name of the VPC created in the Service Project. | <code>string</code> |  | <code>&#34;local&#34;</code> |
-| [vpc_subnet_name](variables.tf#L62) | Name of the subnet created in the Service Project. | <code>string</code> |  | <code>&#34;subnet&#34;</code> |
+| [prefix](variables.tf#L28) | Optional prefix used to generate resources names. | <code>string</code> | ✓ |  |
+| [project_config](variables.tf#L34) | Provide 'billing_account_id' and 'parent' values if project creation is needed, uses existing 'projects_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string, null&#41;&#10;  parent             &#61; optional&#40;string, null&#41;&#10;  project_ids &#61; optional&#40;object&#40;&#123;&#10;    encryption &#61; string&#10;    service    &#61; string&#10;    &#125;&#41;, &#123;&#10;    encryption &#61; &#34;encryption&#34;,&#10;    service    &#61; &#34;service&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [deletion_protection](variables.tf#L15) | Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail. | <code>bool</code> |  | <code>false</code> |
+| [location](variables.tf#L22) | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;europe&#34;</code> |
+| [region](variables.tf#L51) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [vpc_ip_cidr_range](variables.tf#L57) | Ip range used in the subnet deployef in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
+| [vpc_name](variables.tf#L63) | Name of the VPC created in the Service Project. | <code>string</code> |  | <code>&#34;local&#34;</code> |
+| [vpc_subnet_name](variables.tf#L69) | Name of the subnet created in the Service Project. | <code>string</code> |  | <code>&#34;subnet&#34;</code> |
 
 ## Outputs
 
@@ -52,9 +52,7 @@ This sample creates several distinct groups of resources:
 | [projects](outputs.tf#L25) | Project ids. |  |
 | [vm](outputs.tf#L33) | GCE VM. |  |
 | [vm_keys](outputs.tf#L41) | GCE VM Cloud KMS crypto keys. |  |
-
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl
