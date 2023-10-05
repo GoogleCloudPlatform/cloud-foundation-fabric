@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ module "clusters" {
   labels = {
     mesh_id = "proj-${module.fleet_project.number}"
   }
+  deletion_protection = var.deletion_protection
 }
 
 module "cluster_nodepools" {

@@ -163,4 +163,5 @@ module "kms-gcs" {
   location       = var.region
   storage_class  = "REGIONAL"
   encryption_key = local.kms_keys.gcs
+  force_delete   = !var.deletion_protection
 }

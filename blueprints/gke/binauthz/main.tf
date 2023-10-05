@@ -96,6 +96,7 @@ module "cluster" {
     enable_private_endpoint = false
     master_global_access    = false
   }
+  deletion_protection = var.deletion_protection
 }
 
 module "cluster_nodepool" {

@@ -100,27 +100,29 @@ locals {
 }
 
 module "gcs-bucket" {
-  count          = var.bucket_name == null ? 0 : 1
-  source         = "../../../modules/gcs"
-  project_id     = module.project.project_id
-  name           = var.bucket_name
-  prefix         = var.prefix
-  location       = var.region
-  storage_class  = "REGIONAL"
-  versioning     = false
-  encryption_key = var.service_encryption_keys.storage
+  count               = var.bucket_name == null ? 0 : 1
+  source              = "../../../modules/gcs"
+  project_id          = module.project.project_id
+  name                = var.bucket_name
+  prefix              = var.prefix
+  location            = var.region
+  storage_class       = "REGIONAL"
+  versioning          = false
+  encryption_key      = var.service_encryption_keys.storage
+  deletion_protection = false
 }
 
 # Default bucket for Cloud Build to prevent error: "'us' violates constraint ‘gcp.resourceLocations’"
 # https://stackoverflow.com/questions/53206667/cloud-build-fails-with-resource-location-constraint
 module "gcs-bucket-cloudbuild" {
-  source         = "../../../modules/gcs"
-  project_id     = module.project.project_id
-  name           = "${module.project.project_id}_cloudbuild"
-  location       = var.region
-  storage_class  = "REGIONAL"
-  versioning     = false
-  encryption_key = var.service_encryption_keys.storage
+  source              = "../../../modules/gcs"
+  project_id          = module.project.project_id
+  name                = "${module.project.project_id}_cloudbuild"
+  location            = var.region
+  storage_class       = "REGIONAL"
+  versioning          = false
+  encryption_key      = var.service_encryption_keys.storage
+  deletion_protection = false
 }
 
 module "bq-dataset" {

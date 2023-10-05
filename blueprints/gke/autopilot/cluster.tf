@@ -47,7 +47,8 @@ module "cluster" {
   #     service_account = module.node_sa.email
   #   }
   # }
-  release_channel = "RAPID"
+  release_channel     = "RAPID"
+  deletion_protection = var.deletion_protection
   depends_on = [
     module.project
   ]

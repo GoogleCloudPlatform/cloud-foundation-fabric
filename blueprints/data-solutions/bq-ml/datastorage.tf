@@ -15,12 +15,13 @@
 # tfdoc:file:description Datastorage resources.
 
 module "bucket" {
-  source         = "../../../modules/gcs"
-  project_id     = module.project.project_id
-  prefix         = var.prefix
-  location       = var.location
-  name           = "data"
-  encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
+  source              = "../../../modules/gcs"
+  project_id          = module.project.project_id
+  prefix              = var.prefix
+  location            = var.location
+  name                = "data"
+  encryption_key      = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
+  deletion_protection = var.deletion_protection
 }
 
 module "dataset" {

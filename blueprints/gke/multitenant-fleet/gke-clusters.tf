@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,4 +41,5 @@ module "gke-cluster" {
       each.value.vpc_config.network, var.vpc_config.vpc_self_link
     )
   })
+  deletion_protection = var.deletion_protection
 }
