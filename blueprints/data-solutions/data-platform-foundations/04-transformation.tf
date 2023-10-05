@@ -97,7 +97,7 @@ module "transf-cs-df-0" {
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
-  force_delete   = !var.deletion_protection
+  force_destroy  = !var.deletion_protection
 }
 
 module "transf-sa-bq-0" {

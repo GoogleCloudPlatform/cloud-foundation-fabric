@@ -26,7 +26,7 @@ values:
       collation: null
       data_cache_config: []
       database_flags: []
-      deletion_protection_enabled: false
+      deletion_protection_enabled: true
       deny_maintenance_period: []
       disk_autoresize: true
       disk_autoresize_limit: 0

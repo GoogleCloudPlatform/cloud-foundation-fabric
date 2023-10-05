@@ -109,7 +109,7 @@ module "orch-cs-0" {
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
-  force_delete   = !var.deletion_protection
+  force_destroy  = !var.deletion_protection
 }
 
 module "orch-vpc" {
@@ -165,7 +165,7 @@ module "orch-cs-df-template" {
   location       = var.region
   storage_class  = "REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
-  force_delete   = !var.deletion_protection
+  force_destroy  = !var.deletion_protection
 }
 
 module "orch-cs-build-staging" {
@@ -176,7 +176,7 @@ module "orch-cs-build-staging" {
   location       = var.region
   storage_class  = "REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
-  force_delete   = !var.deletion_protection
+  force_destroy  = !var.deletion_protection
 }
 
 module "orch-sa-df-build" {
