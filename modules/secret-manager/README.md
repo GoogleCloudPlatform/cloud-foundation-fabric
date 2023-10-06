@@ -91,7 +91,7 @@ module "secret-manager" {
     global       = "projects/PROJECT_ID/locations/global/keyRings/KEYRING/cryptoKeys/KEY"
   }
 }
-# tftest modules=1 resources=1
+# tftest modules=1 resources=2
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
