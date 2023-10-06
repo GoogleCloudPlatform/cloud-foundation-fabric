@@ -62,6 +62,7 @@ variable "deletion_protection" {
 
 variable "display_name" {
   description = "The human-readable display name of the Bigtable instance."
+  type        = string
   default     = null
 }
 
