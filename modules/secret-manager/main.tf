@@ -46,9 +46,9 @@ resource "google_secret_manager_secret" "default" {
     content {
       auto {
         dynamic "customer_managed_encryption" {
-          for_each = lookup(var.encryption_keys, "global", null) == null ? [] : [""]
+          for_each = lookup(var.encryption_key, "global", null) == null ? [] : [""]
           content {
-            kms_key_name = var.encryption_keys["global"]
+            kms_key_name = var.encryption_key["global"]
           }
         }
       }
@@ -66,9 +66,9 @@ resource "google_secret_manager_secret" "default" {
           content {
             location = location.value
             dynamic "customer_managed_encryption" {
-              for_each = try(var.encryption_keys[location.value] != null ? [""] : [], [])
+              for_each = try(var.encryption_key[location.value] != null ? [""] : [], [])
               content {
-                kms_key_name = var.encryption_keys[location.value]
+                kms_key_name = var.encryption_key[location.value]
               }
             }
           }

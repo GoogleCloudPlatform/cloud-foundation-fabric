@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "encryption_keys" {
+variable "encryption_key" {
   description = "Self link of the KMS keys in {LOCATION => KEY} format. A key must be provided for all replica locations. {GLOBAL => KEY} format enables CMEK for automatic managed secrets."
   type        = map(string)
   default     = null
