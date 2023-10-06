@@ -106,6 +106,7 @@ variable "enable_features" {
       key_name = string
     }))
     dataplane_v2         = optional(bool, false)
+    fqdn_network_policy  = optional(bool, false)
     gateway_api          = optional(bool, false)
     groups_for_rbac      = optional(string)
     intranode_visibility = optional(bool, false)
@@ -127,6 +128,12 @@ variable "enable_features" {
   })
   default = {
     workload_identity = true
+  }
+  validation {
+    condition = (
+      var.enable_features.fqdn_network_policy ? var.enable_features.dataplane_v2 : true
+    )
+    error_message = "FQDN network policy is only supported for clusters with Dataplane v2."
   }
 }
 
