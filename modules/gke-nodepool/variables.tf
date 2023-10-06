@@ -64,9 +64,17 @@ variable "node_config" {
     ephemeral_ssd_count = optional(number)
     gcfs                = optional(bool, false)
     guest_accelerator = optional(object({
-      count              = number
-      type               = string
-      gpu_partition_size = optional(string)
+      count = number
+      type  = string
+      gpu_driver_installation_config = optional(object({
+        gpu_driver_version = string
+        gpu_partition_size = optional(string)
+        gpu_sharing_config = optional(object({
+          gpu_sharing_strategy       = string
+          max_shared_clients_per_gpu = number
+        }))
+
+      }))
     }))
     local_nvme_ssd_block_config = optional(object({
       local_ssd_count = number
