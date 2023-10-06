@@ -116,9 +116,10 @@ variable "project_id" {
 variable "psa_config" {
   description = "The Private Service Access configuration for Service Networking."
   type = object({
-    ranges        = map(string)
-    export_routes = optional(bool, false)
-    import_routes = optional(bool, false)
+    ranges         = map(string)
+    export_routes  = optional(bool, false)
+    import_routes  = optional(bool, false)
+    peered_domains = optional(list(string), [])
   })
   default = null
 }
