@@ -46,7 +46,7 @@ resource "google_secret_manager_secret" "default" {
     content {
       auto {
         dynamic "customer_managed_encryption" {
-          for_each = lookup(var.encryption_key, "global", null) == null ? [] : [""]
+          for_each = try(lookup(var.encryption_key, "global", null) == null ? [] : [""], [])
           content {
             kms_key_name = var.encryption_key["global"]
           }
