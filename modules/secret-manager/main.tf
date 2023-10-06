@@ -44,8 +44,14 @@ resource "google_secret_manager_secret" "default" {
   dynamic "replication" {
     for_each = each.value == null ? [""] : []
     content {
-      # TODO(jccb): support custom keys inside auto
-      auto {}
+      auto {
+        dynamic "customer_managed_encryption" {
+          for_each = lookup(var.encryption_keys, "global", null) == null ? [] : [""]
+          content {
+            kms_key_name = var.encryption_keys["global"]
+          }
+        }
+      }
     }
   }
 
@@ -60,9 +66,9 @@ resource "google_secret_manager_secret" "default" {
           content {
             location = location.value
             dynamic "customer_managed_encryption" {
-              for_each = try(var.encryption_key[location.value] != null ? [""] : [], [])
+              for_each = try(var.encryption_keys[location.value] != null ? [""] : [], [])
               content {
-                kms_key_name = var.encryption_key[location.value]
+                kms_key_name = var.encryption_keys[location.value]
               }
             }
           }

@@ -82,23 +82,23 @@ module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
   secrets = {
+    test-auto       = null
     test-encryption = ["europe-west1", "europe-west4"]
   }
-  encryption_key = {
+  encryption_keys = {
     europe-west1 = "projects/PROJECT_ID/locations/europe-west1/keyRings/KEYRING/cryptoKeys/KEY"
     europe-west4 = "projects/PROJECT_ID/locations/europe-west4/keyRings/KEYRING/cryptoKeys/KEY"
+    global       = "projects/PROJECT_ID/locations/global/keyRings/KEYRING/cryptoKeys/KEY"
   }
 }
 # tftest modules=1 resources=1
-```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [project_id](variables.tf#L35) | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
-| [encryption_key](variables.tf#L17) | Self link of the KMS keys in {LOCATION => KEY} format. A key must be provided for all replica locations. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [encryption_keys](variables.tf#L17) | Self link of the KMS keys in {LOCATION => KEY} format. A key must be provided for all replica locations. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [iam](variables.tf#L23) | IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L29) | Optional labels for each secret. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [secrets](variables.tf#L40) | Map of secrets to manage and their locations. If locations is null, automatic management will be set. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -112,7 +112,6 @@ module "secret-manager" {
 | [secrets](outputs.tf#L24) | Secret resources. |  |
 | [version_ids](outputs.tf#L29) | Version ids keyed by secret name : version name. |  |
 | [versions](outputs.tf#L36) | Secret versions. | ✓ |
-
 <!-- END TFDOC -->
 ## Requirements
 
