@@ -19,11 +19,15 @@ import glob
 import os
 import shutil
 import tempfile
+import textwrap
+import time
 from pathlib import Path
 
 import pytest
 import tftest
 import yaml
+
+import pdb
 
 _REPO_ROOT = Path(__file__).parents[1]
 PlanSummary = collections.namedtuple('PlanSummary', 'values counts outputs')
@@ -38,22 +42,23 @@ def _prepare_root_module(path):
   terraform.tfvars) are deleted to ensure a clean test environment.
   Otherwise, `path` is simply returned untouched.
   """
+  # if we're copying the module, we might as well ignore files and
+  # directories that are automatically read by terraform. Useful
+  # to avoid surprises if, for example, you have an active fast
+  # deployment with links to configs)
+  ignore_patterns = shutil.ignore_patterns('*.auto.tfvars',
+                                           '*.auto.tfvars.json',
+                                           '[0-9]-*-providers.tf',
+                                           'terraform.tfstate*',
+                                           '.terraform.lock.hcl',
+                                           'terraform.tfvars', '.terraform')
+
   if os.environ.get('TFTEST_COPY'):
     # if the TFTEST_COPY is set, create temp dir and copy the root
     # module there
     with tempfile.TemporaryDirectory(dir=path.parent) as tmp_path:
+      print(tmp_path)
       tmp_path = Path(tmp_path)
-
-      # if we're copying the module, we might as well ignore files and
-      # directories that are automatically read by terraform. Useful
-      # to avoid surprises if, for example, you have an active fast
-      # deployment with links to configs)
-      ignore_patterns = shutil.ignore_patterns('*.auto.tfvars',
-                                               '*.auto.tfvars.json',
-                                               '[0-9]-*-providers.tf',
-                                               'terraform.tfstate*',
-                                               '.terraform.lock.hcl',
-                                               'terraform.tfvars', '.terraform')
 
       shutil.copytree(path, tmp_path, dirs_exist_ok=True,
                       ignore=ignore_patterns)
@@ -64,6 +69,11 @@ def _prepare_root_module(path):
       yield tmp_path
   else:
     # if TFTEST_COPY is not set, just return the same path
+
+    if unwanted_files := ignore_patterns(path, os.listdir()):
+      # prevent shorting yourself in the foot (unexpected test results) when ignored files are present
+      raise RuntimeError(f'Test in path {path} contains {", ".join(unwanted_files)} which may affect '
+                         f'test results. Please run tests with TFTEST_COPY=1 environmental variable')
     yield path
 
 
@@ -298,6 +308,42 @@ def e2e_validator_fixture(request):
       basedir = Path(request.fspath).parent
     return e2e_validator(module_path, extra_files, tf_var_files, basedir)
   return inner
+
+
+@pytest.fixture(scope='session', name='e2e_tfvars_path')
+def e2e_tfvars_path(request):
+  if tfvars_path := os.environ.get('TFTEST_E2E_TFVARS_PATH'):
+    # no need to set up the project
+    if int(os.environ.get('PYTEST_XDIST_WORKER_COUNT', '0')) > 1:
+      raise RuntimeError('Setting TFTEST_E2E_TFVARS_PATH is not compatible with running tests in parallel')
+    yield tfvars_path
+  else:
+    with _prepare_root_module(_REPO_ROOT / 'tests' / 'examples_e2e' / 'setup_module') as test_path:
+      if service_account := os.environ.get('TFTEST_E2E_SERVICE_ACCOUNT'):
+        (test_path / 'providers.tf').write_text(textwrap.dedent(f'''
+          provider "google" {{
+            impersonate_service_account = "{service_account}"
+          }}
+
+          provider "google-beta" {{
+            impersonate_service_account = "{service_account}"
+          }}
+  ''').strip('\n'))
+      binary = os.environ.get('TERRAFORM', 'terraform')
+      tf = tftest.TerraformTest(test_path, binary=binary)
+      tf_vars = {
+        'billing_account': os.environ.get("TFTEST_E2E_BILLING_ACCOUNT"),
+        'organization_id': os.environ.get("TFTEST_E2E_ORGANIZATION_ID"),
+        'parent': os.environ.get("TFTEST_E2E_PARENT"),
+        'prefix': os.environ.get("TFTEST_E2E_PREFIX"),
+        'region': os.environ.get("TFTEST_E2E_REGION", "europe-west4"),
+        'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0"),
+        'timestamp': str(int(time.time()))
+      }
+      tf.setup(upgrade=True)
+      tf.apply(tf_vars=tf_vars)
+      yield test_path / "e2e_tests.tfvars"
+      tf.destroy(tf_vars=tf_vars)
 
 # @pytest.fixture
 # def repo_root():

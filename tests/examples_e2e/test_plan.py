@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 import re
+import textwrap
 
 from pathlib import Path
 
@@ -21,16 +23,26 @@ COUNT_TEST_RE = re.compile(r'# tftest +modules=(\d+) +resources=(\d+)' +
                            r'(?: +inventory=([\w\-.]+))?')
 
 
-def test_example(e2e_validator, tmp_path, examples_e2e):
+def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
   (tmp_path / 'fabric').symlink_to(BASE_PATH.parents[1])
   (tmp_path / 'variables.tf').symlink_to(BASE_PATH / 'variables.tf')
   (tmp_path / 'main.tf').write_text(examples_e2e.code)
-  (tmp_path / 'providers.tf').symlink_to(BASE_PATH / 'providers.tf')
+  if service_account := os.environ.get('TFTEST_E2E_SERVICE_ACCOUNT'):
+    (tmp_path / 'providers.tf').write_text(textwrap.dedent(f'''
+          provider "google" {{
+            impersonate_service_account = "{service_account}"
+          }}
+
+          provider "google-beta" {{
+            impersonate_service_account = "{service_account}"
+          }}
+''').strip('\n'))
+
   # for now, let it be a static file
   # for parallel runs, use session scope fixture to generate contests (based on thread id?), and write this content
   # to the file
   # helpful link: https://www.seleniumeasy.com/python/pytest-run-webdriver-tests-in-parallel
-  (tmp_path / 'terraform.tfvars').symlink_to(BASE_PATH / 'terraform.tfvars')
+  (tmp_path / 'terraform.tfvars').symlink_to(e2e_tfvars_path)
 
 
   # module_path = tmp_path

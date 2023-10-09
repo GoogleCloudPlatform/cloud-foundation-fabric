@@ -7,7 +7,7 @@ locals {
 module "folder" {
   source = "../../../modules/folder"
   parent = var.parent
-  name   = "Testing folder"
+  name   = "E2E Tests ${var.timestamp}-${var.suffix}"
 }
 
 
@@ -25,6 +25,7 @@ module "bucket" {
   name       = "bucket"
   prefix     = local.prefix
   project_id = module.project.id
+  force_destroy = true
 }
 
 
@@ -43,8 +44,8 @@ module "vpc" {
 
 
 resource "local_file" "terraform_tfvars" {
-  filename = "../terraform.tfvars"
-  content = templatefile("terraform.tfvars.tftpl", {
+  filename = "e2e_tests.tfvars"
+  content = templatefile("e2e_tests.tfvars.tftpl", {
     bucket             = module.bucket.name
     billing_account_id = var.billing_account
     organization_id    = var.organization_id
