@@ -218,7 +218,7 @@ variable "project_id" {
 variable "requester_pays" {
   description = "Enables Requester Pays on a storage bucket."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "retention_policy" {
