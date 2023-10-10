@@ -71,8 +71,10 @@ def _prepare_root_module(path):
 
     if unwanted_files := ignore_patterns(path, os.listdir(path=path)):
       # prevent shooting yourself in the foot (unexpected test results) when ignored files are present
-      raise RuntimeError(f'Test in path {path} contains {", ".join(unwanted_files)} which may affect '
-                         f'test results. Please run tests with TFTEST_COPY=1 environmental variable')
+      raise RuntimeError(
+          f'Test in path {path} contains {", ".join(unwanted_files)} which may affect '
+          f'test results. Please run tests with TFTEST_COPY=1 environmental variable'
+      )
     yield path
 
 
@@ -199,7 +201,8 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
     # - include a descriptive error message to the assert
 
     if 'values' in inventory:
-      validate_plan_object(inventory['values'], summary.values, relative_path, "")
+      validate_plan_object(inventory['values'], summary.values, relative_path,
+                           "")
 
     if 'counts' in inventory:
       expected_counts = inventory['counts']
@@ -225,7 +228,8 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
   return summary
 
 
-def validate_plan_object(expected_value, plan_value, relative_path, relative_address):
+def validate_plan_object(expected_value, plan_value, relative_path,
+                         relative_address):
   """
   Validate that plan object matches inventory
 
@@ -242,7 +246,8 @@ def validate_plan_object(expected_value, plan_value, relative_path, relative_add
     for k, v in expected_value.items():
       assert k in plan_value, \
         f'{relative_path}: {k} is not a valid address in the plan'
-      validate_plan_object(v, plan_value[k], relative_path, f'{relative_address}.{k}')
+      validate_plan_object(v, plan_value[k], relative_path,
+                           f'{relative_address}.{k}')
 
   # lists
   elif isinstance(expected_value, list) and isinstance(plan_value, list):
@@ -250,7 +255,8 @@ def validate_plan_object(expected_value, plan_value, relative_path, relative_add
       f'{relative_path}: {relative_address} has different length. Got {plan_value}, expected {expected_value}'
 
     for i, (exp, actual) in enumerate(zip(expected_value, plan_value)):
-      validate_plan_object(exp, actual, relative_path, f'{relative_address}[{i}]')
+      validate_plan_object(exp, actual, relative_path,
+                           f'{relative_address}[{i}]')
 
   # all other objects
   else:
@@ -278,7 +284,8 @@ def plan_validator_fixture(request):
   return inner
 
 
-def e2e_validator(module_path: str, extra_files: list, tf_var_files: list, basedir: os.PathLike = None):
+def e2e_validator(module_path: str, extra_files: list, tf_var_files: list,
+                  basedir: os.PathLike = None):
   module_path = _REPO_ROOT / module_path
   with _prepare_root_module(module_path) as test_path:
     binary = os.environ.get('TERRAFORM', 'terraform')
@@ -290,22 +297,34 @@ def e2e_validator(module_path: str, extra_files: list, tf_var_files: list, based
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
 
     try:
-      apply = tf.apply(tf_var_file=tf_var_files)  # type: tftest.TerraformCommandOutput.out
-      plan = tf.plan(output=True, tf_var_file=tf_var_files)  # type: tftest.TerraformPlanOutput
-      changes = dict((k, v['change'])for k, v in plan.resource_changes.items() if v.get('change', {}).get('actions') != ['no-op'])
-      assert dict((k, v['before']) for k, v in changes.items()) == dict((k, v['after']) for k, v in changes.items())
-      assert dict((k, v['before_sensitive']) for k, v in changes.items()) == dict((k, v['after_sensitive']) for k, v in changes.items())
+      apply = tf.apply(
+          tf_var_file=tf_var_files)  # type: tftest.TerraformCommandOutput.out
+      plan = tf.plan(
+          output=True,
+          tf_var_file=tf_var_files)  # type: tftest.TerraformPlanOutput
+      changes = dict((k, v['change'])
+                     for k, v in plan.resource_changes.items()
+                     if v.get('change', {}).get('actions') != ['no-op'])
+      assert dict((k, v['before']) for k, v in changes.items()) == dict(
+          (k, v['after']) for k, v in changes.items())
+      assert dict(
+          (k, v['before_sensitive']) for k, v in changes.items()) == dict(
+              (k, v['after_sensitive']) for k, v in changes.items())
       assert changes == {}, f'Plan not empty for following resources: {", ".join(changes.keys())}'
     finally:
-      destroy = tf.destroy(tf_var_file=tf_var_files)  # type: tftest.TerraformCommandOutput.out
+      destroy = tf.destroy(
+          tf_var_file=tf_var_files)  # type: tftest.TerraformCommandOutput.out
 
 
 @pytest.fixture(name='e2e_validator')
 def e2e_validator_fixture(request):
-  def inner(module_path: str, extra_files: list, tf_var_files: list, basedir: os.PathLike = None):
+
+  def inner(module_path: str, extra_files: list, tf_var_files: list,
+            basedir: os.PathLike = None):
     if basedir is None:
       basedir = Path(request.fspath).parent
     return e2e_validator(module_path, extra_files, tf_var_files, basedir)
+
   return inner
 
 
@@ -314,12 +333,16 @@ def e2e_tfvars_path(request):
   if tfvars_path := os.environ.get('TFTEST_E2E_TFVARS_PATH'):
     # no need to set up the project
     if int(os.environ.get('PYTEST_XDIST_WORKER_COUNT', '0')) > 1:
-      raise RuntimeError('Setting TFTEST_E2E_TFVARS_PATH is not compatible with running tests in parallel')
+      raise RuntimeError(
+          'Setting TFTEST_E2E_TFVARS_PATH is not compatible with running tests in parallel'
+      )
     yield tfvars_path
   else:
-    with _prepare_root_module(_REPO_ROOT / 'tests' / 'examples_e2e' / 'setup_module') as test_path:
+    with _prepare_root_module(_REPO_ROOT / 'tests' / 'examples_e2e' /
+                              'setup_module') as test_path:
       if service_account := os.environ.get('TFTEST_E2E_SERVICE_ACCOUNT'):
-        (test_path / 'providers.tf').write_text(textwrap.dedent(f'''
+        (test_path / 'providers.tf').write_text(
+            textwrap.dedent(f'''
           provider "google" {{
             impersonate_service_account = "{service_account}"
           }}
@@ -331,18 +354,19 @@ def e2e_tfvars_path(request):
       binary = os.environ.get('TERRAFORM', 'terraform')
       tf = tftest.TerraformTest(test_path, binary=binary)
       tf_vars = {
-        'billing_account': os.environ.get("TFTEST_E2E_BILLING_ACCOUNT"),
-        'organization_id': os.environ.get("TFTEST_E2E_ORGANIZATION_ID"),
-        'parent': os.environ.get("TFTEST_E2E_PARENT"),
-        'prefix': os.environ.get("TFTEST_E2E_PREFIX"),
-        'region': os.environ.get("TFTEST_E2E_REGION", "europe-west4"),
-        'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0"),
-        'timestamp': str(int(time.time()))
+          'billing_account': os.environ.get("TFTEST_E2E_BILLING_ACCOUNT"),
+          'organization_id': os.environ.get("TFTEST_E2E_ORGANIZATION_ID"),
+          'parent': os.environ.get("TFTEST_E2E_PARENT"),
+          'prefix': os.environ.get("TFTEST_E2E_PREFIX"),
+          'region': os.environ.get("TFTEST_E2E_REGION", "europe-west4"),
+          'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0"),
+          'timestamp': str(int(time.time()))
       }
       tf.setup(upgrade=True)
       tf.apply(tf_vars=tf_vars)
       yield test_path / "e2e_tests.tfvars"
       tf.destroy(tf_vars=tf_vars)
+
 
 # @pytest.fixture
 # def repo_root():

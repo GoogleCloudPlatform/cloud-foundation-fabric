@@ -28,7 +28,8 @@ def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
   (tmp_path / 'variables.tf').symlink_to(BASE_PATH / 'variables.tf')
   (tmp_path / 'main.tf').write_text(examples_e2e.code)
   if service_account := os.environ.get('TFTEST_E2E_SERVICE_ACCOUNT'):
-    (tmp_path / 'providers.tf').write_text(textwrap.dedent(f'''
+    (tmp_path / 'providers.tf').write_text(
+        textwrap.dedent(f'''
           provider "google" {{
             impersonate_service_account = "{service_account}"
           }}
@@ -44,6 +45,6 @@ def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
   # helpful link: https://www.seleniumeasy.com/python/pytest-run-webdriver-tests-in-parallel
   (tmp_path / 'terraform.tfvars').symlink_to(e2e_tfvars_path)
 
-
   # module_path = tmp_path
-  e2e_validator(module_path=tmp_path, extra_files=[], tf_var_files=[(tmp_path / 'terraform.tfvars')])
+  e2e_validator(module_path=tmp_path, extra_files=[],
+                tf_var_files=[(tmp_path / 'terraform.tfvars')])
