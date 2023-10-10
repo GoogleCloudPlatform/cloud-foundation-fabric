@@ -34,7 +34,7 @@ variable "custom_placement_config" {
 variable "default_event_based_hold" {
   description = "Enable event based hold to new objects added to specific bucket, defaults to false."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "encryption_key" {
