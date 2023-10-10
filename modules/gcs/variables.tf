@@ -31,7 +31,7 @@ variable "custom_placement_config" {
   description = "The bucket's custom location configuration, which specifies the individual regions that comprise a dual-region bucket. If the bucket is designated a single or multi-region, the parameters are empty."
 
   validation {
-    condition     =  var.storage_class == "MULTI_REGIONAL" || var.storage_class == "REGIONAL"
+    condition     = var.storage_class == "MULTI_REGIONAL" || var.storage_class == "REGIONAL"
     error_message = "The storage class must not be set on MULTI_REGIONAL or REGIONAL"
   }
 }
