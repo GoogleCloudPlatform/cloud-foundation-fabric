@@ -29,7 +29,7 @@ pytest tests/examples_e2e
 
 # Option 2 - Provision manually test environment and use it for tests
 ## Provision manually test environment
-In `tests/examples_e2e/setup_module` create `terraform.tfvars with following values:
+In `tests/examples_e2e/setup_module` create `terraform.tfvars` with following values:
 ```hcl
 billing_account = "123456-123456-123456"  # billing account id to associate projects
 organization_id = "1234567890"  # your organization id
@@ -63,7 +63,7 @@ This will generate also `tests/examples_e2e/setup_module/e2e_tests.tfvars` for y
 ## Setup your environment
 ```bash
 export TFTEST_E2E_TFVARS_PATH=`pwd`/tests/examples_e2e/setup_module/e2e_tests.tfvars  # generated above
-export TFTEST_E2E_SERVICE_ACCOUNT=<your_service_account_email>  # your service account e-mail to use
+export TFTEST_E2E_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com  # your service account e-mail to use
 ```
 
 ## Run tests
