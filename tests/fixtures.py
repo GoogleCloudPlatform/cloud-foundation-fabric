@@ -57,7 +57,6 @@ def _prepare_root_module(path):
     # if the TFTEST_COPY is set, create temp dir and copy the root
     # module there
     with tempfile.TemporaryDirectory(dir=path.parent) as tmp_path:
-      print(tmp_path)
       tmp_path = Path(tmp_path)
 
       shutil.copytree(path, tmp_path, dirs_exist_ok=True,
