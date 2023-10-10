@@ -109,7 +109,7 @@ variable "logging_exclusions" {
 }
 
 variable "logging_sinks" {
-  description = "Logging sinks to create for the organization."
+  description = "Logging sinks to create for the folder."
   type = map(object({
     bq_partitioned_table = optional(bool)
     description          = optional(string)
