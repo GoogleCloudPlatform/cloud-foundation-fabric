@@ -70,8 +70,8 @@ def _prepare_root_module(path):
   else:
     # if TFTEST_COPY is not set, just return the same path
 
-    if unwanted_files := ignore_patterns(path, os.listdir()):
-      # prevent shorting yourself in the foot (unexpected test results) when ignored files are present
+    if unwanted_files := ignore_patterns(path, os.listdir(path=path)):
+      # prevent shooting yourself in the foot (unexpected test results) when ignored files are present
       raise RuntimeError(f'Test in path {path} contains {", ".join(unwanted_files)} which may affect '
                          f'test results. Please run tests with TFTEST_COPY=1 environmental variable')
     yield path
