@@ -36,10 +36,10 @@ resource "google_container_cluster" "cluster" {
 
   addons_config {
     http_load_balancing {
-      disabled = !var.enable_addons.http_load_balancing
+      disabled = false
     }
     horizontal_pod_autoscaling {
-      disabled = !var.enable_addons.horizontal_pod_autoscaling
+      disabled = false
     }
     cloudrun_config {
       disabled = !var.enable_addons.cloudrun
