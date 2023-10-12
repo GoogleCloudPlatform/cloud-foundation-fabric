@@ -115,14 +115,12 @@ variable "location" {
 variable "materialized_views" {
   description = "Materialized views definitions."
   type = map(object({
-    query                            = string
     allow_non_incremental_definition = optional(bool)
     deletion_protection              = optional(bool)
     description                      = optional(string, "Terraform managed.")
     enable_refresh                   = optional(bool)
     friendly_name                    = optional(string)
     labels                           = optional(map(string), {})
-    refresh_interval_ms              = optional(bool)
     options = optional(object({
       clustering      = optional(list(string))
       expiration_time = optional(number)
@@ -135,12 +133,14 @@ variable "materialized_views" {
         start    = number
       }))
       time = optional(object({
-        type                     = string
         expiration_ms            = optional(number)
         field                    = optional(string)
         require_partition_filter = optional(bool)
+        type                     = string
       }))
     }))
+    query               = string
+    refresh_interval_ms = optional(bool)
   }))
   default = {}
 }
