@@ -219,7 +219,7 @@ resource "google_container_node_pool" "nodepool" {
       content {
         key    = taint.key
         value  = taint.value.value
-        effect = taint.effect
+        effect = taint.value.effect
       }
     }
     dynamic "workload_metadata_config" {
