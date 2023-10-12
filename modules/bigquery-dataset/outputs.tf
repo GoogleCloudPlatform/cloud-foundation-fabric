@@ -47,6 +47,16 @@ output "id" {
   ]
 }
 
+output "materialized_view_ids" {
+  description = "Map of fully qualified materialized view ids keyed by view ids."
+  value       = { for k, v in google_bigquery_table.materialized_view : v.table_id => v.id }
+}
+
+output "materialized_view" {
+  description = "Materialized view resources."
+  value       = google_bigquery_table.materialized_view
+}
+
 output "self_link" {
   description = "Dataset self link."
   value       = google_bigquery_dataset.default.self_link
@@ -79,14 +89,4 @@ output "view_ids" {
 output "views" {
   description = "View resources."
   value       = google_bigquery_table.views
-}
-
-output "materialized_view_ids" {
-  description = "Map of fully qualified materialized view ids keyed by view ids."
-  value       = { for k, v in google_bigquery_table.materialized_view : v.table_id => v.id }
-}
-
-output "materialized_view" {
-  description = "Materialized view resources."
-  value       = google_bigquery_table.materialized_view
 }
