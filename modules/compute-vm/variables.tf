@@ -355,12 +355,6 @@ variable "snapshot_schedules" {
   }
 }
 
-variable "stack_type" {
-  description = "The stack type for this network interface to identify whether the IPv6 feature is enabled or not. Values are IPV4_IPV6 or IPV4_ONLY. If not specified, IPV4_ONLY will be used."
-  type        = string
-  default     = "IPV4_ONLY"
-}
-
 variable "tag_bindings" {
   description = "Tag bindings for this instance, in key => tag value id format."
   type        = map(string)
