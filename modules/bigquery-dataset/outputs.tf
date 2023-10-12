@@ -52,7 +52,7 @@ output "materialized_view_ids" {
   value       = { for k, v in google_bigquery_table.materialized_view : v.table_id => v.id }
 }
 
-output "materialized_view" {
+output "materialized_views" {
   description = "Materialized view resources."
   value       = google_bigquery_table.materialized_view
 }
