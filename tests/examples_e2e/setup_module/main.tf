@@ -35,10 +35,10 @@ module "project" {
 }
 
 module "bucket" {
-  source     = "../../../modules/gcs"
-  name       = "bucket"
-  prefix     = local.prefix
-  project_id = module.project.id
+  source        = "../../../modules/gcs"
+  name          = "bucket"
+  prefix        = local.prefix
+  project_id    = module.project.id
   force_destroy = true
 }
 
