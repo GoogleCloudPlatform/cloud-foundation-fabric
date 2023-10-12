@@ -311,4 +311,6 @@ module "bigquery-dataset" {
 | [tables](outputs.tf#L69) | Table resources. |  |
 | [view_ids](outputs.tf#L74) | Map of fully qualified view ids keyed by view ids. |  |
 | [views](outputs.tf#L79) | View resources. |  |
+| [materialized_view_ids](outputs.tf#L84) | Map of fully qualified materialized view ids keyed by view ids. |  |
+| [materialized_view](outputs.tf#L89) | Materialized view resources. |  |
 <!-- END TFDOC -->
