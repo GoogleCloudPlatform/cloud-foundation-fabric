@@ -50,21 +50,14 @@ variable "description" {
 variable "enable_addons" {
   description = "Addons enabled in the cluster (true means enabled)."
   type = object({
-    cloudrun                   = optional(bool, false)
-    config_connector           = optional(bool, false)
-    dns_cache                  = optional(bool, false)
-    horizontal_pod_autoscaling = optional(bool, false)
-    http_load_balancing        = optional(bool, false)
+    cloudrun         = optional(bool, false)
+    config_connector = optional(bool, false)
     istio = optional(object({
       enable_tls = bool
     }))
-    kalm           = optional(bool, false)
-    network_policy = optional(bool, false)
+    kalm = optional(bool, false)
   })
-  default = {
-    horizontal_pod_autoscaling = true
-    http_load_balancing        = true
-  }
+  default  = {}
   nullable = false
 }
 
