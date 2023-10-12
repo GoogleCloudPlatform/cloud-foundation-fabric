@@ -35,9 +35,11 @@ resource "google_container_cluster" "cluster" {
   deletion_protection      = var.deletion_protection
 
   addons_config {
+    # HTTP Load Balancing is required to be enabled in Autopilot clusters
     http_load_balancing {
       disabled = false
     }
+    # Horizontal Pod Autoscaling is required to be enabled in Autopilot clusters
     horizontal_pod_autoscaling {
       disabled = false
     }
