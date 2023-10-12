@@ -180,6 +180,7 @@ module "bucket" {
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L158) | Bucket name suffix. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L213) | Bucket project id. | <code>string</code> | ✓ |  |
+| [autoclass](variables.tf#L255) | Enable autoclass to automatically transition objects to appropriate storage classes based on their access pattern. If set to true, storage_class must be set to STANDARD. Defaults to false. | <code>bool</code> |  | <code>false</code> |
 | [cors](variables.tf#L17) | CORS configuration for the bucket. Defaults to null. | <code title="object&#40;&#123;&#10;  origin          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  method          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  response_header &#61; optional&#40;list&#40;string&#41;&#41;&#10;  max_age_seconds &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [custom_placement_config](variables.tf#L28) | The bucket's custom location configuration, which specifies the individual regions that comprise a dual-region bucket. If the bucket is designated as REGIONAL or MULTI_REGIONAL, the parameters are empty. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [default_event_based_hold](variables.tf#L34) | Enable event based hold to new objects added to specific bucket, defaults to false. | <code>bool</code> |  | <code>null</code> |
@@ -200,7 +201,7 @@ module "bucket" {
 | [storage_class](variables.tf#L233) | Bucket storage class. | <code>string</code> |  | <code>&#34;MULTI_REGIONAL&#34;</code> |
 | [uniform_bucket_level_access](variables.tf#L243) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
 | [versioning](variables.tf#L249) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>false</code> |
-| [website](variables.tf#L255) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; optional&#40;string&#41;&#10;  not_found_page   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [website](variables.tf#L261) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; optional&#40;string&#41;&#10;  not_found_page   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

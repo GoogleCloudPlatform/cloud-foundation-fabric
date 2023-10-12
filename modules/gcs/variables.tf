@@ -252,6 +252,12 @@ variable "versioning" {
   default     = false
 }
 
+variable "autoclass" {
+  description = "Enable autoclass to automatically transition objects to appropriate storage classes based on their access pattern. If set to true, storage_class must be set to STANDARD. Defaults to false."
+  type        = bool
+  default     = false
+}
+
 variable "website" {
   description = "Bucket website."
   type = object({

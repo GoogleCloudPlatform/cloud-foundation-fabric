@@ -32,6 +32,9 @@ resource "google_storage_bucket" "bucket" {
   versioning {
     enabled = var.versioning
   }
+  autoclass {
+    enabled = var.autoclass
+  }
 
   dynamic "website" {
     for_each = var.website == null ? [] : [""]
