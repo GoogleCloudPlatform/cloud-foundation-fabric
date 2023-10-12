@@ -235,6 +235,7 @@ resource "google_compute_instance" "default" {
     iterator = config
     content {
       network    = config.value.network
+      stack_type = config.value.stack_type
       subnetwork = config.value.subnetwork
       network_ip = try(config.value.addresses.internal, null)
       dynamic "access_config" {
