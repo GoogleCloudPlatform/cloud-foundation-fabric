@@ -215,11 +215,11 @@ resource "google_container_node_pool" "nodepool" {
       }
     }
     dynamic "taint" {
-      for_each = var.taints
+      for_each = var.taints == null ? [] : concat(var.taints, local.taints_windows)
       content {
-        key    = taint.key
-        value  = taint.value.value
-        effect = taint.effect
+        key    = each.value.key
+        value  = each.value.value
+        effect = each.value.effect
       }
     }
     dynamic "workload_metadata_config" {
