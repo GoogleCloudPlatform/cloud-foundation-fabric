@@ -47,13 +47,12 @@ locals {
       "https://www.googleapis.com/auth/userinfo.email"
     ]
   )
-  taints_windows = (
-    local.image.is_win
-    ? [{
-      key = "node.kubernetes.io/os", value = "windows", effect = "NO_EXECUTE"
-    }]
-    : []
-  )
+  taints = merge(var.taints, !local.image.is_win ? {} : {
+    "node.kubernetes.io/os" = {
+      value  = "windows"
+      effect = "NO_EXECUTE"
+    }
+  })
 }
 
 resource "google_service_account" "service_account" {
@@ -215,7 +214,7 @@ resource "google_container_node_pool" "nodepool" {
       }
     }
     dynamic "taint" {
-      for_each = var.taints
+      for_each = local.taints
       content {
         key    = taint.key
         value  = taint.value.value
