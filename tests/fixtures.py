@@ -27,7 +27,6 @@ import pytest
 import tftest
 import yaml
 
-import pdb
 
 _REPO_ROOT = Path(__file__).parents[1]
 PlanSummary = collections.namedtuple('PlanSummary', 'values counts outputs')
@@ -286,6 +285,12 @@ def plan_validator_fixture(request):
 
 def e2e_validator(module_path: str, extra_files: list, tf_var_files: list,
                   basedir: os.PathLike = None):
+  """Function running apply, plan and destroy to verify the case end to end
+
+  1. Tests whether apply does not return errors
+  2. Tests whether plan after apply is empty
+  3. Tests whether destroy does not return errors
+  """
   module_path = _REPO_ROOT / module_path
   with _prepare_root_module(module_path) as test_path:
     binary = os.environ.get('TERRAFORM', 'terraform')
@@ -298,27 +303,35 @@ def e2e_validator(module_path: str, extra_files: list, tf_var_files: list,
 
     try:
       apply = tf.apply(
-          tf_var_file=tf_var_files)  # type: tftest.TerraformCommandOutput.out
+          tf_var_file=tf_var_files)
       plan = tf.plan(
           output=True,
-          tf_var_file=tf_var_files)  # type: tftest.TerraformPlanOutput
+          tf_var_file=tf_var_files)
       changes = dict((k, v['change'])
                      for k, v in plan.resource_changes.items()
                      if v.get('change', {}).get('actions') != ['no-op'])
+      # compare before with after to raise more meaningful failure to the user, i.e one
+      # that shows how resource will change
       assert dict((k, v['before']) for k, v in changes.items()) == dict(
           (k, v['after']) for k, v in changes.items())
       assert dict(
           (k, v['before_sensitive']) for k, v in changes.items()) == dict(
               (k, v['after_sensitive']) for k, v in changes.items())
+      # If above did not fail, this should not either, but left as a safety check
       assert changes == {}, f'Plan not empty for following resources: {", ".join(changes.keys())}'
     finally:
       destroy = tf.destroy(
-          tf_var_file=tf_var_files)  # type: tftest.TerraformCommandOutput.out
+          tf_var_file=tf_var_files)
 
 
 @pytest.fixture(name='e2e_validator')
 def e2e_validator_fixture(request):
+  """Return a function to run end-to-end test
 
+  In the returned function `basedir` becomes optional and it defaults
+  to the directory of the calling test
+
+  """
   def inner(module_path: str, extra_files: list, tf_var_files: list,
             basedir: os.PathLike = None):
     if basedir is None:
@@ -330,6 +343,16 @@ def e2e_validator_fixture(request):
 
 @pytest.fixture(scope='session', name='e2e_tfvars_path')
 def e2e_tfvars_path(request):
+  """Fixture preparing end-to-end test environment
+
+  If TFTEST_E2E_TFVARS_PATH is set in the environment, then assume the environment is already provisioned
+  and necessary variables are set in the file to which variable is pointing to.
+
+  Otherwise, create a unique test environment (in case of multiple workers - as many environments as
+  there are workers), that will be injected into each example test instead of `tests/examples/variables.tf`.
+
+  Returns path to tfvars file that contains information about envrionment to use for the tests.
+  """
   if tfvars_path := os.environ.get('TFTEST_E2E_TFVARS_PATH'):
     # no need to set up the project
     if int(os.environ.get('PYTEST_XDIST_WORKER_COUNT', '0')) > 1:

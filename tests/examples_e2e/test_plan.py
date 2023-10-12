@@ -39,12 +39,7 @@ def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
           }}
 ''').strip('\n'))
 
-  # for now, let it be a static file
-  # for parallel runs, use session scope fixture to generate contests (based on thread id?), and write this content
-  # to the file
-  # helpful link: https://www.seleniumeasy.com/python/pytest-run-webdriver-tests-in-parallel
   (tmp_path / 'terraform.tfvars').symlink_to(e2e_tfvars_path)
 
-  # module_path = tmp_path
   e2e_validator(module_path=tmp_path, extra_files=[],
                 tf_var_files=[(tmp_path / 'terraform.tfvars')])

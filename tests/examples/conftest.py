@@ -14,8 +14,6 @@
 """Pytest configuration for testing code examples."""
 
 import collections
-import os
-import typing
 import re
 from pathlib import Path
 
@@ -29,19 +27,15 @@ Example = collections.namedtuple('Example', 'name code module files')
 File = collections.namedtuple('File', 'path content')
 
 
-def get_tftest_directive(s: str) -> typing.Optional[str]:
-  tftest = [
-      x for x in s.split(os.linesep)
-      if x.strip().startswith("#") and 'tftest' in x
-  ]
-
-  if len(tftest) > 0:
-    return tftest[0]
-  else:
-    return None
+def get_tftest_directive(s):
+  """Returns tftest directive from code block or None when directive is not found"""
+  for x in s.splitlines():
+    if x.strip().startswith("#") and 'tftest' in x:
+      return x
+  return None
 
 
-def pytest_generate_tests(metafunc, test_group: str = 'example',
+def pytest_generate_tests(metafunc, test_group='example',
                           filter_tests=lambda x: True):
   """Find all README.md files and collect code examples tagged for testing."""
   if test_group in metafunc.fixturenames:
