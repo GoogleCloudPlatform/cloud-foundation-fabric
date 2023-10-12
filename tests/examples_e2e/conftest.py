@@ -13,12 +13,6 @@
 # limitations under the License.
 """Pytest configuration for testing code examples."""
 
-import collections
-import re
-from pathlib import Path
-
-import marko
-
 from ..examples.conftest import pytest_generate_tests as _examples_generate_test
 
 
