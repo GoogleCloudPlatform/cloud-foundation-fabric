@@ -88,6 +88,21 @@ variable "labels" {
   default     = {}
 }
 
+variable "mtls_policy_config" {
+  description = "Configuration for mTLS for the HTTPS Load Balancer."
+  type = object({
+    client_validation_mode            = optional(string, "CLIENT_VALIDATION_MODE_UNSPECIFIED")
+    create_mtls_resources             = optional(bool, false)
+    intermediate_cas_pem_certificates = optional(list(string), [])
+    policy_name                       = optional(string)
+    server_tls_policy_location        = optional(string, "global")
+    trust_config_name                 = optional(string)
+    trust_config_location             = optional(string, "global")
+    trust_anchors_pem_certificates    = optional(list(string), [])
+  })
+  default = {}
+}
+
 variable "name" {
   description = "Load balancer name."
   type        = string
