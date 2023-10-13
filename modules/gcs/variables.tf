@@ -25,6 +25,18 @@ variable "cors" {
   default = null
 }
 
+variable "custom_placement_config" {
+  type        = list(string)
+  default     = null
+  description = "The bucket's custom location configuration, which specifies the individual regions that comprise a dual-region bucket. If the bucket is designated as REGIONAL or MULTI_REGIONAL, the parameters are empty."
+}
+
+variable "default_event_based_hold" {
+  description = "Enable event based hold to new objects added to specific bucket, defaults to false."
+  type        = bool
+  default     = null
+}
+
 variable "encryption_key" {
   description = "KMS key that will be used for encryption."
   type        = string
@@ -201,6 +213,12 @@ variable "prefix" {
 variable "project_id" {
   description = "Bucket project id."
   type        = string
+}
+
+variable "requester_pays" {
+  description = "Enables Requester Pays on a storage bucket."
+  type        = bool
+  default     = null
 }
 
 variable "retention_policy" {
