@@ -66,19 +66,15 @@ variable "node_config" {
     guest_accelerator = optional(object({
       count = number
       type  = string
-      gpu_driver_installation_config = optional(object({
-        gpu_driver_version = string
-        gpu_partition_size = optional(string)
-        gpu_sharing_config = optional(object({
-          gpu_sharing_strategy       = string
-          max_shared_clients_per_gpu = number
-        }))
-
+      gpu_driver = optional(object({
+        version                    = string
+        partition_size             = optional(string)
+        max_shared_clients_per_gpu = optional(number)
       }))
     }))
     local_nvme_ssd_count = optional(number)
-    gvnic      = optional(bool, false)
-    image_type = optional(string)
+    gvnic                = optional(bool, false)
+    image_type           = optional(string)
     kubelet_config = optional(object({
       cpu_manager_policy   = string
       cpu_cfs_quota        = optional(bool)
