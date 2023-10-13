@@ -11,7 +11,7 @@ Prepare following information:
 * prepare service account that has necessary permissions (able to assign billing account to project, resource creation etc)
 
 # Option 1 - automatically provision and de-provision testing infrastructure
-## Set environmental variables
+## Set environment variables
 ```bash
 export TFTEST_E2E_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com  # set if you want to use service account impersonation
 export TFTEST_E2E_BILLING_ACCOUNT="123456-123456-123456"  # billing account id to associate projects
@@ -41,7 +41,7 @@ timestamp       = "1696444185" # generate your own timestamp - will be used as a
 # tftest skip
 ```
 
-If you use service account impersonation, add `proviers.tf` file in `tests/examples_e2e/setup_module`:
+If you use service account impersonation, add `providers.tf` file in `tests/examples_e2e/setup_module`:
 ```hcl
 provider "google" {
   impersonate_service_account = "<username>@<project-id>.iam.gserviceaccount.com"

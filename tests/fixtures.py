@@ -27,7 +27,6 @@ import pytest
 import tftest
 import yaml
 
-
 _REPO_ROOT = Path(__file__).parents[1]
 PlanSummary = collections.namedtuple('PlanSummary', 'values counts outputs')
 
@@ -71,7 +70,7 @@ def _prepare_root_module(path):
       # prevent shooting yourself in the foot (unexpected test results) when ignored files are present
       raise RuntimeError(
           f'Test in path {path} contains {", ".join(unwanted_files)} which may affect '
-          f'test results. Please run tests with TFTEST_COPY=1 environmental variable'
+          f'test results. Please run tests with TFTEST_COPY=1 environment variable'
       )
     # if TFTEST_COPY is not set, just return the same path
     yield path
@@ -283,8 +282,7 @@ def plan_validator_fixture(request):
   return inner
 
 
-def e2e_validator(module_path: str, extra_files: list, tf_var_files: list,
-                  basedir: os.PathLike = None):
+def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
   """Function running apply, plan and destroy to verify the case end to end
 
   1. Tests whether apply does not return errors
@@ -302,26 +300,30 @@ def e2e_validator(module_path: str, extra_files: list, tf_var_files: list,
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
 
     try:
-      apply = tf.apply(
-          tf_var_file=tf_var_files)
-      plan = tf.plan(
-          output=True,
-          tf_var_file=tf_var_files)
-      changes = dict((k, v['change'])
-                     for k, v in plan.resource_changes.items()
-                     if v.get('change', {}).get('actions') != ['no-op'])
+      apply = tf.apply(tf_var_file=tf_var_files)
+      plan = tf.plan(output=True, tf_var_file=tf_var_files)
+      changes = {}
+      for resource_name, value in plan.resource_changes.items():
+        if value.get('change', {}).get('actions') != ['no-op']:
+          changes[resource_name] = value
+
       # compare before with after to raise more meaningful failure to the user, i.e one
       # that shows how resource will change
-      assert dict((k, v['before']) for k, v in changes.items()) == dict(
-          (k, v['after']) for k, v in changes.items())
-      assert dict(
-          (k, v['before_sensitive']) for k, v in changes.items()) == dict(
-              (k, v['after_sensitive']) for k, v in changes.items())
+      plan_before_state = dict((k, v['before']) for k, v in changes.items())
+      plan_after_state = dict((k, v['after']) for k, v in changes.items())
+
+      assert plan_before_state == plan_after_state, f'Plan not empty after apply for values'
+
+      plan_before_sensitive_state = dict(
+          (k, v['before_sensitive']) for k, v in changes.items())
+      plan_after_sensitive_state = dict(
+          (k, v['after_sensitive']) for k, v in changes.items())
+      assert plan_before_sensitive_state == plan_after_sensitive_state, f'Plan not empty after apply for sensitive values'
+
       # If above did not fail, this should not either, but left as a safety check
       assert changes == {}, f'Plan not empty for following resources: {", ".join(changes.keys())}'
     finally:
-      destroy = tf.destroy(
-          tf_var_file=tf_var_files)
+      destroy = tf.destroy(tf_var_file=tf_var_files)
 
 
 @pytest.fixture(name='e2e_validator')
@@ -332,6 +334,7 @@ def e2e_validator_fixture(request):
   to the directory of the calling test
 
   """
+
   def inner(module_path: str, extra_files: list, tf_var_files: list,
             basedir: os.PathLike = None):
     if basedir is None:
