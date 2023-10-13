@@ -165,7 +165,7 @@ resource "google_container_node_pool" "nodepool" {
       content {
         count = var.node_config.guest_accelerator.count
         type  = var.node_config.guest_accelerator.type
-        gpu_driver_installation_config = {
+        gpu_driver_installation_config {
           gpu_driver_version = var.node_config.guest_accelerator.gpu_driver_installation_config.gpu_driver_version
           gpu_partition_size = var.node_config.guest_accelerator.gpu_driver_installation_config.gpu_partition_size
           gpu_sharing_config = {
@@ -177,9 +177,9 @@ resource "google_container_node_pool" "nodepool" {
       }
     }
     dynamic "local_nvme_ssd_block_config" {
-      for_each = var.node_config.local_nvme_ssd_block_config != null ? [""] : []
+      for_each = var.node_config.local_nvme_ssd_count != null ? [""] : []
       content {
-        local_ssd_count = var.node_config.local_nvme_ssd_block_config.local_ssd_count
+        local_ssd_count = var.node_config.local_nvme_ssd_count
       }
     }
     dynamic "gvnic" {

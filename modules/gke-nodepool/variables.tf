@@ -76,9 +76,7 @@ variable "node_config" {
 
       }))
     }))
-    local_nvme_ssd_block_config = optional(object({
-      local_ssd_count = number
-    }))
+    local_nvme_ssd_count = optional(number)
     gvnic      = optional(bool, false)
     image_type = optional(string)
     kubelet_config = optional(object({
