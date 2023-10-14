@@ -34,8 +34,7 @@ locals {
       authoritative = []
       additive = (
         local.billing_mode != "org" ? [] : [
-          "roles/billing.admin",
-          "roles/billing.costsManager"
+          "roles/billing.admin"
         ]
       )
     }
@@ -66,8 +65,7 @@ locals {
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
-          "roles/billing.admin",
-          "roles/billing.costsManager"
+          "roles/billing.admin"
         ]
       )
     }
@@ -111,8 +109,7 @@ locals {
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
-          "roles/billing.admin",
-          "roles/billing.costsManager"
+          "roles/billing.admin"
         ]
       )
     }
@@ -129,8 +126,7 @@ locals {
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
-          "roles/billing.admin",
-          "roles/billing.costsManager"
+          "roles/billing.admin"
         ]
       )
     }
@@ -148,8 +144,7 @@ locals {
       # TODO: align additive roles with the README
       additive = (
         local.billing_mode != "org" ? [] : [
-          "roles/billing.admin",
-          "roles/billing.costsManager"
+          "roles/billing.admin"
         ]
       )
     }
