@@ -25,11 +25,11 @@ resource "google_monitoring_notification_channel" "default" {
   project      = each.value.project_id
   enabled      = each.value.enabled
   force_delete = each.value.force_delete
-  type         = each.value.tupe
+  type         = each.value.type
   labels       = each.value.labels
   user_labels  = each.value.user_labels
   dynamic "sensitive_labels" {
-    for_each = toset(coalesce(each.value.sensitive.labels, {}))
+    for_each = toset(coalesce(each.value.sensitive_labels, []))
     content {
       auth_token  = sensitive_labels.value.auth_token
       password    = sensitive_labels.value.password
@@ -51,78 +51,94 @@ resource "google_billing_budget" "default" {
   dynamic "amount" {
     for_each = each.value.amount.use_last_period != true ? [""] : []
     content {
-      currency_code = each.value.amount.currency_code
-      nanos         = each.value.amount.nanos
-      units         = each.value.amount.units
+      specified_amount {
+        currency_code = each.value.amount.currency_code
+        nanos         = each.value.amount.nanos
+        units         = each.value.amount.units
+      }
     }
   }
   budget_filter {
-    calendar_period = try(each.value.period.calendar, null)
+    calendar_period = try(each.value.filter.period.calendar, null)
     credit_types_treatment = (
-      try(each.value.credit_types_treatment.exclude_all, null) == true
+      try(each.value.filter.credit_types_treatment.exclude_all, null) == true
       ? "EXCLUDE_ALL_CREDITS"
       : (
-        try(each.value.credit_types_treatment.include_specified, null) != null
+        try(each.value.filter.credit_types_treatment.include_specified, null) != null
         ? "INCLUDE_SPECIFIED_CREDITS"
         : "INCLUDE_ALL_CREDITS"
       )
     )
-    labels = each.value.label == null ? null : {
-      (each.value.label.key) = each.value.label.value
+    labels = each.value.filter.label == null ? null : {
+      (each.value.filter.label.key) = each.value.filter.label.value
     }
-    projects           = each.value.projects
-    resource_ancestors = each.value.resource_ancestors
-    services           = each.value.services
-    subaccounts        = each.value.subaccounts
+    projects = (
+      each.value.filter.projects == null
+      ? null
+      : each.value.filter.projects
+    )
+    resource_ancestors = (
+      each.value.filter.resource_ancestors == null
+      ? null
+      : each.value.filter.resource_ancestors
+    )
+    services = (
+      each.value.filter.services == null
+      ? null
+      : each.value.filter.services
+    )
+    subaccounts = (
+      each.value.filter.subaccounts == null
+      ? null
+      : each.value.filter.subaccounts
+    )
     dynamic "custom_period" {
-      for_each = try(each.value.period.custom, null) != null ? [""] : []
+      for_each = try(each.value.filter.period.custom, null) != null ? [""] : []
       content {
         start_date {
-          day   = each.value.period.custom.start_date.day
-          month = each.value.period.custom.start_date.month
-          year  = each.value.period.custom.start_date.year
+          day   = each.value.filter.period.custom.start_date.day
+          month = each.value.filter.period.custom.start_date.month
+          year  = each.value.filter.period.custom.start_date.year
         }
         dynamic "end_date" {
-          for_each = try(each.value.period.custom.end_date, null) != null ? [""] : []
+          for_each = try(each.value.filter.period.custom.end_date, null) != null ? [""] : []
           content {
-            day   = each.value.period.custom.end_date.day
-            month = each.value.period.custom.end_date.month
-            year  = each.value.period.custom.end_date.year
+            day   = each.value.filter.period.custom.end_date.day
+            month = each.value.filter.period.custom.end_date.month
+            year  = each.value.filter.period.custom.end_date.year
           }
         }
       }
     }
   }
   dynamic "threshold_rules" {
-    for_each = each.value.threshold_rules
+    for_each = toset(each.value.threshold_rules)
     iterator = rule
     content {
       threshold_percent = rule.value.percent
       spend_basis = (
-        rule.value.forecasted_spend
+        rule.value.forecasted_spend == true
         ? "FORECASTED_SPEND"
         : "CURRENT_SPEND"
       )
     }
   }
   dynamic "all_updates_rule" {
-    for_each = each.value.all_update_rules
+    for_each = each.value.update_rules
     iterator = rule
     content {
-      monitoring_notification_channels = [
-        for v in rule.value.monitoring_notification_channels : try(
-          google_monitoring_notification_channel[v].id, v
-        )
-      ]
-      pubsub_topic = var.pubsub_topic
-      # disable_default_iam_recipients can only be set if
-      # monitoring_notification_channels is nonempty
-      disable_default_iam_recipients = (
-        try(length(rule.value.monitoring_notification_channels), 0)
-        ? rule.value.disable_default_iam_recipients
-        : null
+      pubsub_topic                   = rule.value.pubsub_topic
+      schema_version                 = "1.0"
+      disable_default_iam_recipients = rule.value.disable_default_iam_recipients
+      monitoring_notification_channels = (
+        rule.value.monitoring_notification_channels == null
+        ? null
+        : [
+          for v in rule.value.monitoring_notification_channels : try(
+            google_monitoring_notification_channel.default[v].id, v
+          )
+        ]
       )
-      schema_version = "1.0"
     }
   }
 }

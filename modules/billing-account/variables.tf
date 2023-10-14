@@ -54,7 +54,6 @@ variable "budgets" {
       use_last_period = optional(bool)
     })
     display_name = optional(string)
-    # TODO: check that only one filter is supported
     filter = optional(object({
       credit_types_treatment = optional(object({
         exclude_all       = optional(bool)
@@ -64,7 +63,6 @@ variable "budgets" {
         key   = string
         value = string
       }))
-      # TODO: check that period is optional
       period = optional(object({
         calendar = optional(string)
         custom = optional(object({
@@ -80,16 +78,16 @@ variable "budgets" {
           }))
         }))
       }))
-      projects           = optional(list(string), [])
-      resource_ancestors = optional(list(string), [])
-      services           = optional(list(string), [])
-      subaccounts        = optional(list(string), [])
+      projects           = optional(list(string))
+      resource_ancestors = optional(list(string))
+      services           = optional(list(string))
+      subaccounts        = optional(list(string))
     }))
-    threshold_rules = optional(map(object({
+    threshold_rules = optional(list(object({
       percent          = number
       forecasted_spend = optional(bool)
-    })), {})
-    all_update_rules = optional(map(object({
+    })), [])
+    update_rules = optional(map(object({
       disable_default_iam_recipients   = optional(bool)
       monitoring_notification_channels = optional(list(string))
       pubsub_topic                     = optional(string)
@@ -105,6 +103,18 @@ variable "budgets" {
       )
     ])
     error_message = "Each budgets needs to have amount units specified, or use last period."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.budgets : [
+        for kk, vv in v.update_rules : [
+          vv.monitoring_notification_channels != null
+          ||
+          vv.pubsub_topic != null
+        ]
+      ]
+    ]))
+    error_message = "Budget notification rules need either a pubsub topic or monitoring channels defined."
   }
 }
 
