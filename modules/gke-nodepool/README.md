@@ -103,6 +103,39 @@ module "cluster-1-nodepool-1" {
 }
 # tftest modules=1 resources=2 inventory=config.yaml
 ```
+### GPU Node & node pool configuration
+
+```hcl
+module "cluster-1-nodepool-gpu-1" {
+  source       = "./fabric/modules/gke-nodepool"
+  project_id   = "myproject"
+  cluster_name = "cluster-1"
+  location     = "europe-west4-a"
+  name         = "nodepool-gpu-1"
+  labels       = { environment = "dev" }
+  service_account = {
+    create       = true
+    email        = "nodepool-gpu-1" # optional
+    oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+  node_config = {
+    machine_type        = "a2-highgpu-1g"
+    disk_size_gb        = 50
+    disk_type           = "pd-ssd"
+    ephemeral_ssd_count = 1
+    gvnic               = true
+    spot                = true
+    guest_accelerator = {
+      type  = "nvidia-tesla-a100"
+      count = 1
+      gpu_driver = {
+        version = "latest"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=config.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
