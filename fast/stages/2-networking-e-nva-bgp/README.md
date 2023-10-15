@@ -148,19 +148,7 @@ This stage uses a dedicated /11 block (10.64.0.0/11), which should be sized to t
 
 The /11 block is evenly split in eight, smaller /16 blocks, assigned to different areas of the GCP network: *landing untrusted europe-west1*, *landing untrusted europe-west4*, *landing trusted europe-west1*, *landing untrusted europe-west4*, *development europe-west1*, *development europe-west4*, *production europe-west1*, *production europe-west4*.
 
-The first /24 range in every area is allocated for a default subnet, which can be removed or modified as needed.
-
-Spoke VPCs also define and reserve three "special" CIDR ranges, derived from their respective /16, dedicated to
-
-- [PSA (Private Service Access)](https://cloud.google.com/vpc/docs/private-services-access):
-
-  - The second-last /24 range is used for PSA (CloudSQL, Postrgres)
-
-  - The third-last /24 range is used for PSA (CloudSQL, MySQL)
-
-- [Internal Application Load Balancers (L7 LBs)](https://cloud.google.com/load-balancing/docs/l7-internal):
-
-  - The last /24 range
+The first /24 range in every area is allocated for a default subnet, which can be removed or modified as needed. The last three /24 ranges can be used for [PSA (Private Service Access)](https://cloud.google.com/vpc/docs/private-services-access)via the `psa_ranges` variable, or for [Internal Application Load Balancers (L7 LBs)](https://cloud.google.com/load-balancing/docs/l7-internal) subnets via the factory.
 
 This is a summary of the subnets allocated by default in this setup:
 
@@ -171,21 +159,21 @@ This is a summary of the subnets allocated by default in this setup:
 | landing-untrusted-default-ew1 | Untrusted landing subnet - europe-west1 | 10.128.0.0/24 |
 | landing-untrusted-default-ew4 | Untrusted landing subnet - europe-west4 | 10.128.32.0/24 |
 | dev-default-ew1 | Dev spoke subnet - europe-west1 | 10.68.0.0/24 |
-| dev-default-ew1 (PSA MySQL) | PSA subnet for MySQL in dev spoke - europe-west1 | 10.68.253.0/24 |
-| dev-default-ew1 (PSA SQL Server) | PSA subnet for Postgres in dev spoke - europe-west1 | 10.68.254.0/24 |
-| dev-default-ew1 (L7 ILB) | L7 ILB subnet for dev spoke - europe-west1 | 10.68.255.0/24 |
+| dev-default-ew1 | free (PSA) - europe-west1 | 10.68.253.0/24 |
+| dev-default-ew1 | free (PSA) - europe-west1 | 10.68.254.0/24 |
+| dev-default-ew1 | free (L7 ILB) - europe-west1 | 10.68.255.0/24 |
 | dev-default-ew4 | Dev spoke subnet - europe-west4 | 10.84.0.0/24 |
-| dev-default-ew4 (PSA MySQL) | PSA subnet for MySQL in dev spoke - europe-west4 | 10.84.253.0/24 |
-| dev-default-ew4 (PSA SQL Server) | PSA subnet for Postgres in dev spoke - europe-west4 | 10.84.254.0/24 |
-| dev-default-ew4 (L7 ILB) | L7 ILB subnet for dev spoke - europe-west4 | 10.84.255.0/24 |
+| dev-default-ew4 | free (PSA)  - europe-west4 | 10.84.253.0/24 |
+| dev-default-ew4 | free (PSA)  - europe-west4 | 10.84.254.0/24 |
+| dev-default-ew4 | free (L7 ILB) - europe-west4 | 10.84.255.0/24 |
 | prod-default-ew1 | Prod spoke subnet - europe-west1 | 10.72.0.0/24 |
-| prod-default-ew1 (PSA MySQL) | PSA subnet for MySQL in prod spoke - europe-west1 | 10.72.253.0/24 |
-| prod-default-ew1 (PSA SQL Server) | PSA subnet for Postgres in prod spoke - europe-west1 | 10.72.254.0/24 |
-| prod-default-ew1 (L7 ILB) | L7 ILB subnet for prod spoke - europe-west1 | 10.72.255.0/24 |
+| prod-default-ew1 | free (PSA) - europe-west1 | 10.72.253.0/24 |
+| prod-default-ew1 | free (PSA) - europe-west1 | 10.72.254.0/24 |
+| prod-default-ew1 | free (L7 ILB) - europe-west1 | 10.72.255.0/24 |
 | prod-default-ew4 | Prod spoke subnet - europe-west4 | 10.88.0.0/24 |
-| prod-default-ew4 (PSA MySQL) | PSA subnet for MySQL in prod spoke - europe-west4 | 10.88.253.0/24 |
-| prod-default-ew4 (PSA SQL Server) | PSA subnet for Postgres in prod spoke - europe-west4 | 10.88.254.0/24 |
-| prod-default-ew4 (L7 ILB) | L7 ILB subnet for prod spoke - europe-west4 | 10.88.255.0/24 |
+| prod-default-ew4 | free (PSA) - europe-west4 | 10.88.253.0/24 |
+| prod-default-ew4 | free (PSA) - europe-west4 | 10.88.254.0/24 |
+| prod-default-ew4 | free (L7 ILB) - europe-west4 | 10.88.255.0/24 |
 
 These subnets can advertised to on-premises as an aggregate /11 range (10.64.0.0/11). Refer to the `var.vpn_onprem_primary_config.router_config` and `var.vpn_onprem_secondary_config.router_config` variables to configure it.
 
@@ -252,10 +240,7 @@ VPCs are defined in separate files, one for `landing` (trusted and untrusted), o
 These files contain different resources:
 
 - **project** ([`projects`](../../../modules/project)): the "[host projects](https://cloud.google.com/vpc/docs/shared-vpc)" containing the VPCs and enabling the required APIs.
-- **VPCs** ([`net-vpc`](../../../modules/net-vpc)): manage the subnets, the explicit routes for `{private,restricted}.googleapis.com` and the DNS inbound policy (for the trusted landing VPC). Subnets are created leveraging "resource factories": the configuration is separated from the module that implements it, and stored in a well-structured file. To add a new subnet, simply create a new file in the `data_folder` directory defined in the module, following the examples found in the [Fabric `net-vpc` documentation](../../../modules/net-vpc#subnet-factory). Sample subnets are shipped in [data/subnets](./data/subnets) and can be easily customized to fit users' needs.
-
-Subnets for [L7 ILBs](https://cloud.google.com/load-balancing/docs/l7-internal/proxy-only-subnets) are handled differently, and defined in variable `l7ilb_subnets`, while ranges for [PSA](https://cloud.google.com/vpc/docs/configure-private-services-access#allocating-range) are configured by variable `psa_ranges` - such variables are consumed by spoke VPCs.
-
+- **VPCs** ([`net-vpc`](../../../modules/net-vpc)): manage the subnets, the explicit routes for `{private,restricted}.googleapis.com` and the DNS inbound policy (for the trusted landing VPC). Non-infrastructural subnets are created leveraging "resource factories": the configuration is separated from the module that implements it, and stored in a well-structured file. To add a new subnet, simply create a new file in the `data_folder` directory defined in the module, following the examples found in the [Fabric `net-vpc` documentation](../../../modules/net-vpc#subnet-factory). Sample subnets are shipped in [data/subnets](./data/subnets) and can be easily customized to fit users' needs. [PSA](https://cloud.google.com/vpc/docs/configure-private-services-access#allocating-range) are configured by the variable `psa_ranges` if managed services are needed.
 - **Cloud NAT** ([`net-cloudnat`](../../../modules/net-cloudnat)) (in the untrusted landing VPC only): it manages the networking infrastructure required to enable the Internet egress.
 
 ### VPNs
