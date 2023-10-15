@@ -19,6 +19,11 @@ output "default_URL_client" {
   value       = module.cloud_run_client.service.status[0].url
 }
 
+output "default_URL_server" {
+  description = "Server Cloud Run service default URL."
+  value       = module.cloud_run_server.service.status[0].url
+}
+
 output "load_balancer_ip" {
   description = "Load Balancer IP address."
   value       = var.prj_svc1_id != null ? module.int-alb[0].address : "none"
