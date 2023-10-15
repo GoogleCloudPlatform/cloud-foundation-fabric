@@ -296,17 +296,12 @@ terraform apply
 
 #### Private Google Access
 
-[Private Google Access](https://cloud.google.com/vpc/docs/private-google-access) (or PGA) enables VMs and on-prem systems to consume Google APIs from within the Google network, and is already fully configured on this environment.
+[Private Google Access](https://cloud.google.com/vpc/docs/private-google-access) (or PGA) enables VMs and on-prem systems to consume Google APIs from within the Google network, and is already fully configured on this environment:
 
-For PGA to work:
+- DNS response policies in the landing project implement rules for all supported domains reachable via PGA
+- routes for the private and restricted ranges are defined in all VPCs
 
-- Private Google Access should be enabled on the subnet. \
-Subnets created by the `net-vpc` module are PGA-enabled by default.
-
-- 199.36.153.4/30 (`restricted.googleapis.com`) and 199.36.153.8/30 (`private.googleapis.com`) should be routed from on-prem to VPC, and from there to the `default-internet-gateway`. \
-Per variable `vpn_onprem_configs` such ranges are advertised to onprem - furthermore every VPC (e.g. see `landing-vpc` in [`landing.tf`](./landing.tf)) has explicit routes set in case the `0.0.0.0/0` route is changed.
-
-- A private DNS zone for `googleapis.com` should be created and configured per [this article](https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid#config-domain), as implemented in module `googleapis-private-zone` in [`dns-landing.tf`](./dns-landing.tf)
+To enable PGA access from on premises advertise the private/restricted ranges via the `landing-to-onprem-primary-vpn` variable, using router or tunnel custom advertisements.
 
 ## Customizations
 
