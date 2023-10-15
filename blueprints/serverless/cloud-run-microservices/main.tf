@@ -125,7 +125,9 @@ module "cloud_run_server" {
 # a VPC access connector to connect from client to server service.
 # The use case with Shared VPC and internal ALB uses Direct VPC Egress.
 resource "google_vpc_access_connector" "connector" {
-  count   = var.prj_svc1_id == null ? 1 : 0
+  #count   = var.prj_svc1_id == null ? 1 : 0
+  # Fake it for now
+  count   = 1
   name    = "connector"
   project = module.project_main.project_id
   region  = var.region
@@ -197,17 +199,6 @@ module "vpc_main" {
     }
   ]
 }
-
-# # Main VPC Firewall with default config, IAP for SSH enabled
-# module "firewall_main" {
-#   source     = "../../../modules/net-vpc-firewall"
-#   project_id = module.project_main.project_id
-#   network    = module.vpc_main.name
-#   default_rules_config = {
-#     http_ranges  = []
-#     https_ranges = []
-#   }
-# }
 
 ###############################################################################
 #                                    PSC                                      #

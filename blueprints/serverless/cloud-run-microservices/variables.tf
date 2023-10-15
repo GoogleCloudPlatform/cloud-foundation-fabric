@@ -21,7 +21,7 @@ variable "custom_domain" {
 }
 
 variable "image" {
-  description = "Container image to deploy."
+  description = "Container image to deploy in the server."
   type        = string
   default     = "us-docker.pkg.dev/cloudrun/container/hello"
 }
