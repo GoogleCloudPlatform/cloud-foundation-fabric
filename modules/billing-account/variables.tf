@@ -102,7 +102,7 @@ variable "budgets" {
         try(v.amount.units, null) != null
       )
     ])
-    error_message = "Each budgets needs to have amount units specified, or use last period."
+    error_message = "Each budget needs to have amount units specified, or use last period."
   }
   validation {
     condition = alltrue(flatten([
