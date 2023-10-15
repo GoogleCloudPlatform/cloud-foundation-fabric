@@ -74,12 +74,3 @@ resource "google_billing_account_iam_member" "billing_ext_admin" {
   role               = "roles/billing.admin"
   member             = each.key
 }
-
-resource "google_billing_account_iam_member" "billing_ext_cost_manager" {
-  for_each = toset(
-    local.billing_mode == "resource" ? local.billing_ext_admins : []
-  )
-  billing_account_id = var.billing_account.id
-  role               = "roles/billing.costsManager"
-  member             = each.key
-}

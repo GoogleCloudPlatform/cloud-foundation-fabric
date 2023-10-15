@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-output "budget" {
-  description = "Budget resource."
-  value       = google_billing_budget.budget
-}
-
-output "id" {
-  description = "Fully qualified budget id."
-  value       = google_billing_budget.budget.id
+resource "google_billing_project_info" "default" {
+  for_each        = toset(var.projects)
+  billing_account = var.id
+  project         = each.key
 }

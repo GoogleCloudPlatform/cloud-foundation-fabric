@@ -30,14 +30,14 @@ These modules are used in the examples included in this repository. If you are u
 
 ## Foundational modules
 
-- [billing budget](./billing-budget)
+- [Billing account](./billing-account)
 - [Cloud Identity group](./cloud-identity-group/)
-- [folder](./folder)
-- [service accounts](./iam-service-account)
-- [logging bucket](./logging-bucket)
-- [organization](./organization)
-- [project](./project)
-- [projects-data-source](./projects-data-source)
+- [Folder](./folder)
+- [Service accounts](./iam-service-account)
+- [Logging bucket](./logging-bucket)
+- [Organization](./organization)
+- [Project](./project)
+- [Projects (data source)](./projects-data-source)
 
 ## Networking modules
 
