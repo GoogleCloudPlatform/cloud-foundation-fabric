@@ -15,7 +15,11 @@
  */
 
 locals {
-  cloud_run_domain = "run.app."
+  cloud_run_client_image = <<EOT
+${var.region}-docker.pkg.dev/${module.project_main.project_id}/${local.cloud_run_repo}/vpc-network-tester:v1.0
+  EOT
+  cloud_run_domain       = "run.app."
+  cloud_run_repo         = "cloud-run-repo"
 }
 
 ###############################################################################
@@ -83,7 +87,7 @@ module "cloud_run_client" {
   region     = var.region
   containers = {
     default = {
-      image = var.image
+      image = local.cloud_run_client_image
     }
   }
   iam = {
@@ -93,6 +97,10 @@ module "cloud_run_client" {
   revision_annotations = {
     vpcaccess_connector = try(google_vpc_access_connector.connector[0].name, null)
   }
+
+  # The container image is built and pushed to Artifact Registry by
+  # a local-exec provisioner
+  depends_on = [null_resource.image]
 }
 
 # Cloud Run service acting as server
@@ -137,21 +145,21 @@ module "docker_artifact_registry" {
   source     = "../../../modules/artifact-registry"
   project_id = module.project_main.project_id
   location   = var.region
-  name       = "cloud-run-repo"
+  name       = local.cloud_run_repo
 }
 
 resource "null_resource" "image" {
-  depends_on = [module.docker_artifact_registry]
-
   provisioner "local-exec" {
-    command = <<-EOT
+    command     = <<-EOT
       gcloud builds submit --region=${var.region} \
       --project=${module.project_main.project_id} \
-      --tag=${var.region}-docker.pkg.dev/${module.project_main.project_id}/\
-      cloud-run-repo/vpc-network-tester:v1.0
+      --tag=${local.cloud_run_client_image}
     EOT
     working_dir = "./code"
   }
+
+  # Wait for the Artifact Registry repo to exist
+  depends_on = [module.docker_artifact_registry]
 }
 
 ###############################################################################
