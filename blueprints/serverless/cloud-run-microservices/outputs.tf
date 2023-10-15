@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "custom_domain" {
+  description = "Custom domain for the Application Load Balancer."
+  value       = var.prj_svc1_id != null ? "http://${var.custom_domain}" : "none"
+}
+
 output "default_URL_client" {
   description = "Client Cloud Run service default URL."
   value       = module.cloud_run_client.service.status[0].url
