@@ -1,0 +1,45 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.billing-account.google_billing_account_iam_binding.authoritative["roles/billing.admin"]:
+    billing_account_id: 012345-ABCDEF-012345
+    condition: []
+    members:
+    - group:billing-admins@example.org
+    - serviceAccount:foo@myprj.iam.gserviceaccount.com
+    role: roles/billing.admin
+  module.billing-account.google_billing_account_iam_binding.bindings["conditional-admin"]:
+    billing_account_id: 012345-ABCDEF-012345
+    condition:
+    - description: null
+      expression: resource.matchTag('123456/environment', 'development')
+      title: pf-dev-conditional-billing-admin
+    members:
+    - serviceAccount:pf-dev@myprj.iam.gserviceaccount.com
+    role: roles/billing.admin
+  module.billing-account.google_billing_account_iam_member.bindings["sa-net-iac-user"]:
+    billing_account_id: 012345-ABCDEF-012345
+    condition: []
+    member: serviceAccount:net-iac-0@myprj.iam.gserviceaccount.com
+    role: roles/billing.user
+
+counts:
+  google_billing_account_iam_binding: 2
+  google_billing_account_iam_member: 1
+  modules: 1
+  resources: 3
+
+outputs: {}
+

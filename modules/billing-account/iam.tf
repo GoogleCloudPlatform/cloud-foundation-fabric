@@ -32,18 +32,18 @@ locals {
   }
 }
 
-resource "google_folder_iam_binding" "authoritative" {
-  for_each = local.iam
-  folder   = local.folder.name
-  role     = each.key
-  members  = each.value
+resource "google_billing_account_iam_binding" "authoritative" {
+  for_each           = local.iam
+  billing_account_id = var.id
+  role               = each.key
+  members            = each.value
 }
 
-resource "google_folder_iam_binding" "bindings" {
-  for_each = var.iam_bindings
-  folder   = local.folder.name
-  role     = each.value.role
-  members  = each.value.members
+resource "google_billing_account_iam_binding" "bindings" {
+  for_each           = var.iam_bindings
+  billing_account_id = var.id
+  role               = each.value.role
+  members            = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -54,11 +54,11 @@ resource "google_folder_iam_binding" "bindings" {
   }
 }
 
-resource "google_folder_iam_member" "bindings" {
-  for_each = var.iam_bindings_additive
-  folder   = local.folder.name
-  role     = each.value.role
-  member   = each.value.member
+resource "google_billing_account_iam_member" "bindings" {
+  for_each           = var.iam_bindings_additive
+  billing_account_id = var.id
+  role               = each.value.role
+  member             = each.value.member
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
