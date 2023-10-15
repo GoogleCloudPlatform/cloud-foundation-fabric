@@ -37,8 +37,9 @@ module "project_main" {
     "run.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
-    "vpcaccess.googleapis.com"
-    # "cloudresourcemanager.googleapis.com"
+    "vpcaccess.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "cloudbuild.googleapis.com"
   ]
   skip_delete = true
 }
@@ -123,6 +124,33 @@ resource "google_vpc_access_connector" "connector" {
   subnet {
     name       = module.vpc_main.subnets["${var.region}/subnet-vpc-access"].name
     project_id = module.project_main.project_id
+  }
+}
+
+###############################################################################
+#                         Client container image in AR                        #
+###############################################################################
+
+# Build from code the image to run in the Cloud Run service client and push it
+# to Artifact Registry
+module "docker_artifact_registry" {
+  source     = "../../../modules/artifact-registry"
+  project_id = module.project_main.project_id
+  location   = var.region
+  name       = "cloud-run-repo"
+}
+
+resource "null_resource" "image" {
+  depends_on = [module.docker_artifact_registry]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      gcloud builds submit --region=${var.region} \
+      --project=${module.project_main.project_id} \
+      --tag=${var.region}-docker.pkg.dev/${module.project_main.project_id}/\
+      cloud-run-repo/vpc-network-tester:v1.0
+    EOT
+    working_dir = "./code"
   }
 }
 
