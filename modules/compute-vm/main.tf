@@ -235,9 +235,10 @@ resource "google_compute_instance" "default" {
     iterator = config
     content {
       network    = config.value.network
-      stack_type = config.value.stack_type
       subnetwork = config.value.subnetwork
       network_ip = try(config.value.addresses.internal, null)
+      nic_type   = config.value.nic_type
+      stack_type = config.value.stack_type
       dynamic "access_config" {
         for_each = config.value.nat ? [""] : []
         content {
@@ -252,7 +253,6 @@ resource "google_compute_instance" "default" {
           ip_cidr_range         = config_alias.value
         }
       }
-      nic_type = config.value.nic_type
     }
   }
 
@@ -375,6 +375,8 @@ resource "google_compute_instance_template" "default" {
       network    = config.value.network
       subnetwork = config.value.subnetwork
       network_ip = try(config.value.addresses.internal, null)
+      nic_type   = config.value.nic_type
+      stack_type = config.value.stack_type
       dynamic "access_config" {
         for_each = config.value.nat ? [""] : []
         content {
@@ -389,7 +391,6 @@ resource "google_compute_instance_template" "default" {
           ip_cidr_range         = config_alias.value
         }
       }
-      nic_type = config.value.nic_type
     }
   }
 
