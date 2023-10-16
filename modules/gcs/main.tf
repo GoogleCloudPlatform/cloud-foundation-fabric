@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,12 @@ resource "google_storage_bucket" "bucket" {
   versioning {
     enabled = var.versioning
   }
-  autoclass {
-    enabled = var.autoclass
+
+  dynamic "autoclass" {
+    for_each = var.autoclass == null [] ? [""]
+    content {
+      enabled = var.autoclass
+    }
   }
 
   dynamic "website" {
