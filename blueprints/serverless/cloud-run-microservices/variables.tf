@@ -34,7 +34,7 @@ variable "ip_ranges" {
       subnet_main       = "10.0.1.0/24"
       subnet_proxy      = "10.10.0.0/24"
       subnet_vpc_access = "10.10.10.0/28"
-      subnet_vpc_direct = "10.8.0.0/28"
+      subnet_vpc_direct = "10.8.0.0/26"
       psc_addr          = "10.0.0.100"
     }
   }

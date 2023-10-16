@@ -81,16 +81,18 @@ resource "google_cloud_run_v2_service" "client" {
     containers {
       image = local.client_image
     }
-    vpc_access {
-      connector = (
-        var.prj_svc1_id == null ?
-        google_vpc_access_connector.connector[0].name : null
-      )
-      network_interfaces {
-        subnetwork = (
-          var.prj_svc1_id != null ?
-          module.vpc_main.subnets["${var.region}/subnet-vpc-direct"].name : null
-        )
+    dynamic "vpc_access" {
+      for_each = var.prj_svc1_id == null ? [""] : []
+      content {
+        connector = google_vpc_access_connector.connector[0].id
+      }
+    }
+    dynamic "vpc_access" {
+      for_each = var.prj_svc1_id != null ? [""] : []
+      content {
+        network_interfaces {
+          subnetwork = module.vpc_main.subnets["${var.region}/subnet-vpc-direct"].name
+        }
       }
     }
   }
