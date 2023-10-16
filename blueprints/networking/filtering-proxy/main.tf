@@ -210,8 +210,12 @@ module "squid-ilb" {
   project_id    = module.project-host.project_id
   region        = var.region
   name          = "squid-ilb"
-  ports         = [3128]
   service_label = "squid-ilb"
+  forwarding_rules_config = {
+    default = {
+      ports = [3128]
+    }
+  }
   vpc_config = {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region}/proxy"]

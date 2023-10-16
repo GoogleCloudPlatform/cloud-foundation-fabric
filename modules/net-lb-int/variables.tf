@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "address" {
-  description = "Optional IP address used for the forwarding rule."
-  type        = string
-  default     = null
-}
-
 variable "backend_service_config" {
   description = "Backend service level configuration."
   type = object({
@@ -79,10 +73,20 @@ variable "description" {
   default     = "Terraform managed."
 }
 
-variable "global_access" {
-  description = "Global access, defaults to false if not set."
-  type        = bool
-  default     = null
+variable "forwarding_rules_config" {
+  description = "The optional forwarding rules configuration."
+  type = map(object({
+    description   = optional(string)
+    global_access = optional(bool, true)
+    ip_address    = optional(string)
+    ip_protocol   = optional(string, "TCP")
+    ip_version    = optional(string)
+    ports         = optional(list(string), null)
+
+  }))
+  default = {
+    default = {}
+  }
 }
 
 variable "group_configs" {
@@ -189,12 +193,6 @@ variable "labels" {
 variable "name" {
   description = "Name used for all resources."
   type        = string
-}
-
-variable "ports" {
-  description = "Comma-separated ports, leave null to use all ports."
-  type        = list(string)
-  default     = null
 }
 
 variable "project_id" {

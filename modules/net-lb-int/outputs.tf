@@ -29,19 +29,28 @@ output "backend_service_self_link" {
   value       = google_compute_region_backend_service.default.self_link
 }
 
-output "forwarding_rule" {
-  description = "Forwarding rule resource."
-  value       = google_compute_forwarding_rule.default
+output "forwarding_rules" {
+  description = "Forwarding rule resources."
+  value = [
+    for fwr in google_compute_forwarding_rule.forwarding_rules
+    : fwr
+  ]
 }
 
-output "forwarding_rule_address" {
+output "forwarding_rule_addresses" {
   description = "Forwarding rule address."
-  value       = google_compute_forwarding_rule.default.ip_address
+  value = [
+    for fwr in google_compute_forwarding_rule.forwarding_rules
+    : fwr.ip_address
+  ]
 }
 
 output "forwarding_rule_self_link" {
-  description = "Forwarding rule self link."
-  value       = google_compute_forwarding_rule.default.self_link
+  description = "Forwarding rule self links."
+  value = [
+    for fwr in google_compute_forwarding_rule.forwarding_rules
+    : fwr.self_link
+  ]
 }
 
 output "group_self_links" {
@@ -72,6 +81,9 @@ output "health_check_self_link" {
 }
 
 output "id" {
-  description = "Fully qualified forwarding rule id."
-  value       = google_compute_forwarding_rule.default.id
+  description = "Fully qualified forwarding rule ids."
+  value = [
+    for fwr in google_compute_forwarding_rule.forwarding_rules
+    : fwr.id
+  ]
 }

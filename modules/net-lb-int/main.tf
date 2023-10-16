@@ -25,24 +25,26 @@ locals {
   )
 }
 
-resource "google_compute_forwarding_rule" "default" {
+resource "google_compute_forwarding_rule" "forwarding_rules" {
+  for_each    = var.forwarding_rules_config
   provider    = google-beta
   project     = var.project_id
   region      = var.region
-  name        = var.name
-  description = var.description
-  ip_address  = var.address
-  ip_protocol = var.protocol
+  name        = "${var.name}-${each.key}"
+  description = each.value.description
+  ip_address  = each.value.ip_address
+  ip_protocol = each.value.ip_protocol
+  ip_version  = each.value.ip_version
   backend_service = (
     google_compute_region_backend_service.default.self_link
   )
   load_balancing_scheme = "INTERNAL"
   network               = var.vpc_config.network
-  ports                 = var.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
+  ports                 = each.value.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
   subnetwork            = var.vpc_config.subnetwork
-  allow_global_access   = var.global_access
+  allow_global_access   = each.value.global_access
   labels                = var.labels
-  all_ports             = var.ports == null ? true : null
+  all_ports             = each.value.ports == null ? true : null
   service_label         = var.service_label
   # is_mirroring_collector = false
 }
