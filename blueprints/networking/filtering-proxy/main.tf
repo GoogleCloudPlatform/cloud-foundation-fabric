@@ -17,7 +17,7 @@
 locals {
   squid_address = (
     var.mig
-    ? module.squid-ilb.0.forwarding_rule_address
+    ? module.squid-ilb.0.forwarding_rule_addresses["default"]
     : module.squid-vm.internal_ip
   )
 }
