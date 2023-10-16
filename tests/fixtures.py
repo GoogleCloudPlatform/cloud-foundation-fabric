@@ -344,8 +344,24 @@ def e2e_validator_fixture(request):
   return inner
 
 
+@pytest.fixture(scope='session')
+def providers_tf():
+    if 'TFTEST_E2E_SERVICE_ACCOUNT' in os.environ:
+        service_account = os.environ["TFTEST_E2E_SERVICE_ACCOUNT"]
+        return textwrap.dedent(f'''
+          provider "google" {{
+            impersonate_service_account = "{service_account}"
+          }}
+
+          provider "google-beta" {{
+            impersonate_service_account = "{service_account}"
+          }}
+        ''').strip('\n')
+    return ""
+
+
 @pytest.fixture(scope='session', name='e2e_tfvars_path')
-def e2e_tfvars_path(request):
+def e2e_tfvars_path(providers_tf):
   """Fixture preparing end-to-end test environment
 
   If TFTEST_E2E_TFVARS_PATH is set in the environment, then assume the environment is already provisioned
@@ -366,17 +382,7 @@ def e2e_tfvars_path(request):
   else:
     with _prepare_root_module(_REPO_ROOT / 'tests' / 'examples_e2e' /
                               'setup_module') as test_path:
-      if service_account := os.environ.get('TFTEST_E2E_SERVICE_ACCOUNT'):
-        (test_path / 'providers.tf').write_text(
-            textwrap.dedent(f'''
-          provider "google" {{
-            impersonate_service_account = "{service_account}"
-          }}
-
-          provider "google-beta" {{
-            impersonate_service_account = "{service_account}"
-          }}
-  ''').strip('\n'))
+      (test_path / 'providers.tf').write_text(providers_tf)
       binary = os.environ.get('TERRAFORM', 'terraform')
       tf = tftest.TerraformTest(test_path, binary=binary)
       tf_vars = {

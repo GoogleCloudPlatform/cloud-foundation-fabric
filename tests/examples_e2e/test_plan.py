@@ -23,21 +23,11 @@ COUNT_TEST_RE = re.compile(r'# tftest +modules=(\d+) +resources=(\d+)' +
                            r'(?: +inventory=([\w\-.]+))?')
 
 
-def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
+def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path, providers_tf):
   (tmp_path / 'fabric').symlink_to(BASE_PATH.parents[1])
   (tmp_path / 'variables.tf').symlink_to(BASE_PATH / 'variables.tf')
   (tmp_path / 'main.tf').write_text(examples_e2e.code)
-  if service_account := os.environ.get('TFTEST_E2E_SERVICE_ACCOUNT'):
-    (tmp_path / 'providers.tf').write_text(
-        textwrap.dedent(f'''
-          provider "google" {{
-            impersonate_service_account = "{service_account}"
-          }}
-
-          provider "google-beta" {{
-            impersonate_service_account = "{service_account}"
-          }}
-''').strip('\n'))
+  (tmp_path / 'providers.tf').write_text(providers_tf)
 
   (tmp_path / 'terraform.tfvars').symlink_to(e2e_tfvars_path)
 
