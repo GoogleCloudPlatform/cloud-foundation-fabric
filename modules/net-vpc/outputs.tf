@@ -83,6 +83,10 @@ output "self_link" {
 output "subnet_ids" {
   description = "Map of subnet IDs keyed by name."
   value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.id }
+  depends_on = [
+    # allows correct destruction of internal application load balancers
+    google_compute_subnetwork.proxy_only
+  ]
 }
 
 output "subnet_ips" {
@@ -90,10 +94,6 @@ output "subnet_ips" {
   value = {
     for k, v in google_compute_subnetwork.subnetwork : k => v.ip_cidr_range
   }
-  depends_on = [
-    # allows correct destruction of internal application load balancers
-    google_compute_subnetwork.proxy_only
-  ]
 }
 
 output "subnet_ipv6_external_prefixes" {
