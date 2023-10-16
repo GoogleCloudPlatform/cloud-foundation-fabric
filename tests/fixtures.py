@@ -346,9 +346,9 @@ def e2e_validator_fixture(request):
 
 @pytest.fixture(scope='session')
 def providers_tf():
-    if 'TFTEST_E2E_SERVICE_ACCOUNT' in os.environ:
-        service_account = os.environ["TFTEST_E2E_SERVICE_ACCOUNT"]
-        return textwrap.dedent(f'''
+  if 'TFTEST_E2E_SERVICE_ACCOUNT' in os.environ:
+    service_account = os.environ["TFTEST_E2E_SERVICE_ACCOUNT"]
+    return textwrap.dedent(f'''
           provider "google" {{
             impersonate_service_account = "{service_account}"
           }}
@@ -357,7 +357,7 @@ def providers_tf():
             impersonate_service_account = "{service_account}"
           }}
         ''').strip('\n')
-    return ""
+  return ""
 
 
 @pytest.fixture(scope='session', name='e2e_tfvars_path')
