@@ -15,11 +15,11 @@
  */
 
 locals {
-  cloud_run_client_image = <<EOT
-${var.region}-docker.pkg.dev/${module.project_main.project_id}/${local.cloud_run_repo}/vpc-network-tester:v1.0
+  client_image     = <<EOT
+${var.region}-docker.pkg.dev/${var.prj_main_id}/${local.repo}/vpc-network-tester:v1.0
   EOT
-  cloud_run_domain       = "run.app."
-  cloud_run_repo         = "cloud-run-repo"
+  cloud_run_domain = "run.app."
+  repo             = "repo"
 }
 
 ###############################################################################
@@ -58,18 +58,9 @@ module "project_svc1" {
   parent          = try(var.prj_svc1_create.parent, null)
   shared_vpc_service_config = {
     host_project = module.project_main.project_id
-    # service_identity_iam = {
-    #   "roles/compute.networkUser" = [
-    #     "vpcaccess"
-    #   ],
-    #   "roles/editor" = [
-    #     "cloudservices"
-    #   ]
-    # }
   }
   services = [
     "compute.googleapis.com",
-    # "dns.googleapis.com",
     "run.googleapis.com",
   ]
   skip_delete = true
@@ -80,27 +71,46 @@ module "project_svc1" {
 ###############################################################################
 
 # Cloud Run service acting as client
-module "cloud_run_client" {
-  source     = "../../../modules/cloud-run"
-  project_id = module.project_main.project_id
-  name       = "client"
-  region     = var.region
-  containers = {
-    default = {
-      image = local.cloud_run_client_image
+resource "google_cloud_run_v2_service" "client" {
+  project      = module.project_main.project_id
+  name         = "client"
+  location     = var.region
+  ingress      = "INGRESS_TRAFFIC_ALL"
+  launch_stage = "BETA"
+  template {
+    containers {
+      image = local.client_image
+    }
+    vpc_access {
+      connector = (
+        var.prj_svc1_id == null ?
+        google_vpc_access_connector.connector[0].name : null
+      )
+      network_interfaces {
+        subnetwork = (
+          var.prj_svc1_id != null ?
+          module.vpc_main.subnets["${var.region}/subnet-vpc-direct"].name : null
+        )
+      }
     }
   }
-  iam = {
-    "roles/run.invoker" = ["allUsers"]
-  }
-  ingress_settings = "all"
-  revision_annotations = {
-    vpcaccess_connector = try(google_vpc_access_connector.connector[0].name, null)
-  }
-
   # The container image is built and pushed to Artifact Registry by
   # a local-exec provisioner
   depends_on = [null_resource.image]
+}
+
+data "google_iam_policy" "noauth" {
+  binding {
+    role    = "roles/run.invoker"
+    members = ["allUsers"]
+  }
+}
+
+resource "google_cloud_run_v2_service_iam_policy" "policy_client" {
+  project     = module.project_main.project_id
+  location    = var.region
+  name        = google_cloud_run_v2_service.client.name
+  policy_data = data.google_iam_policy.noauth.policy_data
 }
 
 # Cloud Run service acting as server
@@ -125,9 +135,7 @@ module "cloud_run_server" {
 # a VPC access connector to connect from client to server service.
 # The use case with Shared VPC and internal ALB uses Direct VPC Egress.
 resource "google_vpc_access_connector" "connector" {
-  #count   = var.prj_svc1_id == null ? 1 : 0
-  # Fake it for now
-  count   = 1
+  count   = var.prj_svc1_id == null ? 1 : 0
   name    = "connector"
   project = module.project_main.project_id
   region  = var.region
@@ -147,15 +155,15 @@ module "docker_artifact_registry" {
   source     = "../../../modules/artifact-registry"
   project_id = module.project_main.project_id
   location   = var.region
-  name       = local.cloud_run_repo
+  name       = local.repo
 }
 
 resource "null_resource" "image" {
   provisioner "local-exec" {
     command     = <<-EOT
       gcloud builds submit --region=${var.region} \
-      --project=${module.project_main.project_id} \
-      --tag=${local.cloud_run_client_image}
+      --project=${var.prj_main_id} \
+      --tag=${local.client_image}
     EOT
     working_dir = "./code"
   }

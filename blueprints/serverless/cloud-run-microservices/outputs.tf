@@ -21,7 +21,7 @@ output "custom_domain" {
 
 output "default_URL_client" {
   description = "Client Cloud Run service default URL."
-  value       = module.cloud_run_client.service.status[0].url
+  value       = google_cloud_run_v2_service.client.uri
 }
 
 output "default_URL_server" {
