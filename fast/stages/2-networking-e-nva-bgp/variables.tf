@@ -173,14 +173,16 @@ variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL). Ranges is in name => range format."
   type = object({
     dev = object({
-      ranges        = map(string)
-      export_routes = optional(bool, false)
-      import_routes = optional(bool, false)
+      ranges         = map(string)
+      export_routes  = optional(bool, false)
+      import_routes  = optional(bool, false)
+      peered_domains = optional(list(string), [])
     })
     prod = object({
-      ranges        = map(string)
-      export_routes = optional(bool, false)
-      import_routes = optional(bool, false)
+      ranges         = map(string)
+      export_routes  = optional(bool, false)
+      import_routes  = optional(bool, false)
+      peered_domains = optional(list(string), [])
     })
   })
   default = null

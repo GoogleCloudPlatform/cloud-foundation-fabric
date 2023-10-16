@@ -116,13 +116,13 @@ variable "materialized_views" {
   description = "Materialized views definitions."
   type = map(object({
     query                            = string
+    allow_non_incremental_definition = optional(bool)
     deletion_protection              = optional(bool)
     description                      = optional(string, "Terraform managed.")
+    enable_refresh                   = optional(bool)
     friendly_name                    = optional(string)
     labels                           = optional(map(string), {})
-    enable_refresh                   = optional(bool)
     refresh_interval_ms              = optional(bool)
-    allow_non_incremental_definition = optional(bool)
     options = optional(object({
       clustering      = optional(list(string))
       expiration_time = optional(number)

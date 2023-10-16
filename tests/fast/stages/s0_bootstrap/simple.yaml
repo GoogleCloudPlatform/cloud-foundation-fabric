@@ -18,7 +18,7 @@ counts:
   google_logging_organization_sink: 2
   google_organization_iam_binding: 20
   google_organization_iam_custom_role: 3
-  google_organization_iam_member: 17
+  google_organization_iam_member: 13
   google_project: 3
   google_project_iam_binding: 9
   google_project_iam_member: 3

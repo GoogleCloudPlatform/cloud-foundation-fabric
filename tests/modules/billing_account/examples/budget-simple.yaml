@@ -1,0 +1,44 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.billing-account.google_billing_budget.default["folder-net-month-current-100"]:
+    all_updates_rule: []
+    amount:
+    - last_period_amount: null
+      specified_amount:
+      - nanos: null
+        units: '100'
+    billing_account: 012345-ABCDEF-012345
+    budget_filter:
+    - calendar_period: null
+      credit_types_treatment: INCLUDE_ALL_CREDITS
+      custom_period: []
+      projects: null
+      resource_ancestors:
+      - folders/1234567890
+    display_name: 100 dollars in current spend
+    threshold_rules:
+    - spend_basis: CURRENT_SPEND
+      threshold_percent: 0.5
+    - spend_basis: CURRENT_SPEND
+      threshold_percent: 0.75
+    timeouts: null
+
+counts:
+  google_billing_budget: 1
+  modules: 1
+  resources: 1
+
+outputs: {}
