@@ -68,7 +68,7 @@ module "ilb-left" {
     subnetwork = values(module.vpc-left.subnet_self_links)[0]
   }
   forwarding_rules_config = {
-    default = {
+    "" = {
       address = local.addresses.ilb-left
     }
   }
@@ -96,7 +96,7 @@ module "ilb-right" {
     subnetwork = values(module.vpc-right.subnet_self_links)[0]
   }
   forwarding_rules_config = {
-    default = {
+    "" = {
       address = local.addresses.ilb-right
     }
   }

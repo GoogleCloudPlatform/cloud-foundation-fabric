@@ -31,26 +31,26 @@ output "backend_service_self_link" {
 
 output "forwarding_rule_addresses" {
   description = "Forwarding rule address."
-  value = [
-    for fwr in google_compute_forwarding_rule.forwarding_rules
-    : fwr.ip_address
-  ]
+  value = {
+    for fwr_name, fwr in google_compute_forwarding_rule.forwarding_rules
+    : fwr_name => fwr.ip_address
+  }
 }
 
-output "forwarding_rule_self_link" {
+output "forwarding_rule_self_links" {
   description = "Forwarding rule self links."
-  value = [
-    for fwr in google_compute_forwarding_rule.forwarding_rules
-    : fwr.self_link
-  ]
+  value = {
+    for fwr_name, fwr in google_compute_forwarding_rule.forwarding_rules
+    : fwr_name => fwr.self_link
+  }
 }
 
 output "forwarding_rules" {
   description = "Forwarding rule resources."
-  value = [
-    for fwr in google_compute_forwarding_rule.forwarding_rules
-    : fwr
-  ]
+  value = {
+    for fwr_name, fwr in google_compute_forwarding_rule.forwarding_rules
+    : fwr_name => fwr
+  }
 }
 
 output "group_self_links" {
@@ -82,8 +82,8 @@ output "health_check_self_link" {
 
 output "id" {
   description = "Fully qualified forwarding rule ids."
-  value = [
-    for fwr in google_compute_forwarding_rule.forwarding_rules
-    : fwr.id
-  ]
+  value = {
+    for fwr_name, fwr in google_compute_forwarding_rule.forwarding_rules
+    : fwr_name => fwr.id
+  }
 }

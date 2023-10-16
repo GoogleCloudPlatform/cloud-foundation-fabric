@@ -17,7 +17,7 @@
 locals {
   squid_address = (
     var.mig
-    ? module.squid-ilb.0.forwarding_rule_addresses["default"]
+    ? module.squid-ilb.0.forwarding_rule_addresses[""]
     : module.squid-vm.internal_ip
   )
 }
@@ -212,7 +212,7 @@ module "squid-ilb" {
   name          = "squid-ilb"
   service_label = "squid-ilb"
   forwarding_rules_config = {
-    default = {
+    "" = {
       ports = [3128]
     }
   }

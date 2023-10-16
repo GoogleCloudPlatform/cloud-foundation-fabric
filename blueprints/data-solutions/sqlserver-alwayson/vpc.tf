@@ -142,8 +142,8 @@ module "listener-ilb" {
   name          = "${var.prefix}-${each.value}-ilb"
   service_label = "${var.prefix}-${each.value}-ilb"
   forwarding_rules_config = {
-    default = {
-      ip_address = local.internal_address_ips["${var.prefix}-lb-${each.value}"]
+    "" = {
+      address = local.internal_address_ips["${var.prefix}-lb-${each.value}"]
     }
   }
   vpc_config = {

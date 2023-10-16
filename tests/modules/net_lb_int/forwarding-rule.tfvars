@@ -13,7 +13,7 @@ backends = [{
 global_access = true
 
 forwarding_rules_config = {
-  default = {
+  "port-80" = {
     ports = [80]
   }
 }

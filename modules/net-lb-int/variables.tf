@@ -76,16 +76,15 @@ variable "description" {
 variable "forwarding_rules_config" {
   description = "The optional forwarding rules configuration."
   type = map(object({
+    address       = optional(string)
     description   = optional(string)
     global_access = optional(bool, true)
-    ip_address    = optional(string)
-    ip_protocol   = optional(string, "TCP")
     ip_version    = optional(string)
     ports         = optional(list(string), null)
-
+    protocol      = optional(string, "TCP")
   }))
   default = {
-    default = {}
+    "" = {}
   }
 }
 

@@ -13,12 +13,12 @@
 # limitations under the License.
 
 values:
-  google_compute_forwarding_rule.forwarding_rules["default"]:
+  google_compute_forwarding_rule.forwarding_rules[""]:
     all_ports: true
     ip_protocol: TCP
     labels: null
     load_balancing_scheme: INTERNAL
-    name: ilb-test-default
+    name: ilb-test
     network: default
     project: my-project
     region: europe-west1

@@ -26,14 +26,16 @@ locals {
 }
 
 resource "google_compute_forwarding_rule" "forwarding_rules" {
-  for_each    = var.forwarding_rules_config
-  provider    = google-beta
-  project     = var.project_id
+  for_each = var.forwarding_rules_config
+  provider = google-beta
+  project  = var.project_id
+  name = (
+    each.key == "" ? var.name : "${var.name}-${each.key}"
+  )
   region      = var.region
-  name        = "${var.name}-${each.key}"
   description = each.value.description
-  ip_address  = each.value.ip_address
-  ip_protocol = each.value.ip_protocol
+  ip_address  = each.value.address
+  ip_protocol = each.value.protocol
   ip_version  = each.value.ip_version
   backend_service = (
     google_compute_region_backend_service.default.self_link

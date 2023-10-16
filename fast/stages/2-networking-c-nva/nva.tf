@@ -130,7 +130,7 @@ module "ilb-nva-untrusted" {
   name          = "nva-untrusted-${each.key}"
   service_label = var.prefix
   forwarding_rules_config = {
-    default = {
+    "" = {
       global_access = true
     }
   }
@@ -165,7 +165,7 @@ module "ilb-nva-trusted" {
   name          = "nva-trusted-${each.key}"
   service_label = var.prefix
   forwarding_rules_config = {
-    default = {
+    "" = {
       global_access = true
     }
   }
