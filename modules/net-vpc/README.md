@@ -571,12 +571,12 @@ module "vpc" {
 | [project_id](outputs.tf#L58) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
 | [self_link](outputs.tf#L71) | Network self link. |  |
 | [subnet_ids](outputs.tf#L83) | Map of subnet IDs keyed by name. |  |
-| [subnet_ips](outputs.tf#L88) | Map of subnet address ranges keyed by name. |  |
-| [subnet_ipv6_external_prefixes](outputs.tf#L95) | Map of subnet external IPv6 prefixes keyed by name. |  |
-| [subnet_regions](outputs.tf#L103) | Map of subnet regions keyed by name. |  |
-| [subnet_secondary_ranges](outputs.tf#L110) | Map of subnet secondary ranges keyed by name. |  |
-| [subnet_self_links](outputs.tf#L121) | Map of subnet self links keyed by name. |  |
-| [subnets](outputs.tf#L126) | Subnet resources. |  |
-| [subnets_proxy_only](outputs.tf#L131) | L7 ILB or L7 Regional LB subnet resources. |  |
-| [subnets_psc](outputs.tf#L136) | Private Service Connect subnet resources. |  |
+| [subnet_ips](outputs.tf#L92) | Map of subnet address ranges keyed by name. |  |
+| [subnet_ipv6_external_prefixes](outputs.tf#L99) | Map of subnet external IPv6 prefixes keyed by name. |  |
+| [subnet_regions](outputs.tf#L107) | Map of subnet regions keyed by name. |  |
+| [subnet_secondary_ranges](outputs.tf#L114) | Map of subnet secondary ranges keyed by name. |  |
+| [subnet_self_links](outputs.tf#L125) | Map of subnet self links keyed by name. |  |
+| [subnets](outputs.tf#L134) | Subnet resources. |  |
+| [subnets_proxy_only](outputs.tf#L143) | L7 ILB or L7 Regional LB subnet resources. |  |
+| [subnets_psc](outputs.tf#L148) | Private Service Connect subnet resources. |  |
 <!-- END TFDOC -->
