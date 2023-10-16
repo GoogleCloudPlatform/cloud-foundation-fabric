@@ -175,7 +175,7 @@ module "vpc_main" {
   name       = "vpc-main"
   subnets = [
     { # regular subnet
-      ip_cidr_range = var.ip_ranges["main"].subnet
+      ip_cidr_range = var.ip_ranges["main"].subnet_main
       name          = "subnet-main"
       region        = var.region
     },
