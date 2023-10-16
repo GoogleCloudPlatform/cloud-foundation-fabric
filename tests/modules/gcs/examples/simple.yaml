@@ -34,6 +34,8 @@ values:
     uniform_bucket_level_access: true
     versioning:
     - enabled: true
+    autoclass:
+    - enabled: false
 
 counts:
   google_storage_bucket: 1

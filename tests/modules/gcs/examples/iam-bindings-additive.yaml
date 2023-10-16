@@ -33,6 +33,8 @@ values:
     uniform_bucket_level_access: true
     versioning:
     - enabled: false
+    autoclass:
+    - enabled: false
   module.bucket.google_storage_bucket_iam_member.bindings["storage-admin-with-delegated_roles"]:
     bucket: my-bucket
     condition:
