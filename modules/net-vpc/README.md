@@ -571,7 +571,7 @@ module "vpc" {
 | [project_id](outputs.tf#L58) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
 | [self_link](outputs.tf#L71) | Network self link. |  |
 | [subnet_ids](outputs.tf#L83) | Map of subnet IDs keyed by name. |  |
-| [subnet_ips](outputs.tf#L88) | Map of subnet address ranges keyed by name. |  |
+| [subnet_ips](outputs.tf#L92) | Map of subnet address ranges keyed by name. |  |
 | [subnet_ipv6_external_prefixes](outputs.tf#L99) | Map of subnet external IPv6 prefixes keyed by name. |  |
 | [subnet_regions](outputs.tf#L107) | Map of subnet regions keyed by name. |  |
 | [subnet_secondary_ranges](outputs.tf#L114) | Map of subnet secondary ranges keyed by name. |  |
