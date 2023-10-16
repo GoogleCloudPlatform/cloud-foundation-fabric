@@ -34,7 +34,7 @@ resource "google_storage_bucket" "bucket" {
   }
 
   dynamic "autoclass" {
-    for_each = var.autoclass == null [] ? [""]
+    for_each = var.autoclass == null ? [] : [""]
     content {
       enabled = var.autoclass
     }
