@@ -70,7 +70,7 @@ variable "backend_service_config" {
 }
 
 variable "backends" {
-  description = "Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'."
+  description = "Load balancer backends."
   type = list(object({
     group       = string
     description = optional(string, "Terraform managed.")
