@@ -21,7 +21,7 @@ resource "google_dialogflow_cx_webhook" "webhook" {
     generic_web_service {
       uri = "${module.cloud_run.service.status.0.url}/${var.webhook_config.url_path}"
       allowed_ca_certs = [
-        filebase64("server_tf.der")
+        try(filebase64("server_tf.der"), "")
       ]
     }
   }

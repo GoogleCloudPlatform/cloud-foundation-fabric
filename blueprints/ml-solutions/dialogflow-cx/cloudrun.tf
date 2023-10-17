@@ -51,9 +51,9 @@ resource "google_artifact_registry_repository" "repo" {
 resource "null_resource" "sp" {
   triggers = {
     policy_sha1 = <<EOT
-      ${sha1(file("./cr/app.py"))}
-      ${sha1(file("./cr/Dockerfile"))}
-      ${sha1(file("./cr/requirements.txt"))}
+      ${try(sha1(file("${path.cwd}/cr/app.py")), "")}
+      ${try(sha1(file("${path.cwd}/cr/Dockerfile")), "")}
+      ${try(sha1(file("${path.cwd}/cr/requirements.txt")), "")}
     EOT
   }
 
