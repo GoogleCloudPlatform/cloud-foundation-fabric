@@ -385,19 +385,25 @@ def e2e_tfvars_path(providers_tf):
       (test_path / 'providers.tf').write_text(providers_tf)
       binary = os.environ.get('TERRAFORM', 'terraform')
       tf = tftest.TerraformTest(test_path, binary=binary)
+      tf_vars_file = None
       tf_vars = {
-          'billing_account': os.environ.get("TFTEST_E2E_BILLING_ACCOUNT"),
-          'organization_id': os.environ.get("TFTEST_E2E_ORGANIZATION_ID"),
-          'parent': os.environ.get("TFTEST_E2E_PARENT"),
-          'prefix': os.environ.get("TFTEST_E2E_PREFIX"),
-          'region': os.environ.get("TFTEST_E2E_REGION", "europe-west4"),
-          'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0"),
-          'timestamp': str(int(time.time()))
+        'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0"),
+        'timestamp': str(int(time.time()))
       }
+      if 'TFTEST_E2E_SETUP_TFVARS_PATH' in os.environ:
+        tf_vars_file = os.environ["TFTEST_E2E_SETUP_TFVARS_PATH"]
+      else:
+        tf_vars.update({
+            'billing_account': os.environ.get("TFTEST_E2E_BILLING_ACCOUNT"),
+            'organization_id': os.environ.get("TFTEST_E2E_ORGANIZATION_ID"),
+            'parent': os.environ.get("TFTEST_E2E_PARENT"),
+            'prefix': os.environ.get("TFTEST_E2E_PREFIX"),
+            'region': os.environ.get("TFTEST_E2E_REGION", "europe-west4"),
+        })
       tf.setup(upgrade=True)
-      tf.apply(tf_vars=tf_vars)
+      tf.apply(tf_vars=tf_vars, tf_var_file=tf_vars_file)
       yield test_path / "e2e_tests.tfvars"
-      tf.destroy(tf_vars=tf_vars)
+      tf.destroy(tf_vars=tf_vars, tf_var_file=tf_vars_file)
 
 
 # @pytest.fixture

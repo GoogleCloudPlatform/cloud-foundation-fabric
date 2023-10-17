@@ -11,7 +11,8 @@ Prepare following information:
 * prepare service account that has necessary permissions (able to assign billing account to project, resource creation etc)
 
 # Option 1 - automatically provision and de-provision testing infrastructure
-## Set environment variables
+## (Suboption A) Set environment variables
+Should this be replaced with [TF_VAR_](https://developer.hashicorp.com/terraform/language/values/variables#environment-variables) environment variables?
 ```bash
 export TFTEST_E2E_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com  # set if you want to use service account impersonation
 export TFTEST_E2E_BILLING_ACCOUNT="123456-123456-123456"  # billing account id to associate projects
@@ -20,6 +21,24 @@ export TFTEST_E2E_PARENT="folders/1234567890"  # folder under which test resourc
 export TFTEST_E2E_PREFIX="your-unique-prefix"  # unique prefix for projects
 export TFTEST_E2E_REGION="europe-west4"  # region to use
 ```
+
+## (Suboption B) Create `e2e.tfvars` file
+```hcl
+billing_account = "123456-123456-123456"  # billing account id to associate projects
+organization_id = "1234567890" # your organization id
+parent          = "folders/1234567890"  # folder under which test resources will be created
+prefix          = "your-unique-prefix"  # unique prefix for projects
+region          = "europe-west4"  # region to use
+
+# tftest skip
+```
+
+And create environment variables:
+```bash
+export TFTEST_E2E_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com  # set if you want to use service account impersonation
+export TFTEST_E2E_SETUP_TFVARS_PATH=<path to e2e.tfvars file>
+```
+
 
 You can keep the prefix the same for all the tests run, the tests will add necessary suffix for subsequent runs, and in case tests are run in parallel, use separate suffix for the workers.
 # Run the tests
