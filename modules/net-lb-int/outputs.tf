@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,24 +32,24 @@ output "backend_service_self_link" {
 output "forwarding_rule_addresses" {
   description = "Forwarding rule address."
   value = {
-    for fwr_name, fwr in google_compute_forwarding_rule.forwarding_rules
-    : fwr_name => fwr.ip_address
+    for k, v in google_compute_forwarding_rule.forwarding_rules
+    : k => v.ip_address
   }
 }
 
 output "forwarding_rule_self_links" {
   description = "Forwarding rule self links."
   value = {
-    for fwr_name, fwr in google_compute_forwarding_rule.forwarding_rules
-    : fwr_name => fwr.self_link
+    for k, v in google_compute_forwarding_rule.forwarding_rules
+    : k => v.self_link
   }
 }
 
 output "forwarding_rules" {
   description = "Forwarding rule resources."
   value = {
-    for fwr_name, fwr in google_compute_forwarding_rule.forwarding_rules
-    : fwr_name => fwr
+    for k, v in google_compute_forwarding_rule.forwarding_rules
+    : k => v
   }
 }
 
@@ -83,7 +83,7 @@ output "health_check_self_link" {
 output "id" {
   description = "Fully qualified forwarding rule ids."
   value = {
-    for fwr_name, fwr in google_compute_forwarding_rule.forwarding_rules
-    : fwr_name => fwr.id
+    for k, v in google_compute_forwarding_rule.forwarding_rules
+    : k => v.id
   }
 }
