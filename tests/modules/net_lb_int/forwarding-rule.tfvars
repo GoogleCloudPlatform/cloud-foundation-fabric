@@ -11,4 +11,10 @@ backends = [{
   failover       = false
 }]
 global_access = true
-ports         = [80]
+
+forwarding_rules_config = {
+  "port-80" = {
+    ports = [80]
+  }
+}
+

@@ -30,7 +30,7 @@ module "vpc-right" {
       dest_range    = var.ip_ranges.left
       priority      = var.ilb_right_enable ? 900 : 1100
       next_hop_type = "ilb"
-      next_hop      = module.ilb-right.forwarding_rule.self_link
+      next_hop      = module.ilb-right.forwarding_rule_self_links[""]
     }
     to-left-gw-1 = {
       dest_range    = var.ip_ranges.left

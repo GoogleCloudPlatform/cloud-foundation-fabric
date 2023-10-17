@@ -64,28 +64,28 @@ module "prod-spoke-vpc" {
       priority      = 1000
       tags          = ["primary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["primary"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["primary"].forwarding_rule_addresses[""]
     }
     nva-secondary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       tags          = ["secondary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["secondary"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["secondary"].forwarding_rule_addresses[""]
     }
     nva-primary-to-secondary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = ["primary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["secondary"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["secondary"].forwarding_rule_addresses[""]
     }
     nva-secondary-to-primary = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = ["secondary"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["primary"].forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["primary"].forwarding_rule_addresses[""]
     }
   }
 }

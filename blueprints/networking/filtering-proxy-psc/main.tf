@@ -106,7 +106,7 @@ resource "google_compute_service_attachment" "service_attachment" {
   enable_proxy_protocol = true
   connection_preference = "ACCEPT_MANUAL"
   nat_subnets           = [module.vpc.subnets_psc["${var.region}/psc"].self_link]
-  target_service        = module.squid-ilb.forwarding_rule_self_link
+  target_service        = module.squid-ilb.forwarding_rule_self_links[""]
   consumer_accept_lists {
     project_id_or_num = module.project.project_id
     connection_limit  = 10
@@ -206,8 +206,12 @@ module "squid-ilb" {
   project_id    = module.project.project_id
   region        = var.region
   name          = "squid-ilb"
-  ports         = [3128]
   service_label = "squid-ilb"
+  forwarding_rules_config = {
+    "" = {
+      ports = [3128]
+    }
+  }
   vpc_config = {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region}/proxy"]

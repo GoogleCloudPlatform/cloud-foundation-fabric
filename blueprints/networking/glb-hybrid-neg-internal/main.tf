@@ -53,12 +53,12 @@ module "vpc_landing_untrusted" {
     spoke1-primary = {
       dest_range    = var.ip_config.spoke_primary
       next_hop_type = "ilb"
-      next_hop      = module.nva_untrusted_ilbs["primary"].forwarding_rule_self_link
+      next_hop      = module.nva_untrusted_ilbs["primary"].forwarding_rule_self_links[""]
     }
     spoke1-secondary = {
       dest_range    = var.ip_config.spoke_secondary
       next_hop_type = "ilb"
-      next_hop      = module.nva_untrusted_ilbs["secondary"].forwarding_rule_self_link
+      next_hop      = module.nva_untrusted_ilbs["secondary"].forwarding_rule_self_links[""]
     }
   }
 
