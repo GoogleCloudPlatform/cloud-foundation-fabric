@@ -86,7 +86,8 @@
   service_agent: "service-%s@gcp-sa-cloudbuild.iam.gserviceaccount.com"
   jit: true # roles/cloudbuild.builds.builder
 - name: "cloudbuild-builder"
-  service_agent: "%s@cloudbuild.gserviceaccount.com.iam.gserviceaccount.com"
+  service_agent: "%s@cloudbuild.gserviceaccount.com"
+  jit: true
 - name: "cloudbuild-logging"
   service_agent: "service-%s@gcp-sa-log-cloudbuild.iam.gserviceaccount.com"
 - name: "clouddeploy"
@@ -164,6 +165,7 @@
   service_agent: "service-%s@gcp-sa-datastudio.iam.gserviceaccount.com"
 - name: "dialogflow"
   service_agent: "service-%s@gcp-sa-dialogflow.iam.gserviceaccount.com"
+  jit: true
 - name: "discoveryengine"
   service_agent: "service-%s@gcp-sa-discoveryengine.iam.gserviceaccount.com"
   # dlp                          ="organizations-ORGANIZATION_NUMBER@gcp-sa-riskmanager"

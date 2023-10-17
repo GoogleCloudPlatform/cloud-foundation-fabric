@@ -52,6 +52,9 @@ locals {
         join(",", var.revision_annotations.cloudsql_instances)
       )
     },
+    var.ingress_settings == "internal" ? {
+      "run.googleapis.com/vpc-access-egress" = "private-ranges-only"
+    } : {},
     local._vpcaccess_annotation,
     var.revision_annotations.vpcaccess_egress == null ? {} : {
       "run.googleapis.com/vpc-access-egress" = (
