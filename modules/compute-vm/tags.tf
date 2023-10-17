@@ -16,8 +16,21 @@
 
 # tfdoc:file:description Tag bindings.
 
-resource "google_tags_tag_binding" "binding" {
-  for_each  = var.create_template ? {} : coalesce(var.tag_bindings, {})
-  parent    = "//compute.googleapis.com/${google_compute_instance.default.0.id}"
-  tag_value = each.value
-}
+# TODO: re-implement once
+# - the provider accepts a project id in the parent without a permadiff
+# - the disk resource exposes an id that can be used to build the parent
+
+# locals {
+#   tag_parent_base = (
+#     "//compute.googleapis.com/projects/${var.project_id}/zones/${var.zone}"
+#   )
+# }
+
+# resource "google_tags_location_tag_binding" "instance" {
+#   for_each = var.create_template ? {} : coalesce(var.tag_bindings, {})
+#   parent = (
+#     "${local.tag_parent_base}/instances/${google_compute_instance.default.0.instance_id}"
+#   )
+#   tag_value = each.value
+#   location  = var.zone
+# }

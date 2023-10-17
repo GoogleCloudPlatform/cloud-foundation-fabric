@@ -209,16 +209,15 @@ resource "google_compute_instance" "default" {
     )
     dynamic "initialize_params" {
       for_each = (
-        var.boot_disk.initialize_params == null
-        ||
-        var.boot_disk.use_independent_disk
+        var.tag_bindings == null || var.boot_disk.use_independent_disk
         ? []
         : [""]
       )
       content {
-        image = var.boot_disk.initialize_params.image
-        size  = var.boot_disk.initialize_params.size
-        type  = var.boot_disk.initialize_params.type
+        image                 = var.boot_disk.initialize_params.image
+        size                  = var.boot_disk.initialize_params.size
+        type                  = var.boot_disk.initialize_params.type
+        resource_manager_tags = var.tag_bindings
       }
     }
   }
@@ -289,6 +288,13 @@ resource "google_compute_instance" "default" {
       enable_secure_boot          = config.value.enable_secure_boot
       enable_vtpm                 = config.value.enable_vtpm
       enable_integrity_monitoring = config.value.enable_integrity_monitoring
+    }
+  }
+
+  dynamic "params" {
+    for_each = var.tag_bindings == null ? [] : [""]
+    content {
+      resource_manager_tags = var.tag_bindings
     }
   }
 
