@@ -287,8 +287,7 @@ module "ilb" {
   }
   backends = [
     for z, mod in module.instance-group : {
-      group          = mod.group.self_link
-      balancing_mode = "UTILIZATION"
+      group = mod.group.self_link
     }
   ]
   health_check_config = {
