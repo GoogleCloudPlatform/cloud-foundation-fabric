@@ -67,9 +67,9 @@ resource "tls_private_key" "default" {
 resource "tls_self_signed_cert" "default" {
   private_key_pem = tls_private_key.default.private_key_pem
   subject {
-    common_name = "webhook-2bp66dygaa-ew.a.run.app" # trim(module.cloud_run.service.status.0.url, "https://")
+    common_name = trimprefix(module.cloud_run.service.status.0.url, "https://")
   }
-  dns_names             = ["webhook-2bp66dygaa-ew.a.run.app"] #trim(module.cloud_run.service.status.0.url, "https://")]
+  dns_names             = [trimprefix(module.cloud_run.service.status.0.url, "https://")]
   validity_period_hours = 36500
   allowed_uses          = ["any_extended"]
   set_subject_key_id    = true
@@ -77,7 +77,7 @@ resource "tls_self_signed_cert" "default" {
 
 module "ilb-l7" {
   source     = "../../../modules/net-lb-app-int"
-  name       = "ilb-test"
+  name       = "ilb-webhook"
   project_id = module.project.project_id
   region     = var.region
   backend_service_configs = {
