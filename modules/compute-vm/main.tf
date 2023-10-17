@@ -208,11 +208,7 @@ resource "google_compute_instance" "default" {
       var.encryption != null ? var.encryption.kms_key_self_link : null
     )
     dynamic "initialize_params" {
-      for_each = (
-        var.tag_bindings == null || var.boot_disk.use_independent_disk
-        ? []
-        : [""]
-      )
+      for_each = var.boot_disk.use_independent_disk ? [] : [""]
       content {
         image                 = var.boot_disk.initialize_params.image
         size                  = var.boot_disk.initialize_params.size
