@@ -51,19 +51,12 @@ variable "backend_service_config" {
 variable "backends" {
   description = "Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'."
   type = list(object({
-    group          = string
-    balancing_mode = optional(string, "CONNECTION")
-    description    = optional(string, "Terraform managed.")
-    failover       = optional(bool, false)
+    group       = string
+    description = optional(string, "Terraform managed.")
+    failover    = optional(bool, false)
   }))
   default  = []
   nullable = false
-  validation {
-    condition = alltrue([
-      for b in var.backends : coalesce(b.balancing_mode, "CONNECTION") == "CONNECTION"
-    ])
-    error_message = "When specifying balancing mode it needs to be 'CONNECTION'."
-  }
 }
 
 variable "description" {
