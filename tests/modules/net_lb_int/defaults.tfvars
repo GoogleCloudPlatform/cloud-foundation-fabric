@@ -6,7 +6,6 @@ vpc_config = {
   subnetwork = "default"
 }
 backends = [{
-  balancing_mode = "CONNECTION"
-  group          = "foo"
-  failover       = false
+  group    = "foo"
+  failover = false
 }]
