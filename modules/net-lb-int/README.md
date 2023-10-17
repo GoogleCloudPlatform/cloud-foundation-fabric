@@ -195,8 +195,7 @@ module "ilb" {
   ports = [80]
   backends = [
     for z, mod in module.instance-group : {
-      group          = mod.group.self_link
-      balancing_mode = "CONNECTION" # Error creating RegionBackendService: googleapi: Error 400: Invalid value for field 'resource.backends[0].balancingMode': 'UTILIZATION'. Balancing mode must be CONNECTION for an INTERNAL backend service., invalid
+      group = mod.group.self_link
     }
   ]
   health_check_config = {
