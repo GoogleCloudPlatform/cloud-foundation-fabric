@@ -160,7 +160,7 @@ module "instance-group" {
   source     = "./fabric/modules/compute-vm"
   for_each   = toset(["b", "c"])
   project_id = var.project_id
-  zone       = "europe-west1-${each.key}"
+  zone       = "${var.region}-${each.key}"
   name       = "ilb-test-${each.key}"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -185,7 +185,7 @@ module "instance-group" {
 module "ilb" {
   source        = "./fabric/modules/net-lb-int"
   project_id    = var.project_id
-  region        = "europe-west1"
+  region        = var.region
   name          = "ilb-test"
   service_label = "ilb-test"
   vpc_config = {
@@ -196,7 +196,7 @@ module "ilb" {
   backends = [
     for z, mod in module.instance-group : {
       group          = mod.group.self_link
-      balancing_mode = "UTILIZATION"
+      balancing_mode = "CONNECTION" # Error creating RegionBackendService: googleapi: Error 400: Invalid value for field 'resource.backends[0].balancingMode': 'UTILIZATION'. Balancing mode must be CONNECTION for an INTERNAL backend service., invalid
     }
   ]
   health_check_config = {
@@ -205,7 +205,7 @@ module "ilb" {
     }
   }
 }
-# tftest modules=3 resources=7
+# tftest modules=3 resources=7 e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
