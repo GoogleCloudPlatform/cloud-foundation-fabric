@@ -60,10 +60,9 @@ variable "backends" {
   nullable = false
   validation {
     condition = alltrue([
-      for b in var.backends : contains(
-        ["CONNECTION", "UTILIZATION"], coalesce(b.balancing_mode, "CONNECTION")
-    )])
-    error_message = "When specified balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
+      for b in var.backends : coalesce(b.balancing_mode, "CONNECTION") == "CONNECTION"
+    ])
+    error_message = "When specifying balancing mode it needs to be 'CONNECTION'."
   }
 }
 
