@@ -419,12 +419,23 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
       }
     }
 
-    all_namespaces = lookup(each.value, "namespaces", null) != null ? null : true
+    all_namespaces = each.value.all_namespaces ? true : null
     dynamic "selected_namespaces" {
       for_each = each.value.namespaces != null ? [""] : []
       content {
         namespaces = each.value.namespaces
       }
+    }
+    dynamic "selected_applications" {
+      for_each = each.value.applications != null ? each.value.applications : []
+      iterator = app
+      content {
+        namespaced_names {
+          namespace = app.value["namespace"]
+          name      = app.value["name"]
+        }
+      }
+
     }
   }
 }

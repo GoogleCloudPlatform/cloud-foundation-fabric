@@ -19,13 +19,18 @@ variable "backup_configs" {
   type = object({
     enable_backup_agent = optional(bool, false)
     backup_plans = optional(map(object({
+      all_namespaces = optional(bool, true)
+      applications = optional(list(object({
+        namespace = string
+        name      = string
+      })))
       encryption_key                    = optional(string)
       include_secrets                   = optional(bool, true)
       include_volume_data               = optional(bool, true)
       namespaces                        = optional(list(string))
       region                            = string
       schedule                          = string
-      retention_policy_days             = optional(string)
+      retention_policy_days             = optional(string, 1)
       retention_policy_lock             = optional(bool, false)
       retention_policy_delete_lock_days = optional(string)
     })), {})
