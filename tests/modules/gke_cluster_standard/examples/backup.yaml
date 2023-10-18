@@ -25,7 +25,7 @@ values:
       include_volume_data: true
       selected_applications:
       - namespaced_names:
-          namespace: test
+        - namespace: test
           name:  app1 
       selected_namespaces: []
     backup_schedule:
