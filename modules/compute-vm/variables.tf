@@ -356,7 +356,7 @@ variable "snapshot_schedules" {
 }
 
 variable "tag_bindings" {
-  description = "Tag bindings for this instance, in key => tag value id format."
+  description = "Tag bindings for this instance, in tag key => tag value format."
   type        = map(string)
   default     = null
 }
