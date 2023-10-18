@@ -6,7 +6,6 @@ Legend: <code>+</code> additive, <code>•</code> conditional.
 
 | members | roles |
 |---|---|
-|<b>egov-test-0</b><br><small><i>group</i></small>|[roles/resourcemanager.organizationViewer](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.organizationViewer) <code>+</code>|
 |<b>dev-resman-pf-0</b><br><small><i>serviceAccount</i></small>|[roles/orgpolicy.policyAdmin](https://cloud.google.com/iam/docs/understanding-roles#orgpolicy.policyAdmin) <code>+</code><code>•</code>|
 |<b>prod-resman-net-0</b><br><small><i>serviceAccount</i></small>|[roles/compute.orgFirewallPolicyAdmin](https://cloud.google.com/iam/docs/understanding-roles#compute.orgFirewallPolicyAdmin) <code>+</code><br>[roles/compute.xpnAdmin](https://cloud.google.com/iam/docs/understanding-roles#compute.xpnAdmin) <code>+</code>|
 |<b>prod-resman-pf-0</b><br><small><i>serviceAccount</i></small>|[roles/orgpolicy.policyAdmin](https://cloud.google.com/iam/docs/understanding-roles#orgpolicy.policyAdmin) <code>+</code><code>•</code>|
