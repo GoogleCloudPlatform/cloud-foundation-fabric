@@ -18,8 +18,6 @@ Legend: <code>+</code> additive, <code>•</code> conditional.
 
 | members | roles |
 |---|---|
-|<b>o366118655033-148933</b><br><small><i>serviceAccount</i></small>|[roles/logging.bucketWriter](https://cloud.google.com/iam/docs/understanding-roles#logging.bucketWriter) <code>+</code><code>•</code>|
-|<b>o366118655033-468879</b><br><small><i>serviceAccount</i></small>|[roles/logging.bucketWriter](https://cloud.google.com/iam/docs/understanding-roles#logging.bucketWriter) <code>+</code><code>•</code>|
 |<b>prod-bootstrap-0</b><br><small><i>serviceAccount</i></small>|[roles/owner](https://cloud.google.com/iam/docs/understanding-roles#owner) |
 
 ## Project <i>prod-iac-core-0</i>
