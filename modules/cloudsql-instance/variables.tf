@@ -195,6 +195,15 @@ variable "project_id" {
   type        = string
 }
 
+variable "psc_config" {
+  description = "Whether Private Service Connect (PSC) connectivity is enabled for this instance and list of consumer projects that are allow-listed for PSC connections to this instance."
+  type = object({
+    psc_enabled = optional(bool, true)
+    allowed_consumer_projects = optional(list(string), [])
+  })
+  default = null
+}
+
 variable "region" {
   description = "Region of the primary instance."
   type        = string

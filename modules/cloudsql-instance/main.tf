@@ -80,6 +80,14 @@ resource "google_sql_database_instance" "primary" {
           value = network.value
         }
       }
+      dynamic "psc_config" {
+        for_each = var.psc_config != null? [""] : []
+        content {
+          psc_enabled = var.psc_config.psc_enabled
+          allowed_consumer_projects = var.psc_config.allowed_consumer_projects
+        }
+        
+      }
     }
 
     dynamic "backup_configuration" {
