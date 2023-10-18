@@ -37,29 +37,6 @@ Legend: <code>+</code> additive, <code>•</code> conditional.
 |---|---|
 |<b>dev-resman-pf-0</b><br><small><i>serviceAccount</i></small>|organizations/[org_id #0]/roles/serviceProjectNetworkAdmin <br>[roles/logging.admin](https://cloud.google.com/iam/docs/understanding-roles#logging.admin) <br>[roles/owner](https://cloud.google.com/iam/docs/understanding-roles#owner) <br>[roles/resourcemanager.folderAdmin](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.folderAdmin) <br>[roles/resourcemanager.projectCreator](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.projectCreator) |
 
-## Folder <i>egov test 0 - core [#1]</i>
-
-| members | roles |
-|---|---|
-|<b>egov-test-0</b><br><small><i>group</i></small>|organizations/[org_id #0]/roles/tenantLoadBalancerAdmin <br>[roles/compute.instanceAdmin.v1](https://cloud.google.com/iam/docs/understanding-roles#compute.instanceAdmin.v1) <br>[roles/viewer](https://cloud.google.com/iam/docs/understanding-roles#viewer) |
-|<b>egov-t0-iac-0</b><br><small><i>serviceAccount</i></small>|organizations/[org_id #0]/roles/tenantLoadBalancerAdmin <br>[roles/compute.instanceAdmin.v1](https://cloud.google.com/iam/docs/understanding-roles#compute.instanceAdmin.v1) <br>[roles/viewer](https://cloud.google.com/iam/docs/understanding-roles#viewer) |
-|<b>tn-egov-t0-0</b><br><small><i>serviceAccount</i></small>|[roles/owner](https://cloud.google.com/iam/docs/understanding-roles#owner) |
-
-## Folder <i>egov test 0 - tenant [#1]</i>
-
-| members | roles |
-|---|---|
-|<b>egov-test-0</b><br><small><i>group</i></small>|[roles/cloudasset.owner](https://cloud.google.com/iam/docs/understanding-roles#cloudasset.owner) <br>[roles/compute.xpnAdmin](https://cloud.google.com/iam/docs/understanding-roles#compute.xpnAdmin) <br>[roles/owner](https://cloud.google.com/iam/docs/understanding-roles#owner) <br>[roles/resourcemanager.folderAdmin](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.folderAdmin) <br>[roles/resourcemanager.projectCreator](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.projectCreator) <br>[roles/resourcemanager.tagUser](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.tagUser) |
-|<b>egov-t0-iac-0</b><br><small><i>serviceAccount</i></small>|[roles/cloudasset.owner](https://cloud.google.com/iam/docs/understanding-roles#cloudasset.owner) <br>[roles/compute.xpnAdmin](https://cloud.google.com/iam/docs/understanding-roles#compute.xpnAdmin) <br>[roles/owner](https://cloud.google.com/iam/docs/understanding-roles#owner) <br>[roles/resourcemanager.folderAdmin](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.folderAdmin) <br>[roles/resourcemanager.projectCreator](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.projectCreator) <br>[roles/resourcemanager.tagUser](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.tagUser) |
-
-## Folder <i>egov test 0 [#1]</i>
-
-| members | roles |
-|---|---|
-|<b>egov-test-0</b><br><small><i>group</i></small>|[roles/logging.admin](https://cloud.google.com/iam/docs/understanding-roles#logging.admin) <br>[roles/monitoring.admin](https://cloud.google.com/iam/docs/understanding-roles#monitoring.admin) <br>[roles/resourcemanager.folderViewer](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.folderViewer) <br>[roles/browser](https://cloud.google.com/iam/docs/understanding-roles#browser) |
-|<b>egov-t0-iac-0</b><br><small><i>serviceAccount</i></small>|[roles/logging.admin](https://cloud.google.com/iam/docs/understanding-roles#logging.admin) <br>[roles/monitoring.admin](https://cloud.google.com/iam/docs/understanding-roles#monitoring.admin) <br>[roles/resourcemanager.folderViewer](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.folderViewer) |
-|<b>tn-egov-t0-0</b><br><small><i>serviceAccount</i></small>|[roles/cloudasset.owner](https://cloud.google.com/iam/docs/understanding-roles#cloudasset.owner) <br>[roles/compute.xpnAdmin](https://cloud.google.com/iam/docs/understanding-roles#compute.xpnAdmin) <br>[roles/resourcemanager.folderAdmin](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.folderAdmin) <br>[roles/resourcemanager.projectCreator](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.projectCreator) <br>[roles/resourcemanager.tagUser](https://cloud.google.com/iam/docs/understanding-roles#resourcemanager.tagUser) |
-
 ## Folder <i>networking</i>
 
 | members | roles |
