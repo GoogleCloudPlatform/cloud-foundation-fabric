@@ -686,7 +686,7 @@ Resource manager tags (or "secure tags") bindings are supported with the followi
 - a single `tag_bindings` variable is used for both the instance and the boot disk
 - tag bindings are not created for attached disks
 - tag bindings will not be created for the boot disk if the `use_independent_disk` flag is true
-- tag bindings are ignore for instance templates
+- tag bindings are ignored for instance templates
 
 ```hcl
 module "simple-vm-example" {
