@@ -272,8 +272,13 @@ module "cluster-1" {
     enable_backup_agent = true
     backup_plans = {
       "backup-1" = {
-        region   = "europe-west2"
-        schedule = "0 9 * * 1"
+        all_namespaces = false
+        region         = "europe-west2"
+        schedule       = "0 9 * * 1"
+        applications = [{
+          namespace = "test"
+          name      = "app1"
+        }]
       }
     }
   }

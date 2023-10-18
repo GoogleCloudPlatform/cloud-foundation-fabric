@@ -27,7 +27,7 @@ values:
       selected_namespaces: []
     backup_schedule:
     - cron_schedule: 0 9 * * 1
-    location: europe-west-2
+    location: europe-west2
     name: backup-1
     project: project-id
     retention_policy:
