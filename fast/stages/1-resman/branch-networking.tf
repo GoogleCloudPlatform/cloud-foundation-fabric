@@ -96,6 +96,9 @@ module "branch-network-sa" {
       try(module.branch-network-sa-cicd.0.iam_email, null)
     ])
   }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }

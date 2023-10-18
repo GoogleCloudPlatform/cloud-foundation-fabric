@@ -29,6 +29,9 @@ module "branch-pf-dev-sa" {
       try(module.branch-pf-dev-sa-cicd.0.iam_email, null)
     ])
   }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
@@ -46,6 +49,9 @@ module "branch-pf-prod-sa" {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-pf-prod-sa-cicd.0.iam_email, null)
     ])
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
   }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]

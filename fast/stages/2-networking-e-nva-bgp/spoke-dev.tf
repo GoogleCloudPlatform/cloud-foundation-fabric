@@ -42,6 +42,26 @@ module "dev-spoke-project" {
       try(local.service_accounts.project-factory-prod, null),
     ])
   }
+  # allow specific service accounts to assign a set of roles
+  iam_bindings = {
+    sa_delegated_grants = {
+      role = "roles/resourcemanager.projectIamAdmin"
+      members = compact([
+        try(local.service_accounts.data-platform-dev, null),
+        try(local.service_accounts.project-factory-dev, null),
+        try(local.service_accounts.project-factory-prod, null),
+        try(local.service_accounts.gke-dev, null),
+      ])
+      condition = {
+        title       = "dev_stage3_sa_delegated_grants"
+        description = "Development host project delegated grants."
+        expression = format(
+          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+          join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
+        )
+      }
+    }
+  }
 }
 
 module "dev-spoke-vpc" {
@@ -79,24 +99,4 @@ module "peering-dev" {
   prefix        = "dev-peering-0"
   local_network = module.dev-spoke-vpc.self_link
   peer_network  = module.landing-trusted-vpc.self_link
-}
-
-# Create delegated grants for stage3 service accounts
-resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
-  project = module.dev-spoke-project.project_id
-  role    = "roles/resourcemanager.projectIamAdmin"
-  members = compact([
-    try(local.service_accounts.data-platform-dev, null),
-    try(local.service_accounts.project-factory-dev, null),
-    try(local.service_accounts.project-factory-prod, null),
-    try(local.service_accounts.gke-dev, null),
-  ])
-  condition {
-    title       = "dev_stage3_sa_delegated_grants"
-    description = "Development host project delegated grants."
-    expression = format(
-      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-      join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
-    )
-  }
 }

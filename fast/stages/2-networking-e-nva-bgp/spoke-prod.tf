@@ -41,6 +41,25 @@ module "prod-spoke-project" {
       try(local.service_accounts.project-factory-prod, null),
     ])
   }
+  # allow specific service accounts to assign a set of roles
+  iam_bindings = {
+    sa_delegated_grants = {
+      role = "roles/resourcemanager.projectIamAdmin"
+      members = compact([
+        try(local.service_accounts.data-platform-prod, null),
+        try(local.service_accounts.project-factory-prod, null),
+        try(local.service_accounts.gke-prod, null),
+      ])
+      condition = {
+        title       = "prod_stage3_sa_delegated_grants"
+        description = "Production host project delegated grants."
+        expression = format(
+          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+          join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
+        )
+      }
+    }
+  }
 }
 
 module "prod-spoke-vpc" {
@@ -78,23 +97,4 @@ module "peering-prod" {
   prefix        = "prod-peering-0"
   local_network = module.prod-spoke-vpc.self_link
   peer_network  = module.landing-trusted-vpc.self_link
-}
-
-# Create delegated grants for stage3 service accounts
-resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
-  project = module.prod-spoke-project.project_id
-  role    = "roles/resourcemanager.projectIamAdmin"
-  members = compact([
-    try(local.service_accounts.data-platform-prod, null),
-    try(local.service_accounts.project-factory-prod, null),
-    try(local.service_accounts.gke-prod, null),
-  ])
-  condition {
-    title       = "prod_stage3_sa_delegated_grants"
-    description = "Production host project delegated grants."
-    expression = format(
-      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-      join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
-    )
-  }
 }
