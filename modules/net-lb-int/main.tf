@@ -68,7 +68,7 @@ resource "google_compute_region_backend_service" "default" {
   dynamic "backend" {
     for_each = { for b in var.backends : b.group => b }
     content {
-      balancing_mode = backend.value.balancing_mode
+      balancing_mode = "CONNECTION"
       description    = backend.value.description
       failover       = backend.value.failover
       group          = backend.key
