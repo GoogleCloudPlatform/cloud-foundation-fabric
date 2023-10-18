@@ -135,6 +135,9 @@ module "tenant-core-sa" {
   name        = "tn-${each.key}-0"
   description = "Terraform service account for tenant ${each.key}."
   prefix      = var.prefix
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
 }
 
 module "tenant-core-gcs" {

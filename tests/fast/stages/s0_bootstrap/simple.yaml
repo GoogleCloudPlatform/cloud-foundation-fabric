@@ -20,8 +20,8 @@ counts:
   google_organization_iam_custom_role: 3
   google_organization_iam_member: 13
   google_project: 3
-  google_project_iam_binding: 9
-  google_project_iam_member: 3
+  google_project_iam_binding: 10
+  google_project_iam_member: 4
   google_project_service: 29
   google_project_service_identity: 3
   google_service_account: 2

@@ -446,8 +446,8 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [nva.tf](./nva.tf) | None | <code>compute-mig</code> · <code>compute-vm</code> · <code>simple-nva</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [regions.tf](./regions.tf) | Compute short names for regions. |  |  |
-| [spoke-dev.tf](./spoke-dev.tf) | Dev spoke VPC and related resources. | <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>project</code> | <code>google_project_iam_binding</code> |
-| [spoke-prod.tf](./spoke-prod.tf) | Production spoke VPC and related resources. | <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>project</code> | <code>google_project_iam_binding</code> |
+| [spoke-dev.tf](./spoke-dev.tf) | Dev spoke VPC and related resources. | <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>project</code> |  |
+| [spoke-prod.tf](./spoke-prod.tf) | Production spoke VPC and related resources. | <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>project</code> |  |
 | [test-resources.tf](./test-resources.tf) | temporary instances for testing | <code>compute-vm</code> |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [vpn-onprem.tf](./vpn-onprem.tf) | VPN between landing and onprem. | <code>net-vpn-ha</code> |  |
