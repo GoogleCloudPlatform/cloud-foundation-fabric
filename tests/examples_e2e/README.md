@@ -36,7 +36,7 @@ export TF_VAR_billing_account="123456-123456-123456"  # billing account id to as
 export TF_VAR_organization_id="1234567890" # your organization id
 export TF_VAR_parent="folders/1234567890"  # folder under which test resources will be created
 export TF_VAR_prefix="your-unique-prefix"  # unique prefix for projects
-export TV_VAR_region="europe-west4"  # region to use
+export TF_VAR_region="europe-west4"  # region to use
 ```
 
 To use Service Account Impersonation, use provider environment variable
