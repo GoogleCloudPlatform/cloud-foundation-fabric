@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,17 @@ resource "google_storage_bucket" "bucket" {
   force_destroy               = var.force_destroy
   uniform_bucket_level_access = var.uniform_bucket_level_access
   labels                      = var.labels
+  default_event_based_hold    = var.default_event_based_hold
+  requester_pays              = var.requester_pays
   versioning {
     enabled = var.versioning
+  }
+
+  dynamic "autoclass" {
+    for_each = var.autoclass == null ? [] : [""]
+    content {
+      enabled = var.autoclass
+    }
   }
 
   dynamic "website" {
@@ -95,6 +104,14 @@ resource "google_storage_bucket" "bucket" {
         num_newer_versions         = rule.value.condition.num_newer_versions
         with_state                 = rule.value.condition.with_state
       }
+    }
+  }
+
+  dynamic "custom_placement_config" {
+    for_each = var.custom_placement_config == null ? [] : [""]
+
+    content {
+      data_locations = var.custom_placement_config
     }
   }
 }

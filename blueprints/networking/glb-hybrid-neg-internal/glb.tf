@@ -44,7 +44,7 @@ module "hybrid-glb" {
         endpoints = {
           primary = {
             ip_address = (var.ilb_create
-              ? module.test_vm_ilbs["primary"].forwarding_rule_address
+              ? module.test_vm_ilbs["primary"].forwarding_rule_addresses[""]
               : module.test_vms["primary"].internal_ip
             )
             port = 80
@@ -59,7 +59,7 @@ module "hybrid-glb" {
         endpoints = {
           secondary = {
             ip_address = (var.ilb_create
-              ? module.test_vm_ilbs["secondary"].forwarding_rule_address
+              ? module.test_vm_ilbs["secondary"].forwarding_rule_addresses[""]
               : module.test_vms["secondary"].internal_ip
             )
             port = 80

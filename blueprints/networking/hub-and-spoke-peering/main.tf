@@ -274,6 +274,7 @@ module "cluster-1" {
       import_routes = false
     }
   }
+  deletion_protection = var.deletion_protection
 }
 
 module "cluster-1-nodepool-1" {

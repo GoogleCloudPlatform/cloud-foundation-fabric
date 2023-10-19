@@ -141,7 +141,11 @@ module "listener-ilb" {
   region        = var.region
   name          = "${var.prefix}-${each.value}-ilb"
   service_label = "${var.prefix}-${each.value}-ilb"
-  address       = local.internal_address_ips["${var.prefix}-lb-${each.value}"]
+  forwarding_rules_config = {
+    "" = {
+      address = local.internal_address_ips["${var.prefix}-lb-${each.value}"]
+    }
+  }
   vpc_config = {
     network    = local.network
     subnetwork = local.subnetwork

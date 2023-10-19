@@ -223,6 +223,7 @@ module "cluster-1" {
   labels = {
     environment = "test"
   }
+  deletion_protection = var.deletion_protection
 }
 
 module "cluster-1-nodepool-1" {

@@ -23,17 +23,26 @@ values:
   module.vpc.google_compute_network.network[0]:
     name: my-network
     project: my-project
-  module.vpc.google_compute_network_peering_routes_config.psa_routes["1"]:
-    export_custom_routes: false
-    import_custom_routes: false
+    routing_mode: GLOBAL
+  module.vpc.google_compute_network_peering_routes_config.psa_routes[0]:
+    export_custom_routes: true
+    import_custom_routes: true
     project: my-project
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]:
     ip_cidr_range: 10.0.0.0/24
     name: production
+    private_ip_google_access: true
     project: my-project
-  module.vpc.google_service_networking_connection.psa_connection["1"]:
+    region: europe-west1
+    secondary_ip_range: []
+  module.vpc.google_service_networking_connection.psa_connection[0]:
     reserved_peering_ranges:
     - myrange
+    service: servicenetworking.googleapis.com
+  module.vpc.google_service_networking_peered_dns_domain.name["gcp.example.com."]:
+    dns_suffix: gcp.example.com.
+    name: gcp-example-com
+    project: my-project
     service: servicenetworking.googleapis.com
 
 counts:
@@ -42,5 +51,4 @@ counts:
   google_compute_network_peering_routes_config: 1
   google_compute_subnetwork: 1
   google_service_networking_connection: 1
-
-outputs: {}
+  google_service_networking_peered_dns_domain: 1

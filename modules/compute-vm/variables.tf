@@ -240,15 +240,16 @@ variable "name" {
 variable "network_interfaces" {
   description = "Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed."
   type = list(object({
-    nat        = optional(bool, false)
     network    = string
     subnetwork = string
+    alias_ips  = optional(map(string), {})
+    nat        = optional(bool, false)
+    nic_type   = optional(string)
+    stack_type = optional(string)
     addresses = optional(object({
       internal = optional(string)
       external = optional(string)
     }), null)
-    alias_ips = optional(map(string), {})
-    nic_type  = optional(string)
   }))
 }
 
@@ -355,7 +356,7 @@ variable "snapshot_schedules" {
 }
 
 variable "tag_bindings" {
-  description = "Tag bindings for this instance, in key => tag value id format."
+  description = "Tag bindings for this instance, in tag key => tag value format."
   type        = map(string)
   default     = null
 }

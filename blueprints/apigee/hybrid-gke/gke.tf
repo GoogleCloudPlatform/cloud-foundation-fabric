@@ -34,6 +34,7 @@ module "cluster" {
   enable_features = {
     workload_identity = true
   }
+  deletion_protection = var.deletion_protection
 }
 
 module "apigee-data-nodepool" {

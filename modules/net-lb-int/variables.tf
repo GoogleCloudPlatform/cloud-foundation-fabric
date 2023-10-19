@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-variable "address" {
-  description = "Optional IP address used for the forwarding rule."
-  type        = string
-  default     = null
-}
 
 variable "backend_service_config" {
   description = "Backend service level configuration."
@@ -55,22 +49,14 @@ variable "backend_service_config" {
 }
 
 variable "backends" {
-  description = "Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'."
+  description = "Load balancer backends."
   type = list(object({
-    group          = string
-    balancing_mode = optional(string, "CONNECTION")
-    description    = optional(string, "Terraform managed.")
-    failover       = optional(bool, false)
+    group       = string
+    description = optional(string, "Terraform managed.")
+    failover    = optional(bool, false)
   }))
   default  = []
   nullable = false
-  validation {
-    condition = alltrue([
-      for b in var.backends : contains(
-        ["CONNECTION", "UTILIZATION"], coalesce(b.balancing_mode, "CONNECTION")
-    )])
-    error_message = "When specified balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
-  }
 }
 
 variable "description" {
@@ -79,10 +65,19 @@ variable "description" {
   default     = "Terraform managed."
 }
 
-variable "global_access" {
-  description = "Global access, defaults to false if not set."
-  type        = bool
-  default     = null
+variable "forwarding_rules_config" {
+  description = "The optional forwarding rules configuration."
+  type = map(object({
+    address       = optional(string)
+    description   = optional(string)
+    global_access = optional(bool, true)
+    ip_version    = optional(string)
+    ports         = optional(list(string), null)
+    protocol      = optional(string, "TCP")
+  }))
+  default = {
+    "" = {}
+  }
 }
 
 variable "group_configs" {
@@ -189,12 +184,6 @@ variable "labels" {
 variable "name" {
   description = "Name used for all resources."
   type        = string
-}
-
-variable "ports" {
-  description = "Comma-separated ports, leave null to use all ports."
-  type        = list(string)
-  default     = null
 }
 
 variable "project_id" {

@@ -17,7 +17,7 @@
 locals {
   squid_address = (
     var.mig
-    ? module.squid-ilb.0.forwarding_rule_address
+    ? module.squid-ilb.0.forwarding_rule_addresses[""]
     : module.squid-vm.internal_ip
   )
 }
@@ -210,8 +210,12 @@ module "squid-ilb" {
   project_id    = module.project-host.project_id
   region        = var.region
   name          = "squid-ilb"
-  ports         = [3128]
   service_label = "squid-ilb"
+  forwarding_rules_config = {
+    "" = {
+      ports = [3128]
+    }
+  }
   vpc_config = {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region}/proxy"]

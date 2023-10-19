@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ module "processing-dp-history" {
   location       = var.region
   storage_class  = "REGIONAL"
   encryption_key = var.service_encryption_keys.storage
+  force_destroy  = !var.deletion_protection
 }
 
 module "processing-sa-0" {
@@ -50,6 +51,7 @@ module "processing-staging-0" {
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = var.service_encryption_keys.storage
+  force_destroy  = !var.deletion_protection
 }
 
 module "processing-temp-0" {
@@ -60,6 +62,7 @@ module "processing-temp-0" {
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = var.service_encryption_keys.storage
+  force_destroy  = !var.deletion_protection
 }
 
 module "processing-log-0" {
@@ -70,6 +73,7 @@ module "processing-log-0" {
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = var.service_encryption_keys.storage
+  force_destroy  = !var.deletion_protection
 }
 
 module "processing-dp-historyserver" {

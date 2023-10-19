@@ -102,20 +102,20 @@ The application deployed to the cluster is an RESTful API that enables managing 
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L29) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L47) | Project ID. | <code>string</code> | ✓ |  |
-| [master_cidr_block](variables.tf#L17) | Master CIDR block. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;28&#34;</code> |
-| [pods_cidr_block](variables.tf#L23) | Pods CIDR block. | <code>string</code> |  | <code>&#34;172.16.0.0&#47;20&#34;</code> |
-| [project_create](variables.tf#L38) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L52) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [services_cidr_block](variables.tf#L58) | Services CIDR block. | <code>string</code> |  | <code>&#34;192.168.0.0&#47;24&#34;</code> |
-| [subnet_cidr_block](variables.tf#L64) | Subnet CIDR block. | <code>string</code> |  | <code>&#34;10.0.1.0&#47;24&#34;</code> |
-| [zone](variables.tf#L70) | Zone. | <code>string</code> |  | <code>&#34;europe-west1-c&#34;</code> |
+| [prefix](variables.tf#L36) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L54) | Project ID. | <code>string</code> | ✓ |  |
+| [deletion_protection](variables.tf#L17) | Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail. | <code>bool</code> |  | <code>false</code> |
+| [master_cidr_block](variables.tf#L24) | Master CIDR block. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;28&#34;</code> |
+| [pods_cidr_block](variables.tf#L30) | Pods CIDR block. | <code>string</code> |  | <code>&#34;172.16.0.0&#47;20&#34;</code> |
+| [project_create](variables.tf#L45) | Parameters for the creation of the new project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L59) | Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [services_cidr_block](variables.tf#L65) | Services CIDR block. | <code>string</code> |  | <code>&#34;192.168.0.0&#47;24&#34;</code> |
+| [subnet_cidr_block](variables.tf#L71) | Subnet CIDR block. | <code>string</code> |  | <code>&#34;10.0.1.0&#47;24&#34;</code> |
+| [zone](variables.tf#L77) | Zone. | <code>string</code> |  | <code>&#34;europe-west1-c&#34;</code> |
 
 ## Outputs
 
@@ -123,9 +123,7 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 |---|---|:---:|
 | [app_repo_url](outputs.tf#L17) | App source repository url. |  |
 | [image_repo_url](outputs.tf#L22) | Image source repository url. |  |
-
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl

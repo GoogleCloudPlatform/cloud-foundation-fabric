@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description IAM bindings, roles and audit logging resources.
+# tfdoc:file:description IAM bindings.
 
 locals {
   _group_iam_roles = distinct(flatten(values(var.group_iam)))
