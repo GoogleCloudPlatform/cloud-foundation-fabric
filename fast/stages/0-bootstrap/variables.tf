@@ -214,6 +214,10 @@ variable "log_sinks" {
       filter = "protoPayload.metadata.@type=\"type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata\""
       type   = "logging"
     }
+    workspace-audit-logs = {
+      filter = "logName:\"/logs/cloudaudit.googleapis.com%2Fdata_access\" and protoPayload.serviceName:\"login.googleapis.com\""
+      type   = "logging"
+    }
   }
   validation {
     condition = alltrue([
