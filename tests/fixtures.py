@@ -19,7 +19,6 @@ import glob
 import os
 import shutil
 import tempfile
-import textwrap
 import time
 from pathlib import Path
 
@@ -309,15 +308,17 @@ def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
 
       # compare before with after to raise more meaningful failure to the user, i.e one
       # that shows how resource will change
-      plan_before_state = dict((k, v['before']) for k, v in changes.items())
-      plan_after_state = dict((k, v['after']) for k, v in changes.items())
+      plan_before_state = {k: v['before'] for k, v in changes.items()}
+      plan_after_state = {k: v['after'] for k, v in changes.items()}
 
       assert plan_before_state == plan_after_state, f'Plan not empty after apply for values'
 
-      plan_before_sensitive_state = dict(
-          (k, v['before_sensitive']) for k, v in changes.items())
-      plan_after_sensitive_state = dict(
-          (k, v['after_sensitive']) for k, v in changes.items())
+      plan_before_sensitive_state = {
+          k: v['before_sensitive'] for k, v in changes.items()
+      }
+      plan_after_sensitive_state = {
+          k: v['after_sensitive'] for k, v in changes.items()
+      }
       assert plan_before_sensitive_state == plan_after_sensitive_state, f'Plan not empty after apply for sensitive values'
 
       # If above did not fail, this should not either, but left as a safety check
@@ -344,24 +345,8 @@ def e2e_validator_fixture(request):
   return inner
 
 
-@pytest.fixture(scope='session')
-def providers_tf():
-  if 'TFTEST_E2E_SERVICE_ACCOUNT' in os.environ:
-    service_account = os.environ["TFTEST_E2E_SERVICE_ACCOUNT"]
-    return textwrap.dedent(f'''
-          provider "google" {{
-            impersonate_service_account = "{service_account}"
-          }}
-
-          provider "google-beta" {{
-            impersonate_service_account = "{service_account}"
-          }}
-        ''').strip('\n')
-  return ""
-
-
 @pytest.fixture(scope='session', name='e2e_tfvars_path')
-def e2e_tfvars_path(providers_tf):
+def e2e_tfvars_path():
   """Fixture preparing end-to-end test environment
 
   If TFTEST_E2E_TFVARS_PATH is set in the environment, then assume the environment is already provisioned
@@ -382,24 +367,15 @@ def e2e_tfvars_path(providers_tf):
   else:
     with _prepare_root_module(_REPO_ROOT / 'tests' / 'examples_e2e' /
                               'setup_module') as test_path:
-      (test_path / 'providers.tf').write_text(providers_tf)
       binary = os.environ.get('TERRAFORM', 'terraform')
       tf = tftest.TerraformTest(test_path, binary=binary)
       tf_vars_file = None
       tf_vars = {
-        'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0"),
-        'timestamp': str(int(time.time()))
+          'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0"),
+          'timestamp': str(int(time.time()))
       }
       if 'TFTEST_E2E_SETUP_TFVARS_PATH' in os.environ:
         tf_vars_file = os.environ["TFTEST_E2E_SETUP_TFVARS_PATH"]
-      else:
-        tf_vars.update({
-            'billing_account': os.environ.get("TFTEST_E2E_BILLING_ACCOUNT"),
-            'organization_id': os.environ.get("TFTEST_E2E_ORGANIZATION_ID"),
-            'parent': os.environ.get("TFTEST_E2E_PARENT"),
-            'prefix': os.environ.get("TFTEST_E2E_PREFIX"),
-            'region': os.environ.get("TFTEST_E2E_REGION", "europe-west4"),
-        })
       tf.setup(upgrade=True)
       tf.apply(tf_vars=tf_vars, tf_var_file=tf_vars_file)
       yield test_path / "e2e_tests.tfvars"

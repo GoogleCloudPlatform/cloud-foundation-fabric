@@ -1,5 +1,3 @@
-Temporary (?) instructions how to set up your environment for E2E tests
-
 # Prerequisites
 Prepare following information:
 * billing account id
@@ -10,17 +8,12 @@ Prepare following information:
 * prepare a prefix, suffix and a timestamp for you (this is to provide project and other resources name uniqueness)
 * prepare service account that has necessary permissions (able to assign billing account to project, resource creation etc)
 
+# How does it work
+Each test case is provided by additional environment defined in [variables.tf](./variables.tf). This simplifies writing the examples as this follows the same structure as for non-end-to-end tests, and allows multiple, independent and concurrent runs of tests.
+
+The test environment can be provisioned automatically during the test run (which now takes ~2 minutes) and destroyed and the end, when of the tests (Option 1 below), which is targeting automated runs in CI/CD pipeline, or can be provisioned manually to reduce test time, which might be typical use case for tests run locally.
+
 # Option 1 - automatically provision and de-provision testing infrastructure
-## (Suboption A) Set environment variables
-Should this be replaced with [TF_VAR_](https://developer.hashicorp.com/terraform/language/values/variables#environment-variables) environment variables?
-```bash
-export TFTEST_E2E_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com  # set if you want to use service account impersonation
-export TFTEST_E2E_BILLING_ACCOUNT="123456-123456-123456"  # billing account id to associate projects
-export TFTEST_E2E_ORGANIZATION_ID="1234567890" # your organization id
-export TFTEST_E2E_PARENT="folders/1234567890"  # folder under which test resources will be created
-export TFTEST_E2E_PREFIX="your-unique-prefix"  # unique prefix for projects
-export TFTEST_E2E_REGION="europe-west4"  # region to use
-```
 
 ## (Suboption B) Create `e2e.tfvars` file
 ```hcl
@@ -32,13 +25,24 @@ region          = "europe-west4"  # region to use
 
 # tftest skip
 ```
-
-And create environment variables:
+And set environment variable pointing to the file:
 ```bash
-export TFTEST_E2E_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com  # set if you want to use service account impersonation
 export TFTEST_E2E_SETUP_TFVARS_PATH=<path to e2e.tfvars file>
 ```
 
+Or set above variables in environment:
+```bash
+export TF_VAR_billing_account="123456-123456-123456"  # billing account id to associate projects
+export TF_VAR_organization_id="1234567890" # your organization id
+export TF_VAR_parent="folders/1234567890"  # folder under which test resources will be created
+export TF_VAR_prefix="your-unique-prefix"  # unique prefix for projects
+export TV_VAR_region="europe-west4"  # region to use
+```
+
+To use Service Account Impersonation, use provider environment variable
+```bash
+export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com
+```
 
 You can keep the prefix the same for all the tests run, the tests will add necessary suffix for subsequent runs, and in case tests are run in parallel, use separate suffix for the workers.
 # Run the tests
@@ -60,33 +64,25 @@ timestamp       = "1696444185" # generate your own timestamp - will be used as a
 # tftest skip
 ```
 
-If you use service account impersonation, add `providers.tf` file in `tests/examples_e2e/setup_module`:
-```hcl
-provider "google" {
-  impersonate_service_account = "<username>@<project-id>.iam.gserviceaccount.com"
-}
-
-provider "google-beta" {
-  impersonate_service_account = "<username>@<project-id>.iam.gserviceaccount.com"
-}
-# tftest skip
-```
-
-In `tests/examples_e2e/setup_module/` run:
+If you use service account impersonation, set `GOOGLE_IMPERSONATE_SERVICE_ACCOUNT`
 ```bash
-(cd tests/examples_e2e/setup_module/ && terraform apply)
+export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com
 ```
 
-This will generate also `tests/examples_e2e/setup_module/e2e_tests.tfvars` for you, which is used by tests.
+Provision the environment using terraform
+```bash
+(cd tests/examples_e2e/setup_module/ && terraform init && terraform apply)
+```
+
+This will generate also `tests/examples_e2e/setup_module/e2e_tests.tfvars` for you, which can be used by tests.
 
 ## Setup your environment
 ```bash
 export TFTEST_E2E_TFVARS_PATH=`pwd`/tests/examples_e2e/setup_module/e2e_tests.tfvars  # generated above
-export TFTEST_E2E_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com  # your service account e-mail to use
 ```
 
 ## Run tests
 Run tests using:
 ```bash
-pytest tests/examples_e2e -vv
+pytest tests/examples_e2e
 ```

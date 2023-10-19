@@ -11,9 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import re
-import textwrap
 
 from pathlib import Path
 
@@ -23,13 +21,15 @@ COUNT_TEST_RE = re.compile(r'# tftest +modules=(\d+) +resources=(\d+)' +
                            r'(?: +inventory=([\w\-.]+))?')
 
 
-def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path,
-                 providers_tf):
+def test_example(request, e2e_validator, tmp_path, examples_e2e,
+                 e2e_tfvars_path):
   (tmp_path / 'fabric').symlink_to(BASE_PATH.parents[1])
   (tmp_path / 'variables.tf').symlink_to(BASE_PATH / 'variables.tf')
   (tmp_path / 'main.tf').write_text(examples_e2e.code)
-  (tmp_path / 'providers.tf').write_text(providers_tf)
-
+  assets_path = BASE_PATH.parent / str(examples_e2e.module).replace(
+      '-', '_') / 'assets'
+  if assets_path.exists():
+    (tmp_path / 'assets').symlink_to(assets_path)
   (tmp_path / 'terraform.tfvars').symlink_to(e2e_tfvars_path)
 
   e2e_validator(module_path=tmp_path, extra_files=[],
