@@ -42,9 +42,10 @@ resource "google_project" "project" {
 }
 
 resource "google_project_service" "project_service" {
-  for_each = toset(local.services)
-  service  = each.value
-  project  = google_project.project.project_id
+  for_each                   = toset(local.services)
+  service                    = each.value
+  project                    = google_project.project.project_id
+  disable_dependent_services = true
 }
 
 resource "google_storage_bucket" "bucket" {
