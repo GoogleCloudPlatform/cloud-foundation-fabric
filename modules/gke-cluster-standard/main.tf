@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 locals {
-  bkp_plans_list = [for k, v in var.backup_configs.backup_plans : k]
+  bkp_plans_list = compact([for k, v in var.backup_configs.backup_plans : v.applications == null ? "" : k])
   bkp_namespaces_object_map = { for backup in local.bkp_plans_list : backup => flatten([
     for k, v in var.backup_configs.backup_plans[backup].applications : [
       for object_name in v : {

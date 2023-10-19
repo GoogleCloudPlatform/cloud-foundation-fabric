@@ -27,7 +27,6 @@ values:
       - namespaced_names:
         - namespace: namespace-1
           name:  app-1
-      - namespaced_names:
         - namespace: namespace-1
           name:  app-2
       selected_namespaces: []
