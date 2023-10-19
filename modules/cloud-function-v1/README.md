@@ -37,7 +37,7 @@ module "cf-http" {
   name        = "test-cf-http"
   bucket_name = var.bucket
   bundle_config = {
-    source_dir  = "fabric/tests/modules/cloud_function_v1/sample/"
+    source_dir  = "assets/sample-function/"
     output_path = "bundle.zip"
   }
 }
