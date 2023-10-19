@@ -15,7 +15,7 @@ The test environment can be provisioned automatically during the test run (which
 
 # Option 1 - automatically provision and de-provision testing infrastructure
 
-## (Suboption B) Create `e2e.tfvars` file
+## Create `e2e.tfvars` file
 ```hcl
 billing_account = "123456-123456-123456"  # billing account id to associate projects
 organization_id = "1234567890" # your organization id
