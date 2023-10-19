@@ -25,8 +25,11 @@ values:
       include_volume_data: true
       selected_applications:
       - namespaced_names:
-        - namespace: test
-          name:  app1 
+        - namespace: namespace-1
+          name:  app-1
+      - namespaced_names:
+        - namespace: namespace-1
+          name:  app-2
       selected_namespaces: []
     backup_schedule:
     - cron_schedule: 0 9 * * 1
