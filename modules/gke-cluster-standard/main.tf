@@ -13,17 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-locals {
-  bkp_plans_list = compact([for k, v in var.backup_configs.backup_plans : v.applications == null ? "" : k])
-  bkp_namespaces_object_map = { for backup in local.bkp_plans_list : backup => flatten([
-    for k, v in var.backup_configs.backup_plans[backup].applications : [
-      for object_name in v : {
-        namespace   = k
-        object_name = object_name
-      }
-    ]])
-  }
-}
 resource "google_container_cluster" "cluster" {
   provider    = google-beta
   project     = var.project_id
@@ -440,11 +429,12 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
       for_each = each.value.applications != null ? [""] : []
       content {
         dynamic "namespaced_names" {
-          for_each = local.bkp_namespaces_object_map[each.key]
-          iterator = ns_obj_couple
+          for_each = flatten([for k, vs in each.value.applications : [
+            for v in vs : { namespace = k, name = v }
+          ]])
           content {
-            namespace = ns_obj_couple.value["namespace"]
-            name      = ns_obj_couple.value["object_name"]
+            namespace = namespaced_names.value.namespace
+            name      = namespaced_names.value.name
           }
         }
       }
