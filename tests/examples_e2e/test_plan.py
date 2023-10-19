@@ -21,8 +21,7 @@ COUNT_TEST_RE = re.compile(r'# tftest +modules=(\d+) +resources=(\d+)' +
                            r'(?: +inventory=([\w\-.]+))?')
 
 
-def test_example(request, e2e_validator, tmp_path, examples_e2e,
-                 e2e_tfvars_path):
+def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
   (tmp_path / 'fabric').symlink_to(BASE_PATH.parents[1])
   (tmp_path / 'variables.tf').symlink_to(BASE_PATH / 'variables.tf')
   (tmp_path / 'main.tf').write_text(examples_e2e.code)
