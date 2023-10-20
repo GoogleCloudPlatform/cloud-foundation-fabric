@@ -1,0 +1,112 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.f5-lb.module.bigip-vms["a"].google_compute_instance.default[0]:
+    boot_disk:
+    - initialize_params:
+      - image: projects/f5-7626-networks-public/global/images/f5-bigip-15-1-2-1-0-0-10-byol-ltm-2boot-loc-210115160742
+        size: 100
+        type: pd-ssd
+    can_ip_forward: true
+    description: Managed by the compute-vm Terraform module.
+    machine_type: n2-standard-4
+    name: test-f5-lb-a
+    network_interface:
+    - access_config: []
+      alias_ip_range:
+      - ip_cidr_range: 192.168.1.0/24
+        subnetwork_range_name: ip-range-a
+      ipv6_access_config: []
+      network: projects/my-project/global/networks/dataplane
+      stack_type: IPV4_ONLY
+      subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/my-project/global/networks/management
+      stack_type: IPV4_ONLY
+      subnetwork: projects/my-project/regions/europe-west1/subnetworks/management
+    project: my-project
+    tags: null
+    zone: europe-west1-a
+  module.f5-lb.module.bigip-vms["a"].google_compute_instance_group.unmanaged[0]:
+    description: Managed by the compute-vm Terraform module.
+    name: test-f5-lb-a
+    network: projects/my-project/global/networks/dataplane
+    project: my-project
+    zone: europe-west1-a
+  module.f5-lb.module.lb-addresses.google_compute_address.internal["l4"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    ip_version: null
+    ipv6_endpoint_type: null
+    name: test-f5-ip-ilb-l4
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+  module.f5-lb.module.passthrough-ilb[0].google_compute_forwarding_rule.forwarding_rules["l4"]:
+    all_ports: true
+    allow_global_access: true
+    allow_psc_global_access: null
+    ip_protocol: L3_DEFAULT
+    ip_version: IPV4
+    load_balancing_scheme: INTERNAL
+    name: test-f5-ilb-l4
+    network: projects/my-project/global/networks/dataplane
+    ports: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+  module.f5-lb.module.passthrough-ilb[0].google_compute_health_check.default[0]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    healthy_threshold: 2
+    name: test-f5-ilb
+    project: my-project
+    tcp_health_check:
+    - port: 65535
+      port_name: null
+      port_specification: USE_FIXED_PORT
+      proxy_header: NONE
+    timeout_sec: 5
+    unhealthy_threshold: 2
+  module.f5-lb.module.passthrough-ilb[0].google_compute_region_backend_service.default:
+    description: Terraform managed.
+    load_balancing_scheme: INTERNAL
+    name: test-f5-ilb
+    network: projects/my-project/global/networks/dataplane
+    project: my-project
+    protocol: UNSPECIFIED
+    region: europe-west1
+  module.f5-lb.module.vm-addresses-dp.google_compute_address.internal["a"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    ip_version: null
+    ipv6_endpoint_type: null
+    name: test-f5-ip-dp-a
+    network: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
+  module.f5-lb.module.vm-addresses-mgmt.google_compute_address.internal["a"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    ip_version: null
+    ipv6_endpoint_type: null
+    name: test-f5-ip-mgmt-a
+    network: null
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/management
