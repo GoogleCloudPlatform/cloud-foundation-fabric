@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,8 +60,8 @@ def start_discovery(resources, response=None, data=None):
   LOGGER.info(f'discovery (has response: {response is not None})')
   project_id = resources['config:monitoring_project']
   type_root = resources['config:monitoring_root']
-  url = URL.format(urllib.parse.quote_plus(project_id),
-                   urllib.parse.quote_plus(type_root))
+  url = URL.format(
+      urllib.parse.quote_plus(project_id), urllib.parse.quote_plus(type_root))
   if response is None:
     yield HTTPRequest(url, {}, None)
   else:

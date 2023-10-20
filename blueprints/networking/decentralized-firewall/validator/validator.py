@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -199,8 +199,7 @@ class FirewallValidator:
     self.schema = yamale.make_schema(path=schema, validators=self.validators)
 
   def set_schema_from_string(self, schema):
-    self.schema = yamale.make_schema(
-        content=schema, validators=self.validators)
+    self.schema = yamale.make_schema(content=schema, validators=self.validators)
 
   def validate_file(self, file):
     print('Validating %s...' % (file), file=sys.stderr)
@@ -210,19 +209,19 @@ class FirewallValidator:
 
 @click.command()
 @click.argument('files')
-@click.option('--schema',
-              default='/schemas/firewallSchema.yaml',
-              help='YAML schema file')
-@click.option('--settings',
-              default='/schemas/firewallSchemaSettings.yaml',
-              help='schema configuration file')
-@click.option('--mode',
-              default='validate',
-              help='select mode (validate or approve)')
-@click.option('--github',
-              is_flag=True,
-              default=False,
-              help='output GitHub action compatible variables')
+@click.option(
+    '--schema', default='/schemas/firewallSchema.yaml', help='YAML schema file')
+@click.option(
+    '--settings',
+    default='/schemas/firewallSchemaSettings.yaml',
+    help='schema configuration file')
+@click.option(
+    '--mode', default='validate', help='select mode (validate or approve)')
+@click.option(
+    '--github',
+    is_flag=True,
+    default=False,
+    help='output GitHub action compatible variables')
 def main(**kwargs):
   args = SimpleNamespace(**kwargs)
   files = [args.files]

@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ STAGE_VPN = STAGES / '2-networking-b-vpn'
 def test_vpn_peering_parity(plan_summary):
   '''Ensure VPN- and peering-based networking stages are identical except
   for VPN and VPC peering resources'''
-  summary_peering = plan_summary("fast/stages/2-networking-a-peering",
-                                 tf_var_files=["common.tfvars"])
-  summary_vpn = plan_summary("fast/stages/2-networking-b-vpn",
-                             tf_var_files=["common.tfvars"])
+  summary_peering = plan_summary(
+      "fast/stages/2-networking-a-peering", tf_var_files=["common.tfvars"])
+  summary_vpn = plan_summary(
+      "fast/stages/2-networking-b-vpn", tf_var_files=["common.tfvars"])
 
-  ddiff = DeepDiff(summary_vpn.values, summary_peering.values,
-                   ignore_order=True)
+  ddiff = DeepDiff(
+      summary_vpn.values, summary_peering.values, ignore_order=True)
 
   removed_types = {x.split('.')[-2] for x in ddiff['dictionary_item_removed']}
   added_types = {x.split('.')[-2] for x in ddiff['dictionary_item_added']}

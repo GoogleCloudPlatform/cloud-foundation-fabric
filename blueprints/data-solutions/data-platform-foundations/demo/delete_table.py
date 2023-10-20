@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import os
 from airflow import models
 from airflow.models.variable import Variable
 from airflow.operators import empty
-from airflow.providers.google.cloud.operators.bigquery import  BigQueryDeleteTableOperator
+from airflow.providers.google.cloud.operators.bigquery import BigQueryDeleteTableOperator
 from airflow.utils.task_group import TaskGroup
 
 # --------------------------------------------------------------------------------
@@ -75,24 +75,24 @@ DF_ZONE = Variable.get("GCP_REGION") + "-b"
 yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
 
 default_args = {
-  'owner': 'airflow',
-  'start_date': yesterday,
-  'depends_on_past': False,
-  'email': [''],
-  'email_on_failure': False,
-  'email_on_retry': False,
-  'retries': 1,
-  'retry_delay': datetime.timedelta(minutes=5),
-  'dataflow_default_options': {
-    'location': DF_REGION,
-    'zone': DF_ZONE,
-    'stagingLocation': LOD_GCS_STAGING,
-    'tempLocation': LOD_GCS_STAGING + "/tmp",
-    'serviceAccountEmail': LOD_SA_DF,
-    'subnetwork': LOD_NET_SUBNET,
-    'ipConfiguration': "WORKER_IP_PRIVATE",
-    'kmsKeyName' : DF_KMS_KEY
-  },
+    'owner': 'airflow',
+    'start_date': yesterday,
+    'depends_on_past': False,
+    'email': [''],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': datetime.timedelta(minutes=5),
+    'dataflow_default_options': {
+        'location': DF_REGION,
+        'zone': DF_ZONE,
+        'stagingLocation': LOD_GCS_STAGING,
+        'tempLocation': LOD_GCS_STAGING + "/tmp",
+        'serviceAccountEmail': LOD_SA_DF,
+        'subnetwork': LOD_NET_SUBNET,
+        'ipConfiguration': "WORKER_IP_PRIVATE",
+        'kmsKeyName': DF_KMS_KEY
+    },
 }
 
 # --------------------------------------------------------------------------------
@@ -100,44 +100,37 @@ default_args = {
 # --------------------------------------------------------------------------------
 
 with models.DAG(
-    'delete_tables_dag',
-    default_args=default_args,
+    'delete_tables_dag', default_args=default_args,
     schedule_interval=None) as dag:
-  start = empty.EmptyOperator(
-    task_id='start',
-    trigger_rule='all_success'
-  )
+  start = empty.EmptyOperator(task_id='start', trigger_rule='all_success')
 
-  end = empty.EmptyOperator(
-    task_id='end',
-    trigger_rule='all_success'
-  )
+  end = empty.EmptyOperator(task_id='end', trigger_rule='all_success')
 
-  # Bigquery Tables deleted here for demo porpuse. 
+  # Bigquery Tables deleted here for demo porpuse.
   # Consider a dedicated pipeline or tool for a real life scenario.
-  with TaskGroup('delete_table') as delete_table:  
+  with TaskGroup('delete_table') as delete_table:
     delete_table_customers = BigQueryDeleteTableOperator(
-      task_id="delete_table_customers",
-      deletion_dataset_table=DWH_LAND_PRJ+"."+DWH_LAND_BQ_DATASET+".customers",
-      impersonation_chain=[LOD_SA_DF]
-    )  
+        task_id="delete_table_customers",
+        deletion_dataset_table=DWH_LAND_PRJ + "." + DWH_LAND_BQ_DATASET +
+        ".customers",
+        impersonation_chain=[LOD_SA_DF])
 
     delete_table_purchases = BigQueryDeleteTableOperator(
-      task_id="delete_table_purchases",
-      deletion_dataset_table=DWH_LAND_PRJ+"."+DWH_LAND_BQ_DATASET+".purchases",
-      impersonation_chain=[LOD_SA_DF]
-    )   
+        task_id="delete_table_purchases",
+        deletion_dataset_table=DWH_LAND_PRJ + "." + DWH_LAND_BQ_DATASET +
+        ".purchases",
+        impersonation_chain=[LOD_SA_DF])
 
     delete_table_customer_purchase_curated = BigQueryDeleteTableOperator(
-      task_id="delete_table_customer_purchase_curated",
-      deletion_dataset_table=DWH_CURATED_PRJ+"."+DWH_CURATED_BQ_DATASET+".customer_purchase",
-      impersonation_chain=[TRF_SA_DF]
-    )   
+        task_id="delete_table_customer_purchase_curated",
+        deletion_dataset_table=DWH_CURATED_PRJ + "." + DWH_CURATED_BQ_DATASET +
+        ".customer_purchase",
+        impersonation_chain=[TRF_SA_DF])
 
     delete_table_customer_purchase_confidential = BigQueryDeleteTableOperator(
-      task_id="delete_table_customer_purchase_confidential",
-      deletion_dataset_table=DWH_CONFIDENTIAL_PRJ+"."+DWH_CONFIDENTIAL_BQ_DATASET+".customer_purchase",
-      impersonation_chain=[TRF_SA_DF]
-    )       
+        task_id="delete_table_customer_purchase_confidential",
+        deletion_dataset_table=DWH_CONFIDENTIAL_PRJ + "." +
+        DWH_CONFIDENTIAL_BQ_DATASET + ".customer_purchase",
+        impersonation_chain=[TRF_SA_DF])
 
-  start >> delete_table >> end  
+  start >> delete_table >> end

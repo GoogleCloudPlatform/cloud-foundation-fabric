@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ def test_policy_factory(plan_summary, tfvars_to_yaml, tmp_path, policy_type):
   tfvars_plan = plan_summary(
       'modules/project',
       tf_var_files=['common.tfvars', f'org_policies_{policy_type}.tfvars'])
-  yaml_plan = plan_summary('modules/project', tf_var_files=['common.tfvars'],
-                           org_policies_data_path=f'{tmp_path}')
+  yaml_plan = plan_summary(
+      'modules/project',
+      tf_var_files=['common.tfvars'],
+      org_policies_data_path=f'{tmp_path}')
   assert tfvars_plan.values == yaml_plan.values

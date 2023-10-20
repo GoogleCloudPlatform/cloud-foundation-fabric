@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import datetime
 from airflow import models
 from airflow.models.variable import Variable
 from airflow.operators import empty
-from airflow.providers.google.cloud.operators.bigquery import  BigQueryDeleteTableOperator
+from airflow.providers.google.cloud.operators.bigquery import BigQueryDeleteTableOperator
 from airflow.utils.task_group import TaskGroup
 
 # --------------------------------------------------------------------------------
@@ -52,14 +52,14 @@ DP_ZONE = Variable.get("DP_REGION") + "-b"
 yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
 
 default_args = {
-  'owner': 'airflow',
-  'start_date': yesterday,
-  'depends_on_past': False,
-  'email': [''],
-  'email_on_failure': False,
-  'email_on_retry': False,
-  'retries': 1,
-  'retry_delay': datetime.timedelta(minutes=5),
+    'owner': 'airflow',
+    'start_date': yesterday,
+    'depends_on_past': False,
+    'email': [''],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': datetime.timedelta(minutes=5),
 }
 
 # --------------------------------------------------------------------------------
@@ -67,26 +67,19 @@ default_args = {
 # --------------------------------------------------------------------------------
 
 with models.DAG(
-    'delete_tables_dag',
-    default_args=default_args,
+    'delete_tables_dag', default_args=default_args,
     schedule_interval=None) as dag:
-  start = empty.EmptyOperator(
-    task_id='start',
-    trigger_rule='all_success'
-  )
+  start = empty.EmptyOperator(task_id='start', trigger_rule='all_success')
 
-  end = empty.EmptyOperator(
-    task_id='end',
-    trigger_rule='all_success'
-  )
+  end = empty.EmptyOperator(task_id='end', trigger_rule='all_success')
 
-  # Bigquery Tables deleted here for demo porpuse. 
+  # Bigquery Tables deleted here for demo porpuse.
   # Consider a dedicated pipeline or tool for a real life scenario.
-  with TaskGroup('delete_table') as delete_table:  
+  with TaskGroup('delete_table') as delete_table:
     delete_table_customers = BigQueryDeleteTableOperator(
-      task_id="delete_table_customers",
-      deletion_dataset_table=CURATED_PRJ+"."+CURATED_BQ_DATASET+".customers",
-      impersonation_chain=[PROCESSING_SA]
-    )
+        task_id="delete_table_customers",
+        deletion_dataset_table=CURATED_PRJ + "." + CURATED_BQ_DATASET +
+        ".customers",
+        impersonation_chain=[PROCESSING_SA])
 
-  start >> delete_table >> end  
+  start >> delete_table >> end

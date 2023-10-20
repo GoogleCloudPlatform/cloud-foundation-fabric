@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,10 +30,14 @@ import yamale
 
 @click.command()
 @click.argument('schema', type=click.Path(exists=True))
-@click.option('--directory', multiple=True,
-              type=click.Path(exists=True, file_okay=False, dir_okay=True))
-@click.option('--file', multiple=True,
-              type=click.Path(exists=True, file_okay=True, dir_okay=False))
+@click.option(
+    '--directory',
+    multiple=True,
+    type=click.Path(exists=True, file_okay=False, dir_okay=True))
+@click.option(
+    '--file',
+    multiple=True,
+    type=click.Path(exists=True, file_okay=True, dir_okay=False))
 @click.option('--recursive', is_flag=True, default=False)
 @click.option('--quiet', is_flag=True, default=False)
 def main(directory=None, file=None, schema=None, recursive=False, quiet=False):

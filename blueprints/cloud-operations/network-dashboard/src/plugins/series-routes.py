@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,8 +60,8 @@ def _static(resources):
   'Computes network and project-level timeseries for dynamic routes.'
   filter = lambda v: v['next_hop_type'] in ('peering', 'network')
   routes = itertools.filterfalse(filter, resources['routes'].values())
-  grouped = itertools.groupby(sorted(routes, key=lambda i: i['network']),
-                              lambda i: i['network'])
+  grouped = itertools.groupby(
+      sorted(routes, key=lambda i: i['network']), lambda i: i['network'])
   project_counts = {}
   for network_id, elements in grouped:
     network = resources['networks'].get(network_id)

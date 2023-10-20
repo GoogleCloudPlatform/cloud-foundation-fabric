@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,8 +49,12 @@ def fetch(url, delete=False):
 
 
 @click.command()
-@click.option('--monitoring-project', '-op', required=True, type=str,
-              help='GCP monitoring project where metrics will be stored.')
+@click.option(
+    '--monitoring-project',
+    '-op',
+    required=True,
+    type=str,
+    help='GCP monitoring project where metrics will be stored.')
 def main(monitoring_project):
   'Module entry point.'
   # if not click.confirm('Do you want to continue?'):

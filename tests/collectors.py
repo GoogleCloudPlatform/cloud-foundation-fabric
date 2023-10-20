@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -70,15 +70,23 @@ class FabricTestFile(pytest.File):
         name = test_name
         if isinstance(inventories, list) and len(inventories) > 1:
           name = f'{test_name}[{i}]'
-        yield FabricTestItem.from_parent(self, name=name, module=module,
-                                         inventory=[i],
-                                         tf_var_files=tf_var_files,
-                                         extra_files=extra_files)
+        yield FabricTestItem.from_parent(
+            self,
+            name=name,
+            module=module,
+            inventory=[i],
+            tf_var_files=tf_var_files,
+            extra_files=extra_files)
 
 
 class FabricTestItem(pytest.Item):
 
-  def __init__(self, name, parent, module, inventory, tf_var_files,
+  def __init__(self,
+               name,
+               parent,
+               module,
+               inventory,
+               tf_var_files,
                extra_files=None):
     super().__init__(name, parent)
     self.module = module

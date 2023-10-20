@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -80,13 +80,16 @@ def do_discovery(resources):
           resources[result.type][result.id][result.key] = result.data
         else:
           resources[result.type][result.id] = result.data
-  LOGGER.info('discovery end {}'.format({
-      k: len(v) for k, v in resources.items() if not isinstance(v, str)
-  }))
+  LOGGER.info('discovery end {}'.format(
+      {k: len(v) for k, v in resources.items() if not isinstance(v, str)}))
 
 
-def do_init(resources, discovery_root, monitoring_project, folders=None,
-            projects=None, custom_quota=None):
+def do_init(resources,
+            discovery_root,
+            monitoring_project,
+            folders=None,
+            projects=None,
+            custom_quota=None):
   '''Calls init plugins to configure keys in the shared resource map.
 
   Args:
@@ -200,8 +203,8 @@ def fetch(request):
     if not request.data:
       response = HTTP.get(request.url, headers=request.headers)
     else:
-      response = HTTP.post(request.url, headers=request.headers,
-                           data=request.data)
+      response = HTTP.post(
+          request.url, headers=request.headers, data=request.data)
   except google.auth.exceptions.RefreshError as e:
     raise SystemExit(e.args[0])
   if response.status_code != 200:
@@ -251,27 +254,53 @@ def main_cf_pubsub(event, context):
 
 @click.command()
 @click.option(
-    '--discovery-root', '-dr', required=True,
+    '--discovery-root',
+    '-dr',
+    required=True,
     help='Root node for asset discovery, organizations/nnn or folders/nnn.')
-@click.option('--monitoring-project', '-mon', required=True, type=str,
-              help='GCP monitoring project where metrics will be stored.')
-@click.option('--project', '-p', type=str, multiple=True,
-              help='GCP project id, can be specified multiple times.')
-@click.option('--folder', '-f', type=int, multiple=True,
-              help='GCP folder id, can be specified multiple times.')
-@click.option('--custom-quota-file', type=click.File('r'),
-              help='Custom quota file in yaml format.')
-@click.option('--dump-file', type=click.File('w'),
-              help='Export JSON representation of resources to file.')
-@click.option('--load-file', type=click.File('r'),
-              help='Load JSON resources from file, skips init and discovery.')
-@click.option('--debug-plugin',
-              help='Run only core and specified timeseries plugin.')
-@click.option('--debug', is_flag=True, default=False,
-              help='Turn on debug logging.')
-def main(discovery_root, monitoring_project, project=None, folder=None,
-         custom_quota_file=None, dump_file=None, load_file=None,
-         debug_plugin=None, debug=False):
+@click.option(
+    '--monitoring-project',
+    '-mon',
+    required=True,
+    type=str,
+    help='GCP monitoring project where metrics will be stored.')
+@click.option(
+    '--project',
+    '-p',
+    type=str,
+    multiple=True,
+    help='GCP project id, can be specified multiple times.')
+@click.option(
+    '--folder',
+    '-f',
+    type=int,
+    multiple=True,
+    help='GCP folder id, can be specified multiple times.')
+@click.option(
+    '--custom-quota-file',
+    type=click.File('r'),
+    help='Custom quota file in yaml format.')
+@click.option(
+    '--dump-file',
+    type=click.File('w'),
+    help='Export JSON representation of resources to file.')
+@click.option(
+    '--load-file',
+    type=click.File('r'),
+    help='Load JSON resources from file, skips init and discovery.')
+@click.option(
+    '--debug-plugin', help='Run only core and specified timeseries plugin.')
+@click.option(
+    '--debug', is_flag=True, default=False, help='Turn on debug logging.')
+def main(discovery_root,
+         monitoring_project,
+         project=None,
+         folder=None,
+         custom_quota_file=None,
+         dump_file=None,
+         load_file=None,
+         debug_plugin=None,
+         debug=False):
   'CLI entry point.'
   logging.basicConfig(level=logging.INFO if not debug else logging.DEBUG)
   if discovery_root.partition('/')[0] not in ('folders', 'organizations'):

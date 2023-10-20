@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,16 +35,15 @@ _PLUGINS_DISCOVERY = []
 _PLUGINS_INIT = []
 _PLUGINS_TIMESERIES = []
 
-HTTPRequest = collections.namedtuple('HTTPRequest', 'url headers data json',
-                                     defaults=[True])
+HTTPRequest = collections.namedtuple(
+    'HTTPRequest', 'url headers data json', defaults=[True])
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
-MetricDescriptor = collections.namedtuple('MetricDescriptor',
-                                          'type name labels is_ratio',
-                                          defaults=[False])
-Plugin = collections.namedtuple('Plugin', 'func name level priority',
-                                defaults=[Level.PRIMARY, 99])
-Resource = collections.namedtuple('Resource', 'type id data key',
-                                  defaults=[None])
+MetricDescriptor = collections.namedtuple(
+    'MetricDescriptor', 'type name labels is_ratio', defaults=[False])
+Plugin = collections.namedtuple(
+    'Plugin', 'func name level priority', defaults=[Level.PRIMARY, 99])
+Resource = collections.namedtuple(
+    'Resource', 'type id data key', defaults=[None])
 TimeSeries = collections.namedtuple('TimeSeries', 'metric value labels')
 
 

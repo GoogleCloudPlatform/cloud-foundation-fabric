@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 '''Cloud Function module to export data for a given day.
 
 This module is designed to be plugged in a Cloud Function, attached to Cloud
@@ -50,20 +49,35 @@ def _configure_logging(verbose=True):
 @click.option('--bq-project', required=True, help='Bigquery project to use.')
 @click.option('--bq-dataset', required=True, help='Bigquery dataset to use.')
 @click.option('--bq-table', required=True, help='Bigquery table name to use.')
-@click.option('--bq-table-overwrite', required=True, help='Overwrite existing BQ table or create new datetime() one.')
-@click.option('--target-node', required=True, help='Node in Google Cloud resource hierarchy.')
-@click.option('--read-time', required=False, help=(
-    'Day to take an asset snapshot in \'YYYYMMDD\' format, uses current day '
-    ' as default. Export will run at midnight of the specified day.'))
+@click.option(
+    '--bq-table-overwrite',
+    required=True,
+    help='Overwrite existing BQ table or create new datetime() one.')
+@click.option(
+    '--target-node',
+    required=True,
+    help='Node in Google Cloud resource hierarchy.')
+@click.option(
+    '--read-time',
+    required=False,
+    help=(
+        'Day to take an asset snapshot in \'YYYYMMDD\' format, uses current day '
+        ' as default. Export will run at midnight of the specified day.'))
 @click.option('--verbose', is_flag=True, help='Verbose output')
-def main_cli(project=None, bq_project=None, bq_dataset=None, bq_table=None, bq_table_overwrite=None, target_node=None,
-             read_time=None, verbose=False):
+def main_cli(project=None,
+             bq_project=None,
+             bq_dataset=None,
+             bq_table=None,
+             bq_table_overwrite=None,
+             target_node=None,
+             read_time=None,
+             verbose=False):
   '''Trigger Cloud Asset inventory export to Bigquery. Data will be stored in
   the dataset specified on a dated table with the name specified.
   '''
   try:
-    _main(project, bq_project, bq_dataset, bq_table,
-          bq_table_overwrite, target_node, read_time, verbose)
+    _main(project, bq_project, bq_dataset, bq_table, bq_table_overwrite,
+          target_node, read_time, verbose)
   except RuntimeError:
     logging.exception('exception raised')
 
@@ -81,7 +95,14 @@ def main(event, context):
     logging.exception('exception in cloud function entry point')
 
 
-def _main(project=None, bq_project=None, bq_dataset=None, bq_table=None, bq_table_overwrite=None, target_node=None, read_time=None, verbose=False):
+def _main(project=None,
+          bq_project=None,
+          bq_dataset=None,
+          bq_table=None,
+          bq_table_overwrite=None,
+          target_node=None,
+          read_time=None,
+          verbose=False):
   'Module entry point used by cli and cloud function wrappers.'
 
   _configure_logging(verbose)
@@ -92,8 +113,7 @@ def _main(project=None, bq_project=None, bq_dataset=None, bq_table=None, bq_tabl
     output_config.bigquery_destination.table = '%s_%s' % (
         bq_table, read_time.strftime('%Y%m%d'))
   else:
-    output_config.bigquery_destination.table = '%s_latest' % (
-        bq_table)
+    output_config.bigquery_destination.table = '%s_latest' % (bq_table)
   content_type = asset_v1.ContentType.RESOURCE
   output_config.bigquery_destination.dataset = 'projects/%s/datasets/%s' % (
       bq_project, bq_dataset)
@@ -106,12 +126,12 @@ def _main(project=None, bq_project=None, bq_dataset=None, bq_table=None, bq_tabl
             'read_time': read_time,
             'content_type': content_type,
             'output_config': output_config
-        }
-    )
+        })
   except (GoogleAPIError, googleapiclient.errors.HttpError) as e:
     logging.debug('API Error: %s', e, exc_info=True)
     raise RuntimeError(
-        'Error fetching Asset Inventory entries (resource manager node: %s)' % target_node, e)
+        'Error fetching Asset Inventory entries (resource manager node: %s)' %
+        target_node, e)
 
 
 if __name__ == '__main__':

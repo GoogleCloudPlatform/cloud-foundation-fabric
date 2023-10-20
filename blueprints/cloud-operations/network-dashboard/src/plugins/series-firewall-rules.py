@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -50,8 +50,9 @@ def timeseries(resources):
     yield TimeSeries('network/firewall_rules_used', count, labels)
   # group firewall rules by project then prepare and return timeseries
   grouped = itertools.groupby(
-      sorted(resources['firewall_rules'].values(),
-             key=lambda i: i['project_id']), lambda i: i['project_id'])
+      sorted(
+          resources['firewall_rules'].values(), key=lambda i: i['project_id']),
+      lambda i: i['project_id'])
   for project_id, rules in grouped:
     count = len(list(rules))
     limit = int(resources['quota'][project_id]['global']['FIREWALLS'])

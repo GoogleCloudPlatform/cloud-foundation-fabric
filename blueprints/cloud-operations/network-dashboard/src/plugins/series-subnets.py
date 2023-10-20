@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,9 +79,10 @@ def timeseries(resources):
   }
   # TODO: add counter functions for PSA
   subnet_counts = {k: 0 for k in resources['subnetworks']}
-  counters = itertools.chain(_subnet_addresses(resources),
-                             _subnet_forwarding_rules(resources, subnet_nets),
-                             _subnet_instances(resources))
+  counters = itertools.chain(
+      _subnet_addresses(resources),
+      _subnet_forwarding_rules(resources, subnet_nets),
+      _subnet_instances(resources))
   for subnet_self_link, count in counters:
     subnet_counts[subnet_self_link] += count
   # compute and return metrics

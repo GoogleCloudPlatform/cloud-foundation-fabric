@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -143,7 +143,8 @@ def timeseries(resources):
                            dtype.endswith('ratio'))
 
   # chain iterators from specialized functions and yield combined timeseries
-  results = itertools.chain(_forwarding_rules(resources), _instances(resources),
-                            _peerings(resources), _subnet_ranges(resources))
+  results = itertools.chain(
+      _forwarding_rules(resources), _instances(resources), _peerings(resources),
+      _subnet_ranges(resources))
   for result in results:
     yield result

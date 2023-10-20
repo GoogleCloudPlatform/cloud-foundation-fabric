@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -51,14 +51,14 @@ DP_ZONE = Variable.get("DP_REGION") + "-b"
 yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
 
 default_args = {
-  'owner': 'airflow',
-  'start_date': yesterday,
-  'depends_on_past': False,
-  'email': [''],
-  'email_on_failure': False,
-  'email_on_retry': False,
-  'retries': 1,
-  'retry_delay': datetime.timedelta(minutes=5),
+    'owner': 'airflow',
+    'start_date': yesterday,
+    'depends_on_past': False,
+    'email': [''],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': datetime.timedelta(minutes=5),
 }
 
 # --------------------------------------------------------------------------------
@@ -66,35 +66,26 @@ default_args = {
 # --------------------------------------------------------------------------------
 
 with models.DAG(
-    'bq_gcs2bq',
-    default_args=default_args,
-    schedule_interval=None) as dag:
-  start = empty.EmptyOperator(
-    task_id='start',
-    trigger_rule='all_success'
-  )
+    'bq_gcs2bq', default_args=default_args, schedule_interval=None) as dag:
+  start = empty.EmptyOperator(task_id='start', trigger_rule='all_success')
 
-  end = empty.EmptyOperator(
-    task_id='end',
-    trigger_rule='all_success'
-  )
+  end = empty.EmptyOperator(task_id='end', trigger_rule='all_success')
 
-  # Bigquery Tables automatically created for demo porpuse. 
+  # Bigquery Tables automatically created for demo porpuse.
   # Consider a dedicated pipeline or tool for a real life scenario.
 
   customers_import = GCSToBigQueryOperator(
       task_id='csv_to_bigquery',
       bucket=LAND_GCS[5:],
       source_objects=['customers.csv'],
-      destination_project_dataset_table='{}:{}.{}'.format(CURATED_PRJ, CURATED_BQ_DATASET, 'customers'),
+      destination_project_dataset_table='{}:{}.{}'.format(
+          CURATED_PRJ, CURATED_BQ_DATASET, 'customers'),
       create_disposition='CREATE_IF_NEEDED',
       write_disposition='WRITE_APPEND',
       schema_update_options=['ALLOW_FIELD_RELAXATION', 'ALLOW_FIELD_ADDITION'],
       schema_object="customers.json",
       schema_object_bucket=PROCESSING_GCS[5:],
       project_id=PROCESSING_PRJ,
-      impersonation_chain=[PROCESSING_SA]
-  )  
+      impersonation_chain=[PROCESSING_SA])
 
   start >> customers_import >> end
-  

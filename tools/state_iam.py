@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -147,8 +147,8 @@ def output_principals(bindings):
 
 @click.command()
 @click.argument('state-file', type=click.File('r'), default=sys.stdin)
-@click.option('--format', type=click.Choice(['csv', 'principals', 'raw']),
-              default='raw')
+@click.option(
+    '--format', type=click.Choice(['csv', 'principals', 'raw']), default='raw')
 @click.option('--prefix', default=None)
 def main(state_file, format, prefix=None):
   'Output IAM bindings parsed from Terraform state file or standard input.'
@@ -158,7 +158,8 @@ def main(state_file, format, prefix=None):
   folders = dict(get_folders(resources))
   bindings = get_bindings(resources, prefix=prefix, folders=folders)
   bindings = sorted(
-      bindings, key=lambda b: (
+      bindings,
+      key=lambda b: (
           RESOURCE_SORT.get(b.resource_type, 99),
           b.resource_id,
           b.member_type,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -178,19 +178,33 @@ def get_releases(api, filter_names=None):
 
 
 @click.command
-@click.option('--all-releases', is_flag=True, default=False,
-              help='All releases.')
 @click.option(
-    '--release', required=False, default=['Unreleased'], multiple=True,
+    '--all-releases', is_flag=True, default=False, help='All releases.')
+@click.option(
+    '--release',
+    required=False,
+    default=['Unreleased'],
+    multiple=True,
     help='Release to replace, specify multiple times for more than one version.'
 )
-@click.option('--token', required=True, envvar='GH_TOKEN',
-              help='GitHub API token.')
-@click.option('--write', '-w', is_flag=True, required=False, default=False,
-              help='Write modified changelog file.')
-@click.argument('changelog', required=False, default='CHANGELOG.md',
-                type=click.Path(exists=True))
-def main(token, changelog='CHANGELOG.md', all_releases=False, release=None,
+@click.option(
+    '--token', required=True, envvar='GH_TOKEN', help='GitHub API token.')
+@click.option(
+    '--write',
+    '-w',
+    is_flag=True,
+    required=False,
+    default=False,
+    help='Write modified changelog file.')
+@click.argument(
+    'changelog',
+    required=False,
+    default='CHANGELOG.md',
+    type=click.Path(exists=True))
+def main(token,
+         changelog='CHANGELOG.md',
+         all_releases=False,
+         release=None,
          write=False):
   api = get_api(token)
   release = [] if all_releases else release
