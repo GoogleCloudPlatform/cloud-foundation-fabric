@@ -248,7 +248,7 @@ module "instance-group" {
   source     = "./fabric/modules/compute-vm"
   for_each   = toset(["b", "c"])
   project_id = var.project_id
-  zone       = "europe-west1-${each.key}"
+  zone       = "${var.region}-${each.key}"
   name       = "ilb-test-${each.key}"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -273,7 +273,7 @@ module "instance-group" {
 module "ilb" {
   source        = "./fabric/modules/net-lb-int"
   project_id    = var.project_id
-  region        = "europe-west1"
+  region        = var.region
   name          = "ilb-test"
   service_label = "ilb-test"
   vpc_config = {
@@ -296,7 +296,7 @@ module "ilb" {
     }
   }
 }
-# tftest modules=3 resources=7
+# tftest modules=3 resources=7 e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

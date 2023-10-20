@@ -28,6 +28,10 @@ def test_example(plan_validator, tmp_path, example):
     (tmp_path / 'fabric').symlink_to(BASE_PATH.parents[1])
     (tmp_path / 'variables.tf').symlink_to(BASE_PATH / 'variables.tf')
     (tmp_path / 'main.tf').write_text(example.code)
+    assets_path = BASE_PATH.parent / str(example.module).replace('-',
+                                                                 '_') / 'assets'
+    if assets_path.exists():
+      (tmp_path / 'assets').symlink_to(assets_path)
 
     expected_modules = int(match.group(1))
     expected_resources = int(match.group(2))
