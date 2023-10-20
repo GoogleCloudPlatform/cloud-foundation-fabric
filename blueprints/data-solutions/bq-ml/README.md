@@ -46,6 +46,8 @@ To run the demo:
 - Clone this repository
 - Run the and run [`demo/bmql_pipeline.ipynb`](demo/bmql_pipeline.ipynb) Jupyter Notebook.
 
+<!-- TFDOC OPTS files:1 -->
+<!-- BEGIN TFDOC -->
 ## Files
 
 | name | description | modules | resources |
@@ -54,10 +56,9 @@ To run the demo:
 | [main.tf](./main.tf) | Core resources. | <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Output variables. |  |  |
 | [variables.tf](./variables.tf) | Terraform variables. |  |  |
-| [versions.tf](./versions.tf) | Version pins. |  |  |
 | [vertex.tf](./vertex.tf) | Vertex resources. | <code>iam-service-account</code> | <code>google_notebooks_instance</code> · <code>google_vertex_ai_metadata_store</code> |
 | [vpc.tf](./vpc.tf) | VPC resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> | <code>google_project_iam_member</code> |
-<!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
