@@ -19,6 +19,7 @@ import glob
 import os
 import shutil
 import tempfile
+import time
 from pathlib import Path
 
 import pytest
@@ -38,22 +39,22 @@ def _prepare_root_module(path):
   terraform.tfvars) are deleted to ensure a clean test environment.
   Otherwise, `path` is simply returned untouched.
   """
+  # if we're copying the module, we might as well ignore files and
+  # directories that are automatically read by terraform. Useful
+  # to avoid surprises if, for example, you have an active fast
+  # deployment with links to configs)
+  ignore_patterns = shutil.ignore_patterns('*.auto.tfvars',
+                                           '*.auto.tfvars.json',
+                                           '[0-9]-*-providers.tf',
+                                           'terraform.tfstate*',
+                                           '.terraform.lock.hcl',
+                                           'terraform.tfvars', '.terraform')
+
   if os.environ.get('TFTEST_COPY'):
     # if the TFTEST_COPY is set, create temp dir and copy the root
     # module there
     with tempfile.TemporaryDirectory(dir=path.parent) as tmp_path:
       tmp_path = Path(tmp_path)
-
-      # if we're copying the module, we might as well ignore files and
-      # directories that are automatically read by terraform. Useful
-      # to avoid surprises if, for example, you have an active fast
-      # deployment with links to configs)
-      ignore_patterns = shutil.ignore_patterns('*.auto.tfvars',
-                                               '*.auto.tfvars.json',
-                                               '[0-9]-*-providers.tf',
-                                               'terraform.tfstate*',
-                                               '.terraform.lock.hcl',
-                                               'terraform.tfvars', '.terraform')
 
       shutil.copytree(path, tmp_path, dirs_exist_ok=True,
                       ignore=ignore_patterns)
@@ -63,6 +64,13 @@ def _prepare_root_module(path):
 
       yield tmp_path
   else:
+    # check if any ignore_patterns files are present in path
+    if unwanted_files := ignore_patterns(path, os.listdir(path=path)):
+      # prevent shooting yourself in the foot (unexpected test results) when ignored files are present
+      raise RuntimeError(
+          f'Test in path {path} contains {", ".join(unwanted_files)} which may affect '
+          f'test results. Please run tests with TFTEST_COPY=1 environment variable'
+      )
     # if TFTEST_COPY is not set, just return the same path
     yield path
 
@@ -190,7 +198,8 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
     # - include a descriptive error message to the assert
 
     if 'values' in inventory:
-      validate_plan_object(inventory['values'], summary.values, relative_path, "")
+      validate_plan_object(inventory['values'], summary.values, relative_path,
+                           "")
 
     if 'counts' in inventory:
       expected_counts = inventory['counts']
@@ -216,7 +225,8 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
   return summary
 
 
-def validate_plan_object(expected_value, plan_value, relative_path, relative_address):
+def validate_plan_object(expected_value, plan_value, relative_path,
+                         relative_address):
   """
   Validate that plan object matches inventory
 
@@ -233,7 +243,8 @@ def validate_plan_object(expected_value, plan_value, relative_path, relative_add
     for k, v in expected_value.items():
       assert k in plan_value, \
         f'{relative_path}: {k} is not a valid address in the plan'
-      validate_plan_object(v, plan_value[k], relative_path, f'{relative_address}.{k}')
+      validate_plan_object(v, plan_value[k], relative_path,
+                           f'{relative_address}.{k}')
 
   # lists
   elif isinstance(expected_value, list) and isinstance(plan_value, list):
@@ -241,7 +252,8 @@ def validate_plan_object(expected_value, plan_value, relative_path, relative_add
       f'{relative_path}: {relative_address} has different length. Got {plan_value}, expected {expected_value}'
 
     for i, (exp, actual) in enumerate(zip(expected_value, plan_value)):
-      validate_plan_object(exp, actual, relative_path, f'{relative_address}[{i}]')
+      validate_plan_object(exp, actual, relative_path,
+                           f'{relative_address}[{i}]')
 
   # all other objects
   else:
@@ -267,6 +279,107 @@ def plan_validator_fixture(request):
                           tf_var_files=tf_var_files, **tf_vars)
 
   return inner
+
+
+def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
+  """Function running apply, plan and destroy to verify the case end to end
+
+  1. Tests whether apply does not return errors
+  2. Tests whether plan after apply is empty
+  3. Tests whether destroy does not return errors
+  """
+  module_path = _REPO_ROOT / module_path
+  with _prepare_root_module(module_path) as test_path:
+    binary = os.environ.get('TERRAFORM', 'terraform')
+    tf = tftest.TerraformTest(test_path, binary=binary)
+    extra_files = [(module_path / filename).resolve()
+                   for x in extra_files or []
+                   for filename in glob.glob(x, root_dir=module_path)]
+    tf.setup(extra_files=extra_files, upgrade=True)
+    tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
+
+    try:
+      apply = tf.apply(tf_var_file=tf_var_files)
+      plan = tf.plan(output=True, tf_var_file=tf_var_files)
+      changes = {}
+      for resource_name, value in plan.resource_changes.items():
+        if value.get('change', {}).get('actions') != ['no-op']:
+          changes[resource_name] = value
+
+      # compare before with after to raise more meaningful failure to the user, i.e one
+      # that shows how resource will change
+      plan_before_state = {k: v['before'] for k, v in changes.items()}
+      plan_after_state = {k: v['after'] for k, v in changes.items()}
+
+      assert plan_before_state == plan_after_state, f'Plan not empty after apply for values'
+
+      plan_before_sensitive_state = {
+          k: v['before_sensitive'] for k, v in changes.items()
+      }
+      plan_after_sensitive_state = {
+          k: v['after_sensitive'] for k, v in changes.items()
+      }
+      assert plan_before_sensitive_state == plan_after_sensitive_state, f'Plan not empty after apply for sensitive values'
+
+      # If above did not fail, this should not either, but left as a safety check
+      assert changes == {}, f'Plan not empty for following resources: {", ".join(changes.keys())}'
+    finally:
+      destroy = tf.destroy(tf_var_file=tf_var_files)
+
+
+@pytest.fixture(name='e2e_validator')
+def e2e_validator_fixture(request):
+  """Return a function to run end-to-end test
+
+  In the returned function `basedir` becomes optional and it defaults
+  to the directory of the calling test
+
+  """
+
+  def inner(module_path: str, extra_files: list, tf_var_files: list,
+            basedir: os.PathLike = None):
+    if basedir is None:
+      basedir = Path(request.fspath).parent
+    return e2e_validator(module_path, extra_files, tf_var_files, basedir)
+
+  return inner
+
+
+@pytest.fixture(scope='session', name='e2e_tfvars_path')
+def e2e_tfvars_path():
+  """Fixture preparing end-to-end test environment
+
+  If TFTEST_E2E_TFVARS_PATH is set in the environment, then assume the environment is already provisioned
+  and necessary variables are set in the file to which variable is pointing to.
+
+  Otherwise, create a unique test environment (in case of multiple workers - as many environments as
+  there are workers), that will be injected into each example test instead of `tests/examples/variables.tf`.
+
+  Returns path to tfvars file that contains information about envrionment to use for the tests.
+  """
+  if tfvars_path := os.environ.get('TFTEST_E2E_TFVARS_PATH'):
+    # no need to set up the project
+    if int(os.environ.get('PYTEST_XDIST_WORKER_COUNT', '0')) > 1:
+      raise RuntimeError(
+          'Setting TFTEST_E2E_TFVARS_PATH is not compatible with running tests in parallel'
+      )
+    yield tfvars_path
+  else:
+    with _prepare_root_module(_REPO_ROOT / 'tests' / 'examples_e2e' /
+                              'setup_module') as test_path:
+      binary = os.environ.get('TERRAFORM', 'terraform')
+      tf = tftest.TerraformTest(test_path, binary=binary)
+      tf_vars_file = None
+      tf_vars = {
+          'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0"),
+          'timestamp': str(int(time.time()))
+      }
+      if 'TFTEST_E2E_SETUP_TFVARS_PATH' in os.environ:
+        tf_vars_file = os.environ["TFTEST_E2E_SETUP_TFVARS_PATH"]
+      tf.setup(upgrade=True)
+      tf.apply(tf_vars=tf_vars, tf_var_file=tf_vars_file)
+      yield test_path / "e2e_tests.tfvars"
+      tf.destroy(tf_vars=tf_vars, tf_var_file=tf_vars_file)
 
 
 # @pytest.fixture

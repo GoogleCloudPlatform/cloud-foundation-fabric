@@ -28,7 +28,7 @@ IAM bindings support the usual syntax. Container environment values can be decla
 ```hcl
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "hello"
   containers = {
     hello = {
@@ -49,7 +49,7 @@ module "cloud_run" {
     "roles/run.invoker" = ["allUsers"]
   }
 }
-# tftest modules=1 resources=2 inventory=simple.yaml
+# tftest modules=1 resources=2 inventory=simple.yaml e2e
 ```
 
 ### Mounting secrets as volumes
