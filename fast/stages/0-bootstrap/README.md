@@ -466,9 +466,11 @@ Provider key names are used by the `cicd_repositories` variable to configure aut
 
 This is a sample configuration of a GitHub and a Gitlab provider. Every parameter is optional.
 
-If users don't specify the `issuer_uri` we assume the default `issuer_uri` for public platforms should be used.
+The `custom_settings` attributes are used to configure the provider to work with privately managed installations of Github and Gitlab:
 
-If users don't specify the `audience`, we set the url of the provider, as recommended in the [WIF FAQ section](https://cloud.google.com/iam/docs/best-practices-for-using-workload-identity-federation#provider-audience).
+- `issuer_uri` (defaults to the public platforms one if not set)
+- `audience` (defaults to the public URL of the provider if not set, as recommended in the [WIF FAQ section](https://cloud.google.com/iam/docs/best-practices-for-using-workload-identity-federation#provider-audience))
+- `jwks_json` for public key upload
 
 ```tfvars
 federated_identity_providers = {
