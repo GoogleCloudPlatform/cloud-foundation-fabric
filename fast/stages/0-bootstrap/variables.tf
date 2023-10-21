@@ -127,6 +127,7 @@ variable "federated_identity_providers" {
     custom_settings = optional(object({
       issuer_uri = optional(string)
       audiences  = optional(list(string), [])
+      jwks_json  = optional(string)
     }), {})
   }))
   default  = {}
