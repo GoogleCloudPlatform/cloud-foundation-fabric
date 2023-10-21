@@ -251,9 +251,9 @@ module "nlb" {
 | [backend_service](outputs.tf#L17) | Backend resource. |  |
 | [backend_service_id](outputs.tf#L22) | Backend id. |  |
 | [backend_service_self_link](outputs.tf#L27) | Backend self link. |  |
-| [forwarding_rule_addresses](outputs.tf#L37) | Forwarding rule addresses. |  |
-| [forwarding_rule_self_links](outputs.tf#L45) | Forwarding rule self links. |  |
-| [forwarding_rules](outputs.tf#L32) | Forwarding rule resources. |  |
+| [forwarding_rule_addresses](outputs.tf#L32) | Forwarding rule addresses. |  |
+| [forwarding_rule_self_links](outputs.tf#L40) | Forwarding rule self links. |  |
+| [forwarding_rules](outputs.tf#L48) | Forwarding rule resources. |  |
 | [group_self_links](outputs.tf#L53) | Optional unmanaged instance group self links. |  |
 | [groups](outputs.tf#L60) | Optional unmanaged instance group resources. |  |
 | [health_check](outputs.tf#L65) | Auto-created health-check resource. |  |

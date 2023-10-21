@@ -29,11 +29,6 @@ output "backend_service_self_link" {
   value       = google_compute_region_backend_service.default.self_link
 }
 
-output "forwarding_rules" {
-  description = "Forwarding rule resources."
-  value       = google_compute_forwarding_rule.forwarding_rules
-}
-
 output "forwarding_rule_addresses" {
   description = "Forwarding rule addresses."
   value = {
@@ -48,6 +43,11 @@ output "forwarding_rule_self_links" {
     for k, v in google_compute_forwarding_rule.forwarding_rules
     : k => v.self_link
   }
+}
+
+output "forwarding_rules" {
+  description = "Forwarding rule resources."
+  value       = google_compute_forwarding_rule.forwarding_rules
 }
 
 output "group_self_links" {
