@@ -48,19 +48,24 @@ resource "google_project_service" "project_service" {
   disable_dependent_services = true
 }
 
+resource "time_sleep" "wait_30_seconds" {
+  depends_on      = [google_project_service.project_service]
+  create_duration = "30s"
+}
+
 resource "google_storage_bucket" "bucket" {
   location      = var.region
   name          = "${local.prefix}-bucket"
   project       = google_project.project.project_id
   force_destroy = true
-  depends_on    = [google_project_service.project_service]
+  depends_on    = [time_sleep.wait_30_seconds]
 }
 
 resource "google_compute_network" "network" {
   name                    = "e2e-test"
   project                 = google_project.project.project_id
   auto_create_subnetworks = false
-  depends_on              = [google_project_service.project_service]
+  depends_on              = [time_sleep.wait_30_seconds]
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
@@ -74,7 +79,7 @@ resource "google_compute_subnetwork" "subnetwork" {
 resource "google_service_account" "service_account" {
   account_id = "e2e-service-account"
   project    = google_project.project.project_id
-  depends_on = [google_project_service.project_service]
+  depends_on = [time_sleep.wait_30_seconds]
 }
 
 resource "local_file" "terraform_tfvars" {
