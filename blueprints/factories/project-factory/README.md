@@ -59,7 +59,7 @@ module "project-factory" {
     data_path = "data"
   }
 }
-# tftest modules=6 resources=14 files=prj-app-1,prj-app-2
+# tftest modules=6 resources=15 files=prj-app-1,prj-app-2
 ```
 
 ```yaml
@@ -94,6 +94,8 @@ org_policies:
   iam.disableServiceAccountKeyCreation:
     rules:
       - enforce: false
+shared_vpc_service_config:
+  host_project: foo-host
 
 # tftest-file id=prj-app-2 path=data/prj-app-2.yaml
 ```
