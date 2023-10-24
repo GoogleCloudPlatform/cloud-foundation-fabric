@@ -754,3 +754,4 @@ module "simple-vm-example" {
 | [template](outputs.tf#L82) | Template resource. |  |
 | [template_name](outputs.tf#L87) | Template name. |  |
 <!-- END TFDOC -->
+
