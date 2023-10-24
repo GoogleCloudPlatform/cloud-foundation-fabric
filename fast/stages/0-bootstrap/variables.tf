@@ -207,6 +207,10 @@ variable "log_sinks" {
     type   = string
   }))
   default = {
+    access-transparency = {
+      filter = "protoPayload.metadata.@type=\"type.googleapis.com/google.cloud.audit.TransparencyLog\""
+      type   = "logging"
+    }
     audit-logs = {
       filter = "logName:\"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName:\"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
       type   = "logging"
