@@ -89,5 +89,8 @@ resource "google_iam_workload_identity_pool_provider" "default" {
       ? each.value.custom_settings.issuer_uri
       : try(each.value.issuer_uri, null)
     )
+    # OIDC JWKs in JSON String format. If no value is provided, they key is 
+    # fetched from the `.well-known` path for the issuer_uri
+    jwks_json = each.value.custom_settings.jwks_json
   }
 }

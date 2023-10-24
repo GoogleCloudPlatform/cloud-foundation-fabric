@@ -68,7 +68,7 @@ variable "backend_service_config" {
       for b in var.backend_service_config.backends : contains(
         ["CONNECTION", "UTILIZATION"], coalesce(b.balancing_mode, "CONNECTION")
     )])
-    error_message = "When specified balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
+    error_message = "When specified, balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
   }
 }
 

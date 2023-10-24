@@ -18,8 +18,8 @@ output "addresses" {
   description = "IP addresses."
   value = {
     gw        = [for z, mod in module.gw : mod.internal_ip]
-    ilb-left  = module.ilb-left.forwarding_rule_address
-    ilb-right = module.ilb-right.forwarding_rule_address
+    ilb-left  = module.ilb-left.forwarding_rule_addresses[""]
+    ilb-right = module.ilb-right.forwarding_rule_addresses[""]
     vm-left   = [for z, mod in module.vm-left : mod.internal_ip]
     vm-right  = [for z, mod in module.vm-right : mod.internal_ip]
   }

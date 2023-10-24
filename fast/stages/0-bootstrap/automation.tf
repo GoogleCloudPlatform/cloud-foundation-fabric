@@ -60,6 +60,26 @@ module "automation-project" {
       module.automation-tf-resman-sa.iam_email
     ]
   }
+  iam_bindings = {
+    delegated_grants_resman = {
+      members = [module.automation-tf-resman-sa.iam_email]
+      role    = "roles/resourcemanager.projectIamAdmin"
+      condition = {
+        title       = "resman_delegated_grant"
+        description = "Resource manager service account delegated grant."
+        expression = format(
+          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['%s'])",
+          "roles/serviceusage.serviceUsageConsumer"
+        )
+      }
+    }
+  }
+  iam_bindings_additive = {
+    serviceusage_resman = {
+      member = module.automation-tf-resman-sa.iam_email
+      role   = "roles/serviceusage.serviceUsageConsumer"
+    }
+  }
   services = [
     "accesscontextmanager.googleapis.com",
     "bigquery.googleapis.com",

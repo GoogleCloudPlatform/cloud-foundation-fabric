@@ -109,23 +109,36 @@ variable "backend_service_configs" {
   default  = {}
   nullable = false
   validation {
-    condition = contains(
-      [
-        "-", "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH",
-        "RANDOM", "ORIGINAL_DESTINATION", "MAGLEV"
-      ],
-      try(var.backend_service_configs.locality_lb_policy, "-")
-    )
+    condition = alltrue([
+      for backend_service in values(var.backend_service_configs) : contains(
+        [
+          "-", "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH",
+          "RANDOM", "ORIGINAL_DESTINATION", "MAGLEV"
+        ],
+        coalesce(backend_service.locality_lb_policy, "-")
+      )
+    ])
     error_message = "Invalid locality lb policy value."
   }
   validation {
-    condition = contains(
-      [
-        "NONE", "CLIENT_IP", "CLIENT_IP_NO_DESTINATION",
-        "CLIENT_IP_PORT_PROTO", "CLIENT_IP_PROTO"
-      ],
-      try(var.backend_service_configs.session_affinity, "NONE")
-    )
+    condition = alltrue([
+      for backend_service in values(var.backend_service_configs) : contains(
+        [
+          "NONE", "CLIENT_IP", "CLIENT_IP_NO_DESTINATION",
+          "CLIENT_IP_PORT_PROTO", "CLIENT_IP_PROTO"
+        ],
+        coalesce(backend_service.session_affinity, "NONE")
+      )
+    ])
     error_message = "Invalid session affinity value."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for backend_service in values(var.backend_service_configs) : [
+        for backend in backend_service.backends : contains(
+          ["RATE", "UTILIZATION"], coalesce(backend.balancing_mode, "UTILIZATION")
+      )]
+    ]))
+    error_message = "When specified, balancing mode needs to be 'RATE' or 'UTILIZATION'."
   }
 }

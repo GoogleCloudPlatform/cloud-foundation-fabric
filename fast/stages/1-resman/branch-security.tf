@@ -60,9 +60,7 @@ module "branch-security-sa" {
     ])
   }
   iam_project_roles = {
-    (var.automation.project_id) = [
-      "roles/serviceusage.serviceUsageConsumer",
-    ]
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
   }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]

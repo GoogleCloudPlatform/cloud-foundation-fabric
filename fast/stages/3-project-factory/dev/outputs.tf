@@ -16,7 +16,12 @@
 
 output "projects" {
   description = "Created projects."
-  value       = module.projects.projects
+  value = {
+    for k, v in module.projects.projects : k => {
+      number     = v.number
+      project_id = v.id
+    }
+  }
 }
 
 output "service_accounts" {

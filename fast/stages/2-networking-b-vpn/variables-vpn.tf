@@ -17,37 +17,28 @@
 variable "vpn_configs" {
   description = "Hub to spokes VPN configurations."
   type = object({
-    dev = object({
-      asn = number
+    dev = optional(object({
+      asn = optional(number, 65501)
       custom_advertise = optional(object({
         all_subnets = bool
         ip_ranges   = map(string)
       }))
-    })
-    landing = object({
-      asn = number
+    }), {})
+    landing = optional(object({
+      asn = optional(number, 65500)
       custom_advertise = optional(object({
         all_subnets = bool
         ip_ranges   = map(string)
       }))
-    })
-    prod = object({
-      asn = number
+    }), {})
+    prod = optional(object({
+      asn = optional(number, 65502)
       custom_advertise = optional(object({
         all_subnets = bool
         ip_ranges   = map(string)
       }))
-    })
+    }), {})
   })
-  default = {
-    dev = {
-      asn = 65501
-    }
-    landing = {
-      asn = 65500
-    }
-    prod = {
-      asn = 65502
-    }
-  }
+  nullable = false
+  default  = {}
 }

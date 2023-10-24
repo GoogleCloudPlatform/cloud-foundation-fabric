@@ -19,7 +19,7 @@
 locals {
   _factory_data_raw = merge([
     for f in try(fileset(var.org_policies_data_path, "*.yaml"), []) :
-    yamldecode(file("${var.org_policies_data_path}/${f}"))
+    try(yamldecode(file("${var.org_policies_data_path}/${f}")), {})
   ]...)
 
   # simulate applying defaults to data coming from yaml files

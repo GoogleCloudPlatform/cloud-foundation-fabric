@@ -33,15 +33,15 @@ This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bu
 ```hcl
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v1"
-  project_id  = "my-project"
+  project_id  = var.project_id
   name        = "test-cf-http"
-  bucket_name = "test-cf-bundles"
+  bucket_name = var.bucket
   bundle_config = {
-    source_dir  = "fabric/assets/"
+    source_dir  = "assets/sample-function/"
     output_path = "bundle.zip"
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 e2e
 ```
 
 ### PubSub and non-HTTP triggers
