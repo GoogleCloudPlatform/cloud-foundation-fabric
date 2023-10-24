@@ -331,7 +331,7 @@ module "ilb-l7" {
   backend_service_configs = {
     default = {
       backends = [{
-        group          = "my-neg"
+        group = "my-neg"
       }]
       health_checks = []
     }
