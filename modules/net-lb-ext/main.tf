@@ -43,6 +43,7 @@ resource "google_compute_forwarding_rule" "forwarding_rules" {
   ports                 = each.value.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
   all_ports             = each.value.ports == null ? true : null
   labels                = var.labels
+  subnetwork            = each.value.subnetwork
   # is_mirroring_collector = false
 }
 
