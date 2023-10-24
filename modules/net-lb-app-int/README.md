@@ -331,9 +331,7 @@ module "ilb-l7" {
   backend_service_configs = {
     default = {
       backends = [{
-        balancing_mode = "RATE"
-        group          = "my-neg"
-        max_rate       = { per_endpoint = 1 }
+        group = "my-neg"
       }]
       health_checks = []
     }
