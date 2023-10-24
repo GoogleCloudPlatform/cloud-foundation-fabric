@@ -69,7 +69,7 @@ def start_discovery(resources, response=None, data=None):
   LOGGER.info(f'discovery (has response: {response is not None})')
   if response is None:
     # return initial discovery URLs
-    if (not resources['config:folders'] and not resources['config:projects']):
+    if not resources['config:folders'] and not resources['config:projects']:
       LOGGER.info(
           f'No monitored project or folder given, defaulting to discovery root: {resources["config:discovery_root"]}'
       )
