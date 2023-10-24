@@ -183,7 +183,7 @@ resource "google_container_node_pool" "nodepool" {
       }
     }
     dynamic "local_nvme_ssd_block_config" {
-      for_each = var.node_config.local_nvme_ssd_count != null ? [""] : []
+      for_each = coalesce(var.node_config.local_nvme_ssd_count, 0) > 0 ? [""] : []
       content {
         local_ssd_count = var.node_config.local_nvme_ssd_count
       }

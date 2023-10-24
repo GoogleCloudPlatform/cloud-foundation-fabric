@@ -129,12 +129,12 @@ module "cluster-1-nodepool-gpu-1" {
       type  = "nvidia-tesla-a100"
       count = 1
       gpu_driver = {
-        version = "latest"
+        version = "LATEST"
       }
     }
   }
 }
-# tftest modules=1 resources=2 inventory=config.yaml
+# tftest modules=1 resources=2 inventory=guest-accelerator.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

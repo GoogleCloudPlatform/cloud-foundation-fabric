@@ -97,6 +97,17 @@ variable "node_config" {
   default = {
     disk_type = "pd-balanced"
   }
+  validation {
+    condition = (
+      alltrue([
+        for k, v in var.node_config.guest_accelerator[*].gpu_driver : contains([
+          "GPU_DRIVER_VERSION_UNSPECIFIED", "INSTALLATION_DISABLED",
+          "DEFAULT", "LATEST"
+        ], v.version)
+      ])
+    )
+    error_message = "Invalid GPU driver version."
+  }
 }
 
 variable "node_count" {
