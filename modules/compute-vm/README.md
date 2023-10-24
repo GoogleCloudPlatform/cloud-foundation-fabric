@@ -37,7 +37,6 @@ In both modes, an optional service account can be created and assigned to either
   - [Resource Manager Tags](#resource-manager-tags)
 - [Variables](#variables)
 - [Outputs](#outputs)
-- [TODO](#todo)
 <!-- END TOC -->
 
 ### Instance using defaults
@@ -755,6 +754,4 @@ module "simple-vm-example" {
 | [template](outputs.tf#L82) | Template resource. |  |
 | [template_name](outputs.tf#L87) | Template name. |  |
 <!-- END TFDOC -->
-## TODO
 
-- [ ] add support for instance groups
