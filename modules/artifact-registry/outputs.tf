@@ -22,7 +22,7 @@ output "id" {
 output "image_path" {
   description = "Repository path for images."
   value = join("/", [
-    "${var.location}-docker.pkg.dev",
+    "${var.location}-${local.format_string}.pkg.dev",
     var.project_id,
     var.name
   ])
