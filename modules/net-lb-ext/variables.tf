@@ -88,6 +88,7 @@ variable "forwarding_rules_config" {
     ip_version  = optional(string)
     ports       = optional(list(string), null)
     protocol    = optional(string, "TCP")
+    subnetwork  = optional(string) # Required for IPv6
   }))
   default = {
     "" = {}
