@@ -59,7 +59,7 @@
                       "alignmentPeriod": "3600s",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/forwarding_rules_l4_used_ratio\" resource.type=\"global\"",
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/forwarding_rules_l7_used_ratio\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_MEAN"

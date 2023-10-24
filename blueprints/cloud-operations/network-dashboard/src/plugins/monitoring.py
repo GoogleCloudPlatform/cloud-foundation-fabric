@@ -17,9 +17,9 @@ import collections
 import datetime
 import json
 import logging
+import time
 
 from . import HTTPRequest
-from .utils import batched
 
 DESCRIPTOR_TYPE_BASE = 'custom.googleapis.com/{}'
 DESCRIPTOR_URL = ('https://content-monitoring.googleapis.com/v3'
@@ -74,6 +74,7 @@ def timeseries_requests(project_id, root, timeseries, descriptors):
     bucket.append(ts)
   LOGGER.info(f'metric types {list(ts_buckets.keys())}')
   ts_buckets = list(ts_buckets.values())
+  api_calls = 0
   while ts_buckets:
     data = {'timeSeries': []}
     for bucket in ts_buckets:
@@ -103,4 +104,10 @@ def timeseries_requests(project_id, root, timeseries, descriptors):
     tot_num = sum(len(b) for b in ts_buckets)
     LOGGER.info(f'sending {req_num} remaining: {tot_num}')
     yield HTTPRequest(url, HEADERS, json.dumps(data))
+    api_calls += 1
+    # Default quota is 180 request per minute per user
+    if (api_calls > 170):
+      LOGGER.info(f'Pausing for 1 minute to avoid monitoring quota issues')
+      time.sleep(60)
+      api_calls = 0
     ts_buckets = [b for b in ts_buckets if b]
