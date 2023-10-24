@@ -42,7 +42,7 @@ IAM for management-related operations is already assigned at the folder level to
 
 A reference Cloud KMS implementation is part of this stage, to provide a simple way of managing centralized keys, that are then shared and consumed widely across the organization to enable customer-managed encryption. The implementation is also easy to clone and modify to support other services like Secret Manager.
 
-The Cloud KMS configuration allows defining keys by name (typically matching the downstream service that uses them) in different locations, either based on a common default or a per-key setting. It then takes care internally of provisioning the relevant keyrings and creating keys in the appropriate location.
+The Cloud KMS configuration allows defining keys by name (typically matching the downstream service that uses them) in different locations. It then takes care internally of provisioning the relevant keyrings and creating keys in the appropriate location.
 
 IAM roles on keys can be configured at the logical level for all locations where a logical key is created. Their management can also be delegated via [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles) exposed through a simple variable, to allow other identities to set IAM policies on keys. This is particularly useful in setups like project factories, making it possible to configure IAM bindings during project creation for team groups or service agent accounts (compute, storage, etc.).
 
@@ -141,10 +141,7 @@ terraform apply
 
 ### KMS keys
 
-Cloud KMS configuration is split in two variables:
-
-- `kms_defaults` configures the locations and rotation period, used for keys that don't specifically configure them
-- `kms_keys` configures the actual keys to create, and also allows configuring their IAM bindings and labels, and overriding locations and rotation period. When configuring locations for a key, please consider the limitations each cloud product may have.
+Cloud KMS configuration is controlled by `kms_keys`, which configures the actual keys to create, and also allows configuring their IAM bindings, labels, locations and rotation period. When configuring locations for a key, please consider the limitations each cloud product may have.
 
 The additional `kms_restricted_admins` variable allows granting `roles/cloudkms.admin` to specified principals, restricted via [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles) so that it only allows granting the roles needed for encryption/decryption on keys. This allows safe delegation of key management to subsequent Terraform stages like the Project Factory, for example to grant usage access on relevant keys to the service agent accounts for compute, storage, etc.
 
@@ -155,10 +152,6 @@ An example of how to configure keys:
 ```tfvars
 # terraform.tfvars
 
-kms_defaults = {
-  locations       = ["europe-west1", "europe-west3", "global"]
-  rotation_period = "7776000s"
-}
 kms_keys = {
   compute = {
     iam = {
@@ -167,8 +160,8 @@ kms_keys = {
       ]
     }
     labels          = { service = "compute" }
-    locations       = null
-    rotation_period = null
+    locations       = ["europe-west1", "europe-west3", "global"]
+    rotation_period = "7776000s"
   }
   storage = {
     iam             = null
