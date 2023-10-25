@@ -38,7 +38,7 @@ allow-icmp:
 
 allow-nat-ranges:
   description: Enable NAT ranges for VPC serverless connector
-  priority: 1001
+  priority: 1004
   match:
     source_ranges:
       - 107.178.230.64/26
