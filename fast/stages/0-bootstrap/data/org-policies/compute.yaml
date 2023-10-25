@@ -2,30 +2,32 @@
 #
 # sample subset of useful organization policies, edit to suit requirements
 
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 compute.disableGuestAttributesAccess:
   rules:
-  - enforce: true
+    - enforce: true
 
 compute.requireOsLogin:
   rules:
-  - enforce: true
+    - enforce: true
 
 compute.restrictLoadBalancerCreationForTypes:
   rules:
-  - allow:
-      values:
-      - in:INTERNAL
+    - allow:
+        values:
+          - in:INTERNAL
 
 compute.skipDefaultNetworkCreation:
   rules:
-  - enforce: true
+    - enforce: true
 
 compute.vmExternalIpAccess:
   rules:
-  - deny:
-      all: true
-
-
+    - deny:
+        all: true
 # compute.disableInternetNetworkEndpointGroup:
 #   rules:
 #   - enforce: true

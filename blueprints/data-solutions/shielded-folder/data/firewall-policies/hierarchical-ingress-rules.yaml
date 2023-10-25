@@ -1,4 +1,7 @@
 # skip boilerplate check
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
 
 allow-admins:
   description: Access from the admin subnet to all subnets
@@ -14,8 +17,8 @@ allow-healthchecks:
     source_ranges:
       - healthchecks
   layer4_configs:
-  - protocol: tcp
-    ports: ["80", "443"]
+    - protocol: tcp
+      ports: ["80", "443"]
 
 allow-ssh-from-iap:
   description: Enable SSH from IAP
@@ -24,8 +27,8 @@ allow-ssh-from-iap:
     source_ranges:
       - 35.235.240.0/20
   layer4_configs:
-  - protocol: tcp
-    ports: ["22"]
+    - protocol: tcp
+      ports: ["22"]
 
 allow-icmp:
   description: Enable ICMP
@@ -34,4 +37,4 @@ allow-icmp:
     source_ranges:
       - 0.0.0.0/0
   layer4_configs:
-  - protocol: icmp
+    - protocol: icmp
