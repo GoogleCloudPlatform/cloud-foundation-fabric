@@ -12,6 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.cluster-1-nodepool-gpu-1.google_container_node_pool.nodepool:
+    cluster: cluster-1
+    location: europe-west4-a
+    name: nodepool-gpu-1
+    node_config:
+    - boot_disk_kms_key: null
+      disk_size_gb: 50
+      disk_type: pd-ssd
+      ephemeral_storage_config:
+      - local_ssd_count: 1
+      ephemeral_storage_local_ssd_config: []
+      guest_accelerator:
+      - count: 1
+        gpu_driver_installation_config:
+        - gpu_driver_version: LATEST
+        gpu_partition_size: null
+        gpu_sharing_config:
+        - gpu_sharing_strategy: null
+          max_shared_clients_per_gpu: null
+        type: nvidia-tesla-a100
+      gvnic: []
+      machine_type: a2-highgpu-1g
+      spot: true
+    project: myproject
+
 counts:
   google_container_node_pool: 1
-  google_service_account: 1
