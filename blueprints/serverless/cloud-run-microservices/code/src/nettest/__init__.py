@@ -11,13 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import flask
 import logging
 import subprocess
 import base64
 import sys
 import re
+import streamlit as st
+import numpy as np
+import pandas as pd
+import plotly.express as px
+
 iphostregex = re.compile(
   r'([A-Z0-9][A-Z0-9-]{0,61}\.)*[A-Z0-9][A-Z0-9-]{0,61}',
   re.IGNORECASE)
@@ -32,147 +35,136 @@ urlregex = re.compile(
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-# If `entrypoint` is not defined in app.yaml, App Engine will look for an app
-# called `app` in `main.py`.
-app = flask.Flask(__name__)
+def dohttp(http_input):
+  if re.match(urlregex, http_input) is None:
+    st.error('Invalid URL')
+  else:
+    st.info("Running curl")
+    
+    process = subprocess.Popen(['curl', '--silent', '--verbose', http_input], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
 
-@app.route('/http')
-def dohttp():
-  url = flask.request.args.get('url')
-  if re.match(urlregex, url) is None:
-    return 'Invalid URL'
-  logging.info("Entering DoHTTP")
-  logging.info("---- Invoking cURL ----")
-  process = subprocess.Popen(['/bin/sh', '-c', 'curl --silent --verbose '+url+' 2>&1'],
-                             stdout=subprocess.PIPE)
-  output = process.stdout.read().decode('utf-8')
-  logging.info(output)
-  rc = process.wait()
-  logging.info('Subprocess Returned:'+ str(rc))
-  resp = flask.Response()
-  resp.headers['Content-Type'] = 'text/plain; charset=utf-8'
-  resp.data = 'curl --silent --verbose '+url+'\n\n'+output
-  return resp
+    if stderr:
+        st.code(stderr.decode('utf-8'), language='bash')
 
-@app.route('/ping')
-def doping():
-  host = flask.request.args.get('host')
+    st.code(stdout.decode('utf-8'), language='bash')
+    st.write('Subprocess Returned:', process.returncode)
+
+def parse_data(data, regex_expr):
+    data_matches = re.findall(regex_expr, data)
+    data_arr = np.array(data_matches, dtype=float)
+    return data_arr
+
+def plot_generic(data, x_label, y_label):
+    fig = px.bar(x=np.arange(1, len(data) + 1), y=data)
+    fig.update_layout(xaxis_title=x_label)
+    fig.update_layout(yaxis_title=y_label)
+    st.plotly_chart(fig)
+
+def doping(host):
   if re.match(iphostregex, host) is None:
     return 'Invalid Host'
   logging.info("Entering DoPing")
   logging.info("---- Invoking Ping "+host+" ----")
-  process = subprocess.Popen(['/bin/sh', '-c', 'ping -c 4 '+host+' 2>&1'],
+  process = subprocess.Popen(['/bin/sh', '-c', 'ping -c 10 '+host+' 2>&1'],
                              stdout=subprocess.PIPE)
+  st.info(f"Running ping")
+
   output = process.stdout.read().decode('utf-8')
   logging.info(output)
+
   rc = process.wait()
   logging.info('Subprocess Returned:'+ str(rc))
-  resp = flask.Response()
-  resp.headers['Content-Type'] = 'text/plain'
-  resp.data = output
-  return resp
+  st.markdown('#### Ping output')
+  st.code(output, language='bash')
+  regex_expr = r"time=(\d+\.\d+) ms"
+  ping_data = parse_data(output, regex_expr)
+  try:
+    plot_generic(ping_data,"Ping Attempt", "Ping Time (ms)")
+  except:
+    st.info("No data to plot")
+def doiperf(iperf_input):
+  input_parts = iperf_input.split()
+  host = input_parts[0] if input_parts else ""
+  args = input_parts[1:] if len(input_parts) > 1 else []
+  if re.match(iphostregex, host):
+    command = f"iperf3 -c {host} {' '.join(args)}"
+    st.info(f"Running {command} ...")
+    try:
+        process = subprocess.Popen(
+            ["/bin/sh", "-c", command],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        output = process.stdout.read().decode('utf-8')
+        iperf_regex = r"(\d+(?:\.\d+)?)\s*(?:[KMG]?bits/sec)"
+        iperf_data = parse_data(output, iperf_regex)
+        regex_pattern_units = r"(\s+[a-zA-Z]+/[a-zA-Z]+)"
+        result = re.search(regex_pattern_units, output)
+        if result: 
+          result = result.group(1)
+          st.code(output, language='bash')
+          plot_generic(iperf_data, "Sec interval ", f"Bitrate {result}")
+        else:
+          st.error('Host not found or iperf not enabled on server')
 
-@app.route('/iperf')
-def doiperf():
-  host = flask.request.args.get('host')
-  if re.match(iphostregex, host) is None:
-    return 'Invalid Host'
-  rev = flask.request.args.get('reverse')
-  nodelay = flask.request.args.get('nodelay')
-  udp = flask.request.args.get('udp')
-  bandwidth = flask.request.args.get('bandwidth')
-  plen = flask.request.args.get('plen')
-  npackets = flask.request.args.get('npackets')
-  streams = flask.request.args.get('streams')
-  port = flask.request.args.get('port')
-  time = flask.request.args.get('time')
-  args = ''
-  if rev is not None:
-    args = args + ' -R'
-  if nodelay is not None:
-    args = args + ' -N'
-  if udp is not None:
-    args = args + ' -u'
-  if bandwidth is not None:
-    ibandwidth = int(bandwidth)
-    if ibandwidth > 0:
-      args = args + ' -b '+str(ibandwidth)+'M'
-  if plen is not None:
-    iplen = int(plen)
-    if iplen > 0:
-      args = args + ' -l '+str(iplen)
-  if npackets is not None:
-    args = args + ' -k '+str(npackets)
-  if streams is not None:
-    istreams = int(streams)
-    if istreams > 0:
-      args = args + ' -P '+str(istreams)
-  if port is not None:
-    iport = int(port)
-    if iport > 0:
-      args = args + ' -p '+str(iport)
-  if time is not None:
-    itime = int(time)
-    if itime > 0:
-      args = args + ' -t '+str(itime)
-  logging.info("---- Invoking iperf3 -c "+host+args+" ----")
-  process = subprocess.Popen(['/bin/sh', '-c', 'iperf3 -c '+host+args+' 2>&1'],
-                             stdout=subprocess.PIPE)
-  output = process.stdout.read().decode('utf-8')
-  logging.info(output)
-  rc = process.wait()
-  logging.info('Subprocess Returned:'+ str(rc))
-  resp = flask.Response()
-  resp.headers['Content-Type'] = 'text/plain'
-  resp.data = output
-  return resp
+    except Exception as e:
+      st.error(f"Error: {str(e)}")
 
-@app.route('/dns')
-def dodns():
-  host = flask.request.args.get('host')
-  if re.match(iphostregex, host) is None:
-    return 'Invalid Host'
-  logging.info("Entering DoDns")
-  logging.info("---- Invoking nslookup "+host+" ----")
-  process = subprocess.Popen(['/bin/sh', '-c', 'dig '+host+' 2>&1'],
-                             stdout=subprocess.PIPE)
-  output = process.stdout.read().decode('utf-8')
-  logging.info(output)
-  rc = process.wait()
-  logging.info('Subprocess Returned:'+ str(rc))
-  resp = flask.Response()
-  resp.headers['Content-Type'] = 'text/plain'
-  resp.data = output
-  return resp
 
-@app.route('/')
-def domain():
-  resp = flask.Response()
-  resp.headers['Content-Type'] = 'text/html'
-  resp.data = (
-    '<!doctype html>'
-    '<html>'
-    '<body>'
-    '<p><form action="/dns" method="get">'
-    'DNS Lookup: <input name="host" type="text"> '
-    '<input type="submit" value="DNS">'
-    '</form></p>'
-    '<p><form action="/ping" method="get">'
-    'Ping Host: <input name="host" type="text"> '
-    '<input type="submit" value="Ping">'
-    '</form></p>'
-    '<p><form action="/http" method="get">'
-    'HTTP URL: <input name="url" type="text"> '
-    '<input type="submit" value="GET">'
-    '</form></p>'
-    '<p><form action="/iperf" method="get">'
-    'IPerf to Host: <input name="host" type="text"> '
-    '<input type="submit" value="IPerf">'
-    '</form></p>'
-    '</body>'
-    '</html>'
-  )
-  return resp
+
+
+def dodns(dns_input):
+  st.title("DNS Lookup")
+  if re.match(iphostregex, dns_input) is None:
+      st.write('Invalid Host')
+  else:
+      st.info("running dig command...")
+      try:
+          process = subprocess.Popen(['dig', dns_input], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+          stdout, stderr = process.communicate()
+          if stderr:
+              st.write(stderr.decode('utf-8'))
+          st.code(stdout.decode('utf-8'), language='bash')
+          st.write('Subprocess Returned:', process.returncode)
+      except Exception as e:
+        st.error(f"Error: {str(e)}")
 
 def create_app(test_config=None):
   return app
+
+def main(): 
+  st.markdown('# VPC Network Tester')
+  col1, col2 = st.columns(2)
+  with col1:
+    ping_input = st.text_input('Ping to Host', '10.0.1.4')
+    http_input = st.text_input('HTTP Test', 'http://10.0.1.4')
+    iperf_input = st.text_input('IPerf to Host', '10.0.1.4')
+    dns_input = st.text_input('DNS Lookup', '10.0.1.4')
+
+  with col2:
+    st.text("")
+    st.text("")
+    button_ping = st.button('Ping')
+    st.text("")
+    st.text("")
+    button_http = st.button('GET')
+    st.text("")
+    st.text("")
+    st.text("")
+    button_iperf = st.button('IPerf')
+    st.text("")
+    button_dns = st.button('DNS Lookup')
+ 
+  if button_ping:
+    doping(ping_input)
+  if button_iperf:
+    doiperf(iperf_input)
+  if button_http: 
+    dohttp(http_input)
+  if button_dns:
+    dodns(dns_input)
+
+
+if __name__ == '__main__':
+  main()

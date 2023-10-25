@@ -1,22 +1,15 @@
-FROM python:alpine as builder
+FROM python:3.8-slim
 
-RUN apk add g++ linux-headers
+RUN apt-get update && \
+    apt-get install -y curl iputils-ping dnsutils iperf3 && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY src /tmp/src/
-RUN cd /tmp/src && \
-    python3 -m venv venv && \
-    VIRTUAL_ENV="/tmp/venv" PATH="/app/venv/bin:$PATH" pip install wheel && \
-    VIRTUAL_ENV="/tmp/venv" PATH="/app/venv/bin:$PATH" python setup.py bdist_wheel && \
-    mkdir -p /app && \
-    cd /app && \
-    python3 -m venv venv && \
-    VIRTUAL_ENV="/app/venv" PATH="/app/venv/bin:$PATH" pip install /tmp/src/dist/*.whl waitress
+# Copy local code to the container image.
+WORKDIR /app
+COPY . /app
 
-FROM python:alpine
-RUN apk add dumb-init curl iperf3 apache2-utils bind-tools
-COPY --from=builder /app/ /app/
-ENV PATH /app/venv/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ENV VIRTUAL_ENV /app/venv
-EXPOSE 8080
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["/app/venv/bin/waitress-serve", "--call", "nettest:create_app"]
+# Install production dependencies.
+RUN pip install -r requirements.txt
+
+# Run the web service on container startup.
+CMD streamlit run --server.port 8080 --server.enableCORS false src/nettest/__init__.py
