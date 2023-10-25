@@ -15,7 +15,9 @@
  */
 
 locals {
-  _factory_rules = try(yamldecode(file(var.rules_file)), {})
+  _factory_data  = var.rules_file != null ? file(var.rules_file) : "{}"
+  _factory_rules = yamldecode(local._factory_data)
+
   factory_rules = {
     for k, v in local._factory_rules : k => {
       dns_name = v.dns_name

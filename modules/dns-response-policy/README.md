@@ -102,6 +102,11 @@ module "dns-policy" {
 ```
 
 ```yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 gcr:
   dns_name: "gcr.io."
   local_data:

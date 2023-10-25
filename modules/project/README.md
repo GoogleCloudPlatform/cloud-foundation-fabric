@@ -359,6 +359,11 @@ module "project" {
 
 ```yaml
 # tftest-file id=boolean path=configs/org-policies/boolean.yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 compute.disableGuestAttributesAccess:
   rules:
   - enforce: true
@@ -381,6 +386,11 @@ iam.disableServiceAccountKeyUpload:
 
 ```yaml
 # tftest-file id=list path=configs/org-policies/list.yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 compute.trustedImageProjects:
   rules:
   - allow:

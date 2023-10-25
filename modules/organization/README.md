@@ -194,6 +194,11 @@ module "org" {
 
 ```yaml
 # tftest-file id=gke path=configs/custom-constraints/gke.yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 custom.gkeEnableLogging:
   resource_types:
   - container.googleapis.com/Cluster
@@ -216,6 +221,11 @@ custom.gkeEnableAutoUpgrade:
 
 ```yaml
 # tftest-file id=dataproc path=configs/custom-constraints/dataproc.yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 custom.dataprocNoMoreThan10Workers:
   resource_types:
   - dataproc.googleapis.com/Cluster

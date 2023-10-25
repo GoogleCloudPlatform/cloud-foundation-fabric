@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 # Access via SSH from IAP to all instancess https://cloud.google.com/iap/docs/using-tcp-forwarding#create-firewall-rule
 iap-ssh-access:
   allow:
