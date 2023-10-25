@@ -138,9 +138,10 @@ variable "pod_range" {
   description = "Pod secondary range configuration."
   type = object({
     secondary_pod_range = object({
-      cidr   = optional(string)
-      create = optional(bool)
-      name   = string
+      name                 = string
+      cidr                 = optional(string)
+      create               = optional(bool)
+      enable_private_nodes = optional(bool)
     })
   })
   default = null
