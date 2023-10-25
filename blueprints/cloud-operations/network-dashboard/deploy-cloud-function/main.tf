@@ -47,7 +47,7 @@ module "pubsub" {
   project_id    = module.project.project_id
   name          = var.name
   regions       = [var.region]
-  subscriptions = { "${var.name}-default" = null }
+  subscriptions = {}
 }
 
 module "cloud-function" {
