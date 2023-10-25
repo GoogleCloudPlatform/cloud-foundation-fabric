@@ -64,12 +64,17 @@ variable "node_config" {
     ephemeral_ssd_count = optional(number)
     gcfs                = optional(bool, false)
     guest_accelerator = optional(object({
-      count              = number
-      type               = string
-      gpu_partition_size = optional(string)
+      count = number
+      type  = string
+      gpu_driver = optional(object({
+        version                    = string
+        partition_size             = optional(string)
+        max_shared_clients_per_gpu = optional(number)
+      }))
     }))
-    gvnic      = optional(bool, false)
-    image_type = optional(string)
+    local_nvme_ssd_count = optional(number)
+    gvnic                = optional(bool, false)
+    image_type           = optional(string)
     kubelet_config = optional(object({
       cpu_manager_policy   = string
       cpu_cfs_quota        = optional(bool)
@@ -91,6 +96,17 @@ variable "node_config" {
   })
   default = {
     disk_type = "pd-balanced"
+  }
+  validation {
+    condition = (
+      alltrue([
+        for k, v in var.node_config.guest_accelerator[*].gpu_driver : contains([
+          "GPU_DRIVER_VERSION_UNSPECIFIED", "INSTALLATION_DISABLED",
+          "DEFAULT", "LATEST"
+        ], v.version)
+      ])
+    )
+    error_message = "Invalid GPU driver version."
   }
 }
 
@@ -138,9 +154,10 @@ variable "pod_range" {
   description = "Pod secondary range configuration."
   type = object({
     secondary_pod_range = object({
-      cidr   = optional(string)
-      create = optional(bool)
-      name   = string
+      name                 = string
+      cidr                 = optional(string)
+      create               = optional(bool)
+      enable_private_nodes = optional(bool)
     })
   })
   default = null

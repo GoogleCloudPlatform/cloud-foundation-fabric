@@ -83,6 +83,9 @@ resource "google_container_cluster" "cluster" {
     gcp_filestore_csi_driver_config {
       enabled = var.enable_addons.gcp_filestore_csi_driver
     }
+    gcs_fuse_csi_driver_config {
+      enabled = var.enable_addons.gcs_fuse_csi_driver
+    }
     kalm_config {
       enabled = var.enable_addons.kalm
     }
