@@ -74,7 +74,7 @@ def timeseries_requests(project_id, root, timeseries, descriptors):
     bucket.append(ts)
   LOGGER.info(f'metric types {list(ts_buckets.keys())}')
   ts_buckets = list(ts_buckets.values())
-  api_calls = 0
+  api_calls, t = 0, time.time()
   while ts_buckets:
     data = {'timeSeries': []}
     for bucket in ts_buckets:
@@ -106,8 +106,11 @@ def timeseries_requests(project_id, root, timeseries, descriptors):
     yield HTTPRequest(url, HEADERS, json.dumps(data))
     api_calls += 1
     # Default quota is 180 request per minute per user
-    if (api_calls > 170):
-      LOGGER.info(f'Pausing for 1 minute to avoid monitoring quota issues')
-      time.sleep(60)
-      api_calls = 0
+    if api_calls >= 170:
+      td = time.time() - t
+      if td < 60:
+        LOGGER.info(
+            f'Pausing for {round(60 - td)}s to avoid monitoring quota issues')
+        time.sleep(60 - td)
+      api_calls, t = 0, time.time()
     ts_buckets = [b for b in ts_buckets if b]
