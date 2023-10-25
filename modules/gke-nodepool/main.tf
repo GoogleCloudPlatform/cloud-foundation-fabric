@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,7 +165,28 @@ resource "google_container_node_pool" "nodepool" {
       content {
         count              = var.node_config.guest_accelerator.count
         type               = var.node_config.guest_accelerator.type
-        gpu_partition_size = var.node_config.guest_accelerator.gpu_partition_size
+        gpu_partition_size = var.node_config.guest_accelerator.gpu_driver == null ? null : var.node_config.guest_accelerator.gpu_driver.partition_size
+
+        dynamic "gpu_sharing_config" {
+          for_each = var.node_config.guest_accelerator.gpu_driver != null ? [""] : []
+          content {
+            gpu_sharing_strategy       = var.node_config.guest_accelerator.gpu_driver.max_shared_clients_per_gpu != null ? "TIME_SHARING" : null
+            max_shared_clients_per_gpu = var.node_config.guest_accelerator.gpu_driver.max_shared_clients_per_gpu
+          }
+        }
+
+        dynamic "gpu_driver_installation_config" {
+          for_each = var.node_config.guest_accelerator.gpu_driver != null ? [""] : []
+          content {
+            gpu_driver_version = var.node_config.guest_accelerator.gpu_driver.version
+          }
+        }
+      }
+    }
+    dynamic "local_nvme_ssd_block_config" {
+      for_each = coalesce(var.node_config.local_nvme_ssd_count, 0) > 0 ? [""] : []
+      content {
+        local_ssd_count = var.node_config.local_nvme_ssd_count
       }
     }
     dynamic "gvnic" {
