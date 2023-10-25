@@ -15,11 +15,13 @@
  */
 
 locals {
-  client_image     = <<EOT
-${var.region}-docker.pkg.dev/${var.prj_main_id}/${local.repo}/vpc-network-tester:v1.0
-  EOT
   cloud_run_domain = "run.app."
   repo             = "repo"
+  svc_a_image      = <<EOT
+${var.region}-docker.pkg.dev/${var.prj_main_id}/${local.repo}/vpc-network-tester:v1.0
+  EOT
+  svc_a_name = "svc-a"
+  svc_b_name = "svc-b"
 }
 
 ###############################################################################
@@ -48,7 +50,7 @@ module "project_main" {
   skip_delete = true
 }
 
-# Service Project 1
+# Service project 1
 module "project_svc1" {
   source          = "../../../modules/project"
   count           = var.prj_svc1_id != null ? 1 : 0
@@ -70,16 +72,16 @@ module "project_svc1" {
 #                                  Cloud Run                                  #
 ###############################################################################
 
-# Cloud Run service acting as client
-resource "google_cloud_run_v2_service" "client" {
+# Cloud Run service A
+resource "google_cloud_run_v2_service" "svc_a" {
   project      = module.project_main.project_id
-  name         = "client"
+  name         = local.svc_a_name
   location     = var.region
   ingress      = "INGRESS_TRAFFIC_ALL"
   launch_stage = "BETA"
   template {
     containers {
-      image = local.client_image
+      image = local.svc_a_image
     }
     dynamic "vpc_access" {
       for_each = var.prj_svc1_id == null ? [""] : []
@@ -108,18 +110,18 @@ data "google_iam_policy" "noauth" {
   }
 }
 
-resource "google_cloud_run_v2_service_iam_policy" "policy_client" {
+resource "google_cloud_run_v2_service_iam_policy" "svc_a_policy" {
   project     = module.project_main.project_id
   location    = var.region
-  name        = google_cloud_run_v2_service.client.name
+  name        = google_cloud_run_v2_service.svc_a.name
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
-# Cloud Run service acting as server
-module "cloud_run_server" {
+# Cloud Run service B
+module "cloud_run_svc_b" {
   source     = "../../../modules/cloud-run"
   project_id = try(module.project_svc1[0].project_id, module.project_main.project_id)
-  name       = "server"
+  name       = local.svc_b_name
   region     = var.region
   containers = {
     default = {
@@ -134,7 +136,7 @@ module "cloud_run_server" {
 
 # VPC Access connector
 # The use case where both Cloud Run services are in the same project uses
-# a VPC access connector to connect from client to server service.
+# a VPC access connector to connect from service to service.
 # The use case with Shared VPC and internal ALB uses Direct VPC Egress.
 resource "google_vpc_access_connector" "connector" {
   count   = var.prj_svc1_id == null ? 1 : 0
@@ -148,11 +150,11 @@ resource "google_vpc_access_connector" "connector" {
 }
 
 ###############################################################################
-#                         Client container image in AR                        #
+#                       Service A container image in AR                       #
 ###############################################################################
 
-# Build from code the image to run in the Cloud Run service client and push it
-# to Artifact Registry
+# Build the image to run in the Cloud Run service A and push it to Artifact
+# Registry. It is a network tester with a GUI.
 module "docker_artifact_registry" {
   source     = "../../../modules/artifact-registry"
   project_id = module.project_main.project_id
@@ -165,7 +167,7 @@ resource "null_resource" "image" {
     command     = <<-EOT
       gcloud builds submit --region=${var.region} \
       --project=${var.prj_main_id} \
-      --tag=${local.client_image}
+      --tag=${local.svc_a_image}
     EOT
     working_dir = "./code"
   }
@@ -189,12 +191,12 @@ module "vpc_main" {
       name          = "subnet-main"
       region        = var.region
     },
-    { # subnet for the VPC access connector
+    { # subnet for VPC access connector
       ip_cidr_range = var.ip_ranges["main"].subnet_vpc_access
       name          = "subnet-vpc-access"
       region        = var.region
     },
-    { # subnet for use in Direct VPC Egress
+    { # subnet for Direct VPC Egress
       ip_cidr_range = var.ip_ranges["main"].subnet_vpc_direct
       name          = "subnet-vpc-direct"
       region        = var.region
@@ -262,7 +264,7 @@ module "int-alb" {
       cloudrun = {
         region = var.region
         target_service = {
-          name = "server"
+          name = local.svc_b_name
         }
       }
     }

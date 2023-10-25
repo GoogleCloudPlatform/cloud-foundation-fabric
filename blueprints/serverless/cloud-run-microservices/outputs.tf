@@ -19,14 +19,14 @@ output "custom_domain" {
   value       = var.prj_svc1_id != null ? "http://${var.custom_domain}" : "none"
 }
 
-output "default_URL_client" {
-  description = "Client Cloud Run service default URL."
-  value       = google_cloud_run_v2_service.client.uri
+output "default_URL_svc_a" {
+  description = "Cloud Run service A default URL."
+  value       = google_cloud_run_v2_service.svc_a.uri
 }
 
-output "default_URL_server" {
-  description = "Server Cloud Run service default URL."
-  value       = module.cloud_run_server.service.status[0].url
+output "default_URL_svc_b" {
+  description = "Cloud Run service B default URL."
+  value       = module.cloud_run_svc_b.service.status[0].url
 }
 
 output "load_balancer_ip" {

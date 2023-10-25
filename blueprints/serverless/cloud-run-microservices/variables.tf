@@ -17,7 +17,7 @@
 variable "custom_domain" {
   description = "Custom domain for the Load Balancer."
   type        = string
-  default     = "server.example.org"
+  default     = "service-b.acme.org"
 }
 
 variable "image" {
