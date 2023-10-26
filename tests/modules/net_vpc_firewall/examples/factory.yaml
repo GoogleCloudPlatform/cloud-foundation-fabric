@@ -53,8 +53,6 @@ values:
     network: my-network
     priority: 1000
     project: my-project
-    source_ranges:
-    - 0.0.0.0/0
     source_service_accounts:
     - service-1@my-project.iam.gserviceaccount.com
     source_tags: null
