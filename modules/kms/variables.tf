@@ -58,6 +58,13 @@ variable "import_job" {
     import_method    = string
     protection_level = string
   })
+  default = null
+}
+
+variable "import_job_create" {
+  description = "Set to true to create an import job for a keyring."
+  type        = bool
+  default     = false
 }
 
 variable "keyring" {
