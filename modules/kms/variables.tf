@@ -51,6 +51,15 @@ variable "iam_bindings_additive" {
   default  = {}
 }
 
+variable "import_job" {
+  description = "Keyring import job attributes."
+  type = object({
+    id               = string
+    import_method    = string
+    protection_level = string
+  })
+}
+
 variable "keyring" {
   description = "Keyring attributes."
   type = object({
