@@ -5,15 +5,14 @@ This module allows creating and managing KMS crypto keys and IAM bindings at bot
 When using an existing keyring be mindful about applying IAM bindings, as all bindings used by this module are authoritative, and you might inadvertently override bindings managed by the keyring creator.
 
 <!-- BEGIN TOC -->
-- [Google KMS Module](#google-kms-module)
-  - [Protecting against destroy](#protecting-against-destroy)
-  - [Examples](#examples)
-    - [Using an existing keyring](#using-an-existing-keyring)
-    - [Keyring creation and crypto key rotation and IAM roles](#keyring-creation-and-crypto-key-rotation-and-iam-roles)
-    - [Crypto key purpose](#crypto-key-purpose)
-    - [Import job](#import-job)
-  - [Variables](#variables)
-  - [Outputs](#outputs)
+- [Protecting against destroy](#protecting-against-destroy)
+- [Examples](#examples)
+  - [Using an existing keyring](#using-an-existing-keyring)
+  - [Keyring creation and crypto key rotation and IAM roles](#keyring-creation-and-crypto-key-rotation-and-iam-roles)
+  - [Crypto key purpose](#crypto-key-purpose)
+  - [Import job](#import-job)
+- [Variables](#variables)
+- [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Protecting against destroy
