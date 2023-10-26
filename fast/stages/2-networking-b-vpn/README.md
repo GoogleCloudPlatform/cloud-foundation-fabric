@@ -203,7 +203,7 @@ DNS queries sent to the on-premises infrastructure come from the `35.199.192.0/1
 
 #### On-prem to cloud
 
-The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in module `landing-vpc` ([`landing.tf`](./landing.tf)) automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP.
+The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in module `landing-vpc` ([`vpc-landing.tf`](./vpc-landing.tf)) automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP.
 
 ## How to run this stage
 
@@ -362,9 +362,9 @@ vpn_onprem_primary_config = {
 
 To create a new environment (e.g. `staging`), a few changes are required.
 
-Create a `spoke-staging.tf` file by copying `spoke-prod.tf` file,
+Create a `vpc-staging.tf` file by copying `vpc-prod.tf` file,
 and adapt the new file by replacing the value "prod" with the value "staging".
-Running `diff spoke-dev.tf spoke-prod.tf` can help to see how environment files differ.
+Running `diff vpc-dev.tf vpc-prod.tf` can help to see how environment files differ.
 
 The new VPC requires a set of dedicated CIDRs, one per region, added to variable `custom_adv` (for example as `spoke_staging_ew1` and `spoke_staging_ew4`).
 >`custom_adv` is a map that "resolves" CIDR names to actual addresses, and will be used later to configure routing.
@@ -372,7 +372,7 @@ The new VPC requires a set of dedicated CIDRs, one per region, added to variable
 Variables managing L7 Internal Load Balancers (`l7ilb_subnets`) and Private Service Access (`psa_ranges`) should also be adapted, also subnets and firewall rules for the new spoke should be added as described above.
 
 HA VPN connectivity (see also [VPNs](#vpns)) to `landing` is managed by the `vpn-spoke-*.tf` files.
-Copy `vpn-spoke-dev.tf` to `vpn-spoke-staging.tf` - replace `dev` with `staging` where relevant.
+Copy `vpn-vpc-dev.tf` to `vpn-vpc-staging.tf` - replace `dev` with `staging` where relevant.
 
 VPN configuration also controls BGP advertisements, which requires the following variable changes:
 
@@ -391,21 +391,21 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [dns-dev.tf](./dns-dev.tf) | Development spoke DNS zones and peerings setup. | <code>dns</code> |  |
 | [dns-landing.tf](./dns-landing.tf) | Landing DNS zones and peerings setup. | <code>dns</code> · <code>dns-response-policy</code> |  |
 | [dns-prod.tf](./dns-prod.tf) | Production spoke DNS zones and peerings setup. | <code>dns</code> |  |
-| [landing.tf](./landing.tf) | Landing VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [vpc-landing.tf](./vpc-landing.tf) | Landing VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> · <code>net-firewall-policy</code> |  |
 | [monitoring-vpn.tf](./monitoring-vpn.tf) | VPN monitoring alerts. |  | <code>google_monitoring_alert_policy</code> |
 | [monitoring.tf](./monitoring.tf) | Network monitoring dashboards. |  | <code>google_monitoring_dashboard</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [regions.tf](./regions.tf) | Compute short names for regions. |  |  |
-| [spoke-dev.tf](./spoke-dev.tf) | Dev spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
-| [spoke-prod.tf](./spoke-prod.tf) | Production spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [vpc-dev.tf](./vpc-dev.tf) | Dev spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [vpc-prod.tf](./vpc-prod.tf) | Production spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [test-resources.tf](./test-resources.tf) | temporary instances for testing | <code>compute-vm</code> |  |
 | [variables-vpn.tf](./variables-vpn.tf) | None |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [vpn-landing.tf](./vpn-landing.tf) | None | <code>net-vpn-ha</code> |  |
 | [vpn-onprem.tf](./vpn-onprem.tf) | VPN between landing and onprem. | <code>net-vpn-ha</code> |  |
-| [vpn-spoke-dev.tf](./vpn-spoke-dev.tf) | VPN between landing and development spoke. | <code>net-vpn-ha</code> |  |
-| [vpn-spoke-prod.tf](./vpn-spoke-prod.tf) | VPN between landing and production spoke in ew1. | <code>net-vpn-ha</code> |  |
+| [vpn-vpc-dev.tf](./vpn-vpc-dev.tf) | VPN between landing and development spoke. | <code>net-vpn-ha</code> |  |
+| [vpn-vpc-prod.tf](./vpn-vpc-prod.tf) | VPN between landing and production spoke in ew1. | <code>net-vpn-ha</code> |  |
 
 ## Variables
 
