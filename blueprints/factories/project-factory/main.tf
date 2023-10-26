@@ -69,16 +69,10 @@ module "service-accounts" {
   for_each = {
     for k in local.service_accounts : "${k.project}-${k.name}" => k
   }
-  name       = each.value.name
-  project_id = module.projects[each.value.project].project_id
-  iam_project_roles = (
-    try(each.value.options.default_roles, null) == null
-    ? {}
-    : {
-      (module.projects[each.value.project].project_id) = [
-        "roles/logging.logWriter",
-        "roles/monitoring.metricWriter"
-      ]
-    }
-  )
+  project_id   = module.projects[each.value.project].project_id
+  name         = each.value.name
+  display_name = each.value.display_name
+  iam_project_roles = each.value.iam_project_roles == null ? {} : {
+    (module.projects[each.value.project].project_id) = each.value.iam_project_roles
+  }
 }

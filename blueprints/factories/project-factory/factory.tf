@@ -101,9 +101,10 @@ locals {
   service_accounts = flatten([
     for k, v in local.projects : [
       for name, opts in v.service_accounts : {
-        project = k
-        name    = name
-        options = opts
+        project           = k
+        name              = name
+        display_name      = try(opts.display_name, "Terraform-managed.")
+        iam_project_roles = try(opts.iam_project_roles, null)
       }
     ]
   ])
