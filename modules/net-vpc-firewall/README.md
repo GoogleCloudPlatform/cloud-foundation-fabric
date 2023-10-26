@@ -186,6 +186,11 @@ module "firewall" {
 
 ```yaml
 # tftest-file id=lbs path=configs/firewall/rules/load_balancers.yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 ingress:
   allow-healthchecks:
     description: Allow ingress from healthchecks.
@@ -220,6 +225,11 @@ egress:
 
 ```yaml
 # tftest-file id=cidrs path=configs/firewall/cidrs.yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 healthchecks:
   - 35.191.0.0/16
   - 130.211.0.0/22

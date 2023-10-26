@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 resource "google_container_cluster" "cluster" {
   provider    = google-beta
   project     = var.project_id
@@ -83,6 +82,9 @@ resource "google_container_cluster" "cluster" {
     }
     gcp_filestore_csi_driver_config {
       enabled = var.enable_addons.gcp_filestore_csi_driver
+    }
+    gcs_fuse_csi_driver_config {
+      enabled = var.enable_addons.gcs_fuse_csi_driver
     }
     kalm_config {
       enabled = var.enable_addons.kalm
@@ -419,12 +421,27 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
       }
     }
 
-    all_namespaces = lookup(each.value, "namespaces", null) != null ? null : true
+    all_namespaces = lookup(each.value, "namespaces", null) != null || lookup(each.value, "applications", null) != null ? null : true
     dynamic "selected_namespaces" {
       for_each = each.value.namespaces != null ? [""] : []
       content {
         namespaces = each.value.namespaces
       }
+    }
+    dynamic "selected_applications" {
+      for_each = each.value.applications != null ? [""] : []
+      content {
+        dynamic "namespaced_names" {
+          for_each = flatten([for k, vs in each.value.applications : [
+            for v in vs : { namespace = k, name = v }
+          ]])
+          content {
+            namespace = namespaced_names.value.namespace
+            name      = namespaced_names.value.name
+          }
+        }
+      }
+
     }
   }
 }

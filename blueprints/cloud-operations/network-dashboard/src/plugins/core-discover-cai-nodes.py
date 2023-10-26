@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -69,6 +69,13 @@ def start_discovery(resources, response=None, data=None):
   LOGGER.info(f'discovery (has response: {response is not None})')
   if response is None:
     # return initial discovery URLs
+    if not resources['config:folders'] and not resources['config:projects']:
+      LOGGER.info(
+          f'No monitored project or folder given, defaulting to discovery root: {resources["config:discovery_root"]}'
+      )
+      dr_node = resources["config:discovery_root"].split("/")[0]
+      dr_value = resources["config:discovery_root"].split("/")[1]
+      yield HTTPRequest(CAI_URL.format(f'{dr_node}/{dr_value}'), {}, None)
     for v in resources['config:folders']:
       yield HTTPRequest(CAI_URL.format(f'folders/{v}'), {}, None)
     for v in resources['config:projects']:

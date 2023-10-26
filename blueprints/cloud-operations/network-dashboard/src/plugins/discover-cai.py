@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -216,11 +216,13 @@ def _handle_sql_instances(resource, data):
       'name': data['name'],
       'self_link': _self_link(data['selfLink']),
       'ipAddresses': [
-          i['ipAddress'] for i in data['ipAddresses'] if i['type'] == 'PRIVATE'
+          i['ipAddress']
+          for i in data.get('ipAddresses')
+          if i['type'] == 'PRIVATE'
       ],
       'region': data['region'],
       'availabilityType': data['settings']['availabilityType'],
-      'network': data['settings']['ipConfiguration']['privateNetwork']
+      'network': data['settings']['ipConfiguration'].get('privateNetwork')
   }
 
 

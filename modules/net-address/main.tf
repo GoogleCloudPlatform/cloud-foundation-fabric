@@ -24,7 +24,7 @@ resource "google_compute_address" "external" {
   provider     = google-beta
   for_each     = var.external_addresses
   project      = var.project_id
-  name         = each.key
+  name         = coalesce(each.value.name, each.key)
   description  = each.value.description
   address_type = "EXTERNAL"
   region       = each.value.region
@@ -35,7 +35,7 @@ resource "google_compute_address" "internal" {
   provider     = google-beta
   for_each     = var.internal_addresses
   project      = var.project_id
-  name         = each.key
+  name         = coalesce(each.value.name, each.key)
   description  = each.value.description
   address_type = "INTERNAL"
   region       = each.value.region
@@ -49,7 +49,7 @@ resource "google_compute_address" "internal" {
 resource "google_compute_global_address" "psc" {
   for_each     = var.psc_addresses
   project      = var.project_id
-  name         = each.key
+  name         = coalesce(each.value.name, each.key)
   description  = each.value.description
   address      = try(each.value.address, null)
   address_type = "INTERNAL"
@@ -61,7 +61,7 @@ resource "google_compute_global_address" "psc" {
 resource "google_compute_global_address" "psa" {
   for_each      = var.psa_addresses
   project       = var.project_id
-  name          = each.key
+  name          = coalesce(each.value.name, each.key)
   description   = each.value.description
   address       = each.value.address
   address_type  = "INTERNAL"
@@ -74,7 +74,7 @@ resource "google_compute_global_address" "psa" {
 resource "google_compute_address" "ipsec_interconnect" {
   for_each      = var.ipsec_interconnect_addresses
   project       = var.project_id
-  name          = each.key
+  name          = coalesce(each.value.name, each.key)
   description   = each.value.description
   address       = each.value.address
   address_type  = "INTERNAL"

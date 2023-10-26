@@ -2,13 +2,16 @@
 #
 # sample subset of useful organization policies, edit to suit requirements
 
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 run.allowedIngress:
   rules:
-  - allow:
-      values:
-      - is:internal
-      - is:internal-and-cloud-load-balancing
-
+    - allow:
+        values:
+          - is:internal
+          - is:internal-and-cloud-load-balancing
 # run.allowedVPCEgress:
 #   rules:
 #   - allow:

@@ -19,7 +19,7 @@ values:
     metadata:
     - {}
     name: hello
-    project: my-project
+    project: project-id
     template:
     - metadata:
       - {}
@@ -45,7 +45,7 @@ values:
     location: europe-west1
     members:
     - allUsers
-    project: my-project
+    project: project-id
     role: roles/run.invoker
     service: hello
 

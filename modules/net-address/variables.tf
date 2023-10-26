@@ -20,6 +20,7 @@ variable "external_addresses" {
     region      = string
     description = optional(string, "Terraform managed.")
     labels      = optional(map(string), {})
+    name        = optional(string)
   }))
   default = {}
 }
@@ -38,6 +39,7 @@ variable "internal_addresses" {
     address     = optional(string)
     description = optional(string, "Terraform managed.")
     labels      = optional(map(string))
+    name        = optional(string)
     purpose     = optional(string)
     tier        = optional(string)
   }))
@@ -51,6 +53,7 @@ variable "ipsec_interconnect_addresses" {
     address       = string
     network       = string
     description   = optional(string, "Terraform managed.")
+    name          = optional(string)
     prefix_length = number
   }))
   default = {}
@@ -72,8 +75,10 @@ variable "psa_addresses" {
   type = map(object({
     address       = string
     network       = string
-    description   = optional(string, "Terraform managed.")
     prefix_length = number
+    description   = optional(string, "Terraform managed.")
+    name          = optional(string)
+
   }))
   default = {}
 }
@@ -84,6 +89,7 @@ variable "psc_addresses" {
     address     = string
     network     = string
     description = optional(string, "Terraform managed.")
+    name        = optional(string)
   }))
   default = {}
 }

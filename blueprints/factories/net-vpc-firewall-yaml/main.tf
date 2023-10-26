@@ -31,7 +31,7 @@ locals {
   firewall_rules = merge(
     [
       for config_file in local.firewall_rule_files :
-      try(yamldecode(file(config_file)), {})
+      yamldecode(file(config_file))
     ]...
   )
 }

@@ -47,7 +47,7 @@ locals {
     if contains(["EGRESS", "INGRESS"], r.direction)
   }
   _named_ranges = merge(
-    try(yamldecode(file(var.factories_config.cidr_tpl_file)), {}),
+    can(var.factories_config.cidr_tpl_file) ? yamldecode(file(var.factories_config.cidr_tpl_file)) : {},
     var.named_ranges
   )
   _rules = merge(
