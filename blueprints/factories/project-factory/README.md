@@ -59,7 +59,7 @@ module "project-factory" {
     data_path = "data"
   }
 }
-# tftest modules=6 resources=15 files=prj-app-1,prj-app-2
+# tftest modules=6 resources=17 files=prj-app-1,prj-app-2
 ```
 
 ```yaml
@@ -74,8 +74,12 @@ service_encryption_key_ids:
 services:
 - storage.googleapis.com
 service_accounts:
-  app-1-be: {}
-  app-1-fe: {}
+  app-1-be:
+    iam_project_roles:
+    - roles/logging.logWriter
+    - roles/monitoring.metricWriter
+  app-1-fe:
+    display_name: "Test app 1 frontend."
 
 # tftest-file id=prj-app-1 path=data/prj-app-1.yaml
 ```
