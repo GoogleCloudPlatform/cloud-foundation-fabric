@@ -61,12 +61,6 @@ variable "import_job" {
   default = null
 }
 
-variable "import_job_create" {
-  description = "Set to true to create an import job for a keyring."
-  type        = bool
-  default     = false
-}
-
 variable "keyring" {
   description = "Keyring attributes."
   type = object({
