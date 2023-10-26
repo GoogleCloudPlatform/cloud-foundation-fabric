@@ -5,13 +5,15 @@ This module allows creating and managing KMS crypto keys and IAM bindings at bot
 When using an existing keyring be mindful about applying IAM bindings, as all bindings used by this module are authoritative, and you might inadvertently override bindings managed by the keyring creator.
 
 <!-- BEGIN TOC -->
-- [Protecting against destroy](#protecting-against-destroy)
-- [Examples](#examples)
-  - [Using an existing keyring](#using-an-existing-keyring)
-  - [Keyring creation and crypto key rotation and IAM roles](#keyring-creation-and-crypto-key-rotation-and-iam-roles)
-  - [Crypto key purpose](#crypto-key-purpose)
-- [Variables](#variables)
-- [Outputs](#outputs)
+- [Google KMS Module](#google-kms-module)
+  - [Protecting against destroy](#protecting-against-destroy)
+  - [Examples](#examples)
+    - [Using an existing keyring](#using-an-existing-keyring)
+    - [Keyring creation and crypto key rotation and IAM roles](#keyring-creation-and-crypto-key-rotation-and-iam-roles)
+    - [Crypto key purpose](#crypto-key-purpose)
+    - [Import job](#import-job)
+  - [Variables](#variables)
+  - [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Protecting against destroy
@@ -93,6 +95,27 @@ module "kms" {
   }
 }
 # tftest modules=1 resources=2 inventory=purpose.yaml
+```
+
+### Import job
+
+```hcl
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = "my-project"
+  iam = {
+    "roles/cloudkms.admin" = ["user:user1@example.com"]
+  }
+  keyring = {
+    location = "europe-west1"
+    name     = "test"
+  }
+  import_job = {
+    id               = "my-import-job"
+    import_method    = "RSA_OAEP_3072_SHA1_AES_256"
+    protection_level = "SOFTWARE"
+  }
+}
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
