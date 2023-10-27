@@ -16,7 +16,7 @@
 
 # tfdoc:file:description Cloud Run services.
 
- # Cloud Run service A
+# Cloud Run service A
 resource "google_cloud_run_v2_service" "svc_a" {
   project      = module.project_main.project_id
   name         = local.svc_a_name

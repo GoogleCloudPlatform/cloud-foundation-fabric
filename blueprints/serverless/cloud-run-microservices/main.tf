@@ -22,8 +22,8 @@ locals {
   svc_a_image      = <<EOT
 ${var.region}-docker.pkg.dev/${var.prj_main_id}/${local.repo}/vpc-network-tester:v1.0
   EOT
-  svc_a_name = "svc-a"
-  svc_b_name = "svc-b"
+  svc_a_name       = "svc-a"
+  svc_b_name       = "svc-b"
 }
 
 # Main (or host) project
