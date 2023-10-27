@@ -17,31 +17,39 @@
 variable "external_addresses" {
   description = "Map of external addresses, keyed by name."
   type = map(object({
-    region      = string
-    description = optional(string, "Terraform managed.")
-    labels      = optional(map(string), {})
-    name        = optional(string)
+    region             = string
+    description        = optional(string, "Terraform managed.")
+    ip_version         = optional(string, "IPV4")
+    ipv6_endpoint_type = optional(string)
+    labels             = optional(map(string), {})
+    name               = optional(string)
   }))
   default = {}
 }
 
 variable "global_addresses" {
   description = "List of global addresses to create."
-  type        = list(string)
-  default     = []
+  type = map(object({
+    description = optional(string, "Terraform managed.")
+    ip_version  = optional(string, "IPV4")
+    name        = optional(string)
+  }))
+  default = {}
 }
 
 variable "internal_addresses" {
   description = "Map of internal addresses to create, keyed by name."
   type = map(object({
-    region      = string
-    subnetwork  = string
-    address     = optional(string)
-    description = optional(string, "Terraform managed.")
-    labels      = optional(map(string))
-    name        = optional(string)
-    purpose     = optional(string)
-    tier        = optional(string)
+    region             = string
+    subnetwork         = string
+    address            = optional(string)
+    description        = optional(string, "Terraform managed.")
+    ip_version         = optional(string, "IPV4")
+    ipv6_endpoint_type = optional(string)
+    labels             = optional(map(string))
+    name               = optional(string)
+    purpose            = optional(string)
+    tier               = optional(string)
   }))
   default = {}
 }
