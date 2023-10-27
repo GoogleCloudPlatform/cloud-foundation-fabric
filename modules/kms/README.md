@@ -8,11 +8,11 @@ When using an existing keyring be mindful about applying IAM bindings, as all bi
 - [Protecting against destroy](#protecting-against-destroy)
 - [Examples](#examples)
   - [Using an existing keyring](#using-an-existing-keyring)
-    - [Keyring creation and crypto key rotation and IAM roles](#keyring-creation-and-crypto-key-rotation-and-iam-roles)
-    - [Crypto key purpose](#crypto-key-purpose)
-    - [Import job](#import-job)
-  - [Variables](#variables)
-  - [Outputs](#outputs)
+  - [Keyring creation and crypto key rotation and IAM roles](#keyring-creation-and-crypto-key-rotation-and-iam-roles)
+  - [Crypto key purpose](#crypto-key-purpose)
+  - [Import job](#import-job)
+- [Variables](#variables)
+- [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Protecting against destroy
