@@ -54,8 +54,16 @@ variable "environments" {
       min_node_count = optional(number)
       max_node_count = optional(number)
     }))
-    iam       = optional(map(list(string)))
-    envgroups = optional(list(string))
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      role    = string
+      members = list(string)
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      role   = string
+      member = string
+    })), {})
+    envgroups = optional(list(string), [])
   }))
   default  = {}
   nullable = false
@@ -72,7 +80,7 @@ variable "instances" {
     disk_encryption_key           = optional(string)
     consumer_accept_list          = optional(list(string))
     enable_nat                    = optional(bool, false)
-    environments                  = optional(list(string))
+    environments                  = optional(list(string), [])
   }))
   validation {
     condition = alltrue([

@@ -17,6 +17,7 @@ This module simplifies the creation of a Apigee resources (organization, environ
   - [New instance (Non VPC Peering Provisioning Mode)](#new-instance-non-vpc-peering-provisioning-mode)
   - [New endpoint attachment](#new-endpoint-attachment)
   - [Apigee add-ons](#apigee-add-ons)
+  - [IAM](#iam)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -87,7 +88,6 @@ module "apigee" {
 
 When a new Apigee organization is created, it is automatically peered to the authorized network. You can prevent this from happening by using the `disable_vpc_peering` key in the `organization` variable, as shown below:
 
-
 ```hcl
 module "apigee" {
   source     = "./fabric/modules/apigee"
@@ -116,7 +116,6 @@ module "apigee" {
 }
 # tftest modules=1 resources=6 inventory=no-peering.yaml
 ```
-
 
 ### All resources (CLOUD)
 
@@ -147,9 +146,6 @@ module "apigee" {
       display_name = "APIs prod"
       description  = "APIs prod"
       envgroups    = ["prod"]
-      iam = {
-        "roles/viewer" = ["group:devops@myorg.com"]
-      }
     }
   }
   instances = {
@@ -176,7 +172,7 @@ module "apigee" {
     }
   }
 }
-# tftest modules=1 resources=15
+# tftest modules=1 resources=14
 ```
 
 ### All resources (HYBRID control plane)
@@ -205,13 +201,10 @@ module "apigee" {
       display_name = "APIs prod"
       description  = "APIs prod"
       envgroups    = ["prod"]
-      iam = {
-        "roles/viewer" = ["group:devops@myorg.com"]
-      }
     }
   }
 }
-# tftest modules=1 resources=8
+# tftest modules=1 resources=7
 ```
 
 ### New environment group
@@ -311,18 +304,69 @@ module "apigee" {
 }
 # tftest modules=1 resources=1
 ```
+
+### IAM
+
+```hcl
+module "apigee" {
+  source     = "./fabric/modules/apigee"
+  project_id = "my-project"
+  organization = {
+    display_name            = "My Organization"
+    description             = "My Organization"
+    authorized_network      = "my-vpc"
+    runtime_type            = "CLOUD"
+    billing_type            = "PAYG"
+    database_encryption_key = "123456789"
+    analytics_region        = "europe-west1"
+  }
+  envgroups = {
+    test = ["test.example.com"]
+    prod = ["prod.example.com"]
+  }
+  environments = {
+    apis-test = {
+      display_name = "APIs test"
+      description  = "APIs Test"
+      envgroups    = ["test"]
+      iam = {
+        "roles/apigee.environmentAdmin" = ["group:apigee-env-admin@myorg.com"]
+      }
+      iam_bindings_additive = {
+        viewer = {
+          role   = "roles/viewer"
+          member = "user:user1@myorg.com"
+        }
+      }
+    }
+    apis-prod = {
+      display_name = "APIs prod"
+      description  = "APIs prod"
+      envgroups    = ["prod"]
+      iam_bindings = {
+        apigee-env-admin = {
+          role    = "roles/apigee.environmentAdmin"
+          members = ["group:apigee-env-admin@myorg.com"]
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=10
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L117) | Project ID. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L125) | Project ID. | <code>string</code> | ✓ |  |
 | [addons_config](variables.tf#L17) | Addons configuration. | <code title="object&#40;&#123;&#10;  advanced_api_ops    &#61; optional&#40;bool, false&#41;&#10;  api_security        &#61; optional&#40;bool, false&#41;&#10;  connectors_platform &#61; optional&#40;bool, false&#41;&#10;  integration         &#61; optional&#40;bool, false&#41;&#10;  monetization        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [endpoint_attachments](variables.tf#L29) | Endpoint attachments. | <code title="map&#40;object&#40;&#123;&#10;  region             &#61; string&#10;  service_attachment &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [envgroups](variables.tf#L39) | Environment groups (NAME => [HOSTNAMES]). | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [environments](variables.tf#L46) | Environments. | <code title="map&#40;object&#40;&#123;&#10;  display_name    &#61; optional&#40;string&#41;&#10;  description     &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  deployment_type &#61; optional&#40;string&#41;&#10;  api_proxy_type  &#61; optional&#40;string&#41;&#10;  node_config &#61; optional&#40;object&#40;&#123;&#10;    min_node_count &#61; optional&#40;number&#41;&#10;    max_node_count &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  iam       &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  envgroups &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [instances](variables.tf#L64) | Instances ([REGION] => [INSTANCE]). | <code title="map&#40;object&#40;&#123;&#10;  name                          &#61; optional&#40;string&#41;&#10;  display_name                  &#61; optional&#40;string&#41;&#10;  description                   &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  runtime_ip_cidr_range         &#61; optional&#40;string&#41;&#10;  troubleshooting_ip_cidr_range &#61; optional&#40;string&#41;&#10;  disk_encryption_key           &#61; optional&#40;string&#41;&#10;  consumer_accept_list          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  enable_nat                    &#61; optional&#40;bool, false&#41;&#10;  environments                  &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [organization](variables.tf#L89) | Apigee organization. If set to null the organization must already exist. | <code title="object&#40;&#123;&#10;  display_name            &#61; optional&#40;string&#41;&#10;  description             &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  authorized_network      &#61; optional&#40;string&#41;&#10;  runtime_type            &#61; optional&#40;string, &#34;CLOUD&#34;&#41;&#10;  billing_type            &#61; optional&#40;string&#41;&#10;  database_encryption_key &#61; optional&#40;string&#41;&#10;  analytics_region        &#61; optional&#40;string, &#34;europe-west1&#34;&#41;&#10;  retention               &#61; optional&#40;string&#41;&#10;  disable_vpc_peering     &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [environments](variables.tf#L46) | Environments. | <code title="map&#40;object&#40;&#123;&#10;  display_name    &#61; optional&#40;string&#41;&#10;  description     &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  deployment_type &#61; optional&#40;string&#41;&#10;  api_proxy_type  &#61; optional&#40;string&#41;&#10;  node_config &#61; optional&#40;object&#40;&#123;&#10;    min_node_count &#61; optional&#40;number&#41;&#10;    max_node_count &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    role    &#61; string&#10;    members &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    role   &#61; string&#10;    member &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  envgroups &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [instances](variables.tf#L72) | Instances ([REGION] => [INSTANCE]). | <code title="map&#40;object&#40;&#123;&#10;  name                          &#61; optional&#40;string&#41;&#10;  display_name                  &#61; optional&#40;string&#41;&#10;  description                   &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  runtime_ip_cidr_range         &#61; optional&#40;string&#41;&#10;  troubleshooting_ip_cidr_range &#61; optional&#40;string&#41;&#10;  disk_encryption_key           &#61; optional&#40;string&#41;&#10;  consumer_accept_list          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  enable_nat                    &#61; optional&#40;bool, false&#41;&#10;  environments                  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [organization](variables.tf#L97) | Apigee organization. If set to null the organization must already exist. | <code title="object&#40;&#123;&#10;  display_name            &#61; optional&#40;string&#41;&#10;  description             &#61; optional&#40;string, &#34;Terraform-managed&#34;&#41;&#10;  authorized_network      &#61; optional&#40;string&#41;&#10;  runtime_type            &#61; optional&#40;string, &#34;CLOUD&#34;&#41;&#10;  billing_type            &#61; optional&#40;string&#41;&#10;  database_encryption_key &#61; optional&#40;string&#41;&#10;  analytics_region        &#61; optional&#40;string, &#34;europe-west1&#34;&#41;&#10;  retention               &#61; optional&#40;string&#41;&#10;  disable_vpc_peering     &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
