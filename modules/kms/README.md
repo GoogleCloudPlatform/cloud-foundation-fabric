@@ -5,10 +5,9 @@ This module allows creating and managing KMS crypto keys and IAM bindings at bot
 When using an existing keyring be mindful about applying IAM bindings, as all bindings used by this module are authoritative, and you might inadvertently override bindings managed by the keyring creator.
 
 <!-- BEGIN TOC -->
-- [Google KMS Module](#google-kms-module)
-  - [Protecting against destroy](#protecting-against-destroy)
-  - [Examples](#examples)
-    - [Using an existing keyring](#using-an-existing-keyring)
+- [Protecting against destroy](#protecting-against-destroy)
+- [Examples](#examples)
+  - [Using an existing keyring](#using-an-existing-keyring)
     - [Keyring creation and crypto key rotation and IAM roles](#keyring-creation-and-crypto-key-rotation-and-iam-roles)
     - [Crypto key purpose](#crypto-key-purpose)
     - [Import job](#import-job)
@@ -103,9 +102,6 @@ module "kms" {
 module "kms" {
   source     = "./fabric/modules/kms"
   project_id = "my-project"
-  iam = {
-    "roles/cloudkms.admin" = ["user:user1@example.com"]
-  }
   keyring = {
     location = "europe-west1"
     name     = "test"
