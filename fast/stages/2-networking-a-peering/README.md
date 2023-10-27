@@ -190,7 +190,7 @@ DNS queries sent to the on-premises infrastructure come from the `35.199.192.0/1
 
 #### On-prem to cloud
 
-The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in module `landing-vpc` ([`landing.tf`](./landing.tf)) automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP.
+The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in module `landing-vpc` ([`net-landing.tf`](./net-landing.tf)) automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP.
 
 ## How to run this stage
 
@@ -349,9 +349,9 @@ vpn_onprem_primary_config = {
 
 To create a new environment (e.g. `staging`), a few changes are required.
 
-Create a `spoke-staging.tf` file by copying `spoke-prod.tf` file,
+Create a `net-staging.tf` file by copying `net-prod.tf` file,
 and adapt the new file by replacing the value "prod" with the value "staging".
-Running `diff spoke-dev.tf spoke-prod.tf` can help to see how environment files differ.
+Running `diff net-dev.tf net-prod.tf` can help to see how environment files differ.
 
 The new VPC requires a set of dedicated CIDRs, one per region, added to variable `custom_adv` (for example as `spoke_staging_primary` and `spoke_staging_secondary`).
 >`custom_adv` is a map that "resolves" CIDR names to actual addresses, and will be used later to configure routing.
@@ -369,15 +369,15 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [dns-dev.tf](./dns-dev.tf) | Development spoke DNS zones and peerings setup. | <code>dns</code> |  |
 | [dns-landing.tf](./dns-landing.tf) | Landing DNS zones and peerings setup. | <code>dns</code> · <code>dns-response-policy</code> |  |
 | [dns-prod.tf](./dns-prod.tf) | Production spoke DNS zones and peerings setup. | <code>dns</code> |  |
-| [landing.tf](./landing.tf) | Landing VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> · <code>net-firewall-policy</code> |  |
 | [monitoring-vpn-onprem.tf](./monitoring-vpn-onprem.tf) | VPN monitoring alerts. |  | <code>google_monitoring_alert_policy</code> |
 | [monitoring.tf](./monitoring.tf) | Network monitoring dashboards. |  | <code>google_monitoring_dashboard</code> |
+| [net-dev.tf](./net-dev.tf) | Dev spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [net-landing.tf](./net-landing.tf) | Landing VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [net-prod.tf](./net-prod.tf) | Production spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [peerings.tf](./peerings.tf) | None | <code>net-vpc-peering</code> |  |
 | [regions.tf](./regions.tf) | Compute short names for regions. |  |  |
-| [spoke-dev.tf](./spoke-dev.tf) | Dev spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
-| [spoke-prod.tf](./spoke-prod.tf) | Production spoke VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [test-resources.tf](./test-resources.tf) | temporary instances for testing | <code>compute-vm</code> |  |
 | [variables-peerings.tf](./variables-peerings.tf) | Peering related variables. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
