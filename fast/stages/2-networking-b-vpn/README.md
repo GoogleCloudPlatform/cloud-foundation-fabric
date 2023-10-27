@@ -362,7 +362,7 @@ vpn_onprem_primary_config = {
 
 To create a new environment (e.g. `staging`), a few changes are required.
 
-Create a `vpc-staging.tf` file by copying `net-prod.tf` file,
+Create a `net-staging.tf` file by copying `net-prod.tf` file,
 and adapt the new file by replacing the value "prod" with the value "staging".
 Running `diff net-dev.tf net-prod.tf` can help to see how environment files differ.
 
@@ -372,7 +372,7 @@ The new VPC requires a set of dedicated CIDRs, one per region, added to variable
 Variables managing L7 Internal Load Balancers (`l7ilb_subnets`) and Private Service Access (`psa_ranges`) should also be adapted, also subnets and firewall rules for the new spoke should be added as described above.
 
 HA VPN connectivity (see also [VPNs](#vpns)) to `landing` is managed by the `vpn-spoke-*.tf` files.
-Copy `vpn-net-dev.tf` to `vpn-vpc-staging.tf` - replace `dev` with `staging` where relevant.
+Copy `vpn-net-dev.tf` to `vpn-net-staging.tf` - replace `dev` with `staging` where relevant.
 
 VPN configuration also controls BGP advertisements, which requires the following variable changes:
 

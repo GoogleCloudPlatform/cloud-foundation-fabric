@@ -349,7 +349,7 @@ vpn_onprem_primary_config = {
 
 To create a new environment (e.g. `staging`), a few changes are required.
 
-Create a `vpc-staging.tf` file by copying `net-prod.tf` file,
+Create a `net-staging.tf` file by copying `net-prod.tf` file,
 and adapt the new file by replacing the value "prod" with the value "staging".
 Running `diff net-dev.tf net-prod.tf` can help to see how environment files differ.
 
