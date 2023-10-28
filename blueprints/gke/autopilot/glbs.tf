@@ -19,7 +19,11 @@ locals {
 }
 
 module "addresses" {
-  source           = "../../../modules/net-address"
-  project_id       = module.project.project_id
-  global_addresses = ["grafana", "locust", "app"]
+  source     = "../../../modules/net-address"
+  project_id = module.project.project_id
+  global_addresses = {
+    app     = {}
+    grafana = {}
+    locust  = {}
+  }
 }
