@@ -23,7 +23,6 @@ values:
   module.addresses.google_compute_address.internal["ilb"]:
     address_type: INTERNAL
     ip_version: IPV6
-    ipv6_endpoint_type: NETLB
     labels: null
     name: ilb
     network: null
@@ -34,7 +33,6 @@ values:
   module.addresses.google_compute_address.internal["vm"]:
     address_type: INTERNAL
     ip_version: IPV6
-    ipv6_endpoint_type: VM
     labels: null
     name: vm
     network: null

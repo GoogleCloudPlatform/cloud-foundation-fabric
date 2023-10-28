@@ -19,7 +19,7 @@ resource "google_compute_global_address" "global" {
   project     = var.project_id
   name        = coalesce(each.value.name, each.key)
   description = each.value.description
-  ip_version  = each.value.ip_version
+  ip_version  = each.value.ipv6 != null ? "IPV6" : "IPV4"
 }
 
 resource "google_compute_address" "external" {
@@ -29,27 +29,26 @@ resource "google_compute_address" "external" {
   name               = coalesce(each.value.name, each.key)
   description        = each.value.description
   address_type       = "EXTERNAL"
-  ip_version         = each.value.ip_version
-  ipv6_endpoint_type = each.value.ipv6_endpoint_type
+  ip_version         = each.value.ipv6 != null ? "IPV6" : "IPV4"
+  ipv6_endpoint_type = try(each.value.ipv6.endpoint_type, null)
   region             = each.value.region
   labels             = each.value.labels
 }
 
 resource "google_compute_address" "internal" {
-  provider           = google-beta
-  for_each           = var.internal_addresses
-  project            = var.project_id
-  name               = coalesce(each.value.name, each.key)
-  description        = each.value.description
-  address_type       = "INTERNAL"
-  region             = each.value.region
-  subnetwork         = each.value.subnetwork
-  address            = each.value.address
-  ip_version         = each.value.ip_version
-  ipv6_endpoint_type = each.value.ipv6_endpoint_type
-  network_tier       = each.value.tier
-  purpose            = each.value.purpose
-  labels             = coalesce(each.value.labels, {})
+  provider     = google-beta
+  for_each     = var.internal_addresses
+  project      = var.project_id
+  name         = coalesce(each.value.name, each.key)
+  description  = each.value.description
+  address_type = "INTERNAL"
+  region       = each.value.region
+  subnetwork   = each.value.subnetwork
+  address      = each.value.address
+  ip_version   = each.value.ipv6 != null ? "IPV6" : "IPV4"
+  network_tier = each.value.tier
+  purpose      = each.value.purpose
+  labels       = coalesce(each.value.labels, {})
 }
 
 resource "google_compute_global_address" "psc" {
