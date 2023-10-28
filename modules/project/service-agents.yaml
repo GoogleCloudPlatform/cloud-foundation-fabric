@@ -18,7 +18,7 @@
   service_agent: "service-%s@gcp-sa-adsdatahub.iam.gserviceaccount.com"
 - name: "aiplatform"
   service_agent: "service-%s@gcp-sa-aiplatform.iam.gserviceaccount.com"
-  jit: true
+  jit: true # roles/aiplatform.customCodeServiceAgent
 - name: "aiplatform-cc"
   service_agent: "service-%s@gcp-sa-aiplatform-cc.iam.gserviceaccount.com"
 - name: "alloydb"
@@ -37,7 +37,7 @@
   service_agent: "service-%s@gcp-sa-apigateway-mgmt.iam.gserviceaccount.com"
 - name: "apigee"
   service_agent: "service-%s@gcp-sa-apigee.iam.gserviceaccount.com"
-  jit: true #roles/apigee.serviceAgent
+  jit: true # roles/apigee.serviceAgent
 - name: "apigeeregistry"
   service_agent: "service-%s@gcp-sa-apigeeregistry.iam.gserviceaccount.com"
 - name: "appdevelopmentexperience"
@@ -221,7 +221,7 @@
   service_agent: "service-%s@gcp-sa-healthcare.iam.gserviceaccount.com"
 - name: "iap"
   service_agent: "service-%s@gcp-sa-iap.iam.gserviceaccount.com"
-  jit: true
+  jit: true # none
 - name: "identitytoolkit"
   service_agent: "service-%s@gcp-sa-identitytoolkit.iam.gserviceaccount.com"
 - name: "ids"
@@ -314,7 +314,7 @@
   service_agent: "service-%s@gcp-sa-spectrumsas.iam.gserviceaccount.com"
 - name: "secretmanager"
   service_agent: "service-%s@gcp-sa-secretmanager.iam.gserviceaccount.com"
-  jit: true
+  jit: true # none
 - name: "securedlandingzone"
   service_agent: "service-%s@gcp-sa-slz.iam.gserviceaccount.com"
 - name: "securitycenter-notification"
