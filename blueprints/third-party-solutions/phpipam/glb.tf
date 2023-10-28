@@ -21,10 +21,12 @@ locals {
 
 # Reserved static IP for the Load Balancer
 module "addresses" {
-  source           = "../../../modules/net-address"
-  count            = local.glb_create ? 1 : 0
-  project_id       = var.project_id
-  global_addresses = ["phpipam"]
+  source     = "../../../modules/net-address"
+  count      = local.glb_create ? 1 : 0
+  project_id = var.project_id
+  global_addresses = {
+    phpipam = {}
+  }
 }
 
 # Global L7 HTTPS Load Balancer in front of Cloud Run

@@ -1,0 +1,44 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.addresses.google_compute_address.external["nlb"]:
+    address_type: EXTERNAL
+    ip_version: IPV6
+    ipv6_endpoint_type: NETLB
+    name: nlb
+    project: project-id
+    region: region
+  module.addresses.google_compute_address.internal["ilb"]:
+    address_type: INTERNAL
+    ip_version: IPV6
+    labels: null
+    name: ilb
+    network: null
+    project: project-id
+    purpose: SHARED_LOADBALANCER_VIP
+    region: region
+    subnetwork: subnet_self_link
+  module.addresses.google_compute_address.internal["vm"]:
+    address_type: INTERNAL
+    ip_version: IPV6
+    labels: null
+    name: vm
+    network: null
+    project: project-id
+    region: region
+    subnetwork: subnet_self_link
+
+counts:
+  google_compute_address: 3
