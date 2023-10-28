@@ -118,6 +118,17 @@ variable "budgets" {
   }
 }
 
+variable "factory_configs" {
+  # TODO: align all other factory variable names
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    data_path      = optional(string, "data")
+    budgets_folder = optional(string, "billing-budgets")
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "group_iam" {
   description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
   type        = map(list(string))

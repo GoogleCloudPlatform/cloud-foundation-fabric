@@ -37,7 +37,7 @@ resource "google_monitoring_notification_channel" "default" {
 }
 
 resource "google_billing_budget" "default" {
-  for_each        = var.budgets
+  for_each        = merge(local.factory_budgets, var.budgets)
   billing_account = var.id
   display_name    = each.value.display_name
   dynamic "amount" {
