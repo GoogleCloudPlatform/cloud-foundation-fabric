@@ -118,12 +118,11 @@ variable "budgets" {
   }
 }
 
-variable "factory_configs" {
+variable "factory_config" {
   # TODO: align all other factory variable names
-  description = "Paths to data files and folders that enable factory functionality."
+  description = "Path to folder containing budget alerts data files."
   type = object({
-    data_path      = optional(string, "data")
-    budgets_folder = optional(string, "billing-budgets")
+    budgets_data_path = optional(string, "data/billing-budgets")
   })
   nullable = false
   default  = {}

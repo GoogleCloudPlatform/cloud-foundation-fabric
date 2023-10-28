@@ -19,10 +19,7 @@ locals {
     for f in fileset("${local._factory_path}", "**/*.yaml") :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._factory_path}/${f}"))
   }
-  _factory_path = join("/", [
-    var.factory_configs.data_path,
-    var.factory_configs.budgets_folder
-  ])
+  _factory_path = var.factory_config.budgets_data_path
   factory_budgets = {
     for k, v in local._factory_data : k => merge(v, {
       amount = merge(
@@ -44,9 +41,7 @@ locals {
             v.filter.credit_types_treatment
           )
         )
-        label = (
-          try(v.filter.label, null) == null ? null : v.filter.label
-        )
+        label              = try(v.filter.label, null)
         projects           = try(v.filter.projects, null)
         resource_ancestors = try(v.filter.resource_ancestors, null)
         services           = try(v.filter.services, null)
