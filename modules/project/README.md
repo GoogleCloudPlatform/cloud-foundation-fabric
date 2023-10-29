@@ -247,6 +247,7 @@ module "service-project" {
   source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "service"
+  parent          = var.folder_id
   prefix          = var.prefix
   services = [
     "container.googleapis.com",
