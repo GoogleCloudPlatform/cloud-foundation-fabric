@@ -1,6 +1,6 @@
 **/.terraform
 **/terraform.tfstate*
-**/terraform.tfvars
+# **/terraform.tfvars
 **/*.auto.tfvars
 **/.terraform.tfstate.lock.info
 **/.terraform.lock.hcl
@@ -23,7 +23,7 @@ bundle.zip
 fixture_*
 fast/configs
 fast/**/[0-9]*providers.tf
-fast/**/terraform.tfvars
+# fast/**/terraform.tfvars
 fast/**/terraform.tfvars.json
 fast/**/terraform-*.auto.tfvars.json
 fast/**/[0-9]*.auto.tfvars*

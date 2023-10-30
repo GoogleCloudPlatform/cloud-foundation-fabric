@@ -16,3 +16,25 @@ outputs_location = "~/fast-config"
 # use something unique and no longer than 9 characters
 prefix = "ozpr"
 
+# cicd_repositories = {
+#   bootstrap = {
+#     branch            = "main"
+#     identity_provider = "github-sample"
+#     name              = "my-gh-org/fast-bootstrap"
+#     type              = "github"
+#   }
+#   resman = {
+#     branch            = "main"
+#     identity_provider = "github-sample"
+#     name              = "my-gh-org/fast-resman"
+#     type              = "github"
+#   }
+# }
+
+federated_identity_providers = {
+  # Use the public GitHub and specify an attribute condition
+  github = {
+    attribute_condition = "attribute.repository_owner==\"ozone-project\""
+    issuer              = "github"
+  }
+}

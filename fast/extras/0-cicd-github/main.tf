@@ -158,7 +158,7 @@ resource "github_branch" "default" {
 resource "github_repository_file" "default" {
   for_each   = local.modules_repo == null ? {} : local.repository_files
   repository = local.repositories[each.value.repository]
-  branch     = var.pull_request_config.create == true ? github_branch.default[each.value.repository].branch : "main"
+  branch     = var.pull_request_config.create == true ? github_branch.default[each.value.repository].branch : "master"
   file       = each.value.name
   content = (
     endswith(each.value.name, ".tf") && local.modules_repo != null
