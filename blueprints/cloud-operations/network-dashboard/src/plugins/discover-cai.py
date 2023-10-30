@@ -212,14 +212,17 @@ def _handle_routes(resource, data):
 
 def _handle_sql_instances(resource, data):
   'Handles cloud sql instance type resource data.'
+  ip_addressses = []
+  if data.get('ipAddresses'):
+    ip_addressses = [
+        i['ipAddress']
+        for i in data.get('ipAddresses')
+        if i['type'] == 'PRIVATE'
+    ]
   return {
       'name': data['name'],
       'self_link': _self_link(data['selfLink']),
-      'ipAddresses': [
-          i['ipAddress']
-          for i in data.get('ipAddresses')
-          if i['type'] == 'PRIVATE'
-      ],
+      'ipAddresses': ip_addressses,
       'region': data['region'],
       'availabilityType': data['settings']['availabilityType'],
       'network': data['settings']['ipConfiguration'].get('privateNetwork')
