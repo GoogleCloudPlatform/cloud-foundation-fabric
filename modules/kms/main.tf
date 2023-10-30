@@ -53,3 +53,11 @@ resource "google_kms_crypto_key" "default" {
     }
   }
 }
+
+resource "google_kms_key_ring_import_job" "default" {
+  count            = var.import_job != null ? 1 : 0
+  key_ring         = local.keyring.id
+  import_job_id    = var.import_job.id
+  import_method    = var.import_job.import_method
+  protection_level = var.import_job.protection_level
+}
