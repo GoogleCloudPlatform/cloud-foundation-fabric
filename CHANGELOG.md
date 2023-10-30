@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1821)] [net-address] enable ipv6 ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-28 13:36:31+00:00 -->
+- [[#1814](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1814)] **incompatible change:** Allow specifying arbitrary project roles for service accounts in project factory ([ludoo](https://github.com/ludoo)) <!-- 2023-10-26 14:09:04+00:00 -->
 - [[#1812](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1812)] Stop wrapping yamldecode with try() ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-25 14:16:05+00:00 -->
 - [[#1806](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1806)] Updating network dashboard: fixing Cloud SQL problem, fixing 1 metric… ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2023-10-25 10:37:25+00:00 -->
 - [[#1796](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1796)] Make extended shared vpc attributes optional in project factory ([ludoo](https://github.com/ludoo)) <!-- 2023-10-23 13:45:48+00:00 -->
@@ -25,6 +27,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1818](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1818)] FAST: rename VPC-related files to `net-*` ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-27 08:23:08+00:00 -->
 - [[#1812](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1812)] Stop wrapping yamldecode with try() ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-25 14:16:05+00:00 -->
 - [[#1810](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1810)] FAST: Add access transparency logs to the default sinks ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-24 20:09:01+00:00 -->
 - [[#1809](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1809)] FAST: Add VPC serverless connector NAT ranges to hierarchical fw ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-24 19:46:04+00:00 -->
@@ -46,6 +49,11 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1822](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1822)] Billing budget factory ([ludoo](https://github.com/ludoo)) <!-- 2023-10-29 10:24:52+00:00 -->
+- [[#1821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1821)] [net-address] enable ipv6 ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-10-28 13:36:31+00:00 -->
+- [[#1820](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1820)] Added iam_bindings and iam_bindings_additive to apigee module ([apichick](https://github.com/apichick)) <!-- 2023-10-27 18:08:18+00:00 -->
+- [[#1813](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1813)] empty gpu sharing config fix ([ewojtach](https://github.com/ewojtach)) <!-- 2023-10-27 09:49:34+00:00 -->
+- [[#1815](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1815)] Fix logic for default source range in firewall ingress rules ([ludoo](https://github.com/ludoo)) <!-- 2023-10-26 15:25:37+00:00 -->
 - [[#1812](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1812)] Stop wrapping yamldecode with try() ([sruffilli](https://github.com/sruffilli)) <!-- 2023-10-25 14:16:05+00:00 -->
 - [[#1750](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1750)] AI models support ([ewojtach](https://github.com/ewojtach)) <!-- 2023-10-25 09:42:37+00:00 -->
 - [[#1798](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1798)] Fix Apigee add-ons configuration ([mwarm2](https://github.com/mwarm2)) <!-- 2023-10-25 07:37:45+00:00 -->
