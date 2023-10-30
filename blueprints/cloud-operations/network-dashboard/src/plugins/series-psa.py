@@ -31,7 +31,7 @@ LOGGER = logging.getLogger('net-dash.timeseries.psa')
 def _sql_addresses(sql_instances):
   'Returns counts of Cloud SQL instances per PSA range.'
   for v in sql_instances.values():
-    if not v['ipAddresses']:
+    if not v.get('ipAddresses'):
       continue
     # 1 IP for the instance + 1 IP for the ILB + 1 IP if HA
     yield v['ipAddresses'][
