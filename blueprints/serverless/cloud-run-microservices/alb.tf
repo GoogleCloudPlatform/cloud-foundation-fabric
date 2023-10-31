@@ -19,13 +19,13 @@
 # Internal Application Load Balancer in main (host) project
 module "int-alb" {
   source     = "../../../modules/net-lb-app-int"
-  count      = var.prj_svc1_id != null ? 1 : 0
-  project_id = module.project_main.project_id
+  count      = var.service_project.project_id != null ? 1 : 0
+  project_id = module.main-project.project_id
   name       = "int-alb-cr"
   region     = var.region
   backend_service_configs = {
     default = {
-      project_id = module.project_svc1[0].project_id
+      project_id = module.service-project[0].project_id
       backends = [{
         group = "cr-neg"
       }]
@@ -35,7 +35,7 @@ module "int-alb" {
   health_check_configs = {}
   neg_configs = {
     cr-neg = {
-      project_id = module.project_svc1[0].project_id
+      project_id = module.service-project[0].project_id
       cloudrun = {
         region = var.region
         target_service = {
@@ -45,7 +45,7 @@ module "int-alb" {
     }
   }
   vpc_config = {
-    network    = module.vpc_main.self_link
-    subnetwork = module.vpc_main.subnet_self_links["${var.region}/subnet-main"]
+    network    = module.vpc-main.self_link
+    subnetwork = module.vpc-main.subnet_self_links["${var.region}/subnet-main"]
   }
 }

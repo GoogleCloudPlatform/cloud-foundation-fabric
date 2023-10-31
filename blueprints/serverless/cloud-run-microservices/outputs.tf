@@ -16,7 +16,7 @@
 
 output "custom_domain" {
   description = "Custom domain for the Application Load Balancer."
-  value       = var.prj_svc1_id != null ? "http://${var.custom_domain}" : "none"
+  value       = var.service_project.project_id != null ? "http://${var.custom_domain}" : "none"
 }
 
 output "default_URL_svc_a" {
@@ -26,10 +26,10 @@ output "default_URL_svc_a" {
 
 output "default_URL_svc_b" {
   description = "Cloud Run service B default URL."
-  value       = module.cloud_run_svc_b.service.status[0].url
+  value       = module.cloud-run-svc-b.service.status[0].url
 }
 
 output "load_balancer_ip" {
   description = "Load Balancer IP address."
-  value       = var.prj_svc1_id != null ? module.int-alb[0].address : "none"
+  value       = var.service_project.project_id != null ? module.int-alb[0].address : "none"
 }

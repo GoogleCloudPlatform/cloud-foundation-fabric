@@ -21,7 +21,7 @@ variable "custom_domain" {
 }
 
 variable "ip_ranges" {
-  description = "IPs or IP ranges used by VPCs."
+  description = "IPs or IP ranges used by the VPC."
   type        = map(map(string))
   default = {
     main = {
@@ -34,33 +34,23 @@ variable "ip_ranges" {
   }
 }
 
-variable "prj_main_create" {
-  description = "Parameters for the creation of the main project."
+variable "main_project" {
+  description = "Main (or host) project."
   type = object({
-    billing_account_id = string
-    parent             = string
+    billing_account_id = optional(string)
+    parent             = optional(string)
+    project_id         = string
   })
-  default = null
 }
 
-variable "prj_main_id" {
-  description = "Main Project ID."
-  type        = string
-}
-
-variable "prj_svc1_create" {
-  description = "Parameters for the creation of service project 1."
+variable "service_project" {
+  description = "Service project."
   type = object({
-    billing_account_id = string
-    parent             = string
+    billing_account_id = optional(string)
+    parent             = optional(string)
+    project_id         = optional(string)
   })
-  default = null
-}
-
-variable "prj_svc1_id" {
-  description = "Service Project 1 ID."
-  type        = string
-  default     = null
+  default = {}
 }
 
 variable "region" {

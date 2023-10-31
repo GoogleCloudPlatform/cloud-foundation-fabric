@@ -17,31 +17,31 @@
 # tfdoc:file:description DNS resources.
 
 # DNS configuration for the PSC for Google APIs endpoint
-module "private_dns_main" {
+module "private-dns-main" {
   source     = "../../../modules/dns"
-  project_id = module.project_main.project_id
+  project_id = module.main-project.project_id
   name       = "cloud-run"
   zone_config = {
     domain = local.cloud_run_domain
     private = {
-      client_networks = [module.vpc_main.self_link]
+      client_networks = [module.vpc-main.self_link]
     }
   }
   recordsets = {
-    "A *" = { records = [module.psc_addr_main.psc_addresses["psc-addr"].address] }
+    "A *" = { records = [module.psc-addr-main.psc_addresses["psc-addr"].address] }
   }
 }
 
 # DNS configuration for the Cloud Run custom domain (when using internal ALB)
-module "private_dns_main_custom" {
+module "private-dns-main-custom" {
   source     = "../../../modules/dns"
-  count      = var.prj_svc1_id != null ? 1 : 0
-  project_id = module.project_main.project_id
+  count      = var.service_project.project_id != null ? 1 : 0
+  project_id = module.main-project.project_id
   name       = "cloud-run-custom"
   zone_config = {
     domain = format("%s.", var.custom_domain)
     private = {
-      client_networks = [module.vpc_main.self_link]
+      client_networks = [module.vpc-main.self_link]
     }
   }
   recordsets = {

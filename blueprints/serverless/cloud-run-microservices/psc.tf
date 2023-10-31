@@ -18,13 +18,13 @@
 
 # PSC configured in the main project
 # IP address for the PSC endpoint
-module "psc_addr_main" {
+module "psc-addr-main" {
   source     = "../../../modules/net-address"
-  project_id = module.project_main.project_id
+  project_id = module.main-project.project_id
   psc_addresses = {
     psc-addr = {
       address = var.ip_ranges["main"].psc_addr
-      network = module.vpc_main.self_link
+      network = module.vpc-main.self_link
     }
   }
 }
@@ -32,10 +32,10 @@ module "psc_addr_main" {
 # PSC endpoint (forwarding rule)
 resource "google_compute_global_forwarding_rule" "psc_endpoint_main" {
   provider              = google-beta
-  project               = module.project_main.project_id
+  project               = module.main-project.project_id
   name                  = "pscaddr"
-  network               = module.vpc_main.self_link
-  ip_address            = module.psc_addr_main.psc_addresses["psc-addr"].self_link
+  network               = module.vpc-main.self_link
+  ip_address            = module.psc-addr-main.psc_addresses["psc-addr"].self_link
   target                = "vpc-sc"
   load_balancing_scheme = ""
 }

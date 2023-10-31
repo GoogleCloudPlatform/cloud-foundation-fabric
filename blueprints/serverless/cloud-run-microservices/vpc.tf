@@ -17,9 +17,9 @@
 # tfdoc:file:description VPC resources.
 
 # VPC in main project
-module "vpc_main" {
+module "vpc-main" {
   source     = "../../../modules/net-vpc"
-  project_id = module.project_main.project_id
+  project_id = module.main-project.project_id
   name       = "vpc-main"
   subnets = [
     { # regular subnet

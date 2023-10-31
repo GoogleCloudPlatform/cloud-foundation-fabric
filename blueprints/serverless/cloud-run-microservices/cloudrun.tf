@@ -18,7 +18,7 @@
 
 # Cloud Run service A
 resource "google_cloud_run_v2_service" "svc_a" {
-  project      = module.project_main.project_id
+  project      = module.main-project.project_id
   name         = local.svc_a_name
   location     = var.region
   ingress      = "INGRESS_TRAFFIC_ALL"
@@ -28,16 +28,16 @@ resource "google_cloud_run_v2_service" "svc_a" {
       image = var.svc_a_image
     }
     dynamic "vpc_access" {
-      for_each = var.prj_svc1_id == null ? [""] : []
+      for_each = var.service_project.project_id == null ? [""] : []
       content { # Use Serverless VPC Access connector
         connector = google_vpc_access_connector.connector[0].id
       }
     }
     dynamic "vpc_access" {
-      for_each = var.prj_svc1_id != null ? [""] : []
+      for_each = var.service_project.project_id != null ? [""] : []
       content { # Use Direct VPC Egress
         network_interfaces {
-          subnetwork = module.vpc_main.subnets["${var.region}/subnet-vpc-direct"].name
+          subnetwork = module.vpc-main.subnets["${var.region}/subnet-vpc-direct"].name
         }
       }
     }
@@ -52,16 +52,16 @@ data "google_iam_policy" "noauth" {
 }
 
 resource "google_cloud_run_v2_service_iam_policy" "svc_a_policy" {
-  project     = module.project_main.project_id
+  project     = module.main-project.project_id
   location    = var.region
   name        = google_cloud_run_v2_service.svc_a.name
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
 # Cloud Run service B
-module "cloud_run_svc_b" {
+module "cloud-run-svc-b" {
   source     = "../../../modules/cloud-run"
-  project_id = try(module.project_svc1[0].project_id, module.project_main.project_id)
+  project_id = try(module.service-project[0].project_id, module.main-project.project_id)
   name       = local.svc_b_name
   region     = var.region
   containers = {
@@ -80,12 +80,12 @@ module "cloud_run_svc_b" {
 # a VPC access connector to connect from service A to service B.
 # The use case with Shared VPC and internal ALB uses Direct VPC Egress.
 resource "google_vpc_access_connector" "connector" {
-  count   = var.prj_svc1_id == null ? 1 : 0
+  count   = var.service_project.project_id == null ? 1 : 0
   name    = "connector"
-  project = module.project_main.project_id
+  project = module.main-project.project_id
   region  = var.region
   subnet {
-    name       = module.vpc_main.subnets["${var.region}/subnet-vpc-access"].name
-    project_id = module.project_main.project_id
+    name       = module.vpc-main.subnets["${var.region}/subnet-vpc-access"].name
+    project_id = module.main-project.project_id
   }
 }

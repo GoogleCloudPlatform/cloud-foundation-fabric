@@ -23,12 +23,12 @@ locals {
 }
 
 # Main (or host) project
-module "project_main" {
+module "main-project" {
   source          = "../../../modules/project"
-  name            = var.prj_main_id
-  project_create  = var.prj_main_create != null
-  billing_account = try(var.prj_main_create.billing_account_id, null)
-  parent          = try(var.prj_main_create.parent, null)
+  name            = var.main_project.project_id
+  project_create  = var.main_project.billing_account_id != null
+  billing_account = try(var.main_project.billing_account_id, null)
+  parent          = try(var.main_project.parent, null)
   # Enable Shared VPC by default, some use cases will use this project as host
   shared_vpc_host_config = {
     enabled = true
@@ -43,15 +43,15 @@ module "project_main" {
 }
 
 # Service project 1
-module "project_svc1" {
+module "service-project" {
   source          = "../../../modules/project"
-  count           = var.prj_svc1_id != null ? 1 : 0
-  name            = var.prj_svc1_id
-  project_create  = var.prj_svc1_create != null
-  billing_account = try(var.prj_svc1_create.billing_account_id, null)
-  parent          = try(var.prj_svc1_create.parent, null)
+  count           = var.service_project.project_id != null ? 1 : 0
+  name            = var.service_project.project_id
+  project_create  = var.service_project.billing_account_id != null
+  billing_account = try(var.service_project.billing_account_id, null)
+  parent          = try(var.service_project.parent, null)
   shared_vpc_service_config = {
-    host_project = module.project_main.project_id
+    host_project = module.main-project.project_id
   }
   services = [
     "compute.googleapis.com",
