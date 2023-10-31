@@ -95,7 +95,7 @@ prefix       = "[prefix]"
 svc_a_image  = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
 ```
 
-Note that final project ids will be of the form [prefix]-[main-project-id].
+Note that final project ids will be of the form "[prefix]-[main-project-id]".
 
 The service B default URL is automatically created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Get into service A and try to reach service B URL as shown below:
 
@@ -146,7 +146,6 @@ The above command will delete the associated resources so there will be no billa
 | [main.tf](./main.tf) | Project resources. | <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
 | [psc.tf](./psc.tf) | Private Service Connect resources. | <code>net-address</code> | <code>google_compute_global_forwarding_rule</code> |
-| [tester.tf](./tester.tf) | Network tester image. | <code>artifact-registry</code> | <code>null_resource</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [vpc.tf](./vpc.tf) | VPC resources. | <code>net-vpc</code> |  |
 
@@ -154,14 +153,14 @@ The above command will delete the associated resources so there will be no billa
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prj_main_id](variables.tf#L52) | Main Project ID. | <code>string</code> | ✓ |  |
+| [main_project](variables.tf#L35) | Main (or host) project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string&#41;&#10;  parent             &#61; optional&#40;string&#41;&#10;  project_id         &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [prefix](variables.tf#L44) | Prefix used for project names. | <code>string</code> | ✓ |  |
+| [svc_a_image](variables.tf#L69) | Container image to deploy in service A. | <code>string</code> | ✓ |  |
 | [custom_domain](variables.tf#L17) | Custom domain for the Load Balancer. | <code>string</code> |  | <code>&#34;service-b.acme.org&#34;</code> |
-| [image](variables.tf#L23) | Container image to deploy in the server. | <code>string</code> |  | <code>&#34;us-docker.pkg.dev&#47;cloudrun&#47;container&#47;hello&#34;</code> |
-| [ip_ranges](variables.tf#L29) | IPs or IP ranges used by VPCs. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  main &#61; &#123;&#10;    subnet_main       &#61; &#34;10.0.1.0&#47;24&#34;&#10;    subnet_proxy      &#61; &#34;10.10.0.0&#47;24&#34;&#10;    subnet_vpc_access &#61; &#34;10.10.10.0&#47;28&#34;&#10;    subnet_vpc_direct &#61; &#34;10.8.0.0&#47;26&#34;&#10;    psc_addr          &#61; &#34;10.0.0.100&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [prj_main_create](variables.tf#L43) | Parameters for the creation of the main project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prj_svc1_create](variables.tf#L57) | Parameters for the creation of service project 1. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prj_svc1_id](variables.tf#L66) | Service Project 1 ID. | <code>string</code> |  | <code>null</code> |
-| [region](variables.tf#L72) | Cloud region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [ip_ranges](variables.tf#L23) | IP ranges or IPs used by the VPC. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  subnet_main       &#61; &#34;10.0.1.0&#47;24&#34;&#10;  subnet_proxy      &#61; &#34;10.10.0.0&#47;24&#34;&#10;  subnet_vpc_access &#61; &#34;10.10.10.0&#47;28&#34;&#10;  subnet_vpc_direct &#61; &#34;10.8.0.0&#47;26&#34;&#10;  psc_addr          &#61; &#34;10.0.0.100&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [region](variables.tf#L53) | Cloud region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [service_project](variables.tf#L59) | Service project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string&#41;&#10;  parent             &#61; optional&#40;string&#41;&#10;  project_id         &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [svc_b_image](variables.tf#L74) | Container image to deploy in service B. | <code>string</code> |  | <code>&#34;us-docker.pkg.dev&#47;cloudrun&#47;container&#47;hello&#34;</code> |
 
 ## Outputs
 
@@ -177,30 +176,34 @@ The above command will delete the associated resources so there will be no billa
 ```hcl
 module "test" {
   source = "./fabric/blueprints/serverless/cloud-run-microservices"
-  prj_main_create = {
+  main_project = {
     billing_account_id = "ABCDE-12345-ABCDE"
     parent             = "organizations/0123456789"
+    project_id         = "main-project-id"
   }
-  prj_main_id = "main-project-id"
+  prefix      = "prefix"
+  svc_a_image = "cloud-run-image"
 }
 
-# tftest modules=7 resources=28
+# tftest modules=6 resources=22
 ```
 
 ```hcl
 module "test" {
   source = "./fabric/blueprints/serverless/cloud-run-microservices"
-  prj_main_create = {
+  main_project = { # Used as host project
     billing_account_id = "ABCDE-12345-ABCDE"
     parent             = "organizations/0123456789"
+    project_id         = "main-project-id"
   }
-  prj_main_id = "main-project-id" # Used as host project
-  prj_svc1_create = {
+  prefix = "prefix"
+  service_project = {
     billing_account_id = "ABCDE-12345-ABCDE"
     parent             = "organizations/0123456789"
+    project_id         = "service-project-id"
   }
-  prj_svc1_id = "service-project1-id"
+  svc_a_image = "cloud-run-image"
 }
 
-# tftest modules=10 resources=38
+# tftest modules=9 resources=32
 ```
