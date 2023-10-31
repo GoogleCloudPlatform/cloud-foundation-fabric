@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "encryption_key" {
-  description = "Self link of the KMS keys in {LOCATION => KEY} format. A key must be provided for all replica locations. {GLOBAL => KEY} format enables CMEK for automatic managed secrets."
-  type        = map(string)
-  default     = null
-}
-
 variable "iam" {
   description = "IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format."
   type        = map(map(list(string)))
@@ -38,9 +32,14 @@ variable "project_id" {
 }
 
 variable "secrets" {
-  description = "Map of secrets to manage and their locations. If locations is null, automatic management will be set."
-  type        = map(list(string))
-  default     = {}
+  description = "Map of secrets to manage, their locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
+  type = map(object({
+    locations = list(string)
+    keys      = optional(map(string), null)
+  }))
+  default = {
+    locations = null
+  }
 }
 
 variable "versions" {

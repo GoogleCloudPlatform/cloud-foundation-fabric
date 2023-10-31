@@ -42,13 +42,13 @@ resource "google_secret_manager_secret" "default" {
   labels    = lookup(var.labels, each.key, null)
 
   dynamic "replication" {
-    for_each = each.value == null ? [""] : []
+    for_each = each.value.locations == null ? [""] : []
     content {
       auto {
         dynamic "customer_managed_encryption" {
-          for_each = try(lookup(var.encryption_key, "global", null) == null ? [] : [""], [])
+          for_each = try(lookup(each.value.keys, "global", null) == null ? [] : [""], [])
           content {
-            kms_key_name = var.encryption_key["global"]
+            kms_key_name = each.value.keys["global"]
           }
         }
       }
@@ -56,19 +56,18 @@ resource "google_secret_manager_secret" "default" {
   }
 
   dynamic "replication" {
-    for_each = each.value == null ? [] : [each.value]
-    iterator = locations
+    for_each = each.value.locations == null ? [] : [""]
     content {
       user_managed {
         dynamic "replicas" {
-          for_each = locations.value
+          for_each = each.value.locations
           iterator = location
           content {
             location = location.value
             dynamic "customer_managed_encryption" {
-              for_each = try(var.encryption_key[location.value] != null ? [""] : [], [])
+              for_each = try(lookup(each.value.keys, location.value, null) == null ? [] : [""], [])
               content {
-                kms_key_name = var.encryption_key[location.value]
+                kms_key_name = each.value.keys[location.value]
               }
             }
           }

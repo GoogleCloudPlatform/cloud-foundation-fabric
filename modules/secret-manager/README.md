@@ -17,11 +17,25 @@ module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
   secrets = {
-    test-auto   = null
-    test-manual = ["europe-west1", "europe-west4"]
+    test-auto = {
+      locations = null
+      keys = {
+        global = "projects/PROJECT_ID/locations/global/keyRings/KEYRING/cryptoKeys/KEY"
+      }
+    }
+    test-auto-nokeys = {
+      locations = null
+    }
+    test-manual = {
+      locations = ["europe-west1", "europe-west4"]
+      keys = {
+        europe-west1 = "projects/PROJECT_ID/locations/europe-west1/keyRings/KEYRING/cryptoKeys/KEY"
+        europe-west4 = "projects/PROJECT_ID/locations/europe-west4/keyRings/KEYRING/cryptoKeys/KEY"
+      }
+    }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=3
 ```
 
 ### Secret IAM bindings
@@ -33,8 +47,12 @@ module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
   secrets = {
-    test-auto   = null
-    test-manual = ["europe-west1", "europe-west4"]
+    test-auto = {
+      locations = null
+    }
+    test-manual = {
+      locations = ["europe-west1", "europe-west4"]
+    }
   }
   iam = {
     test-auto = {
@@ -57,8 +75,12 @@ module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
   secrets = {
-    test-auto   = null
-    test-manual = ["europe-west1", "europe-west4"]
+    test-auto = {
+      locations = null
+    }
+    test-manual = {
+      locations = ["europe-west1", "europe-west4"]
+    }
   }
   versions = {
     test-auto = {
@@ -75,20 +97,29 @@ module "secret-manager" {
 
 ### Secret with customer managed encryption key
 
-Secrets will be used if an encryption key is set in the `encryption_key` variable for the secret region.
+CMEK will be used if an encryption key is set in the `keys` field of `secrets` object for the secret region. For secrets with auto-replication, a global key must be specified.
 
 ```hcl
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
   secrets = {
-    test-auto       = null
-    test-encryption = ["europe-west1", "europe-west4"]
-  }
-  encryption_key = {
-    europe-west1 = "projects/PROJECT_ID/locations/europe-west1/keyRings/KEYRING/cryptoKeys/KEY"
-    europe-west4 = "projects/PROJECT_ID/locations/europe-west4/keyRings/KEYRING/cryptoKeys/KEY"
-    global       = "projects/PROJECT_ID/locations/global/keyRings/KEYRING/cryptoKeys/KEY"
+    test-auto = {
+      locations = null
+      keys = {
+        global = "projects/PROJECT_ID/locations/global/keyRings/KEYRING/cryptoKeys/KEY"
+      }
+    }
+    test-auto-nokeys = {
+      locations = null
+    }
+    test-manual = {
+      locations = ["europe-west1", "europe-west4"]
+      keys = {
+        europe-west1 = "projects/PROJECT_ID/locations/europe-west1/keyRings/KEYRING/cryptoKeys/KEY"
+        europe-west4 = "projects/PROJECT_ID/locations/europe-west4/keyRings/KEYRING/cryptoKeys/KEY"
+      }
+    }
   }
 }
 # tftest modules=1 resources=2
@@ -98,12 +129,11 @@ module "secret-manager" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L35) | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
-| [encryption_key](variables.tf#L17) | Self link of the KMS keys in {LOCATION => KEY} format. A key must be provided for all replica locations. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [iam](variables.tf#L23) | IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L29) | Optional labels for each secret. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [secrets](variables.tf#L40) | Map of secrets to manage and their locations. If locations is null, automatic management will be set. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [versions](variables.tf#L46) | Optional versions to manage for each secret. Version names are only used internally to track individual versions. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  enabled &#61; bool&#10;  data    &#61; string&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_id](variables.tf#L29) | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
+| [iam](variables.tf#L17) | IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L23) | Optional labels for each secret. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [secrets](variables.tf#L34) | Map of secrets to manage, their locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set. | <code title="map&#40;object&#40;&#123;&#10;  locations &#61; list&#40;string&#41;&#10;  keys      &#61; optional&#40;map&#40;string&#41;, null&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  locations &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [versions](variables.tf#L45) | Optional versions to manage for each secret. Version names are only used internally to track individual versions. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  enabled &#61; bool&#10;  data    &#61; string&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
