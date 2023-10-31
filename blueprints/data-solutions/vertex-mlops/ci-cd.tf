@@ -59,7 +59,7 @@ module "secret-manager" {
   secrets = {
     github-key = {
       locations = [var.region]
-      kms = {
+      keys = {
         "${var.region}" = var.service_encryption_keys.secretmanager
       }
     }
