@@ -76,19 +76,18 @@ This use case deploys two Cloud Run services in the same project. Service B is p
 
 <p align="center"> <img src="images/use-case-1.png" width="600"> </p>
 
-In this case the only variable that you need to set in `terraform.tfvars` is the main project ID:
+Service A uses an application with a GUI to test connectivity. You can find its source code in:
+
+https://github.com/willypalacin/vpc-network-tester/tree/main
+
+Build an image and push it to Artifact Registry. Set the corresponding image variable to its URL, and the main project ID, in `terraform.tfvars`. E.g.:
 
 ```tfvars
 prj_main_id = "[your-main-project-id]"
+svc_a_image = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
 ```
 
-Alternatively you can pass this value on the command line:
-
-```bash
-terraform apply -var prj_main_id="[your-main-project-id]"
-```
-
-The service B default URL is automatically created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Service A offers a GUI to test connectivity, its source code is part of the blueprint and an image is built and pushed to a repository in Artifact Registry. Get into the service and try to reach service B URL as shown below:
+The service B default URL is automatically created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Get into service A and try to reach service B URL as shown below:
 
 <p align="center"> <img src="images/use-case-1-test.png" width="600"> </p>
 
@@ -105,6 +104,7 @@ Set the following in `terraform.tfvars`:
 ```tfvars
 prj_main_id = "[your-main-project-id]" # Used as host project
 prj_svc1_id = "[your-service-project1-id]"
+svc_a_image = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
 ```
 
 The blueprint uses an HTTP connection to the ALB to avoid management of SSL certificates. Try to reach service B custom URL as shown below:

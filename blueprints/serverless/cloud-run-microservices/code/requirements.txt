@@ -1,5 +1,0 @@
-streamlit==1.13.0
-numpy
-pandas==1.5.0
-plotly.express
-altair==4.0

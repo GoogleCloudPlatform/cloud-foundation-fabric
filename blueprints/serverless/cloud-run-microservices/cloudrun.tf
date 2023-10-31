@@ -25,7 +25,7 @@ resource "google_cloud_run_v2_service" "svc_a" {
   launch_stage = "BETA" # Required to use Direct VPC Egress
   template {
     containers {
-      image = local.svc_a_image
+      image = var.svc_a_image
     }
     dynamic "vpc_access" {
       for_each = var.prj_svc1_id == null ? [""] : []
@@ -42,9 +42,6 @@ resource "google_cloud_run_v2_service" "svc_a" {
       }
     }
   }
-  # The container image is built and pushed to Artifact Registry by
-  # a local-exec provisioner
-  depends_on = [null_resource.image]
 }
 
 data "google_iam_policy" "noauth" {
@@ -69,7 +66,7 @@ module "cloud_run_svc_b" {
   region     = var.region
   containers = {
     default = {
-      image = var.image
+      image = var.svc_b_image
     }
   }
   iam = {

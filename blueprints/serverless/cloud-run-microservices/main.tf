@@ -18,10 +18,6 @@
 
 locals {
   cloud_run_domain = "run.app."
-  repo             = "repo"
-  svc_a_image      = <<EOT
-${var.region}-docker.pkg.dev/${var.prj_main_id}/${local.repo}/vpc-network-tester:v1.0
-  EOT
   svc_a_name       = "svc-a"
   svc_b_name       = "svc-b"
 }
@@ -41,9 +37,7 @@ module "project_main" {
     "run.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
-    "vpcaccess.googleapis.com",
-    "artifactregistry.googleapis.com",
-    "cloudbuild.googleapis.com"
+    "vpcaccess.googleapis.com"
   ]
   skip_delete = true
 }
