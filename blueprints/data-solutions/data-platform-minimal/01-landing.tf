@@ -22,7 +22,7 @@ locals {
     "roles/storage.objectViewer" = [
       module.processing-sa-cmp-0.iam_email
     ]
-    "roles/storage.objectAdmin" = [
+    "roles/storage.admin" = [
       module.processing-sa-0.iam_email,
       local.groups_iam.data-engineers
     ]
