@@ -823,7 +823,7 @@ module "bucket" {
   parent      = var.project_id
   id          = "bucket"
 }
-# tftest modules=7 resources=53 e2e
+# tftest modules=7 resources=53 inventory=data.yaml e2e
 ```
 
 
