@@ -14,6 +14,9 @@
 
 locals {
   prefix = "${var.prefix}-${var.timestamp}${var.suffix}"
+  jit_services = [
+    "storage.googleapis.com",  # no permissions granted by default
+  ]
   services = [
     # trimmed down list of services, to be extended as needed
     "apigee.googleapis.com",
@@ -92,6 +95,15 @@ resource "google_kms_crypto_key" "key" {
   key_ring        = google_kms_key_ring.keyring.id
   rotation_period = "100000s"
 }
+
+resource "google_project_service_identity" "jit_si" {
+  for_each   = toset(local.jit_services)
+  provider   = google-beta
+  project    = google_project.project.project_id
+  service    = each.value
+  depends_on = [google_project_service.project_service]
+}
+
 
 resource "local_file" "terraform_tfvars" {
   filename = "e2e_tests.tfvars"
