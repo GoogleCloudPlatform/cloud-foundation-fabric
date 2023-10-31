@@ -25,6 +25,7 @@ Legend: <code>+</code> additive, <code>•</code> conditional.
 
 | members | roles |
 |---|---|
+|<b>gcp-data-engineers</b><br><small><i>group</i></small>|[roles/storage.objectAdmin](https://cloud.google.com/iam/docs/understanding-roles#storage.objectAdmin) |
 |<b>lnd-sa-0</b><br><small><i>serviceAccount</i></small>|[roles/storage.objectCreator](https://cloud.google.com/iam/docs/understanding-roles#storage.objectCreator) |
 |<b>prc-0</b><br><small><i>serviceAccount</i></small>|[roles/storage.objectAdmin](https://cloud.google.com/iam/docs/understanding-roles#storage.objectAdmin) |
 |<b>prc-cmp-0</b><br><small><i>serviceAccount</i></small>|[roles/storage.objectViewer](https://cloud.google.com/iam/docs/understanding-roles#storage.objectViewer) |
