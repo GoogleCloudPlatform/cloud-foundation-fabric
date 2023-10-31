@@ -19,23 +19,13 @@ module "secret-manager" {
   secrets = {
     test-auto = {
       locations = null
-      keys = {
-        global = "projects/PROJECT_ID/locations/global/keyRings/KEYRING/cryptoKeys/KEY"
-      }
-    }
-    test-auto-nokeys = {
-      locations = null
     }
     test-manual = {
       locations = ["europe-west1", "europe-west4"]
-      keys = {
-        europe-west1 = "projects/PROJECT_ID/locations/europe-west1/keyRings/KEYRING/cryptoKeys/KEY"
-        europe-west4 = "projects/PROJECT_ID/locations/europe-west4/keyRings/KEYRING/cryptoKeys/KEY"
-      }
     }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=2
 ```
 
 ### Secret IAM bindings
