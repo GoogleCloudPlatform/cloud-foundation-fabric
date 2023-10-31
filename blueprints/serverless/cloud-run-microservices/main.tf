@@ -26,6 +26,7 @@ locals {
 module "main-project" {
   source          = "../../../modules/project"
   name            = var.main_project.project_id
+  prefix          = var.prefix
   project_create  = var.main_project.billing_account_id != null
   billing_account = try(var.main_project.billing_account_id, null)
   parent          = try(var.main_project.parent, null)
@@ -47,6 +48,7 @@ module "service-project" {
   source          = "../../../modules/project"
   count           = var.service_project.project_id != null ? 1 : 0
   name            = var.service_project.project_id
+  prefix          = var.prefix
   project_create  = var.service_project.billing_account_id != null
   billing_account = try(var.service_project.billing_account_id, null)
   parent          = try(var.service_project.parent, null)

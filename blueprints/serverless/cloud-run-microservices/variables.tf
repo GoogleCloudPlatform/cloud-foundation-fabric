@@ -43,6 +43,21 @@ variable "main_project" {
   })
 }
 
+variable "prefix" {
+  description = "Prefix used for project names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
+}
+
+variable "region" {
+  description = "Cloud region where resources will be deployed."
+  type        = string
+  default     = "europe-west1"
+}
+
 variable "service_project" {
   description = "Service project."
   type = object({
@@ -51,12 +66,6 @@ variable "service_project" {
     project_id         = optional(string)
   })
   default = {}
-}
-
-variable "region" {
-  description = "Cloud region where resources will be deployed."
-  type        = string
-  default     = "europe-west1"
 }
 
 variable "svc_a_image" {

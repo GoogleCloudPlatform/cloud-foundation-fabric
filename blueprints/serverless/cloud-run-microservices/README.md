@@ -18,9 +18,10 @@ Depending on the use case, you will need one or two projects with [billing enabl
 
 ```tfvars
 # Create the main project
-prj_main_create = {
+main_project = {
   billing_account_id = "ABCDE-12345-ABCDE"
   parent             = "organizations/0123456789"
+  project_id         = "spiritual-hour-331417"
 }
 ```
 
@@ -47,13 +48,17 @@ You should see this README and some terraform files.
 3. To deploy a specific use case, you will need to create a file in this directory called `terraform.tfvars` and follow the corresponding instructions to set variables. Values that are meant to be substituted will be shown inside brackets but you need to omit these brackets. E.g.:
 
 ```tfvars
-project_id = "[your-project_id]"
+main_project = {
+  project_id = "[project_id]"
+}
 ```
 
 may become
 
 ```tfvars
-project_id = "spiritual-hour-331417"
+main_project = {
+  project_id = "spiritual-hour-331417"
+}
 ```
 
 Use cases are self-contained so you can deploy any of them at will.
@@ -83,15 +88,20 @@ https://github.com/willypalacin/vpc-network-tester/tree/main
 Build an image and push it to Artifact Registry. Set the corresponding image variable to its URL, and the main project ID, in `terraform.tfvars`. E.g.:
 
 ```tfvars
-prj_main_id = "[your-main-project-id]"
-svc_a_image = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
+main_project = {
+  project_id = "[main-project-id]"
+}
+prefix       = "[prefix]"
+svc_a_image  = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
 ```
+
+Note that final project ids will be of the form [prefix]-[main-project-id].
 
 The service B default URL is automatically created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Get into service A and try to reach service B URL as shown below:
 
 <p align="center"> <img src="images/use-case-1-test.png" width="600"> </p>
 
-Note that service A is resolving service B to an internal IP, 10.0.0.100, the PSC endpoint. Public access is restricted, if you try to e.g. `curl` from your laptop you will get an error.
+You can see service A is resolving service B to an internal IP, 10.0.0.100, the PSC endpoint. Public access is restricted, if you try to e.g. `curl` from your laptop you will get an error.
 
 ### Use case 2: Service to service communication in different projects
 
@@ -102,9 +112,12 @@ The second option for internal service to service communication is to use an int
 Set the following in `terraform.tfvars`:
 
 ```tfvars
-prj_main_id = "[your-main-project-id]" # Used as host project
-prj_svc1_id = "[your-service-project1-id]"
-svc_a_image = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
+main_project    = {
+  project_id = "[main-project-id]" # Used as host project
+}
+prefix          = "[prefix]"
+service_project = "[service-project-id]"
+svc_a_image     = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
 ```
 
 The blueprint uses an HTTP connection to the ALB to avoid management of SSL certificates. Try to reach service B custom URL as shown below:
