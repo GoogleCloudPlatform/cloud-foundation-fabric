@@ -24,8 +24,8 @@ values:
     lifecycle_rule: []
     location: EU
     logging: []
-    name: my-bucket
-    project: myproject
+    name: test-my-bucket
+    project: project-id
     requester_pays: null
     retention_policy: []
     storage_class: MULTI_REGIONAL
@@ -36,13 +36,13 @@ values:
     autoclass:
     - enabled: false
   module.bucket.google_storage_bucket_iam_binding.bindings["storage-admin-with-delegated_roles"]:
-    bucket: my-bucket
+    bucket: test-my-bucket
     condition:
     - description: null
       expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/storage.objectAdmin','roles/storage.objectViewer'])
       title: delegated-role-grants
     members:
-    - group:storage@example.com
+    - group:organization-admins@example.org
     role: roles/storage.admin
 
 counts:
