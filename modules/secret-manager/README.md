@@ -112,7 +112,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=3
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
