@@ -118,6 +118,8 @@ Organization policies can be loaded from a directory containing YAML files where
 
 Note that constraints defined via org_policies take precedence over those in org_policies_data_path. In other words, if you specify the same constraint in a YAML file and in the org_policies variable, the latter will take priority.
 
+The example below deploys a few organization policies split between two YAML files.
+
 ```hcl
 module "folder" {
   source = "./fabric/modules/folder"
@@ -170,8 +172,6 @@ iam.allowedPolicyMemberDomains:
       - C0yyyyyyy
 ```
 
-
-The example below deploys a few organization policies split between two YAML files.
 ## Hierarchical Firewall Policy Attachments
 
 Hierarchical firewall policies can be managed via the [`net-firewall-policy`](../net-firewall-policy/) module, including support for factories. Once a policy is available, attaching it to the organization can be done either in the firewall policy module itself, or here:
