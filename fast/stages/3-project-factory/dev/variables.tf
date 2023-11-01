@@ -29,23 +29,11 @@ variable "billing_account" {
   }
 }
 
-variable "factory_data" {
-  description = "Project data from either YAML files or externally parsed data."
-  type = object({
-    data      = optional(map(any))
-    data_path = optional(string)
-  })
-  nullable = false
-  default = {
-    data_path = "data/projects"
-  }
-  validation {
-    condition = (
-      (var.factory_data.data != null ? 1 : 0) +
-      (var.factory_data.data_path != null ? 1 : 0)
-    ) == 1
-    error_message = "One of data or data_path needs to be set."
-  }
+variable "factory_data_path" {
+  description = "Path to folder containing YAML project data files."
+  type        = string
+  nullable    = false
+  default     = "data/projects"
 }
 
 variable "prefix" {
