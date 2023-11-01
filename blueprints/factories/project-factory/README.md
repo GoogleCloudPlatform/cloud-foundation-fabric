@@ -120,3 +120,56 @@ shared_vpc_service_config:
 | [projects](outputs.tf#L17) | Project module outputs. |  |
 | [service_accounts](outputs.tf#L22) | Service account emails. |  |
 <!-- END TFDOC -->
+
+## Tests
+
+These tests validate fixes to the project factory.
+
+```hcl
+module "project-factory" {
+  source = "./fabric/blueprints/factories/project-factory"
+  data_defaults = {
+    billing_account = "012345-67890A-ABCDEF"
+  }
+  data_merges = {
+    labels = {
+      owner = "foo"
+    }
+    services = [
+      "compute.googleapis.com"
+    ]
+  }
+  data_overrides = {
+    prefix = "foo"
+  }
+  factory_data = {
+    data_path = "data"
+  }
+}
+# tftest modules=6 resources=17 files=test-0,test-1,test-2
+```
+
+```yaml
+parent: folders/1234567890
+services:
+  - iam.googleapis.com
+  - contactcenteraiplatform.googleapis.com
+  - container.googleapis.com
+# tftest-file id=test-0 path=data/test-0.yaml
+```
+
+```yaml
+parent: folders/1234567890
+services:
+  - iam.googleapis.com
+  - contactcenteraiplatform.googleapis.com
+# tftest-file id=test-1 path=data/test-1.yaml
+```
+
+```yaml
+parent: folders/1234567890
+services:
+  - iam.googleapis.com
+  - storage.googleapis.com
+# tftest-file id=test-2 path=data/test-2.yaml
+```
