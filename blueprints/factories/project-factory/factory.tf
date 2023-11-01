@@ -15,19 +15,15 @@
  */
 
 locals {
-  _data = (
-    var.factory_data.data != null
-    ? var.factory_data.data
-    : {
-      for f in fileset("${local._data_path}", "**/*.yaml") :
-      trimsuffix(f, ".yaml") => yamldecode(file("${local._data_path}/${f}"))
-    }
-  )
-  _data_path = var.factory_data.data_path == null ? null : pathexpand(
-    var.factory_data.data_path
-  )
+  _factory_files = [
+    for f in fileset("${pathexpand(var.factory_data_path)}", "**/*.yaml") : f
+  ]
+  _factory_data = [
+    for f in local._factory_files :
+    yamldecode(file("${pathexpand(var.factory_data_path)}/${f}"))
+  ]
   projects = {
-    for k, v in local._data : k => merge(v, {
+    for i, v in local._factory_data : trimsuffix(local._factory_files[i], ".yaml") => {
       billing_account = try(coalesce(
         var.data_overrides.billing_account,
         try(v.billing_account, null),
@@ -96,7 +92,7 @@ locals {
         try(v.service_accounts, null),
         var.data_defaults.service_accounts
       )
-    })
+    }
   }
   service_accounts = flatten([
     for k, v in local.projects : [
