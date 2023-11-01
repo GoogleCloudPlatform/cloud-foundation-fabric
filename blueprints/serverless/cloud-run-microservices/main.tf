@@ -22,14 +22,13 @@ locals {
   svc_b_name       = "svc-b"
 }
 
-# Main (or host) project
 module "main-project" {
   source          = "../../../modules/project"
-  name            = var.main_project.project_id
+  name            = var.project_configs.main.project_id
   prefix          = var.prefix
-  project_create  = var.main_project.billing_account_id != null
-  billing_account = try(var.main_project.billing_account_id, null)
-  parent          = try(var.main_project.parent, null)
+  project_create  = var.project_configs.main.billing_account_id != null
+  billing_account = try(var.project_configs.main.billing_account_id, null)
+  parent          = try(var.project_configs.main.parent, null)
   # Enable Shared VPC by default, some use cases will use this project as host
   shared_vpc_host_config = {
     enabled = true
@@ -43,15 +42,14 @@ module "main-project" {
   skip_delete = true
 }
 
-# Service project 1
 module "service-project" {
   source          = "../../../modules/project"
-  count           = var.service_project.project_id != null ? 1 : 0
-  name            = var.service_project.project_id
+  count           = try(var.project_configs.service.project_id, null) != null ? 1 : 0
+  name            = var.project_configs.service.project_id
   prefix          = var.prefix
-  project_create  = var.service_project.billing_account_id != null
-  billing_account = try(var.service_project.billing_account_id, null)
-  parent          = try(var.service_project.parent, null)
+  project_create  = var.project_configs.service.billing_account_id != null
+  billing_account = try(var.project_configs.service.billing_account_id, null)
+  parent          = try(var.project_configs.service.parent, null)
   shared_vpc_service_config = {
     host_project = module.main-project.project_id
   }

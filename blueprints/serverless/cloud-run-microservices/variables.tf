@@ -32,15 +32,6 @@ variable "ip_ranges" {
   }
 }
 
-variable "main_project" {
-  description = "Main (or host) project."
-  type = object({
-    billing_account_id = optional(string)
-    parent             = optional(string)
-    project_id         = string
-  })
-}
-
 variable "prefix" {
   description = "Prefix used for project names."
   type        = string
@@ -50,20 +41,28 @@ variable "prefix" {
   }
 }
 
+variable "project_configs" {
+  description = "Projects to use, one project or host and service projects."
+  type = map(object({
+    billing_account_id = optional(string)
+    parent             = optional(string)
+    project_id         = optional(string)
+  }))
+  default = {
+    main    = {} # Or host project
+    service = {}
+  }
+  nullable = false
+  validation {
+    condition     = var.project_configs.main.project_id != null
+    error_message = "At least the main project ID is needed."
+  }
+}
+
 variable "region" {
   description = "Cloud region where resources will be deployed."
   type        = string
   default     = "europe-west1"
-}
-
-variable "service_project" {
-  description = "Service project."
-  type = object({
-    billing_account_id = optional(string)
-    parent             = optional(string)
-    project_id         = optional(string)
-  })
-  default = {}
 }
 
 variable "svc_a_image" {

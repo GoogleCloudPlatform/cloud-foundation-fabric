@@ -28,13 +28,13 @@ resource "google_cloud_run_v2_service" "svc_a" {
       image = var.svc_a_image
     }
     dynamic "vpc_access" {
-      for_each = var.service_project.project_id == null ? [""] : []
+      for_each = try(var.project_configs.service.project_id, null) == null ? [""] : []
       content { # Use Serverless VPC Access connector
         connector = google_vpc_access_connector.connector[0].id
       }
     }
     dynamic "vpc_access" {
-      for_each = var.service_project.project_id != null ? [""] : []
+      for_each = try(var.project_configs.service.project_id, null) != null ? [""] : []
       content { # Use Direct VPC Egress
         network_interfaces {
           subnetwork = module.vpc-main.subnets["${var.region}/subnet-vpc-direct"].name
@@ -80,7 +80,7 @@ module "cloud-run-svc-b" {
 # a VPC access connector to connect from service A to service B.
 # The use case with Shared VPC and internal ALB uses Direct VPC Egress.
 resource "google_vpc_access_connector" "connector" {
-  count   = var.service_project.project_id == null ? 1 : 0
+  count   = try(var.project_configs.service.project_id, null) == null ? 1 : 0
   name    = "connector"
   project = module.main-project.project_id
   region  = var.region

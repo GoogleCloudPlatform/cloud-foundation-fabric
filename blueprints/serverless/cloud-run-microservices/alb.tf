@@ -19,7 +19,7 @@
 # Internal Application Load Balancer in main (host) project
 module "int-alb" {
   source     = "../../../modules/net-lb-app-int"
-  count      = var.service_project.project_id != null ? 1 : 0
+  count      = try(var.project_configs.service.project_id, null) != null ? 1 : 0
   project_id = module.main-project.project_id
   name       = "int-alb-cr"
   region     = var.region

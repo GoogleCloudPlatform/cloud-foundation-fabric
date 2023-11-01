@@ -16,7 +16,10 @@
 
 output "custom_domain" {
   description = "Custom domain for the Application Load Balancer."
-  value       = var.service_project.project_id != null ? "http://${var.custom_domain}" : "none"
+  value = (
+    try(var.project_configs.service.project_id, null) != null
+    ? "http://${var.custom_domain}" : "none"
+  )
 }
 
 output "default_URL_svc_a" {
@@ -31,5 +34,8 @@ output "default_URL_svc_b" {
 
 output "load_balancer_ip" {
   description = "Load Balancer IP address."
-  value       = var.service_project.project_id != null ? module.int-alb[0].address : "none"
+  value = (
+    try(var.project_configs.service.project_id, null) != null
+    ? module.int-alb[0].address : "none"
+  )
 }

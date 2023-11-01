@@ -35,7 +35,7 @@ module "private-dns-main" {
 # DNS configuration for the Cloud Run custom domain (when using internal ALB)
 module "private-dns-main-custom" {
   source     = "../../../modules/dns"
-  count      = var.service_project.project_id != null ? 1 : 0
+  count      = try(var.project_configs.service.project_id, null) != null ? 1 : 0
   project_id = module.main-project.project_id
   name       = "cloud-run-custom"
   zone_config = {
