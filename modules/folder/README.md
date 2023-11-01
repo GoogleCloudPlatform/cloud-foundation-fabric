@@ -21,10 +21,10 @@ This module allows the creation and management of folders, including support for
 ```hcl
 module "folder" {
   source = "./fabric/modules/folder"
-  parent = "organizations/1234567890"
+  parent = var.folder_id
   name   = "Folder name"
   group_iam = {
-    "cloud-owners@example.org" = [
+    "${var.group_email}" = [
       "roles/owner",
       "roles/resourcemanager.folderAdmin",
       "roles/resourcemanager.projectCreator"
@@ -35,12 +35,12 @@ module "folder" {
   }
   iam_bindings_additive = {
     am1-storage-admin = {
-      member = "user:am1@example.org"
+      member = "user:one@example.org"
       role   = "roles/storage.admin"
     }
   }
 }
-# tftest modules=1 resources=5 inventory=iam.yaml
+# tftest modules=1 resources=5 inventory=iam.yaml e2e
 ```
 
 ## IAM
@@ -62,7 +62,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 ```hcl
 module "folder" {
   source = "./fabric/modules/folder"
-  parent = "organizations/1234567890"
+  parent = var.folder_id
   name   = "Folder name"
   org_policies = {
     "compute.disableGuestAttributesAccess" = {
@@ -109,13 +109,69 @@ module "folder" {
     }
   }
 }
-# tftest modules=1 resources=8 inventory=org-policies.yaml
+# tftest modules=1 resources=8 inventory=org-policies.yaml e2e
 ```
 
 ### Organization Policy Factory
 
-See the [organization policy factory in the project module](../project#organization-policy-factory).
+Organization policies can be loaded from a directory containing YAML files where each file defines one or more constraints. The structure of the YAML files is exactly the same as the org_policies variable.
 
+Note that constraints defined via org_policies take precedence over those in org_policies_data_path. In other words, if you specify the same constraint in a YAML file and in the org_policies variable, the latter will take priority.
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+  org_policies_data_path = "configs/org-policies/"
+}
+
+# tftest modules=1 resources=8 files=boolean,list inventory=org-policies.yaml e2e
+```
+
+```yaml
+# tftest-file id=boolean path=configs/org-policies/boolean.yaml
+compute.disableGuestAttributesAccess:
+  rules:
+  - enforce: true
+compute.skipDefaultNetworkCreation:
+  rules:
+  - enforce: true
+iam.disableServiceAccountKeyCreation:
+  rules:
+  - enforce: true
+iam.disableServiceAccountKeyUpload:
+  rules:
+  - condition:
+      description: test condition
+      expression: resource.matchTagId('tagKeys/1234', 'tagValues/1234')
+      location: somewhere
+      title: condition
+    enforce: true
+  - enforce: false
+```
+
+```yaml
+# tftest-file id=list path=configs/org-policies/list.yaml
+compute.trustedImageProjects:
+  rules:
+  - allow:
+      values:
+      - projects/my-project
+compute.vmExternalIpAccess:
+  rules:
+  - deny:
+      all: true
+iam.allowedPolicyMemberDomains:
+  rules:
+  - allow:
+      values:
+      - C0xxxxxxx
+      - C0yyyyyyy
+```
+
+
+The example below deploys a few organization policies split between two YAML files.
 ## Hierarchical Firewall Policy Attachments
 
 Hierarchical firewall policies can be managed via the [`net-firewall-policy`](../net-firewall-policy/) module, including support for factories. Once a policy is available, attaching it to the organization can be done either in the firewall policy module itself, or here:
@@ -133,7 +189,7 @@ module "firewall-policy" {
 
 module "folder" {
   source = "./fabric/modules/folder"
-  parent = "organizations/1234567890"
+  parent = var.folder_id
   name   = "Folder name"
   # attachment via the organization module
   firewall_policy = {
@@ -141,42 +197,42 @@ module "folder" {
     policy = module.firewall-policy.id
   }
 }
-# tftest modules=2 resources=3
+# tftest modules=2 resources=3 e2e
 ```
-
 ## Log Sinks
 
 ```hcl
 module "gcs" {
   source        = "./fabric/modules/gcs"
-  project_id    = "my-project"
+  project_id    = var.project_id
   name          = "gcs_sink"
+  prefix        = "test"
   force_destroy = true
 }
 
 module "dataset" {
   source     = "./fabric/modules/bigquery-dataset"
-  project_id = "my-project"
+  project_id = var.project_id
   id         = "bq_sink"
 }
 
 module "pubsub" {
   source     = "./fabric/modules/pubsub"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "pubsub_sink"
 }
 
 module "bucket" {
   source      = "./fabric/modules/logging-bucket"
   parent_type = "project"
-  parent      = "my-project"
+  parent      = var.project_id
   id          = "bucket"
 }
 
 module "folder-sink" {
   source = "./fabric/modules/folder"
-  parent = "folders/657104291943"
-  name   = "my-folder"
+  folder_create = "false"
+  id   = var.folder_id
   logging_sinks = {
     warnings = {
       destination = module.gcs.id
@@ -206,7 +262,7 @@ module "folder-sink" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest modules=5 resources=14 inventory=logging.yaml
+# tftest modules=5 resources=14 inventory=logging.yaml e2e
 ```
 
 ## Data Access Logs
@@ -218,12 +274,12 @@ This example shows how to set a non-authoritative access log configuration:
 ```hcl
 module "folder" {
   source = "./fabric/modules/folder"
-  parent = "folders/657104291943"
-  name   = "my-folder"
+  parent = var.folder_id
+  name   = "Folder name"
   logging_data_access = {
     allServices = {
       # logs for principals listed here will be excluded
-      ADMIN_READ = ["group:organization-admins@example.org"]
+      ADMIN_READ = ["group:${var.group_email}"]
     }
     "storage.googleapis.com" = {
       DATA_READ  = []
@@ -231,7 +287,7 @@ module "folder" {
     }
   }
 }
-# tftest modules=1 resources=3 inventory=logging-data-access.yaml
+# tftest modules=1 resources=3 inventory=logging-data-access.yaml e2e
 ```
 
 ## Tags
@@ -243,7 +299,7 @@ module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   tags = {
-    environment = {
+    environments = {
       description = "Environment specification."
       iam         = null
       values = {
@@ -256,14 +312,14 @@ module "org" {
 
 module "folder" {
   source = "./fabric/modules/folder"
-  name   = "Test"
-  parent = module.org.organization_id
+  name   = "Folder name"
+  parent = var.folder_id
   tag_bindings = {
-    env-prod = module.org.tag_values["environment/prod"].id
-    foo      = "tagValues/12345678"
+    env-prod = module.org.tag_values["environments/prod"].id
+   # foo      = "tagValues/12345678"
   }
 }
-# tftest modules=2 resources=6 inventory=tags.yaml
+# tftest modules=2 resources=6 inventory=tags.yaml e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->
