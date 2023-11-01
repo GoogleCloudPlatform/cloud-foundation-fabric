@@ -59,7 +59,7 @@ module "project-factory" {
     data_path = "data"
   }
 }
-# tftest modules=7 resources=26 files=prj-app-1,prj-app-2,prj-app-3 inventory=example.yaml
+# tftest modules=6 resources=17 files=prj-app-1,prj-app-2
 ```
 
 ```yaml
@@ -72,8 +72,7 @@ service_encryption_key_ids:
  compute:
  - projects/kms-central-prj/locations/europe-west3/keyRings/my-keyring/cryptoKeys/europe3-gce
 services:
-  - container.googleapis.com
-  - storage.googleapis.com
+- storage.googleapis.com
 service_accounts:
   app-1-be:
     iam_project_roles:
@@ -87,30 +86,23 @@ service_accounts:
 
 ```yaml
 labels:
- app: app-2
+ app: app-1
  team: foo
 parent: folders/12345678
 service_accounts:
   app-2-be: {}
-services:
-- compute.googleapis.com
-- run.googleapis.com
-- storage.googleapis.com
+org_policies:
+  compute.disableGuestAttributesAccess:
+    rules:
+      - enforce: false
+  iam.disableServiceAccountKeyCreation:
+    rules:
+      - enforce: false
 shared_vpc_service_config:
   host_project: foo-host
 
 # tftest-file id=prj-app-2 path=data/prj-app-2.yaml
 ```
-
-```yaml
-parent: folders/12345678
-services:
-- run.googleapis.com
-- storage.googleapis.com
-
-# tftest-file id=prj-app-3 path=data/prj-app-3.yaml
-```
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
