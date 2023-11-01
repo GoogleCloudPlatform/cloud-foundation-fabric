@@ -59,3 +59,9 @@ variable "routes_config" {
   nullable = false
   default  = {}
 }
+
+variable "stack_type" {
+  description = "IP version(s) of traffic and routes that are allowed to be imported or exported between peer networks. Possible values: IPV4_ONLY, IPV4_IPV6"
+  type        = string
+  default     = "IPV4_ONLY"
+}
