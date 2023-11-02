@@ -16,7 +16,6 @@
 
 # tfdoc:file:description Cloud Run services.
 
-# Cloud Run service A
 resource "google_cloud_run_v2_service" "svc_a" {
   project      = module.main-project.project_id
   name         = local.svc_a_name
@@ -25,7 +24,7 @@ resource "google_cloud_run_v2_service" "svc_a" {
   launch_stage = "BETA" # Required to use Direct VPC Egress
   template {
     containers {
-      image = var.svc_a_image
+      image = var.image_configs.svc_a
     }
     dynamic "vpc_access" {
       for_each = try(var.project_configs.service.project_id, null) == null ? [""] : []
@@ -58,7 +57,6 @@ resource "google_cloud_run_v2_service_iam_policy" "svc_a_policy" {
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
-# Cloud Run service B
 module "cloud-run-svc-b" {
   source     = "../../../modules/cloud-run"
   project_id = try(module.service-project[0].project_id, module.main-project.project_id)
@@ -66,7 +64,7 @@ module "cloud-run-svc-b" {
   region     = var.region
   containers = {
     default = {
-      image = var.svc_b_image
+      image = var.image_configs.svc_b
     }
   }
   iam = {

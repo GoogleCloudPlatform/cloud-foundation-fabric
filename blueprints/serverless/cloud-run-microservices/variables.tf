@@ -20,6 +20,15 @@ variable "custom_domain" {
   default     = "service-b.acme.org"
 }
 
+variable "image_configs" {
+  description = "Container images for Cloud Run services."
+  type = object({
+    svc_a = string
+    svc_b = optional(string, "us-docker.pkg.dev/cloudrun/container/hello")
+  })
+  nullable = false
+}
+
 variable "ip_ranges" {
   description = "IP ranges or IPs used by the VPC."
   type        = map(string)
@@ -63,15 +72,4 @@ variable "region" {
   description = "Cloud region where resources will be deployed."
   type        = string
   default     = "europe-west1"
-}
-
-variable "svc_a_image" {
-  description = "Container image to deploy in service A."
-  type        = string
-}
-
-variable "svc_b_image" {
-  description = "Container image to deploy in service B."
-  type        = string
-  default     = "us-docker.pkg.dev/cloudrun/container/hello"
 }
