@@ -34,12 +34,10 @@ variable "project_id" {
 variable "secrets" {
   description = "Map of secrets to manage, their locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
   type = map(object({
-    locations = list(string)
+    locations = optional(list(string), null)
     keys      = optional(map(string), null)
   }))
-  default = {
-    locations = null
-  }
+  default = {}
 }
 
 variable "versions" {
