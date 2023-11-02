@@ -217,7 +217,7 @@ def _handle_sql_instances(resource, data):
       'self_link': _self_link(data['selfLink']),
       'ipAddresses': [
           i['ipAddress']
-          for i in data.get('ipAddresses')
+          for i in data.get('ipAddresses', [])
           if i['type'] == 'PRIVATE'
       ],
       'region': data['region'],

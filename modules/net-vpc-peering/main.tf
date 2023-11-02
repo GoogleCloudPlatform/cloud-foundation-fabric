@@ -36,6 +36,7 @@ resource "google_compute_network_peering" "local_network_peering" {
   import_subnet_routes_with_public_ip = try(
     var.routes_config.local.public_import, null
   )
+  stack_type = var.stack_type
 }
 
 resource "google_compute_network_peering" "peer_network_peering" {
@@ -55,5 +56,6 @@ resource "google_compute_network_peering" "peer_network_peering" {
   import_subnet_routes_with_public_ip = try(
     var.routes_config.peer.public_import, null
   )
+  stack_type = var.stack_type
   depends_on = [google_compute_network_peering.local_network_peering]
 }

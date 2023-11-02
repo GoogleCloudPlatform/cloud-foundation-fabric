@@ -129,9 +129,11 @@ Redirect is implemented via an additional HTTP load balancer with a custom URL m
 
 ```hcl
 module "addresses" {
-  source           = "./fabric/modules/net-address"
-  project_id       = "myprj"
-  global_addresses = ["glb-test-0"]
+  source     = "./fabric/modules/net-address"
+  project_id = "myprj"
+  global_addresses = {
+    "glb-test-0" = {}
+  }
 }
 
 module "glb-test-0-redirect" {

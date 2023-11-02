@@ -19,7 +19,9 @@ locals {
 }
 
 module "addresses" {
-  source           = "../../../modules/net-address"
-  project_id       = module.project.project_id
-  global_addresses = [local.ingress_ip_name]
+  source     = "../../../modules/net-address"
+  project_id = module.project.project_id
+  global_addresses = {
+    "${local.ingress_ip_name}" = {}
+  }
 }

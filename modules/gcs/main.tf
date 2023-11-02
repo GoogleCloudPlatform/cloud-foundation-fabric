@@ -29,6 +29,7 @@ resource "google_storage_bucket" "bucket" {
   labels                      = var.labels
   default_event_based_hold    = var.default_event_based_hold
   requester_pays              = var.requester_pays
+  public_access_prevention    = var.public_access_prevention
   versioning {
     enabled = var.versioning
   }
