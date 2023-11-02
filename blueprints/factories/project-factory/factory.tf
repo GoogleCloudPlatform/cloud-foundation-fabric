@@ -15,13 +15,16 @@
  */
 
 locals {
+  # turn the set of file names into a list for index-based access later on
   _factory_files = [
     for f in fileset("${pathexpand(var.factory_data_path)}", "**/*.yaml") : f
   ]
+  # use a list to store data to avoid map enforcing the same type for all
   _factory_data = [
     for f in local._factory_files :
     yamldecode(file("${pathexpand(var.factory_data_path)}/${f}"))
   ]
+  # assemble final data, emulating optionals and using defaults and merges
   projects = {
     for i, v in local._factory_data : trimsuffix(local._factory_files[i], ".yaml") => {
       billing_account = try(coalesce(
