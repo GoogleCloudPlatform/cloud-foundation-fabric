@@ -22,14 +22,12 @@ output "custom_domain" {
   )
 }
 
-output "default_URL_svc_a" {
-  description = "Cloud Run service A default URL."
-  value       = google_cloud_run_v2_service.svc_a.uri
-}
-
-output "default_URL_svc_b" {
-  description = "Cloud Run service B default URL."
-  value       = module.cloud-run-svc-b.service.status[0].url
+output "default_URLs" {
+  description = "Cloud Run services default URLs."
+  value = {
+    service_a = google_cloud_run_v2_service.svc_a.uri
+    service_b = module.cloud-run-svc-b.service.status[0].url
+  }
 }
 
 output "load_balancer_ip" {
