@@ -17,11 +17,12 @@ If you are interested in following this guide, take a look to the chapters' blue
 Depending on the use case, you will need one or two projects with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project) and a user with the “Project owner” [IAM](https://cloud.google.com/iam) role on those projects. You can use existing projects or let the blueprint create them for you but in that case you will need to add extra information for each project. E.g.:
 
 ```tfvars
-# Create the main project
-main_project = {
-  billing_account_id = "ABCDE-12345-ABCDE"
-  parent             = "organizations/0123456789"
-  project_id         = "spiritual-hour-331417"
+project_configs = {
+  main = {
+    billing_account_id = "ABCDE-12345-ABCDE"
+    parent             = "organizations/0123456789"
+    project_id         = "spiritual-hour-331417"
+  }
 }
 ```
 
@@ -48,16 +49,20 @@ You should see this README and some terraform files.
 3. To deploy a specific use case, you will need to create a file in this directory called `terraform.tfvars` and follow the corresponding instructions to set variables. Values that are meant to be substituted will be shown inside brackets but you need to omit these brackets. E.g.:
 
 ```tfvars
-main_project = {
-  project_id = "[project_id]"
+project_configs = {
+  main = {
+    project_id = "[project_id]"
+  }
 }
 ```
 
 may become
 
 ```tfvars
-main_project = {
-  project_id = "spiritual-hour-331417"
+project_configs = {
+  main = {
+    project_id = "spiritual-hour-331417"
+  }
 }
 ```
 
@@ -88,16 +93,20 @@ https://github.com/willypalacin/vpc-network-tester/tree/main
 Build an image and push it to Artifact Registry. Set the corresponding image variable to its URL, and the main project ID, in `terraform.tfvars`. E.g.:
 
 ```tfvars
-main_project = {
-  project_id = "[main-project-id]"
+image_configs = {
+  svc_a = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
 }
-prefix       = "[prefix]"
-svc_a_image  = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
+prefix = "[prefix]"
+project_configs = {
+  main = {
+    project_id = "[project_id]"
+  }
+}
 ```
 
 Note that final project ids will be of the form "[prefix]-[main-project-id]".
 
-The service B default URL is automatically created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Get into service A and try to reach service B URL as shown below:
+The service B default URL is created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Get into service A and try to reach service B URL as shown below:
 
 <p align="center"> <img src="images/use-case-1-test.png" width="600"> </p>
 
@@ -112,12 +121,18 @@ The second option for internal service to service communication is to use an int
 Set the following in `terraform.tfvars`:
 
 ```tfvars
-main_project    = {
-  project_id = "[main-project-id]" # Used as host project
+image_configs = {
+  svc_a = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
 }
-prefix          = "[prefix]"
-service_project = "[service-project-id]"
-svc_a_image     = "us-docker.pkg.dev/[project-id]/[repo-name]/[tester-app]"
+prefix = "[prefix]"
+project_configs = {
+  main = { # Used as host project
+    project_id = "[project_id]"
+  }
+  service = {
+    project_id = "[project_id]"
+  }
+}
 ```
 
 The blueprint uses an HTTP connection to the ALB to avoid management of SSL certificates. Try to reach service B custom URL as shown below:
@@ -141,7 +156,7 @@ The above command will delete the associated resources so there will be no billa
 | name | description | modules | resources |
 |---|---|---|---|
 | [alb.tf](./alb.tf) | Internal Application Load Balancer resource. | <code>net-lb-app-int</code> |  |
-| [cloudrun.tf](./cloudrun.tf) | Cloud Run services. | <code>cloud-run</code> | <code>google_cloud_run_v2_service</code> · <code>google_cloud_run_v2_service_iam_policy</code> · <code>google_vpc_access_connector</code> |
+| [cloudrun.tf](./cloudrun.tf) | Cloud Run services. | <code>cloud-run</code> | <code>google_cloud_run_v2_service</code> · <code>google_cloud_run_v2_service_iam_binding</code> · <code>google_vpc_access_connector</code> |
 | [dns.tf](./dns.tf) | DNS resources. | <code>dns</code> |  |
 | [main.tf](./main.tf) | Project resources. | <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
@@ -153,36 +168,37 @@ The above command will delete the associated resources so there will be no billa
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [main_project](variables.tf#L35) | Main (or host) project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string&#41;&#10;  parent             &#61; optional&#40;string&#41;&#10;  project_id         &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [image_configs](variables.tf#L23) | Container images for Cloud Run services. | <code title="object&#40;&#123;&#10;  svc_a &#61; string&#10;  svc_b &#61; optional&#40;string, &#34;us-docker.pkg.dev&#47;cloudrun&#47;container&#47;hello&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [prefix](variables.tf#L44) | Prefix used for project names. | <code>string</code> | ✓ |  |
-| [svc_a_image](variables.tf#L69) | Container image to deploy in service A. | <code>string</code> | ✓ |  |
 | [custom_domain](variables.tf#L17) | Custom domain for the Load Balancer. | <code>string</code> |  | <code>&#34;service-b.acme.org&#34;</code> |
-| [ip_ranges](variables.tf#L23) | IP ranges or IPs used by the VPC. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  subnet_main       &#61; &#34;10.0.1.0&#47;24&#34;&#10;  subnet_proxy      &#61; &#34;10.10.0.0&#47;24&#34;&#10;  subnet_vpc_access &#61; &#34;10.10.10.0&#47;28&#34;&#10;  subnet_vpc_direct &#61; &#34;10.8.0.0&#47;26&#34;&#10;  psc_addr          &#61; &#34;10.0.0.100&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [region](variables.tf#L53) | Cloud region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [service_project](variables.tf#L59) | Service project. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string&#41;&#10;  parent             &#61; optional&#40;string&#41;&#10;  project_id         &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [svc_b_image](variables.tf#L74) | Container image to deploy in service B. | <code>string</code> |  | <code>&#34;us-docker.pkg.dev&#47;cloudrun&#47;container&#47;hello&#34;</code> |
+| [ip_configs](variables.tf#L32) | IP ranges or IPs used by the VPC. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  subnet_main       &#61; &#34;10.0.1.0&#47;24&#34;&#10;  subnet_proxy      &#61; &#34;10.10.0.0&#47;24&#34;&#10;  subnet_vpc_access &#61; &#34;10.10.10.0&#47;28&#34;&#10;  subnet_vpc_direct &#61; &#34;10.8.0.0&#47;26&#34;&#10;  psc_addr          &#61; &#34;10.0.0.100&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_configs](variables.tf#L53) | Projects to use, one project or host and service projects. | <code title="map&#40;object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string&#41;&#10;  parent             &#61; optional&#40;string&#41;&#10;  project_id         &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  main    &#61; &#123;&#125; &#35; Or host project&#10;  service &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [region](variables.tf#L71) | Cloud region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [custom_domain](outputs.tf#L17) | Custom domain for the Application Load Balancer. |  |
-| [default_URL_svc_a](outputs.tf#L22) | Cloud Run service A default URL. |  |
-| [default_URL_svc_b](outputs.tf#L27) | Cloud Run service B default URL. |  |
-| [load_balancer_ip](outputs.tf#L32) | Load Balancer IP address. |  |
+| [default_URLs](outputs.tf#L25) | Cloud Run services default URLs. |  |
+| [load_balancer_ip](outputs.tf#L33) | Load Balancer IP address. |  |
 <!-- END TFDOC -->
 ## Tests
 
 ```hcl
 module "test" {
   source = "./fabric/blueprints/serverless/cloud-run-microservices"
-  main_project = {
-    billing_account_id = "ABCDE-12345-ABCDE"
-    parent             = "organizations/0123456789"
-    project_id         = "main-project-id"
+  image_configs = {
+    svc_a = "cloud-run-image"
   }
-  prefix      = "prefix"
-  svc_a_image = "cloud-run-image"
+  prefix = "prefix"
+  project_configs = {
+    main = {
+      billing_account_id = "ABCDE-12345-ABCDE"
+      parent             = "organizations/0123456789"
+      project_id         = "main-project-id"
+    }
+  }
 }
 
 # tftest modules=6 resources=22
@@ -191,18 +207,22 @@ module "test" {
 ```hcl
 module "test" {
   source = "./fabric/blueprints/serverless/cloud-run-microservices"
-  main_project = { # Used as host project
-    billing_account_id = "ABCDE-12345-ABCDE"
-    parent             = "organizations/0123456789"
-    project_id         = "main-project-id"
+  image_configs = {
+    svc_a = "cloud-run-image"
   }
   prefix = "prefix"
-  service_project = {
-    billing_account_id = "ABCDE-12345-ABCDE"
-    parent             = "organizations/0123456789"
-    project_id         = "service-project-id"
+  project_configs = {
+    main = { # Used as host project
+      billing_account_id = "ABCDE-12345-ABCDE"
+      parent             = "organizations/0123456789"
+      project_id         = "main-project-id"
+    }
+    service = {
+      billing_account_id = "ABCDE-12345-ABCDE"
+      parent             = "organizations/0123456789"
+      project_id         = "service-project-id"
+    }
   }
-  svc_a_image = "cloud-run-image"
 }
 
 # tftest modules=9 resources=32
