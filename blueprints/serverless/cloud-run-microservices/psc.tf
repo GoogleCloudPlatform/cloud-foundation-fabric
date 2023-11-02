@@ -23,7 +23,7 @@ module "psc-addr-main" {
   project_id = module.main-project.project_id
   psc_addresses = {
     psc-addr = {
-      address = var.ip_ranges.psc_addr
+      address = var.ip_configs.psc_addr
       network = module.vpc-main.self_link
     }
   }

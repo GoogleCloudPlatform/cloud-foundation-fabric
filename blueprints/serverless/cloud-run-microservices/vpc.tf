@@ -23,24 +23,24 @@ module "vpc-main" {
   name       = "vpc-main"
   subnets = [
     { # regular subnet
-      ip_cidr_range = var.ip_ranges.subnet_main
+      ip_cidr_range = var.ip_configs.subnet_main
       name          = "subnet-main"
       region        = var.region
     },
     { # subnet for VPC access connector
-      ip_cidr_range = var.ip_ranges.subnet_vpc_access
+      ip_cidr_range = var.ip_configs.subnet_vpc_access
       name          = "subnet-vpc-access"
       region        = var.region
     },
     { # subnet for Direct VPC Egress
-      ip_cidr_range = var.ip_ranges.subnet_vpc_direct
+      ip_cidr_range = var.ip_configs.subnet_vpc_direct
       name          = "subnet-vpc-direct"
       region        = var.region
     }
   ]
   subnets_proxy_only = [
     { # subnet for internal ALB
-      ip_cidr_range = var.ip_ranges.subnet_proxy
+      ip_cidr_range = var.ip_configs.subnet_proxy
       name          = "subnet-proxy"
       region        = var.region
       active        = true

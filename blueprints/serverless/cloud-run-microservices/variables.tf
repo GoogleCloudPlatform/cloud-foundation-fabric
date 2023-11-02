@@ -29,7 +29,7 @@ variable "image_configs" {
   nullable = false
 }
 
-variable "ip_ranges" {
+variable "ip_configs" {
   description = "IP ranges or IPs used by the VPC."
   type        = map(string)
   default = {
