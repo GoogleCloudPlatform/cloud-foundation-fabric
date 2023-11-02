@@ -89,7 +89,6 @@ module "secret-manager" {
   project_id = "my-project"
   secrets = {
     test-auto = {
-      locations = null
       keys = {
         global = "projects/PROJECT_ID/locations/global/keyRings/KEYRING/cryptoKeys/KEY"
       }
