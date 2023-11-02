@@ -79,8 +79,8 @@ terraform apply
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account](variables.tf#L19) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [prefix](variables.tf#L51) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
-| [factory_data](variables.tf#L32) | Project data from either YAML files or externally parsed data. | <code title="object&#40;&#123;&#10;  data      &#61; optional&#40;map&#40;any&#41;&#41;&#10;  data_path &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_path &#61; &#34;data&#47;projects&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [prefix](variables.tf#L39) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [factory_data_path](variables.tf#L32) | Path to folder containing YAML project data files. | <code>string</code> |  | <code>&#34;data&#47;projects&#34;</code> |  |
 
 ## Outputs
 
