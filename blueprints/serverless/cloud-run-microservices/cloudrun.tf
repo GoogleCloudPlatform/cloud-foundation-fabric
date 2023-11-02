@@ -43,18 +43,12 @@ resource "google_cloud_run_v2_service" "svc_a" {
   }
 }
 
-data "google_iam_policy" "noauth" {
-  binding {
-    role    = "roles/run.invoker"
-    members = ["allUsers"]
-  }
-}
-
-resource "google_cloud_run_v2_service_iam_policy" "svc_a_policy" {
-  project     = module.main-project.project_id
-  location    = var.region
-  name        = google_cloud_run_v2_service.svc_a.name
-  policy_data = data.google_iam_policy.noauth.policy_data
+resource "google_cloud_run_v2_service_iam_binding" "svc_a_binding" {
+  project  = module.main-project.project_id
+  location = var.region
+  name     = google_cloud_run_v2_service.svc_a.name
+  role     = "roles/run.invoker"
+  members  = ["allUsers"]
 }
 
 module "cloud-run-svc-b" {
