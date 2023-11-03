@@ -31,7 +31,7 @@ def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
 
   # add files the same way as it is done for examples
   if match := COUNT_TEST_RE.search(examples_e2e.code):
-      prepare_files(examples_e2e, tmp_path, match.group(3))
+      prepare_files(examples_e2e, tmp_path, match.group("files"))
 
   e2e_validator(module_path=tmp_path, extra_files=[],
                 tf_var_files=[(tmp_path / 'terraform.tfvars')])
