@@ -52,8 +52,8 @@ resource "google_apigee_environment" "environments" {
       max_node_count = each.value.node_config.max_node_count
     }
   }
-  org_id          = local.org_id
-  type            = each.value.type
+  org_id = local.org_id
+  type   = each.value.type
   lifecycle {
     ignore_changes = [
       node_config["current_aggregate_node_count"]
