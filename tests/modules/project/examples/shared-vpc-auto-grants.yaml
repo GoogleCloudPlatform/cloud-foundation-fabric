@@ -14,25 +14,25 @@
 
 values:
   module.host-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
-    project: my-host-project
+    project: test-host
   module.host-project.google_project.project[0]:
-    project_id: my-host-project
+    project_id: test-host
   module.service-project.google_compute_shared_vpc_service_project.shared_vpc_service[0]:
-    host_project: my-host-project
-    service_project: my-service-project
+    host_project: test-host
+    service_project: test-service
   module.service-project.google_project.project[0]:
-    project_id: my-service-project
+    project_id: test-service
   module.service-project.google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:cloudservices"]:
     condition: []
-    project: my-host-project
+    project: test-host
     role: roles/compute.networkUser
   module.service-project.google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:container"]:
     condition: []
-    project: my-host-project
+    project: test-host
     role: roles/compute.networkUser
   module.service-project.google_project_iam_member.shared_vpc_host_robots["roles/container.hostServiceAgentUser:container"]:
     condition: []
-    project: my-host-project
+    project: test-host
     role: roles/container.hostServiceAgentUser
 
 counts:

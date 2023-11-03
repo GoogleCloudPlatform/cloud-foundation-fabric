@@ -11,15 +11,16 @@ This module implements the creation and management of one GCP project including 
   - [Authoritative IAM](#authoritative-iam)
   - [Additive IAM](#additive-iam)
   - [Service Identities and Authoritative IAM](#service-identities-and-authoritative-iam)
-  - [Service Identities Requiring Manual Iam Grants](#service-identities-requiring-manual-iam-grants)
+  - [Service Identities Requiring Manual IAM Grants](#service-identities-requiring-manual-iam-grants)
 - [Shared VPC](#shared-vpc)
 - [Organization Policies](#organization-policies)
   - [Organization Policy Factory](#organization-policy-factory)
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
-- [Cloud Kms Encryption Keys](#cloud-kms-encryption-keys)
+- [Cloud KMS Encryption Keys](#cloud-kms-encryption-keys)
 - [Tags](#tags)
 - [Outputs](#outputs)
+  - [Managing project related configuration without creating it](#managing-project-related-configuration-without-creating-it)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -30,16 +31,16 @@ This module implements the creation and management of one GCP project including 
 ```hcl
 module "project" {
   source          = "./fabric/modules/project"
-  billing_account = "123456-123456-123456"
-  name            = "myproject"
-  parent          = "folders/1234567890"
-  prefix          = "foo"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
   services = [
     "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
 }
-# tftest modules=1 resources=3 inventory=basic.yaml
+# tftest modules=1 resources=3 inventory=basic.yaml e2e
 ```
 
 ## IAM
@@ -65,10 +66,10 @@ locals {
 
 module "project" {
   source          = "./fabric/modules/project"
-  billing_account = "123456-123456-123456"
-  name            = "project-example"
-  parent          = "folders/1234567890"
-  prefix          = "foo"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
   services = [
     "container.googleapis.com",
     "stackdriver.googleapis.com"
@@ -87,12 +88,12 @@ The `group_iam` variable uses group email addresses as keys and is a convenient 
 ```hcl
 module "project" {
   source          = "./fabric/modules/project"
-  billing_account = "123456-123456-123456"
-  name            = "project-example"
-  parent          = "folders/1234567890"
-  prefix          = "foo"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
   group_iam = {
-    "gcp-security-admins@example.com" = [
+    (var.group_email) = [
       "roles/cloudasset.owner",
       "roles/cloudsupport.techSupportEditor",
       "roles/iam.securityReviewer",
@@ -100,7 +101,7 @@ module "project" {
     ]
   }
 }
-# tftest modules=1 resources=5 inventory=iam-group.yaml
+# tftest modules=1 resources=5 inventory=iam-group.yaml e2e
 ```
 
 The `iam_bindings` variable behaves like a more verbose version of `iam`, and allows setting binding-level IAM conditions.
@@ -108,10 +109,10 @@ The `iam_bindings` variable behaves like a more verbose version of `iam`, and al
 ```hcl
 module "project" {
   source          = "./fabric/modules/project"
-  billing_account = "123456-123456-123456"
-  name            = "project-example"
-  parent          = "folders/1234567890"
-  prefix          = "foo"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
   services = [
     "container.googleapis.com",
     "stackdriver.googleapis.com"
@@ -119,7 +120,7 @@ module "project" {
   iam_bindings = {
     iam_admin_conditional = {
       members = [
-        "group:test-admins@example.org"
+        "group:${var.group_email}"
       ]
       role = "roles/resourcemanager.projectIamAdmin"
       condition = {
@@ -135,7 +136,7 @@ module "project" {
     }
   }
 }
-# tftest modules=1 resources=4 inventory=iam-bindings.yaml
+# tftest modules=1 resources=4 inventory=iam-bindings.yaml e2e
 ```
 
 ### Additive IAM
@@ -146,19 +147,22 @@ The `iam_bindings_additive` variable allows setting individual role/principal bi
 
 ```hcl
 module "project" {
-  source = "./fabric/modules/project"
-  name   = "project-1"
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
   services = [
     "compute.googleapis.com"
   ]
   iam_bindings_additive = {
     group-owner = {
-      member = "group:p1-owners@example.org"
+      member = "group:${var.group_email}"
       role   = "roles/owner"
     }
   }
 }
-# tftest modules=1 resources=3 inventory=iam-bindings-additive.yaml
+# tftest modules=1 resources=3 inventory=iam-bindings-additive.yaml e2e
 ```
 
 ### Service Identities and Authoritative IAM
@@ -167,23 +171,21 @@ As mentioned above, there are cases where authoritative management of specific I
 
 ```hcl
 module "project" {
-  source = "./fabric/modules/project"
-  name   = "project-example"
-  group_iam = {
-    "foo@example.com" = [
-      "roles/editor"
-    ]
-  }
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
   iam = {
     "roles/editor" = [
       "serviceAccount:${module.project.service_accounts.cloud_services}"
     ]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 e2e
 ```
 
-### Service Identities Requiring Manual Iam Grants
+### Service Identities Requiring Manual IAM Grants
 
 The module will create service identities at project creation instead of creating of them at the time of first use. This allows granting these service identities roles in other projects, something which is usually necessary in a Shared VPC context.  
 
@@ -191,15 +193,21 @@ You can grant roles to service identities using the following construct:
 
 ```hcl
 module "project" {
-  source = "./fabric/modules/project"
-  name   = "project-example"
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "apigee.googleapis.com",
+  ]
   iam = {
     "roles/apigee.serviceAgent" = [
       "serviceAccount:${module.project.service_accounts.robots.apigee}"
     ]
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=4 e2e
 ```
 
 This table lists all affected services and roles that you need to grant to service identities
@@ -225,16 +233,26 @@ You can enable Shared VPC Host at the project level and manage project service a
 
 ```hcl
 module "host-project" {
-  source = "./fabric/modules/project"
-  name   = "my-host-project"
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "host"
+  parent          = var.folder_id
+  prefix          = var.prefix
   shared_vpc_host_config = {
     enabled = true
   }
 }
 
 module "service-project" {
-  source = "./fabric/modules/project"
-  name   = "my-service-project"
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "service"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "container.googleapis.com",
+    "run.googleapis.com"
+  ]
   shared_vpc_service_config = {
     host_project = module.host-project.project_id
     service_identity_iam = {
@@ -250,23 +268,29 @@ module "service-project" {
     }
   }
 }
-# tftest modules=2 resources=8 inventory=shared-vpc.yaml
+# tftest modules=2 resources=10 inventory=shared-vpc.yaml e2e
 ```
 
 The module allows also granting necessary permissions in host project to service identities by specifying which services will be used in service project in `grant_iam_for_services`.
 
 ```hcl
 module "host-project" {
-  source = "./fabric/modules/project"
-  name   = "my-host-project"
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "host"
+  parent          = var.folder_id
+  prefix          = var.prefix
   shared_vpc_host_config = {
     enabled = true
   }
 }
 
 module "service-project" {
-  source = "./fabric/modules/project"
-  name   = "my-service-project"
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "service"
+  parent          = var.folder_id
+  prefix          = var.prefix
   services = [
     "container.googleapis.com",
   ]
@@ -275,7 +299,7 @@ module "service-project" {
     service_iam_grants = module.service-project.services
   }
 }
-# tftest modules=2 resources=9 inventory=shared-vpc-auto-grants.yaml
+# tftest modules=2 resources=9 inventory=shared-vpc-auto-grants.yaml e2e
 ```
 
 ## Organization Policies
@@ -285,10 +309,10 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 ```hcl
 module "project" {
   source          = "./fabric/modules/project"
-  billing_account = "123456-123456-123456"
-  name            = "project-example"
-  parent          = "folders/1234567890"
-  prefix          = "foo"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
   org_policies = {
     "compute.disableGuestAttributesAccess" = {
       rules = [{ enforce = true }]
@@ -334,7 +358,7 @@ module "project" {
     }
   }
 }
-# tftest modules=1 resources=8 inventory=org-policies.yaml
+# tftest modules=1 resources=8 inventory=org-policies.yaml e2e
 ```
 
 ### Organization Policy Factory
@@ -348,13 +372,13 @@ The example below deploys a few organization policies split between two YAML fil
 ```hcl
 module "project" {
   source                 = "./fabric/modules/project"
-  billing_account        = "123456-123456-123456"
-  name                   = "project-example"
-  parent                 = "folders/1234567890"
-  prefix                 = "foo"
+  billing_account        = var.billing_account_id
+  name                   = "project"
+  parent                 = var.folder_id
+  prefix                 = var.prefix
   org_policies_data_path = "configs/org-policies/"
 }
-# tftest modules=1 resources=8 files=boolean,list inventory=org-policies.yaml
+# tftest modules=1 resources=8 files=boolean,list inventory=org-policies.yaml e2e
 ```
 
 ```yaml
@@ -415,6 +439,7 @@ module "gcs" {
   source        = "./fabric/modules/gcs"
   project_id    = var.project_id
   name          = "gcs_sink"
+  prefix        = var.prefix
   force_destroy = true
 }
 
@@ -422,6 +447,7 @@ module "dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = var.project_id
   id         = "bq_sink"
+  options    = { delete_contents_on_destroy = true }
 }
 
 module "pubsub" {
@@ -433,15 +459,19 @@ module "pubsub" {
 module "bucket" {
   source      = "./fabric/modules/logging-bucket"
   parent_type = "project"
-  parent      = "my-project"
+  parent      = var.project_id
   id          = "bucket"
 }
 
 module "project-host" {
   source          = "./fabric/modules/project"
-  name            = "my-project"
-  billing_account = "123456-123456-123456"
-  parent          = "folders/1234567890"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "logging.googleapis.com"
+  ]
   logging_sinks = {
     warnings = {
       destination = module.gcs.id
@@ -471,7 +501,7 @@ module "project-host" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest modules=5 resources=14 inventory=logging.yaml
+# tftest modules=5 resources=15 inventory=logging.yaml e2e
 ```
 
 ## Data Access Logs
@@ -483,13 +513,14 @@ This example shows how to set a non-authoritative access log configuration:
 ```hcl
 module "project" {
   source          = "./fabric/modules/project"
-  name            = "my-project"
-  billing_account = "123456-123456-123456"
-  parent          = "folders/1234567890"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
   logging_data_access = {
     allServices = {
       # logs for principals listed here will be excluded
-      ADMIN_READ = ["group:organization-admins@example.org"]
+      ADMIN_READ = ["group:${var.group_email}"]
     }
     "storage.googleapis.com" = {
       DATA_READ  = []
@@ -497,33 +528,34 @@ module "project" {
     }
   }
 }
-# tftest modules=1 resources=3 inventory=logging-data-access.yaml
+# tftest modules=1 resources=3 inventory=logging-data-access.yaml e2e
 ```
 
-## Cloud Kms Encryption Keys
+## Cloud KMS Encryption Keys
 
 The module offers a simple, centralized way to assign `roles/cloudkms.cryptoKeyEncrypterDecrypter` to service identities.
 
 ```hcl
 module "project" {
-  source = "./fabric/modules/project"
-  name   = "my-project"
-  prefix = "foo"
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
   services = [
     "compute.googleapis.com",
     "storage.googleapis.com"
   ]
   service_encryption_key_ids = {
     compute = [
-      "projects/kms-central-prj/locations/europe-west3/keyRings/my-keyring/cryptoKeys/europe3-gce",
-      "projects/kms-central-prj/locations/europe-west4/keyRings/my-keyring/cryptoKeys/europe4-gce"
+      var.kms_key.id
     ]
     storage = [
-      "projects/kms-central-prj/locations/europe/keyRings/my-keyring/cryptoKeys/europe-gcs"
+      var.kms_key.id
     ]
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=6 e2e
 ```
 
 ## Tags
@@ -548,7 +580,8 @@ module "org" {
 
 module "project" {
   source = "./fabric/modules/project"
-  name   = "test-project"
+  name   = "project"
+  parent = var.folder_id
   tag_bindings = {
     env-prod = module.org.tag_values["environment/prod"].id
     foo      = "tagValues/12345678"
@@ -565,8 +598,11 @@ One non-obvious output is `service_accounts`, which offers a simple way to disco
 
 ```hcl
 module "project" {
-  source = "./fabric/modules/project"
-  name   = "project-example"
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
   services = [
     "compute.googleapis.com"
   ]
@@ -575,8 +611,221 @@ module "project" {
 output "compute_robot" {
   value = module.project.service_accounts.robots.compute
 }
-# tftest modules=1 resources=2 inventory:outputs.yaml
+# tftest modules=1 resources=2 inventory:outputs.yaml e2e
 ```
+
+### Managing project related configuration without creating it
+
+The module offers managing all related resources without ever touching the project itself by using `project_create = false` 
+
+```hcl
+module "create-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+}
+
+module "project" {
+  source          = "./fabric/modules/project"
+  depends_on      = [module.create-project]
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  project_create  = false
+
+  group_iam = {
+    (var.group_email) = [
+      "roles/cloudasset.owner",
+      "roles/cloudsupport.techSupportEditor",
+      "roles/iam.securityReviewer",
+      "roles/logging.admin",
+    ]
+  }
+  iam_bindings = {
+    iam_admin_conditional = {
+      members = [
+        "group:${var.group_email}"
+      ]
+      role = "roles/resourcemanager.projectIamAdmin"
+      condition = {
+        title      = "delegated_network_user_one"
+        expression = <<-END
+          api.getAttribute(
+            'iam.googleapis.com/modifiedGrantsByRole', []
+          ).hasOnly([
+            'roles/compute.networkAdmin'
+          ])
+        END
+      }
+    }
+  }
+  iam_bindings_additive = {
+    group-owner = {
+      member = "group:${var.group_email}"
+      role   = "roles/owner"
+    }
+  }
+  iam = {
+    "roles/editor" = [
+      "serviceAccount:${module.project.service_accounts.cloud_services}"
+    ]
+    "roles/apigee.serviceAgent" = [
+      "serviceAccount:${module.project.service_accounts.robots.apigee}"
+    ]
+  }
+  logging_data_access = {
+    allServices = {
+      # logs for principals listed here will be excluded
+      ADMIN_READ = ["group:${var.group_email}"]
+    }
+    "storage.googleapis.com" = {
+      DATA_READ  = []
+      DATA_WRITE = []
+    }
+  }
+  logging_sinks = {
+    warnings = {
+      destination = module.gcs.id
+      filter      = "severity=WARNING"
+      type        = "storage"
+    }
+    info = {
+      destination = module.dataset.id
+      filter      = "severity=INFO"
+      type        = "bigquery"
+    }
+    notice = {
+      destination = module.pubsub.id
+      filter      = "severity=NOTICE"
+      type        = "pubsub"
+    }
+    debug = {
+      destination = module.bucket.id
+      filter      = "severity=DEBUG"
+      exclusions = {
+        no-compute = "logName:compute"
+      }
+      type = "logging"
+    }
+  }
+  logging_exclusions = {
+    no-gce-instances = "resource.type=gce_instance"
+  }
+  org_policies = {
+    "compute.disableGuestAttributesAccess" = {
+      rules = [{ enforce = true }]
+    }
+    "compute.skipDefaultNetworkCreation" = {
+      rules = [{ enforce = true }]
+    }
+    "iam.disableServiceAccountKeyCreation" = {
+      rules = [{ enforce = true }]
+    }
+    "iam.disableServiceAccountKeyUpload" = {
+      rules = [
+        {
+          condition = {
+            expression  = "resource.matchTagId('tagKeys/1234', 'tagValues/1234')"
+            title       = "condition"
+            description = "test condition"
+            location    = "somewhere"
+          }
+          enforce = true
+        },
+        {
+          enforce = false
+        }
+      ]
+    }
+    "iam.allowedPolicyMemberDomains" = {
+      rules = [{
+        allow = {
+          values = ["C0xxxxxxx", "C0yyyyyyy"]
+        }
+      }]
+    }
+    "compute.trustedImageProjects" = {
+      rules = [{
+        allow = {
+          values = ["projects/my-project"]
+        }
+      }]
+    }
+    "compute.vmExternalIpAccess" = {
+      rules = [{ deny = { all = true } }]
+    }
+  }
+  shared_vpc_service_config = {
+    host_project       = module.host-project.project_id
+    service_iam_grants = module.project.services
+    service_identity_iam = {
+      "roles/cloudasset.owner" = [
+        "cloudservices", "container-engine"
+      ]
+    }
+  }
+  services = [
+    "apigee.googleapis.com",
+    "bigquery.googleapis.com",
+    "container.googleapis.com",
+    "logging.googleapis.com",
+    "run.googleapis.com",
+    "storage.googleapis.com",
+  ]
+  service_encryption_key_ids = {
+    compute = [
+      var.kms_key.id
+    ]
+    storage = [
+      var.kms_key.id
+    ]
+  }
+}
+
+module "host-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "host"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  shared_vpc_host_config = {
+    enabled = true
+  }
+}
+
+module "gcs" {
+  source        = "./fabric/modules/gcs"
+  project_id    = var.project_id
+  name          = "gcs_sink"
+  prefix        = var.prefix
+  force_destroy = true
+}
+
+module "dataset" {
+  source     = "./fabric/modules/bigquery-dataset"
+  project_id = var.project_id
+  id         = "bq_sink"
+  options    = { delete_contents_on_destroy = true }
+}
+
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "pubsub_sink"
+}
+
+module "bucket" {
+  source      = "./fabric/modules/logging-bucket"
+  parent_type = "project"
+  parent      = var.project_id
+  id          = "bucket"
+}
+# tftest modules=7 resources=53 inventory=data.yaml e2e
+```
+
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->

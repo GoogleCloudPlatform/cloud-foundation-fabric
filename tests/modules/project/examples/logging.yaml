@@ -21,7 +21,7 @@ values:
     disabled: null
     filter: resource.type=gce_instance
     name: no-gce-instances
-    project: my-project
+    project: test-project
   module.project-host.google_logging_project_sink.sink["debug"]:
     description: debug (Terraform-managed).
     disabled: false
@@ -32,7 +32,7 @@ values:
       name: no-compute
     filter: severity=DEBUG
     name: debug
-    project: my-project
+    project: test-project
     unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["info"]:
     description: info (Terraform-managed).
@@ -40,7 +40,7 @@ values:
     exclusions: []
     filter: severity=INFO
     name: info
-    project: my-project
+    project: test-project
     unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["notice"]:
     description: notice (Terraform-managed).
@@ -48,25 +48,25 @@ values:
     exclusions: []
     filter: severity=NOTICE
     name: notice
-    project: my-project
+    project: test-project
     unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["warnings"]:
     description: warnings (Terraform-managed).
-    destination: storage.googleapis.com/gcs_sink
+    destination: storage.googleapis.com/test-gcs_sink
     disabled: false
     exclusions: []
     filter: severity=WARNING
     name: warnings
-    project: my-project
+    project: test-project
     unique_writer_identity: true
   module.project-host.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    folder_id: '1234567890'
+    folder_id: '1122334455'
     labels: null
-    name: my-project
+    name: test-project
     org_id: null
-    project_id: my-project
+    project_id: test-project
     skip_delete: false
   module.project-host.google_project_iam_member.bucket-sinks-binding["debug"]:
     condition:
@@ -76,7 +76,7 @@ values:
     condition: []
     role: roles/pubsub.publisher
   module.project-host.google_storage_bucket_iam_member.gcs-sinks-binding["warnings"]:
-    bucket: gcs_sink
+    bucket: test-gcs_sink
     condition: []
     role: roles/storage.objectCreator
 

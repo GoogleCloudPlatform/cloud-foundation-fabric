@@ -1,0 +1,338 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+values:
+  module.bucket.google_logging_project_bucket_config.bucket[0]:
+    bucket_id: bucket
+    project: project-id
+  module.create-project.google_project.project[0]:
+    billing_account: 123456-123456-123456
+    folder_id: '1122334455'
+    name: test-project
+    project_id: test-project
+  module.dataset.google_bigquery_dataset.default:
+    dataset_id: bq_sink
+    delete_contents_on_destroy: true
+    project: project-id
+  module.gcs.google_storage_bucket.bucket:
+    name: test-gcs_sink
+    project: project-id
+  module.host-project.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
+    project: test-host
+  module.host-project.google_project.project[0]:
+    billing_account: 123456-123456-123456
+    folder_id: '1122334455'
+    name: test-host
+    project_id: test-host
+  module.project.data.google_bigquery_default_service_account.bq_sa[0]:
+    project: test-project
+  module.project.data.google_project.project[0]:
+    project_id: test-project
+  module.project.data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-project
+  module.project.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
+    role: roles/bigquery.dataEditor
+  module.project.google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    host_project: test-host
+    service_project: test-project
+  module.project.google_kms_crypto_key_iam_member.service_identity_cmek["compute.kms_key_self_link"]:
+    crypto_key_id: kms_key_self_link
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.project.google_kms_crypto_key_iam_member.service_identity_cmek["storage.kms_key_self_link"]:
+    crypto_key_id: kms_key_self_link
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.project.google_logging_project_exclusion.logging-exclusion["no-gce-instances"]:
+    filter: resource.type=gce_instance
+    name: no-gce-instances
+    project: test-project
+  module.project.google_logging_project_sink.sink["debug"]:
+    exclusions:
+    - description: null
+      disabled: false
+      filter: logName:compute
+      name: no-compute
+    filter: severity=DEBUG
+    name: debug
+    project: test-project
+  module.project.google_logging_project_sink.sink["info"]:
+    exclusions: []
+    filter: severity=INFO
+    name: info
+    project: test-project
+  module.project.google_logging_project_sink.sink["notice"]:
+    destination: pubsub.googleapis.com/projects/project-id/topics/pubsub_sink
+    disabled: false
+    exclusions: []
+    filter: severity=NOTICE
+    name: notice
+    project: test-project
+  module.project.google_logging_project_sink.sink["warnings"]:
+    destination: storage.googleapis.com/test-gcs_sink
+    disabled: false
+    exclusions: []
+    filter: severity=WARNING
+    name: warnings
+    project: test-project
+  module.project.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
+    name: projects/test-project/policies/compute.disableGuestAttributesAccess
+    parent: projects/test-project
+    spec:
+    - inherit_from_parent: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+  module.project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
+    name: projects/test-project/policies/compute.skipDefaultNetworkCreation
+    parent: projects/test-project
+    spec:
+    - inherit_from_parent: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+  module.project.google_org_policy_policy.default["compute.trustedImageProjects"]:
+    name: projects/test-project/policies/compute.trustedImageProjects
+    parent: projects/test-project
+    spec:
+    - inherit_from_parent: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - projects/my-project
+          denied_values: null
+  module.project.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    name: projects/test-project/policies/compute.vmExternalIpAccess
+    parent: projects/test-project
+    spec:
+    - inherit_from_parent: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: 'TRUE'
+        enforce: null
+        values: []
+  module.project.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
+    name: projects/test-project/policies/iam.allowedPolicyMemberDomains
+    parent: projects/test-project
+    spec:
+    - inherit_from_parent: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - C0xxxxxxx
+          - C0yyyyyyy
+          denied_values: null
+  module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    name: projects/test-project/policies/iam.disableServiceAccountKeyCreation
+    parent: projects/test-project
+    spec:
+    - inherit_from_parent: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+  module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    name: projects/test-project/policies/iam.disableServiceAccountKeyUpload
+    parent: projects/test-project
+    spec:
+    - inherit_from_parent: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: test condition
+          expression: resource.matchTagId('tagKeys/1234', 'tagValues/1234')
+          location: somewhere
+          title: condition
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        values: []
+  module.project.google_project_iam_audit_config.default["allServices"]:
+    audit_log_config:
+    - exempted_members:
+      - group:organization-admins@example.org
+      log_type: ADMIN_READ
+    project: test-project
+    service: allServices
+  module.project.google_project_iam_audit_config.default["storage.googleapis.com"]:
+    audit_log_config:
+    - exempted_members: []
+      log_type: DATA_READ
+    - exempted_members: []
+      log_type: DATA_WRITE
+    project: test-project
+    service: storage.googleapis.com
+  module.project.google_project_iam_binding.authoritative["roles/apigee.serviceAgent"]:
+    condition: []
+    project: test-project
+    role: roles/apigee.serviceAgent
+  module.project.google_project_iam_binding.authoritative["roles/cloudasset.owner"]:
+    condition: []
+    project: test-project
+    role: roles/cloudasset.owner
+  module.project.google_project_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
+    condition: []
+    project: test-project
+    role: roles/cloudsupport.techSupportEditor
+  module.project.google_project_iam_binding.authoritative["roles/editor"]:
+    condition: []
+    project: test-project
+    role: roles/editor
+  module.project.google_project_iam_binding.authoritative["roles/iam.securityReviewer"]:
+    condition: []
+    project: test-project
+    role: roles/iam.securityReviewer
+  module.project.google_project_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    project: test-project
+    role: roles/logging.admin
+  module.project.google_project_iam_binding.bindings["iam_admin_conditional"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute(\n  'iam.googleapis.com/modifiedGrantsByRole',\
+        \ []\n).hasOnly([\n  'roles/compute.networkAdmin'\n])\n"
+      title: delegated_network_user_one
+    members:
+    - group:organization-admins@example.org
+    project: test-project
+    role: roles/resourcemanager.projectIamAdmin
+  module.project.google_project_iam_member.bindings["group-owner"]:
+    condition: []
+    member: group:organization-admins@example.org
+    project: test-project
+    role: roles/owner
+  module.project.google_project_iam_member.bucket-sinks-binding["debug"]:
+    condition:
+    - title: debug bucket writer
+    role: roles/logging.bucketWriter
+  module.project.google_project_iam_member.shared_vpc_host_robots["roles/cloudasset.owner:cloudservices"]:
+    condition: []
+    project: test-host
+    role: roles/cloudasset.owner
+  module.project.google_project_iam_member.shared_vpc_host_robots["roles/cloudasset.owner:container-engine"]:
+    condition: []
+    project: test-host
+    role: roles/cloudasset.owner
+  module.project.google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:cloudservices"]:
+    condition: []
+    project: test-host
+    role: roles/compute.networkUser
+  module.project.google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:container"]:
+    condition: []
+    project: test-host
+    role: roles/compute.networkUser
+  module.project.google_project_iam_member.shared_vpc_host_robots["roles/compute.securityAdmin:container"]:
+    condition: []
+    project: test-host
+    role: roles/compute.securityAdmin
+  module.project.google_project_iam_member.shared_vpc_host_robots["roles/container.hostServiceAgentUser:container"]:
+    condition: []
+    project: test-host
+    role: roles/container.hostServiceAgentUser
+  module.project.google_project_iam_member.shared_vpc_host_robots["roles/vpcaccess.user:run"]:
+    condition: []
+    project: test-host
+    role: roles/vpcaccess.user
+  module.project.google_project_service.project_services["apigee.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-project
+    service: apigee.googleapis.com
+  module.project.google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-project
+    service: bigquery.googleapis.com
+  module.project.google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-project
+    service: container.googleapis.com
+  module.project.google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-project
+    service: logging.googleapis.com
+  module.project.google_project_service.project_services["run.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-project
+    service: run.googleapis.com
+  module.project.google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-project
+    service: storage.googleapis.com
+  module.project.google_project_service_identity.jit_si["apigee.googleapis.com"]:
+    project: test-project
+    service: apigee.googleapis.com
+  module.project.google_pubsub_topic_iam_member.pubsub-sinks-binding["notice"]:
+    condition: []
+    project: project-id
+    role: roles/pubsub.publisher
+    topic: pubsub_sink
+  module.project.google_storage_bucket_iam_member.gcs-sinks-binding["warnings"]:
+    bucket: test-gcs_sink
+    condition: []
+    role: roles/storage.objectCreator
+  module.pubsub.google_pubsub_topic.default:
+    name: pubsub_sink
+    project: project-id
+
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_dataset_iam_member: 1
+  google_bigquery_default_service_account: 1
+  google_compute_shared_vpc_host_project: 1
+  google_compute_shared_vpc_service_project: 1
+  google_kms_crypto_key_iam_member: 2
+  google_logging_project_bucket_config: 1
+  google_logging_project_exclusion: 1
+  google_logging_project_sink: 4
+  google_org_policy_policy: 7
+  google_project: 3
+  google_project_iam_audit_config: 2
+  google_project_iam_binding: 7
+  google_project_iam_member: 9
+  google_project_service: 6
+  google_project_service_identity: 1
+  google_pubsub_topic: 1
+  google_pubsub_topic_iam_member: 1
+  google_storage_bucket: 1
+  google_storage_bucket_iam_member: 1
+  google_storage_project_service_account: 1
+  modules: 7
+  resources: 53
+
+outputs: {}
