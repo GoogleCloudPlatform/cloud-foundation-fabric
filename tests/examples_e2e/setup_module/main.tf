@@ -13,11 +13,14 @@
 # limitations under the License.
 
 locals {
-  prefix = "${var.prefix}-${var.timestamp}-${var.suffix}"
+  prefix = "${var.prefix}-${var.timestamp}${var.suffix}"
   services = [
     # trimmed down list of services, to be extended as needed
+    "apigee.googleapis.com",
+    "bigquery.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudfunctions.googleapis.com",
+    "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
     "iam.googleapis.com",
@@ -77,14 +80,28 @@ resource "google_service_account" "service_account" {
   depends_on = [google_project_service.project_service]
 }
 
+resource "google_kms_key_ring" "keyring" {
+  name       = "keyring"
+  project    = google_project.project.project_id
+  location   = var.region
+  depends_on = [google_project_service.project_service]
+}
+
+resource "google_kms_crypto_key" "key" {
+  name            = "crypto-key-example"
+  key_ring        = google_kms_key_ring.keyring.id
+  rotation_period = "100000s"
+}
+
 resource "local_file" "terraform_tfvars" {
   filename = "e2e_tests.tfvars"
   content = templatefile("e2e_tests.tfvars.tftpl", {
     bucket             = google_storage_bucket.bucket.name
     billing_account_id = var.billing_account
-    organization_id    = var.organization_id
     folder_id          = google_folder.folder.folder_id
-    prefix             = local.prefix
+    group_email        = var.group_email
+    kms_key_id         = google_kms_crypto_key.key.id
+    organization_id    = var.organization_id
     project_id         = google_project.project.project_id
     region             = var.region
     service_account = {

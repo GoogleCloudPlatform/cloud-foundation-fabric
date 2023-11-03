@@ -22,9 +22,13 @@ variable "billing_account_id" {
   default = "123456-123456-123456"
 }
 
+variable "group_email" {
+  default = "organization-admins@example.org"
+}
+
 variable "kms_key" {
   default = {
-    self_link = "kms_key_self_link"
+    id = "kms_key_self_link"
   }
 }
 
