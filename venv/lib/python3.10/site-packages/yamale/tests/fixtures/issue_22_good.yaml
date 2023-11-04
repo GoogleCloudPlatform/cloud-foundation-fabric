@@ -1,5 +1,0 @@
-apps:
-  - id: info.guardianproject.orfox
-    repository: guardian_orfox
-  - id: org.videolan.vlc
-  - be.uhasselt.privacypolice

@@ -1,5 +1,0 @@
-outcomes: list(include('outcome'))
----
-outcome:
-    id: str()
-    title: str()

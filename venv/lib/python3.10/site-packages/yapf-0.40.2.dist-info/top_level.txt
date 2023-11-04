@@ -1,3 +1,0 @@
-yapf
-yapf_third_party
-yapftests

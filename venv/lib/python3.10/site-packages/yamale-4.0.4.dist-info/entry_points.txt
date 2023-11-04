@@ -1,3 +1,0 @@
-[console_scripts]
-yamale = yamale.command_line:main
-
