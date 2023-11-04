@@ -298,9 +298,12 @@ def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
     tf.setup(extra_files=extra_files, upgrade=True)
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
 
+    # to allow different tests to create projects (or other globally unique resources) with the same name
+    # bump prefix forward on each test execution
+    prefix = f'{os.environ.get("TF_VAR_prefix")}-{int(time.time())}{os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:]}'
     try:
-      apply = tf.apply(tf_var_file=tf_var_files)
-      plan = tf.plan(output=True, tf_var_file=tf_var_files)
+      apply = tf.apply(tf_var_file=tf_var_files, tf_vars={"prefix": prefix})
+      plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars={"prefix": prefix})
       changes = {}
       for resource_name, value in plan.resource_changes.items():
         if value.get('change', {}).get('actions') != ['no-op']:
@@ -324,7 +327,7 @@ def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
       # If above did not fail, this should not either, but left as a safety check
       assert changes == {}, f'Plan not empty for following resources: {", ".join(changes.keys())}'
     finally:
-      destroy = tf.destroy(tf_var_file=tf_var_files)
+      destroy = tf.destroy(tf_var_file=tf_var_files, tf_vars={'prefix': prefix})
 
 
 @pytest.fixture(name='e2e_validator')
@@ -371,7 +374,7 @@ def e2e_tfvars_path():
       tf = tftest.TerraformTest(test_path, binary=binary)
       tf_vars_file = None
       tf_vars = {
-          'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0"),
+          'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:],  # take at most 2 last chars for suffix
           'timestamp': str(int(time.time()))
       }
       if 'TFTEST_E2E_SETUP_TFVARS_PATH' in os.environ:

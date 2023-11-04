@@ -18,9 +18,18 @@ import yaml
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
-COUNT_TEST_RE = re.compile(r'# tftest +modules=(\d+) +resources=(\d+)' +
-                           r'(?: +files=([\w@,_-]+))?' +
-                           r'(?: +inventory=([\w\-.]+))?')
+COUNT_TEST_RE = re.compile(r'# tftest +modules=(?P<modules>\d+) +resources=(?P<resources>\d+)' +
+                           r'(?: +files=(?P<files>[\w@,_-]+))?' +
+                           r'(?: +inventory=(?P<inventory>[\w\-.]+))?')
+
+
+def prepare_files(example, test_path, line):
+  if line is not None:
+    requested_files = line.split(',')
+    for f in requested_files:
+      destination = test_path / example.files[f].path
+      destination.parent.mkdir(parents=True, exist_ok=True)
+      destination.write_text(example.files[f].content)
 
 
 def test_example(plan_validator, tmp_path, example):
@@ -33,21 +42,16 @@ def test_example(plan_validator, tmp_path, example):
     if assets_path.exists():
       (tmp_path / 'assets').symlink_to(assets_path)
 
-    expected_modules = int(match.group(1))
-    expected_resources = int(match.group(2))
+    expected_modules = int(match.group("modules"))
+    expected_resources = int(match.group("resources"))
 
-    if match.group(3) is not None:
-      requested_files = match.group(3).split(',')
-      for f in requested_files:
-        destination = tmp_path / example.files[f].path
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(example.files[f].content)
+    prepare_files(example, tmp_path, match.group("files"))
 
     inventory = []
-    if match.group(4) is not None:
+    if match.group("inventory") is not None:
       python_test_path = str(example.module).replace('-', '_')
       inventory = BASE_PATH.parent / python_test_path / 'examples'
-      inventory = inventory / match.group(4)
+      inventory = inventory / match.group("inventory")
 
     # TODO: force plan_validator to never copy files (we're already
     # running from a temp dir)

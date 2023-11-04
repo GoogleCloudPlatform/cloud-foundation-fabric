@@ -15,23 +15,23 @@
 values:
   module.project.google_project.project[0]:
     auto_create_network: false
-    billing_account: null
-    folder_id: null
+    billing_account: 123456-123456-123456
+    folder_id: '1122334455'
     labels: null
-    name: project-1
+    name: test-project
     org_id: null
-    project_id: project-1
+    project_id: test-project
     skip_delete: false
     timeouts: null
   module.project.google_project_iam_member.bindings["group-owner"]:
     condition: []
-    member: group:p1-owners@example.org
-    project: project-1
+    member: group:organization-admins@example.org
+    project: test-project
     role: roles/owner
   module.project.google_project_service.project_services["compute.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: project-1
+    project: test-project
     service: compute.googleapis.com
     timeouts: null
 

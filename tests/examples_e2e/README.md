@@ -9,7 +9,7 @@ Prepare following information:
 * prepare service account that has necessary permissions (able to assign billing account to project, resource creation etc)
 
 # How does it work
-Each test case is provided by additional environment defined in [variables.tf](./variables.tf). This simplifies writing the examples as this follows the same structure as for non-end-to-end tests, and allows multiple, independent and concurrent runs of tests.
+Each test case is provided by additional environment defined in [variables.tf](../examples/variables.tf). This simplifies writing the examples as this follows the same structure as for non-end-to-end tests, and allows multiple, independent and concurrent runs of tests.
 
 The test environment can be provisioned automatically during the test run (which now takes ~2 minutes) and destroyed and the end, when of the tests (Option 1 below), which is targeting automated runs in CI/CD pipeline, or can be provisioned manually to reduce test time, which might be typical use case for tests run locally.
 
@@ -18,6 +18,7 @@ The test environment can be provisioned automatically during the test run (which
 ## Create `e2e.tfvars` file
 ```hcl
 billing_account = "123456-123456-123456"  # billing account id to associate projects
+group_email     = "group@example.org"  # existing group within organization
 organization_id = "1234567890" # your organization id
 parent          = "folders/1234567890"  # folder under which test resources will be created
 prefix          = "your-unique-prefix"  # unique prefix for projects
@@ -27,15 +28,17 @@ region          = "europe-west4"  # region to use
 ```
 And set environment variable pointing to the file:
 ```bash
+export TF_VAR_prefix="your-unique-prefix"  # unique prefix for projects, no longer than 7 characters
 export TFTEST_E2E_SETUP_TFVARS_PATH=<path to e2e.tfvars file>
 ```
 
 Or set above variables in environment:
 ```bash
 export TF_VAR_billing_account="123456-123456-123456"  # billing account id to associate projects
+export TF_VAR_group_email="group@example.org" # existing group within organization
 export TF_VAR_organization_id="1234567890" # your organization id
 export TF_VAR_parent="folders/1234567890"  # folder under which test resources will be created
-export TF_VAR_prefix="your-unique-prefix"  # unique prefix for projects
+export TF_VAR_prefix="your-unique-prefix"  # unique prefix for projects, no longer than 7 characters
 export TF_VAR_region="europe-west4"  # region to use
 ```
 
@@ -55,6 +58,7 @@ pytest tests/examples_e2e
 In `tests/examples_e2e/setup_module` create `terraform.tfvars` with following values:
 ```hcl
 billing_account = "123456-123456-123456"  # billing account id to associate projects
+group_email     = "group@example.org"  # existing group within organization
 organization_id = "1234567890"  # your organization id
 parent          = "folders/1234567890"  # folder under which test resources will be created
 prefix          = "your-unique-prefix"  # unique prefix for projects
@@ -79,6 +83,7 @@ This will generate also `tests/examples_e2e/setup_module/e2e_tests.tfvars` for y
 ## Setup your environment
 ```bash
 export TFTEST_E2E_TFVARS_PATH=`pwd`/tests/examples_e2e/setup_module/e2e_tests.tfvars  # generated above
+export TF_VAR_prefix="your-unique-prefix"  # unique prefix for projects, no longer than 7 characters
 ```
 
 ## Run tests
