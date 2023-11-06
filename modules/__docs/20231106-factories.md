@@ -86,3 +86,16 @@ As outlined above, the existing factories will be moved to modules (bigquery and
 ### FAST factories
 
 The only change for FAST factories will be moving the project factory from blueprints to the stage folder, and updating the path used for the environment-level wrapping stage.
+
+### File schema and filesystem organization
+
+Factory files schema must mimick and implement the variable interface for the module, including optionals and validation - which are implemented in code and checks.
+
+With notable exceptions (currently only the `cidrs.yaml` file consumed by firewall factories), the following convention for files/directory is proposed:
+
+- Factories should consume directories (vs single files)
+- All files should contain a dictionary
+- Files in a directory should be parsed together and flattened into a single dictionary
+
+This allows developers to implement multiple resources in a single file or to use one file per resource, as they see fit.
+
