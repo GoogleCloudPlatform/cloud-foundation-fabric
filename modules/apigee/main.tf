@@ -40,11 +40,11 @@ resource "google_apigee_envgroup" "envgroups" {
 
 resource "google_apigee_environment" "environments" {
   for_each        = var.environments
-  name            = each.key
-  display_name    = each.value.display_name
-  description     = each.value.description
-  deployment_type = each.value.deployment_type
   api_proxy_type  = each.value.api_proxy_type
+  deployment_type = each.value.deployment_type
+  description     = each.value.description
+  display_name    = each.value.display_name
+  name            = each.key
   dynamic "node_config" {
     for_each = try(each.value.node_config, null) != null ? [""] : []
     content {
@@ -53,6 +53,7 @@ resource "google_apigee_environment" "environments" {
     }
   }
   org_id = local.org_id
+  type   = each.value.type
   lifecycle {
     ignore_changes = [
       node_config["current_aggregate_node_count"]
