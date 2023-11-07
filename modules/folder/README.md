@@ -31,11 +31,11 @@ module "folder" {
     ]
   }
   iam = {
-    "roles/owner" = ["user:one@example.org"]
+    "roles/owner" = ["serviceAccount:${var.service_account.email}"]
   }
   iam_bindings_additive = {
     am1-storage-admin = {
-      member = "user:one@example.org"
+      member = "serviceAccount:${var.service_account.email}"
       role   = "roles/storage.admin"
     }
   }
@@ -122,12 +122,11 @@ The example below deploys a few organization policies split between two YAML fil
 
 ```hcl
 module "folder" {
-  source = "./fabric/modules/folder"
-  parent = var.folder_id
-  name   = "Folder name"
+  source                 = "./fabric/modules/folder"
+  parent                 = var.folder_id
+  name                   = "Folder name"
   org_policies_data_path = "configs/org-policies/"
 }
-
 # tftest modules=1 resources=8 files=boolean,list inventory=org-policies.yaml e2e
 ```
 
@@ -231,8 +230,8 @@ module "bucket" {
 
 module "folder-sink" {
   source = "./fabric/modules/folder"
-  folder_create = "false"
-  id   = var.folder_id
+  name   = "Folder name"
+  parent = var.folder_id
   logging_sinks = {
     warnings = {
       destination = module.gcs.id
@@ -299,7 +298,7 @@ module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   tags = {
-    environments = {
+    environment = {
       description = "Environment specification."
       iam         = null
       values = {
@@ -315,11 +314,10 @@ module "folder" {
   name   = "Folder name"
   parent = var.folder_id
   tag_bindings = {
-    env-prod = module.org.tag_values["environments/prod"].id
-   # foo      = "tagValues/12345678"
+    env-prod = module.org.tag_values["environment/prod"].id
   }
 }
-# tftest modules=2 resources=6 inventory=tags.yaml e2e
+# tftest modules=2 resources=5 inventory=tags.yaml e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->

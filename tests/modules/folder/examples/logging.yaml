@@ -16,8 +16,8 @@ values:
   module.folder-sink.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
     role: roles/bigquery.dataEditor
   module.folder-sink.google_folder.folder[0]:
-    display_name: my-folder
-    parent: folders/657104291943
+    display_name: Folder name
+    parent: folders/1122334455
   module.folder-sink.google_logging_folder_exclusion.logging-exclusion["no-gce-instances"]:
     description: no-gce-instances (Terraform-managed).
     filter: resource.type=gce_instance
@@ -46,7 +46,7 @@ values:
     name: notice
   module.folder-sink.google_logging_folder_sink.sink["warnings"]:
     description: warnings (Terraform-managed).
-    destination: storage.googleapis.com/gcs_sink
+    destination: storage.googleapis.com/test-gcs_sink
     disabled: false
     exclusions: []
     filter: severity=WARNING
@@ -60,7 +60,7 @@ values:
     condition: []
     role: roles/pubsub.publisher
   module.folder-sink.google_storage_bucket_iam_member.gcs-sinks-binding["warnings"]:
-    bucket: gcs_sink
+    bucket: test-gcs_sink
     condition: []
     role: roles/storage.objectCreator
 
