@@ -38,11 +38,22 @@ variable "backup_configs" {
 variable "cluster_autoscaling" {
   description = "Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler."
   type = object({
+    autoscaling_profile = optional(string)
     auto_provisioning_defaults = optional(object({
       boot_disk_kms_key = optional(string)
+      disk_size         = optional(number)
+      disk_type         = optional(string)
       image_type        = optional(string)
       oauth_scopes      = optional(list(string))
       service_account   = optional(string)
+      management = optional(object({
+        auto_repair  = optional(bool, true)
+        auto_upgrade = optional(bool, true)
+      }))
+      shielded_instance_config = object({
+        integrity_monitoring = optional(bool, true)
+        secure_boot          = optional(bool, false)
+      })
     }))
     cpu_limits = optional(object({
       min = number

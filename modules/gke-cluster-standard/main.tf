@@ -123,13 +123,31 @@ resource "google_container_cluster" "cluster" {
     content {
       enabled = true
 
+      autoscaling_profile = var.cluster_autoscaling.autoscaling_profile
+
       dynamic "auto_provisioning_defaults" {
         for_each = var.cluster_autoscaling.auto_provisioning_defaults != null ? [""] : []
         content {
           boot_disk_kms_key = var.cluster_autoscaling.auto_provisioning_defaults.boot_disk_kms_key
+          disk_size         = var.cluster_autoscaling.auto_provisioning_defaults.disk_size
+          disk_type         = var.cluster_autoscaling.auto_provisioning_defaults.disk_type
           image_type        = var.cluster_autoscaling.auto_provisioning_defaults.image_type
           oauth_scopes      = var.cluster_autoscaling.auto_provisioning_defaults.oauth_scopes
           service_account   = var.cluster_autoscaling.auto_provisioning_defaults.service_account
+          dynamic "management" {
+            for_each = var.cluster_autoscaling.auto_provisioning_defaults.management != null ? [""] : []
+            content {
+              auto_repair  = var.cluster_autoscaling.auto_provisioning_defaults.management.auto_repair
+              auto_upgrade = var.cluster_autoscaling.auto_provisioning_defaults.management.auto_upgrade
+            }
+          }
+          dynamic "shielded_instance_config" {
+            for_each = var.cluster_autoscaling.auto_provisioning_defaults.shielded_instance_config != null ? [""] : []
+            content {
+              enable_integrity_monitoring = var.cluster_autoscaling.auto_provisioning_defaults.shielded_instance_config.integrity_monitoring
+              enable_secure_boot          = var.cluster_autoscaling.auto_provisioning_defaults.shielded_instance_config.secure_boot
+            }
+          }
         }
       }
       dynamic "resource_limits" {
