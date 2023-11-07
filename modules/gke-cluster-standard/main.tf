@@ -166,7 +166,19 @@ resource "google_container_cluster" "cluster" {
           maximum       = var.cluster_autoscaling.mem_limits.max
         }
       }
-      // TODO: support GPUs too
+      dynamic "resource_limits" {
+        for_each = (
+          try(var.cluster_autoscaling.gpu_resources, null) == null
+          ? []
+          : var.cluster_autoscaling.gpu_resources
+        )
+        iterator = gpu_resources
+        content {
+          resource_type = gpu_resources.value.resource_type
+          minimum       = gpu_resources.value.min
+          maximum       = gpu_resources.value.max
+        }
+      }
     }
   }
 
