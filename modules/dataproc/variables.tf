@@ -128,7 +128,7 @@ variable "dataproc_config" {
       dataproc_metric_config = optional(object({
         metrics = list(object({
           metric_source    = string
-          metric_overrides = optional(string)
+          metric_overrides = optional(list(string))
         }))
       }))
       metastore_config = optional(object({
