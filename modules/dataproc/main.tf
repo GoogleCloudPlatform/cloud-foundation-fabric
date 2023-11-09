@@ -185,7 +185,7 @@ resource "google_dataproc_cluster" "cluster" {
         for_each = var.dataproc_config.cluster_config.dataproc_metric_config == null ? [] : [""]
         content {
           dynamic "metrics" {
-            for_each = var.dataproc_config.cluster_config.dataproc_metric_config.metrics == null ? [] : var.dataproc_config.cluster_config.dataproc_metric_config.metrics
+            for_each = coalesce(var.dataproc_config.cluster_config.dataproc_metric_config.metrics, [])
             content {
               metric_source    = metrics.value.metric_source
               metric_overrides = metrics.value.metric_overrides
