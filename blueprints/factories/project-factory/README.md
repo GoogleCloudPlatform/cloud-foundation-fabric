@@ -29,6 +29,10 @@ In addition to the yaml files describing projects, the project factory accepts t
 
 Some examples on where to use each of the three sets are provided below.
 
+## Overriding project id
+
+By default, the project id is derived from the file path relative to the data root. Path slashes are replaced with dashes to allow for multilevel data folders (e.g. `app01/fe.yaml`, `app02/fe.yaml`, etc.). The project id can be overridden by specifying a custom `name` attribute in the yaml file. Refer to the example below for details.
+
 ## Example
 
 ```hcl
@@ -57,7 +61,7 @@ module "project-factory" {
   # location where the yaml files are read from
   factory_data_path = "data"
 }
-# tftest modules=7 resources=26 files=prj-app-1,prj-app-2,prj-app-3 inventory=example.yaml
+# tftest modules=8 resources=32 files=app01,app02-be,app03-be,app03-fe inventory=example.yaml
 ```
 
 ```yaml
@@ -80,12 +84,12 @@ service_accounts:
   app-1-fe:
     display_name: "Test app 1 frontend."
 
-# tftest-file id=prj-app-1 path=data/prj-app-1.yaml
+# tftest-file id=app01 path=data/app01.yaml
 ```
 
 ```yaml
 labels:
- app: app-2
+ app: app02
  team: foo
 parent: folders/12345678
 service_accounts:
@@ -97,17 +101,29 @@ services:
 shared_vpc_service_config:
   host_project: foo-host
 
-# tftest-file id=prj-app-2 path=data/prj-app-2.yaml
+# tftest-file id=app02-be path=data/app02/be.yaml
 ```
 
 ```yaml
+name: app03-be-0
 parent: folders/12345678
 services:
 - run.googleapis.com
 - storage.googleapis.com
 
-# tftest-file id=prj-app-3 path=data/prj-app-3.yaml
+# tftest-file id=app03-be path=data/app03/be.yaml
 ```
+
+```yaml
+name: app03-fe-0
+parent: folders/12345678
+services:
+- run.googleapis.com
+- storage.googleapis.com
+
+# tftest-file id=app03-fe path=data/app03/fe.yaml
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
