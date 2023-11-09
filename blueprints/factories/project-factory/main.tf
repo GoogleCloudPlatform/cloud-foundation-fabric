@@ -18,7 +18,7 @@ module "projects" {
   source              = "../../../modules/project"
   for_each            = local.projects
   billing_account     = each.value.billing_account
-  name                = each.key
+  name                = each.value.name
   parent              = try(each.value.parent, null)
   prefix              = each.value.prefix
   auto_create_network = try(each.value.auto_create_network, false)
