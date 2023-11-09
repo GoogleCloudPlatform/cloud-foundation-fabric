@@ -38,11 +38,11 @@ variable "backup_configs" {
 variable "cluster_autoscaling" {
   description = "Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler."
   type = object({
-    autoscaling_profile = optional(string)
+    autoscaling_profile = optional(string, "BALANCED")
     auto_provisioning_defaults = optional(object({
       boot_disk_kms_key = optional(string)
       disk_size         = optional(number)
-      disk_type         = optional(string)
+      disk_type         = optional(string, "pd-standard")
       image_type        = optional(string)
       oauth_scopes      = optional(list(string))
       service_account   = optional(string)
@@ -69,7 +69,15 @@ variable "cluster_autoscaling" {
       max           = number
     })))
   })
-  default = null
+  default = {}
+  validation {
+    condition     = contains(["BALANCED", "OPTIMIZE_UTILIZATION"], var.cluster_autoscaling.autoscaling_profile)
+    error_message = "Invalid autoscaling_profile."
+  }
+  validation {
+    condition     = contains(["pd-standard", "pd-ssd", "pd-balanced"], var.cluster_autoscaling.auto_provisioning_defaults.disk_type)
+    error_message = "Invalid disk_type."
+  }
 }
 
 variable "deletion_protection" {
