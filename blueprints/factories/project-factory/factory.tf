@@ -44,7 +44,6 @@ locals {
         try(v.metric_scopes, null),
         var.data_defaults.metric_scopes
       )
-      name         = try(v.name, replace(k, "/", "-"))
       org_policies = try(v.org_policies, {})
       parent = coalesce(
         var.data_overrides.parent,
