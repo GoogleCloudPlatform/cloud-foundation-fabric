@@ -1,4 +1,4 @@
-/**
+/** TO MOD
  * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,18 +27,18 @@ locals {
 
   users = {
     for k, v in var.users :
-    (k) =>
+    k =>
     local.is_mysql ?
     {
-      name     = v.type == "BUILT_IN" ? split("@", v.name)[0] : v.name
-      host     = v.type == "BUILT_IN" ? try(split("@", v.name)[1], null) : null
-      password = v.type == "BUILT_IN" ? try(random_password.passwords[v.name].result, v.password) : null
-      type     = v.type
+      name     = try(v.type, "BUILT_IN") == "BUILT_IN" ? split("@", k)[0] : k
+      host     = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(split("@", k)[1], null) : null
+      password = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[v.name].result, v.password) : null
+      type     = try(v.type, "BUILT_IN")
       } : {
-      name     = local.is_postgres ? try(trimsuffix(v.name, ".gserviceaccount.com"), v.name) : v.name
+      name     = local.is_postgres ? try(trimsuffix(v.name, ".gserviceaccount.com"), k) : k
       host     = null
-      password = v.type == "BUILT_IN" ? try(random_password.passwords[v.name].result, v.password) : null
-      type     = v.type
+      password = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type     = try(v.type, "BUILT_IN")
     }
   }
 
@@ -179,13 +179,14 @@ resource "google_sql_database" "databases" {
 
 resource "random_password" "passwords" {
   for_each = toset([
-    for user in coalesce(var.users, []) :
-    user.name
-    if user.password == null
+    for k, v in coalesce(var.users, {}) :
+    k
+    if v.password == null
   ])
   length  = 16
   special = true
 }
+
 
 resource "google_sql_user" "users" {
   for_each = local.users
