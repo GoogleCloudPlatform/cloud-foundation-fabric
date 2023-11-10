@@ -92,7 +92,7 @@ module "db" {
     # assign a password to user2
     user2 = {
       password = "mypassword"
-      }
+    }
   }
 }
 # tftest modules=1 resources=6 inventory=custom.yaml
