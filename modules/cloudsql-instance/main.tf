@@ -1,4 +1,4 @@
-/** TO MOD
+/**
  * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -186,7 +186,6 @@ resource "random_password" "passwords" {
   length  = 16
   special = true
 }
-
 
 resource "google_sql_user" "users" {
   for_each = local.users
