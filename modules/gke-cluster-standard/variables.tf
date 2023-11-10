@@ -69,13 +69,13 @@ variable "cluster_autoscaling" {
       max           = number
     })))
   })
-  default = {}
+  default = null
   validation {
-    condition     = contains(["BALANCED", "OPTIMIZE_UTILIZATION"], var.cluster_autoscaling.autoscaling_profile)
+    condition     = (var.cluster_autoscaling == null ? true : contains(["BALANCED", "OPTIMIZE_UTILIZATION"], var.cluster_autoscaling.autoscaling_profile))
     error_message = "Invalid autoscaling_profile."
   }
   validation {
-    condition     = contains(["pd-standard", "pd-ssd", "pd-balanced"], var.cluster_autoscaling.auto_provisioning_defaults.disk_type)
+    condition     = (var.cluster_autoscaling == null ? true : contains(["pd-standard", "pd-ssd", "pd-balanced"], var.cluster_autoscaling.auto_provisioning_defaults.disk_type))
     error_message = "Invalid disk_type."
   }
 }
