@@ -26,7 +26,7 @@ locals {
   enable_backup = var.backup_configuration.enabled || (local.is_mysql && local.has_replicas) || (local.is_mysql && local.is_regional)
 
   users = {
-    for k, v in var.users :
+    for k, v in coalesce(var.users, {}) :
     k =>
     local.is_mysql ?
     {
