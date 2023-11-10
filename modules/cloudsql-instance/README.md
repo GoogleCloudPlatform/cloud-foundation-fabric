@@ -86,9 +86,13 @@ module "db" {
 
   users = {
     # generatea password for user1
-    user1 = null
+    user1 = {
+      password = null
+    }
     # assign a password to user2
-    user2 = "mypassword"
+    user2 = {
+      password = "mypassword"
+      }
   }
 }
 # tftest modules=1 resources=6 inventory=custom.yaml
