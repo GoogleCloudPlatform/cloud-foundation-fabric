@@ -32,7 +32,7 @@ locals {
     {
       name     = try(v.type, "BUILT_IN") == "BUILT_IN" ? split("@", k)[0] : k
       host     = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(split("@", k)[1], null) : null
-      password = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[v.name].result, v.password) : null
+      password = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
       type     = try(v.type, "BUILT_IN")
       } : {
       name     = local.is_postgres ? try(trimsuffix(k, ".gserviceaccount.com"), k) : k
