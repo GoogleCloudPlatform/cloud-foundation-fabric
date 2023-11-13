@@ -1,4 +1,4 @@
-/**
+/** TO MOD
  * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 locals {
   prefix       = var.prefix == null ? "" : "${var.prefix}-"
   is_mysql     = can(regex("^MYSQL", var.database_version))
+  is_postgres  = can(regex("^POSTGRES", var.database_version))
   has_replicas = try(length(var.replicas) > 0, false)
   is_regional  = var.availability_type == "REGIONAL" ? true : false
 
@@ -25,20 +26,20 @@ locals {
   enable_backup = var.backup_configuration.enabled || (local.is_mysql && local.has_replicas) || (local.is_mysql && local.is_regional)
 
   users = {
-    for user, password in coalesce(var.users, {}) :
-    (user) => (
-      local.is_mysql
-      ? {
-        name     = split("@", user)[0]
-        host     = try(split("@", user)[1], null)
-        password = try(random_password.passwords[user].result, password)
-      }
-      : {
-        name     = user
-        host     = null
-        password = try(random_password.passwords[user].result, password)
-      }
-    )
+    for k, v in coalesce(var.users, {}) :
+    k =>
+    local.is_mysql ?
+    {
+      name     = try(v.type, "BUILT_IN") == "BUILT_IN" ? split("@", k)[0] : k
+      host     = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(split("@", k)[1], null) : null
+      password = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type     = try(v.type, "BUILT_IN")
+      } : {
+      name     = local.is_postgres ? try(trimsuffix(k, ".gserviceaccount.com"), k) : k
+      host     = null
+      password = try(v.type, "BUILT_IN") == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type     = try(v.type, "BUILT_IN")
+    }
   }
 
 }
@@ -178,13 +179,14 @@ resource "google_sql_database" "databases" {
 
 resource "random_password" "passwords" {
   for_each = toset([
-    for user, password in coalesce(var.users, {}) :
-    user
-    if password == null
+    for k, v in coalesce(var.users, {}) :
+    k
+    if v.password == null
   ])
   length  = 16
   special = true
 }
+
 
 resource "google_sql_user" "users" {
   for_each = local.users
@@ -193,6 +195,7 @@ resource "google_sql_user" "users" {
   name     = each.value.name
   host     = each.value.host
   password = each.value.password
+  type     = each.value.type
 }
 
 resource "google_sql_ssl_cert" "postgres_client_certificates" {

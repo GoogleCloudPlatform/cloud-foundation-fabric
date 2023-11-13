@@ -34,7 +34,9 @@ module "db" {
   }
   databases = [var.postgres_database]
   users = {
-    postgres = var.postgres_user_password
+    postgres = {
+      password = var.postgres_user_password
+    }
   }
 }
 
