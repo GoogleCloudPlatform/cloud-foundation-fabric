@@ -18,6 +18,7 @@ import re
 from pathlib import Path
 
 import marko
+import pytest
 
 FABRIC_ROOT = Path(__file__).parents[2]
 
@@ -78,7 +79,12 @@ def pytest_generate_tests(metafunc, test_group='example',
             if index > 1:
               name += f' {index}'
             ids.append(f'{path}:{last_header}:{index}')
-            examples.append(Example(name, code, path, files[last_header]))
+            # if test is marked with 'serial' in tftest line then add them to this xdist group
+            # this, together with `--dist loadgroup` will ensure that those tests will be run one after another
+            # even if multiple workers are used
+            # see: https://pytest-xdist.readthedocs.io/en/latest/distribution.html
+            marks = [pytest.mark.xdist_group("serial")] if 'serial' in tftest_tag else []
+            examples.append(pytest.param(Example(name, code, path, files[last_header]), marks=marks))
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
           index = 0
