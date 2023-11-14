@@ -16,7 +16,7 @@
 
 output "bucket" {
   description = "Cloud Function deployment bucket resource."
-  value       =  var.cloud_function_config.version == "v1" ? module.cloud-function.0.bucket : module.cloud-function-v2.0.bucket
+  value       = var.cloud_function_config.version == "v1" ? module.cloud-function.0.bucket : module.cloud-function-v2.0.bucket
 }
 
 output "project_id" {

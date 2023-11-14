@@ -164,12 +164,12 @@ module "cloud-function-v2" {
 }
 
 module "cloud-scheduler-service-account" {
-  count     = var.cloud_function_config.version == "v2" ? 1 : 0
+  count      = var.cloud_function_config.version == "v2" ? 1 : 0
   source     = "../../../../modules/iam-service-account"
   project_id = module.project.project_id
   name       = "scheduler-sa"
   iam_project_roles = {
-   "${module.project.project_id}" = [
+    "${module.project.project_id}" = [
       "roles/run.invoker",
     ]
   }
@@ -206,7 +206,7 @@ resource "google_cloud_scheduler_job" "scheduler-http" {
     }
     oidc_token {
       service_account_email = module.cloud-scheduler-service-account.0.email
-      audience = module.cloud-function-v2.0.uri
+      audience              = module.cloud-function-v2.0.uri
     }
   }
 }
