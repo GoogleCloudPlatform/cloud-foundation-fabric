@@ -42,10 +42,10 @@ resource "google_organization_iam_custom_role" "roles" {
 }
 
 resource "google_organization_iam_binding" "authoritative" {
-  for_each = local.iam
-  org_id   = local.organization_id_numeric
-  role     = each.key
-  members  = each.value
+  for_each   = local.iam
+  org_id     = local.organization_id_numeric
+  role       = each.key
+  members    = each.value
   depends_on = [google_organization_iam_custom_role.roles]
 }
 
