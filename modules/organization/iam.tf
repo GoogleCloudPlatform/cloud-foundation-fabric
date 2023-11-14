@@ -42,11 +42,11 @@ resource "google_organization_iam_custom_role" "roles" {
 }
 
 resource "google_organization_iam_binding" "authoritative" {
-  for_each   = local.iam
-  org_id     = local.organization_id_numeric
-  role       = each.key
-  members    = each.value
-  depends_on = [google_organization_iam_custom_role.roles]
+  for_each = local.iam
+  org_id   = local.organization_id_numeric
+  role     = each.key
+  members  = each.value
+  # ensuring that custom role exists is left to the caller, by leveraging custom_role_id output
 }
 
 resource "google_organization_iam_binding" "bindings" {
@@ -62,7 +62,7 @@ resource "google_organization_iam_binding" "bindings" {
       description = each.value.condition.description
     }
   }
-  depends_on = [google_organization_iam_custom_role.roles]
+  # ensuring that custom role exists is left to the caller, by leveraging custom_role_id output
 }
 
 resource "google_organization_iam_member" "bindings" {
@@ -78,5 +78,5 @@ resource "google_organization_iam_member" "bindings" {
       description = each.value.condition.description
     }
   }
-  depends_on = [google_organization_iam_custom_role.roles]
+  # ensuring that custom role exists is left to the caller, by leveraging custom_role_id output
 }

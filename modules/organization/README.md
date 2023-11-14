@@ -355,7 +355,7 @@ module "org" {
 
 ## Custom Roles
 
-Custom roles can be defined via the `custom_roles` variable, and referenced via the `custom_role_id` output:
+Custom roles can be defined via the `custom_roles` variable, and referenced via the `custom_role_id` output (this also provides explicit dependency on the custom role):
 
 ```hcl
 module "org" {
