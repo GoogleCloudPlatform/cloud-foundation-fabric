@@ -168,7 +168,6 @@ module "cloud-scheduler-service-account" {
   source     = "../../../../modules/iam-service-account"
   project_id = module.project.project_id
   name       = "scheduler-sa"
-  # non-authoritative roles granted *to* the service accounts on other resources
   iam_project_roles = {
    "${module.project.project_id}" = [
       "roles/run.invoker",
