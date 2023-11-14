@@ -46,6 +46,7 @@ resource "google_organization_iam_binding" "authoritative" {
   org_id   = local.organization_id_numeric
   role     = each.key
   members  = each.value
+  depends_on = [google_organization_iam_custom_role.roles]
 }
 
 resource "google_organization_iam_binding" "bindings" {
@@ -61,6 +62,7 @@ resource "google_organization_iam_binding" "bindings" {
       description = each.value.condition.description
     }
   }
+  depends_on = [google_organization_iam_custom_role.roles]
 }
 
 resource "google_organization_iam_member" "bindings" {
@@ -76,4 +78,5 @@ resource "google_organization_iam_member" "bindings" {
       description = each.value.condition.description
     }
   }
+  depends_on = [google_organization_iam_custom_role.roles]
 }

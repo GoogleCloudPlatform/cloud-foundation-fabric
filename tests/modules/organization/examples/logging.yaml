@@ -47,7 +47,7 @@ values:
     name: notice
     org_id: '1122334455'
   module.org.google_logging_organization_sink.sink["warnings"]:
-    destination: storage.googleapis.com/gcs_sink
+    destination: storage.googleapis.com/test-gcs_sink
     disabled: false
     exclusions: []
     filter: severity=WARNING

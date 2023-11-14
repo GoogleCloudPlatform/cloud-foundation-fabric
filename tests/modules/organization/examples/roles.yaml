@@ -16,7 +16,7 @@ values:
   module.org.google_organization_iam_binding.authoritative["organizations/1122334455/roles/myRole"]:
     condition: []
     members:
-    - user:me@example.com
+    - group:organization-admins@example.org
     org_id: '1122334455'
     role: organizations/1122334455/roles/myRole
   module.org.google_organization_iam_custom_role.roles["myRole"]:
