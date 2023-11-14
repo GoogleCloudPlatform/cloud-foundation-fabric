@@ -57,10 +57,12 @@ module "secret-manager" {
   project_id = module.project.project_id
   source     = "../../../modules/secret-manager"
   secrets = {
-    github-key = [var.region]
-  }
-  encryption_key = {
-    "${var.region}" = var.service_encryption_keys.secretmanager
+    github-key = {
+      locations = [var.region]
+      keys = {
+        "${var.region}" = var.service_encryption_keys.secretmanager
+      }
+    }
   }
   iam = {
     github-key = {

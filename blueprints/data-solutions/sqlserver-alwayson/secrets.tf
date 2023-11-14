@@ -19,7 +19,9 @@ module "secret-manager" {
   source     = "../../../modules/secret-manager"
   project_id = var.project_id
   secrets = {
-    (local.ad_user_password_secret) = null
+    (local.ad_user_password_secret) = {
+      locations = null
+    }
   }
   versions = {
     (local.ad_user_password_secret) = {

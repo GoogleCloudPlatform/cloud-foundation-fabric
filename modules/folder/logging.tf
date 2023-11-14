@@ -22,7 +22,7 @@ locals {
     type => {
       for name, sink in var.logging_sinks :
       name => sink
-      if sink.type == type
+      if sink.iam == true && sink.type == type
     }
   }
 }

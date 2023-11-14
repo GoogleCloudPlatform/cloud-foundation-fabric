@@ -17,21 +17,21 @@ values:
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    folder_id: '1234567890'
+    folder_id: '1122334455'
     labels: null
-    name: foo-myproject
+    name: test-project
     org_id: null
-    project_id: foo-myproject
+    project_id: test-project
     skip_delete: false
   module.project.google_project_service.project_services["container.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: foo-myproject
+    project: test-project
     service: container.googleapis.com
   module.project.google_project_service.project_services["stackdriver.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: foo-myproject
+    project: test-project
     service: stackdriver.googleapis.com
 
 counts:

@@ -117,6 +117,7 @@ variable "logging_sinks" {
     disabled             = optional(bool, false)
     exclusions           = optional(map(string), {})
     filter               = string
+    iam                  = optional(bool, true)
     include_children     = optional(bool, true)
     type                 = string
   }))

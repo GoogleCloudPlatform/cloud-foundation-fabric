@@ -168,10 +168,7 @@ resource "google_container_node_pool" "nodepool" {
         gpu_partition_size = var.node_config.guest_accelerator.gpu_driver == null ? null : var.node_config.guest_accelerator.gpu_driver.partition_size
 
         dynamic "gpu_sharing_config" {
-          for_each = lookup(
-            lookup(var.node_config.guest_accelerator, "gpu_driver", {}),
-            "max_shared_clients_per_gpu"
-          ) != null ? [""] : []
+          for_each = try(var.node_config.guest_accelerator.gpu_driver.max_shared_clients_per_gpu, null) != null ? [""] : []
           content {
             gpu_sharing_strategy       = var.node_config.guest_accelerator.gpu_driver.max_shared_clients_per_gpu != null ? "TIME_SHARING" : null
             max_shared_clients_per_gpu = var.node_config.guest_accelerator.gpu_driver.max_shared_clients_per_gpu

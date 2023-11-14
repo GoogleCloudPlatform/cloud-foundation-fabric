@@ -516,7 +516,7 @@ module "kms-vm-example" {
   }
   encryption = {
     encrypt_boot      = true
-    kms_key_self_link = var.kms_key.self_link
+    kms_key_self_link = var.kms_key.id
   }
 }
 # tftest modules=1 resources=3 inventory=cmek.yaml
