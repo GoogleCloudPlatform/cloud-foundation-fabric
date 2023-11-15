@@ -17,8 +17,8 @@
 locals {
   discovery_roles = ["roles/compute.viewer", "roles/cloudasset.viewer"]
   function = (
-    var.cloud_function_config.version == "v1" 
-    ? module.cloud-function.0 
+    var.cloud_function_config.version == "v1"
+    ? module.cloud-function.0
     : module.cloud-function-v2.0
   )
 }
