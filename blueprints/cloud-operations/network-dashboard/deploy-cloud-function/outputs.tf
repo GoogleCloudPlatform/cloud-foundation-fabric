@@ -16,7 +16,7 @@
 
 output "bucket" {
   description = "Cloud Function deployment bucket resource."
-  value       = var.cloud_function_config.version == "v1" ? module.cloud-function.0.bucket : module.cloud-function-v2.0.bucket
+  value       = local.function.bucket
 }
 
 output "project_id" {
@@ -27,8 +27,8 @@ output "project_id" {
 output "service_account" {
   description = "Cloud Function service account."
   value = {
-    email     = var.cloud_function_config.version == "v1" ? module.cloud-function.0.service_account_email : module.cloud-function-v2.0.service_account_email
-    iam_email = var.cloud_function_config.version == "v1" ? module.cloud-function.0.service_account_iam_email : module.cloud-function-v2.0.service_account_iam_email
+    email     = local.function.service_account_email
+    iam_email = local.function.service_account_iam_email
   }
 }
 
