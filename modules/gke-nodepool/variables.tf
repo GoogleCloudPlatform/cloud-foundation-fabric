@@ -100,7 +100,7 @@ variable "node_config" {
   validation {
     condition = (
       alltrue([
-        for k, v in var.node_config.guest_accelerator[*].gpu_driver : contains([
+        for k, v in try(var.node_config.guest_accelerator[0].gpu_driver, {}) : contains([
           "GPU_DRIVER_VERSION_UNSPECIFIED", "INSTALLATION_DISABLED",
           "DEFAULT", "LATEST"
         ], v.version)

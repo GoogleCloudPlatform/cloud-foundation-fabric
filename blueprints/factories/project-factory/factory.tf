@@ -16,15 +16,13 @@
 
 locals {
   _data = (
-    var.factory_data.data != null
-    ? var.factory_data.data
-    : {
-      for f in fileset("${local._data_path}", "**/*.yaml") :
+    {
+      for f in fileset(local._data_path, "**/*.yaml") :
       trimsuffix(f, ".yaml") => yamldecode(file("${local._data_path}/${f}"))
     }
   )
-  _data_path = var.factory_data.data_path == null ? null : pathexpand(
-    var.factory_data.data_path
+  _data_path = var.factory_data_path == null ? null : pathexpand(
+    var.factory_data_path
   )
   projects = {
     for k, v in local._data : k => merge(v, {

@@ -16,11 +16,11 @@ values:
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    folder_id: '1234567890'
+    folder_id: '1122334455'
     labels: null
-    name: my-project
+    name: test-project
     org_id: null
-    project_id: my-project
+    project_id: test-project
     skip_delete: false
     timeouts: null
   module.project.google_project_iam_audit_config.default["allServices"]:
@@ -28,7 +28,7 @@ values:
     - exempted_members:
       - group:organization-admins@example.org
       log_type: ADMIN_READ
-    project: my-project
+    project: test-project
     service: allServices
   module.project.google_project_iam_audit_config.default["storage.googleapis.com"]:
     audit_log_config:
@@ -36,7 +36,7 @@ values:
       log_type: DATA_READ
     - exempted_members: []
       log_type: DATA_WRITE
-    project: my-project
+    project: test-project
     service: storage.googleapis.com
 
 counts:

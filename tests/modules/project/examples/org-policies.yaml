@@ -14,8 +14,8 @@
 
 values:
   module.project.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
-    name: projects/foo-project-example/policies/compute.disableGuestAttributesAccess
-    parent: projects/foo-project-example
+    name: projects/test-project/policies/compute.disableGuestAttributesAccess
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -26,8 +26,8 @@ values:
         enforce: 'TRUE'
         values: []
   module.project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
-    name: projects/foo-project-example/policies/compute.skipDefaultNetworkCreation
-    parent: projects/foo-project-example
+    name: projects/test-project/policies/compute.skipDefaultNetworkCreation
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -38,8 +38,8 @@ values:
         enforce: 'TRUE'
         values: []
   module.project.google_org_policy_policy.default["compute.trustedImageProjects"]:
-    name: projects/foo-project-example/policies/compute.trustedImageProjects
-    parent: projects/foo-project-example
+    name: projects/test-project/policies/compute.trustedImageProjects
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -53,8 +53,8 @@ values:
           - projects/my-project
           denied_values: null
   module.project.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
-    name: projects/foo-project-example/policies/compute.vmExternalIpAccess
-    parent: projects/foo-project-example
+    name: projects/test-project/policies/compute.vmExternalIpAccess
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -65,8 +65,8 @@ values:
         enforce: null
         values: []
   module.project.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
-    name: projects/foo-project-example/policies/iam.allowedPolicyMemberDomains
-    parent: projects/foo-project-example
+    name: projects/test-project/policies/iam.allowedPolicyMemberDomains
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -81,8 +81,8 @@ values:
           - C0yyyyyyy
           denied_values: null
   module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
-    name: projects/foo-project-example/policies/iam.disableServiceAccountKeyCreation
-    parent: projects/foo-project-example
+    name: projects/test-project/policies/iam.disableServiceAccountKeyCreation
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -93,8 +93,8 @@ values:
         enforce: 'TRUE'
         values: []
   module.project.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
-    name: projects/foo-project-example/policies/iam.disableServiceAccountKeyUpload
-    parent: projects/foo-project-example
+    name: projects/test-project/policies/iam.disableServiceAccountKeyUpload
+    parent: projects/test-project
     spec:
     - inherit_from_parent: null
       reset: null
@@ -115,10 +115,10 @@ values:
         values: []
   module.project.google_project.project[0]:
     billing_account: 123456-123456-123456
-    folder_id: '1234567890'
-    name: foo-project-example
+    folder_id: '1122334455'
+    name: test-project
     org_id: null
-    project_id: foo-project-example
+    project_id: test-project
 
 counts:
   google_org_policy_policy: 7

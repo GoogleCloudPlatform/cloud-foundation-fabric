@@ -221,6 +221,12 @@ variable "project_id" {
   type        = string
 }
 
+variable "public_access_prevention" {
+  description = "Prevents public access to a bucket. Acceptable values are inherited or enforced. If inherited, the bucket uses public access prevention, only if the bucket is subject to the public access prevention organization policy constraint."
+  type        = string
+  default     = null
+}
+
 variable "requester_pays" {
   description = "Enables Requester Pays on a storage bucket."
   type        = bool
