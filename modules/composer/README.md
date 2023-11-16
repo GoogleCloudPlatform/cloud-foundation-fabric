@@ -90,6 +90,6 @@ module "composer-environment" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [composer-gke-cluster](outputs.tf#L22) | The Kubernetes Engine cluster used to run this environment. |  |
-| [composer-id](outputs.tf#L17) | An identifier for the resource with format projects/{{project}}/locations/{{region}}/environments/{{name}}. |  |
+| [composer-gke-cluster](outputs.tf#L17) | The Kubernetes Engine cluster used to run this environment. |  |
+| [composer-id](outputs.tf#L22) | An identifier for the resource with format projects/{{project}}/locations/{{region}}/environments/{{name}}. |  |
 <!-- END TFDOC -->

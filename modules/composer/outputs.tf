@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-output "composer-id" {
-  description = "An identifier for the resource with format projects/{{project}}/locations/{{region}}/environments/{{name}}."
-  value       = google_composer_environment.composer-env.id
-}
-
 output "composer-gke-cluster" {
   description = "The Kubernetes Engine cluster used to run this environment."
   value       = google_composer_environment.composer-env.config.0.gke_cluster
+}
 
+output "composer-id" {
+  description = "An identifier for the resource with format projects/{{project}}/locations/{{region}}/environments/{{name}}."
+  value       = google_composer_environment.composer-env.id
 }
