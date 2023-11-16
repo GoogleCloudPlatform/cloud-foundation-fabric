@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 locals {
   image         = try(split("-", var.software_config.image_version), "")
   version       = try(split(".", local.image.1), null)

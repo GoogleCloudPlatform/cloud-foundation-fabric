@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- output "composer-id" {
+
+output "composer-id" {
   description = "An identifier for the resource with format projects/{{project}}/locations/{{region}}/environments/{{name}}."
   value       = google_composer_environment.composer-env.id
 }
