@@ -37,7 +37,7 @@ def get_tftest_directive(s):
 
 
 def pytest_generate_tests(metafunc, test_group='example',
-                          filter_tests=lambda x: True):
+                          filter_tests=lambda x: 'skip' not in x):
   """Find all README.md files and collect code examples tagged for testing."""
   if test_group in metafunc.fixturenames:
     readmes = FABRIC_ROOT.glob('**/README.md')
@@ -70,8 +70,7 @@ def pytest_generate_tests(metafunc, test_group='example',
           index += 1
           code = child.children[0].children
           tftest_tag = get_tftest_directive(code)
-          if tftest_tag and ('skip' in tftest_tag or
-                             not filter_tests(tftest_tag)):
+          if tftest_tag and not filter_tests(tftest_tag):
             continue
           if child.lang == 'hcl':
             path = module.relative_to(FABRIC_ROOT)

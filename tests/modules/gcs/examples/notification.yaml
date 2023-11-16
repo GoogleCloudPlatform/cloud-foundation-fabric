@@ -16,10 +16,10 @@ values:
   module.bucket-gcs-notification.google_pubsub_topic.topic[0]: {}
   module.bucket-gcs-notification.google_pubsub_topic_iam_binding.binding[0]: {}
   module.bucket-gcs-notification.google_storage_bucket.bucket:
-    name: my-bucket
-    project: myproject
+    name: test-my-bucket
+    project: project-id
   module.bucket-gcs-notification.google_storage_notification.notification[0]:
-    bucket: my-bucket
+    bucket: test-my-bucket
     event_types:
     - OBJECT_FINALIZE
     payload_format: JSON_API_V1
