@@ -5,27 +5,55 @@
 ```hcl
 module "bucket" {
   source     = "./fabric/modules/gcs"
-  project_id = "myproject"
-  prefix     = "test"
+  project_id = var.project_id
+  prefix     = var.prefix
   name       = "my-bucket"
   versioning = true
   labels = {
     cost-center = "devops"
   }
 }
-# tftest modules=1 resources=1 inventory=simple.yaml
+# tftest modules=1 resources=1 inventory=simple.yaml e2e
 ```
 
 ### Example with Cloud KMS
 
 ```hcl
+module "project" {
+  source         = "./fabric/modules/project"
+  name           = var.project_id
+  project_create = false
+}
+
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  keyring = {
+    location = "europe" # location of the KMS must match location of the bucket
+    name     = "test"
+  }
+  keys = {
+    bucket_key = {
+      iam_bindings = {
+        bucket_key_iam = {
+          members = ["serviceAccount:${module.project.service_accounts.robots.storage}"]
+          role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+        }
+      }
+    }
+  }
+}
+
 module "bucket" {
   source         = "./fabric/modules/gcs"
-  project_id     = "myproject"
+  project_id     = var.project_id
+  prefix         = var.prefix
   name           = "my-bucket"
-  encryption_key = "my-encryption-key"
+  encryption_key = module.kms.keys.bucket_key.id
+  location       = "EU"
 }
-# tftest modules=1 resources=1 inventory=cmek.yaml
+
+# tftest skip e2e
 ```
 
 ### Example with retention policy and logging
@@ -33,7 +61,8 @@ module "bucket" {
 ```hcl
 module "bucket" {
   source     = "./fabric/modules/gcs"
-  project_id = "myproject"
+  project_id = var.project_id
+  prefix     = var.prefix
   name       = "my-bucket"
   retention_policy = {
     retention_period = 100
@@ -52,7 +81,8 @@ module "bucket" {
 ```hcl
 module "bucket" {
   source     = "./fabric/modules/gcs"
-  project_id = "myproject"
+  project_id = var.project_id
+  prefix     = var.prefix
   name       = "my-bucket"
   lifecycle_rules = {
     lr-0 = {
@@ -66,26 +96,33 @@ module "bucket" {
     }
   }
 }
-# tftest modules=1 resources=1 inventory=lifecycle.yaml
+# tftest modules=1 resources=1 inventory=lifecycle.yaml e2e
 ```
 
 ### Minimal example with GCS notifications
 
 ```hcl
+module "project" {
+  source         = "./fabric/modules/project"
+  name           = var.project_id
+  project_create = false
+}
+
 module "bucket-gcs-notification" {
   source     = "./fabric/modules/gcs"
-  project_id = "myproject"
+  project_id = var.project_id
+  prefix     = var.prefix
   name       = "my-bucket"
   notification_config = {
     enabled           = true
     payload_format    = "JSON_API_V1"
-    sa_email          = "service-<project-number>@gs-project-accounts.iam.gserviceaccount.com" # GCS SA email must be passed or fetched from projects module.
+    sa_email          = module.project.service_accounts.robots.storage
     topic_name        = "gcs-notification-topic"
     event_types       = ["OBJECT_FINALIZE"]
     custom_attributes = {}
   }
 }
-# tftest modules=1 resources=4 inventory=notification.yaml
+# tftest skip e2e
 ```
 
 ### Example with object upload
@@ -93,17 +130,18 @@ module "bucket-gcs-notification" {
 ```hcl
 module "bucket" {
   source     = "./fabric/modules/gcs"
-  project_id = "myproject"
+  project_id = var.project_id
+  prefix     = var.prefix
   name       = "my-bucket"
   objects_to_upload = {
     sample-data = {
       name         = "example-file.csv"
-      source       = "data/example-file.csv"
+      source       = "assets/example-file.csv"
       content_type = "text/csv"
     }
   }
 }
-# tftest modules=1 resources=2 inventory=object-upload.yaml
+# tftest modules=1 resources=2 inventory=object-upload.yaml e2e
 ```
 
 ### Examples of IAM
@@ -111,24 +149,26 @@ module "bucket" {
 ```hcl
 module "bucket" {
   source     = "./fabric/modules/gcs"
-  project_id = "myproject"
+  project_id = var.project_id
+  prefix     = var.prefix
   name       = "my-bucket"
   iam = {
-    "roles/storage.admin" = ["group:storage@example.com"]
+    "roles/storage.admin" = ["group:${var.group_email}"]
   }
 }
-# tftest modules=1 resources=2 inventory=iam-authoritative.yaml
+# tftest modules=1 resources=2 inventory=iam-authoritative.yaml e2e
 ```
 
 ```hcl
 module "bucket" {
   source     = "./fabric/modules/gcs"
-  project_id = "myproject"
+  project_id = var.project_id
+  prefix     = var.prefix
   name       = "my-bucket"
   iam_bindings = {
     storage-admin-with-delegated_roles = {
       role    = "roles/storage.admin"
-      members = ["group:storage@example.com"]
+      members = ["group:${var.group_email}"]
       condition = {
         title = "delegated-role-grants"
         expression = format(
@@ -144,18 +184,19 @@ module "bucket" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=iam-bindings.yaml
+# tftest modules=1 resources=2 inventory=iam-bindings.yaml e2e
 ```
 
 ```hcl
 module "bucket" {
   source     = "./fabric/modules/gcs"
-  project_id = "myproject"
+  project_id = var.project_id
+  prefix     = var.prefix
   name       = "my-bucket"
   iam_bindings_additive = {
     storage-admin-with-delegated_roles = {
       role   = "roles/storage.admin"
-      member = "group:storage@example.com"
+      member = "group:${var.group_email}"
       condition = {
         title = "delegated-role-grants"
         expression = format(
@@ -171,7 +212,7 @@ module "bucket" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=iam-bindings-additive.yaml
+# tftest modules=1 resources=2 inventory=iam-bindings-additive.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
