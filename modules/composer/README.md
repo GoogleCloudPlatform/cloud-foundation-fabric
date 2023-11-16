@@ -15,7 +15,7 @@ This module Manages a Google Cloud [Composer](https://cloud.google.com/composer)
 ### Simple
 ```hcl
 module "composer-environment" {
-  source     = "./fabric/modules/cloud-composer"
+  source     = "./fabric/modules/composer"
   project_id = "my-project"
   name       = "my-env"
   region     = "europe-west1"
@@ -26,7 +26,7 @@ module "composer-environment" {
 It is possible to configure nodes using the variable [node_config](variables.tf#L36).
 ```hcl
 module "composer-environment" {
-  source     = "./fabric/modules/cloud-composer"
+  source     = "./fabric/modules/composer"
   project_id = "my-project"
   name       = "my-env"
   region     = "europe-west1"
@@ -50,7 +50,7 @@ module "composer-environment" {
 To set private environment configuration set [private_environment_config](variables.tf#L85)`.enable_private_endpoint` at `true`, configure the master, sql and web server cidr blocks.
 ```hcl
 module "composer-environment" {
-  source     = "./fabric/modules/cloud-composer"
+  source     = "./fabric/modules/composer"
   project_id = "my-project"
   name       = "my-env"
   region     = "europe-west1"
