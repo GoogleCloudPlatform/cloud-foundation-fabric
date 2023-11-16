@@ -16,12 +16,7 @@
 
 output "bucket" {
   description = "Cloud Function deployment bucket resource."
-  value       = module.cloud-function.bucket
-}
-
-output "cloud-function" {
-  description = "Cloud Function resource."
-  value       = module.cloud-function.function
+  value       = local.function.bucket
 }
 
 output "project_id" {
@@ -32,8 +27,8 @@ output "project_id" {
 output "service_account" {
   description = "Cloud Function service account."
   value = {
-    email     = module.cloud-function.service_account_email
-    iam_email = module.cloud-function.service_account_iam_email
+    email     = local.function.service_account_email
+    iam_email = local.function.service_account_iam_email
   }
 }
 
@@ -41,6 +36,6 @@ output "troubleshooting_payload" {
   description = "Cloud Function payload used for manual triggering."
   sensitive   = true
   value = jsonencode({
-    data = google_cloud_scheduler_job.default.pubsub_target.0.data
+    data = var.cloud_function_config.version == "v1" ? google_cloud_scheduler_job.default[0].pubsub_target.0.data : google_cloud_scheduler_job.scheduler-http[0].http_target.0.body
   })
 }
