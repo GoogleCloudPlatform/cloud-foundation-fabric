@@ -97,7 +97,7 @@ variable "software_config" {
 }
 
 variable "private_environment_config" {
-  description = ""
+  description = "The configuration used for the Private IP Cloud Composer environment."
   type = object({
     connection_type                  = optional(string)
     enable_private_endpoint          = optional(bool)
