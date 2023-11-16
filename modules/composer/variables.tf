@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-variable "region" {
-  description = "The location or Compute Engine region for the environment."
-  type        = string
+variable "allowed_ip_range" {
+  description = "The network-level access control policy for the Airflow web server. If unspecified, no network-level access restrictions are applied. For Cloud Composer 1 only."
+  type = object({
+    value       = string
+    description = string
+  })
+  default = null
 }
 
-variable "name" {
-  description = "Name of the environment."
-  type        = string
+variable "database_config" {
+  description = "The configuration settings for Cloud SQL instance used internally by Apache Airflow software. For Cloud Composer 1 only."
+  type = object({
+    machine_type = string
+  })
+  default = null
 }
 
-variable "project_id" {
-  description = "The ID of the project in which the resource belongs."
-  type        = string
-}
-
-variable "node_count" {
-  description = "The number of nodes in the Kubernetes Engine cluster of the environment. For Cloud Composer 1 only."
-  type        = number
-  default     = 3
+variable "encryption_config" {
+  description = "The encryption options for the Cloud Composer environment and its dependencies."
+  type = object({
+    kms_key_name = string
+  })
+  default = null
 }
 
 variable "environment_size" {
@@ -41,10 +45,31 @@ variable "environment_size" {
   default     = "ENVIRONMENT_SIZE_SMALL"
 }
 
-variable "resilience_mode" {
-  description = "The resilience mode states whether high resilience is enabled for the environment or not. Values for resilience mode are HIGH_RESILIENCE for high resilience and STANDARD_RESILIENCE for standard resilience. For Cloud Composer 2.1.15 or newer only."
+variable "maintenance_window" {
+  description = "The configuration settings for Cloud Composer maintenance windows. BETA FOR Cloud Composer 1."
+  type = object({
+    start_time = string
+    end_time   = string
+    recurrence = string
+  })
+  default = null
+}
+
+variable "master_authorized_networks_config" {
+  description = "Configuration options for the master authorized networks feature. Enabled master authorized networks will disallow all external traffic to access Kubernetes master through HTTPS except traffic from the given CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs."
+  type = object({
+    display_name = bool
+    cidr_blocks = object({
+      display_name = optional(string)
+      cidr_block   = string
+    })
+  })
+  default = null
+}
+
+variable "name" {
+  description = "Name of the environment."
   type        = string
-  default     = null
 }
 
 variable "node_config" {
@@ -70,30 +95,10 @@ variable "node_config" {
   default = null
 }
 
-variable "recovery_config" {
-  description = "The configuration settings for recovery, for Cloud Composer 2 only."
-  type = object({
-    scheduled_snapshots_config = object({
-      enabled                    = bool
-      snapshot_location          = optional(string)
-      snapshot_creation_schedule = optional(string)
-      time_zone                  = optional(string)
-    })
-  })
-  default = null
-}
-
-variable "software_config" {
-  description = "The configuration settings for software inside the environment."
-  type = object({
-    airflow_config_overrides = optional(map(string))
-    pypi_packages            = optional(map(string))
-    env_variables            = optional(map(string))
-    image_version            = optional(string)
-    python_version           = optional(string)
-    scheduler_count          = optional(number)
-  })
-  default = null
+variable "node_count" {
+  description = "The number of nodes in the Kubernetes Engine cluster of the environment. For Cloud Composer 1 only."
+  type        = number
+  default     = 3
 }
 
 variable "private_environment_config" {
@@ -109,60 +114,52 @@ variable "private_environment_config" {
   default = null
 }
 
-variable "allowed_ip_range" {
-  description = "The network-level access control policy for the Airflow web server. If unspecified, no network-level access restrictions are applied. For Cloud Composer 1 only."
+variable "project_id" {
+  description = "The ID of the project in which the resource belongs."
+  type        = string
+}
+
+variable "recovery_config" {
+  description = "The configuration settings for recovery, for Cloud Composer 2 only."
   type = object({
-    value       = string
-    description = string
+    scheduled_snapshots_config = object({
+      enabled                    = bool
+      snapshot_location          = optional(string)
+      snapshot_creation_schedule = optional(string)
+      time_zone                  = optional(string)
+    })
   })
   default = null
 }
 
-variable "database_config" {
-  description = "The configuration settings for Cloud SQL instance used internally by Apache Airflow software. For Cloud Composer 1 only."
-  type = object({
-    machine_type = string
-  })
-
-  default = null
+variable "region" {
+  description = "The location or Compute Engine region for the environment."
+  type        = string
 }
 
+variable "resilience_mode" {
+  description = "The resilience mode states whether high resilience is enabled for the environment or not. Values for resilience mode are HIGH_RESILIENCE for high resilience and STANDARD_RESILIENCE for standard resilience. For Cloud Composer 2.1.15 or newer only."
+  type        = string
+  default     = null
+}
+
+variable "software_config" {
+  description = "The configuration settings for software inside the environment."
+  type = object({
+    airflow_config_overrides = optional(map(string))
+    pypi_packages            = optional(map(string))
+    env_variables            = optional(map(string))
+    image_version            = optional(string)
+    python_version           = optional(string)
+    scheduler_count          = optional(number)
+  })
+  default = null
+}
 
 variable "web_server_config" {
   description = "The configuration settings for the Airflow web server App Engine instance. For Cloud Composer 1 only."
   type = object({
     machine_type = string
-  })
-  default = null
-}
-
-variable "encryption_config" {
-  description = "The encryption options for the Cloud Composer environment and its dependencies."
-  type = object({
-    kms_key_name = string
-  })
-  default = null
-}
-
-variable "maintenance_window" {
-  description = "The configuration settings for Cloud Composer maintenance windows. BETA FOR Cloud Composer 1."
-  type = object({
-    start_time = string
-    end_time   = string
-    recurrence = string
-  })
-  default = null
-
-}
-
-variable "master_authorized_networks_config" {
-  description = "Configuration options for the master authorized networks feature. Enabled master authorized networks will disallow all external traffic to access Kubernetes master through HTTPS except traffic from the given CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs."
-  type = object({
-    display_name = bool
-    cidr_blocks = object({
-      display_name = optional(string)
-      cidr_block   = string
-    })
   })
   default = null
 }
