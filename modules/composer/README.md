@@ -2,7 +2,6 @@
 This module Manages a Google Cloud [Composer](https://cloud.google.com/composer) environment.
 
 <!-- BEGIN TOC -->
-- [TODO](#todo)
 - [Examples](#examples)
   - [Simple](#simple)
   - [Node confiugration](#node-confiugration)
@@ -10,8 +9,6 @@ This module Manages a Google Cloud [Composer](https://cloud.google.com/composer)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
-
-## TODO
 
 ## Examples
 
@@ -59,9 +56,9 @@ module "composer-environment" {
   region     = "europe-west1"
   private_environment_config = {
     enable_private_endpoint    = true
-    master_ipv4_cidr_block     = "10.62.178.0/28"
-    cloud_sql_ipv4_cidr_block  = "10.58.149.0/24"
-    web_server_ipv4_cidr_block = "10.58.147.48/28"
+    master_ipv4_cidr_block     = "10.10.10.0/28"
+    cloud_sql_ipv4_cidr_block  = "10.10.11.0/24"
+    web_server_ipv4_cidr_block = "10.10.12.0/28"
   }
 }
 # tftest modules=1 resources=1
