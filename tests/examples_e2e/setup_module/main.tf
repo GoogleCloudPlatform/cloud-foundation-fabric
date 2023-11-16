@@ -15,7 +15,7 @@
 locals {
   prefix = "${var.prefix}-${var.timestamp}${var.suffix}"
   jit_services = [
-    "storage.googleapis.com",  # no permissions granted by default
+    "storage.googleapis.com", # no permissions granted by default
   ]
   services = [
     # trimmed down list of services, to be extended as needed
