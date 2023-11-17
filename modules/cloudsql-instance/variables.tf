@@ -123,16 +123,16 @@ variable "disk_type" {
   default     = "PD_SSD"
 }
 
-variable "encryption_key_name" {
-  description = "The full path to the encryption key used for the CMEK disk encryption of the primary instance."
-  type        = string
-  default     = null
-}
-
 variable "edition" {
   description = "The edition of the instance, can be ENTERPRISE or ENTERPRISE_PLUS."
   type        = string
   default     = "ENTERPRISE"
+}
+
+variable "encryption_key_name" {
+  description = "The full path to the encryption key used for the CMEK disk encryption of the primary instance."
+  type        = string
+  default     = null
 }
 
 variable "flags" {

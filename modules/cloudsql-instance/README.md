@@ -209,8 +209,8 @@ module "db" {
 | [disk_autoresize_limit](variables.tf#L108) | The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit. | <code>number</code> |  | <code>0</code> |
 | [disk_size](variables.tf#L114) | Disk size in GB. Set to null to enable autoresize. | <code>number</code> |  | <code>null</code> |
 | [disk_type](variables.tf#L120) | The type of data disk: `PD_SSD` or `PD_HDD`. | <code>string</code> |  | <code>&#34;PD_SSD&#34;</code> |
-| [edition](variables.tf#L132) | The edition of the instance, can be ENTERPRISE or ENTERPRISE_PLUS. | <code>string</code> |  | <code>&#34;ENTERPRISE&#34;</code> |
-| [encryption_key_name](variables.tf#L126) | The full path to the encryption key used for the CMEK disk encryption of the primary instance. | <code>string</code> |  | <code>null</code> |
+| [edition](variables.tf#L126) | The edition of the instance, can be ENTERPRISE or ENTERPRISE_PLUS. | <code>string</code> |  | <code>&#34;ENTERPRISE&#34;</code> |
+| [encryption_key_name](variables.tf#L132) | The full path to the encryption key used for the CMEK disk encryption of the primary instance. | <code>string</code> |  | <code>null</code> |
 | [flags](variables.tf#L138) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [insights_config](variables.tf#L144) | Query Insights configuration. Defaults to null which disables Query Insights. | <code title="object&#40;&#123;&#10;  query_string_length     &#61; optional&#40;number, 1024&#41;&#10;  record_application_tags &#61; optional&#40;bool, false&#41;&#10;  record_client_address   &#61; optional&#40;bool, false&#41;&#10;  query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [ipv4_enabled](variables.tf#L155) | Add a public IP address to database instance. | <code>bool</code> |  | <code>false</code> |
