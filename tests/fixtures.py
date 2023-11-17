@@ -307,20 +307,20 @@ def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
       changes = {}
       for resource_name, value in plan.resource_changes.items():
         if value.get('change', {}).get('actions') != ['no-op']:
-          changes[resource_name] = value
+          changes[resource_name] = value['change']
 
       # compare before with after to raise more meaningful failure to the user, i.e one
       # that shows how resource will change
-      plan_before_state = {k: v['before'] for k, v in changes.items()}
-      plan_after_state = {k: v['after'] for k, v in changes.items()}
+      plan_before_state = {k: v.get('before') for k, v in changes.items()}
+      plan_after_state = {k: v.get('after') for k, v in changes.items()}
 
       assert plan_before_state == plan_after_state, f'Plan not empty after apply for values'
 
       plan_before_sensitive_state = {
-          k: v['before_sensitive'] for k, v in changes.items()
+          k: v.get('before_sensitive') for k, v in changes.items()
       }
       plan_after_sensitive_state = {
-          k: v['after_sensitive'] for k, v in changes.items()
+          k: v.get('after_sensitive') for k, v in changes.items()
       }
       assert plan_before_sensitive_state == plan_after_sensitive_state, f'Plan not empty after apply for sensitive values'
 
