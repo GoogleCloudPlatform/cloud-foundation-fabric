@@ -17,9 +17,19 @@
 locals {
   _vpcaccess_annotation = (
     local.vpc_connector_create
-    ? {
+    ? merge({
       "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.0.id
-    }
+      },
+      var.revision_annotations.vpcaccess_egress == null ? {
+        # if creating a vpc connector and no explicit annotation is given,
+        # add "private-ranges-only" annotation to prevent permanent diff
+        "run.googleapis.com/vpc-access-egress" = "private-ranges-only"
+        } : {
+        "run.googleapis.com/vpc-access-egress" = (
+          var.revision_annotations.vpcaccess_egress
+        )
+      },
+    )
     : (
       var.revision_annotations.vpcaccess_connector == null
       ? {}
@@ -82,8 +92,10 @@ locals {
   trigger_sa_create = try(
     var.eventarc_triggers.service_account_create, false
   )
-  trigger_sa_email = try(
-    google_service_account.trigger_service_account[0].email, null
+  trigger_sa_email = (
+    local.trigger_sa_create ?
+    google_service_account.trigger_service_account[0].email
+    : try(var.eventarc_triggers.service_account_email, null)
   )
   vpc_connector_create = var.vpc_connector_create != null
 }
