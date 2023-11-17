@@ -55,13 +55,17 @@ resource "google_sql_database_instance" "primary" {
 
   settings {
     tier                        = var.tier
+    edition                     = var.edition
     deletion_protection_enabled = var.deletion_protection_enabled
     disk_autoresize             = var.disk_size == null
+    disk_autoresize_limit       = var.disk_autoresize_limit
     disk_size                   = var.disk_size
     disk_type                   = var.disk_type
     availability_type           = var.availability_type
     user_labels                 = var.labels
     activation_policy           = var.activation_policy
+    collation                   = var.collation
+    connector_enforcement       = var.connector_enforcement
 
     ip_configuration {
       ipv4_enabled       = var.ipv4_enabled

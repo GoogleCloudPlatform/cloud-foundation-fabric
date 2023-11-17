@@ -68,6 +68,18 @@ variable "backup_configuration" {
   }
 }
 
+variable "collation" {
+  description = "The name of server instance collation."
+  type        = string
+  default     = null
+}
+
+variable "connector_enforcement" {
+  description = "Specifies if connections must use Cloud SQL connectors."
+  type        = string
+  default     = null
+}
+
 variable "database_version" {
   description = "Database type and version to create."
   type        = string
@@ -93,6 +105,12 @@ variable "deletion_protection_enabled" {
   nullable    = false
 }
 
+variable "disk_autoresize_limit" {
+  description = "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit."
+  type        = number
+  default     = 0
+}
+
 variable "disk_size" {
   description = "Disk size in GB. Set to null to enable autoresize."
   type        = number
@@ -109,6 +127,12 @@ variable "encryption_key_name" {
   description = "The full path to the encryption key used for the CMEK disk encryption of the primary instance."
   type        = string
   default     = null
+}
+
+variable "edition" {
+  description = "The edition of the instance, can be ENTERPRISE or ENTERPRISE_PLUS."
+  type        = string
+  default     = "ENTERPRISE"
 }
 
 variable "flags" {
@@ -210,4 +234,3 @@ variable "users" {
   }))
   default = null
 }
-
