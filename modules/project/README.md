@@ -888,10 +888,10 @@ module "bucket" {
 |---|---|:---:|
 | [custom_roles](outputs.tf#L17) | Ids of the created custom roles. |  |
 | [id](outputs.tf#L25) | Project id. |  |
-| [name](outputs.tf#L44) | Project name. |  |
-| [number](outputs.tf#L56) | Project number. |  |
-| [project_id](outputs.tf#L75) | Project id. |  |
-| [service_accounts](outputs.tf#L94) | Product robot service accounts in project. |  |
-| [services](outputs.tf#L110) | Service APIs to enabled in the project. |  |
-| [sink_writer_identities](outputs.tf#L119) | Writer identities created for each sink. |  |
+| [name](outputs.tf#L45) | Project name. |  |
+| [number](outputs.tf#L57) | Project number. |  |
+| [project_id](outputs.tf#L77) | Project id. |  |
+| [service_accounts](outputs.tf#L97) | Product robot service accounts in project. |  |
+| [services](outputs.tf#L113) | Service APIs to enabled in the project. |  |
+| [sink_writer_identities](outputs.tf#L122) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->

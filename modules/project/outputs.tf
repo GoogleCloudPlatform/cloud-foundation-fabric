@@ -37,7 +37,8 @@ output "id" {
     google_kms_crypto_key_iam_member.service_identity_cmek,
     google_project_service_identity.jit_si,
     google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    google_project_iam_member.servicenetworking,
+    google_project_service_identity.dlp
   ]
 }
 
@@ -66,7 +67,8 @@ output "number" {
     google_kms_crypto_key_iam_member.service_identity_cmek,
     google_project_service_identity.jit_si,
     google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    google_project_iam_member.servicenetworking,
+    google_project_service_identity.dlp
   ]
 }
 
@@ -87,7 +89,8 @@ output "project_id" {
     google_kms_crypto_key_iam_member.service_identity_cmek,
     google_project_service_identity.jit_si,
     google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    google_project_iam_member.servicenetworking,
+    google_project_service_identity.dlp
   ]
 }
 
