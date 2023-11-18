@@ -296,7 +296,7 @@ module "cloud_run" {
     "roles/run.invoker" = [module.sa.iam_email]
   }
 }
-# tftest modules=2 resources=5 inventory=audit-logs.yaml e2e
+# tftest modules=2 resources=5 inventory=audit-logs.yaml
 ```
 
 #### Using custom service accounts for triggers
