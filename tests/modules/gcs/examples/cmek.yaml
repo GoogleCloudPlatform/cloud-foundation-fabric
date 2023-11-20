@@ -14,10 +14,10 @@
 
 values:
   module.bucket.google_storage_bucket.bucket:
-    encryption:
-    - default_kms_key_name: my-encryption-key
-    name: my-bucket
-    project: myproject
+#    encryption: __missing__
+#     - default_kms_key_name:
+    name: test-my-bucket
+    project: project-id
 
 counts:
   google_storage_bucket: 1

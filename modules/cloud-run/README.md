@@ -26,6 +26,20 @@ Cloud Run management, with support for IAM roles, revision annotations and optio
 IAM bindings support the usual syntax. Container environment values can be declared as key-value strings or as references to Secret Manager secrets. Both can be combined as long as there's no duplication of keys:
 
 ```hcl
+
+module "secret-manager" {
+  source     = "./fabric/modules/secret-manager"
+  project_id = var.project_id
+  secrets = {
+    credentials = {}
+  }
+  iam = {
+    credentials = {
+      "roles/secretmanager.secretAccessor" = [module.cloud_run.service_account_iam_email]
+    }
+  }
+}
+
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
   project_id = var.project_id
@@ -39,8 +53,8 @@ module "cloud_run" {
       }
       env_from = {
         SECRET1 = {
-          name = "credentials"
-          key  = "1"
+          name = module.secret-manager.ids["credentials"]
+          key  = "latest"
         }
       }
     }
@@ -48,13 +62,33 @@ module "cloud_run" {
   iam = {
     "roles/run.invoker" = ["allUsers"]
   }
+  service_account_create = true
 }
-# tftest modules=1 resources=2 inventory=simple.yaml e2e
+# tftest modules=2 resources=5 inventory=simple.yaml e2e
 ```
 
 ### Mounting secrets as volumes
 
 ```hcl
+module "secret-manager" {
+  source     = "./fabric/modules/secret-manager"
+  project_id = var.project_id
+  secrets = {
+    credentials = {}
+  }
+  versions = {
+    credentials = {
+      v1 = { enabled = true, data = "foo bar baz" }
+    }
+  }
+  iam = {
+    credentials = {
+      "roles/secretmanager.secretAccessor" = [module.cloud_run.service_account_iam_email]
+    }
+  }
+}
+
+
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
   project_id = var.project_id
@@ -68,17 +102,18 @@ module "cloud_run" {
       }
     }
   }
+  service_account_create = true
   volumes = {
     credentials = {
-      name        = "credentials"
-      secret_name = "credentials"
+      name        = module.secret-manager.secrets["credentials"].name
+      secret_name = "credentials" # TODO: module.secret-manager.secrets["credentials"].name
       items = {
-        v1 = { path = "v1.txt" }
+        latest = { path = "v1.txt" }
       }
     }
   }
 }
-# tftest modules=1 resources=1 inventory=secrets.yaml
+# tftest modules=2 resources=5 inventory=secrets.yaml e2e
 ```
 
 ### Revision annotations
@@ -124,7 +159,7 @@ module "cloud_run" {
   }
   gen2_execution_environment = true
 }
-# tftest modules=1 resources=1 inventory=gen2.yaml
+# tftest modules=1 resources=1 inventory=gen2.yaml e2e
 ```
 
 ### VPC Access Connector creation
@@ -142,11 +177,11 @@ module "cloud_run" {
     }
   }
   vpc_connector_create = {
-    ip_cidr_range = "10.10.10.0/24"
-    vpc_self_link = "projects/example/host/global/networks/host"
+    ip_cidr_range = "10.10.10.0/28"
+    vpc_self_link = var.vpc.self_link
   }
 }
-# tftest modules=1 resources=2 inventory=connector.yaml
+# tftest modules=1 resources=2 inventory=connector.yaml e2e
 ```
 
 Note that if you are using Shared VPC you need to specify a subnet:
@@ -178,7 +213,7 @@ This deploys a Cloud Run service with traffic split between two revisions.
 ```hcl
 module "cloud_run" {
   source        = "./fabric/modules/cloud-run"
-  project_id    = "my-project"
+  project_id    = var.project_id
   name          = "hello"
   revision_name = "green"
   containers = {
@@ -201,9 +236,15 @@ module "cloud_run" {
 This deploys a Cloud Run service that will be triggered when messages are published to Pub/Sub topics.
 
 ```hcl
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "pubsub_sink"
+}
+
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "hello"
   containers = {
     hello = {
@@ -212,12 +253,11 @@ module "cloud_run" {
   }
   eventarc_triggers = {
     pubsub = {
-      topic-1 = "topic1"
-      topic-2 = "topic2"
+      topic-1 = module.pubsub.id
     }
   }
 }
-# tftest modules=1 resources=3 inventory=eventarc.yaml
+# tftest modules=2 resources=3 inventory=eventarc.yaml e2e
 ```
 
 #### Audit logs
@@ -225,9 +265,18 @@ module "cloud_run" {
 This deploys a Cloud Run service that will be triggered when specific log events are written to Google Cloud audit logs.
 
 ```hcl
+module "sa" {
+  source     = "./fabric/modules/iam-service-account"
+  project_id = var.project_id
+  name       = "eventarc-trigger"
+  iam_project_roles = {
+    (var.project_id) = ["roles/eventarc.eventReceiver"]
+  }
+}
+
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "hello"
   containers = {
     hello = {
@@ -241,46 +290,33 @@ module "cloud_run" {
         service = "cloudresourcemanager.googleapis.com"
       }
     }
+    service_account_email = module.sa.email
+  }
+  iam = {
+    "roles/run.invoker" = [module.sa.iam_email]
   }
 }
-# tftest modules=1 resources=2 inventory=audit-logs.yaml
+# tftest modules=2 resources=5 inventory=audit-logs.yaml
 ```
 
 #### Using custom service accounts for triggers
 
 By default `Compute default service account` is used to trigger Cloud Run. If you want to use custom Service Account you can either provide your own in `eventarc_triggers.service_account_email` or set `eventarc_triggers.service_account_create` to true and service account named `tf-cr-trigger-${var.name}` will be created with `roles/run.invoker` granted on this Cloud Run service.
 
-Example using provided service account:
-
-```hcl
-module "cloud_run" {
-  source     = "./fabric/modules/cloud-run"
-  project_id = "my-project"
-  name       = "hello"
-  containers = {
-    hello = {
-      image = "us-docker.pkg.dev/cloudrun/container/hello"
-    }
-  }
-  eventarc_triggers = {
-    audit_log = {
-      setiampolicy = {
-        method  = "SetIamPolicy"
-        service = "cloudresourcemanager.googleapis.com"
-      }
-    }
-    service_account_email = "cloud-run-trigger@my-project.iam.gserviceaccount.com"
-  }
-}
-# tftest modules=1 resources=2 inventory=trigger-service-account-external.yaml
-```
+For example using provided service account refer to [Audit logs](#audit-logs) example.
 
 Example using automatically created service account:
 
 ```hcl
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "pubsub_sink"
+}
+
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "hello"
   containers = {
     hello = {
@@ -289,13 +325,12 @@ module "cloud_run" {
   }
   eventarc_triggers = {
     pubsub = {
-      topic-1 = "topic1"
-      topic-2 = "topic2"
+      topic-1 = module.pubsub.id
     }
     service_account_create = true
   }
 }
-# tftest modules=1 resources=5 inventory=trigger-service-account.yaml
+# tftest modules=2 resources=5 inventory=trigger-service-account.yaml e2e
 ```
 
 ### Service account
@@ -305,7 +340,7 @@ To use a custom service account managed by the module, set `service_account_crea
 ```hcl
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "hello"
   containers = {
     hello = {
@@ -314,7 +349,7 @@ module "cloud_run" {
   }
   service_account_create = true
 }
-# tftest modules=1 resources=2 inventory=service-account.yaml
+# tftest modules=1 resources=2 inventory=service-account.yaml e2e
 ```
 
 To use an externally managed service account, pass its email in `service_account` and leave `service_account_create` to `false` (the default).
@@ -322,42 +357,42 @@ To use an externally managed service account, pass its email in `service_account
 ```hcl
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "hello"
   containers = {
     hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
-  service_account = "cloud-run@my-project.iam.gserviceaccount.com"
+  service_account = var.service_account.email
 }
-# tftest modules=1 resources=1 inventory=service-account-external.yaml
+# tftest modules=1 resources=1 inventory=service-account-external.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L136) | Name used for cloud run service. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L151) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L144) | Name used for cloud run service. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L159) | Project id used for all resources. | <code>string</code> | ✓ |  |
 | [container_concurrency](variables.tf#L18) | Maximum allowed in-flight (concurrent) requests per container of the revision. | <code>string</code> |  | <code>null</code> |
 | [containers](variables.tf#L24) | Containers in arbitrary key => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  image   &#61; string&#10;  args    &#61; optional&#40;list&#40;string&#41;&#41;&#10;  command &#61; optional&#40;list&#40;string&#41;&#41;&#10;  env     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  env_from_key &#61; optional&#40;map&#40;object&#40;&#123;&#10;    key  &#61; string&#10;    name &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  liveness_probe &#61; optional&#40;object&#40;&#123;&#10;    action &#61; object&#40;&#123;&#10;      grpc &#61; optional&#40;object&#40;&#123;&#10;        port    &#61; optional&#40;number&#41;&#10;        service &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      http_get &#61; optional&#40;object&#40;&#123;&#10;        http_headers &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;        path         &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    failure_threshold     &#61; optional&#40;number&#41;&#10;    initial_delay_seconds &#61; optional&#40;number&#41;&#10;    period_seconds        &#61; optional&#40;number&#41;&#10;    timeout_seconds       &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  ports &#61; optional&#40;map&#40;object&#40;&#123;&#10;    container_port &#61; optional&#40;number&#41;&#10;    name           &#61; optional&#40;string&#41;&#10;    protocol       &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  resources &#61; optional&#40;object&#40;&#123;&#10;    limits &#61; optional&#40;object&#40;&#123;&#10;      cpu    &#61; string&#10;      memory &#61; string&#10;    &#125;&#41;&#41;&#10;    requests &#61; optional&#40;object&#40;&#123;&#10;      cpu    &#61; string&#10;      memory &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  startup_probe &#61; optional&#40;object&#40;&#123;&#10;    action &#61; object&#40;&#123;&#10;      grpc &#61; optional&#40;object&#40;&#123;&#10;        port    &#61; optional&#40;number&#41;&#10;        service &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      http_get &#61; optional&#40;object&#40;&#123;&#10;        http_headers &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;        path         &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      tcp_socket &#61; optional&#40;object&#40;&#123;&#10;        port &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    failure_threshold     &#61; optional&#40;number&#41;&#10;    initial_delay_seconds &#61; optional&#40;number&#41;&#10;    period_seconds        &#61; optional&#40;number&#41;&#10;    timeout_seconds       &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  volume_mounts &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [eventarc_triggers](variables.tf#L91) | Event arc triggers for different sources. | <code title="object&#40;&#123;&#10;  audit_log &#61; optional&#40;map&#40;object&#40;&#123;&#10;    method  &#61; string&#10;    service &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  pubsub                 &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_email  &#61; optional&#40;string&#41;&#10;  service_account_create &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [gen2_execution_environment](variables.tf#L105) | Use second generation execution environment. | <code>bool</code> |  | <code>false</code> |
-| [iam](variables.tf#L111) | IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ingress_settings](variables.tf#L117) | Ingress settings. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L130) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L141) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
-| [region](variables.tf#L156) | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [revision_annotations](variables.tf#L162) | Configure revision template annotations. | <code title="object&#40;&#123;&#10;  autoscaling &#61; optional&#40;object&#40;&#123;&#10;    max_scale &#61; number&#10;    min_scale &#61; number&#10;  &#125;&#41;&#41;&#10;  cloudsql_instances  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  vpcaccess_connector &#61; optional&#40;string&#41;&#10;  vpcaccess_egress    &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [revision_name](variables.tf#L177) | Revision name. | <code>string</code> |  | <code>null</code> |
-| [service_account](variables.tf#L183) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L189) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [startup_cpu_boost](variables.tf#L195) | Enable startup cpu boost. | <code>bool</code> |  | <code>false</code> |
-| [timeout_seconds](variables.tf#L201) | Maximum duration the instance is allowed for responding to a request. | <code>number</code> |  | <code>null</code> |
-| [traffic](variables.tf#L207) | Traffic steering configuration. If revision name is null the latest revision will be used. | <code title="map&#40;object&#40;&#123;&#10;  percent &#61; number&#10;  latest  &#61; optional&#40;bool&#41;&#10;  tag     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [volumes](variables.tf#L218) | Named volumes in containers in name => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  secret_name  &#61; string&#10;  default_mode &#61; optional&#40;string&#41;&#10;  items &#61; optional&#40;map&#40;object&#40;&#123;&#10;    path &#61; string&#10;    mode &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vpc_connector_create](variables.tf#L232) | Populate this to create a VPC connector. You can then refer to it in the template annotations. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; optional&#40;string&#41;&#10;  vpc_self_link &#61; optional&#40;string&#41;&#10;  machine_type  &#61; optional&#40;string&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  subnet &#61; optional&#40;object&#40;&#123;&#10;    name       &#61; optional&#40;string&#41;&#10;    project_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [gen2_execution_environment](variables.tf#L113) | Use second generation execution environment. | <code>bool</code> |  | <code>false</code> |
+| [iam](variables.tf#L119) | IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ingress_settings](variables.tf#L125) | Ingress settings. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L138) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L149) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L164) | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [revision_annotations](variables.tf#L170) | Configure revision template annotations. | <code title="object&#40;&#123;&#10;  autoscaling &#61; optional&#40;object&#40;&#123;&#10;    max_scale &#61; number&#10;    min_scale &#61; number&#10;  &#125;&#41;&#41;&#10;  cloudsql_instances  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  vpcaccess_connector &#61; optional&#40;string&#41;&#10;  vpcaccess_egress    &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [revision_name](variables.tf#L185) | Revision name. | <code>string</code> |  | <code>null</code> |
+| [service_account](variables.tf#L191) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L197) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| [startup_cpu_boost](variables.tf#L203) | Enable startup cpu boost. | <code>bool</code> |  | <code>false</code> |
+| [timeout_seconds](variables.tf#L209) | Maximum duration the instance is allowed for responding to a request. | <code>number</code> |  | <code>null</code> |
+| [traffic](variables.tf#L215) | Traffic steering configuration. If revision name is null the latest revision will be used. | <code title="map&#40;object&#40;&#123;&#10;  percent &#61; number&#10;  latest  &#61; optional&#40;bool&#41;&#10;  tag     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [volumes](variables.tf#L226) | Named volumes in containers in name => attributes format. | <code title="map&#40;object&#40;&#123;&#10;  secret_name  &#61; string&#10;  default_mode &#61; optional&#40;string&#41;&#10;  items &#61; optional&#40;map&#40;object&#40;&#123;&#10;    path &#61; string&#10;    mode &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpc_connector_create](variables.tf#L240) | Populate this to create a VPC connector. You can then refer to it in the template annotations. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; optional&#40;string&#41;&#10;  vpc_self_link &#61; optional&#40;string&#41;&#10;  machine_type  &#61; optional&#40;string&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  subnet &#61; optional&#40;object&#40;&#123;&#10;    name       &#61; optional&#40;string&#41;&#10;    project_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

@@ -30,6 +30,7 @@ variable "cloud_function_config" {
     memory_mb            = optional(number, 256)
     source_dir           = optional(string, "../src")
     timeout_seconds      = optional(number, 540)
+    version              = optional(string, "v1")
     vpc_connector = optional(object({
       name            = string
       egress_settings = optional(string, "ALL_TRAFFIC")

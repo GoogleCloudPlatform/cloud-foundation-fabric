@@ -27,6 +27,8 @@ module "cloudsql" {
   region              = var.region
   tier                = local.cloudsql_conf.tier
   users = {
-    "${local.cloudsql_conf.user}" = var.cloudsql_password
+    "${local.cloudsql_conf.user}" = {
+      password = var.cloudsql_password
+    }
   }
 }

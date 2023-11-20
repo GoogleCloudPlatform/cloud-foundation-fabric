@@ -114,28 +114,6 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
-  dynamic "connection_tracking_policy" {
-    for_each = (
-      each.value.connection_tracking == null
-      ? []
-      : [each.value.connection_tracking]
-    )
-    iterator = cb
-    content {
-      connection_persistence_on_unhealthy_backends = (
-        cb.value.persist_conn_on_unhealthy != null
-        ? cb.value.persist_conn_on_unhealthy
-        : null
-      )
-      idle_timeout_sec = cb.value.idle_timeout_sec
-      tracking_mode = (
-        cb.value.track_per_session != null
-        ? cb.value.track_per_session
-        : null
-      )
-    }
-  }
-
   dynamic "consistent_hash" {
     for_each = (
       each.value.consistent_hash == null ? [] : [each.value.consistent_hash]
