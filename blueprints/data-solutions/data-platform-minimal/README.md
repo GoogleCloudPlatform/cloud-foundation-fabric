@@ -229,7 +229,7 @@ module "data-platform" {
   prefix = "myprefix"
 }
 
-# tftest modules=23 resources=138
+# tftest modules=23 resources=139
 ```
 
 ## Customizations
