@@ -169,6 +169,7 @@
   # dlp                          ="organizations-ORGANIZATION_NUMBER@gcp-sa-riskmanager"
 - name: "dlp"
   service_agent: "service-%s@dlp-api.iam.gserviceaccount.com"
+  jit: true
 - name: "documentai"
   service_agent: "service-%s@gcp-sa-prod-dai-core.iam.gserviceaccount.com"
 - name: "edgecontainer"
