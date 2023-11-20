@@ -26,12 +26,15 @@ locals {
     "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
+    "eventarc.googleapis.com",
     "iam.googleapis.com",
     "run.googleapis.com",
+    "secretmanager.googleapis.com",
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com",
     "storage-component.googleapis.com",
     "storage.googleapis.com",
+    "vpcaccess.googleapis.com",
   ]
 }
 
