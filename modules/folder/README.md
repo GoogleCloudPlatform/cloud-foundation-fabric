@@ -205,7 +205,6 @@ module "gcs" {
   source        = "./fabric/modules/gcs"
   project_id    = var.project_id
   name          = "gcs_sink"
-  prefix        = "test"
   force_destroy = true
 }
 
