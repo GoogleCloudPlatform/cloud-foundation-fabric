@@ -16,8 +16,8 @@ values:
   module.bucket.google_storage_bucket.bucket:
     logging:
     - log_bucket: log-bucket
-    name: my-bucket
-    project: myproject
+    name: test-my-bucket
+    project: project-id
     retention_policy:
     - is_locked: true
       retention_period: 100

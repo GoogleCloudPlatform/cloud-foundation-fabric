@@ -26,7 +26,7 @@ values:
     location: EU
     logging: []
     name: test-my-bucket
-    project: myproject
+    project: project-id
     requester_pays: null
     retention_policy: []
     storage_class: MULTI_REGIONAL

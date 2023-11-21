@@ -39,6 +39,7 @@ Use the following diagram as a simple high level reference for the following sec
   - [Names and naming convention](#names-and-naming-convention)
   - [Workload Identity Federation](#workload-identity-federation)
   - [CI/CD repositories](#cicd-repositories)
+  - [Toggling features](#toggling-features)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -556,6 +557,18 @@ The remaining configuration is manual, as it regards the repositories themselves
     - for GitHub, place it in a `.github/workflows` folder in the repository root
     - for Gitlab, rename it to `.gitlab-ci.yml` and place it in the repository root
     - for Source Repositories, place it in `.cloudbuild/workflow.yaml`
+
+### Toggling features
+
+Some FAST features can be enabled or disabled using the `fast_features` variables. While this variable is not directly used in the bootstrap stage, it can instruct the following stages to create certain resources only if needed.
+
+The `fast_features` variable consists of 4 toggles:
+
+- **`data_platform`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-data-platform](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-data-platform) stage
+- **`gke`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-gke-multitenant](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-gke-multitenant) stage
+- **`project_factory`** controls the creation of required resources (folders, service accounts, buckets, IAM bindings) to deploy the [3-project-factory](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/3-project-factory) stage
+- **`sandbox`** controls the creation of a "Sandbox" top level folder with relaxed policies, intended for sandbox environments where users can experiment
+- **`teams`** controls the creation of the top level "Teams" folder used by the [teams feature in resman](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/fast/stages/1-resman#team-folders).
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->

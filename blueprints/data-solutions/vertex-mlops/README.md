@@ -112,19 +112,19 @@ module "test" {
     "team" = "ml"
   }
   bucket_name          = "gcs-test"
-  dataset_name         = "bq-test"
+  dataset_name         = "bq_test"
   identity_pool_claims = "attribute.repository/ORGANIZATION/REPO"
   notebooks = {
     "myworkbench" = {
       type = "USER_MANAGED"
     }
   }
-  prefix = "pref-dev"
+  prefix = var.prefix
   project_config = {
-    billing_account_id = "000000-123456-123456"
-    parent             = "folders/111111111111"
+    billing_account_id = var.billing_account_id
+    parent             = var.folder_id
     project_id         = "test-dev"
   }
 }
-# tftest modules=13 resources=67
+# tftest modules=13 resources=67 e2e
 ```

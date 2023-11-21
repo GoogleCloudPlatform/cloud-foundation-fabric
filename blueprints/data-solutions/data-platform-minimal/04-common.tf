@@ -39,6 +39,7 @@ locals {
     "roles/datacatalog.categoryFineGrainedReader" = [
       module.processing-sa-0.iam_email
     ]
+    "roles/dlp.serviceAgent" = ["serviceAccount:${module.common-project.service_accounts.robots.dlp}"]
   }
   # this only works because the service account module uses a static output
   iam_cmn_additive = {

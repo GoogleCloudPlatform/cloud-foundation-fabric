@@ -123,13 +123,31 @@ resource "google_container_cluster" "cluster" {
     content {
       enabled = true
 
+      autoscaling_profile = var.cluster_autoscaling.autoscaling_profile
+
       dynamic "auto_provisioning_defaults" {
         for_each = var.cluster_autoscaling.auto_provisioning_defaults != null ? [""] : []
         content {
           boot_disk_kms_key = var.cluster_autoscaling.auto_provisioning_defaults.boot_disk_kms_key
+          disk_size         = var.cluster_autoscaling.auto_provisioning_defaults.disk_size
+          disk_type         = var.cluster_autoscaling.auto_provisioning_defaults.disk_type
           image_type        = var.cluster_autoscaling.auto_provisioning_defaults.image_type
           oauth_scopes      = var.cluster_autoscaling.auto_provisioning_defaults.oauth_scopes
           service_account   = var.cluster_autoscaling.auto_provisioning_defaults.service_account
+          dynamic "management" {
+            for_each = var.cluster_autoscaling.auto_provisioning_defaults.management != null ? [""] : []
+            content {
+              auto_repair  = var.cluster_autoscaling.auto_provisioning_defaults.management.auto_repair
+              auto_upgrade = var.cluster_autoscaling.auto_provisioning_defaults.management.auto_upgrade
+            }
+          }
+          dynamic "shielded_instance_config" {
+            for_each = var.cluster_autoscaling.auto_provisioning_defaults.shielded_instance_config != null ? [""] : []
+            content {
+              enable_integrity_monitoring = var.cluster_autoscaling.auto_provisioning_defaults.shielded_instance_config.integrity_monitoring
+              enable_secure_boot          = var.cluster_autoscaling.auto_provisioning_defaults.shielded_instance_config.secure_boot
+            }
+          }
         }
       }
       dynamic "resource_limits" {
@@ -148,7 +166,19 @@ resource "google_container_cluster" "cluster" {
           maximum       = var.cluster_autoscaling.mem_limits.max
         }
       }
-      // TODO: support GPUs too
+      dynamic "resource_limits" {
+        for_each = (
+          try(var.cluster_autoscaling.gpu_resources, null) == null
+          ? []
+          : var.cluster_autoscaling.gpu_resources
+        )
+        iterator = gpu_resources
+        content {
+          resource_type = gpu_resources.value.resource_type
+          minimum       = gpu_resources.value.min
+          maximum       = gpu_resources.value.max
+        }
+      }
     }
   }
 

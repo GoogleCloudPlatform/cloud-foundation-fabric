@@ -59,32 +59,29 @@ A monitoring dashboard can be optionally be deployed int he same project by sett
 dashboard_json_path = "../dashboards/quotas-utilization.json"
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [discovery_config](variables.tf#L48) | Discovery configuration. Discovery root is the organization or a folder. If monitored folders and projects are empty, every project under the discovery root node will be monitored. | <code title="object&#40;&#123;&#10;  discovery_root     &#61; string&#10;  monitored_folders  &#61; list&#40;string&#41;&#10;  monitored_projects &#61; list&#40;string&#41;&#10;  custom_quota_file  &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L100) | Project id where the Cloud Function will be deployed. | <code>string</code> | ✓ |  |
+| [discovery_config](variables.tf#L49) | Discovery configuration. Discovery root is the organization or a folder. If monitored folders and projects are empty, every project under the discovery root node will be monitored. | <code title="object&#40;&#123;&#10;  discovery_root     &#61; string&#10;  monitored_folders  &#61; list&#40;string&#41;&#10;  monitored_projects &#61; list&#40;string&#41;&#10;  custom_quota_file  &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L101) | Project id where the Cloud Function will be deployed. | <code>string</code> | ✓ |  |
 | [bundle_path](variables.tf#L17) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
-| [cloud_function_config](variables.tf#L23) | Optional Cloud Function configuration. | <code title="object&#40;&#123;&#10;  bucket_name          &#61; optional&#40;string&#41;&#10;  build_worker_pool_id &#61; optional&#40;string&#41;&#10;  bundle_path          &#61; optional&#40;string, &#34;.&#47;bundle.zip&#34;&#41;&#10;  debug                &#61; optional&#40;bool, false&#41;&#10;  memory_mb            &#61; optional&#40;number, 256&#41;&#10;  source_dir           &#61; optional&#40;string, &#34;..&#47;src&#34;&#41;&#10;  timeout_seconds      &#61; optional&#40;number, 540&#41;&#10;  vpc_connector &#61; optional&#40;object&#40;&#123;&#10;    name            &#61; string&#10;    egress_settings &#61; optional&#40;string, &#34;ALL_TRAFFIC&#34;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [dashboard_json_path](variables.tf#L42) | Optional monitoring dashboard to deploy. | <code>string</code> |  | <code>null</code> |
-| [grant_discovery_iam_roles](variables.tf#L66) | Optionally grant required IAM roles to Cloud Function service account. | <code>bool</code> |  | <code>false</code> |
-| [labels](variables.tf#L73) | Billing labels used for the Cloud Function, and the project if project_create is true. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [monitoring_project](variables.tf#L79) | Project where generated metrics will be written. Default is to use the same project where the Cloud Function is deployed. | <code>string</code> |  | <code>null</code> |
-| [name](variables.tf#L85) | Name used to create Cloud Function related resources. | <code>string</code> |  | <code>&#34;net-dash&#34;</code> |
-| [project_create_config](variables.tf#L91) | Optional configuration if project creation is required. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent_id          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L105) | Compute region where the Cloud Function will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [schedule_config](variables.tf#L111) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;&#42;&#47;30 &#42; &#42; &#42; &#42;&#34;</code> |
+| [cloud_function_config](variables.tf#L23) | Optional Cloud Function configuration. | <code title="object&#40;&#123;&#10;  bucket_name          &#61; optional&#40;string&#41;&#10;  build_worker_pool_id &#61; optional&#40;string&#41;&#10;  bundle_path          &#61; optional&#40;string, &#34;.&#47;bundle.zip&#34;&#41;&#10;  debug                &#61; optional&#40;bool, false&#41;&#10;  memory_mb            &#61; optional&#40;number, 256&#41;&#10;  source_dir           &#61; optional&#40;string, &#34;..&#47;src&#34;&#41;&#10;  timeout_seconds      &#61; optional&#40;number, 540&#41;&#10;  version              &#61; optional&#40;string, &#34;v1&#34;&#41;&#10;  vpc_connector &#61; optional&#40;object&#40;&#123;&#10;    name            &#61; string&#10;    egress_settings &#61; optional&#40;string, &#34;ALL_TRAFFIC&#34;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [dashboard_json_path](variables.tf#L43) | Optional monitoring dashboard to deploy. | <code>string</code> |  | <code>null</code> |
+| [grant_discovery_iam_roles](variables.tf#L67) | Optionally grant required IAM roles to Cloud Function service account. | <code>bool</code> |  | <code>false</code> |
+| [labels](variables.tf#L74) | Billing labels used for the Cloud Function, and the project if project_create is true. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [monitoring_project](variables.tf#L80) | Project where generated metrics will be written. Default is to use the same project where the Cloud Function is deployed. | <code>string</code> |  | <code>null</code> |
+| [name](variables.tf#L86) | Name used to create Cloud Function related resources. | <code>string</code> |  | <code>&#34;net-dash&#34;</code> |
+| [project_create_config](variables.tf#L92) | Optional configuration if project creation is required. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent_id          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L106) | Compute region where the Cloud Function will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [schedule_config](variables.tf#L112) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;&#42;&#47;30 &#42; &#42; &#42; &#42;&#34;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [bucket](outputs.tf#L17) | Cloud Function deployment bucket resource. |  |
-| [cloud-function](outputs.tf#L22) | Cloud Function resource. |  |
-| [project_id](outputs.tf#L27) | Project id. |  |
-| [service_account](outputs.tf#L32) | Cloud Function service account. |  |
-| [troubleshooting_payload](outputs.tf#L40) | Cloud Function payload used for manual triggering. | ✓ |
-
+| [project_id](outputs.tf#L22) | Project id. |  |
+| [service_account](outputs.tf#L27) | Cloud Function service account. |  |
+| [troubleshooting_payload](outputs.tf#L35) | Cloud Function payload used for manual triggering. | ✓ |
 <!-- END TFDOC -->
