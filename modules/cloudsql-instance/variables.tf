@@ -172,6 +172,7 @@ variable "name" {
 variable "network" {
   description = "VPC self link where the instances will be deployed. Private Service Networking must be enabled and configured in this VPC."
   type        = string
+  default     = ""
 }
 
 variable "postgres_client_certificates" {
@@ -198,8 +199,8 @@ variable "project_id" {
 variable "psc_config" {
   description = "Whether Private Service Connect (PSC) connectivity is enabled for this instance and list of consumer projects that are allow-listed for PSC connections to this instance."
   type = object({
-    psc_enabled = optional(bool, true)
     allowed_consumer_projects = optional(list(string), [])
+    psc_enabled               = optional(bool, true)
   })
   default = null
 }

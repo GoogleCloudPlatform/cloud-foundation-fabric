@@ -81,12 +81,12 @@ resource "google_sql_database_instance" "primary" {
         }
       }
       dynamic "psc_config" {
-        for_each = var.psc_config != null? [""] : []
+        for_each = var.psc_config != null ? [""] : []
         content {
-          psc_enabled = var.psc_config.psc_enabled
+          psc_enabled               = var.psc_config.psc_enabled
           allowed_consumer_projects = var.psc_config.allowed_consumer_projects
         }
-        
+
       }
     }
 
