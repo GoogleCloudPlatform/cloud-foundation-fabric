@@ -44,7 +44,8 @@ resource "google_container_cluster" "cluster" {
   # the default node pool is deleted here, use the gke-nodepool module instead.
   # the default node pool configuration is based on a shielded_nodes variable.
   node_config {
-    service_account = var.service_account
+    service_account   = var.service_account
+    boot_disk_kms_key = var.boot_disk_kms_key
     dynamic "shielded_instance_config" {
       for_each = var.enable_features.shielded_nodes ? [""] : []
       content {
@@ -128,7 +129,7 @@ resource "google_container_cluster" "cluster" {
       dynamic "auto_provisioning_defaults" {
         for_each = var.cluster_autoscaling.auto_provisioning_defaults != null ? [""] : []
         content {
-          boot_disk_kms_key = var.cluster_autoscaling.auto_provisioning_defaults.boot_disk_kms_key
+          boot_disk_kms_key = var.cluster_autoscaling.auto_provisioning_defaults.boot_disk_kms_key != null ? var.cluster_autoscaling.auto_provisioning_defaults.boot_disk_kms_key : var.boot_disk_kms_key
           disk_size         = var.cluster_autoscaling.auto_provisioning_defaults.disk_size
           disk_type         = var.cluster_autoscaling.auto_provisioning_defaults.disk_type
           image_type        = var.cluster_autoscaling.auto_provisioning_defaults.image_type

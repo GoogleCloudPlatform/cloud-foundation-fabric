@@ -35,6 +35,12 @@ variable "backup_configs" {
   nullable = false
 }
 
+variable "boot_disk_kms_key" {
+  description = "The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool."
+  type        = string
+  default     = null
+}
+
 variable "cluster_autoscaling" {
   description = "Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler."
   type = object({
