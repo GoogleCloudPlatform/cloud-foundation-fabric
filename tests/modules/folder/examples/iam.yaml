@@ -20,18 +20,18 @@ values:
   module.folder.google_folder_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - group:group_email
+    - group:organization-admins@example.org
     - serviceAccount:service_account_email
     role: roles/owner
   module.folder.google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
     condition: []
     members:
-    - group:group_email
+    - group:organization-admins@example.org
     role: roles/resourcemanager.folderAdmin
   module.folder.google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
     condition: []
     members:
-    - group:group_email
+    - group:organization-admins@example.org
     role: roles/resourcemanager.projectCreator
   module.folder.google_folder_iam_member.bindings["am1-storage-admin"]:
     condition: []

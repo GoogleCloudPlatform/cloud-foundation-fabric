@@ -20,7 +20,7 @@ values:
   module.folder.google_folder_iam_audit_config.default["allServices"]:
     audit_log_config:
     - exempted_members:
-      - group:group_email
+      - group:organization-admins@example.org
       log_type: ADMIN_READ
     service: allServices
   module.folder.google_folder_iam_audit_config.default["storage.googleapis.com"]:
