@@ -15,28 +15,39 @@
  */
 
 locals {
-  # F5 configs
-  as3_url  = "https://github.com/F5Networks/f5-appsvcs-extension/releases/download/v3.46.0/f5-appsvcs-3.46.0-5.noarch.rpm"
-  as3_ver  = format("v%s", split("-", split("/", local.as3_url)[length(split("/", local.as3_url)) - 1])[2])
-  cfe_ver  = format("v%s", split("-", split("/", local.cfe_url)[length(split("/", local.cfe_url)) - 1])[3])
-  cfe_url  = "https://github.com/F5Networks/f5-cloud-failover-extension/releases/download/v1.15.0/f5-cloud-failover-1.15.0-0.noarch.rpm"
-  do_url   = "https://github.com/F5Networks/f5-declarative-onboarding/releases/download/v1.39.0/f5-declarative-onboarding-1.39.0-4.noarch.rpm"
-  do_ver   = format("v%s", split("-", split("/", local.do_url)[length(split("/", local.do_url)) - 1])[3])
-  fast_url = "https://github.com/F5Networks/f5-appsvcs-templates/releases/download/v1.25.0/f5-appsvcs-templates-1.25.0-1.noarch.rpm"
-  fast_ver = format("v%s", split("-", split("/", local.fast_url)[length(split("/", local.fast_url)) - 1])[3])
-  init_url = "https://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/v1.6.2/dist/f5-bigip-runtime-init-1.6.2-1.gz.run"
-  ts_ver   = format("v%s", split("-", split("/", local.ts_url)[length(split("/", local.ts_url)) - 1])[2])
-  ts_url   = "https://github.com/F5Networks/f5-telemetry-streaming/releases/download/v1.33.0/f5-telemetry-1.33.0-1.noarch.rpm"
+  _f5_urls = {
+    as3  = "https://github.com/F5Networks/f5-appsvcs-extension/releases/download/v3.46.0/f5-appsvcs-3.46.0-5.noarch.rpm"
+    cfe  = "https://github.com/F5Networks/f5-cloud-failover-extension/releases/download/v1.15.0/f5-cloud-failover-1.15.0-0.noarch.rpm"
+    do   = "https://github.com/F5Networks/f5-declarative-onboarding/releases/download/v1.39.0/f5-declarative-onboarding-1.39.0-4.noarch.rpm"
+    fast = "https://github.com/F5Networks/f5-appsvcs-templates/releases/download/v1.25.0/f5-appsvcs-templates-1.25.0-1.noarch.rpm"
+    init = "https://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/v1.6.2/dist/f5-bigip-runtime-init-1.6.2-1.gz.run"
+    ts   = "https://github.com/F5Networks/f5-telemetry-streaming/releases/download/v1.33.0/f5-telemetry-1.33.0-1.noarch.rpm"
+  }
+  _f5_urls_split = {
+    for k, v in local._f5_urls
+    : k => split("/", v)
+  }
+  _f5_vers = {
+    as3  = split("-", local._f5_urls_split.as3[length(local._f5_urls_split.as3) - 1])[2]
+    cfe  = split("-", local._f5_urls_split.cfe[length(local._f5_urls_split.cfe) - 1])[3]
+    do   = split("-", local._f5_urls_split.do[length(local._f5_urls_split.do) - 1])[3]
+    fast = format("v%s", split("-", local._f5_urls_split.fast[length(local._f5_urls_split.fast) - 1])[3])
+    ts   = format("v%s", split("-", local._f5_urls_split.ts[length(local._f5_urls_split.ts) - 1])[2])
+  }
+  f5_config = merge(
+    { NIC_COUNT = true },
+    { for k, v in local._f5_urls : upper("${k}_url") => v },
+    { for k, v in local._f5_vers : upper("${k}_ver") => v },
+  )
 }
 
 module "vm-addresses-dp" {
   source     = "../../../../modules/net-address"
   project_id = var.project_id
   internal_addresses = {
-    for k, v in var.f5_vms_dedicated_config
-    : k => {
+    for k, v in var.instance_dedicated_configs : k => {
       address    = try(v.network_config.dataplane_address, null)
-      name       = "${var.prefix}-f5-ip-dp-${k}"
+      name       = "${var.prefix}-${k}-dp"
       region     = var.region
       subnetwork = var.vpc_config.dataplane.subnetwork
     }
@@ -47,10 +58,10 @@ module "vm-addresses-mgmt" {
   source     = "../../../../modules/net-address"
   project_id = var.project_id
   internal_addresses = {
-    for k, v in var.f5_vms_dedicated_config
+    for k, v in var.instance_dedicated_configs
     : k => {
       address    = try(v.network_config.management_address, null)
-      name       = "${var.prefix}-f5-ip-mgmt-${k}"
+      name       = "${var.prefix}-${k}-mgmt"
       region     = var.region
       subnetwork = var.vpc_config.management.subnetwork
     }
@@ -58,21 +69,17 @@ module "vm-addresses-mgmt" {
 }
 
 module "bigip-vms" {
-  for_each       = var.f5_vms_dedicated_config
+  for_each       = var.instance_dedicated_configs
   source         = "../../../../modules/compute-vm"
   project_id     = var.project_id
   zone           = "${var.region}-${each.key}"
-  name           = "${var.prefix}-f5-lb-${each.key}"
-  instance_type  = var.f5_vms_shared_config.instance_type
+  name           = "${var.prefix}-lb-${each.key}"
+  instance_type  = var.instance_shared_config.instance_type
   can_ip_forward = true
-  tags           = var.f5_vms_shared_config.tags
+  tags           = var.instance_shared_config.tags
 
   boot_disk = {
-    initialize_params = {
-      image = var.f5_vms_shared_config.image
-      size  = var.f5_vms_shared_config.disk_size
-      type  = "pd-ssd"
-    }
+    initialize_params = var.instance_shared_config.boot_disk
   }
 
   group = {
@@ -80,27 +87,16 @@ module "bigip-vms" {
   }
 
   metadata = {
-    startup-script = replace(templatefile("${path.module}/startup-script.tpl", {
-      onboard_log                       = "/var/log/startup-script.log",
-      libs_dir                          = "/config/cloud/gcp/node_modules",
-      bigip_username                    = var.f5_vms_shared_config.username,
-      gcp_secret_manager_authentication = var.f5_vms_shared_config.use_gcp_secret ? true : false,
-      bigip_password                    = var.f5_vms_shared_config.secret,
-      license_key                       = each.value.license_key,
-      ssh_keypair                       = try(file(var.f5_vms_shared_config.ssh_public_key), ""),
-      INIT_URL                          = local.init_url
-      DO_URL                            = local.do_url
-      DO_VER                            = local.do_ver
-      AS3_URL                           = local.as3_url
-      AS3_VER                           = local.as3_ver
-      TS_VER                            = local.ts_ver
-      TS_URL                            = local.ts_url
-      CFE_VER                           = local.cfe_ver
-      CFE_URL                           = local.cfe_url
-      FAST_URL                          = local.fast_url
-      FAST_VER                          = local.fast_ver
-      NIC_COUNT                         = true
-    }), "/\r/", "")
+    startup-script = replace(templatefile("${path.module}/startup-script.tpl",
+      merge(local.f5_config, {
+        onboard_log                       = "/var/log/startup-script.log",
+        libs_dir                          = "/config/cloud/gcp/node_modules",
+        bigip_username                    = var.instance_shared_config.username,
+        gcp_secret_manager_authentication = var.instance_shared_config.secret.is_gcp,
+        bigip_password                    = var.instance_shared_config.secret.value,
+        license_key                       = each.value.license_key,
+        ssh_keypair                       = try(file(var.instance_shared_config.ssh_public_key), ""),
+    })), "/\r/", "")
   }
 
   network_interfaces = [
@@ -108,12 +104,12 @@ module "bigip-vms" {
       network    = var.vpc_config.dataplane.network
       subnetwork = var.vpc_config.dataplane.subnetwork
       stack_type = (
-        var.f5_vms_shared_config.enable_ipv6
+        var.instance_shared_config.enable_ipv6
         ? "IPV4_IPV6"
         : "IPV4_ONLY"
       )
       addresses = {
-        internal = module.vm-addresses-dp.internal_addresses["${var.prefix}-f5-ip-dp-${each.key}"].address
+        internal = module.vm-addresses-dp.internal_addresses["${var.prefix}-${each.key}-dp"].address
       }
       alias_ips = {
         "${each.value.network_config.alias_ip_range_name}" = each.value.network_config.alias_ip_range_address
@@ -123,18 +119,18 @@ module "bigip-vms" {
       network    = var.vpc_config.management.network
       subnetwork = var.vpc_config.management.subnetwork
       stack_type = (
-        var.f5_vms_shared_config.enable_ipv6
+        var.instance_shared_config.enable_ipv6
         ? "IPV4_IPV6"
         : "IPV4_ONLY"
       )
       addresses = {
-        internal = module.vm-addresses-mgmt.internal_addresses["${var.prefix}-f5-ip-mgmt-${each.key}"].address
+        internal = module.vm-addresses-mgmt.internal_addresses["${var.prefix}-${each.key}-mgmt"].address
       }
     }
   ]
 
   service_account = {
-    email = var.f5_vms_shared_config.service_account
+    email = var.instance_shared_config.service_account
     scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/userinfo.email"

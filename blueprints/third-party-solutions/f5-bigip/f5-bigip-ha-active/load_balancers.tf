@@ -18,7 +18,7 @@ locals {
   ilb_forwarding_rules_config = {
     for k, v in var.forwarding_rules_config
     : k => {
-      address       = try(module.lb-addresses.internal_addresses["${var.prefix}-f5-ip-ilb-${k}"].address)
+      address       = try(module.lb-addresses.internal_addresses["${var.prefix}-ilb-${k}"].address)
       global_access = v.global_access
       ip_version    = v.ip_version
       protocol      = v.protocol
@@ -27,7 +27,7 @@ locals {
   nlb_forwarding_rules_config = {
     for k, v in var.forwarding_rules_config
     : k => {
-      address    = try(module.lb-addresses.external_addresses["${var.prefix}-f5-ip-nlb-${k}"].address)
+      address    = try(module.lb-addresses.external_addresses["${var.prefix}-nlb-${k}"].address)
       ip_version = v.ip_version
       protocol   = v.protocol
       subnetwork = v.subnetwork
@@ -43,7 +43,7 @@ module "lb-addresses" {
     : k => {
       address    = v.address
       ipv6       = v.ip_version == "IPV6" ? { endpoint_type = "NETLB" } : null
-      name       = "${var.prefix}-f5-ip-nlb-${k}"
+      name       = "${var.prefix}-nlb-${k}"
       region     = var.region
       subnetwork = var.vpc_config["dataplane"]["subnetwork"]
     } if v.external == true
@@ -53,7 +53,7 @@ module "lb-addresses" {
     : k => {
       address    = v.address
       ipv6       = v.ip_version == "IPV6" ? {} : null
-      name       = "${var.prefix}-f5-ip-ilb-${k}"
+      name       = "${var.prefix}-ilb-${k}"
       region     = var.region
       subnetwork = var.vpc_config["dataplane"]["subnetwork"]
     } if v.external == false
@@ -69,12 +69,12 @@ module "passthrough-ilb" {
   source                  = "../../../../modules/net-lb-int"
   project_id              = var.project_id
   region                  = var.region
-  name                    = "${var.prefix}-f5-ilb"
+  name                    = "${var.prefix}-ilb"
   forwarding_rules_config = local.ilb_forwarding_rules_config
   health_check_config     = var.health_check_config
 
   backends = [
-    for k, _ in var.f5_vms_dedicated_config
+    for k, _ in var.instance_dedicated_configs
     : { group = module.bigip-vms[k].group.self_link }
   ]
 
@@ -93,12 +93,12 @@ module "passthrough-nlb" {
   source                  = "../../../../modules/net-lb-ext"
   project_id              = var.project_id
   region                  = var.region
-  name                    = "${var.prefix}-f5-nlb"
+  name                    = "${var.prefix}-nlb"
   forwarding_rules_config = local.nlb_forwarding_rules_config
   health_check_config     = var.health_check_config
 
   backends = [
-    for k, _ in var.f5_vms_dedicated_config
+    for k, _ in var.instance_dedicated_configs
     : { group = module.bigip-vms[k].group.self_link }
   ]
 }

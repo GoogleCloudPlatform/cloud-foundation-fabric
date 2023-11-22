@@ -22,7 +22,7 @@ output "f5_management_ips" {
   }
 }
 
-output "forwarding_rules_config" {
+output "forwarding_rules_configs" {
   description = "The GCP forwarding rules configurations."
   value = {
     external = {

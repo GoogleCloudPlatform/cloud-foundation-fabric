@@ -17,11 +17,11 @@ values:
     boot_disk:
     - initialize_params:
       - image: projects/f5-7626-networks-public/global/images/f5-bigip-15-1-2-1-0-0-10-byol-ltm-2boot-loc-210115160742
-        size: 100
+        size: 150
         type: pd-ssd
     can_ip_forward: true
     description: Managed by the compute-vm Terraform module.
-    machine_type: n2-standard-4
+    machine_type: n2-standard-8
     name: test-lb-a
     network_interface:
     - access_config: []
@@ -39,7 +39,8 @@ values:
       stack_type: IPV4_ONLY
       subnetwork: projects/my-project/regions/europe-west1/subnetworks/management
     project: my-project
-    tags: null
+    tags:
+    - f5-lbs
     zone: europe-west1-a
   module.f5-lb.module.bigip-vms["a"].google_compute_instance_group.unmanaged[0]:
     description: Managed by the compute-vm Terraform module.
@@ -47,6 +48,15 @@ values:
     network: projects/my-project/global/networks/dataplane
     project: my-project
     zone: europe-west1-a
+  module.f5-lb.module.lb-addresses.google_compute_address.internal["l4"]:
+    address_type: INTERNAL
+    description: Terraform managed.
+    ip_version: null
+    ipv6_endpoint_type: null
+    name: test-ilb-l4
+    project: my-project
+    region: europe-west1
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
   module.f5-lb.module.bigip-vms["b"].google_compute_instance.default[0]:
     advanced_machine_features: []
     allow_stopping_for_update: true
@@ -54,11 +64,11 @@ values:
     boot_disk:
     - initialize_params:
       - image: projects/f5-7626-networks-public/global/images/f5-bigip-15-1-2-1-0-0-10-byol-ltm-2boot-loc-210115160742
-        size: 100
+        size: 150
         type: pd-ssd
     can_ip_forward: true
     description: Managed by the compute-vm Terraform module.
-    machine_type: n2-standard-4
+    machine_type: n2-standard-8
     name: test-lb-b
     network_interface:
     - access_config: []
@@ -80,7 +90,8 @@ values:
     - scopes:
       - https://www.googleapis.com/auth/cloud-platform
       - https://www.googleapis.com/auth/userinfo.email
-    tags: null
+    tags:
+    - f5-lbs
     zone: europe-west1-b
   module.f5-lb.module.bigip-vms["b"].google_compute_instance_group.unmanaged[0]:
     description: Managed by the compute-vm Terraform module.
@@ -89,64 +100,18 @@ values:
     network: projects/my-project/global/networks/dataplane
     project: my-project
     zone: europe-west1-b
-  module.f5-lb.module.lb-addresses.google_compute_address.external["ext-ipv4"]:
-    address_type: EXTERNAL
-    description: Terraform managed.
-    ip_version: null
-    ipv6_endpoint_type: null
-    name: test-nlb-ext-ipv4
-    project: my-project
-    region: europe-west1
-  module.f5-lb.module.lb-addresses.google_compute_address.external["ext-ipv6"]:
-    address_type: EXTERNAL
-    description: Terraform managed.
-    ip_version: IPV6
-    ipv6_endpoint_type: NETLB
-    name: test-nlb-ext-ipv6
-    project: my-project
-    region: europe-west1
-  module.f5-lb.module.lb-addresses.google_compute_address.internal["int-ipv4"]:
-    address_type: INTERNAL
-    description: Terraform managed.
-    ip_version: null
-    ipv6_endpoint_type: null
-    name: test-ilb-int-ipv4
-    project: my-project
-    region: europe-west1
-    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
-  module.f5-lb.module.lb-addresses.google_compute_address.internal["int-ipv6"]:
-    address_type: INTERNAL
-    description: Terraform managed.
-    ip_version: IPV6
-    ipv6_endpoint_type: null
-    name: test-ilb-int-ipv6
-    project: my-project
-    region: europe-west1
-    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
-  module.f5-lb.module.passthrough-ilb[0].google_compute_forwarding_rule.forwarding_rules["int-ipv4"]:
+  module.f5-lb.module.passthrough-ilb[0].google_compute_forwarding_rule.forwarding_rules["l4"]:
     all_ports: true
     allow_global_access: true
+    allow_psc_global_access: null
     ip_protocol: L3_DEFAULT
     ip_version: IPV4
     load_balancing_scheme: INTERNAL
-    name: test-ilb-int-ipv4
+    name: test-ilb-l4
     network: projects/my-project/global/networks/dataplane
     ports: null
     project: my-project
     region: europe-west1
-    subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
-  module.f5-lb.module.passthrough-ilb[0].google_compute_forwarding_rule.forwarding_rules["int-ipv6"]:
-    all_ports: true
-    allow_global_access: true
-    ip_protocol: L3_DEFAULT
-    ip_version: IPV6
-    load_balancing_scheme: INTERNAL
-    name: test-ilb-int-ipv6
-    network: projects/my-project/global/networks/dataplane
-    ports: null
-    project: my-project
-    region: europe-west1
-    source_ip_ranges: null
     subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
   module.f5-lb.module.passthrough-ilb[0].google_compute_health_check.default[0]:
     check_interval_sec: 5
@@ -162,63 +127,13 @@ values:
     timeout_sec: 5
     unhealthy_threshold: 2
   module.f5-lb.module.passthrough-ilb[0].google_compute_region_backend_service.default:
-    connection_draining_timeout_sec: 0
     description: Terraform managed.
     load_balancing_scheme: INTERNAL
     name: test-ilb
     network: projects/my-project/global/networks/dataplane
-    outlier_detection: []
     project: my-project
     protocol: UNSPECIFIED
     region: europe-west1
-  module.f5-lb.module.passthrough-nlb[0].google_compute_forwarding_rule.forwarding_rules["ext-ipv4"]:
-    all_ports: true
-    allow_global_access: null
-    ip_protocol: L3_DEFAULT
-    ip_version: IPV4
-    load_balancing_scheme: EXTERNAL
-    name: test-nlb-ext-ipv4
-    project: my-project
-    region: europe-west1
-  module.f5-lb.module.passthrough-nlb[0].google_compute_forwarding_rule.forwarding_rules["ext-ipv6"]:
-    all_ports: true
-    allow_global_access: null
-    ip_protocol: L3_DEFAULT
-    ip_version: IPV6
-    load_balancing_scheme: EXTERNAL
-    name: test-nlb-ext-ipv6
-    ports: null
-    project: my-project
-    region: europe-west1
-    subnetwork: projects/my-project/regions/europe-west1/subnetworks/ipv6_external
-  module.f5-lb.module.passthrough-nlb[0].google_compute_region_backend_service.default:
-    connection_draining_timeout_sec: 0
-    description: Terraform managed.
-    load_balancing_scheme: EXTERNAL
-    locality_lb_policy: null
-    name: test-nlb
-    project: my-project
-    protocol: UNSPECIFIED
-    region: europe-west1
-  module.f5-lb.module.passthrough-nlb[0].google_compute_region_health_check.default[0]:
-    check_interval_sec: 5
-    description: Terraform managed.
-    grpc_health_check: []
-    healthy_threshold: 2
-    http2_health_check: []
-    http_health_check: []
-    https_health_check: []
-    name: test-nlb
-    project: my-project
-    region: europe-west1
-    ssl_health_check: []
-    tcp_health_check:
-    - port: 65535
-      port_name: null
-      port_specification: USE_FIXED_PORT
-      proxy_header: NONE
-    timeout_sec: 5
-    unhealthy_threshold: 2
   module.f5-lb.module.vm-addresses-dp.google_compute_address.internal["a"]:
     address_type: INTERNAL
     description: Terraform managed.

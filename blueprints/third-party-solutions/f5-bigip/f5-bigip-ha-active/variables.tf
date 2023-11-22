@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "f5_vms_dedicated_config" {
+variable "instance_dedicated_configs" {
   description = "The F5 VMs configuration. The map keys are the zones where the VMs are deployed."
   type = map(object({
     network_config = object({
@@ -27,18 +27,23 @@ variable "f5_vms_dedicated_config" {
   }))
 }
 
-variable "f5_vms_shared_config" {
+variable "instance_shared_config" {
   description = "The F5 VMs shared configurations."
   type = object({
-    disk_size       = optional(number, 100)
-    enable_ipv6     = optional(bool, false) # needs to be true to receive traffic from IPv6 forwarding rules
-    image           = optional(string, "projects/f5-7626-networks-public/global/images/f5-bigip-15-1-2-1-0-0-10-byol-ltm-2boot-loc-210115160742")
-    instance_type   = optional(string, "n2-standard-4")
-    secret          = optional(string, "mysecret")
+    boot_disk = optional(object({
+      image = optional(string, "projects/f5-7626-networks-public/global/images/f5-bigip-15-1-2-1-0-0-10-byol-ltm-2boot-loc-210115160742")
+      size  = optional(number, 100)
+      type  = optional(string, "pd-ssd")
+    }), {})
+    enable_ipv6   = optional(bool, false) # needs to be true to receive traffic from IPv6 forwarding rules
+    instance_type = optional(string, "n2-standard-4")
+    secret = optional(object({
+      is_gcp = optional(bool, false)
+      value  = optional(string, "mysecret")
+    }), {})
     service_account = optional(string)
     ssh_public_key  = optional(string, "my_key.pub")
     tags            = optional(list(string), [])
-    use_gcp_secret  = optional(bool, false)
     username        = optional(string, "admin")
   })
   default = {}
@@ -60,7 +65,7 @@ variable "forwarding_rules_config" {
 }
 
 variable "health_check_config" {
-  description = "The optional health check configuration."
+  description = "The optional health check configuration. The variable types are enforced by the underlying module."
   type        = map(any)
   default = {
     tcp = {

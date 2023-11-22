@@ -18,6 +18,7 @@ This blueprint allows to create external active/active private and/or public F5 
 - [Examples](#examples)
   - [Single instance](#single-instance)
   - [Active/active instances](#activeactive-instances)
+  - [Change the shared instances configuration](#change-the-shared-instances-configuration)
   - [Public load F5 load balancers](#public-load-f5-load-balancers)
   - [Multiple forwarding rules and dual-stack (IPv4/IPv6)](#multiple-forwarding-rules-and-dual-stack-ipv4ipv6)
   - [Use the GCP secret manager](#use-the-gcp-secret-manager)
@@ -36,7 +37,7 @@ module "f5-lb" {
   prefix     = "test"
   region     = "europe-west1"
 
-  f5_vms_dedicated_config = {
+  instance_dedicated_configs = {
     a = {
       license_key = "AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE"
       network_config = {
@@ -62,7 +63,7 @@ module "f5-lb" {
 
 ### Active/active instances
 
-To add more than one instance, add items to the `f5_vms_dedicated_config` variable. Keys specify the the zones where the instances are deployed.
+To add more than one instance, add items to the `instance_dedicated_configs` variable. Keys specify the the zones where the instances are deployed.
 
 ```hcl
 module "f5-lb" {
@@ -71,7 +72,7 @@ module "f5-lb" {
   prefix     = "test"
   region     = "europe-west1"
 
-  f5_vms_dedicated_config = {
+  instance_dedicated_configs = {
     a = {
       license_key = "AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE"
       network_config = {
@@ -102,6 +103,57 @@ module "f5-lb" {
 # tftest modules=7 resources=12 inventory=active-active-instances.yaml
 ```
 
+### Change the shared instances configuration
+
+You can change one or more properties used by the shared instances, leveraging the `instance_shared_config` variable.
+
+```hcl
+module "f5-lb" {
+  source     = "./fabric/blueprints/third-party-solutions/f5-bigip/f5-bigip-ha-active"
+  project_id = "my-project"
+  prefix     = "test"
+  region     = "europe-west1"
+
+  instance_dedicated_configs = {
+    a = {
+      license_key = "AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE"
+      network_config = {
+        alias_ip_range_address = "192.168.1.0/24"
+        alias_ip_range_name    = "ip-range-a"
+      }
+    }
+    b = {
+      license_key = "XXXXX-YYYYY-WWWWW-ZZZZZ-PPPPPP"
+      network_config = {
+        alias_ip_range_address = "192.168.2.0/24"
+        alias_ip_range_name    = "ip-range-b"
+      }
+    }
+  }
+
+  instance_shared_config = {
+    boot_disk = {
+      size = 150
+    }
+    instance_type = "n2-standard-8"
+    tags          = ["f5-lbs"]
+    username      = "f5admin"
+  }
+
+  vpc_config = {
+    dataplane = {
+      network    = "projects/my-project/global/networks/dataplane"
+      subnetwork = "projects/my-project/regions/europe-west1/subnetworks/dataplane"
+    }
+    management = {
+      network    = "projects/my-project/global/networks/management"
+      subnetwork = "projects/my-project/regions/europe-west1/subnetworks/management"
+    }
+  }
+}
+# tftest modules=7 resources=12 inventory=shared-config.yaml
+```
+
 ### Public load F5 load balancers
 
 You can configure the blueprint so it deploys external network passthrough load balancers, so you can expose on Internet your F5 load balancer(s).
@@ -113,7 +165,7 @@ module "f5-lb" {
   prefix     = "test"
   region     = "europe-west1"
 
-  f5_vms_dedicated_config = {
+  instance_dedicated_configs = {
     a = {
       license_key = "AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE"
       network_config = {
@@ -162,7 +214,7 @@ module "f5-lb" {
   prefix     = "test"
   region     = "europe-west1"
 
-  f5_vms_dedicated_config = {
+  instance_dedicated_configs = {
     a = {
       license_key = "AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE"
       network_config = {
@@ -220,12 +272,14 @@ module "f5-lb" {
   prefix     = "test"
   region     = "europe-west1"
 
-  f5_vms_shared_config = {
-    secret         = "f5_secret_name" # needs to be in the same project
-    use_gcp_secret = true
+  instance_shared_config = {
+    secret = {
+      is_gcp = true
+      value  = "f5_secret_name" # needs to be defined in the same project
+    }
   }
 
-  f5_vms_dedicated_config = {
+  instance_dedicated_configs = {
     a = {
       license_key = "AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE"
       network_config = {
@@ -253,19 +307,19 @@ module "f5-lb" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [f5_vms_dedicated_config](variables.tf#L17) | The F5 VMs configuration. The map keys are the zones where the VMs are deployed. | <code title="map&#40;object&#40;&#123;&#10;  network_config &#61; object&#40;&#123;&#10;    alias_ip_range_address &#61; string&#10;    alias_ip_range_name    &#61; string&#10;    dataplane_address      &#61; optional&#40;string&#41;&#10;    management_address     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;  license_key &#61; optional&#40;string, &#34;AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [prefix](variables.tf#L73) | The name prefix used for resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L78) | The project id where we deploy the resources. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L83) | The region where we deploy the F5 IPs. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L88) | The dataplane and mgmt network and subnetwork self links. | <code title="object&#40;&#123;&#10;  dataplane &#61; object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;  &#125;&#41;&#10;  management &#61; object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [f5_vms_shared_config](variables.tf#L30) | The F5 VMs shared configurations. | <code title="object&#40;&#123;&#10;  disk_size       &#61; optional&#40;number, 100&#41;&#10;  enable_ipv6     &#61; optional&#40;bool, false&#41; &#35; needs to be true to receive traffic from IPv6 forwarding rules&#10;  image           &#61; optional&#40;string, &#34;projects&#47;f5-7626-networks-public&#47;global&#47;images&#47;f5-bigip-15-1-2-1-0-0-10-byol-ltm-2boot-loc-210115160742&#34;&#41;&#10;  instance_type   &#61; optional&#40;string, &#34;n2-standard-4&#34;&#41;&#10;  secret          &#61; optional&#40;string, &#34;mysecret&#34;&#41;&#10;  service_account &#61; optional&#40;string&#41;&#10;  ssh_public_key  &#61; optional&#40;string, &#34;my_key.pub&#34;&#41;&#10;  tags            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  use_gcp_secret  &#61; optional&#40;bool, false&#41;&#10;  username        &#61; optional&#40;string, &#34;admin&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [forwarding_rules_config](variables.tf#L47) | The optional configurations of the GCP load balancers forwarding rules. | <code title="map&#40;object&#40;&#123;&#10;  address       &#61; optional&#40;string&#41;&#10;  external      &#61; optional&#40;bool, false&#41;&#10;  global_access &#61; optional&#40;bool, true&#41;&#10;  ip_version    &#61; optional&#40;string, &#34;IPV4&#34;&#41;&#10;  protocol      &#61; optional&#40;string, &#34;L3_DEFAULT&#34;&#41;&#10;  subnetwork    &#61; optional&#40;string&#41; &#35; used for IPv6 NLBs&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  l4 &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [health_check_config](variables.tf#L62) | The optional health check configuration. | <code>map&#40;any&#41;</code> |  | <code title="&#123;&#10;  tcp &#61; &#123;&#10;    port               &#61; 65535&#10;    port_specification &#61; &#34;USE_FIXED_PORT&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [instance_dedicated_configs](variables.tf#L17) | The F5 VMs configuration. The map keys are the zones where the VMs are deployed. | <code title="map&#40;object&#40;&#123;&#10;  network_config &#61; object&#40;&#123;&#10;    alias_ip_range_address &#61; string&#10;    alias_ip_range_name    &#61; string&#10;    dataplane_address      &#61; optional&#40;string&#41;&#10;    management_address     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;  license_key &#61; optional&#40;string, &#34;AAAAA-BBBBB-CCCCC-DDDDD-EEEEEEE&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [prefix](variables.tf#L78) | The name prefix used for resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L83) | The project id where we deploy the resources. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L88) | The region where we deploy the F5 IPs. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L93) | The dataplane and mgmt network and subnetwork self links. | <code title="object&#40;&#123;&#10;  dataplane &#61; object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;  &#125;&#41;&#10;  management &#61; object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [forwarding_rules_config](variables.tf#L52) | The optional configurations of the GCP load balancers forwarding rules. | <code title="map&#40;object&#40;&#123;&#10;  address       &#61; optional&#40;string&#41;&#10;  external      &#61; optional&#40;bool, false&#41;&#10;  global_access &#61; optional&#40;bool, true&#41;&#10;  ip_version    &#61; optional&#40;string, &#34;IPV4&#34;&#41;&#10;  protocol      &#61; optional&#40;string, &#34;L3_DEFAULT&#34;&#41;&#10;  subnetwork    &#61; optional&#40;string&#41; &#35; used for IPv6 NLBs&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  l4 &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [health_check_config](variables.tf#L67) | The optional health check configuration. The variable types are enforced by the underlying module. | <code>map&#40;any&#41;</code> |  | <code title="&#123;&#10;  tcp &#61; &#123;&#10;    port               &#61; 65535&#10;    port_specification &#61; &#34;USE_FIXED_PORT&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [instance_shared_config](variables.tf#L30) | The F5 VMs shared configurations. | <code title="object&#40;&#123;&#10;  boot_disk &#61; optional&#40;object&#40;&#123;&#10;    image &#61; optional&#40;string, &#34;projects&#47;f5-7626-networks-public&#47;global&#47;images&#47;f5-bigip-15-1-2-1-0-0-10-byol-ltm-2boot-loc-210115160742&#34;&#41;&#10;    size  &#61; optional&#40;number, 100&#41;&#10;    type  &#61; optional&#40;string, &#34;pd-ssd&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  enable_ipv6   &#61; optional&#40;bool, false&#41; &#35; needs to be true to receive traffic from IPv6 forwarding rules&#10;  instance_type &#61; optional&#40;string, &#34;n2-standard-4&#34;&#41;&#10;  secret &#61; optional&#40;object&#40;&#123;&#10;    is_gcp &#61; optional&#40;bool, false&#41;&#10;    value  &#61; optional&#40;string, &#34;mysecret&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  service_account &#61; optional&#40;string&#41;&#10;  ssh_public_key  &#61; optional&#40;string, &#34;my_key.pub&#34;&#41;&#10;  tags            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  username        &#61; optional&#40;string, &#34;admin&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [f5_management_ips](outputs.tf#L17) | The F5 management interfaces IP addresses. |  |
-| [forwarding_rules_config](outputs.tf#L25) | The GCP forwarding rules configurations. |  |
+| [forwarding_rules_configs](outputs.tf#L25) | The GCP forwarding rules configurations. |  |
 <!-- END TFDOC -->
