@@ -171,7 +171,7 @@ variable "network_config" {
     }))
   })
   validation {
-    condition = (var.network_config.private_network != null ? 1 : 0 ) + ( var.network_config.psc_config != null ? 1 : 0 ) == 1
+    condition     = (var.network_config.private_network != null ? 1 : 0) + (var.network_config.psc_config != null ? 1 : 0) == 1
     error_message = "Only one between private network and psc can be specified."
   }
 }
