@@ -178,7 +178,7 @@ Hierarchical firewall policies can be managed via the [`net-firewall-policy`](..
 ```hcl
 module "firewall-policy" {
   source    = "./fabric/modules/net-firewall-policy"
-  name      = "test-1"
+  name      = "${var.prefix}-test-1"
   parent_id = module.folder.id
   # attachment via the firewall policy module
   # attachments = {
@@ -196,7 +196,7 @@ module "folder" {
     policy = module.firewall-policy.id
   }
 }
-# tftest modules=2 resources=3 e2e
+# tftest modules=2 resources=3 e2e serial
 ```
 ## Log Sinks
 
@@ -316,7 +316,7 @@ module "folder" {
     env-prod = module.org.tag_values["environment/prod"].id
   }
 }
-# tftest modules=2 resources=5 inventory=tags.yaml e2e
+# tftest modules=2 resources=5 inventory=tags.yaml e2e serial
 ```
 
 <!-- TFDOC OPTS files:1 -->
