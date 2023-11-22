@@ -51,7 +51,7 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   network_config = {
-    private_network = module.vpc.self_link
+    private_network = var.vpc.self_link
   }
   prefix           = "myprefix"
   name             = "db"
@@ -74,7 +74,7 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   network_config = {
-    private_network = module.vpc.self_link
+    private_network = var.vpc.self_link
   }
   name             = "db"
   region           = "europe-west1"
@@ -141,7 +141,7 @@ module "db" {
   project_id          = module.project.project_id
   encryption_key_name = module.kms.keys["key-sql"].id
   network_config = {
-    private_network = module.vpc.self_link
+    private_network = var.vpc.self_link
   }
   name             = "db"
   region           = var.region
@@ -161,7 +161,7 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   network_config = {
-    private_network = module.vpc.self_link
+    private_network = var.vpc.self_link
     ipv4_enabled    = true
   }
   name             = "db"
