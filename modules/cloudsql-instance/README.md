@@ -184,7 +184,7 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   network_config = {
-    private_network = module.vpc.self_link
+    private_network = var.vpc.self_link
   }
   name             = "db"
   region           = "europe-west1"
