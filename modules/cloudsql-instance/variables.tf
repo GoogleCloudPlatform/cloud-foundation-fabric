@@ -137,12 +137,6 @@ variable "insights_config" {
   default = null
 }
 
-variable "ipv4_enabled" {
-  description = "Add a public IP address to database instance."
-  type        = bool
-  default     = false
-}
-
 variable "labels" {
   description = "Labels to be attached to all instances."
   type        = map(string)
@@ -174,12 +168,6 @@ variable "network_config" {
     condition     = (var.network_config.private_network != null ? 1 : 0) + (var.network_config.psc_config != null ? 1 : 0) == 1
     error_message = "Only one between private network and psc can be specified."
   }
-}
-
-variable "network" {
-  description = "VPC self link where the instances will be deployed. Private Service Networking must be enabled and configured in this VPC."
-  type        = string
-  default     = ""
 }
 
 variable "postgres_client_certificates" {
