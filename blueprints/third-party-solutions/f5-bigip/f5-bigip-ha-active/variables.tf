@@ -14,6 +14,32 @@
  * limitations under the License.
  */
 
+variable "forwarding_rules_config" {
+  type = map(object({
+    address       = optional(string)
+    external      = optional(bool, false)
+    global_access = optional(bool, true)
+    ip_version    = optional(string, "IPV4")
+    protocol      = optional(string, "L3_DEFAULT")
+    subnetwork    = optional(string) # used for IPv6 NLBs
+  }))
+  description = "The optional configurations of the GCP load balancers forwarding rules."
+  default = {
+    l4 = {}
+  }
+}
+
+variable "health_check_config" {
+  description = "The optional health check configuration. The variable types are enforced by the underlying module."
+  type        = map(any)
+  default = {
+    tcp = {
+      port               = 65535
+      port_specification = "USE_FIXED_PORT"
+    }
+  }
+}
+
 variable "instance_dedicated_configs" {
   description = "The F5 VMs configuration. The map keys are the zones where the VMs are deployed."
   type = map(object({
@@ -47,32 +73,6 @@ variable "instance_shared_config" {
     username        = optional(string, "admin")
   })
   default = {}
-}
-
-variable "forwarding_rules_config" {
-  type = map(object({
-    address       = optional(string)
-    external      = optional(bool, false)
-    global_access = optional(bool, true)
-    ip_version    = optional(string, "IPV4")
-    protocol      = optional(string, "L3_DEFAULT")
-    subnetwork    = optional(string) # used for IPv6 NLBs
-  }))
-  description = "The optional configurations of the GCP load balancers forwarding rules."
-  default = {
-    l4 = {}
-  }
-}
-
-variable "health_check_config" {
-  description = "The optional health check configuration. The variable types are enforced by the underlying module."
-  type        = map(any)
-  default = {
-    tcp = {
-      port               = 65535
-      port_specification = "USE_FIXED_PORT"
-    }
-  }
 }
 
 variable "prefix" {
