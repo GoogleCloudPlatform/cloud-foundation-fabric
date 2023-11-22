@@ -24,21 +24,6 @@ variable "activation_policy" {
   nullable = false
 }
 
-variable "allocated_ip_ranges" {
-  description = "(Optional)The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with RFC 1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z?."
-  type = object({
-    primary = optional(string)
-    replica = optional(string)
-  })
-  default  = {}
-  nullable = false
-}
-variable "authorized_networks" {
-  description = "Map of NAME=>CIDR_RANGE to allow to connect to the database(s)."
-  type        = map(string)
-  default     = null
-}
-
 variable "availability_type" {
   description = "Availability type for the primary replica. Either `ZONAL` or `REGIONAL`."
   type        = string
@@ -169,6 +154,28 @@ variable "name" {
   type        = string
 }
 
+variable "network_config" {
+  description = "Network configuration for the instance. Only one between private VPC and PSC can be used."
+  type = object({
+    authorized_networks = optional(map(string))
+    ipv4_enabled        = optional(bool, false)
+    private_network     = optional(string, null)
+    require_ssl         = optional(bool)
+    allocated_ip_ranges = optional(object({
+      primary = optional(string)
+      replica = optional(string)
+    }))
+    psc_config = optional(object({
+      allowed_consumer_projects = optional(list(string), [])
+      psc_enabled               = optional(bool, true)
+    }))
+  })
+  validation {
+    condition = (var.network_config.private_network != null ? 1 : 0 ) + ( var.network_config.psc_config != null ? 1 : 0 ) == 1
+    error_message = "Only one between private network and psc can be specified."
+  }
+}
+
 variable "network" {
   description = "VPC self link where the instances will be deployed. Private Service Networking must be enabled and configured in this VPC."
   type        = string
@@ -196,15 +203,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "psc_config" {
-  description = "Whether Private Service Connect (PSC) connectivity is enabled for this instance and list of consumer projects that are allow-listed for PSC connections to this instance."
-  type = object({
-    allowed_consumer_projects = optional(list(string), [])
-    psc_enabled               = optional(bool, true)
-  })
-  default = null
-}
-
 variable "region" {
   description = "Region of the primary instance."
   type        = string
@@ -217,12 +215,6 @@ variable "replicas" {
     encryption_key_name = string
   }))
   default = {}
-}
-
-variable "require_ssl" {
-  description = "Enable SSL connections only."
-  type        = bool
-  default     = null
 }
 
 variable "root_password" {
