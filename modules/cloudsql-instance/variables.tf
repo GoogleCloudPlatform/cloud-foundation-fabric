@@ -149,7 +149,7 @@ variable "name" {
 }
 
 variable "network_config" {
-  description = "Network configuration for the instance. Only one between private VPC and PSC can be used."
+  description = "Network configuration for the instance. Only one between private_network and psc_config can be used."
   type = object({
     authorized_networks = optional(map(string))
     ipv4_enabled        = optional(bool, false)
@@ -165,7 +165,7 @@ variable "network_config" {
     }))
   })
   validation {
-    condition     = (var.network_config.private_network != null ? 1 : 0) + (var.network_config.psc_config != null ? 1 : 0) == 1
+    condition     = (var.network_config.private_network != null ? 1 : 0) + (var.network_config.psc_config != null ? 1 : 0) < 2
     error_message = "Only one between private network and psc can be specified."
   }
 }

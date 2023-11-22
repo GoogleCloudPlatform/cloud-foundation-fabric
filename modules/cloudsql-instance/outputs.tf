@@ -36,7 +36,15 @@ output "connection_names" {
 
 output "dns_name" {
   description = "The dns name of the instance."
-  value       = try(google_sql_database_instance.primary.dns_name, null)
+  value       = google_sql_database_instance.primary.dns_name
+}
+
+output "dns_names" {
+  description = "Dns names of all instances."
+  value = {
+    for id, instance in local._all_instances :
+    id => instance.dns_name
+  }
 }
 
 output "id" {
@@ -92,7 +100,15 @@ output "postgres_client_certificates" {
 
 output "psc_service_attachment_link" {
   description = "The link to service attachment of PSC instance."
-  value       = try(google_sql_database_instance.primary.psc_service_attachment_link, null)
+  value       = google_sql_database_instance.primary.psc_service_attachment_link
+}
+
+output "psc_service_attachment_links" {
+  description = "Links to service attachment of PSC instances."
+  value = {
+    for id, instance in local._all_instances :
+    id => instance.psc_service_attachment_link
+  }
 }
 
 output "self_link" {
