@@ -16,8 +16,8 @@ values:
   module.folder-sink.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
     role: roles/bigquery.dataEditor
   module.folder-sink.google_folder.folder[0]:
-    display_name: my-folder
-    parent: folders/657104291943
+    display_name: Folder name
+    parent: folders/1122334455
   module.folder-sink.google_logging_folder_exclusion.logging-exclusion["no-gce-instances"]:
     description: no-gce-instances (Terraform-managed).
     filter: resource.type=gce_instance
