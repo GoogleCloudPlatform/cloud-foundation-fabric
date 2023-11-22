@@ -36,7 +36,7 @@ output "connection_names" {
 
 output "dns_name" {
   description = "The dns name of the instance."
-  value       = google_sql_database_instance.primary.dns_name
+  value       = try(google_sql_database_instance.primary.dns_name, null)
 }
 
 output "id" {
