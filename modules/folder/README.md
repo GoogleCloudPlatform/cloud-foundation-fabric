@@ -178,7 +178,7 @@ Hierarchical firewall policies can be managed via the [`net-firewall-policy`](..
 ```hcl
 module "firewall-policy" {
   source    = "./fabric/modules/net-firewall-policy"
-  name      = "${var.prefix}-test-1"
+  name      = "test-1"
   parent_id = module.folder.id
   # attachment via the firewall policy module
   # attachments = {
