@@ -168,6 +168,27 @@ module "db" {
 # tftest modules=3 resources=10
 ```
 
+### Instance with PSC enabled
+
+```hcl
+module "db" {
+  source     = "./fabric/modules/cloudsql-instance"
+  project_id = var.project_id
+  network_config = {
+    connectivity = {
+      psc_allowed_consumer_projects = ["my-project-id"]
+    }
+  }
+  prefix            = "myprefix"
+  name              = "db"
+  region            = "europe-west1"
+  availability_type = "REGIONAL"
+  database_version  = "POSTGRES_13"
+  tier              = "db-g1-small"
+}
+# tftest modules=1 resources=1
+```
+
 ### Enable public IP
 
 Use `ipv_enabled` to create instances with a public IP.
