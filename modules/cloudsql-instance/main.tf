@@ -68,9 +68,9 @@ resource "google_sql_database_instance" "primary" {
     connector_enforcement       = var.connector_enforcement
 
     ip_configuration {
-      ipv4_enabled       = var.network_config.ipv4_enabled
-      private_network    = var.network_config.private_network
-      allocated_ip_range = try(var.network_config.allocated_ip_ranges.primary, null)
+      ipv4_enabled       = var.network_config.connectivity.public_ipv4
+      private_network    = var.network_config.connectivity.psa_config.private_network
+      allocated_ip_range = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.primary, null)
       require_ssl        = var.network_config.require_ssl
       dynamic "authorized_networks" {
         for_each = var.network_config.authorized_networks != null ? var.network_config.authorized_networks : {}
@@ -81,10 +81,10 @@ resource "google_sql_database_instance" "primary" {
         }
       }
       dynamic "psc_config" {
-        for_each = var.network_config.psc_config != null ? [""] : []
+        for_each = var.network_config.connectivity.psc_allowed_consumer_projects != null ? [""] : []
         content {
-          psc_enabled               = var.network_config.psc_config.psc_enabled
-          allowed_consumer_projects = var.network_config.psc_config.allowed_consumer_projects
+          psc_enabled               = true
+          allowed_consumer_projects = var.network_config.connectivity.psc_allowed_consumer_projects
         }
       }
     }
@@ -156,9 +156,9 @@ resource "google_sql_database_instance" "replicas" {
     activation_policy = var.activation_policy
 
     ip_configuration {
-      ipv4_enabled       = var.network_config.ipv4_enabled
-      private_network    = var.network_config.private_network
-      allocated_ip_range = try(var.network_config.allocated_ip_ranges.replica, null)
+      ipv4_enabled       = var.network_config.connectivity.public_ipv4
+      private_network    = var.network_config.connectivity.psa_config.private_network
+      allocated_ip_range = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.replica, null)
       dynamic "authorized_networks" {
         for_each = var.network_config.authorized_networks != null ? var.network_config.authorized_networks : {}
         iterator = network
@@ -167,12 +167,11 @@ resource "google_sql_database_instance" "replicas" {
           value = network.value
         }
       }
-
       dynamic "psc_config" {
-        for_each = var.network_config.psc_config != null ? [""] : []
+        for_each = var.network_config.connectivity.psc_allowed_consumer_projects != null ? [""] : []
         content {
-          psc_enabled               = var.network_config.psc_config.psc_enabled
-          allowed_consumer_projects = var.network_config.psc_config.allowed_consumer_projects
+          psc_enabled               = true
+          allowed_consumer_projects = var.network_config.connectivity.psc_allowed_consumer_projects
         }
       }
     }

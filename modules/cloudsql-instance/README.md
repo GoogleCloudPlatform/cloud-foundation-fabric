@@ -34,7 +34,11 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = module.project.project_id
   network_config = {
-    private_network = module.vpc.self_link
+    connectivity = {
+      psa_config = {
+        private_network = module.vpc.self_link
+      }
+    }
   }
   name             = "db"
   region           = "europe-west1"
@@ -51,7 +55,11 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   network_config = {
-    private_network = var.vpc.self_link
+    connectivity = {
+      psa_config = {
+        private_network = var.vpc.self_link
+      }
+    }
   }
   prefix           = "myprefix"
   name             = "db"
@@ -74,7 +82,11 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   network_config = {
-    private_network = var.vpc.self_link
+    connectivity = {
+      psa_config = {
+        private_network = var.vpc.self_link
+      }
+    }
   }
   name             = "db"
   region           = "europe-west1"
@@ -141,7 +153,11 @@ module "db" {
   project_id          = module.project.project_id
   encryption_key_name = module.kms.keys["key-sql"].id
   network_config = {
-    private_network = var.vpc.self_link
+    connectivity = {
+      psa_config = {
+        private_network = var.vpc.self_link
+      }
+    }
   }
   name             = "db"
   region           = var.region
@@ -161,8 +177,12 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   network_config = {
-    private_network = var.vpc.self_link
-    ipv4_enabled    = true
+    connectivity = {
+      public_ipv4 = true
+      psa_config = {
+        private_network = var.vpc.self_link
+      }
+    }
   }
   name             = "db"
   region           = "europe-west1"
@@ -184,7 +204,11 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   network_config = {
-    private_network = var.vpc.self_link
+    connectivity = {
+      psa_config = {
+        private_network = var.vpc.self_link
+      }
+    }
   }
   name             = "db"
   region           = "europe-west1"
@@ -204,10 +228,10 @@ module "db" {
 |---|---|:---:|:---:|:---:|
 | [database_version](variables.tf#L68) | Database type and version to create. | <code>string</code> | ✓ |  |
 | [name](variables.tf#L146) | Name of primary instance. | <code>string</code> | ✓ |  |
-| [network_config](variables.tf#L151) | Network configuration for the instance. Only one between private_network and psc_config can be used. | <code title="object&#40;&#123;&#10;  authorized_networks &#61; optional&#40;map&#40;string&#41;&#41;&#10;  ipv4_enabled        &#61; optional&#40;bool, false&#41;&#10;  private_network     &#61; optional&#40;string, null&#41;&#10;  require_ssl         &#61; optional&#40;bool&#41;&#10;  allocated_ip_ranges &#61; optional&#40;object&#40;&#123;&#10;    primary &#61; optional&#40;string&#41;&#10;    replica &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  psc_config &#61; optional&#40;object&#40;&#123;&#10;    allowed_consumer_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    psc_enabled               &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L189) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L194) | Region of the primary instance. | <code>string</code> | ✓ |  |
-| [tier](variables.tf#L214) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
+| [network_config](variables.tf#L151) | Network configuration for the instance. Only one between private_network and psc_config can be used. | <code title="object&#40;&#123;&#10;  authorized_networks &#61; optional&#40;map&#40;string&#41;&#41;&#10;  require_ssl         &#61; optional&#40;bool&#41;&#10;  connectivity &#61; object&#40;&#123;&#10;    public_ipv4 &#61; optional&#40;bool, false&#41;&#10;    psa_config &#61; optional&#40;object&#40;&#123;&#10;      private_network &#61; string&#10;      allocated_ip_ranges &#61; optional&#40;object&#40;&#123;&#10;        primary &#61; optional&#40;string&#41;&#10;        replica &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    psc_allowed_consumer_projects &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L190) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L195) | Region of the primary instance. | <code>string</code> | ✓ |  |
+| [tier](variables.tf#L215) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
 | [activation_policy](variables.tf#L16) | This variable specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS. | <code>string</code> |  | <code>&#34;ALWAYS&#34;</code> |
 | [availability_type](variables.tf#L27) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;ZONAL&#34;</code> |
 | [backup_configuration](variables.tf#L33) | Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas. | <code title="object&#40;&#123;&#10;  enabled                        &#61; optional&#40;bool, false&#41;&#10;  binary_log_enabled             &#61; optional&#40;bool, false&#41;&#10;  start_time                     &#61; optional&#40;string, &#34;23:00&#34;&#41;&#10;  location                       &#61; optional&#40;string&#41;&#10;  log_retention_days             &#61; optional&#40;number, 7&#41;&#10;  point_in_time_recovery_enabled &#61; optional&#40;bool&#41;&#10;  retention_count                &#61; optional&#40;number, 7&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enabled                        &#61; false&#10;  binary_log_enabled             &#61; false&#10;  start_time                     &#61; &#34;23:00&#34;&#10;  location                       &#61; null&#10;  log_retention_days             &#61; 7&#10;  point_in_time_recovery_enabled &#61; null&#10;  retention_count                &#61; 7&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -224,11 +248,11 @@ module "db" {
 | [flags](variables.tf#L123) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [insights_config](variables.tf#L129) | Query Insights configuration. Defaults to null which disables Query Insights. | <code title="object&#40;&#123;&#10;  query_string_length     &#61; optional&#40;number, 1024&#41;&#10;  record_application_tags &#61; optional&#40;bool, false&#41;&#10;  record_client_address   &#61; optional&#40;bool, false&#41;&#10;  query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [labels](variables.tf#L140) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [postgres_client_certificates](variables.tf#L173) | Map of cert keys connect to the application(s) using public IP. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [prefix](variables.tf#L179) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [replicas](variables.tf#L199) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [root_password](variables.tf#L208) | Root password of the Cloud SQL instance. Required for MS SQL Server. | <code>string</code> |  | <code>null</code> |
-| [users](variables.tf#L219) | Map of users to create in the primary instance (and replicated to other replicas). For MySQL, anything afterr the first `@` (if persent) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'BUILT_IN', 'CLOUD_IAM_USER' or 'CLOUD_IAM_SERVICE_ACCOUNT'. | <code title="map&#40;object&#40;&#123;&#10;  password &#61; optional&#40;string&#41;&#10;  type     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [postgres_client_certificates](variables.tf#L174) | Map of cert keys connect to the application(s) using public IP. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L180) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
+| [replicas](variables.tf#L200) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [root_password](variables.tf#L209) | Root password of the Cloud SQL instance. Required for MS SQL Server. | <code>string</code> |  | <code>null</code> |
+| [users](variables.tf#L220) | Map of users to create in the primary instance (and replicated to other replicas). For MySQL, anything afterr the first `@` (if persent) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'BUILT_IN', 'CLOUD_IAM_USER' or 'CLOUD_IAM_SERVICE_ACCOUNT'. | <code title="map&#40;object&#40;&#123;&#10;  password &#61; optional&#40;string&#41;&#10;  type     &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

@@ -55,7 +55,11 @@ module "cloudsql" {
   source     = "../../../../modules/cloudsql-instance"
   project_id = module.project.project_id
   network_config = {
-    private_network = module.vpc.self_link
+    connectivity = {
+      psa_config = {
+        private_network = module.vpc.self_link
+      }
+    }
   }
   name             = "${var.prefix}-mysql"
   region           = var.region

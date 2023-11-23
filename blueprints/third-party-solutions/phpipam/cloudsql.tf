@@ -23,7 +23,11 @@ module "cloudsql" {
   deletion_protection = var.deletion_protection
   databases           = [local.cloudsql_conf.db]
   network_config = {
-    private_network = local.network
+    connectivity = {
+      psa_config = {
+        private_network = local.network
+      }
+    }
   }
   prefix = var.prefix
   region = var.region

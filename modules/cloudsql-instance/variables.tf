@@ -152,20 +152,21 @@ variable "network_config" {
   description = "Network configuration for the instance. Only one between private_network and psc_config can be used."
   type = object({
     authorized_networks = optional(map(string))
-    ipv4_enabled        = optional(bool, false)
-    private_network     = optional(string, null)
     require_ssl         = optional(bool)
-    allocated_ip_ranges = optional(object({
-      primary = optional(string)
-      replica = optional(string)
-    }))
-    psc_config = optional(object({
-      allowed_consumer_projects = optional(list(string), [])
-      psc_enabled               = optional(bool, true)
-    }))
+    connectivity = object({
+      public_ipv4 = optional(bool, false)
+      psa_config = optional(object({
+        private_network = string
+        allocated_ip_ranges = optional(object({
+          primary = optional(string)
+          replica = optional(string)
+        }))
+      }))
+      psc_allowed_consumer_projects = optional(list(string))
+    })
   })
   validation {
-    condition     = (var.network_config.private_network != null ? 1 : 0) + (var.network_config.psc_config != null ? 1 : 0) < 2
+    condition     = (var.network_config.connectivity.psa_config.private_network != null ? 1 : 0) + (var.network_config.connectivity.psc_allowed_consumer_projects != null ? 1 : 0) < 2
     error_message = "Only one between private network and psc can be specified."
   }
 }

@@ -18,7 +18,11 @@ module "db" {
   availability_type   = var.sql_configuration.availability_type
   encryption_key_name = var.service_encryption_keys != null ? try(var.service_encryption_keys[var.regions.primary], null) : null
   network_config = {
-    private_network = local.vpc_self_link
+    connectivity = {
+      psa_config = {
+        private_network = local.vpc_self_link
+      }
+    }
   }
   name             = "${var.prefix}-db"
   region           = var.regions.primary
