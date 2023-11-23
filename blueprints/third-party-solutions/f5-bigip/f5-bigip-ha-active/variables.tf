@@ -65,7 +65,7 @@ variable "instance_shared_config" {
     instance_type = optional(string, "n2-standard-4")
     secret = optional(object({
       is_gcp = optional(bool, false)
-      value  = optional(string, "mysecret")
+      value  = optional(string, "MyFabricSecret123!")
     }), {})
     service_account = optional(string)
     ssh_public_key  = optional(string, "my_key.pub")
