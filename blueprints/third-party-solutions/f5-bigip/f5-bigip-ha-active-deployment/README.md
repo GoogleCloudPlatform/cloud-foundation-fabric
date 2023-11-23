@@ -26,7 +26,7 @@ Additionally, we deploy directly through this blueprint:
 - Run `terraform init, terraform apply`
 - At startup, the F5 VMs should download some software and reboot twice. Check the serial console logs to make sure everything works as expected and no errors occur.
 
-Please, refer to the [module documentation](./f5-bigip/README.md) for variables definitions and further module customizations.
+Please, refer to the [blueprint documentation](../f5-bigip-ha-active/README.md) for variables definitions and further module customizations.
 
 ## Access the F5 machines through IAP tunnels
 
