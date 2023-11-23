@@ -15,6 +15,8 @@ This blueprint allows to create active/active private and/or public F5 BigIP-VE 
 
 F5 management IPs are private. If you haven't setup any hybrid connectivity (i.e. VPN/Interconnect) you can still access the VMs with SSH and their GUI leveraging IAP tunnels.
 
+For example, you can first establish a tunnel:
+
 ```shell
 gcloud compute ssh YOUR_F5_VM_NAME \
   --project YOUR_PROJECT \
@@ -22,24 +24,12 @@ gcloud compute ssh YOUR_F5_VM_NAME \
   -L 4431:127.0.0.1:8443 \
   -L 221:127.0.0.1:22 \
   -N -q -f
-
-gcloud compute ssh YOUR_F5_VM_NAME \
-  --project YOUR_PROJECT \
-  --zone europe-west8-b -- \
-  -L 4432:127.0.0.1:8443 \
-  -L 222:127.0.0.1:22 \
-  -N -q -f
 ```
 
-Once tunnels are established, from your machine:
+And then connect to:
 
-Connect to the machine in zone `a` using:
 - SSH: `127.0.0.1`, port `221`
 - GUI: `127.0.0.1`, port `4431`
-
-Connect to the machine in zone `b` using:
-- SSH: `127.0.0.1`, port `222`
-- GUI: `127.0.0.1`, port `4432`
 
 The default username is `admin` and the password is `MyFabricSecret123!`
 
