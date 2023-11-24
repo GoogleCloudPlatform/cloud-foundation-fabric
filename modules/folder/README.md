@@ -196,7 +196,7 @@ module "folder" {
     policy = module.firewall-policy.id
   }
 }
-# tftest modules=2 resources=3 e2e
+# tftest modules=2 resources=3 e2e serial
 ```
 ## Log Sinks
 
@@ -204,6 +204,7 @@ module "folder" {
 module "gcs" {
   source        = "./fabric/modules/gcs"
   project_id    = var.project_id
+  prefix        = var.prefix
   name          = "gcs_sink"
   force_destroy = true
 }
@@ -316,7 +317,7 @@ module "folder" {
     env-prod = module.org.tag_values["environment/prod"].id
   }
 }
-# tftest modules=2 resources=5 inventory=tags.yaml e2e
+# tftest modules=2 resources=5 inventory=tags.yaml e2e serial
 ```
 
 <!-- TFDOC OPTS files:1 -->

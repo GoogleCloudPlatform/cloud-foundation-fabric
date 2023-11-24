@@ -46,7 +46,7 @@ values:
     name: notice
   module.folder-sink.google_logging_folder_sink.sink["warnings"]:
     description: warnings (Terraform-managed).
-    destination: storage.googleapis.com/gcs_sink
+    destination: storage.googleapis.com/test-gcs_sink
     disabled: false
     exclusions: []
     filter: severity=WARNING
@@ -60,7 +60,7 @@ values:
     condition: []
     role: roles/pubsub.publisher
   module.folder-sink.google_storage_bucket_iam_member.gcs-sinks-binding["warnings"]:
-    bucket: gcs_sink
+    bucket: test-gcs_sink
     condition: []
     role: roles/storage.objectCreator
 
