@@ -24,6 +24,6 @@ The blueprints in this folder show how to automate installation of specific thir
 
 ### F5 BigIP
 
-<a href="./f5-bigip/" title="F5 BigIP"><img src="./phpipam/diagram.png" align="left" width="320px"></a> <p style="margin-left: 340px">These examples show how to deploy both private and public active/active F5 BigIP-VE load balancers in GCP.</p>
+<a href="./f5-bigip/" title="F5 BigIP"><img src="./phpipam/diagram.png" align="left" width="320px"></a> <p style="margin-left: 340px">These examples show how to deploy F5 BigIP-VE load balancers in GCP.</p>
 
 <br clear="left">
