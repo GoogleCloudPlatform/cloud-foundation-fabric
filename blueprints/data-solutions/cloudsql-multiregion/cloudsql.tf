@@ -17,11 +17,17 @@ module "db" {
   project_id          = module.project.project_id
   availability_type   = var.sql_configuration.availability_type
   encryption_key_name = var.service_encryption_keys != null ? try(var.service_encryption_keys[var.regions.primary], null) : null
-  network             = local.vpc_self_link
-  name                = "${var.prefix}-db"
-  region              = var.regions.primary
-  database_version    = var.sql_configuration.database_version
-  tier                = var.sql_configuration.tier
+  network_config = {
+    connectivity = {
+      psa_config = {
+        private_network = local.vpc_self_link
+      }
+    }
+  }
+  name             = "${var.prefix}-db"
+  region           = var.regions.primary
+  database_version = var.sql_configuration.database_version
+  tier             = var.sql_configuration.tier
   flags = {
     "cloudsql.iam_authentication" = "on"
   }

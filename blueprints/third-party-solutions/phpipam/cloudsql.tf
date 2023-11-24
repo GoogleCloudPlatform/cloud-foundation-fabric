@@ -22,10 +22,16 @@ module "cloudsql" {
   database_version    = local.cloudsql_conf.database_version
   deletion_protection = var.deletion_protection
   databases           = [local.cloudsql_conf.db]
-  network             = local.network
-  prefix              = var.prefix
-  region              = var.region
-  tier                = local.cloudsql_conf.tier
+  network_config = {
+    connectivity = {
+      psa_config = {
+        private_network = local.network
+      }
+    }
+  }
+  prefix = var.prefix
+  region = var.region
+  tier   = local.cloudsql_conf.tier
   users = {
     "${local.cloudsql_conf.user}" = {
       password = var.cloudsql_password

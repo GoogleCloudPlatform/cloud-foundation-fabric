@@ -24,21 +24,6 @@ variable "activation_policy" {
   nullable = false
 }
 
-variable "allocated_ip_ranges" {
-  description = "(Optional)The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with RFC 1035. Specifically, the name must be 1-63 characters long and match the regular expression a-z?."
-  type = object({
-    primary = optional(string)
-    replica = optional(string)
-  })
-  default  = {}
-  nullable = false
-}
-variable "authorized_networks" {
-  description = "Map of NAME=>CIDR_RANGE to allow to connect to the database(s)."
-  type        = map(string)
-  default     = null
-}
-
 variable "availability_type" {
   description = "Availability type for the primary replica. Either `ZONAL` or `REGIONAL`."
   type        = string
@@ -152,12 +137,6 @@ variable "insights_config" {
   default = null
 }
 
-variable "ipv4_enabled" {
-  description = "Add a public IP address to database instance."
-  type        = bool
-  default     = false
-}
-
 variable "labels" {
   description = "Labels to be attached to all instances."
   type        = map(string)
@@ -169,9 +148,27 @@ variable "name" {
   type        = string
 }
 
-variable "network" {
-  description = "VPC self link where the instances will be deployed. Private Service Networking must be enabled and configured in this VPC."
-  type        = string
+variable "network_config" {
+  description = "Network configuration for the instance. Only one between private_network and psc_config can be used."
+  type = object({
+    authorized_networks = optional(map(string))
+    require_ssl         = optional(bool)
+    connectivity = object({
+      public_ipv4 = optional(bool, false)
+      psa_config = optional(object({
+        private_network = string
+        allocated_ip_ranges = optional(object({
+          primary = optional(string)
+          replica = optional(string)
+        }))
+      }))
+      psc_allowed_consumer_projects = optional(list(string))
+    })
+  })
+  validation {
+    condition     = (var.network_config.connectivity.psa_config != null ? 1 : 0) + (var.network_config.connectivity.psc_allowed_consumer_projects != null ? 1 : 0) < 2
+    error_message = "Only one between private network and psc can be specified."
+  }
 }
 
 variable "postgres_client_certificates" {
@@ -207,12 +204,6 @@ variable "replicas" {
     encryption_key_name = string
   }))
   default = {}
-}
-
-variable "require_ssl" {
-  description = "Enable SSL connections only."
-  type        = bool
-  default     = null
 }
 
 variable "root_password" {
