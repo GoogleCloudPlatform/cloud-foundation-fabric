@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2023-10-04 10:23:37+00:00 -->
 
+## [28.0.0] - 2023-11-24
+
 ### BLUEPRINTS
 
 - [[#1882](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1882)] Fixes/improvements to F5 HA blueprint ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-11-23 15:15:48+00:00 -->
@@ -1749,7 +1751,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v27.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v28.0.0...HEAD
+[28.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v27.0.0...v28.0.0
 [27.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v26.0.0...v27.0.0
 [26.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v25.0.0...v26.0.0
 [25.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v24.0.0...v25.0.0
