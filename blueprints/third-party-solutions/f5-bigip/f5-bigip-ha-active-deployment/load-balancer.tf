@@ -25,11 +25,6 @@ module "f5-sa" {
   source     = "../../../../modules/iam-service-account"
   project_id = local.project_id
   name       = "${var.prefix}-f5-sa"
-  iam = {
-    "roles/iam.serviceAccountUser" = [
-      "user:${data.google_client_openid_userinfo.provider_identity.email}"
-    ]
-  }
 }
 
 module "f5-lb" {

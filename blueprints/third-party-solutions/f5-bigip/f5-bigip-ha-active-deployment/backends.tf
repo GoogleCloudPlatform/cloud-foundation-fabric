@@ -32,11 +32,6 @@ module "backends-sa" {
   source     = "../../../../modules/iam-service-account"
   project_id = local.project_id
   name       = "${var.prefix}-backends-sa"
-  iam = {
-    "roles/iam.serviceAccountUser" = [
-      "user:${data.google_client_openid_userinfo.provider_identity.email}"
-    ]
-  }
 }
 
 module "backend-vms" {

@@ -20,6 +20,7 @@ Additionally, we deploy directly through this blueprint:
 
 ## Apply this blueprint
 
+- If you're leveraging an existing project, make sure you have the roles to attach service accounts and log into VMs (typically, `roles/iam.serviceAccountUser`).
 - Register an F5 BigIP-VE license or apply for an F5 BigIP-VE trial license.
 - Substitute the default values for each F5 instance in the `instance_dedicated_config` variable.
 - Substitute the [default public key](data/my_key.pub) in the `data` folder with your own public key. This should automatically grant you SSH access.
@@ -107,3 +108,15 @@ Please, note there are a few caveats:
 | [f5_management_ips](outputs.tf#L17) | The F5 management interfaces IP addresses. |  |
 | [forwarding_rule_configss](outputs.tf#L22) | The GCP forwarding rules configurations. |  |
 <!-- END TFDOC -->
+
+## Test
+```hcl
+module "f5-deployment" {
+  source         = "./fabric/blueprints/third-party-solutions/f5-bigip/f5-bigip-ha-active-deployment"
+  prefix         = "test"
+  project_create = true
+  project_id     = "test-project"
+  region         = "europe-west1"
+}
+# tftest modules=21 resources=45
+```

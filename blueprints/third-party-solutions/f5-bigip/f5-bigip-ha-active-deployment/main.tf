@@ -22,8 +22,6 @@ locals {
   )
 }
 
-data "google_client_openid_userinfo" "provider_identity" {}
-
 module "project" {
   source         = "../../../../modules/project"
   name           = var.project_id
