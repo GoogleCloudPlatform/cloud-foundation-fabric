@@ -21,3 +21,9 @@ The blueprints in this folder show how to automate installation of specific thir
 <a href="./phpipam/" title="phpIPAM bootstrap example"><img src="./phpipam/images/phpipam.png" align="left" width="320px"></a> <p style="margin-left: 340px">This [example](./phpipam/) shows how to quickly bootstrap a serverless phpIPAM instance on GCP using Cloud Run. This comes with typical enterprise features like Shared VPC, Cloud Armor with IAP and, possibly, private exposure via Internal Application Load Balancer. Indeed, the script supports deploying the application either publicly via Global Application Load Balancer with restricted access based on IPs (Cloud Armor) and identities (Identity Aware Proxy) or privately via Internal Application Load Balancer.</p>
 
 <br clear="left">
+
+### F5 BigIP
+
+<a href="./f5-bigip/" title="F5 BigIP"><img src="./phpipam/diagram.png" align="left" width="320px"></a> <p style="margin-left: 340px">These examples show how to deploy both private and public active/active F5 BigIP-VE load balancers in GCP.</p>
+
+<br clear="left">
