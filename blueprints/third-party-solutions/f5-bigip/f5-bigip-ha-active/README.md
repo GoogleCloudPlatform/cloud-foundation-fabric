@@ -2,6 +2,10 @@
 
 This blueprint allows to create active/active private and/or public F5 BigIP-VE load balancers.
 
+<p align="center">
+  <img src="diagram.svg" alt="Networking diagram">
+</p>
+
 ## Design notes
 
 - The blueprint supports by default two VPCs: a `dataplane` network and a `management` network. 
