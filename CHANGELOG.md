@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1882](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1882)] Fixes/improvements to F5 HA blueprint ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-11-23 15:15:48+00:00 -->
 - [[#1787](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1787)] F5 blueprint ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-11-22 18:48:14+00:00 -->
 - [[#1873](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1873)] Add DLP Service Agent role ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-20 14:34:28+00:00 -->
 - [[#1859](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1859)] Net dash cfv2 ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2023-11-16 14:45:45+00:00 -->
@@ -67,6 +68,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1884](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1884)] Fix failing E2E tests for folders ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-24 08:09:14+00:00 -->
 - [[#1881](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1881)] Support boot disk KMS key in GKE cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2023-11-23 11:52:14+00:00 -->
 - [[#1879](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1879)] Output all neg ids in app lbs ([juliocc](https://github.com/juliocc)) <!-- 2023-11-23 07:41:31+00:00 -->
 - [[#1878](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1878)] Fix permissions assignments ([flaprimo](https://github.com/flaprimo)) <!-- 2023-11-22 12:16:25+00:00 -->
