@@ -21,6 +21,7 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
     - [Building tests for blueprints](#building-tests-for-blueprints)
   - [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-tfvars-and-yaml-aka-tftest-based-tests)
     - [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for-tftest-based-tests)
+  - [Running end-to-end tests](#running-end-to-end-tests)
   - [Writing tests in Python (legacy approach)](#writing-tests-in-python-legacy-approach)
   - [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
 - [Fabric tools](#fabric-tools)
@@ -1083,7 +1084,7 @@ Prepare following information:
 * prepare a prefix (this is to provide project and other global resources name uniqueness)
 
 #### How does it work
-Each test case is provided by additional environment defined in [variables.tf](../examples/variables.tf). This simplifies writing the examples as this follows the same structure as for non-end-to-end tests, and allows multiple, independent and concurrent runs of tests.
+Each test case is provided by additional environment defined in [variables.tf](tests/examples/variables.tf). This simplifies writing the examples as this follows the same structure as for non-end-to-end tests, and allows multiple, independent and concurrent runs of tests.
 
 The test environment can be provisioned automatically during the test run (which takes ~2 minutes) and destroyed at the end, when of the tests (option 1 below), which is targeting automated runs in CI/CD pipeline, or can be provisioned manually (option 2 below) to reduce test time, which might be typical use case for tests run locally.
 
