@@ -162,7 +162,7 @@ resource "local_file" "terraform_tfvars" {
     service_project_2 = {
       project_id = google_project.service_project_2.project_id
     }
-    region             = var.region
+    region = var.region
     service_account = {
       id        = google_service_account.service_account.id
       email     = google_service_account.service_account.email
