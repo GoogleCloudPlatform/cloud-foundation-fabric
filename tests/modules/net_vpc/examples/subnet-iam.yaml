@@ -75,7 +75,6 @@ values:
     condition: []
     members:
     - group:organization-admins@example.org
-    - user:user1@example.org
     project: project-id
     region: europe-west1
     role: roles/compute.networkUser
@@ -93,7 +92,7 @@ values:
     subnetwork: subnet-1
   module.vpc.google_compute_subnetwork_iam_member.bindings["subnet-2-iam"]:
     condition: []
-    member: user:user1@example.org
+    member: group:organization-admins@example.org
     project: project-id
     region: europe-west1
     role: roles/compute.networkUser

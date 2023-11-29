@@ -18,12 +18,9 @@ values:
     project: project-id
   module.vpc-host.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
     project: project-id
-  module.vpc-host.google_compute_shared_vpc_service_project.service_projects["service-project-1-project-id"]:
+  module.service-project.google_compute_shared_vpc_service_project.shared_vpc_service[0]:
     host_project: project-id
-    service_project: service-project-1-project-id
-  module.vpc-host.google_compute_shared_vpc_service_project.service_projects["service-project-2-project-id"]:
-    host_project: project-id
-    service_project: service-project-2-project-id
+    service_project: test-prj1
   module.vpc-host.google_compute_subnetwork.subnetwork["europe-west1/subnet-1"]:
     secondary_ip_range:
     - ip_cidr_range: 172.16.0.0/20
@@ -34,7 +31,6 @@ values:
     condition: []
     members:
     - serviceAccount:service_account_email
-    # - serviceAccount:gke
     project: project-id
     region: europe-west1
     role: roles/compute.networkUser
@@ -48,9 +44,12 @@ values:
     role: roles/compute.securityAdmin
     subnetwork: subnet-1
 
+
 counts:
   google_compute_network: 1
+  google_compute_route: 2
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 2
   google_compute_subnetwork: 1
   google_compute_subnetwork_iam_binding: 2
+  modules: 2

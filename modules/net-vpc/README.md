@@ -114,7 +114,7 @@ module "vpc" {
       ip_cidr_range = "10.0.1.0/24"
       iam = {
         "roles/compute.networkUser" = [
-          "user:${var.user_email}", "group:${var.group_email}"
+          "group:${var.group_email}"
         ]
       }
       iam_bindings = {
@@ -134,7 +134,7 @@ module "vpc" {
       ip_cidr_range = "10.0.2.0/24"
       iam_bindings_additive = {
         subnet-2-iam = {
-          member = "user:${var.user_email}"
+          member = "group:${var.group_email}"
           role   = "roles/compute.networkUser"
           subnet = "europe-west1/subnet-2"
         }
@@ -185,14 +185,21 @@ module "vpc-spoke-1" {
 [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) is a project-level functionality which enables a project to share its VPCs with other projects. The `shared_vpc_host` variable is here to help with rapid prototyping, we recommend leveraging the project module for production usage.
 
 ```hcl
-locals {
-  service_project_1 = {
-    project_id                     = var.service_project_1.project_id
-    gke_service_account            = "serviceAccount:${var.service_account.email}"
-    cloud_services_service_account = "serviceAccount:${var.service_account.email}"
-  }
-  service_project_2 = {
-    project_id = var.service_project_2.project_id
+
+module "service-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "prj1"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "cloudresourcemanager.googleapis.com",
+    "compute.googleapis.com",
+    "iam.googleapis.com",
+    "serviceusage.googleapis.com"
+  ]
+  shared_vpc_service_config = {
+    host_project = var.project_id
   }
 }
 
@@ -211,22 +218,20 @@ module "vpc-host" {
       }
       iam = {
         "roles/compute.networkUser" = [
-          local.service_project_1.cloud_services_service_account,
-          local.service_project_1.gke_service_account
+          "serviceAccount:${var.service_account.email}"
         ]
         "roles/compute.securityAdmin" = [
-          local.service_project_1.gke_service_account
+          "serviceAccount:${var.service_account.email}"
         ]
       }
     }
   ]
   shared_vpc_host = true
   shared_vpc_service_projects = [
-    local.service_project_1.project_id,
-    local.service_project_2.project_id
+    module.service-project.project_id
   ]
 }
-# tftest modules=1 resources=9 inventory=shared-vpc.yaml e2e
+# tftest modules=2 resources=14 inventory=shared-vpc.yaml e2e
 ```
 
 ### Private Service Networking

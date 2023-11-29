@@ -22,10 +22,6 @@ variable "billing_account_id" {
   default = "123456-123456-123456"
 }
 
-variable "user_email" {
-  default = "user1@example.org"
-}
-
 variable "group_email" {
   default = "organization-admins@example.org"
 }
@@ -97,16 +93,4 @@ variable "vpc2" {
 
 variable "zone" {
   default = "zone"
-}
-
-variable "service_project_1" {
-  default = {
-    project_id = "service-project-1-project-id"
-  }
-}
-
-variable "service_project_2" {
-  default = {
-    project_id = "service-project-2-project-id"
-  }
 }
