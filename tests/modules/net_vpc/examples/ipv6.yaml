@@ -18,10 +18,10 @@ values:
     delete_default_routes_on_create: false
     description: Terraform-managed.
     enable_ula_internal_ipv6: true
-    internal_ipv6_range: fd20:6b2:27e5:0:0:0:0:0/48
+    # internal_ipv6_range: fd20:6b2:27e5:0:0:0:0:0/48
     name: my-network
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
-    project: my-project
+    project: project-id
     routing_mode: GLOBAL
     timeouts: null
   module.vpc.google_compute_route.gateway["private-googleapis"]:
@@ -33,7 +33,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
     timeouts: null
   module.vpc.google_compute_route.gateway["restricted-googleapis"]:
@@ -45,7 +45,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
     timeouts: null
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/test"]:
@@ -55,7 +55,7 @@ values:
     log_config: []
     name: test
     private_ip_google_access: true
-    project: my-project
+    project: project-id
     region: europe-west1
     role: null
     secondary_ip_range: []
@@ -68,7 +68,7 @@ values:
     log_config: []
     name: test
     private_ip_google_access: true
-    project: my-project
+    project: project-id
     region: europe-west3
     role: null
     secondary_ip_range: []

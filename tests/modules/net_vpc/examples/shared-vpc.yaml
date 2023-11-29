@@ -15,15 +15,15 @@
 values:
   module.vpc-host.google_compute_network.network[0]:
     name: my-host-network
-    project: my-project
+    project: project-id
   module.vpc-host.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
-    project: my-project
-  module.vpc-host.google_compute_shared_vpc_service_project.service_projects["project1"]:
-    host_project: my-project
-    service_project: project1
-  module.vpc-host.google_compute_shared_vpc_service_project.service_projects["project2"]:
-    host_project: my-project
-    service_project: project2
+    project: project-id
+  module.vpc-host.google_compute_shared_vpc_service_project.service_projects["service-project-1-project-id"]:
+    host_project: project-id
+    service_project: service-project-1-project-id
+  module.vpc-host.google_compute_shared_vpc_service_project.service_projects["service-project-2-project-id"]:
+    host_project: project-id
+    service_project: service-project-2-project-id
   module.vpc-host.google_compute_subnetwork.subnetwork["europe-west1/subnet-1"]:
     secondary_ip_range:
     - ip_cidr_range: 172.16.0.0/20
@@ -33,17 +33,17 @@ values:
   module.vpc-host.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.networkUser"]:
     condition: []
     members:
-    - serviceAccount:cloudsvc
-    - serviceAccount:gke
-    project: my-project
+    - serviceAccount:service_account_email
+    # - serviceAccount:gke
+    project: project-id
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
   module.vpc-host.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.securityAdmin"]:
     condition: []
     members:
-    - serviceAccount:gke
-    project: my-project
+    - serviceAccount:service_account_email
+    project: project-id
     region: europe-west1
     role: roles/compute.securityAdmin
     subnetwork: subnet-1

@@ -29,7 +29,7 @@ This module allows creation and management of VPC networks including subnetworks
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-network"
   subnets = [
     {
@@ -48,7 +48,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=5 inventory=simple.yaml
+# tftest modules=1 resources=5 inventory=simple.yaml e2e
 ```
 
 ### Subnet Options
@@ -56,7 +56,7 @@ module "vpc" {
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-network"
   subnets = [
     # simple subnet
@@ -95,7 +95,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=7 inventory=subnet-options.yaml
+# tftest modules=1 resources=7 inventory=subnet-options.yaml e2e
 ```
 
 ### Subnet IAM
@@ -105,7 +105,7 @@ Subnet IAM variables follow our general interface, with extra keys/members for t
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-network"
   subnets = [
     {
@@ -114,12 +114,12 @@ module "vpc" {
       ip_cidr_range = "10.0.1.0/24"
       iam = {
         "roles/compute.networkUser" = [
-          "user:user1@example.com", "group:group1@example.com"
+          "user:${var.user_email}", "group:${var.group_email}"
         ]
       }
       iam_bindings = {
         subnet-1-iam = {
-          members = ["group:group2@example.com"]
+          members = ["group:${var.group_email}"]
           role    = "roles/compute.networkUser"
           condition = {
             expression = "resource.matchTag('123456789012/env', 'prod')"
@@ -131,10 +131,10 @@ module "vpc" {
     {
       name          = "subnet-2"
       region        = "europe-west1"
-      ip_cidr_range = "10.0.1.0/24"
+      ip_cidr_range = "10.0.2.0/24"
       iam_bindings_additive = {
         subnet-2-iam = {
-          member = "user:am1@example.com"
+          member = "user:${var.user_email}"
           role   = "roles/compute.networkUser"
           subnet = "europe-west1/subnet-2"
         }
@@ -142,7 +142,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=8 inventory=subnet-iam.yaml
+# tftest modules=1 resources=8 inventory=subnet-iam.yaml e2e
 ```
 
 ### Peering
@@ -154,7 +154,7 @@ If you only want to create the "local" side of the peering, use `peering_create_
 ```hcl
 module "vpc-hub" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "hub"
+  project_id = var.project_id
   name       = "vpc-hub"
   subnets = [{
     ip_cidr_range = "10.0.0.0/24"
@@ -165,7 +165,7 @@ module "vpc-hub" {
 
 module "vpc-spoke-1" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "spoke1"
+  project_id = var.project_id
   name       = "vpc-spoke1"
   subnets = [{
     ip_cidr_range = "10.0.1.0/24"
@@ -187,18 +187,18 @@ module "vpc-spoke-1" {
 ```hcl
 locals {
   service_project_1 = {
-    project_id                     = "project1"
-    gke_service_account            = "serviceAccount:gke"
-    cloud_services_service_account = "serviceAccount:cloudsvc"
+    project_id                     = var.service_project_1.project_id
+    gke_service_account            = "serviceAccount:${var.service_account.email}"
+    cloud_services_service_account = "serviceAccount:${var.service_account.email}"
   }
   service_project_2 = {
-    project_id = "project2"
+    project_id = var.service_project_2.project_id
   }
 }
 
 module "vpc-host" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-host-network"
   subnets = [
     {
@@ -226,7 +226,7 @@ module "vpc-host" {
     local.service_project_2.project_id
   ]
 }
-# tftest modules=1 resources=9 inventory=shared-vpc.yaml
+# tftest modules=1 resources=9 inventory=shared-vpc.yaml e2e
 ```
 
 ### Private Service Networking
@@ -234,7 +234,7 @@ module "vpc-host" {
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-network"
   subnets = [
     {
@@ -247,7 +247,7 @@ module "vpc" {
     ranges = { myrange = "10.0.1.0/24" }
   }
 }
-# tftest modules=1 resources=7 inventory=psa.yaml
+# tftest modules=1 resources=7 inventory=psa.yaml e2e
 ```
 
 ### Private Service Networking with peering routes and peered Cloud DNS domains
@@ -257,7 +257,7 @@ Custom routes can be optionally exported/imported through the peering formed wit
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-network"
   subnets = [
     {
@@ -273,7 +273,7 @@ module "vpc" {
     peered_domains = ["gcp.example.com."]
   }
 }
-# tftest modules=1 resources=8 inventory=psa-routes.yaml
+# tftest modules=1 resources=8 inventory=psa-routes.yaml e2e
 ```
 
 ### Subnets for Private Service Connect, Proxy-only subnets
@@ -286,7 +286,7 @@ Along with common private subnets module supports creation more service specific
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-network"
 
   subnets_proxy_only = [
@@ -312,7 +312,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=6 inventory=proxy-only-subnets.yaml
+# tftest modules=1 resources=6 inventory=proxy-only-subnets.yaml e2e
 ```
 
 ### DNS Policies
@@ -320,7 +320,7 @@ module "vpc" {
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-network"
   dns_policy = {
     inbound = true
@@ -337,7 +337,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=5 inventory=dns-policies.yaml
+# tftest modules=1 resources=5 inventory=dns-policies.yaml e2e
 ```
 
 ### Subnet Factory
@@ -347,7 +347,7 @@ The `net-vpc` module includes a subnet factory (see [Resource Factories](../../b
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-network"
   factories_config = {
     subnets_folder = "config/subnets"
@@ -430,7 +430,7 @@ locals {
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
   for_each   = local.route_types
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-network-with-route-${replace(each.key, "_", "-")}"
   routes = {
     next-hop = {
@@ -460,7 +460,7 @@ By default the VPC module creates IPv4 routes for the [Private Google Access ran
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-vpc"
   create_googleapis_routes = {
     restricted   = false
@@ -469,7 +469,7 @@ module "vpc" {
     private-6    = true
   }
 }
-# tftest modules=1 resources=3 inventory=googleapis.yaml
+# tftest modules=1 resources=3 inventory=googleapis.yaml e2e
 ```
 
 ### Allow Firewall Policy to be evaluated before Firewall Rules
@@ -477,7 +477,7 @@ module "vpc" {
 ```hcl
 module "vpc" {
   source                            = "./fabric/modules/net-vpc"
-  project_id                        = "my-project"
+  project_id                        = var.project_id
   name                              = "my-network"
   firewall_policy_enforcement_order = "BEFORE_CLASSIC_FIREWALL"
   subnets = [
@@ -497,7 +497,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=5 inventory=firewall_policy_enforcement_order.yaml
+# tftest modules=1 resources=5 inventory=firewall_policy_enforcement_order.yaml e2e
 ```
 
 ### IPv6
@@ -507,12 +507,12 @@ A non-overlapping private IPv6 address space can be configured for the VPC via t
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-network"
   ipv6_config = {
     # internal_range is optional
     enable_ula_internal = true
-    internal_range      = "fd20:6b2:27e5:0:0:0:0:0/48"
+    # internal_range      = "fd20:6b2:27e5::/48"
   }
   subnets = [
     {
@@ -531,7 +531,7 @@ module "vpc" {
     }
   ]
 }
-# tftest modules=1 resources=5 inventory=ipv6.yaml
+# tftest modules=1 resources=5 inventory=ipv6.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

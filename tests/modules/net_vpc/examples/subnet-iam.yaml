@@ -20,7 +20,7 @@ values:
     enable_ula_internal_ipv6: null
     name: my-network
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
-    project: my-project
+    project: project-id
     routing_mode: GLOBAL
     timeouts: null
   module.vpc.google_compute_route.gateway["private-googleapis"]:
@@ -32,7 +32,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
     timeouts: null
   module.vpc.google_compute_route.gateway["restricted-googleapis"]:
@@ -44,7 +44,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
     timeouts: null
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/subnet-1"]:
@@ -54,19 +54,19 @@ values:
     log_config: []
     name: subnet-1
     private_ip_google_access: true
-    project: my-project
+    project: project-id
     region: europe-west1
     role: null
     secondary_ip_range: []
     timeouts: null
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/subnet-2"]:
     description: Terraform-managed.
-    ip_cidr_range: 10.0.1.0/24
+    ip_cidr_range: 10.0.2.0/24
     ipv6_access_type: null
     log_config: []
     name: subnet-2
     private_ip_google_access: true
-    project: my-project
+    project: project-id
     region: europe-west1
     role: null
     secondary_ip_range: []
@@ -74,9 +74,9 @@ values:
   module.vpc.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.networkUser"]:
     condition: []
     members:
-    - group:group1@example.com
-    - user:user1@example.com
-    project: my-project
+    - group:organization-admins@example.org
+    - user:user1@example.org
+    project: project-id
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
@@ -86,15 +86,15 @@ values:
       expression: resource.matchTag('123456789012/env', 'prod')
       title: test_condition
     members:
-    - group:group2@example.com
-    project: my-project
+    - group:organization-admins@example.org
+    project: project-id
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
   module.vpc.google_compute_subnetwork_iam_member.bindings["subnet-2-iam"]:
     condition: []
-    member: user:am1@example.com
-    project: my-project
+    member: user:user1@example.org
+    project: project-id
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-2

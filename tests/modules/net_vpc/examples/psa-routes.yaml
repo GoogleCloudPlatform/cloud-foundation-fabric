@@ -18,21 +18,21 @@ values:
     address_type: INTERNAL
     name: myrange
     prefix_length: 24
-    project: my-project
+    project: project-id
     purpose: VPC_PEERING
   module.vpc.google_compute_network.network[0]:
     name: my-network
-    project: my-project
+    project: project-id
     routing_mode: GLOBAL
   module.vpc.google_compute_network_peering_routes_config.psa_routes[0]:
     export_custom_routes: true
     import_custom_routes: true
-    project: my-project
+    project: project-id
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]:
     ip_cidr_range: 10.0.0.0/24
     name: production
     private_ip_google_access: true
-    project: my-project
+    project: project-id
     region: europe-west1
     secondary_ip_range: []
   module.vpc.google_service_networking_connection.psa_connection[0]:
@@ -42,7 +42,7 @@ values:
   module.vpc.google_service_networking_peered_dns_domain.name["gcp.example.com."]:
     dns_suffix: gcp.example.com.
     name: gcp-example-com
-    project: my-project
+    project: project-id
     service: servicenetworking.googleapis.com
 
 counts:

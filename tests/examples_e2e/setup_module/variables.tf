@@ -18,6 +18,9 @@ variable "billing_account" {
 variable "group_email" {
   type = string
 }
+variable "user_email" {
+  type = string
+}
 variable "organization_id" {
   type = string
 }
