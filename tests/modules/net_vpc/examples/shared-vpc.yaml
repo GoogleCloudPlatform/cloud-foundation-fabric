@@ -18,7 +18,9 @@ values:
     project: project-id
   module.vpc-host.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
     project: project-id
-  module.service-project.google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+  module.service-project.google_project.project[0]:
+    project_id: test-prj1
+  module.vpc-host.google_compute_shared_vpc_service_project.service_projects["test-prj1"]:
     host_project: project-id
     service_project: test-prj1
   module.vpc-host.google_compute_subnetwork.subnetwork["europe-west1/subnet-1"]:
@@ -49,7 +51,7 @@ counts:
   google_compute_network: 1
   google_compute_route: 2
   google_compute_shared_vpc_host_project: 1
-  google_compute_shared_vpc_service_project: 2
+  google_compute_shared_vpc_service_project: 1
   google_compute_subnetwork: 1
   google_compute_subnetwork_iam_binding: 2
   modules: 2

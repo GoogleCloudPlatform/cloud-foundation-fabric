@@ -117,7 +117,6 @@ resource "local_file" "terraform_tfvars" {
     billing_account_id = var.billing_account
     folder_id          = google_folder.folder.folder_id
     group_email        = var.group_email
-    prefix             = var.prefix
     kms_key_id         = google_kms_crypto_key.key.id
     organization_id    = var.organization_id
     project_id         = google_project.project.project_id
