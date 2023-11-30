@@ -32,11 +32,11 @@ variable "backend_service_configs" {
     timeout_sec                     = optional(number)
     backends = list(object({
       # group renamed to backend
-      backend        = string
-      balancing_mode = optional(string, "UTILIZATION")
-      # capacity_scaler = optional(number, 1)
-      description = optional(string, "Terraform managed.")
-      failover    = optional(bool, false)
+      backend         = string
+      balancing_mode  = optional(string, "UTILIZATION")
+      capacity_scaler = optional(number, 1)
+      description     = optional(string, "Terraform managed.")
+      failover        = optional(bool, false)
       max_connections = optional(object({
         per_endpoint = optional(number)
         per_group    = optional(number)

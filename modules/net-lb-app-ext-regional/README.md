@@ -162,10 +162,11 @@ module "ralb-test-0-redirect" {
 }
 
 module "ralb-test-0" {
-  source              = "./fabric/modules/net-lb-app-ext-regional"
-  project_id          = "myprj"
-  name                = "ralb-test-0"
-  use_classic_version = false
+  source     = "./fabric/modules/net-lb-app-ext-regional"
+  project_id = "myprj"
+  name       = "ralb-test-0"
+  vpc        = var.vpc.self_link
+  region     = var.region
   address = (
     module.addresses.global_addresses["ralb-test-0"].address
   )
@@ -188,30 +189,6 @@ module "ralb-test-0" {
 }
 
 # tftest modules=3 resources=10
-```
-
-### Classic vs Non-classic
-
-The module uses a classic Global Load Balancer by default. To use the non-classic version set the `use_classic_version` variable to `false` as in the following example, note that the module is not enforcing feature sets between the two versions:
-
-```hcl
-module "ralb-0" {
-  source              = "./fabric/modules/net-lb-app-ext-regional"
-  project_id          = "myprj"
-  name                = "ralb-test-0"
-  vpc                 = var.vpc.self_link
-  region              = var.region
-  use_classic_version = false
-  backend_service_configs = {
-    default = {
-      backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
-      ]
-    }
-  }
-}
-# tftest modules=1 resources=5
 ```
 
 ### Health Checks
@@ -321,7 +298,7 @@ module "win-template" {
     }
   }
   network_interfaces = [{
-    network    = var.vpc.self_link.self_link
+    network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
@@ -536,16 +513,14 @@ module "ralb-0" {
 
 #### Private Service Connect NEG creation
 
-The module supports managing PSC NEGs if the non-classic version of the load balancer is used:
 
 ```hcl
 module "ralb-0" {
-  source              = "./fabric/modules/net-lb-app-ext-regional"
-  project_id          = "myprj"
-  name                = "ralb-test-0"
-  vpc                 = var.vpc.self_link
-  region              = var.region
-  use_classic_version = false
+  source     = "./fabric/modules/net-lb-app-ext-regional"
+  project_id = "myprj"
+  name       = "ralb-test-0"
+  vpc        = var.vpc.self_link
+  region     = var.region
   backend_service_configs = {
     default = {
       backends = [
@@ -642,7 +617,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=1 resources=6 inventory=https-sneg.yaml
+# tftest modules=1 resources=6
 ```
 
 ### URL Map

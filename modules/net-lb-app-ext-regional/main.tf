@@ -38,13 +38,13 @@ resource "google_compute_forwarding_rule" "default" {
   description = var.description
   ip_address  = var.address
   ip_protocol = "TCP"
-  load_balancing_scheme = (
-    var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
-  )
-  port_range = join(",", local.fwd_rule_ports)
-  labels     = var.labels
-  target     = local.fwd_rule_target
-  network    = var.vpc
+  # external regional load balancer is always EXTERNAL_MANAGER.
+  # TODO(jccb): double check if this is true
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  port_range            = join(",", local.fwd_rule_ports)
+  labels                = var.labels
+  target                = local.fwd_rule_target
+  network               = var.vpc
   # external regional app lb only supports standard tier
   network_tier = "STANDARD"
 }

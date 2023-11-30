@@ -59,7 +59,9 @@ resource "google_compute_region_backend_service" "default" {
   health_checks = length(each.value.health_checks) == 0 ? null : [
     for k in each.value.health_checks : lookup(local.hc_ids, k, k)
   ]
-  load_balancing_scheme = var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
+  # external regional load balancer is always EXTERNAL_MANAGER.
+  # TODO(jccb): double check if this is true
+  load_balancing_scheme = "EXTERNAL_MANAGED"
   #TODO(jccb): add locality_lb_policy with MAGLEV and WEIGHTED_MAGLEV when scheme EXTERNAL
   port_name = (
     each.value.port_name == null
@@ -75,10 +77,10 @@ resource "google_compute_region_backend_service" "default" {
   dynamic "backend" {
     for_each = { for b in coalesce(each.value.backends, []) : b.backend => b }
     content {
-      group          = lookup(local.group_ids, backend.key, backend.key)
-      balancing_mode = backend.value.balancing_mode # UTILIZATION, RATE
-      # capacity_scaler = backend.value.capacity_scaler
-      description = backend.value.description
+      group           = lookup(local.group_ids, backend.key, backend.key)
+      balancing_mode  = backend.value.balancing_mode # UTILIZATION, RATE
+      capacity_scaler = backend.value.capacity_scaler
+      description     = backend.value.description
       max_connections = try(
         backend.value.max_connections.per_group, null
       )

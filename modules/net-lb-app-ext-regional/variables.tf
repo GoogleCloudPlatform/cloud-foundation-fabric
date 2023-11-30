@@ -230,12 +230,6 @@ variable "ssl_certificates" {
   nullable = false
 }
 
-variable "use_classic_version" {
-  description = "Use classic Global Load Balancer."
-  type        = bool
-  default     = true
-}
-
 
 variable "vpc" {
   description = "VPC-level configuration."
