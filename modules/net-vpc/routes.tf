@@ -19,9 +19,9 @@
 locals {
   _googleapis_ranges = {
     private      = "199.36.153.8/30"
-    private-6    = "2600:2d00:0002:2000::/64"
+    private-6    = "2600:2d00:2:2000::/64"
     restricted   = "199.36.153.4/30"
-    restricted-6 = "2600:2d00:0002:1000::/64"
+    restricted-6 = "2600:2d00:2:1000::/64"
   }
   _googleapis_routes = {
     for k, v in local._googleapis_ranges : "${k}-googleapis" => {
