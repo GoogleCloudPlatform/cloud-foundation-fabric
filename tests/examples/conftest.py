@@ -23,6 +23,7 @@ import pytest
 FABRIC_ROOT = Path(__file__).parents[2]
 
 FILE_TEST_RE = re.compile(r'# tftest-file +id=([\w_.-]+) +path=([\S]+)')
+FIXTURE_TEST_RE = re.compile(r'# tftest-fixture')
 
 Example = collections.namedtuple('Example', 'name code module files')
 File = collections.namedtuple('File', 'path content')
@@ -49,18 +50,22 @@ def pytest_generate_tests(metafunc, test_group='example',
       doc = marko.parse(readme.read_text())
       index = 0
       files = collections.defaultdict(dict)
+      fixture = []
 
       # first pass: collect all examples tagged with tftest-file
       last_header = None
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode):
           code = child.children[0].children
-          match = FILE_TEST_RE.search(code)
-          if match:
+          if match := FILE_TEST_RE.search(code):
             name, path = match.groups()
             files[last_header][name] = File(path, code)
+          if match := FIXTURE_TEST_RE.search(code):
+            fixture.append(code)
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
+
+      fixture = "\n".join(fixture)
 
       # second pass: collect all examples tagged with tftest
       last_header = None
@@ -82,8 +87,12 @@ def pytest_generate_tests(metafunc, test_group='example',
             # this, together with `--dist loadgroup` will ensure that those tests will be run one after another
             # even if multiple workers are used
             # see: https://pytest-xdist.readthedocs.io/en/latest/distribution.html
-            marks = [pytest.mark.xdist_group("serial")] if 'serial' in tftest_tag else []
-            examples.append(pytest.param(Example(name, code, path, files[last_header]), marks=marks))
+            marks = [pytest.mark.xdist_group("serial")
+                    ] if 'serial' in tftest_tag else []
+            examples.append(
+                pytest.param(
+                    Example(name, fixture + code, path, files[last_header]),
+                    marks=marks))
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
           index = 0
