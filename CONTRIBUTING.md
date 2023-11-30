@@ -1188,6 +1188,29 @@ The `<direcotry>` has empty `main.tf` where you can paste any example, and it wi
 
 If there are any changes to the test sandbox, you can rerun the script and only changes will be applied to the project.
 
+#### Cleaning up interrupted E2E tests / failed destroys
+Tests take the effort to clean after themselves but in following situations some resources may be left in GCP:
+* you interrupt the test run
+* `terraform destroy` failed (for example, because of some bug in the example of module code)
+
+To clean up the old dangling resources you may run this commands, to remove folders and projects older than 1 week
+```bash
+
+for folder_id in $(
+  gcloud resource-manager folders list --folder "${TFTEST_E2E_parent}" --filter="createTime<-P1W" --format='value(name)'
+  ) ; do
+  for project_id in $(
+  gcloud alpha projects list --folder "${folder_id}" --format='value(project_id)'
+  ) ; do
+    echo $project_id
+    gcloud projects delete --quiet "${project_id}"
+  done
+  gcloud resource-manager folders delete --quiet "${folder_id}"
+done
+```
+
+Take care, as this may also attempt to remove folders/projects created for Option 2 or sandbox.
+
 ### Writing tests in Python (legacy approach)
 
 Where possible, we recommend using the testing methods described in the previous sections. However, if you need it, you can still write tests using Python directly.
