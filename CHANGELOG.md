@@ -90,7 +90,7 @@ All notable changes to this project will be documented in this file.
 - [[#1846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1846)] Add support for IAM to vpc sc module ([ludoo](https://github.com/ludoo)) <!-- 2023-11-08 10:27:44+00:00 -->
 - [[#1844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1844)] Allow disabling IAM for sink identity in resource manager modules ([apichick](https://github.com/apichick)) <!-- 2023-11-07 08:30:42+00:00 -->
 - [[#1841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1841)] Fix modules to support new Apigee X environment types ([Teodelas](https://github.com/Teodelas)) <!-- 2023-11-06 08:56:04+00:00 -->
-- [[#1842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1842)] Bump provider version to 5.4.0 ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-04 08:14:03+00:00 -->
+- [[#1842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1842)] Bump provider version to 5.6.0 ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-04 08:14:03+00:00 -->
 - [[#1823](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1823)] Add end-to-end tests for project module ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-03 17:04:19+00:00 -->
 - [[#1837](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1837)] Added envoy as SNI dynamic forward proxy to cloud-config-container ([apichick](https://github.com/apichick)) <!-- 2023-11-03 07:43:15+00:00 -->
 - [[#1839](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1839)] Added create_before_destroy = true for self-managed certificates ([apichick](https://github.com/apichick)) <!-- 2023-11-02 14:14:45+00:00 -->
