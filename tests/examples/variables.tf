@@ -44,6 +44,10 @@ variable "prefix" {
   default = "test"
 }
 
+variable "network_name" {
+  default = "network-name"
+}
+
 variable "project_id" {
   default = "project-id"
 }
