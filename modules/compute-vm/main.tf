@@ -58,7 +58,17 @@ locals {
       )
     )
   }
-  termination_action = var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
+  tags_combined = (
+    var.tag_bindings == null && var.tag_bindings_firewall == null
+    ? null
+    : merge(
+      coalesce(var.tag_bindings, {}),
+      coalesce(var.tag_bindings_firewall, {})
+    )
+  )
+  termination_action = (
+    var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
+  )
 }
 
 resource "google_compute_disk" "boot" {
@@ -294,9 +304,9 @@ resource "google_compute_instance" "default" {
   }
 
   dynamic "params" {
-    for_each = var.tag_bindings == null ? [] : [""]
+    for_each = local.tags_combined == null ? [] : [""]
     content {
-      resource_manager_tags = var.tag_bindings
+      resource_manager_tags = local.tags_combined
     }
   }
 

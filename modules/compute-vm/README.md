@@ -34,7 +34,8 @@ In both modes, an optional service account can be created and assigned to either
   - [Instance group](#instance-group)
   - [Instance Schedule](#instance-schedule)
   - [Snapshot Schedules](#snapshot-schedules)
-  - [Resource Manager Tags](#resource-manager-tags)
+  - [Resource Manager Tags (non-firewall)](#resource-manager-tags-non-firewall)
+  - [Resource Manager Tags (firewall)](#resource-manager-tags-firewall)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -678,14 +679,20 @@ module "instance" {
 # tftest modules=1 resources=5 inventory=snapshot-schedule-create.yaml
 ```
 
-### Resource Manager Tags
+### Resource Manager Tags (non-firewall)
 
-Resource manager tags (or "secure tags") bindings are supported with the following limitations:
+Resource manager tags bindings for use in IAM or org policy conditions are supported via the `tag_bindings` variable with the following limitations:
 
-- a single `tag_bindings` variable is used for both the instance and the boot disk
 - tag bindings are not created for attached disks
 - tag bindings will not be created for the boot disk if the `use_independent_disk` flag is true
 - tag bindings are ignored for instance templates
+
+The current provider implementation is sub-optimal and forces
+
+- recreation of the instance on tag changes
+- specifying both the key and value where only the value is actually needed
+
+This is an example of setting tag bindings:
 
 ```hcl
 module "simple-vm-example" {
@@ -703,6 +710,33 @@ module "simple-vm-example" {
 }
 # tftest modules=1 resources=1 inventory=tag-bindings.yaml
 ```
+
+### Resource Manager Tags (firewall)
+
+Network-scoped resource manager tags (or "secure tags") bindings for use in firewall rules are supported with similar limitations as in the section above, via a separate `tag_bindings_firewall` variable that only applies bindings to the instance and not the boot disk.
+
+This is an example of setting both types of tag bindings:
+
+```hcl
+module "simple-vm-example" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "europe-west1-b"
+  name       = "test"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  tag_bindings = {
+    "tagKeys/1234567890" = "tagValues/7890123456"
+  }
+  # tags here need to be scoped to a VPC
+  tag_bindings_firewall = {
+    "tagKeys/5678901234" = "tagValues/3456789012"
+  }
+}
+# tftest modules=1 resources=1 inventory=tag-bindings.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -711,7 +745,7 @@ module "simple-vm-example" {
 | [name](variables.tf#L235) | Instance name. | <code>string</code> | ✓ |  |
 | [network_interfaces](variables.tf#L240) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;  alias_ips  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  nat        &#61; optional&#40;bool, false&#41;&#10;  nic_type   &#61; optional&#40;string&#41;&#10;  stack_type &#61; optional&#40;string&#41;&#10;  addresses &#61; optional&#40;object&#40;&#123;&#10;    internal &#61; optional&#40;string&#41;&#10;    external &#61; optional&#40;string&#41;&#10;  &#125;&#41;, null&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L278) | Project id. | <code>string</code> | ✓ |  |
-| [zone](variables.tf#L370) | Compute zone. | <code>string</code> | ✓ |  |
+| [zone](variables.tf#L376) | Compute zone. | <code>string</code> | ✓ |  |
 | [attached_disk_defaults](variables.tf#L17) | Defaults for attached disks options. | <code title="object&#40;&#123;&#10;  auto_delete  &#61; optional&#40;bool, false&#41;&#10;  mode         &#61; string&#10;  replica_zone &#61; string&#10;  type         &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  auto_delete  &#61; true&#10;  mode         &#61; &#34;READ_WRITE&#34;&#10;  replica_zone &#61; null&#10;  type         &#61; &#34;pd-balanced&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [attached_disks](variables.tf#L37) | Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null. | <code title="list&#40;object&#40;&#123;&#10;  name        &#61; string&#10;  device_name &#61; optional&#40;string&#41;&#10;  size              &#61; string&#10;  snapshot_schedule &#61; optional&#40;string&#41;&#10;  source            &#61; optional&#40;string&#41;&#10;  source_type       &#61; optional&#40;string&#41;&#10;  options &#61; optional&#40;&#10;    object&#40;&#123;&#10;      auto_delete  &#61; optional&#40;bool, false&#41;&#10;      mode         &#61; optional&#40;string, &#34;READ_WRITE&#34;&#41;&#10;      replica_zone &#61; optional&#40;string&#41;&#10;      type         &#61; optional&#40;string, &#34;pd-balanced&#34;&#41;&#10;    &#125;&#41;,&#10;    &#123;&#10;      auto_delete  &#61; true&#10;      mode         &#61; &#34;READ_WRITE&#34;&#10;      replica_zone &#61; null&#10;      type         &#61; &#34;pd-balanced&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 | [boot_disk](variables.tf#L83) | Boot disk properties. | <code title="object&#40;&#123;&#10;  auto_delete       &#61; optional&#40;bool, true&#41;&#10;  snapshot_schedule &#61; optional&#40;string&#41;&#10;  source            &#61; optional&#40;string&#41;&#10;  initialize_params &#61; optional&#40;object&#40;&#123;&#10;    image &#61; optional&#40;string, &#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-11&#34;&#41;&#10;    size  &#61; optional&#40;number, 10&#41;&#10;    type  &#61; optional&#40;string, &#34;pd-balanced&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  use_independent_disk &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  initialize_params &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -734,8 +768,9 @@ module "simple-vm-example" {
 | [service_account](variables.tf#L295) | Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account. | <code title="object&#40;&#123;&#10;  auto_create &#61; optional&#40;bool, false&#41;&#10;  email       &#61; optional&#40;string&#41;&#10;  scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [shielded_config](variables.tf#L305) | Shielded VM configuration of the instances. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; bool&#10;  enable_vtpm                 &#61; bool&#10;  enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [snapshot_schedules](variables.tf#L315) | Snapshot schedule resource policies that can be attached to disks. | <code title="map&#40;object&#40;&#123;&#10;  schedule &#61; object&#40;&#123;&#10;    daily &#61; optional&#40;object&#40;&#123;&#10;      days_in_cycle &#61; number&#10;      start_time    &#61; string&#10;    &#125;&#41;&#41;&#10;    hourly &#61; optional&#40;object&#40;&#123;&#10;      hours_in_cycle &#61; number&#10;      start_time     &#61; string&#10;    &#125;&#41;&#41;&#10;    weekly &#61; optional&#40;list&#40;object&#40;&#123;&#10;      day        &#61; string&#10;      start_time &#61; string&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  retention_policy &#61; optional&#40;object&#40;&#123;&#10;    max_retention_days         &#61; number&#10;    on_source_disk_delete_keep &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  snapshot_properties &#61; optional&#40;object&#40;&#123;&#10;    chain_name        &#61; optional&#40;string&#41;&#10;    guest_flush       &#61; optional&#40;bool&#41;&#10;    labels            &#61; optional&#40;map&#40;string&#41;&#41;&#10;    storage_locations &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L358) | Tag bindings for this instance, in tag key => tag value format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [tags](variables.tf#L364) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [tag_bindings](variables.tf#L358) | Resource manager tag bindings for this instance, in tag key => tag value format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tag_bindings_firewall](variables.tf#L364) | Firewall (network scoped) tag bindings for this instance, in tag key => tag value format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L370) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
@@ -754,4 +789,3 @@ module "simple-vm-example" {
 | [template](outputs.tf#L82) | Template resource. |  |
 | [template_name](outputs.tf#L87) | Template name. |  |
 <!-- END TFDOC -->
-
