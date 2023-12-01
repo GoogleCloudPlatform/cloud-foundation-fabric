@@ -713,7 +713,7 @@ module "simple-vm-example" {
 
 ### Resource Manager Tags (firewall)
 
-Network-scoped resource manager tags (or "secure tags") bindings for use in firewall rules are supported with similar limitations as in the section above, via a separate `tag_bindings_firewall` variable.
+Network-scoped resource manager tags (or "secure tags") bindings for use in firewall rules are supported with similar limitations as in the section above, via a separate `tag_bindings_firewall` variable that only applies bindings to the instance and not the boot disk.
 
 This is an example of setting both types of tag bindings:
 
