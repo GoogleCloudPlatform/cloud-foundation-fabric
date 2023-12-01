@@ -20,8 +20,8 @@ values:
     deny: []
     disabled: null
     log_config: []
-    name: network-name-ingress-admins
-    network: network-name
+    name: vpc-name-ingress-admins
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges:
@@ -38,8 +38,8 @@ values:
     deny: []
     disabled: null
     log_config: []
-    name: network-name-ingress-tag-http
-    network: network-name
+    name: vpc-name-ingress-tag-http
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges:
@@ -60,8 +60,8 @@ values:
     deny: []
     disabled: null
     log_config: []
-    name: network-name-ingress-tag-https
-    network: network-name
+    name: vpc-name-ingress-tag-https
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges:
@@ -82,8 +82,8 @@ values:
     deny: []
     disabled: null
     log_config: []
-    name: network-name-ingress-tag-ssh
-    network: network-name
+    name: vpc-name-ingress-tag-ssh
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges:

@@ -116,7 +116,6 @@ resource "local_file" "terraform_tfvars" {
     bucket             = google_storage_bucket.bucket.name
     billing_account_id = var.billing_account
     folder_id          = google_folder.folder.folder_id
-    network_name       = google_compute_network.network.name
     group_email        = var.group_email
     kms_key_id         = google_kms_crypto_key.key.id
     organization_id    = var.organization_id

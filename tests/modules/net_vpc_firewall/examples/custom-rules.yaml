@@ -32,7 +32,7 @@ values:
     disabled: false
     log_config: []
     name: allow-egress-rfc1918
-    network: network-name
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges: null
@@ -52,7 +52,7 @@ values:
     disabled: false
     log_config: []
     name: allow-egress-tag
-    network: network-name
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges: null
@@ -72,7 +72,7 @@ values:
     disabled: false
     log_config: []
     name: allow-ingress-ntp
-    network: network-name
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges:
@@ -92,7 +92,7 @@ values:
     disabled: false
     log_config: []
     name: allow-ingress-tag
-    network: network-name
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges: null
@@ -114,7 +114,7 @@ values:
     disabled: false
     log_config: []
     name: deny-egress-all
-    network: network-name
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges: null

@@ -26,7 +26,7 @@ values:
     disabled: false
     log_config: []
     name: allow-ingress-source-destination-ranges
-    network: network-name
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges:
@@ -47,7 +47,7 @@ values:
     disabled: false
     log_config: []
     name: deny-egress-source-destination-ranges
-    network: network-name
+    network: vpc-name
     priority: 1000
     project: project-id
     source_ranges:

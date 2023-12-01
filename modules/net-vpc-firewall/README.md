@@ -30,7 +30,7 @@ This is often useful for prototyping or testing infrastructure, allowing open in
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
   project_id = var.project_id
-  network    = var.network_name
+  network    = var.vpc.name
   default_rules_config = {
     admin_ranges = ["10.0.0.0/8"]
   }
@@ -53,7 +53,7 @@ Some implicit defaults are used in the rules variable types and can be controlle
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
   project_id = var.project_id
-  network    = var.network_name
+  network    = var.vpc.name
   default_rules_config = {
     admin_ranges = ["10.0.0.0/8"]
   }
@@ -110,7 +110,7 @@ Default tags and ranges can be overridden for each protocol, like shown here for
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
   project_id = var.project_id
-  network    = var.network_name
+  network    = var.vpc.name
   default_rules_config = {
     ssh_ranges = ["10.0.0.0/8"]
     ssh_tags   = ["ssh-default"]
@@ -127,7 +127,7 @@ Default rules can be disabled individually by specifying an empty set of ranges:
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
   project_id = var.project_id
-  network    = var.network_name
+  network    = var.vpc.name
   default_rules_config = {
     ssh_ranges = []
   }
@@ -141,7 +141,7 @@ Or the entire set of rules can be disabled via the `disabled` attribute:
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
   project_id = var.project_id
-  network    = var.network_name
+  network    = var.vpc.name
   default_rules_config = {
     disabled = true
   }
@@ -157,7 +157,7 @@ Custom rules now support including both source & destination ranges in ingress a
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
   project_id = var.project_id
-  network    = var.network_name
+  network    = var.vpc.name
   default_rules_config = {
     disabled = true
   }
@@ -187,7 +187,7 @@ The module includes a rules factory (see [Resource Factories](../../blueprints/f
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
   project_id = var.project_id
-  network    = var.network_name
+  network    = var.vpc.name
   factories_config = {
     rules_folder  = "configs/firewall/rules"
     cidr_tpl_file = "configs/firewall/cidrs.yaml"
