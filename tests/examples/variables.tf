@@ -71,7 +71,7 @@ variable "subnet" {
 
 variable "vpc" {
   default = {
-    name      = "vpc_name"
+    name      = "vpc-name"
     self_link = "projects/xxx/global/networks/aaa"
     id        = "projects/xxx/global/networks/aaa"
   }
@@ -79,14 +79,14 @@ variable "vpc" {
 
 variable "vpc1" {
   default = {
-    name      = "vpc_name"
+    name      = "vpc-name"
     self_link = "projects/xxx/global/networks/bbb"
   }
 }
 
 variable "vpc2" {
   default = {
-    name      = "vpc2_name"
+    name      = "vpc2-name"
     self_link = "projects/xxx/global/networks/ccc"
   }
 }
