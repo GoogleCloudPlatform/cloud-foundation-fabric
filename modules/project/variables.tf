@@ -66,6 +66,16 @@ variable "descriptive_name" {
   default     = null
 }
 
+variable "factories_config" {
+  description = "Paths to data files that enable factory functionality."
+  type = object({
+    custom_roles      = optional(string)
+    bindings          = optional(string)
+    bindings_additive = optional(string)
+  })
+  default = null
+}
+
 variable "group_iam" {
   description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
   type        = map(list(string))
