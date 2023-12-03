@@ -73,7 +73,7 @@ variable "factories_config" {
     bindings          = optional(string)
     bindings_additive = optional(string)
   })
-  default = null
+  default = {}
 }
 
 variable "group_iam" {

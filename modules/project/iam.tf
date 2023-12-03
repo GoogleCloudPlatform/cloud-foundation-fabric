@@ -33,60 +33,6 @@ locals {
       try(local._group_iam[role], [])
     )
   }
-
-  _factory_custom_roles = { for r in
-    flatten([for f in try(fileset(var.factories_config.custom_roles, "*.yaml"), []) :
-      [for role_name, permissions in yamldecode(file("${var.factories_config.custom_roles}/${f}")) : {
-        role_name   = role_name
-        permissions = permissions
-      }]
-  ]) : r.role_name => r.permissions }
-
-  custom_roles = merge(
-    var.custom_roles,
-    local._factory_custom_roles
-  )
-
-  _factory_iam_bindings = { for b in
-    flatten([for f in try(fileset(var.factories_config.bindings, "*.yaml"), []) :
-      [for binding_name, data in yamldecode(file("${var.factories_config.bindings}/${f}")) : {
-        binding_name = binding_name
-        data = {
-          members = data.members
-          role    = try(google_project_iam_custom_role.roles[data.role], data.role)
-          condition = {
-            title       = try(data.condition.title, "")
-            expression  = try(data.condition.expression, "")
-            description = try(data.condition.description, "")
-          }
-        }
-      }]
-  ]) : b.binding_name => b.data }
-
-  _factory_iam_bindings_additive = { for b in
-    flatten([for f in try(fileset(var.factories_config.bindings_additive_, "*.yaml"), []) :
-      [for binding_name, data in yamldecode(file("${var.factories_config.bindings_additive_}/${f}")) : {
-        binding_name = binding_name
-        data = {
-          members = data.members
-          role    = try(google_project_iam_custom_role.roles[data.role], data.role)
-          condition = {
-            title       = try(data.condition.title, "")
-            expression  = try(data.condition.expression, "")
-            description = try(data.condition.description, "")
-          }
-        }
-      }]
-  ]) : b.binding_name => b.data }
-
-  iam_bindings = merge(
-    var.iam_bindings,
-    local._factory_iam_bindings
-  )
-  iam_bindings_additive = merge(
-    var.iam_bindings,
-    local._factory_iam_bindings_additive
-  )
 }
 
 resource "google_project_iam_custom_role" "roles" {
