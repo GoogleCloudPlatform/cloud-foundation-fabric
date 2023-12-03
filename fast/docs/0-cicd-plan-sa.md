@@ -55,7 +55,9 @@ If no merge branch is set in the repository configuration as in the example abov
 
 ### Implementation
 
-The following changes will need to be implemented
+No changes to variables will be needed other than a lightweight refactor with `optional`.
+
+The following resource changes will need to be implemented:
 
 - define the set of read-only roles for each stage
 - create a new automation service account in each stage and assign the identified roles
@@ -65,6 +67,14 @@ The following changes will need to be implemented
   - define a new provider file that impersonates the new automation service account and use it in the workflow for checks
   - keep the existing token exchange, impersonation and provider file for the `apply` part of the workflow only matching the specified merge branch
 - if a branch is not set the current behaviour will be kept
+
+Implementation will modify in stages 0 and 1
+
+- the `automation.tf` files
+- any file where IAM roles are assigned to the automation service account
+- the `cicd-*.tf` files
+- the `templates/workflow-*.yaml` files to implement the new workflow logic
+- the `outputs.tf` files to generate the additional provider files
 
 ## Decision
 
