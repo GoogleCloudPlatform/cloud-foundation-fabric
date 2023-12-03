@@ -1,4 +1,4 @@
-# Add new service account for CI/CD with plan-only permissions
+# Add new service accounts for CI/CD with plan-only permissions
 
 **authors:** [Ludo](https://github.com/ludoo) \
 **date:** December 3, 2023
