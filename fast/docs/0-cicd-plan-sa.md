@@ -15,16 +15,56 @@ The Workload Identity Federation provider allows pinning a branch which could be
 
 ## Proposal
 
-The obvious solution is to use two separate service accounts for CI/CD
+The proposal is to create a separate "chain" of less privileged service accounts that can only run `plan`, used only when a repository configuration sets a branch for merges in the `cicd_repositories` variable.
 
-- a lower privileged one that is only able to read resources and can be safely used to run `terraform plan` during PR checks
-- a higher privileged one which can modify resources and is used to run `terraform apply` during merges, and can be restricted to work from a single branch (typically `main`)
+### Use cases
 
-Implementing this proposal would mean
+#### Merge branch set in repository configuration
 
-- adding the read-only service account and relevant set of role bindings to stage 0 and 1 for all CI/CD repositories
-- changing the definition of the per-repository WIF provider so two providers are actually created if a branch condition is desired, one for the deprivileged service account with no condition, and one for the priviled one with the condition (typically on the `main` branch)
-- changing the CI/CD workflows to separate `plan` and `apply` credentials
+```hcl
+cicd_repositories = {
+  bootstrap = {
+    branch            = "main"
+    identity_provider = "github-example"
+    name              = "example/bootstrap"
+    type              = "github"
+  }
+}
+# tftest skip
+```
+
+When a merge branch is set as in the example aboce, the CI/CD workflow will have two separate flows:
+
+- for PR checks, the OICD token will be exchanged with credentials for the `plan`-only CI/CD service account, which can only impersonate the `plan`-only automation service account
+- for merges, the current flow that enables credential exchange and impersonation of the `apply`-enabled service account will be used
+
+#### No merge branch set in repository configuration
+
+```hcl
+cicd_repositories = {
+  bootstrap = {
+    identity_provider = "github-example"
+    name              = "example/bootstrap"
+    type              = "github"
+  }
+}
+# tftest skip
+```
+
+If no merge branch is set in the repository configuration as in the example above, the current behaviour will be preserved allowing exchange and impersonation of the `apply`-enabled service account from any branch.
+
+### Implementation
+
+The following changes will need to be implemented
+
+- define the set of read-only roles for each stage
+- create a new automation service account in each stage and assign the identified roles
+- create a new CI/CD service account with `roles/iam.serviceAccountTokenCreator` on the new automation service account
+- if a merge branch is set in the repository configuration
+  - grant `roles/iam.workloadIdentityUser` on the new CI/CD service account to the `principalSet` matching any branch
+  - define a new provider file that impersonates the new automation service account and use it in the workflow for checks
+  - keep the existing token exchange, impersonation and provider file for the `apply` part of the workflow only matching the specified merge branch
+- if a branch is not set the current behaviour will be kept
 
 ## Decision
 
@@ -32,4 +72,4 @@ This has been surfaced a while ago and implementation was only pending actual ti
 
 ## Consequences
 
-Existing CI/CD workflows will need to be replaced.
+Existing CI/CD workflows will need to be replaced when a merge branch is already defined in the repository configuration (unlikely to exist as the existing workflow would not work).
