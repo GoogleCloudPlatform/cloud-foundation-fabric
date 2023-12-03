@@ -1,6 +1,6 @@
-# Add new service account for CI/CD with plan-only permissions
+# Add new service accounts for CI/CD with plan-only permissions
 
-**authors:** [Ludo](https://github.com/ludoo)
+**authors:** [Ludo](https://github.com/ludoo) \
 **date:** December 3, 2023
 
 ## Status
@@ -11,7 +11,7 @@ In development.
 
 The current CI/CD workflows are inherently insecure, as the same service account is used to run `terraform plan` in PR checks, and `terraform apply` in merges.
 
-The Workload Identity Federation provider allows pinning a branch which could be used to only allow using the service account in merges, but that has the consequence of preventing PR checks to work.
+The current repository configuration variable allows setting a branch which could be used to only allow using the service account in merges, but that only has the consequence of preventing PR checks to work so it's not working as desired.
 
 ## Proposal
 
@@ -33,9 +33,9 @@ cicd_repositories = {
 # tftest skip
 ```
 
-When a merge branch is set as in the example aboce, the CI/CD workflow will have two separate flows:
+When a merge branch is set as in the example above, the CI/CD workflow will have two separate flows:
 
-- for PR checks, the OICD token will be exchanged with credentials for the `plan`-only CI/CD service account, which can only impersonate the `plan`-only automation service account
+- for PR checks, the OIDC token will be exchanged with credentials for the `plan`-only CI/CD service account, which can only impersonate the `plan`-only automation service account
 - for merges, the current flow that enables credential exchange and impersonation of the `apply`-enabled service account will be used
 
 #### No merge branch set in repository configuration
@@ -63,9 +63,9 @@ The following resource changes will need to be implemented:
 - create a new automation service account in each stage and assign the identified roles
 - create a new CI/CD service account with `roles/iam.serviceAccountTokenCreator` on the new automation service account
 - if a merge branch is set in the repository configuration
-  - grant `roles/iam.workloadIdentityUser` on the new CI/CD service account to the `principalSet` matching any branch
+  - grant `roles/iam.workloadIdentityUser` on the new CI/CD service account to the `principalSet:` matching any branch
   - define a new provider file that impersonates the new automation service account and use it in the workflow for checks
-  - keep the existing token exchange, impersonation and provider file for the `apply` part of the workflow only matching the specified merge branch
+  - keep the existing token exchange via `principal:`, impersonation and provider file for the `apply` part of the workflow only matching the specified merge branch
 - if a branch is not set the current behaviour will be kept
 
 Implementation will modify in stages 0 and 1
@@ -82,4 +82,4 @@ This has been surfaced a while ago and implementation was only pending actual ti
 
 ## Consequences
 
-Existing CI/CD workflows will need to be replaced when a merge branch is already defined in the repository configuration (unlikely to exist as the existing workflow would not work).
+Existing CI/CD workflows will need to be replaced when a merge branch is already defined in the repository configuration (unlikely to happen as the current workflow would not work).
