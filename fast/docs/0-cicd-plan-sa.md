@@ -35,7 +35,7 @@ cicd_repositories = {
 
 When a merge branch is set as in the example above, the CI/CD workflow will have two separate flows:
 
-- for PR checks, the OICD token will be exchanged with credentials for the `plan`-only CI/CD service account, which can only impersonate the `plan`-only automation service account
+- for PR checks, the OIDC token will be exchanged with credentials for the `plan`-only CI/CD service account, which can only impersonate the `plan`-only automation service account
 - for merges, the current flow that enables credential exchange and impersonation of the `apply`-enabled service account will be used
 
 #### No merge branch set in repository configuration
