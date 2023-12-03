@@ -461,7 +461,7 @@ module "bucket" {
   source      = "./fabric/modules/logging-bucket"
   parent_type = "project"
   parent      = var.project_id
-  id          = "bucket"
+  id          = "${var.prefix}-bucket"
 }
 
 module "project-host" {
@@ -822,7 +822,7 @@ module "bucket" {
   source      = "./fabric/modules/logging-bucket"
   parent_type = "project"
   parent      = var.project_id
-  id          = "bucket"
+  id          = "${var.prefix}-bucket"
 }
 # tftest modules=7 resources=53 inventory=data.yaml e2e
 ```
