@@ -15,7 +15,7 @@
 
 values:
   module.bucket.google_logging_project_bucket_config.bucket[0]:
-    bucket_id: bucket
+    bucket_id: test-bucket
     project: project-id
   module.create-project.google_project.project[0]:
     billing_account: 123456-123456-123456
