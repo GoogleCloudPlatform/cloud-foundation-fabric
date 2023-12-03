@@ -45,6 +45,16 @@ locals {
       }
     ]
   ])
+  custom_roles = merge(
+    {
+      for k, v in var.custom_role_names :
+      k => try(module.organization.custom_role_id[v], "")
+    },
+    {
+      for k, v in var.custom_roles :
+      k => try(module.organization.custom_role_id[k], "")
+    }
+  )
   drs_domains = concat(
     [var.organization.customer_id],
     var.org_policies_config.constraints.allowed_policy_member_domains
@@ -121,6 +131,22 @@ module "organization" {
     }
   }
   custom_roles = merge(var.custom_roles, {
+    # this is used by the plan-only admin SA
+    (var.custom_role_names.organization_admin_viewer) = [
+      "essentialcontacts.contacts.get",
+      "essentialcontacts.contacts.list",
+      "orgpolicy.constraints.list",
+      "orgpolicy.policies.list",
+      "orgpolicy.policy.get",
+      "resourcemanager.folders.get",
+      "resourcemanager.folders.getIamPolicy",
+      "resourcemanager.folders.list",
+      "resourcemanager.organizations.get",
+      "resourcemanager.organizations.getIamPolicy",
+      "resourcemanager.projects.get",
+      "resourcemanager.projects.getIamPolicy",
+      "resourcemanager.projects.list"
+    ]
     # this is needed for use in additive IAM bindings, to avoid conflicts
     (var.custom_role_names.organization_iam_admin) = [
       "resourcemanager.organizations.get",

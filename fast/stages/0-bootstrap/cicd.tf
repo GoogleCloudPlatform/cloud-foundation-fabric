@@ -78,9 +78,12 @@ module "automation-tf-cicd-repo" {
       ? module.automation-tf-bootstrap-sa.iam_email
       : module.automation-tf-resman-sa.iam_email
     ]
-    "roles/source.reader" = [
-      module.automation-tf-cicd-sa[each.key].iam_email
-    ]
+    "roles/source.reader" = concat(
+      [module.automation-tf-cicd-sa[each.key].iam_email],
+      each.key == "bootstrap"
+      ? module.automation-tf-bootstrap-r-sa.iam_email
+      : module.automation-tf-resman-r-sa.iam_email
+    )
   }
   triggers = {
     "fast-0-${each.key}" = {

@@ -38,16 +38,6 @@ locals {
       }
     )
   }
-  custom_roles = merge(
-    {
-      for k, v in var.custom_role_names :
-      k => try(module.organization.custom_role_id[v], "")
-    },
-    {
-      for k, v in var.custom_roles :
-      k => try(module.organization.custom_role_id[k], "")
-    }
-  )
   providers = {
     "0-bootstrap" = templatefile(local._tpl_providers, {
       backend_extra = null
@@ -55,11 +45,23 @@ locals {
       name          = "bootstrap"
       sa            = module.automation-tf-bootstrap-sa.email
     })
+    "0-bootstrap-r" = templatefile(local._tpl_providers, {
+      backend_extra = null
+      bucket        = module.automation-tf-bootstrap-gcs.name
+      name          = "bootstrap"
+      sa            = module.automation-tf-bootstrap-r-sa.email
+    })
     "1-resman" = templatefile(local._tpl_providers, {
       backend_extra = null
       bucket        = module.automation-tf-resman-gcs.name
       name          = "resman"
       sa            = module.automation-tf-resman-sa.email
+    })
+    "1-resman-r" = templatefile(local._tpl_providers, {
+      backend_extra = null
+      bucket        = module.automation-tf-resman-gcs.name
+      name          = "resman"
+      sa            = module.automation-tf-resman-r-sa.email
     })
     "0-bootstrap-tenant" = templatefile(local._tpl_providers, {
       backend_extra = join("\n", [

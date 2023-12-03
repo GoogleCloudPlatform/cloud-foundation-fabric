@@ -79,11 +79,13 @@ variable "cicd_repositories" {
 variable "custom_role_names" {
   description = "Names of custom roles defined at the org level."
   type = object({
+    organization_admin_viewer     = string
     organization_iam_admin        = string
     service_project_network_admin = string
     tenant_network_admin          = string
   })
   default = {
+    organization_admin_viewer     = "organizationAdminViewer"
     organization_iam_admin        = "organizationIamAdmin"
     service_project_network_admin = "serviceProjectNetworkAdmin"
     tenant_network_admin          = "tenantNetworkAdmin"
