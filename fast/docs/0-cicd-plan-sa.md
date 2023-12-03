@@ -82,4 +82,4 @@ This has been surfaced a while ago and implementation was only pending actual ti
 
 ## Consequences
 
-Existing CI/CD workflows will need to be replaced when a merge branch is already defined in the repository configuration (unlikely to exist as the existing workflow would not work).
+Existing CI/CD workflows will need to be replaced when a merge branch is already defined in the repository configuration (unlikely to happen as the current workflow would not work).
