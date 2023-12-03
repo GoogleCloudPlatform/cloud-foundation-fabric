@@ -225,7 +225,7 @@ module "bucket" {
   source      = "./fabric/modules/logging-bucket"
   parent_type = "project"
   parent      = var.project_id
-  id          = "bucket"
+  id          = "${var.prefix}-bucket"
 }
 
 module "folder-sink" {
