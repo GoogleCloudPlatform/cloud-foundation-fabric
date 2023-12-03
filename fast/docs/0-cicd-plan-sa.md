@@ -63,9 +63,9 @@ The following resource changes will need to be implemented:
 - create a new automation service account in each stage and assign the identified roles
 - create a new CI/CD service account with `roles/iam.serviceAccountTokenCreator` on the new automation service account
 - if a merge branch is set in the repository configuration
-  - grant `roles/iam.workloadIdentityUser` on the new CI/CD service account to the `principalSet` matching any branch
+  - grant `roles/iam.workloadIdentityUser` on the new CI/CD service account to the `principalSet:` matching any branch
   - define a new provider file that impersonates the new automation service account and use it in the workflow for checks
-  - keep the existing token exchange, impersonation and provider file for the `apply` part of the workflow only matching the specified merge branch
+  - keep the existing token exchange via `principal`, impersonation and provider file for the `apply` part of the workflow only matching the specified merge branch
 - if a branch is not set the current behaviour will be kept
 
 Implementation will modify in stages 0 and 1
