@@ -11,7 +11,7 @@ In development.
 
 The current CI/CD workflows are inherently insecure, as the same service account is used to run `terraform plan` in PR checks, and `terraform apply` in merges.
 
-The Workload Identity Federation provider allows pinning a branch which could be used to only allow using the service account in merges, but that has the consequence of preventing PR checks to work.
+The current repository configuration variable allows setting a branch which could be used to only allow using the service account in merges, but that only has the consequence of preventing PR checks to work so it's not working as desired.
 
 ## Proposal
 
