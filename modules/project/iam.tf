@@ -72,7 +72,6 @@ resource "google_project_iam_binding" "bindings" {
   depends_on = [
     google_project_service.project_services,
     google_project_iam_custom_role.roles,
-    local.iam_bindings
   ]
 }
 
