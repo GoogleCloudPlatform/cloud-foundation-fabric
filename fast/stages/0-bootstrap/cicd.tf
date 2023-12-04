@@ -139,3 +139,33 @@ module "automation-tf-cicd-sa" {
     (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
   }
 }
+
+module "automation-tf-cicd-r-sa" {
+  source       = "../../../modules/iam-service-account"
+  for_each     = local.cicd_repositories
+  project_id   = module.automation-project.project_id
+  name         = "${each.key}-1r"
+  display_name = "Terraform CI/CD ${each.key} service account (read-only)."
+  prefix       = local.prefix
+  iam = (
+    each.value.type == "sourcerepo"
+    # build trigger for read-only SA is optionally defined by users
+    ? {}
+    # impersonated via workload identity federation for external repos
+    : {
+      "roles/iam.workloadIdentityUser" = [
+        format(
+          local.identity_providers_defs[each.value.type].principalset_tpl,
+          google_iam_workload_identity_pool.default.0.name,
+          each.value.name
+        )
+      ]
+    }
+  )
+  iam_project_roles = {
+    (module.automation-project.project_id) = ["roles/logging.logWriter"]
+  }
+  iam_storage_roles = {
+    (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
+  }
+}

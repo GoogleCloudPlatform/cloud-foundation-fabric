@@ -17,7 +17,8 @@
 # tfdoc:file:description Automation project and resources.
 
 locals {
-  cicd_resman_sa = try(module.automation-tf-cicd-sa["resman"].iam_email, "")
+  cicd_resman_sa   = try(module.automation-tf-cicd-sa["resman"].iam_email, "")
+  cicd_resman_r_sa = try(module.automation-tf-cicd-r-sa["resman"].iam_email, "")
 }
 
 module "automation-project" {
@@ -183,11 +184,11 @@ module "automation-tf-bootstrap-r-sa" {
   display_name = "Terraform organization bootstrap service account (read-only)."
   prefix       = local.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
-  # iam = {
-  #   "roles/iam.serviceAccountTokenCreator" = compact([
-  #     try(module.automation-tf-cicd-sa["bootstrap"].iam_email, null)
-  #   ])
-  # }
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.automation-tf-cicd-r-sa["bootstrap"].iam_email, null)
+    ])
+  }
   # we grant this role here as IAM bindings have precedence over custom roles
   # in the organization module, so this needs depend on it
   iam_organization_roles = {
@@ -244,14 +245,14 @@ module "automation-tf-resman-r-sa" {
   prefix       = local.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   # we use additive IAM to allow tenant CI/CD SAs to impersonate it
-  # iam_bindings_additive = (
-  #   local.cicd_resman_sa == "" ? {} : {
-  #     cicd_token_creator = {
-  #       member = local.cicd_resman_sa
-  #       role   = "roles/iam.serviceAccountTokenCreator"
-  #     }
-  #   }
-  # )
+  iam_bindings_additive = (
+    local.cicd_resman_r_sa == "" ? {} : {
+      cicd_token_creator = {
+        member = local.cicd_resman_r_sa
+        role   = "roles/iam.serviceAccountTokenCreator"
+      }
+    }
+  )
   iam_storage_roles = {
     (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
   }
