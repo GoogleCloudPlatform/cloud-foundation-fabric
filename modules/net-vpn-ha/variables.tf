@@ -111,7 +111,7 @@ variable "vpn_gateway_create" {
   description = "Create HA VPN Gateway. Set to null to avoid creation."
   type = object({
     description = optional(string, "Terraform managed external VPN gateway")
-    stack_type  = optional(string, "IPV4_ONLY") # IPV4_ONLY, IPV4_IPV6
+    ipv6        = optional(bool, false)
   })
   default = {}
 }

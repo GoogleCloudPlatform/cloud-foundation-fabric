@@ -42,7 +42,7 @@ resource "google_compute_ha_vpn_gateway" "ha_gateway" {
   project     = var.project_id
   region      = var.region
   network     = var.network
-  stack_type  = var.vpn_gateway_create.stack_type
+  stack_type  = var.vpn_gateway_create.ipv6 ? "IPV4_IPV6" : "IPV4_ONLY"
 }
 
 resource "google_compute_external_vpn_gateway" "external_gateway" {
