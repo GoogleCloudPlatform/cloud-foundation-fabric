@@ -82,12 +82,16 @@ variable "custom_role_names" {
     organization_admin_viewer     = string
     organization_iam_admin        = string
     service_project_network_admin = string
+    storage_viewer                = string
+    tag_viewer                    = string
     tenant_network_admin          = string
   })
   default = {
     organization_admin_viewer     = "organizationAdminViewer"
     organization_iam_admin        = "organizationIamAdmin"
     service_project_network_admin = "serviceProjectNetworkAdmin"
+    storage_viewer                = "storageViewer"
+    tag_viewer                    = "tagViewer"
     tenant_network_admin          = "tenantNetworkAdmin"
   }
 }

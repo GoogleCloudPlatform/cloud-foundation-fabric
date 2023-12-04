@@ -133,6 +133,7 @@ module "organization" {
   custom_roles = merge(var.custom_roles, {
     # this is used by the plan-only admin SA
     (var.custom_role_names.organization_admin_viewer) = [
+      # the following permissions are a descoped version of organizationAdmin
       "essentialcontacts.contacts.get",
       "essentialcontacts.contacts.list",
       "orgpolicy.constraints.list",
@@ -146,6 +147,34 @@ module "organization" {
       "resourcemanager.projects.get",
       "resourcemanager.projects.getIamPolicy",
       "resourcemanager.projects.list"
+    ]
+    (var.custom_role_names.storage_viewer) = [
+      # the following permissions are a descoped version of storage.admin
+      "storage.buckets.get",
+      "storage.buckets.getIamPolicy",
+      "storage.buckets.getObjectInsights",
+      "storage.buckets.list",
+      "storage.buckets.listEffectiveTags",
+      "storage.buckets.listTagBindings",
+      "storage.managedFolders.get",
+      "storage.managedFolders.getIamPolicy",
+      "storage.managedFolders.list",
+      "storage.multipartUploads.list",
+      "storage.multipartUploads.listParts",
+      "storage.objects.create",
+      "storage.objects.get",
+      "storage.objects.getIamPolicy",
+      "storage.objects.list"
+    ]
+    (var.custom_role_names.tag_viewer) = [
+      # the following permissions are a descoped version of tagAdmin
+      "resourcemanager.tagHolds.list",
+      "resourcemanager.tagKeys.get",
+      "resourcemanager.tagKeys.getIamPolicy",
+      "resourcemanager.tagKeys.list",
+      "resourcemanager.tagValues.get",
+      "resourcemanager.tagValues.getIamPolicy",
+      "resourcemanager.tagValues.list"
     ]
     # this is needed for use in additive IAM bindings, to avoid conflicts
     (var.custom_role_names.organization_iam_admin) = [

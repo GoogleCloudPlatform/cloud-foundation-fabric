@@ -56,25 +56,40 @@ jobs:
           ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
           ssh-add - <<< "$${{ secrets.CICD_MODULES_KEY }}"
 
+      # set up authentication via Workload identity Federation (plan)
+      - id: gcp-auth-plan
+        if: github.event.pull_request.merged != true && success()
+        name: Authenticate to Google Cloud (plan)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: $${{ env.FAST_WIF_PROVIDER }}
+          service_account: $${{ env.FAST_SERVICE_ACCOUNT_PLAN }}
+          access_token_lifetime: 3600s
+
       # set up authentication via Workload identity Federation (apply)
       - id: gcp-auth-apply
         if: github.event.pull_request.merged == true && success()
-        name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v0
+        name: Authenticate to Google Cloud (apply)
+        uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: $${{ env.FAST_WIF_PROVIDER }}
           service_account: $${{ env.FAST_SERVICE_ACCOUNT }}
           access_token_lifetime: 3600s
 
-      # set up authentication via Workload identity Federation (plan)
-      - id: gcp-auth-plan
+      # set up step variables for plan
+      - id: vars-plan
         if: github.event.pull_request.merged != true && success()
-        name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v0
-        with:
-          workload_identity_provider: $${{ env.FAST_WIF_PROVIDER }}
-          service_account: $${{ env.FAST_SERVICE_ACCOUNT_PLAN }}
-          access_token_lifetime: 3600s
+        name: Set up plan variables
+        run: |
+          echo "plan_opts=-lock=false" >> "$GITHUB_ENV"
+          echo "provider_file=$${{env.TF_PROVIDERS_FILE_PLAN}}" >> "$GITHUB_ENV"
+
+      # set up step variables for apply
+      - id: vars-apply
+        if: github.event.pull_request.merged == true && success()
+        name: Set up apply variables
+        run: |
+          echo "provider_file=$${{env.TF_PROVIDERS_FILE}}" >> "$GITHUB_ENV"
 
       - id: gcp-sdk
         name: Set up Cloud SDK
@@ -82,33 +97,12 @@ jobs:
         with:
           install_components: alpha
 
-      # copy provider file (apply)
-      - id: tf-config-provider-apply
-        if: github.event.pull_request.merged == true && success()
+      # copy provider file
+      - id: tf-config-provider
         name: Copy Terraform provider file
         run: |
           gcloud alpha storage cp -r \
-            "gs://$${{env.FAST_OUTPUTS_BUCKET}}/providers/$${{env.TF_PROVIDERS_FILE}}" ./
-
-      # copy provider file (plan)
-      - id: tf-config-provider-apply
-        if: github.event.pull_request.merged != true && success()
-        name: Copy Terraform provider file
-        run: |
-          gcloud alpha storage cp -r \
-            "gs://$${{env.FAST_OUTPUTS_BUCKET}}/providers/$${{env.TF_PROVIDERS_FILE_PLAN}}" ./
-
-      %{~ if tf_var_files != [] ~}
-      # copy tfvars files
-      - id: tf-config
-        name: Copy Terraform output files
-        run: |
-          gcloud alpha storage cp -r \
-            "gs://$${{env.FAST_OUTPUTS_BUCKET}}/tfvars" ./
-          for f in $${{env.TF_VAR_FILES}}; do
-            ln -s "tfvars/$f" ./
-          done
-      %{~ endif ~}
+            "gs://$${{env.FAST_OUTPUTS_BUCKET}}/providers/$${{env.provider_file}}" ./
 
       - id: tf-setup
         name: Set up Terraform
@@ -132,7 +126,7 @@ jobs:
         name: Terraform plan
         continue-on-error: true
         run: |
-          terraform plan -input=false -out ../plan.out -no-color
+          terraform plan -input=false -out ../plan.out -no-color $${{env.plan_opts}}
 
       - id: tf-apply
         if: github.event.pull_request.merged == true && success()

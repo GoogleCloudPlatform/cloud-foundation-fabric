@@ -75,7 +75,8 @@ module "automation-project" {
     "roles/storage.admin" = [
       module.automation-tf-resman-sa.iam_email
     ]
-    "roles/storage.objectViewer" = [
+    (local.custom_roles["storage_viewer"]) = [
+      module.automation-tf-bootstrap-r-sa.iam_email,
       module.automation-tf-resman-r-sa.iam_email
     ]
     "roles/viewer" = [
@@ -189,13 +190,16 @@ module "automation-tf-bootstrap-r-sa" {
       try(module.automation-tf-cicd-r-sa["bootstrap"].iam_email, null)
     ])
   }
-  # we grant this role here as IAM bindings have precedence over custom roles
-  # in the organization module, so this needs depend on it
+  # we grant organization roles here as IAM bindings have precedence over
+  # custom roles in the organization module, so these need to depend on it
   iam_organization_roles = {
-    (split("/", module.organization.id)[1]) = [local.custom_roles["organization_admin_viewer"]]
+    (var.organization.id) = [
+      local.custom_roles["organization_admin_viewer"],
+      local.custom_roles["tag_viewer"]
+    ]
   }
   iam_storage_roles = {
-    (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
+    (module.automation-tf-output-gcs.name) = [local.custom_roles["storage_viewer"]]
   }
 }
 
@@ -254,6 +258,6 @@ module "automation-tf-resman-r-sa" {
     }
   )
   iam_storage_roles = {
-    (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
+    (module.automation-tf-output-gcs.name) = [local.custom_roles["storage_viewer"]]
   }
 }
