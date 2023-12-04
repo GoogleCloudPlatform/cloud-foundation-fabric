@@ -29,12 +29,16 @@ locals {
           local.cicd_providers[v["identity_provider"]].name, ""
         )
         outputs_bucket = module.automation-tf-output-gcs.name
-        service_account = try(
-          module.automation-tf-cicd-sa[k].email, ""
-        )
-        stage_name        = k
-        tf_providers_file = local.cicd_workflow_providers[k]
-        tf_var_files      = local.cicd_workflow_var_files[k]
+        service_accounts = {
+          apply = try(module.automation-tf-cicd-sa[k].email, "")
+          plan  = try(module.automation-tf-cicd-r-sa[k].email, "")
+        }
+        stage_name = k
+        tf_providers_files = {
+          apply = local.cicd_workflow_providers[k]
+          plan  = local.cicd_workflow_providers["${k}_r"]
+        }
+        tf_var_files = local.cicd_workflow_var_files[k]
       }
     )
   }

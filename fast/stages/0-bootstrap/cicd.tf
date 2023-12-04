@@ -51,8 +51,10 @@ locals {
     )
   }
   cicd_workflow_providers = {
-    bootstrap = "0-bootstrap-providers.tf"
-    resman    = "1-resman-providers.tf"
+    bootstrap   = "0-bootstrap-providers.tf"
+    bootstrap_r = "0-bootstrap-r-providers.tf"
+    resman      = "1-resman-providers.tf"
+    resman_r    = "1-resman-r-providers.tf"
   }
   cicd_workflow_var_files = {
     bootstrap = []

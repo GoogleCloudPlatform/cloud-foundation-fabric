@@ -22,13 +22,15 @@ default:
 variables:
   GOOGLE_CREDENTIALS: cicd-sa-credentials.json
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}
-  FAST_SERVICE_ACCOUNT: ${service_account}
+  FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
+  FAST_SERVICE_ACCOUNT_PLAN: ${service_accounts.plan}
   FAST_WIF_PROVIDER: ${identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-  %{~ if tf_providers_file != "" ~}
-  TF_PROVIDERS_FILE: ${tf_providers_file}
+  TF_PROVIDERS_FILE: "${tf_providers_files.apply}"
+  TF_PROVIDERS_FILE_PLAN: "${tf_providers_files.plan}"
+  %{~ if tf_var_files != [] ~}
+  TF_VAR_FILES: ${join("\n    ", tf_var_files)}
   %{~ endif ~}
-  TF_VAR_FILES: ${tf_var_files == [] ? "''" : join("\n    ", tf_var_files)}
 
 stages:
   - gcp-auth
@@ -41,9 +43,8 @@ cache:
   paths:
     - cicd-sa-credentials.json
     - token.txt
-    %{~ if tf_providers_file != "" ~}
-    - ${tf_providers_file}
-    %{~ endif ~}
+    - ${tf_providers_files.apply}
+    - ${tf_providers_files.plan}
     %{~ for f in tf_var_files ~}
     - ${f}
     %{~ endfor ~}

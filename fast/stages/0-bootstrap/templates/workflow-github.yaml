@@ -25,10 +25,12 @@ on:
 
 env:
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}
-  FAST_SERVICE_ACCOUNT: ${service_account}
+  FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
+  FAST_SERVICE_ACCOUNT_PLAN: ${service_accounts.plan}
   FAST_WIF_PROVIDER: ${identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-  TF_PROVIDERS_FILE: ${tf_providers_file}
+  TF_PROVIDERS_FILE: ${tf_providers_files.apply}
+  TF_PROVIDERS_FILE_PLAN: ${tf_providers_files.plan}
   %{~ if tf_var_files != [] ~}
   TF_VAR_FILES: ${join("\n    ", tf_var_files)}
   %{~ endif ~}
@@ -54,13 +56,24 @@ jobs:
           ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
           ssh-add - <<< "$${{ secrets.CICD_MODULES_KEY }}"
 
-      # set up authentication via Workload identity Federation
-      - id: gcp-auth
+      # set up authentication via Workload identity Federation (apply)
+      - id: gcp-auth-apply
+        if: github.event.pull_request.merged == true && success()
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: $${{ env.FAST_WIF_PROVIDER }}
           service_account: $${{ env.FAST_SERVICE_ACCOUNT }}
+          access_token_lifetime: 3600s
+
+      # set up authentication via Workload identity Federation (plan)
+      - id: gcp-auth-plan
+        if: github.event.pull_request.merged != true && success()
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: $${{ env.FAST_WIF_PROVIDER }}
+          service_account: $${{ env.FAST_SERVICE_ACCOUNT_PLAN }}
           access_token_lifetime: 3600s
 
       - id: gcp-sdk
@@ -69,19 +82,33 @@ jobs:
         with:
           install_components: alpha
 
-      # copy provider and tfvars files
-      - id: tf-config
-        name: Copy Terraform output files
+      # copy provider file (apply)
+      - id: tf-config-provider-apply
+        if: github.event.pull_request.merged == true && success()
+        name: Copy Terraform provider file
         run: |
           gcloud alpha storage cp -r \
             "gs://$${{env.FAST_OUTPUTS_BUCKET}}/providers/$${{env.TF_PROVIDERS_FILE}}" ./
-          %{~ if tf_var_files != [] ~}
+
+      # copy provider file (plan)
+      - id: tf-config-provider-apply
+        if: github.event.pull_request.merged != true && success()
+        name: Copy Terraform provider file
+        run: |
+          gcloud alpha storage cp -r \
+            "gs://$${{env.FAST_OUTPUTS_BUCKET}}/providers/$${{env.TF_PROVIDERS_FILE_PLAN}}" ./
+
+      %{~ if tf_var_files != [] ~}
+      # copy tfvars files
+      - id: tf-config
+        name: Copy Terraform output files
+        run: |
           gcloud alpha storage cp -r \
             "gs://$${{env.FAST_OUTPUTS_BUCKET}}/tfvars" ./
           for f in $${{env.TF_VAR_FILES}}; do
             ln -s "tfvars/$f" ./
           done
-          %{~ endif ~}
+      %{~ endif ~}
 
       - id: tf-setup
         name: Set up Terraform
