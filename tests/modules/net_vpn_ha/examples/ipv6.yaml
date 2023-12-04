@@ -97,7 +97,6 @@ values:
   module.vpn_ha.google_compute_vpn_tunnel.tunnels["remote-0"]:
     description: null
     ike_version: 2
-    labels: null
     name: mynet-to-onprem-remote-0
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
@@ -110,7 +109,6 @@ values:
   module.vpn_ha.google_compute_vpn_tunnel.tunnels["remote-1"]:
     description: null
     ike_version: 2
-    labels: null
     name: mynet-to-onprem-remote-1
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null

@@ -89,7 +89,6 @@ values:
   module.vpn-1.google_compute_vpn_tunnel.tunnels["remote-0"]:
     description: null
     ike_version: 2
-    labels: null
     name: net1-to-net-2-remote-0
     peer_external_gateway: null
     peer_external_gateway_interface: null
@@ -184,7 +183,6 @@ values:
   module.vpn-2.google_compute_vpn_tunnel.tunnels["remote-0"]:
     description: null
     ike_version: 2
-    labels: null
     name: net2-to-net1-remote-0
     peer_external_gateway: null
     peer_external_gateway_interface: null
@@ -196,7 +194,6 @@ values:
   module.vpn-2.google_compute_vpn_tunnel.tunnels["remote-1"]:
     description: null
     ike_version: 2
-    labels: null
     name: net2-to-net1-remote-1
     peer_external_gateway: null
     peer_external_gateway_interface: null
