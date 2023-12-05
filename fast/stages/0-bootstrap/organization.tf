@@ -132,7 +132,7 @@ module "organization" {
   }
   custom_roles = merge(var.custom_roles, {
     for k, v in var.custom_role_names :
-    v => yamldecode(file("data/roles/${k}.yaml"))
+    v => yamldecode(file("${var.factories_config.custom_roles_data_path}/${k}.yaml"))
   })
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
