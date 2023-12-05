@@ -259,7 +259,6 @@ variable "options" {
     allow_stopping_for_update = optional(bool, true)
     deletion_protection       = optional(bool, false)
     node_affinities = optional(map(object({
-      key    = string
       values = list(string)
       in     = optional(bool, true)
     })), {})

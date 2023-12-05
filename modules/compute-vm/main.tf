@@ -278,7 +278,7 @@ resource "google_compute_instance" "default" {
       for_each = var.options.node_affinities
       iterator = affinity
       content {
-        key      = affinity.value.key
+        key      = affinity.key
         operator = affinity.value.in ? "IN" : "NOT_IN"
         values   = affinity.value.values
       }
@@ -433,7 +433,7 @@ resource "google_compute_instance_template" "default" {
       for_each = var.options.node_affinities
       iterator = affinity
       content {
-        key      = affinity.value.key
+        key      = affinity.key
         operator = affinity.value.in ? "IN" : "NOT_IN"
         values   = affinity.value.values
       }

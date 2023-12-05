@@ -59,7 +59,7 @@ values:
       max_run_duration: []
       min_node_cpus: null
       node_affinities:
-      - key: cpu-type
+      - key: cpu
         operator: NOT_IN
         values:
         - c3
