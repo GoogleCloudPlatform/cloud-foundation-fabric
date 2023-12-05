@@ -273,6 +273,16 @@ resource "google_compute_instance" "default" {
     on_host_maintenance         = local.on_host_maintenance
     preemptible                 = var.options.spot
     provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+
+    dynamic "node_affinities" {
+      for_each = var.options.node_affinities
+      iterator = affinity
+      content {
+        key      = affinity.key
+        operator = affinity.value.in ? "IN" : "NOT_IN"
+        values   = affinity.value.values
+      }
+    }
   }
 
   dynamic "scratch_disk" {
@@ -418,6 +428,16 @@ resource "google_compute_instance_template" "default" {
     on_host_maintenance         = local.on_host_maintenance
     preemptible                 = var.options.spot
     provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+
+    dynamic "node_affinities" {
+      for_each = var.options.node_affinities
+      iterator = affinity
+      content {
+        key      = affinity.key
+        operator = affinity.value.in ? "IN" : "NOT_IN"
+        values   = affinity.value.values
+      }
+    }
   }
 
   dynamic "service_account" {
