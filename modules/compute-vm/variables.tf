@@ -258,8 +258,13 @@ variable "options" {
   type = object({
     allow_stopping_for_update = optional(bool, true)
     deletion_protection       = optional(bool, false)
-    spot                      = optional(bool, false)
-    termination_action        = optional(string)
+    node_affinities = optional(map(object({
+      key    = string
+      values = list(string)
+      in     = optional(bool, true)
+    })), {})
+    spot               = optional(bool, false)
+    termination_action = optional(string)
   })
   default = {
     allow_stopping_for_update = true
