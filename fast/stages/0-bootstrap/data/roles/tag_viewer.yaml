@@ -13,10 +13,12 @@
 # limitations under the License.
 
 # the following permissions are a descoped version of tagAdm
-- resourcemanager.tagHolds.list
-- resourcemanager.tagKeys.get
-- resourcemanager.tagKeys.getIamPolicy
-- resourcemanager.tagKeys.list
-- resourcemanager.tagValues.get
-- resourcemanager.tagValues.getIamPolicy
-- resourcemanager.tagValues.list
+name: tagViewer
+includedPermissions:
+  - resourcemanager.tagHolds.list
+  - resourcemanager.tagKeys.get
+  - resourcemanager.tagKeys.getIamPolicy
+  - resourcemanager.tagKeys.list
+  - resourcemanager.tagValues.get
+  - resourcemanager.tagValues.getIamPolicy
+  - resourcemanager.tagValues.list

@@ -13,18 +13,20 @@
 # limitations under the License.
 
 # the following permissions are a descoped version of storage.admin
-- storage.buckets.get
-- storage.buckets.getIamPolicy
-- storage.buckets.getObjectInsights
-- storage.buckets.list
-- storage.buckets.listEffectiveTags
-- storage.buckets.listTagBindings
-- storage.managedFolders.get
-- storage.managedFolders.getIamPolicy
-- storage.managedFolders.list
-- storage.multipartUploads.list
-- storage.multipartUploads.listParts
-- storage.objects.create
-- storage.objects.get
-- storage.objects.getIamPolicy
-- storage.objects.list
+name: storageViewer
+includedPermissions:
+  - storage.buckets.get
+  - storage.buckets.getIamPolicy
+  - storage.buckets.getObjectInsights
+  - storage.buckets.list
+  - storage.buckets.listEffectiveTags
+  - storage.buckets.listTagBindings
+  - storage.managedFolders.get
+  - storage.managedFolders.getIamPolicy
+  - storage.managedFolders.list
+  - storage.multipartUploads.list
+  - storage.multipartUploads.listParts
+  - storage.objects.create
+  - storage.objects.get
+  - storage.objects.getIamPolicy
+  - storage.objects.list

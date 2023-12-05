@@ -45,21 +45,19 @@ locals {
       }
     ]
   ])
-  custom_roles = merge(
-    {
-      for k, v in var.custom_role_names :
-      k => try(module.organization.custom_role_id[v], "")
-    },
-    {
-      for k, v in var.custom_roles :
-      k => try(module.organization.custom_role_id[k], "")
-    }
-  )
   drs_domains = concat(
     [var.organization.customer_id],
     var.org_policies_config.constraints.allowed_policy_member_domains
   )
   drs_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
+  fast_custom_roles = [
+    "organization_admin_viewer",
+    "organization_iam_admin",
+    "service_project_network_admin",
+    "storage_viewer",
+    "tag_viewer",
+    "tenant_network_admin",
+  ]
   group_iam = {
     for k, v in local.iam_group_bindings : k => v.authoritative
   }
@@ -76,6 +74,16 @@ locals {
       member = b.member
       role   = b.role
     }
+  }
+}
+
+check "custom_roles" {
+  assert {
+    condition = alltrue([
+      for r in local.fast_custom_roles :
+      try(module.organization.custom_role_id[r], null) != null
+    ])
+    error_message = "Missing system custom role."
   }
 }
 
@@ -105,7 +113,7 @@ module "organization" {
   iam_bindings = {
     organization_iam_admin_conditional = {
       members = [module.automation-tf-resman-sa.iam_email]
-      role    = module.organization.custom_role_id[var.custom_role_names.organization_iam_admin]
+      role    = module.organization.custom_role_id["organization_iam_admin"]
       condition = {
         expression = format(
           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
@@ -116,7 +124,7 @@ module "organization" {
               "roles/compute.xpnAdmin",
               "roles/orgpolicy.policyAdmin",
               "roles/resourcemanager.organizationViewer",
-              module.organization.custom_role_id[var.custom_role_names.tenant_network_admin]
+              module.organization.custom_role_id["tenant_network_admin"]
             ],
             local.billing_mode == "org" ? [
               "roles/billing.admin",
@@ -130,10 +138,11 @@ module "organization" {
       }
     }
   }
-  custom_roles = merge(var.custom_roles, {
-    for k, v in var.custom_role_names :
-    v => yamldecode(file("${var.factories_config.custom_roles_data_path}/${k}.yaml"))
-  })
+  custom_roles = var.custom_roles
+  factories_config = {
+    custom_roles = var.factories_config.custom_roles
+    org_policies = var.bootstrap_user != null ? null : var.factories_config.org_policy
+  }
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
@@ -142,11 +151,6 @@ module "organization" {
       type                 = attrs.type
     }
   }
-  org_policies_data_path = (
-    var.bootstrap_user != null
-    ? null
-    : var.factories_config.org_policy_data_path
-  )
   org_policies = var.bootstrap_user != null ? {} : {
     "iam.allowedPolicyMemberDomains" = {
       rules = [

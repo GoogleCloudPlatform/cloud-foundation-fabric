@@ -88,7 +88,7 @@ locals {
       project_id                   = module.automation-project.project_id
       project_number               = module.automation-project.number
     }
-    custom_roles = local.custom_roles
+    custom_roles = module.organization.custom_role_id
     logging = {
       project_id        = module.log-export-project.project_id
       project_number    = module.log-export-project.number
@@ -139,7 +139,7 @@ output "cicd_repositories" {
 
 output "custom_roles" {
   description = "Organization-level custom roles."
-  value       = local.custom_roles
+  value       = module.organization.custom_role_id
 }
 
 output "federated_identity" {

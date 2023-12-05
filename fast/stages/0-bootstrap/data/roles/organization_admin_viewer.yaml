@@ -13,16 +13,18 @@
 # limitations under the License.
 
 # this is used by the plan-only admin SA
-- essentialcontacts.contacts.get
-- essentialcontacts.contacts.list
-- orgpolicy.constraints.list
-- orgpolicy.policies.list
-- orgpolicy.policy.get
-- resourcemanager.folders.get
-- resourcemanager.folders.getIamPolicy
-- resourcemanager.folders.list
-- resourcemanager.organizations.get
-- resourcemanager.organizations.getIamPolicy
-- resourcemanager.projects.get
-- resourcemanager.projects.getIamPolicy
-- resourcemanager.projects.list
+name: organizationAdminViewer
+includedPermissions:
+  - essentialcontacts.contacts.get
+  - essentialcontacts.contacts.list
+  - orgpolicy.constraints.list
+  - orgpolicy.policies.list
+  - orgpolicy.policy.get
+  - resourcemanager.folders.get
+  - resourcemanager.folders.getIamPolicy
+  - resourcemanager.folders.list
+  - resourcemanager.organizations.get
+  - resourcemanager.organizations.getIamPolicy
+  - resourcemanager.projects.get
+  - resourcemanager.projects.getIamPolicy
+  - resourcemanager.projects.list

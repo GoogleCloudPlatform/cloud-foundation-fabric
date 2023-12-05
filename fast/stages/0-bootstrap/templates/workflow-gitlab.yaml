@@ -38,6 +38,23 @@ stages:
   - tf-plan
   - tf-apply
 
+# TODO: add and document step for project-level deploy key used to fetch modules
+
+# yaml rules: - if: $CI_COMMIT_BRANCH == "master"
+
+# job1:
+#   script:
+#     - echo "This job runs in merge request pipelines"
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+# job1:
+#   script:
+#     - echo "This job runs in merge request pipelines"
+#   only:
+#     - merge_requests
+
+
 cache:
   key: gcp-auth
   paths:
@@ -78,9 +95,7 @@ tf-files:
   script:
     # - gcloud components install -q alpha
     - gcloud config set auth/credential_file_override $${GOOGLE_CREDENTIALS}
-    %{~ if tf_providers_file != "" ~}
-    - gcloud alpha storage cp -r "gs://$${FAST_OUTPUTS_BUCKET}/providers/${tf_providers_file}" ./
-    %{~ endif ~}
+    - gcloud alpha storage cp -r "gs://$${FAST_OUTPUTS_BUCKET}/providers/${tf_providers_files.plan}" ./
     %{~ for f in tf_var_files ~}
     - gcloud alpha storage cp -r "gs://$${FAST_OUTPUTS_BUCKET}/tfvars/${f}" ./
     %{~ endfor ~}

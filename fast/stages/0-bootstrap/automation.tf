@@ -75,7 +75,7 @@ module "automation-project" {
     "roles/storage.admin" = [
       module.automation-tf-resman-sa.iam_email
     ]
-    (local.custom_roles["storage_viewer"]) = [
+    (module.organization.custom_role_id["storage_viewer"]) = [
       module.automation-tf-bootstrap-r-sa.iam_email,
       module.automation-tf-resman-r-sa.iam_email
     ]
@@ -194,12 +194,12 @@ module "automation-tf-bootstrap-r-sa" {
   # custom roles in the organization module, so these need to depend on it
   iam_organization_roles = {
     (var.organization.id) = [
-      local.custom_roles["organization_admin_viewer"],
-      local.custom_roles["tag_viewer"]
+      module.organization.custom_role_id["organization_admin_viewer"],
+      module.organization.custom_role_id["tag_viewer"]
     ]
   }
   iam_storage_roles = {
-    (module.automation-tf-output-gcs.name) = [local.custom_roles["storage_viewer"]]
+    (module.automation-tf-output-gcs.name) = [module.organization.custom_role_id["storage_viewer"]]
   }
 }
 
@@ -258,6 +258,6 @@ module "automation-tf-resman-r-sa" {
     }
   )
   iam_storage_roles = {
-    (module.automation-tf-output-gcs.name) = [local.custom_roles["storage_viewer"]]
+    (module.automation-tf-output-gcs.name) = [module.organization.custom_role_id["storage_viewer"]]
   }
 }

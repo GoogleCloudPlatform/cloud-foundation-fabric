@@ -12,18 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- compute.globalOperations.get
- # compute.networks.updatePeering and compute.networks.get are
- # used by automation service accounts who manage service
- # projects where peering creation might be needed (e.g. GKE). If
- # you remove them your network administrators should create
- # peerings for service projects
-- compute.networks.updatePeering
-- compute.networks.get
-- compute.organizations.disableXpnResource
-- compute.organizations.enableXpnResource
-- compute.projects.get
-- compute.subnetworks.getIamPolicy
-- compute.subnetworks.setIamPolicy
-- dns.networks.bindPrivateDNSZone
-- resourcemanager.projects.get
+name: serviceProjectNetworkAdmin
+includedPermissions:
+  - compute.globalOperations.get
+  # compute.networks.updatePeering and compute.networks.get are
+  # used by automation service accounts who manage service
+  # projects where peering creation might be needed (e.g. GKE). If
+  # you remove them your network administrators should create
+  # peerings for service projects
+  - compute.networks.updatePeering
+  - compute.networks.get
+  - compute.organizations.disableXpnResource
+  - compute.organizations.enableXpnResource
+  - compute.projects.get
+  - compute.subnetworks.getIamPolicy
+  - compute.subnetworks.setIamPolicy
+  - dns.networks.bindPrivateDNSZone
+  - resourcemanager.projects.get
