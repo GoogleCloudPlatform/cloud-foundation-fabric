@@ -131,77 +131,8 @@ module "organization" {
     }
   }
   custom_roles = merge(var.custom_roles, {
-    # this is used by the plan-only admin SA
-    (var.custom_role_names.organization_admin_viewer) = [
-      # the following permissions are a descoped version of organizationAdmin
-      "essentialcontacts.contacts.get",
-      "essentialcontacts.contacts.list",
-      "orgpolicy.constraints.list",
-      "orgpolicy.policies.list",
-      "orgpolicy.policy.get",
-      "resourcemanager.folders.get",
-      "resourcemanager.folders.getIamPolicy",
-      "resourcemanager.folders.list",
-      "resourcemanager.organizations.get",
-      "resourcemanager.organizations.getIamPolicy",
-      "resourcemanager.projects.get",
-      "resourcemanager.projects.getIamPolicy",
-      "resourcemanager.projects.list"
-    ]
-    (var.custom_role_names.storage_viewer) = [
-      # the following permissions are a descoped version of storage.admin
-      "storage.buckets.get",
-      "storage.buckets.getIamPolicy",
-      "storage.buckets.getObjectInsights",
-      "storage.buckets.list",
-      "storage.buckets.listEffectiveTags",
-      "storage.buckets.listTagBindings",
-      "storage.managedFolders.get",
-      "storage.managedFolders.getIamPolicy",
-      "storage.managedFolders.list",
-      "storage.multipartUploads.list",
-      "storage.multipartUploads.listParts",
-      "storage.objects.create",
-      "storage.objects.get",
-      "storage.objects.getIamPolicy",
-      "storage.objects.list"
-    ]
-    (var.custom_role_names.tag_viewer) = [
-      # the following permissions are a descoped version of tagAdmin
-      "resourcemanager.tagHolds.list",
-      "resourcemanager.tagKeys.get",
-      "resourcemanager.tagKeys.getIamPolicy",
-      "resourcemanager.tagKeys.list",
-      "resourcemanager.tagValues.get",
-      "resourcemanager.tagValues.getIamPolicy",
-      "resourcemanager.tagValues.list"
-    ]
-    # this is needed for use in additive IAM bindings, to avoid conflicts
-    (var.custom_role_names.organization_iam_admin) = [
-      "resourcemanager.organizations.get",
-      "resourcemanager.organizations.getIamPolicy",
-      "resourcemanager.organizations.setIamPolicy"
-    ]
-    (var.custom_role_names.service_project_network_admin) = [
-      "compute.globalOperations.get",
-      # compute.networks.updatePeering and compute.networks.get are
-      # used by automation service accounts who manage service
-      # projects where peering creation might be needed (e.g. GKE). If
-      # you remove them your network administrators should create
-      # peerings for service projects
-      "compute.networks.updatePeering",
-      "compute.networks.get",
-      "compute.organizations.disableXpnResource",
-      "compute.organizations.enableXpnResource",
-      "compute.projects.get",
-      "compute.subnetworks.getIamPolicy",
-      "compute.subnetworks.setIamPolicy",
-      "dns.networks.bindPrivateDNSZone",
-      "resourcemanager.projects.get",
-    ]
-    (var.custom_role_names.tenant_network_admin) = [
-      "compute.globalOperations.get",
-    ]
+    for k, v in var.custom_role_names :
+    v => yamldecode(file("data/roles/${k}.yaml"))
   })
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
