@@ -12,61 +12,67 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-default:
-  image:
-    name: hashicorp/terraform
-    entrypoint:
-      - "/usr/bin/env"
-      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
 variables:
   GOOGLE_CREDENTIALS: cicd-sa-credentials.json
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}
-  FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
-  FAST_SERVICE_ACCOUNT_PLAN: ${service_accounts.plan}
   FAST_WIF_PROVIDER: ${identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-  TF_PROVIDERS_FILE: "${tf_providers_files.apply}"
-  TF_PROVIDERS_FILE_PLAN: "${tf_providers_files.plan}"
   %{~ if tf_var_files != [] ~}
   TF_VAR_FILES: ${join("\n    ", tf_var_files)}
   %{~ endif ~}
 
+workflow:
+  rules:
+    # merge / apply
+    - if: $$CI_PIPELINE_SOURCE == 'push' && $$CI_COMMIT_REF_NAME == $$CI_DEFAULT_BRANCH
+      variables:
+        COMMAND: apply
+        FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
+        TF_PROVIDERS_FILE: 0-bootstrap-providers.tf
+    # pr / plan
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      variables:
+        COMMAND: plan
+        FAST_SERVICE_ACCOUNT: ${service_accounts.plan}
+        TF_PROVIDERS_FILE: 0-bootstrap-r-providers.tf
+
 stages:
-  - gcp-auth
-  - tf-files
-  - tf-plan
-  - tf-apply
+  - gcp-setup
+  - tf-plan-apply
 
-# TODO: add and document step for project-level deploy key used to fetch modules
+# TODO: document project-level deploy key used to fetch modules
 
-# yaml rules: - if: $CI_COMMIT_BRANCH == "master"
+gcp-setup:
+  stage: gcp-setup
+  image:
+    name: google/cloud-sdk:slim
+  artifacts:
+    paths:
+      - cicd-sa-credentials.json
+      - providers.tf
+  id_tokens:
+    GITLAB_TOKEN:
+      aud:
+      %{~ for aud in audiences ~}
+        - ${aud}
+      %{~ endfor ~}
+  before_script:
+    - echo "$${GITLAB_TOKEN}" > token.txt
+  script:
+    - |
+      gcloud iam workload-identity-pools create-cred-config \
+        $${FAST_WIF_PROVIDER} \
+        --service-account=$${FAST_SERVICE_ACCOUNT} \
+        --service-account-token-lifetime-seconds=600 \
+        --output-file=$${GOOGLE_CREDENTIALS} \
+        --credential-source-file=token.txt
+    - gcloud config set auth/credential_file_override $${GOOGLE_CREDENTIALS}
+    - gcloud alpha storage cp -r "gs://$${FAST_OUTPUTS_BUCKET}/providers/$${TF_PROVIDERS_FILE}" ./providers.tf
 
-# job1:
-#   script:
-#     - echo "This job runs in merge request pipelines"
-#   rules:
-#     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-
-# job1:
-#   script:
-#     - echo "This job runs in merge request pipelines"
-#   only:
-#     - merge_requests
-
-
-cache:
-  key: gcp-auth
-  paths:
-    - cicd-sa-credentials.json
-    - token.txt
-    - ${tf_providers_files.apply}
-    - ${tf_providers_files.plan}
-    %{~ for f in tf_var_files ~}
-    - ${f}
-    %{~ endfor ~}
-
-gcp-auth:
+tf-plan-apply:
+  stage: tf-plan-apply
+  dependencies:
+    - gcp-setup
   id_tokens:
     GITLAB_TOKEN:
       aud:
@@ -74,67 +80,20 @@ gcp-auth:
         - ${aud}
       %{~ endfor ~}
   image:
-    name: google/cloud-sdk:slim
-  stage: gcp-auth
+    name: hashicorp/terraform
+    entrypoint:
+      - "/usr/bin/env"
+  variables:
+    SSH_AUTH_SOCK: /tmp/ssh-agent.sock
   script:
-    - echo "$${GITLAB_TOKEN}" > token.txt
     - |
-      gcloud iam workload-identity-pools create-cred-config \
-        $${FAST_WIF_PROVIDER} \
-        --service-account=$${FAST_SERVICE_ACCOUNT} \
-        --service-account-token-lifetime-seconds=3600 \
-        --output-file=$${GOOGLE_CREDENTIALS} \
-        --credential-source-file=token.txt
-
-tf-files:
-  dependencies:
-    - gcp-auth
-  image:
-    name: google/cloud-sdk:slim
-  stage: tf-files
-  script:
-    # - gcloud components install -q alpha
-    - gcloud config set auth/credential_file_override $${GOOGLE_CREDENTIALS}
-    - gcloud alpha storage cp -r "gs://$${FAST_OUTPUTS_BUCKET}/providers/${tf_providers_files.plan}" ./
-    %{~ for f in tf_var_files ~}
-    - gcloud alpha storage cp -r "gs://$${FAST_OUTPUTS_BUCKET}/tfvars/${f}" ./
-    %{~ endfor ~}
-    - ls -l
-
-tf-plan:
-  dependencies:
-    - tf-files
-  stage: tf-plan
-  # uncomment the following lines and set the SSH key secret for private modules repo
-  # before_script:
-  #   - |
-  #     ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-  #     echo "$CICD_MODULES_KEY" | base64 -d | tr -d '\r' | ssh-add - > /dev/null
-  #     mkdir -p ~/.ssh
-  #     ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
-  #     ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
-  script:
+      ssh-agent -a $$SSH_AUTH_SOCK
+      echo "$$CICD_MODULES_KEY" | ssh-add -
+      mkdir -p ~/.ssh
+      ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+      ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
+    - echo "$${GITLAB_TOKEN}" > token.txt
     - terraform init
     - terraform validate
-    - terraform plan
-
-tf-apply:
-  dependencies:
-    - tf-files
-  stage: tf-apply
-  # uncomment the following lines and set the SSH key secret for private modules repo
-  # before_script:
-  #   - |
-  #     ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-  #     echo "$CICD_MODULES_KEY" | base64 -d | tr -d '\r' | ssh-add - > /dev/null
-  #     mkdir -p ~/.ssh
-  #     ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
-  #     ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
-  script:
-    - terraform init
-    - terraform validate
-    - terraform apply -input=false -auto-approve
-  when: manual
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - "if [ $$COMMAND == 'plan' ]; then terraform plan -input=false -no-color -lock=false; fi"
+    - "if [ $$COMMAND == 'apply' ]; then terraform plan -input=false -no-color -auto-approve; fi"

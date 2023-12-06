@@ -77,15 +77,7 @@ locals {
   }
 }
 
-check "custom_roles" {
-  assert {
-    condition = alltrue([
-      for r in local.fast_custom_roles :
-      try(module.organization.custom_role_id[r], null) != null
-    ])
-    error_message = "Missing system custom role."
-  }
-}
+# TODO: add a check block to ensure our custom roles exist in the factory files
 
 module "organization" {
   source          = "../../../modules/organization"

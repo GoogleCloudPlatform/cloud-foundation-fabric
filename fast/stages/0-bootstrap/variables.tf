@@ -86,7 +86,7 @@ variable "custom_roles" {
 variable "factories_config" {
   description = "Configuration for the organization policies factory."
   type = object({
-    custom_roles = optional(string, "data/roles")
+    custom_roles = optional(string, "data/custom-roles")
     org_policy   = optional(string, "data/org-policies")
   })
   nullable = false
