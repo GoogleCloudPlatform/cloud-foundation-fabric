@@ -24,7 +24,7 @@ variables:
 workflow:
   rules:
     # merge / apply
-    - if: $$CI_PIPELINE_SOURCE == 'push' && $$CI_COMMIT_REF_NAME == $$CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == 'push' && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       variables:
         COMMAND: apply
         FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
@@ -57,17 +57,17 @@ gcp-setup:
         - ${aud}
       %{~ endfor ~}
   before_script:
-    - echo "$${GITLAB_TOKEN}" > token.txt
+    - echo "$GITLAB_TOKEN" > token.txt
   script:
     - |
       gcloud iam workload-identity-pools create-cred-config \
-        $${FAST_WIF_PROVIDER} \
-        --service-account=$${FAST_SERVICE_ACCOUNT} \
+        $FAST_WIF_PROVIDER \
+        --service-account=$FAST_SERVICE_ACCOUNT \
         --service-account-token-lifetime-seconds=600 \
-        --output-file=$${GOOGLE_CREDENTIALS} \
+        --output-file=$GOOGLE_CREDENTIALS \
         --credential-source-file=token.txt
-    - gcloud config set auth/credential_file_override $${GOOGLE_CREDENTIALS}
-    - gcloud alpha storage cp -r "gs://$${FAST_OUTPUTS_BUCKET}/providers/$${TF_PROVIDERS_FILE}" ./providers.tf
+    - gcloud config set auth/credential_file_override $GOOGLE_CREDENTIALS
+    - gcloud alpha storage cp -r "gs://$FAST_OUTPUTS_BUCKET/providers/$TF_PROVIDERS_FILE" ./providers.tf
 
 tf-plan-apply:
   stage: tf-plan-apply
@@ -87,13 +87,13 @@ tf-plan-apply:
     SSH_AUTH_SOCK: /tmp/ssh-agent.sock
   script:
     - |
-      ssh-agent -a $$SSH_AUTH_SOCK
-      echo "$$CICD_MODULES_KEY" | ssh-add -
+      ssh-agent -a $SSH_AUTH_SOCK
+      echo "$CICD_MODULES_KEY" | ssh-add -
       mkdir -p ~/.ssh
       ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
       ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
-    - echo "$${GITLAB_TOKEN}" > token.txt
+    - echo "$GITLAB_TOKEN" > token.txt
     - terraform init
     - terraform validate
-    - "if [ $$COMMAND == 'plan' ]; then terraform plan -input=false -no-color -lock=false; fi"
-    - "if [ $$COMMAND == 'apply' ]; then terraform plan -input=false -no-color -auto-approve; fi"
+    - "if [ $COMMAND == 'plan' ]; then terraform plan -input=false -no-color -lock=false; fi"
+    - "if [ $COMMAND == 'apply' ]; then terraform apply -input=false -no-color -auto-approve; fi"
