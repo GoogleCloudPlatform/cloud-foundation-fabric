@@ -29,8 +29,9 @@ module "project" {
   parent          = try(var.project_create_config.parent, null)
   project_create  = var.project_create_config != null
   services = [
-    "compute.googleapis.com",
-    "cloudfunctions.googleapis.com"
+    "cloudasset.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "compute.googleapis.com"
   ]
 }
 

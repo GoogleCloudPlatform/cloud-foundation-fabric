@@ -32,6 +32,8 @@ import google.auth
 import requests.exceptions
 
 from google.auth.transport.requests import AuthorizedSession
+from google.cloud import asset_v1
+from google.protobuf.json_format import MessageToDict
 
 BASE = 'custom.googleapis.com/quota'
 HTTP = AuthorizedSession(google.auth.default()[0])
@@ -39,6 +41,9 @@ HTTP_HEADERS = {'content-type': 'application/json; charset=UTF-8'}
 URL_PROJECT = 'https://compute.googleapis.com/compute/v1/projects/{}'
 URL_REGION = 'https://compute.googleapis.com/compute/v1/projects/{}/regions/{}'
 URL_TS = 'https://monitoring.googleapis.com/v3/projects/{}/timeSeries'
+URL_DISCOVERY='https://cloudasset.googleapis.com/v1/{}/assets?assetTypes=cloudresourcemanager.googleapis.com%2FProject&contentType=RESOURCE&pageSize=100'
+
+
 
 _Quota = collections.namedtuple('_Quota',
                                 'project region tstamp metric limit usage')
@@ -161,12 +166,18 @@ def get_quotas(project, region='global'):
     yield Quota(project, region, ts, **quota)
 
 
+#def get_discovered_projects(discovery_root)
+#  if discovery_root.partition('/')[0] not in ('folders', 'organizations'):
+#    raise SystemExit('Invalid discovery root.')
+
 @click.command()
 @click.argument('project-id', required=True)
 @click.option(
-    '--project-ids', multiple=True, help=
-    'Project ids to monitor (multiple). Defaults to monitoring project if not set.'
-)
+    '--discovery-root', '-dr', required=False,
+    help='Root node for asset discovery, organizations/nnn or folders/nnn.')
+@click.option(
+    '--project-ids', multiple=True, 
+              help='Project ids to monitor (multiple). Defaults to monitoring project if not set, values are appended to those found under discovery-root')
 @click.option('--regions', multiple=True,
               help='Regions (multiple). Defaults to "global" if not set.')
 @click.option('--include', multiple=True,
@@ -175,11 +186,11 @@ def get_quotas(project, region='global'):
               help='Exclude quotas starting with keyword (multiple).')
 @click.option('--dry-run', is_flag=True, help='Do not write metrics.')
 @click.option('--verbose', is_flag=True, help='Verbose output.')
-def main_cli(project_id=None, project_ids=None, regions=None, include=None,
+def main_cli(project_id=None, discovery_root=None, project_ids=None, regions=None, include=None,
              exclude=None, dry_run=False, verbose=False):
   'Fetch GCE quotas and writes them as custom metrics to Stackdriver.'
   try:
-    _main(project_id, project_ids, regions, include, exclude, dry_run, verbose)
+    _main(project_id,discovery_root,project_ids, regions, include, exclude, dry_run, verbose)
   except RuntimeError as e:
     logging.exception(f'exception raised: {e.args[0]}')
 
@@ -193,11 +204,50 @@ def main(event, context):
     raise
 
 
-def _main(monitoring_project, projects=None, regions=None, include=None,
+def _main(monitoring_project, discovery_root=None, projects=None, regions=None, include=None,
           exclude=None, dry_run=False, verbose=False):
   """Module entry point used by cli and cloud function wrappers."""
   configure_logging(verbose=verbose)
+
+
+  # Create the Cloud Asset Inventory client
+  #client = asset_v1.AssetServiceClient()
+
+  # Define the parent resource (organization)
+  parent = f"organizations/"+discovery_root
+
+  # Define the asset types to list (projects)
+  #asset_types = ["organization.googleapis.com/Project"]
+
+  # Build the query
+  #query = asset_v1.types.ListAssetsRequest()
+  #query.content_type="RESOURCE"
+  #query.parent = parent
+  #query.asset_types = ["cloudresourcemanager.googleapis.com/Project"]
+  #query.page_size=100
+  request = HTTPRequest(URL_DISCOVERY.format(parent))
+  print(request)
+  resp = fetch(request)
+  print(resp)
+   
+
+  last_assets_page_reached=False
+  discovered_projects=[]
+  # List projects 
+  while not last_assets_page_reached:
+    list_assets_results = MessageToDict(client.list_assets(query)._pb)
+    if not "nextPageToken" in list_assets_results:
+      last_assets_page_reached=True
+    
+    for asset in list_assets_results["assets"]:
+      if asset["assetType"] in query.asset_types:
+        discovered_projects.append(asset["resource"]["data"]["projectId"])
+
+
   projects = projects or [monitoring_project]
+  projects= (projects + tuple(set(discovered_projects) - set(projects)))
+
+
   regions = regions or ['global']
   include = set(include or [])
   exclude = set(exclude or [])
