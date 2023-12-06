@@ -56,6 +56,15 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  # gcfs_config deactivation need the block to be defined so it can't be dynamic
+  node_pool_defaults {
+    node_config_defaults {
+      gcfs_config {
+        enabled = var.enable_features.image_streaming
+      }
+    }
+  }
+
   addons_config {
     dns_cache_config {
       enabled = var.enable_addons.dns_cache
