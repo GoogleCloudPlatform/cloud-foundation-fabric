@@ -63,10 +63,11 @@ variable "quota_config" {
       "a2", "c2", "c2d", "committed", "g2", "interconnect", "m1", "m2", "m3",
       "nvidia", "preemptible"
     ])
+    discovery_root = optional(string)
+    dry_run  = optional(bool, false)
     include  = optional(list(string))
     projects = optional(list(string))
     regions  = optional(list(string))
-    dry_run  = optional(bool, false)
     verbose  = optional(bool, false)
   })
   nullable = false

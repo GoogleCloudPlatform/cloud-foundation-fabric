@@ -32,8 +32,6 @@ import google.auth
 import requests.exceptions
 
 from google.auth.transport.requests import AuthorizedSession
-from google.cloud import asset_v1
-from google.protobuf.json_format import MessageToDict
 
 BASE = 'custom.googleapis.com/quota'
 HTTP = AuthorizedSession(google.auth.default()[0])
