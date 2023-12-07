@@ -146,7 +146,7 @@ module "nlb" {
     }
   }
 }
-# tftest modules=3 resources=7 inventory=fw_rules.yaml e2e
+# tftest modules=3 resources=7 inventory=fwd_rules.yaml e2e
 ```
 
 ### Dual stack (IPv4 and IPv6)
