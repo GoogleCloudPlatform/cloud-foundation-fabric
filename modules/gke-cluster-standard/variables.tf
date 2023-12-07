@@ -50,10 +50,10 @@ variable "cluster_autoscaling" {
         auto_repair  = optional(bool, true)
         auto_upgrade = optional(bool, true)
       }))
-      shielded_instance_config = object({
+      shielded_instance_config = optional(object({
         integrity_monitoring = optional(bool, true)
         secure_boot          = optional(bool, false)
-      })
+      }))
     }))
     cpu_limits = optional(object({
       min = number
