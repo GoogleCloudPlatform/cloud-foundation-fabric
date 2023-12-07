@@ -228,9 +228,21 @@ This table lists all affected services and roles that you need to grant to servi
 
 ## Shared VPC
 
-The module allows managing Shared VPC status for both hosts and service projects, and includes a simple way of assigning Shared VPC roles to service identities.
+The module allows managing Shared VPC status for both hosts and service projects, and control of IAM bindings for API service identities.
 
-You can enable Shared VPC Host at the project level and manage project service association independently.
+Project service association for VPC host projects can be
+
+- autoritatively managed in the host project by enabling Shared VPC and specifying the set of service projects, or
+- additively managed in service projects by by enabling Shared VPC in the host project and then "attaching" each service project independently
+
+IAM bindings in the host project for API service identities can be managed from service projects in two different ways:
+
+- via the `service_identity_iam` attribute, by specifying the set of roles and service agents
+- via the `service_iam_grants` attribute that leverages a [fixed list of roles for each service](./sharedvpc-agent-iam.yaml), by specifying a list of services
+
+While the first method is more explicit and readable, the second method is simpler and less error prone as all appropriate roles are predefined for all required service agents (eg compute and cloud services). You can mix and match as the two sets of bindings are then internally combined.
+
+This example shows a simple configuration with a host project, and a service project independently attached with granular IAM bindings for service identities.
 
 ```hcl
 module "host-project" {
@@ -272,7 +284,7 @@ module "service-project" {
 # tftest modules=2 resources=10 inventory=shared-vpc.yaml e2e
 ```
 
-The module allows also granting necessary permissions in host project to service identities by specifying which services will be used in service project in `grant_iam_for_services`.
+This example shows a similar configuration, with the simpler way of defining IAM bindings for service identities. The list of services passed to `service_iam_grants` uses the same module's outputs to establish a dependency, as service identities are only typically available after service (API) activation.
 
 ```hcl
 module "host-project" {
@@ -296,7 +308,8 @@ module "service-project" {
     "container.googleapis.com",
   ]
   shared_vpc_service_config = {
-    host_project       = module.host-project.project_id
+    host_project = module.host-project.project_id
+    # implicit dependency using outputs
     service_iam_grants = module.service-project.services
   }
 }
@@ -617,7 +630,7 @@ output "compute_robot" {
 
 ### Managing project related configuration without creating it
 
-The module offers managing all related resources without ever touching the project itself by using `project_create = false` 
+The module offers managing all related resources without ever touching the project itself by using `project_create = false`
 
 ```hcl
 module "create-project" {
@@ -826,7 +839,6 @@ module "bucket" {
 }
 # tftest modules=7 resources=53 inventory=data.yaml e2e
 ```
-
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->

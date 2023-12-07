@@ -17,20 +17,24 @@
 # tfdoc:file:description Shared VPC project-level configuration.
 
 locals {
-  _shared_vpc_agent_config = yamldecode(file("${path.module}/sharedvpc-agent-iam.yaml"))
-  _shared_vpc_agent_config_filtered = [
-    for config in local._shared_vpc_agent_config : config
-    if contains(var.shared_vpc_service_config.service_iam_grants, config.service)
+  # read the list of service/roles for API service agents
+  _svpc_agent_config = yamldecode(file(
+    "${path.module}/sharedvpc-agent-iam.yaml"
+  ))
+  # filter the list and keep services for which we need to create IAM bindings
+  _svpc_agent_config_filtered = [
+    for v in local._svpc_agent_config : v
+    if contains(var.shared_vpc_service_config.service_iam_grants, v.service)
   ]
-  _shared_vpc_agent_grants = flatten(flatten([
-    for api in local._shared_vpc_agent_config_filtered : [
-      for service, roles in api.agents : [
+  # normalize the list of service/role tuples
+  _svpc_agent_grants = flatten(flatten([
+    for v in local._svpc_agent_config_filtered : [
+      for service, roles in v.agents : [
         for role in roles : { role = role, service = service }
       ]
     ]
   ]))
-
-  # compute the host project IAM bindings for this project's service identities
+  # normalize the service identity IAM bindings directly defined by the user
   _svpc_service_iam = flatten([
     for role, services in var.shared_vpc_service_config.service_identity_iam : [
       for service in services : { role = role, service = service }
@@ -44,9 +48,10 @@ locals {
       try(var.shared_vpc_host_config.service_projects, null), []
     )
   }
-
+  # combine the two sets of service/role bindings defined above
   svpc_service_iam = {
-    for b in setunion(local._svpc_service_iam, local._shared_vpc_agent_grants) : "${b.role}:${b.service}" => b
+    for b in setunion(local._svpc_service_iam, local._svpc_agent_grants) :
+    "${b.role}:${b.service}" => b
   }
 }
 
