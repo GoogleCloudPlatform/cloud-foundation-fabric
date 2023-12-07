@@ -149,6 +149,25 @@ resource "google_container_cluster" "cluster" {
               enable_secure_boot          = var.cluster_autoscaling.auto_provisioning_defaults.shielded_instance_config.secure_boot
             }
           }
+          upgrade_settings {
+            max_surge       = try(var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.strategy, "SURGE") == "SURGE" ? try(var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.max_surge, 1) : null
+            max_unavailable = try(var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.strategy, "SURGE") == "SURGE" ? try(var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.max_unavailable, 0) : null
+            strategy        = try(var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.strategy, "SURGE")
+            dynamic "blue_green_settings" {
+              for_each = (try(var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green_settings, null) != null) ? [""] : []
+              content {
+                node_pool_soak_duration = var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green_settings.node_pool_soak_duration
+                dynamic "standard_rollout_policy" {
+                  for_each = var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green_settings.standard_rollout_policy != null ? [""] : []
+                  content {
+                    batch_node_count    = var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green_settings.standard_rollout_policy.batch_node_count
+                    batch_percentage    = var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green_settings.standard_rollout_policy.batch_percentage
+                    batch_soak_duration = var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green_settings.standard_rollout_policy.batch_soak_duration
+                  }
+                }
+              }
+            }
+          }
         }
       }
       dynamic "resource_limits" {
