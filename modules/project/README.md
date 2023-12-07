@@ -228,9 +228,21 @@ This table lists all affected services and roles that you need to grant to servi
 
 ## Shared VPC
 
-The module allows managing Shared VPC status for both hosts and service projects, and includes a simple way of assigning Shared VPC roles to service identities.
+The module allows managing Shared VPC status for both hosts and service projects, and control of IAM bindings for API service identities.
 
-You can enable Shared VPC Host at the project level and manage project service association independently.
+Project service association for VPC host projects can be
+
+- autoritatively managed in the host project by enabling Shared VPC and specifying the set of service projects, or
+- additively managed in service projects by by enabling Shared VPC in the host project and then "attaching" each service project independently
+
+IAM bindings in the host project for API service identities can be managed from service projects in two different ways:
+
+- via the `service_identity_iam` attribute, by specifying the set of roles and service agents
+- via the `service_iam_grants` attribute that leverages a [fixed list of roles for each service](./sharedvpc-agent-iam.yaml), by specifying a list of services
+
+While the first method is more explicit and readable, the second method is simpler and less error prone as all appropriate roles are predefined for all required service agents (eg compute and cloud services). You can mix and match as the two sets of bindings are then internally combined.
+
+This example shows a simple configuration with a host project, and a service project independently attached with granular IAM bindings for service identities.
 
 ```hcl
 module "host-project" {
@@ -272,7 +284,7 @@ module "service-project" {
 # tftest modules=2 resources=10 inventory=shared-vpc.yaml e2e
 ```
 
-The module allows also granting necessary permissions in host project to service identities by specifying which services will be used in service project in `grant_iam_for_services`.
+This example shows a similar configuration, with the simpler way of defining IAM bindings for service identities. The list of services passed to `service_iam_grants` uses the same module's outputs to establish a dependency, as service identities are only typically available after service (API) activation.
 
 ```hcl
 module "host-project" {
@@ -296,11 +308,45 @@ module "service-project" {
     "container.googleapis.com",
   ]
   shared_vpc_service_config = {
-    host_project       = module.host-project.project_id
+    host_project = module.host-project.project_id
+    # reuse the list of services from the module's outputs
     service_iam_grants = module.service-project.services
   }
 }
 # tftest modules=2 resources=9 inventory=shared-vpc-auto-grants.yaml e2e
+```
+
+In specific cases it might make sense to selectively grant the `compute.networkUser` role for service identities at the subnet level, and while that is best done via org policies it's also supported by this module.
+
+```hcl
+module "host-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "host"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  shared_vpc_host_config = {
+    enabled = true
+  }
+}
+
+module "service-project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "service"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "compute.googleapis.com",
+  ]
+  shared_vpc_service_config = {
+    host_project = module.host-project.project_id
+    service_identity_subnet_iam = {
+      "europe-west1/gce" = ["compute"]
+    }
+  }
+}
+# tftest modules=2 resources=6 inventory=shared-vpc-subnet-grants.yaml
 ```
 
 ## Organization Policies
@@ -617,7 +663,7 @@ output "compute_robot" {
 
 ### Managing project related configuration without creating it
 
-The module offers managing all related resources without ever touching the project itself by using `project_create = false` 
+The module offers managing all related resources without ever touching the project itself by using `project_create = false`
 
 ```hcl
 module "create-project" {
@@ -827,7 +873,6 @@ module "bucket" {
 # tftest modules=7 resources=53 inventory=data.yaml e2e
 ```
 
-
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -840,7 +885,7 @@ module "bucket" {
 | [organization-policies.tf](./organization-policies.tf) | Project-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [service-accounts.tf](./service-accounts.tf) | Service identities and supporting resources. | <code>google_kms_crypto_key_iam_member</code> · <code>google_project_default_service_accounts</code> · <code>google_project_iam_member</code> · <code>google_project_service_identity</code> |
-| [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_project_iam_member</code> |
+| [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_compute_subnetwork_iam_member</code> · <code>google_project_iam_member</code> |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |
@@ -879,9 +924,9 @@ module "bucket" {
 | [service_perimeter_standard](variables.tf#L276) | Name of VPC-SC Standard perimeter to add project into. See comment in the variables file for format. | <code>string</code> |  | <code>null</code> |
 | [services](variables.tf#L282) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [shared_vpc_host_config](variables.tf#L288) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code title="object&#40;&#123;&#10;  enabled          &#61; bool&#10;  service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [shared_vpc_service_config](variables.tf#L297) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project         &#61; string&#10;  service_identity_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [skip_delete](variables.tf#L319) | Allows the underlying resources to be destroyed without destroying the project itself. | <code>bool</code> |  | <code>false</code> |
-| [tag_bindings](variables.tf#L325) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [shared_vpc_service_config](variables.tf#L297) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project                &#61; string&#10;  service_identity_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_identity_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants          &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [skip_delete](variables.tf#L320) | Allows the underlying resources to be destroyed without destroying the project itself. | <code>bool</code> |  | <code>false</code> |
+| [tag_bindings](variables.tf#L326) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
