@@ -232,13 +232,14 @@ The module allows managing Shared VPC status for both hosts and service projects
 
 Project service association for VPC host projects can be
 
-- autoritatively managed in the host project by enabling Shared VPC and specifying the set of service projects, or
+- authoritatively managed in the host project by enabling Shared VPC and specifying the set of service projects, or
 - additively managed in service projects by by enabling Shared VPC in the host project and then "attaching" each service project independently
 
 IAM bindings in the host project for API service identities can be managed from service projects in two different ways:
 
 - via the `service_identity_iam` attribute, by specifying the set of roles and service agents
 - via the `service_iam_grants` attribute that leverages a [fixed list of roles for each service](./sharedvpc-agent-iam.yaml), by specifying a list of services
+- via the `service_identity_subnet_iam` attribute, by providing a map of `"<region>/<subnet_name>"` -> `[ "<service_identity>", (...)]`, to grant `compute.networkUser` role on subnet level to service identity
 
 While the first method is more explicit and readable, the second method is simpler and less error prone as all appropriate roles are predefined for all required service agents (eg compute and cloud services). You can mix and match as the two sets of bindings are then internally combined.
 
@@ -317,6 +318,8 @@ module "service-project" {
 ```
 
 In specific cases it might make sense to selectively grant the `compute.networkUser` role for service identities at the subnet level, and while that is best done via org policies it's also supported by this module.
+
+In this example, Compute service identity will be granted compute.networkUser in the `gce` subnet defined in `europe-west1` region.
 
 ```hcl
 module "host-project" {
