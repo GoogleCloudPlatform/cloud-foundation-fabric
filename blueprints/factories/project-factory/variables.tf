@@ -28,9 +28,10 @@ variable "data_defaults" {
     service_perimeter_standard = optional(string)
     services                   = optional(list(string), [])
     shared_vpc_service_config = optional(object({
-      host_project         = string
-      service_identity_iam = optional(map(list(string)), {})
-      service_iam_grants   = optional(list(string), [])
+      host_project                = string
+      service_identity_iam        = optional(map(list(string)), {})
+      service_identity_subnet_iam = optional(map(list(string)), {})
+      service_iam_grants          = optional(list(string), [])
     }), { host_project = null })
     tag_bindings = optional(map(string), {})
     # non-project resources
