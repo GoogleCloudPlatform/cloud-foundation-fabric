@@ -60,10 +60,6 @@ case $STAGE_NAME in
   TFVARS="tfvars/0-bootstrap.auto.tfvars.json
   tfvars/1-resman.auto.tfvars.json"
   ;;
-"1-resman")
-  PROVIDER="providers/${STAGE_NAME}-providers.tf"
-  TFVARS="tfvars/0-bootstrap.auto.tfvars.json"
-  ;;
 "1-resman-tenant")
   if [[ -z "$TENANT" ]]; then
     echo "Please set a \$TENANT variable with the tenant shortname"
@@ -72,6 +68,10 @@ case $STAGE_NAME in
   unset GLOBALS
   PROVIDER="tenants/$TENANT/providers/1-resman-tenant-providers.tf"
   TFVARS="tenants/$TENANT/tfvars/0-bootstrap-tenant.auto.tfvars.json"
+  ;;
+"1-resman"*)
+  PROVIDER="providers/1-resman-providers.tf"
+  TFVARS="tfvars/0-bootstrap.auto.tfvars.json"
   ;;
 "2-networking"*)
   if [[ -z "$TENANT" ]]; then
