@@ -91,7 +91,7 @@ variable "deletion_protection_enabled" {
 }
 
 variable "deny_maintenance_period" {
-  description = "Prevent maintenance during a selected deny period, which can last up to 90 days. If the year is empty it means the no maintenance interval recurs every year. Date format: \"yyyy-mm-dd\""
+  description = "Prevent maintenance during a selected deny period, which can last up to 90 days. If the year is empty it means the no maintenance interval recurs every year. Date format: 'yyyy-mm-dd'."
   type = object({
     start_date = string
     end_date   = string
@@ -154,7 +154,7 @@ variable "labels" {
 }
 
 variable "maintenance_window" {
-  description = "One-hour maintenance window when an Instance can automatically restart to apply updates. The maintenance window is specified in UTC time"
+  description = "One-hour maintenance window when an Instance can automatically restart to apply updates. The maintenance window is specified in UTC time."
   type = object({
     day          = number
     hour         = number
