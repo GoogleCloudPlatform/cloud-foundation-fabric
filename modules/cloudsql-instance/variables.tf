@@ -94,7 +94,7 @@ variable "deny_maintenance_period" {
   description = "Prevent maintenance during a selected deny period, which can last up to 90 days. If the year is empty it means the no maintenance interval recurs every year. Date format: \"yyyy-mm-dd\""
   type = object({
     start_date = string
-    end_date = string
+    end_date   = string
     start_time = optional(string, "00:00:00")
   })
   default = null
