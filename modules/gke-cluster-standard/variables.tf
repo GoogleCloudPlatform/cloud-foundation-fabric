@@ -50,10 +50,10 @@ variable "cluster_autoscaling" {
         auto_repair  = optional(bool, true)
         auto_upgrade = optional(bool, true)
       }))
-      shielded_instance_config = object({
+      shielded_instance_config = optional(object({
         integrity_monitoring = optional(bool, true)
         secure_boot          = optional(bool, false)
-      })
+      }))
     }))
     cpu_limits = optional(object({
       min = number
@@ -135,6 +135,7 @@ variable "enable_features" {
     fqdn_network_policy  = optional(bool, false)
     gateway_api          = optional(bool, false)
     groups_for_rbac      = optional(string)
+    image_streaming      = optional(bool, false)
     intranode_visibility = optional(bool, false)
     l4_ilb_subsetting    = optional(bool, false)
     mesh_certificates    = optional(bool)
