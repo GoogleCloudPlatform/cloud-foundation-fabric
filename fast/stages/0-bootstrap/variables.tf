@@ -76,20 +76,6 @@ variable "cicd_repositories" {
   }
 }
 
-variable "custom_role_names" {
-  description = "Names of custom roles defined at the org level."
-  type = object({
-    organization_iam_admin        = string
-    service_project_network_admin = string
-    tenant_network_admin          = string
-  })
-  default = {
-    organization_iam_admin        = "organizationIamAdmin"
-    service_project_network_admin = "serviceProjectNetworkAdmin"
-    tenant_network_admin          = "tenantNetworkAdmin"
-  }
-}
-
 variable "custom_roles" {
   description = "Map of role names => list of permissions to additionally create at the organization level."
   type        = map(list(string))
@@ -100,7 +86,8 @@ variable "custom_roles" {
 variable "factories_config" {
   description = "Configuration for the organization policies factory."
   type = object({
-    org_policy_data_path = optional(string, "data/org-policies")
+    custom_roles = optional(string, "data/custom-roles")
+    org_policy   = optional(string, "data/org-policies")
   })
   nullable = false
   default  = {}
