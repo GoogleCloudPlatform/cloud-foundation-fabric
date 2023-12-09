@@ -71,13 +71,15 @@ locals {
 }
 
 module "folder" {
-  source                 = "../../../modules/folder"
-  folder_create          = var.folder_config.folder_create != null
-  parent                 = try(var.folder_config.folder_create.parent, null)
-  name                   = try(var.folder_config.folder_create.display_name, null)
-  id                     = var.folder_config.folder_create != null ? null : var.folder_config.folder_id
-  group_iam              = local.group_iam
-  org_policies_data_path = var.data_dir != null ? "${var.data_dir}/org-policies" : null
+  source        = "../../../modules/folder"
+  folder_create = var.folder_config.folder_create != null
+  parent        = try(var.folder_config.folder_create.parent, null)
+  name          = try(var.folder_config.folder_create.display_name, null)
+  id            = var.folder_config.folder_create != null ? null : var.folder_config.folder_id
+  group_iam     = local.group_iam
+  factories_config = {
+    org_policies = var.data_dir != null ? "${var.data_dir}/org-policies" : null
+  }
   logging_sinks = var.enable_features.log_sink ? {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
