@@ -160,7 +160,7 @@ variable "data_dir" {
 variable "factories_config" {
   description = "Configuration for the organization policies factory."
   type = object({
-    org_policy   = optional(string, "data/org-policies")
+    org_policy = optional(string, "data/org-policies")
   })
   nullable = false
   default  = {}
