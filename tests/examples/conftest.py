@@ -23,9 +23,9 @@ import pytest
 FABRIC_ROOT = Path(__file__).parents[2]
 
 FILE_TEST_RE = re.compile(r'# tftest-file +id=([\w_.-]+) +path=([\S]+)')
-FIXTURE_TEST_RE = re.compile(r'# tftest-fixture')
+FIXTURE_TEST_RE = re.compile(r'# tftest-fixture +id=([\w_.-]+)')
 
-Example = collections.namedtuple('Example', 'name code module files')
+Example = collections.namedtuple('Example', 'name code module files fixtures')
 File = collections.namedtuple('File', 'path content')
 
 
@@ -50,7 +50,7 @@ def pytest_generate_tests(metafunc, test_group='example',
       doc = marko.parse(readme.read_text())
       index = 0
       files = collections.defaultdict(dict)
-      fixture = []
+      fixtures = {}
 
       # first pass: collect all examples tagged with tftest-file
       last_header = None
@@ -61,11 +61,10 @@ def pytest_generate_tests(metafunc, test_group='example',
             name, path = match.groups()
             files[last_header][name] = File(path, code)
           if match := FIXTURE_TEST_RE.search(code):
-            fixture.append(code)
+            name = match.groups()[0]
+            fixtures[name] = code
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
-
-      fixture = "\n".join(fixture)
 
       # second pass: collect all examples tagged with tftest
       last_header = None
@@ -89,10 +88,8 @@ def pytest_generate_tests(metafunc, test_group='example',
             # see: https://pytest-xdist.readthedocs.io/en/latest/distribution.html
             marks = [pytest.mark.xdist_group("serial")
                     ] if 'serial' in tftest_tag else []
-            examples.append(
-                pytest.param(
-                    Example(name, fixture + code, path, files[last_header]),
-                    marks=marks))
+            example = Example(name, code, path, files[last_header], fixtures)
+            examples.append(pytest.param(example, marks=marks))
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
           index = 0
