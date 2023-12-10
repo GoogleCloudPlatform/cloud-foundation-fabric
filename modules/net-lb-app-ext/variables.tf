@@ -220,6 +220,7 @@ variable "ssl_certificates" {
       domains     = list(string)
       description = optional(string)
     })), {})
+    self_signed_configs = optional(list(string), [])
   })
   default  = {}
   nullable = false

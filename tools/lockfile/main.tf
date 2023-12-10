@@ -22,4 +22,5 @@ resource "local_file" "default" {}
 resource "random_pet" "default" {}
 resource "time_static" "default" {}
 resource "tls_private_key" "default" {}
+resource "tls_self_signed_cert" "default" {}
 resource "vsphere_role" "default" {}

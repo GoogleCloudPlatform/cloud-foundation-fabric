@@ -175,6 +175,7 @@ variable "ssl_certificates" {
       certificate = string
       private_key = string
     })), {})
+    self_signed_configs = optional(list(string), [])
   })
   default  = {}
   nullable = false

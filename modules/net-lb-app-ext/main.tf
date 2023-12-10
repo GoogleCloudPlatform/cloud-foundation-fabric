@@ -26,6 +26,7 @@ locals {
   proxy_ssl_certificates = concat(
     coalesce(var.ssl_certificates.certificate_ids, []),
     [for k, v in google_compute_ssl_certificate.default : v.id],
+    [for k, v in google_compute_ssl_certificate.self_signed : v.id],
     [for k, v in google_compute_managed_ssl_certificate.default : v.id]
   )
 }
