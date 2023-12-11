@@ -38,16 +38,6 @@ locals {
       }
     )
   }
-  custom_roles = merge(
-    {
-      for k, v in var.custom_role_names :
-      k => try(module.organization.custom_role_id[v], "")
-    },
-    {
-      for k, v in var.custom_roles :
-      k => try(module.organization.custom_role_id[k], "")
-    }
-  )
   providers = {
     "0-bootstrap" = templatefile(local._tpl_providers, {
       backend_extra = null
@@ -82,7 +72,7 @@ locals {
       project_id                   = module.automation-project.project_id
       project_number               = module.automation-project.number
     }
-    custom_roles = local.custom_roles
+    custom_roles = module.organization.custom_role_id
     logging = {
       project_id        = module.log-export-project.project_id
       project_number    = module.log-export-project.number
@@ -133,7 +123,7 @@ output "cicd_repositories" {
 
 output "custom_roles" {
   description = "Organization-level custom roles."
-  value       = local.custom_roles
+  value       = module.organization.custom_role_id
 }
 
 output "federated_identity" {
