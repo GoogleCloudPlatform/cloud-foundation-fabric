@@ -115,6 +115,25 @@ def configure_logging(verbose=True):
   warnings.filterwarnings('ignore', r'.*end user credentials.*', UserWarning)
 
 
+def discover_projects(discovery_root):
+  'Discovers projects under a folder or organization'
+  if discovery_root.partition('/')[0] not in ('folders', 'organizations'):
+    raise SystemExit(f'Invalid discovery root {discovery_root}.')
+  last_assets_page_reached=False    
+  discovered_projects=[]
+  nextPageToken=""
+  while not last_assets_page_reached:
+    list_assets_results = fetch(HTTPRequest(URL_DISCOVERY.format(discovery_root,nextPageToken)))
+    if "assets" in list_assets_results:
+      for asset in list_assets_results["assets"]:
+        if (asset["resource"]["data"]["lifecycleState"] == "ACTIVE"):
+          discovered_projects.append(asset["resource"]["data"]["projectId"])
+    last_assets_page_reached =  False if "nextPageToken" in list_assets_results else True
+    nextPageToken="" if  last_assets_page_reached==True else list_assets_results["nextPageToken"]
+  return discover_projects
+    
+
+
 def fetch(request, delete=False):
   'Minimal HTTP client interface for API calls.'
   logging.debug(f'fetch {"POST" if request.data else "GET"} {request.url}')
@@ -204,24 +223,10 @@ def _main(monitoring_project, discovery_root=None, projects=None, regions=None, 
   configure_logging(verbose=verbose)
 
   
+  # default to monitoring scope project if projects parameter is not passed, then merge the list with discovered projects, if any
   projects = projects or {monitoring_project}
-  
   if (discovery_root):
-    if discovery_root.partition('/')[0] not in ('folders', 'organizations'):
-      raise SystemExit(f'Invalid discovery root {discovery_root}.')
-    
-    last_assets_page_reached=False    
-    discovered_projects=[]
-    nextPageToken=""
-    while not last_assets_page_reached:
-      list_assets_results = fetch(HTTPRequest(URL_DISCOVERY.format(discovery_root,nextPageToken)))
-      if "assets" in list_assets_results:
-        for asset in list_assets_results["assets"]:
-          if (asset["resource"]["data"]["lifecycleState"] == "ACTIVE"):
-            discovered_projects.append(asset["resource"]["data"]["projectId"])
-      last_assets_page_reached =  False if "nextPageToken" in list_assets_results else True
-      nextPageToken="" if  last_assets_page_reached==True else list_assets_results["nextPageToken"]
-    #merge discovered projects with those received as an input
+    discovered_projects=discover_projects(discovery_root)
     projects= tuple(projects)+ tuple(set(discovered_projects) - set(projects))
 
 
