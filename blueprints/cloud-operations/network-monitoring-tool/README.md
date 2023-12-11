@@ -250,16 +250,16 @@ billable charges made afterwards.
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [agent_project_id](variables.tf#L31) | GCP project the agent is provisioned to. | <code>string</code> | ✓ |  |
-| [monitoring_project_id](variables.tf#L63) | GCP Project ID. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L87) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [monitoring_project_id](variables.tf#L64) | GCP Project ID. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L88) | Prefix used for resource names. | <code>string</code> | ✓ |  |
 | [agent_config](variables.tf#L17) | Network monitoring agent script configuration. | <code title="object&#40;&#123;&#10;  identifier &#61; optional&#40;string, &#34;net-mon-agent&#34;&#41;&#10;  interval   &#61; optional&#40;number, 10&#41;&#10;  target_endpoints &#61; optional&#40;map&#40;string&#41;, &#123;&#10;    &#34;8.8.8.8&#34; &#61; &#34;53&#34;&#10;  &#125;&#41;&#10;  timeout &#61; optional&#40;number, 10&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [alert_config](variables.tf#L36) | Configure creation of monitoring alert. | <code title="object&#40;&#123;&#10;  enabled            &#61; optional&#40;bool, false&#41;&#10;  notification_email &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [bootstrap_monitoring](variables.tf#L50) | Whether to create network dashboard, time series. | <code></code> |  | <code>false</code> |
-| [cidrs](variables.tf#L55) | CIDR ranges for subnets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  agent &#61; &#34;10.0.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [nat_logging](variables.tf#L68) | Enables Cloud NAT logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'. | <code>string</code> |  | <code>&#34;ERRORS_ONLY&#34;</code> |
-| [net_mon_agent_vm_config](variables.tf#L74) | Network Monitoring agent VM configuration. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;e2-standard-2&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;net-mon-agent&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  private_ip    &#61; optional&#40;string, null&#41;&#10;  public_ip     &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [region](variables.tf#L97) | GCP Region. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
-| [vpc_config](variables.tf#L103) | VPC Network and subnetwork self links for internal LB setup. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [bootstrap_monitoring](variables.tf#L50) | Whether to create network dashboard, time series. | <code>bool</code> |  | <code>false</code> |
+| [cidrs](variables.tf#L56) | CIDR ranges for subnets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  agent &#61; &#34;10.0.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [nat_logging](variables.tf#L69) | Enables Cloud NAT logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'. | <code>string</code> |  | <code>&#34;ERRORS_ONLY&#34;</code> |
+| [net_mon_agent_vm_config](variables.tf#L75) | Network Monitoring agent VM configuration. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;e2-standard-2&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;net-mon-agent&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  private_ip    &#61; optional&#40;string, null&#41;&#10;  public_ip     &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [region](variables.tf#L98) | GCP Region. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
+| [vpc_config](variables.tf#L104) | VPC Network and subnetwork self links for internal LB setup. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 <!-- END TFDOC -->
 
 ## Test
