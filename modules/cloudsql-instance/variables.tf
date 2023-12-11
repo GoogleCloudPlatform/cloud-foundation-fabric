@@ -90,16 +90,6 @@ variable "deletion_protection_enabled" {
   nullable    = false
 }
 
-variable "deny_maintenance_period" {
-  description = "Prevent maintenance during a selected deny period, which can last up to 90 days. If the year is empty it means the no maintenance interval recurs every year. Date format: 'yyyy-mm-dd'."
-  type = object({
-    start_date = string
-    end_date   = string
-    start_time = optional(string, "00:00:00")
-  })
-  default = null
-}
-
 variable "disk_autoresize_limit" {
   description = "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit."
   type        = number
@@ -153,14 +143,24 @@ variable "labels" {
   default     = null
 }
 
-variable "maintenance_window" {
-  description = "One-hour maintenance window when an Instance can automatically restart to apply updates. The maintenance window is specified in UTC time."
+variable "maintenance_config" {
+  description = "Set maintenance window configuration and maintenance deny period (up to 90 days). Date format: 'yyyy-mm-dd'."
   type = object({
-    day          = number
-    hour         = number
-    update_track = optional(string, "stable")
+    maintenance_window = optional(object({
+      day          = number
+      hour         = number
+      update_track = optional(string, "stable")
+    }), null)
+    deny_maintenance_period = optional(object({
+      start_date = string
+      end_date   = string
+      start_time = optional(string, "00:00:00")
+    }), null)
   })
-  default = null
+  default = {
+    maintenance_window      = null,
+    deny_maintenance_period = null
+  }
 }
 
 variable "name" {

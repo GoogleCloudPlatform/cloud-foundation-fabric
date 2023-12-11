@@ -122,11 +122,11 @@ resource "google_sql_database_instance" "primary" {
     }
 
     dynamic "deny_maintenance_period" {
-      for_each = var.deny_maintenance_period != null ? [1] : []
+      for_each = var.maintenance_config.deny_maintenance_period != null ? [1] : []
       content {
-        start_date = var.deny_maintenance_period.start_date
-        end_date   = var.deny_maintenance_period.end_date
-        time       = var.deny_maintenance_period.start_time
+        start_date = var.maintenance_config.deny_maintenance_period.start_date
+        end_date   = var.maintenance_config.deny_maintenance_period.end_date
+        time       = var.maintenance_config.deny_maintenance_period.start_time
       }
     }
 
@@ -142,11 +142,11 @@ resource "google_sql_database_instance" "primary" {
     }
 
     dynamic "maintenance_window" {
-      for_each = var.maintenance_window != null ? [1] : []
+      for_each = var.maintenance_config.maintenance_window != null ? [1] : []
       content {
-        day          = var.maintenance_window.day
-        hour         = var.maintenance_window.hour
-        update_track = var.maintenance_window.update_track
+        day          = var.maintenance_config.maintenance_window.day
+        hour         = var.maintenance_config.maintenance_window.hour
+        update_track = var.maintenance_config.maintenance_window.update_track
       }
     }
   }
