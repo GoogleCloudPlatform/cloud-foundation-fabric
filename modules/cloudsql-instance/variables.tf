@@ -168,7 +168,7 @@ variable "maintenance_config" {
         var.maintenance_config.maintenance_window.hour >= 0 &&
         var.maintenance_config.maintenance_window.hour <= 23 &&
         # Maintenance window update_track validation below
-        var.maintenance_config.maintenance_window.update_track == null ? true : 
+        var.maintenance_config.maintenance_window.update_track == null ? true :
         contains(["canary", "stable"], var.maintenance_config.maintenance_window.update_track)
       )
     )
