@@ -49,7 +49,7 @@ variable "alert_config" {
 
 variable "bootstrap_monitoring" {
   description = "Whether to create network dashboard, time series."
-  type = bool
+  type        = bool
   default     = false
 }
 
