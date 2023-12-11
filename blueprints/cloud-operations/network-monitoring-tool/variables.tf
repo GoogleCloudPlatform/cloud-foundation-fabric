@@ -61,7 +61,7 @@ variable "cidrs" {
 }
 
 variable "monitoring_project_id" {
-  description = "GCP Project ID"
+  description = "GCP Project ID."
   type        = string
 }
 
@@ -95,7 +95,7 @@ variable "prefix" {
 }
 
 variable "region" {
-  description = "GCP Region"
+  description = "GCP Region."
   type        = string
   default     = "europe-west8"
 }
