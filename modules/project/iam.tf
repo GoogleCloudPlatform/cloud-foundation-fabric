@@ -20,12 +20,32 @@
 # - external users need to have accepted the invitation email to join
 
 locals {
+  _custom_roles = {
+    for f in try(fileset(var.factories_config.custom_roles, "*.yaml"), []) :
+    replace(f, ".yaml", "") => yamldecode(
+      file("${var.factories_config.custom_roles}/${f}")
+    )
+  }
   _group_iam_roles = distinct(flatten(values(var.group_iam)))
   _group_iam = {
     for r in local._group_iam_roles : r => [
       for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
     ]
   }
+  custom_roles = merge(
+    {
+      for k, v in local._custom_roles : k => {
+        name        = lookup(v, "name", k)
+        permissions = v["includedPermissions"]
+      }
+    },
+    {
+      for k, v in var.custom_roles : k => {
+        name        = k
+        permissions = v
+      }
+    }
+  )
   iam = {
     for role in distinct(concat(keys(var.iam), keys(local._group_iam))) :
     role => concat(
@@ -35,13 +55,27 @@ locals {
   }
 }
 
+# we use a different key for custom roles to allow referring to the role alias
+# in Terraform, while still being able to define unique role names
+
+check "custom_roles" {
+  assert {
+    condition = (
+      length(local.custom_roles) == length({
+        for k, v in local.custom_roles : v.name => null
+      })
+    )
+    error_message = "Duplicate role name in custom roles."
+  }
+}
+
 resource "google_project_iam_custom_role" "roles" {
-  for_each    = var.custom_roles
+  for_each    = local.custom_roles
   project     = local.project.project_id
-  role_id     = each.key
-  title       = "Custom role ${each.key}"
+  role_id     = each.value.name
+  title       = "Custom role ${each.value.name}"
   description = "Terraform-managed."
-  permissions = each.value
+  permissions = each.value.permissions
 }
 
 resource "google_project_iam_binding" "authoritative" {

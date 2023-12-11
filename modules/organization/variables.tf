@@ -28,6 +28,17 @@ variable "custom_roles" {
   nullable    = false
 }
 
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    custom_roles                  = optional(string)
+    org_policies                  = optional(string)
+    org_policy_custom_constraints = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "firewall_policy" {
   description = "Hierarchical firewall policies to associate to the organization."
   type = object({
@@ -183,12 +194,6 @@ variable "org_policies" {
   nullable = false
 }
 
-variable "org_policies_data_path" {
-  description = "Path containing org policies in YAML format."
-  type        = string
-  default     = null
-}
-
 variable "org_policy_custom_constraints" {
   description = "Organization policy custom constraints keyed by constraint name."
   type = map(object({
@@ -201,12 +206,6 @@ variable "org_policy_custom_constraints" {
   }))
   default  = {}
   nullable = false
-}
-
-variable "org_policy_custom_constraints_data_path" {
-  description = "Path containing org policy custom constraints in YAML format."
-  type        = string
-  default     = null
 }
 
 variable "organization_id" {

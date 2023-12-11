@@ -18,10 +18,9 @@
 
 locals {
   _factory_data_raw = merge([
-    for f in try(fileset(var.org_policies_data_path, "*.yaml"), []) :
-    yamldecode(file("${var.org_policies_data_path}/${f}"))
+    for f in try(fileset(var.factories_config.org_policies, "*.yaml"), []) :
+    yamldecode(file("${var.factories_config.org_policies}/${f}"))
   ]...)
-
   # simulate applying defaults to data coming from yaml files
   _factory_data = {
     for k, v in local._factory_data_raw :
@@ -49,9 +48,7 @@ locals {
       ]
     }
   }
-
   _org_policies = merge(local._factory_data, var.org_policies)
-
   org_policies = {
     for k, v in local._org_policies :
     k => merge(v, {
