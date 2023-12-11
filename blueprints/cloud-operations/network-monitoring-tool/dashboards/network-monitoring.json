@@ -1,0 +1,91 @@
+{
+  "dashboardFilters": [],
+  "displayName": "Network Monitoring",
+  "labels": {},
+  "mosaicLayout": {
+    "columns": 48,
+    "tiles": [
+      {
+        "height": 16,
+        "widget": {
+          "title": "Endpoint Latency",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "breakdowns": [],
+                "dimensions": [],
+                "measures": [],
+                "minAlignmentPeriod": "60s",
+                "plotType": "LINE",
+                "targetAxis": "Y2",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_MEAN",
+                      "groupByFields": [
+                        "metric.label.\"endpoint\""
+                      ],
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/endpoint_latency\" resource.type=\"global\""
+                  }
+                }
+              }
+            ],
+            "thresholds": [],
+            "y2Axis": {
+              "label": "Milliseconds",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 24
+      },
+      {
+        "height": 16,
+        "widget": {
+          "title": "Endpoint Uptime Check",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "breakdowns": [],
+                "dimensions": [],
+                "measures": [],
+                "minAlignmentPeriod": "60s",
+                "plotType": "LINE",
+                "targetAxis": "Y2",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_MEAN",
+                      "groupByFields": [
+                        "metric.label.\"endpoint\""
+                      ],
+                      "perSeriesAligner": "ALIGN_FRACTION_TRUE"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/endpoint_uptime_check_passed\" resource.type=\"global\""
+                  }
+                }
+              }
+            ],
+            "thresholds": [],
+            "y2Axis": {
+              "label": "Reachable",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 24,
+        "xPos": 24
+      }
+    ]
+  }
+}
