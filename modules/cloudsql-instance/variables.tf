@@ -149,7 +149,7 @@ variable "maintenance_config" {
     maintenance_window = optional(object({
       day          = number
       hour         = number
-      update_track = optional(string, "stable")
+      update_track = optional(string, null)
     }), null)
     deny_maintenance_period = optional(object({
       start_date = string
@@ -157,9 +157,19 @@ variable "maintenance_config" {
       start_time = optional(string, "00:00:00")
     }), null)
   })
-  default = {
-    maintenance_window      = null,
-    deny_maintenance_period = null
+  default = {}
+  validation {
+    condition = (
+      var.maintenance_config.maintenance_window == null ? true : (
+        # Maintenance window day validation below
+        var.maintenance_config.maintenance_window.day >= 1 &&
+        var.maintenance_config.maintenance_window.day <= 7 &&
+        # Maintenance window hour validation below
+        var.maintenance_config.maintenance_window.hour >= 0 &&
+        var.maintenance_config.maintenance_window.hour <= 23
+      )
+    )
+    error_message = "Maintenance window day must be between 1 and 7 and maintenance window hour must be between 0 and 23."
   }
 }
 

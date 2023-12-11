@@ -142,7 +142,7 @@ resource "google_sql_database_instance" "primary" {
     }
 
     dynamic "maintenance_window" {
-      for_each = var.maintenance_config.maintenance_window != null ? [1] : []
+      for_each = var.maintenance_config.maintenance_window != null ? [""] : []
       content {
         day          = var.maintenance_config.maintenance_window.day
         hour         = var.maintenance_config.maintenance_window.hour
