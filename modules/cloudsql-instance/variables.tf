@@ -166,10 +166,13 @@ variable "maintenance_config" {
         var.maintenance_config.maintenance_window.day <= 7 &&
         # Maintenance window hour validation below
         var.maintenance_config.maintenance_window.hour >= 0 &&
-        var.maintenance_config.maintenance_window.hour <= 23
+        var.maintenance_config.maintenance_window.hour <= 23 &&
+        # Maintenance window update_track validation below
+        var.maintenance_config.maintenance_window.update_track == null ? true : 
+        contains(["canary", "stable"], var.maintenance_config.maintenance_window.update_track)
       )
     )
-    error_message = "Maintenance window day must be between 1 and 7 and maintenance window hour must be between 0 and 23."
+    error_message = "Maintenance window day must be between 1 and 7, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable' or 'canary'."
   }
 }
 
