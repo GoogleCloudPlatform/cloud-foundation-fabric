@@ -20,6 +20,8 @@ locals {
     ? [var.project_id]
     : var.quota_config.projects
   )
+  discovery_root_type = split("/", coalesce(var.quota_config["discovery_root"], "/"))[0]
+  discovery_root_id   = split("/", coalesce(var.quota_config["discovery_root"], "/"))[1]
 }
 
 module "project" {
@@ -29,8 +31,11 @@ module "project" {
   parent          = try(var.project_create_config.parent, null)
   project_create  = var.project_create_config != null
   services = [
-    "compute.googleapis.com",
-    "cloudfunctions.googleapis.com"
+    "cloudasset.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "cloudscheduler.googleapis.com",
+    "compute.googleapis.com"
   ]
 }
 
@@ -80,6 +85,55 @@ resource "google_cloud_scheduler_job" "default" {
     )))
   }
 }
+
+resource "google_organization_iam_member" "org_asset_viewer" {
+  count  = local.discovery_root_type == "organizations" ? 1 : 0
+  org_id = local.discovery_root_id
+  role   = "roles/cloudasset.viewer"
+  member = module.cf.service_account_iam_email
+}
+
+
+# role with the least privilege including compute.projects.get permission
+resource "google_organization_iam_member" "org_network_viewer" {
+  count  = local.discovery_root_type == "organizations" ? 1 : 0
+  org_id = local.discovery_root_id
+  role   = "roles/compute.networkViewer"
+  member = module.cf.service_account_iam_email
+}
+
+resource "google_organization_iam_member" "org_quota_viewer" {
+  count  = local.discovery_root_type == "organizations" ? 1 : 0
+  org_id = local.discovery_root_id
+  role   = "roles/servicemanagement.quotaViewer"
+  member = module.cf.service_account_iam_email
+}
+
+resource "google_folder_iam_member" "folder_asset_viewer" {
+  count  = local.discovery_root_type == "folders" ? 1 : 0
+  folder = local.discovery_root_id
+  role   = "roles/cloudasset.viewer"
+  member = module.cf.service_account_iam_email
+}
+
+# role with the least privilege including compute.projects.get permission
+resource "google_folder_iam_member" "folder_network_viewer" {
+  count  = local.discovery_root_type == "folders" ? 1 : 0
+  folder = local.discovery_root_id
+  role   = "roles/compute.networkViewer"
+  member = module.cf.service_account_iam_email
+}
+
+resource "google_folder_iam_member" "folder_quota_viewer" {
+  count  = local.discovery_root_type == "folders" ? 1 : 0
+  folder = local.discovery_root_id
+  role   = "roles/servicemanagement.quotaViewer"
+  member = module.cf.service_account_iam_email
+}
+
+
+
+
 
 resource "google_project_iam_member" "metric_writer" {
   project = module.project.project_id

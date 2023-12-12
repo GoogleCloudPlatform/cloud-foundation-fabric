@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,12 @@ resource "google_composer_environment" "env" {
           storage_gb = try(var.composer_config.workloads_config.scheduler.storage_gb, null)
           count      = try(var.composer_config.workloads_config.scheduler.count, null)
         }
+        triggerer {
+          cpu       = try(var.composer_config.workloads_config.triggerer.cpu, null)
+          memory_gb = try(var.composer_config.workloads_config.triggerer.memory_gb, null)
+          count     = try(var.composer_config.workloads_config.triggerer.count, null)
+        }
+
         web_server {
           cpu        = try(var.composer_config.workloads_config.web_server.cpu, null)
           memory_gb  = try(var.composer_config.workloads_config.web_server.memory_gb, null)

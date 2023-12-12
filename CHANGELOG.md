@@ -19,8 +19,16 @@ All notable changes to this project will be documented in this file.
 - [[#1871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1871)] Added workstation-cluster module ([apichick](https://github.com/apichick)) <!-- 2023-11-30 06:15:37+00:00 -->
 - [[#1883](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1883)] F5 deployment blueprint ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-11-24 13:02:34+00:00 -->
 
+### FAST
+
+- [[#1900](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1900)] Patch Github actions ci google-github-actions/auth@v0 --> v2 ([ibrahimparvez2](https://github.com/ibrahimparvez2)) <!-- 2023-12-04 12:16:02+00:00 -->
+
 ### MODULES
 
+- [[#1904](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1904)] gke-cluster-standard : Add possibility to enable image streaming feature at cluster level ([noony](https://github.com/noony)) <!-- 2023-12-07 05:36:22+00:00 -->
+- [[#1903](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1903)] Enable sole tenancy (`node_affinities`) on compute_vm ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-05 17:05:23+00:00 -->
+- [[#1901](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1901)] Add IPv6 to HA VPN module + test inventories ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-04 22:38:42+00:00 -->
+- [[#1898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1898)] Use unique names for logging buckets in examples ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-03 11:50:46+00:00 -->
 - [[#1896](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1896)] e2e test fix for net-vpc-firewall module ([rthangaraju](https://github.com/rthangaraju)) <!-- 2023-12-01 12:50:56+00:00 -->
 - [[#1895](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1895)] Add support for firewall tags to compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2023-12-01 11:27:38+00:00 -->
 - [[#1891](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1891)] artifact-registry: Support cleanup policies ([noony](https://github.com/noony)) <!-- 2023-12-01 10:33:02+00:00 -->

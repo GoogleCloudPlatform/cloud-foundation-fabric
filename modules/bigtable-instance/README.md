@@ -237,7 +237,7 @@ module "bigtable-instance" {
 | [deletion_protection](variables.tf#L56) | Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail. | <code>bool</code> |  | <code>true</code> |
 | [display_name](variables.tf#L63) | The human-readable display name of the Bigtable instance. | <code>string</code> |  | <code>null</code> |
 | [iam](variables.tf#L69) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [instance_type](variables.tf#L75) | (deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L75) | Labels to be attached to the instance. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tables](variables.tf#L91) | Tables to be created in the BigTable instance. | <code title="map&#40;object&#40;&#123;&#10;  split_keys &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  column_families &#61; optional&#40;map&#40;object&#40;&#10;    &#123;&#10;      gc_policy &#61; optional&#40;object&#40;&#123;&#10;        deletion_policy &#61; optional&#40;string&#41;&#10;        gc_rules        &#61; optional&#40;string&#41;&#10;        mode            &#61; optional&#40;string&#41;&#10;        max_age         &#61; optional&#40;string&#41;&#10;        max_version     &#61; optional&#40;string&#41;&#10;      &#125;&#41;, null&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
