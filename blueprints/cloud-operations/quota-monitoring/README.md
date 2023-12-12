@@ -79,5 +79,5 @@ module "test" {
     billing_account = "12345-ABCDE-12345"
   }
 }
-# tftest modules=4 resources=14
+# tftest modules=4 resources=19
 ```
