@@ -93,8 +93,8 @@ resource "google_organization_iam_member" "org_asset_viewer" {
   member = module.cf.service_account_iam_email
 }
 
-# TODO: document why this role is needed
 
+# role with the least privilege including compute.projects.get permission
 resource "google_organization_iam_member" "org_network_viewer" {
   count  = local.discovery_root_type == "organizations" ? 1 : 0
   org_id = local.discovery_root_id
@@ -116,6 +116,7 @@ resource "google_folder_iam_member" "folder_asset_viewer" {
   member = module.cf.service_account_iam_email
 }
 
+# role with the least privilege including compute.projects.get permission
 resource "google_folder_iam_member" "folder_network_viewer" {
   count  = local.discovery_root_type == "folders" ? 1 : 0
   folder = local.discovery_root_id

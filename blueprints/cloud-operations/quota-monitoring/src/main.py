@@ -41,7 +41,7 @@ URL_REGION = 'https://compute.googleapis.com/compute/v1/projects/{}/regions/{}'
 URL_TS = 'https://monitoring.googleapis.com/v3/projects/{}/timeSeries'
 URL_DISCOVERY = ('https://cloudasset.googleapis.com/v1/{}/assets?'
                  'assetTypes=cloudresourcemanager.googleapis.com%2FProject&'
-                 'contentType=RESOURCE&pageSize=1&pageToken={}')
+                 'contentType=RESOURCE&pageSize=100&pageToken={}')
 
 _Quota = collections.namedtuple('_Quota',
                                 'project region tstamp metric limit usage')
@@ -119,9 +119,8 @@ def discover_projects(discovery_root):
   'Discovers projects under a folder or organization.'
   if discovery_root.partition('/')[0] not in ('folders', 'organizations'):
     raise SystemExit(f'Invalid discovery root {discovery_root}.')
-  last_assets_page_reached = False
   next_page_token = ''
-  while not last_assets_page_reached:
+  while True:
     list_assets_results = fetch(
         HTTPRequest(URL_DISCOVERY.format(discovery_root, next_page_token)))
     if 'assets' in list_assets_results:
@@ -231,7 +230,7 @@ def _main(monitoring_project, discovery_root=None, projects=None, regions=None,
   exclude = set(exclude or [])
   projects = projects or [monitoring_project]
   if (discovery_root):
-    projects = set(projects + list(discover_projects(discovery_root)))
+    projects = set(list(projects) + list(discover_projects(discovery_root)))
   for k in ('monitoring_project', 'projects', 'regions', 'include', 'exclude'):
     logging.debug(f'{k} {locals().get(k)}')
   timeseries = []

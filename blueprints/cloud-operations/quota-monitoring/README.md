@@ -41,7 +41,7 @@ The `quota_config` variable mirrors the arguments accepted by the Python program
 - `quota_config.discover_root` organization or folder to be used to discover all underlying projects to track quotas for, in `organizations/nnnnn` or `folders/nnnnn` format
 - `quota_config.exclude` do not generate metrics for quotas matching prefixes listed here
 - `quota_config.include` only generate metrics for quotas matching prefixes listed here
-- `quota_config.projects` projects to track quotas for, defaults to the project where metrics are stored, if projects are automatically discovered, those in this list are appended
+- `quota_config.projects` projects to track quotas for, defaults to the project where metrics are stored, if projects are automatically discovered, those in this list are appended. 
 - `quota_config.regions` regions to track quotas for, defaults to the `global` region for project-level quotas
 - `dry_run` do not write actual metrics
 - `verbose` increase logging verbosity
