@@ -106,6 +106,7 @@ module "organization" {
     organization_iam_admin_conditional = {
       members = [module.automation-tf-resman-sa.iam_email]
       role    = module.organization.custom_role_id["organization_iam_admin"]
+      role    = module.organization.custom_role_id["organization_iam_admin"]
       condition = {
         expression = format(
           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
@@ -116,6 +117,7 @@ module "organization" {
               "roles/compute.xpnAdmin",
               "roles/orgpolicy.policyAdmin",
               "roles/resourcemanager.organizationViewer",
+              module.organization.custom_role_id["tenant_network_admin"]
               module.organization.custom_role_id["tenant_network_admin"]
             ],
             local.billing_mode == "org" ? [
@@ -133,7 +135,9 @@ module "organization" {
   custom_roles = var.custom_roles
   factories_config = {
     custom_roles = var.factories_config.custom_roles
-    org_policies = var.bootstrap_user != null ? null : var.factories_config.org_policy
+    org_policies = (
+      var.bootstrap_user != null ? null : var.factories_config.org_policy
+    )
   }
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
