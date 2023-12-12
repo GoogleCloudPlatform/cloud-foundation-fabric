@@ -102,11 +102,33 @@ values:
       environment: test
       team: foo
     timeouts: null
+  ? module.project-factory.module.projects["prj-app-2"].google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:cloudservices"]
+  : condition: []
+    project: foo-host
+    role: roles/compute.networkUser
+  ? module.project-factory.module.projects["prj-app-2"].google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:container-engine"]
+  : condition: []
+    project: foo-host
+    role: roles/compute.networkUser
+  ? module.project-factory.module.projects["prj-app-2"].google_project_iam_member.shared_vpc_host_robots["roles/container.hostServiceAgentUser:container-engine"]
+  : condition: []
+    project: foo-host
+    role: roles/container.hostServiceAgentUser
+  ? module.project-factory.module.projects["prj-app-2"].google_project_iam_member.shared_vpc_host_robots["roles/vpcaccess.user:cloudrun"]
+  : condition: []
+    project: foo-host
+    role: roles/vpcaccess.user
   module.project-factory.module.projects["prj-app-2"].google_project_service.project_services["compute.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-prj-app-2
     service: compute.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["prj-app-2"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-prj-app-2
+    service: container.googleapis.com
     timeouts: null
   module.project-factory.module.projects["prj-app-2"].google_project_service.project_services["run.googleapis.com"]:
     disable_dependent_services: false
@@ -204,11 +226,11 @@ counts:
   google_essential_contacts_contact: 3
   google_kms_crypto_key_iam_member: 1
   google_project: 3
-  google_project_iam_member: 2
-  google_project_service: 10
+  google_project_iam_member: 6
+  google_project_service: 11
   google_service_account: 3
   google_storage_project_service_account: 3
   modules: 7
-  resources: 26
+  resources: 31
 
 outputs: {}

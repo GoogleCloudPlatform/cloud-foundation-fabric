@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-output "custom_roles" {
-  description = "Ids of the created custom roles."
+output "custom_role_ids" {
+  description = "Map of custom role IDs created in the project."
   value = {
-    for name, role in google_project_iam_custom_role.roles :
-    name => role.id
+    for k, v in google_project_iam_custom_role.roles :
+    # build the string manually so that role IDs can be used as map
+    # keys (useful for folder/organization/project-level iam bindings)
+    (k) => "projects/${local.prefix}${var.name}/roles/${local.custom_roles[k].name}"
   }
 }
 
