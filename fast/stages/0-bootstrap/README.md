@@ -616,14 +616,14 @@ The `fast_features` variable consists of 4 toggles:
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [automation](outputs.tf#L102) | Automation resources. |  |  |
-| [billing_dataset](outputs.tf#L107) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L112) | CI/CD repository configurations. |  |  |
-| [custom_roles](outputs.tf#L124) | Organization-level custom roles. |  |  |
-| [federated_identity](outputs.tf#L129) | Workload Identity Federation pool and providers. |  |  |
-| [outputs_bucket](outputs.tf#L139) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L144) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L154) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L161) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L170) | Terraform variable files for the following stages. | ✓ |  |
+| [automation](outputs.tf#L118) | Automation resources. |  |  |
+| [billing_dataset](outputs.tf#L123) | BigQuery dataset prepared for billing export. |  |  |
+| [cicd_repositories](outputs.tf#L128) | CI/CD repository configurations. |  |  |
+| [custom_roles](outputs.tf#L140) | Organization-level custom roles. |  |  |
+| [federated_identity](outputs.tf#L145) | Workload Identity Federation pool and providers. |  |  |
+| [outputs_bucket](outputs.tf#L155) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L160) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L170) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L177) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L186) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

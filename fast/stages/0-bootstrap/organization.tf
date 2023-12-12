@@ -106,7 +106,6 @@ module "organization" {
     organization_iam_admin_conditional = {
       members = [module.automation-tf-resman-sa.iam_email]
       role    = module.organization.custom_role_id["organization_iam_admin"]
-      role    = module.organization.custom_role_id["organization_iam_admin"]
       condition = {
         expression = format(
           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
@@ -117,7 +116,6 @@ module "organization" {
               "roles/compute.xpnAdmin",
               "roles/orgpolicy.policyAdmin",
               "roles/resourcemanager.organizationViewer",
-              module.organization.custom_role_id["tenant_network_admin"]
               module.organization.custom_role_id["tenant_network_admin"]
             ],
             local.billing_mode == "org" ? [
