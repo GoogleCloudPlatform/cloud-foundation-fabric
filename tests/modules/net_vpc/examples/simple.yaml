@@ -18,7 +18,7 @@ values:
     delete_default_routes_on_create: false
     description: Terraform-managed.
     name: my-network
-    project: my-project
+    project: project-id
     routing_mode: GLOBAL
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]:
     description: Terraform-managed.
@@ -26,7 +26,7 @@ values:
     log_config: []
     name: production
     private_ip_google_access: true
-    project: my-project
+    project: project-id
     region: europe-west1
     role: null
     secondary_ip_range:
@@ -40,7 +40,7 @@ values:
     log_config: []
     name: production
     private_ip_google_access: true
-    project: my-project
+    project: project-id
     region: europe-west2
     role: null
     secondary_ip_range: []
@@ -52,7 +52,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
     timeouts: null
   module.vpc.google_compute_route.gateway["restricted-googleapis"]:
@@ -64,7 +64,7 @@ values:
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: my-project
+    project: project-id
     tags: null
     timeouts: null
 

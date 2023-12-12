@@ -16,7 +16,7 @@ This example shows how to reference existing Managed Infrastructure Groups (MIGs
 module "instance_template" {
   source          = "./fabric/modules/compute-vm"
   project_id      = var.project_id
-  zone            = "europe-west1-b"
+  zone            = "${var.region}-b"
   name            = "vm-test"
   create_template = true
   service_account = {
@@ -36,7 +36,7 @@ module "instance_template" {
 module "mig" {
   source            = "./fabric/modules/compute-mig"
   project_id        = var.project_id
-  location          = "europe-west1"
+  location          = var.region
   name              = "mig-test"
   target_size       = 1
   instance_template = module.instance_template.template.self_link
@@ -45,7 +45,7 @@ module "mig" {
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
   name       = "nlb-test"
   backends = [{
     group = module.mig.group_manager.instance_group
@@ -56,7 +56,7 @@ module "nlb" {
     }
   }
 }
-# tftest modules=3 resources=6
+# tftest modules=3 resources=6 inventory=migs.yaml e2e
 ```
 
 ### Externally managed instances
@@ -64,17 +64,28 @@ module "nlb" {
 This examples shows how to create an NLB by combining externally managed instances (in a custom module or even outside of the current root module) in an unmanaged group. When using internally managed groups, remember to run `terraform apply` each time group instances change.
 
 ```hcl
+module "instance" {
+  source     = "./fabric/modules/compute-vm"
+  for_each   = toset(["b", "c"])
+  name       = "instance-${each.key}"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+}
+
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
   name       = "nlb-test"
   group_configs = {
     my-group = {
-      zone = "europe-west1-b"
+      zone = "${var.region}-b"
       instances = [
-        "instance-1-self-link",
-        "instance-2-self-link"
+        for z in ["b", "c"] : module.instance[z].id
       ]
     }
   }
@@ -87,7 +98,7 @@ module "nlb" {
     }
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=3 resources=6 inventory=ext_migs.yaml e2e
 ```
 
 ### Mutiple forwarding rules
@@ -100,10 +111,22 @@ The example adds two forwarding rules:
 - the second one, called `nlb-test-vip-two` exposes an IPv4 address, it listens on port 80 and allows connections from the same region only.
 
 ```hcl
+module "instance" {
+  source     = "./fabric/modules/compute-vm"
+  for_each   = toset(["b", "c"])
+  name       = "instance-${each.key}"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+}
+
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
   name       = "nlb-test"
   backends = [{
     group = module.nlb.groups.my-group.self_link
@@ -116,15 +139,14 @@ module "nlb" {
   }
   group_configs = {
     my-group = {
-      zone = "europe-west1-b"
+      zone = "${var.region}-b"
       instances = [
-        "instance-1-self-link",
-        "instance-2-self-link"
+        for z in ["b", "c"] : module.instance[z].id
       ]
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=7 inventory=fwd_rules.yaml e2e
 ```
 
 ### Dual stack (IPv4 and IPv6)
@@ -133,10 +155,22 @@ Your load balancer can use a combination of either or both IPv4 and IPv6 forward
 In this example we set the load balancer to work as dual stack, meaning it exposes both an IPv4 and an IPv6 address.
 
 ```hcl
+module "instance" {
+  source     = "./fabric/modules/compute-vm"
+  for_each   = toset(["b", "c"])
+  name       = "instance-${each.key}"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+}
+
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
   name       = "nlb-test"
   backends = [{
     group = module.nlb.groups.my-group.self_link
@@ -151,15 +185,14 @@ module "nlb" {
   }
   group_configs = {
     my-group = {
-      zone = "europe-west1-b"
+      zone = "${var.region}-b"
       instances = [
-        "instance-1-self-link",
-        "instance-2-self-link"
+        for z in ["b", "c"] : module.instance[z].id
       ]
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=7 inventory=dual_stack.yaml e2e
 ```
 
 ### End to end example
@@ -181,7 +214,7 @@ module "instance-group" {
   source     = "./fabric/modules/compute-vm"
   for_each   = toset(["b", "c"])
   project_id = var.project_id
-  zone       = "europe-west1-${each.key}"
+  zone       = "${var.region}-${each.key}"
   name       = "nlb-test-${each.key}"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -206,7 +239,7 @@ module "instance-group" {
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
   name       = "nlb-test"
   backends = [
     for z, mod in module.instance-group : {
@@ -224,7 +257,7 @@ module "nlb" {
     }
   }
 }
-# tftest modules=3 resources=7
+# tftest modules=3 resources=7 inventory=e2e.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

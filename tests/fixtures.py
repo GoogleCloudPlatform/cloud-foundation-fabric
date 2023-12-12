@@ -281,6 +281,12 @@ def plan_validator_fixture(request):
   return inner
 
 
+def get_tfvars_for_e2e():
+  _variables = ["billing_account", "group_email", "organization_id", "parent", "prefix", "region"]
+  tf_vars = {k: os.environ.get(f"TFTEST_E2E_{k}") for k in _variables}
+  return tf_vars
+
+
 def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
   """Function running apply, plan and destroy to verify the case end to end
 
@@ -298,36 +304,38 @@ def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
     tf.setup(extra_files=extra_files, upgrade=True)
     tf_var_files = [(basedir / x).resolve() for x in tf_var_files or []]
 
+    # we need only prefix variable to run the example test, all the other are passed in terraform.tfvars file
+    prefix = get_tfvars_for_e2e()["prefix"]
     # to allow different tests to create projects (or other globally unique resources) with the same name
     # bump prefix forward on each test execution
-    prefix = f'{os.environ.get("TF_VAR_prefix")}-{int(time.time())}{os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:]}'
+    tf_vars = {"prefix": f'{prefix}-{int(time.time())}{os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:]}'}
     try:
-      apply = tf.apply(tf_var_file=tf_var_files, tf_vars={"prefix": prefix})
-      plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars={"prefix": prefix})
+      apply = tf.apply(tf_var_file=tf_var_files, tf_vars=tf_vars)
+      plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars=tf_vars)
       changes = {}
       for resource_name, value in plan.resource_changes.items():
         if value.get('change', {}).get('actions') != ['no-op']:
-          changes[resource_name] = value
+          changes[resource_name] = value['change']
 
       # compare before with after to raise more meaningful failure to the user, i.e one
       # that shows how resource will change
-      plan_before_state = {k: v['before'] for k, v in changes.items()}
-      plan_after_state = {k: v['after'] for k, v in changes.items()}
+      plan_before_state = {k: v.get('before') for k, v in changes.items()}
+      plan_after_state = {k: v.get('after') for k, v in changes.items()}
 
       assert plan_before_state == plan_after_state, f'Plan not empty after apply for values'
 
       plan_before_sensitive_state = {
-          k: v['before_sensitive'] for k, v in changes.items()
+          k: v.get('before_sensitive') for k, v in changes.items()
       }
       plan_after_sensitive_state = {
-          k: v['after_sensitive'] for k, v in changes.items()
+          k: v.get('after_sensitive') for k, v in changes.items()
       }
       assert plan_before_sensitive_state == plan_after_sensitive_state, f'Plan not empty after apply for sensitive values'
 
       # If above did not fail, this should not either, but left as a safety check
       assert changes == {}, f'Plan not empty for following resources: {", ".join(changes.keys())}'
     finally:
-      destroy = tf.destroy(tf_var_file=tf_var_files, tf_vars={'prefix': prefix})
+      destroy = tf.destroy(tf_var_file=tf_var_files, tf_vars=tf_vars)
 
 
 @pytest.fixture(name='e2e_validator')
@@ -373,10 +381,10 @@ def e2e_tfvars_path():
       binary = os.environ.get('TERRAFORM', 'terraform')
       tf = tftest.TerraformTest(test_path, binary=binary)
       tf_vars_file = None
-      tf_vars = {
-          'suffix': os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:],  # take at most 2 last chars for suffix
-          'timestamp': str(int(time.time()))
-      }
+      tf_vars = get_tfvars_for_e2e()
+      tf_vars['suffix'] = os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:]  # take at most 2 last chars for suffix
+      tf_vars['timestamp'] = str(int(time.time()))
+
       if 'TFTEST_E2E_SETUP_TFVARS_PATH' in os.environ:
         tf_vars_file = os.environ["TFTEST_E2E_SETUP_TFVARS_PATH"]
       tf.setup(upgrade=True)

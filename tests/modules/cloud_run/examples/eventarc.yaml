@@ -13,7 +13,13 @@
 # limitations under the License.
 
 values:
-  module.cloud_run.google_cloud_run_service.service: {}
+  module.cloud_run.google_cloud_run_service.service:
+    name: hello
+    project: project-id
+    template:
+      - spec:
+          - containers:
+              - image: us-docker.pkg.dev/cloudrun/container/hello
   module.cloud_run.google_eventarc_trigger.pubsub_triggers["topic-1"]:
     destination:
     - cloud_function: null
@@ -29,30 +35,17 @@ values:
       operator: ''
       value: google.cloud.pubsub.topic.v1.messagePublished
     name: pubsub-topic-1
-    project: my-project
+    project: project-id
     transport:
     - pubsub:
-      - topic: topic1
-  module.cloud_run.google_eventarc_trigger.pubsub_triggers["topic-2"]:
-    destination:
-    - cloud_function: null
-      cloud_run_service:
-      - path: null
-        region: europe-west1
-        service: hello
-      gke: []
-      workflow: null
-    location: europe-west1
-    matching_criteria:
-    - attribute: type
-      operator: ''
-      value: google.cloud.pubsub.topic.v1.messagePublished
-    name: pubsub-topic-2
-    project: my-project
-    transport:
-    - pubsub:
-      - topic: topic2
+      - topic: projects/project-id/topics/pubsub_sink
+
+  module.pubsub.google_pubsub_topic.default:
+    name: pubsub_sink
+    project: project-id
+
 
 counts:
   google_cloud_run_service: 1
-  google_eventarc_trigger: 2
+  google_eventarc_trigger: 1
+  google_pubsub_topic: 1

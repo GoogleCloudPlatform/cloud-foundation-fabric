@@ -66,6 +66,16 @@ variable "descriptive_name" {
   default     = null
 }
 
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    custom_roles = optional(string)
+    org_policies = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "group_iam" {
   description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
   type        = map(list(string))
@@ -215,12 +225,6 @@ variable "org_policies" {
   nullable = false
 }
 
-variable "org_policies_data_path" {
-  description = "Path containing org policies in YAML format."
-  type        = string
-  default     = null
-}
-
 variable "parent" {
   description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
   type        = string
@@ -298,9 +302,10 @@ variable "shared_vpc_service_config" {
   description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
   # the list of valid service identities is in service-agents.yaml
   type = object({
-    host_project         = string
-    service_identity_iam = optional(map(list(string)), {})
-    service_iam_grants   = optional(list(string), [])
+    host_project                = string
+    service_identity_iam        = optional(map(list(string)), {})
+    service_identity_subnet_iam = optional(map(list(string)), {})
+    service_iam_grants          = optional(list(string), [])
   })
   default = {
     host_project = null

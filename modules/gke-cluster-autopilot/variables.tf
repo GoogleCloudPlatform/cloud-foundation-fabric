@@ -189,6 +189,16 @@ variable "name" {
   type        = string
 }
 
+variable "node_config" {
+  description = "Configuration for nodes and nodepools."
+  type = object({
+    boot_disk_kms_key = optional(string)
+    service_account   = optional(string)
+    tags              = optional(list(string))
+  })
+  default = {}
+}
+
 variable "node_locations" {
   description = "Zones in which the cluster's nodes are located."
   type        = list(string)
@@ -224,19 +234,6 @@ variable "release_channel" {
     condition     = contains(["RAPID", "REGULAR", "STABLE"], var.release_channel)
     error_message = "Must be one of: RAPID, REGULAR, STABLE."
   }
-}
-
-variable "service_account" {
-  description = "The Google Cloud Platform Service Account to be used by the node VMs created by GKE Autopilot."
-  type        = string
-  default     = null
-}
-
-variable "tags" {
-  description = "Network tags applied to nodes."
-  type        = list(string)
-  default     = []
-  nullable    = false
 }
 
 variable "vpc_config" {

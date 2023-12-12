@@ -36,11 +36,13 @@ locals {
 }
 
 resource "google_compute_ha_vpn_gateway" "ha_gateway" {
-  count   = var.vpn_gateway_create != null ? 1 : 0
-  name    = var.name
-  project = var.project_id
-  region  = var.region
-  network = var.network
+  count       = var.vpn_gateway_create != null ? 1 : 0
+  name        = var.name
+  description = var.vpn_gateway_create.description
+  project     = var.project_id
+  region      = var.region
+  network     = var.network
+  stack_type  = var.vpn_gateway_create.ipv6 ? "IPV4_IPV6" : "IPV4_ONLY"
 }
 
 resource "google_compute_external_vpn_gateway" "external_gateway" {
@@ -115,7 +117,10 @@ resource "google_compute_router_peer" "bgp_peer" {
       description = range.value
     }
   }
-  interface = google_compute_router_interface.router_interface[each.key].name
+  enable_ipv6               = try(each.value.bgp_peer.ipv6, null) == null ? false : true
+  interface                 = google_compute_router_interface.router_interface[each.key].name
+  ipv6_nexthop_address      = try(each.value.bgp_peer.ipv6.nexthop_address, null)
+  peer_ipv6_nexthop_address = try(each.value.bgp_peer.ipv6.peer_nexthop_address, null)
 }
 
 resource "google_compute_router_interface" "router_interface" {

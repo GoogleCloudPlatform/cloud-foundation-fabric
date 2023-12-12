@@ -76,7 +76,7 @@ module "vpn-2" {
     }
   }
 }
-# tftest modules=2 resources=18
+# tftest modules=2 resources=18 inventory=gcp-to-gcp.yaml
 ```
 
 Note: When using the `for_each` meta-argument you might experience a Cycle Error due to the multiple `net-vpn-ha` modules referencing each other. To fix this you can create the [google_compute_ha_vpn_gateway](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_ha_vpn_gateway) resources separately and reference them in the `net-vpn-ha` module via the `vpn_gateway` and `peer_gcp_gateway` variables.
@@ -122,7 +122,61 @@ module "vpn_ha" {
     }
   }
 }
-# tftest modules=1 resources=10
+# tftest modules=1 resources=10 inventory=gcp-to-onprem.yaml
+```
+
+### IPv6 (dual-stack)
+
+You can optionally set your HA VPN gateway (and BGP sessions) to carry both IPv4 and IPv6 traffic. IPv6 only is not supported.
+
+```hcl
+module "vpn_ha" {
+  source     = "./fabric/modules/net-vpn-ha"
+  project_id = var.project_id
+  region     = var.region
+  name       = "mynet-to-onprem"
+  network    = var.vpc.self_link
+  peer_gateways = {
+    default = {
+      external = {
+        redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+        interfaces      = ["8.8.8.8"] # on-prem router ip address
+      }
+    }
+  }
+  router_config = { asn = 64514 }
+  tunnels = {
+    remote-0 = {
+      bgp_peer = {
+        address = "169.254.1.1"
+        asn     = 64513
+        ipv6    = {}
+      }
+      bgp_session_range               = "169.254.1.2/30"
+      peer_external_gateway_interface = 0
+      shared_secret                   = "mySecret"
+      vpn_gateway_interface           = 0
+    }
+    remote-1 = {
+      bgp_peer = {
+        address = "169.254.2.1"
+        asn     = 64513
+        ipv6 = {
+          nexthop_address      = "2600:2d00:0:2::1"
+          peer_nexthop_address = "2600:2d00:0:3::1"
+        }
+      }
+      bgp_session_range               = "169.254.2.2/30"
+      peer_external_gateway_interface = 0
+      shared_secret                   = "mySecret"
+      vpn_gateway_interface           = 1
+    }
+  }
+  vpn_gateway_create = {
+    stack_type = "IPV4_IPV6"
+  }
+}
+# tftest modules=1 resources=10 intentory=ipv6.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -135,9 +189,9 @@ module "vpn_ha" {
 | [region](variables.tf#L52) | Region used for resources. | <code>string</code> | ✓ |  |
 | [router_config](variables.tf#L57) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code title="object&#40;&#123;&#10;  create    &#61; optional&#40;bool, true&#41;&#10;  asn       &#61; number&#10;  name      &#61; optional&#40;string&#41;&#10;  keepalive &#61; optional&#40;number&#41;&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [peer_gateways](variables.tf#L27) | Configuration of the (external or GCP) peer gateway. | <code title="map&#40;object&#40;&#123;&#10;  external &#61; optional&#40;object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces      &#61; list&#40;string&#41;&#10;    description     &#61; optional&#40;string, &#34;Terraform managed external VPN gateway&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  gcp &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tunnels](variables.tf#L72) | VPN tunnel configurations. | <code title="map&#40;object&#40;&#123;&#10;  bgp_peer &#61; object&#40;&#123;&#10;    address        &#61; string&#10;    asn            &#61; number&#10;    route_priority &#61; optional&#40;number, 1000&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets          &#61; bool&#10;      all_vpc_subnets      &#61; bool&#10;      all_peer_vpc_subnets &#61; bool&#10;      ip_ranges            &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  bgp_session_range               &#61; string&#10;  ike_version                     &#61; optional&#40;number, 2&#41;&#10;  peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;  peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;  router                          &#61; optional&#40;string&#41;&#10;  shared_secret                   &#61; optional&#40;string&#41;&#10;  vpn_gateway_interface           &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vpn_gateway](variables.tf#L100) | HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
-| [vpn_gateway_create](variables.tf#L106) | Create HA VPN Gateway. Set to null to avoid creation. | <code title="object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Terraform managed external VPN gateway&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tunnels](variables.tf#L72) | VPN tunnel configurations. | <code title="map&#40;object&#40;&#123;&#10;  bgp_peer &#61; object&#40;&#123;&#10;    address        &#61; string&#10;    asn            &#61; number&#10;    route_priority &#61; optional&#40;number, 1000&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets          &#61; bool&#10;      all_vpc_subnets      &#61; bool&#10;      all_peer_vpc_subnets &#61; bool&#10;      ip_ranges            &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    ipv6 &#61; optional&#40;object&#40;&#123;&#10;      nexthop_address      &#61; optional&#40;string&#41;&#10;      peer_nexthop_address &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  bgp_session_range               &#61; string&#10;  ike_version                     &#61; optional&#40;number, 2&#41;&#10;  peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;  peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;  router                          &#61; optional&#40;string&#41;&#10;  shared_secret                   &#61; optional&#40;string&#41;&#10;  vpn_gateway_interface           &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpn_gateway](variables.tf#L104) | HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
+| [vpn_gateway_create](variables.tf#L110) | Create HA VPN Gateway. Set to null to avoid creation. | <code title="object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Terraform managed external VPN gateway&#34;&#41;&#10;  ipv6        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

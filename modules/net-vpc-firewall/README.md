@@ -29,13 +29,13 @@ This is often useful for prototyping or testing infrastructure, allowing open in
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = "my-project"
-  network    = "my-network"
+  project_id = var.project_id
+  network    = var.vpc.name
   default_rules_config = {
     admin_ranges = ["10.0.0.0/8"]
   }
 }
-# tftest modules=1 resources=4 inventory=basic.yaml
+# tftest modules=1 resources=4 inventory=basic.yaml e2e
 ```
 
 ### Custom rules
@@ -52,8 +52,8 @@ Some implicit defaults are used in the rules variable types and can be controlle
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = "my-project"
-  network    = "my-network"
+  project_id = var.project_id
+  network    = var.vpc.name
   default_rules_config = {
     admin_ranges = ["10.0.0.0/8"]
   }
@@ -90,7 +90,7 @@ module "firewall" {
     }
   }
 }
-# tftest modules=1 resources=9 inventory=custom-rules.yaml
+# tftest modules=1 resources=9 inventory=custom-rules.yaml e2e
 ```
 
 ### Controlling or turning off default rules
@@ -109,14 +109,14 @@ Default tags and ranges can be overridden for each protocol, like shown here for
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = "my-project"
-  network    = "my-network"
+  project_id = var.project_id
+  network    = var.vpc.name
   default_rules_config = {
     ssh_ranges = ["10.0.0.0/8"]
     ssh_tags   = ["ssh-default"]
   }
 }
-# tftest modules=1 resources=3 inventory=custom-ssh-default-rule.yaml
+# tftest modules=1 resources=3 inventory=custom-ssh-default-rule.yaml e2e
 ```
 
 #### Disabling predefined rules
@@ -126,13 +126,13 @@ Default rules can be disabled individually by specifying an empty set of ranges:
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = "my-project"
-  network    = "my-network"
+  project_id = var.project_id
+  network    = var.vpc.name
   default_rules_config = {
     ssh_ranges = []
   }
 }
-# tftest modules=1 resources=2 inventory=no-ssh-default-rules.yaml
+# tftest modules=1 resources=2 inventory=no-ssh-default-rules.yaml e2e
 ```
 
 Or the entire set of rules can be disabled via the `disabled` attribute:
@@ -140,13 +140,13 @@ Or the entire set of rules can be disabled via the `disabled` attribute:
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = "my-project"
-  network    = "my-network"
+  project_id = var.project_id
+  network    = var.vpc.name
   default_rules_config = {
     disabled = true
   }
 }
-# tftest modules=0 resources=0 inventory=no-default-rules.yaml
+# tftest modules=0 resources=0 inventory=no-default-rules.yaml e2e
 ```
 
 ### Including source & destination ranges
@@ -156,8 +156,8 @@ Custom rules now support including both source & destination ranges in ingress a
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = "my-project"
-  network    = "my-network"
+  project_id = var.project_id
+  network    = var.vpc.name
   default_rules_config = {
     disabled = true
   }
@@ -176,7 +176,7 @@ module "firewall" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=local-ranges.yaml
+# tftest modules=1 resources=2 inventory=local-ranges.yaml e2e
 ```
 
 ### Rules Factory
@@ -186,8 +186,8 @@ The module includes a rules factory (see [Resource Factories](../../blueprints/f
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = "my-project"
-  network    = "my-network"
+  project_id = var.project_id
+  network    = var.vpc.name
   factories_config = {
     rules_folder  = "configs/firewall/rules"
     cidr_tpl_file = "configs/firewall/cidrs.yaml"
@@ -220,7 +220,7 @@ ingress:
     targets: ["service-2"]
     use_service_accounts: true
     sources:
-      - service-1@my-project.iam.gserviceaccount.com
+      - service-1@project-id.iam.gserviceaccount.com
     rules:
       - protocol: tcp
         ports:

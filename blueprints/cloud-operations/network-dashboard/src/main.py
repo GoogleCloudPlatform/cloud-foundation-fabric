@@ -221,11 +221,11 @@ def main_cf_pubsub(event, context):
   try:
     payload = json.loads(base64.b64decode(event['data']).decode('utf-8'))
   except (binascii.Error, json.JSONDecodeError) as e:
-    raise SystemExit(f'Invalid payload: e.args[0].')
+    raise SystemExit(f'Invalid payload: {e.args[0]}.')
   discovery_root = payload.get('discovery_root')
   monitoring_project = payload.get('monitoring_project')
   if not discovery_root:
-    LOGGER.critical('no discovery roo project specified')
+    LOGGER.critical('no discovery root project specified')
     LOGGER.info(payload)
     raise SystemExit(f'Invalid options')
   if not monitoring_project:
@@ -247,6 +247,43 @@ def main_cf_pubsub(event, context):
   do_timeseries_descriptors(monitoring_project, resources['metric-descriptors'],
                             descriptors)
   do_timeseries(monitoring_project, timeseries, descriptors)
+
+
+def main_cf_http(request):
+  'Entry point for Cloud Function triggered by HTTP request.'
+  debug = os.environ.get('DEBUG')
+  logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
+  LOGGER.info('processing http payload')
+  try:
+    payload = json.loads(request.data)
+  except (binascii.Error, json.JSONDecodeError) as e:
+    raise SystemExit(f'Invalid payload: {e.args[0]}.')
+  discovery_root = payload.get('discovery_root')
+  monitoring_project = payload.get('monitoring_project')
+  if not discovery_root:
+    LOGGER.critical('no discovery root project specified')
+    LOGGER.info(payload)
+    raise SystemExit(f'Invalid options')
+  if not monitoring_project:
+    LOGGER.critical('no monitoring project specified')
+    LOGGER.info(payload)
+    raise SystemExit(f'Invalid options')
+  if discovery_root.partition('/')[0] not in ('folders', 'organizations'):
+    raise SystemExit(f'Invalid discovery root {discovery_root}.')
+  custom_quota = payload.get('custom_quota', {})
+  descriptors = []
+  folders = payload.get('folders', [])
+  projects = payload.get('projects', [])
+  resources = {}
+  timeseries = []
+  do_init(resources, discovery_root, monitoring_project, folders, projects,
+          custom_quota)
+  do_discovery(resources)
+  do_timeseries_calc(resources, descriptors, timeseries)
+  do_timeseries_descriptors(monitoring_project, resources['metric-descriptors'],
+                            descriptors)
+  do_timeseries(monitoring_project, timeseries, descriptors)
+  return "Execution successful"
 
 
 @click.command()

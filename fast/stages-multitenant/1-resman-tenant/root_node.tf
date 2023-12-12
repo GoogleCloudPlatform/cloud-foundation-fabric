@@ -26,6 +26,9 @@ module "root-folder" {
   )
   name = var.test_skip_data_sources ? "Test" : null
   # end test attributes
+  factories_config = {
+    org_policy = var.factories_config.org_policy
+  }
   iam_bindings_additive = {
     sa_net_fw_policy_admin = {
       member = local.automation_sas_iam.networking
@@ -40,5 +43,4 @@ module "root-folder" {
       role   = "roles/accesscontextmanager.policyAdmin"
     }
   }
-  org_policies_data_path = var.organization_policy_data_path
 }

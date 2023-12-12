@@ -18,19 +18,19 @@ values:
     address_type: INTERNAL
     name: myrange
     prefix_length: 24
-    project: my-project
+    project: project-id
     purpose: VPC_PEERING
   module.vpc.google_compute_network.network[0]:
     name: my-network
-    project: my-project
+    project: project-id
   module.vpc.google_compute_network_peering_routes_config.psa_routes[0]:
     export_custom_routes: false
     import_custom_routes: false
-    project: my-project
+    project: project-id
   module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]:
     ip_cidr_range: 10.0.0.0/24
     name: production
-    project: my-project
+    project: project-id
   module.vpc.google_service_networking_connection.psa_connection[0]:
     reserved_peering_ranges:
     - myrange
