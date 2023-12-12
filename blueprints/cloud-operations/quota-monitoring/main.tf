@@ -20,8 +20,8 @@ locals {
     ? [var.project_id]
     : var.quota_config.projects
   )
-  discovery_root_type = split("/", var.quota_config["discovery_root"])[0]
-  discovery_root_id   = split("/", var.quota_config["discovery_root"])[1]
+  discovery_root_type = split("/", coalesce(var.quota_config["discovery_root"], "/"))[0]
+  discovery_root_id   = split("/", coalesce(var.quota_config["discovery_root"], "/"))[1]
 }
 
 module "project" {

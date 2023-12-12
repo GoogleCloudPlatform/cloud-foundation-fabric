@@ -63,7 +63,7 @@ variable "quota_config" {
       "a2", "c2", "c2d", "committed", "g2", "interconnect", "m1", "m2", "m3",
       "nvidia", "preemptible"
     ])
-    discovery_root = optional(string)
+    discovery_root = optional(string, "")
     dry_run        = optional(bool, false)
     include        = optional(list(string))
     projects       = optional(list(string))
@@ -74,7 +74,7 @@ variable "quota_config" {
   default  = {}
   validation {
     condition = (
-      var.quota_config.discovery_root == null ||
+      var.quota_config.discovery_root == "" ||
       startswith(var.quota_config.discovery_root, "folders/") ||
       startswith(var.quota_config.discovery_root, "organizations/")
     )
