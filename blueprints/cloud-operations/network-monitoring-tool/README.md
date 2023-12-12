@@ -267,9 +267,9 @@ billable charges made afterwards.
 ```hcl
 module "test" {
   source                = "./fabric/blueprints/cloud-operations/network-monitoring-tool"
-  agent_project_id      = "brz-dev-net-spoke-0"
-  monitoring_project_id = "brz-dev-net-spoke-0"
-  prefix                = "brz"
+  agent_project_id      = "agent-test-prj"
+  monitoring_project_id = "monitoring-test-prj"
+  prefix                = "tmp"
   bootstrap_monitoring  = true
 }
 # tftest modules=8 resources=30
