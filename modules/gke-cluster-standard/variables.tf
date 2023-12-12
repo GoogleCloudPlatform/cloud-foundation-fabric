@@ -53,7 +53,7 @@ variable "cluster_autoscaling" {
       shielded_instance_config = optional(object({
         integrity_monitoring = optional(bool, true)
         secure_boot          = optional(bool, false)
-      })
+      }))
       upgrade_settings = optional(object({
         blue_green = optional(object({
           node_pool_soak_duration = optional(string)
