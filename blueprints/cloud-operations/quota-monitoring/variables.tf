@@ -64,14 +64,22 @@ variable "quota_config" {
       "nvidia", "preemptible"
     ])
     discovery_root = optional(string)
-    dry_run  = optional(bool, false)
-    include  = optional(list(string))
-    projects = optional(list(string))
-    regions  = optional(list(string))
-    verbose  = optional(bool, false)
+    dry_run        = optional(bool, false)
+    include        = optional(list(string))
+    projects       = optional(list(string))
+    regions        = optional(list(string))
+    verbose        = optional(bool, false)
   })
   nullable = false
   default  = {}
+  validation {
+    condition = (
+      var.quota_config.discovery_root == null ||
+      startswith(var.quota_config.discovery_root, "folders/") ||
+      startswith(var.quota_config.discovery_root, "organizations/")
+    )
+    error_message = "non-null discovery root needs to start with folders/ or organizations/"
+  }
 }
 
 variable "region" {

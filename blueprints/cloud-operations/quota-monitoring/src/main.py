@@ -39,9 +39,9 @@ HTTP_HEADERS = {'content-type': 'application/json; charset=UTF-8'}
 URL_PROJECT = 'https://compute.googleapis.com/compute/v1/projects/{}'
 URL_REGION = 'https://compute.googleapis.com/compute/v1/projects/{}/regions/{}'
 URL_TS = 'https://monitoring.googleapis.com/v3/projects/{}/timeSeries'
-URL_DISCOVERY='https://cloudasset.googleapis.com/v1/{}/assets?assetTypes=cloudresourcemanager.googleapis.com%2FProject&contentType=RESOURCE&pageSize=1&pageToken={}'
-
-
+URL_DISCOVERY = ('https://cloudasset.googleapis.com/v1/{}/assets?'
+                 'assetTypes=cloudresourcemanager.googleapis.com%2FProject&'
+                 'contentType=RESOURCE&pageSize=1&pageToken={}')
 
 _Quota = collections.namedtuple('_Quota',
                                 'project region tstamp metric limit usage')
@@ -83,8 +83,8 @@ class Quota(_Quota):
     else:
       d['valueType'] = 'INT64'
       d['points'][0]['value'] = {'int64Value': value}
-    # remove this label if cardinality gets too high
-    d['metric']['labels']['quota'] = f'{self.usage}/{self.limit}'
+    # re-enable the following line if cardinality is not a problem
+    # d['metric']['labels']['quota'] = f'{self.usage}/{self.limit}'
     return d
 
   @property
@@ -95,7 +95,7 @@ class Quota(_Quota):
       ratio = 0
     yield self._api_format('ratio', ratio)
     yield self._api_format('usage', self.usage)
-    # yield self._api_format('limit', self.limit)
+    yield self._api_format('limit', self.limit)
 
 
 def batched(iterable, n):
@@ -116,22 +116,21 @@ def configure_logging(verbose=True):
 
 
 def discover_projects(discovery_root):
-  'Discovers projects under a folder or organization'
+  'Discovers projects under a folder or organization.'
   if discovery_root.partition('/')[0] not in ('folders', 'organizations'):
     raise SystemExit(f'Invalid discovery root {discovery_root}.')
-  last_assets_page_reached=False    
-  discovered_projects=[]
-  nextPageToken=""
+  last_assets_page_reached = False
+  next_page_token = ''
   while not last_assets_page_reached:
-    list_assets_results = fetch(HTTPRequest(URL_DISCOVERY.format(discovery_root,nextPageToken)))
-    if "assets" in list_assets_results:
-      for asset in list_assets_results["assets"]:
-        if (asset["resource"]["data"]["lifecycleState"] == "ACTIVE"):
-          discovered_projects.append(asset["resource"]["data"]["projectId"])
-    last_assets_page_reached =  False if "nextPageToken" in list_assets_results else True
-    nextPageToken="" if  last_assets_page_reached==True else list_assets_results["nextPageToken"]
-  return discover_projects
-    
+    list_assets_results = fetch(
+        HTTPRequest(URL_DISCOVERY.format(discovery_root, next_page_token)))
+    if 'assets' in list_assets_results:
+      for asset in list_assets_results['assets']:
+        if (asset['resource']['data']['lifecycleState'] == 'ACTIVE'):
+          yield asset['resource']['data']['projectId']
+    next_page_token = list_assets_results.get('nextPageToken')
+    if not next_page_token:
+      break
 
 
 def fetch(request, delete=False):
@@ -186,11 +185,13 @@ def get_quotas(project, region='global'):
 @click.command()
 @click.argument('project-id', required=True)
 @click.option(
-    '--discovery-root', '-dr', required=False,
-    help='Root node for asset discovery, organizations/nnn or folders/nnn.')
+    '--discovery-root', '-dr', required=False, help=
+    'Root node used to dynamically fetch projects, in organizations/nnn or folders/nnn format.'
+)
 @click.option(
-    '--project-ids', multiple=True, 
-              help='Project ids to monitor (multiple). Defaults to monitoring project if not set, values are appended to those found under discovery-root')
+    '--project-ids', multiple=True, help=
+    'Project ids to monitor (multiple). Defaults to monitoring project if not set, values are appended to those found under discovery-root'
+)
 @click.option('--regions', multiple=True,
               help='Regions (multiple). Defaults to "global" if not set.')
 @click.option('--include', multiple=True,
@@ -199,11 +200,13 @@ def get_quotas(project, region='global'):
               help='Exclude quotas starting with keyword (multiple).')
 @click.option('--dry-run', is_flag=True, help='Do not write metrics.')
 @click.option('--verbose', is_flag=True, help='Verbose output.')
-def main_cli(project_id=None, discovery_root=None, project_ids=None, regions=None, include=None,
-             exclude=None, dry_run=False, verbose=False):
+def main_cli(project_id=None, discovery_root=None, project_ids=None,
+             regions=None, include=None, exclude=None, dry_run=False,
+             verbose=False):
   'Fetch GCE quotas and writes them as custom metrics to Stackdriver.'
   try:
-    _main(project_id,discovery_root,project_ids, regions, include, exclude, dry_run, verbose)
+    _main(project_id, discovery_root, project_ids, regions, include, exclude,
+          dry_run, verbose)
   except RuntimeError as e:
     logging.exception(f'exception raised: {e.args[0]}')
 
@@ -217,22 +220,18 @@ def main(event, context):
     raise
 
 
-def _main(monitoring_project, discovery_root=None, projects=None, regions=None, include=None,
-          exclude=None, dry_run=False, verbose=False):
+def _main(monitoring_project, discovery_root=None, projects=None, regions=None,
+          include=None, exclude=None, dry_run=False, verbose=False):
   """Module entry point used by cli and cloud function wrappers."""
   configure_logging(verbose=verbose)
 
-  
   # default to monitoring scope project if projects parameter is not passed, then merge the list with discovered projects, if any
-  projects = projects or {monitoring_project}
-  if (discovery_root):
-    discovered_projects=discover_projects(discovery_root)
-    projects= tuple(projects)+ tuple(set(discovered_projects) - set(projects))
-
-
   regions = regions or ['global']
   include = set(include or [])
   exclude = set(exclude or [])
+  projects = projects or [monitoring_project]
+  if (discovery_root):
+    projects = set(projects + list(discover_projects(discovery_root)))
   for k in ('monitoring_project', 'projects', 'regions', 'include', 'exclude'):
     logging.debug(f'{k} {locals().get(k)}')
   timeseries = []
