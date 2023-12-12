@@ -266,7 +266,7 @@ billable charges made afterwards.
 
 ```hcl
 module "test" {
-  source                = "./fabric/blueprints/cloud-operations/net-monitoring-tool"
+  source                = "./fabric/blueprints/cloud-operations/network-monitoring-tool"
   agent_project_id      = "brz-dev-net-spoke-0"
   monitoring_project_id = "brz-dev-net-spoke-0"
   prefix                = "brz"
