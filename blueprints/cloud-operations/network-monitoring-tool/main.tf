@@ -37,7 +37,7 @@ locals {
 module "monitoring_project" {
   source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project"
   name           = var.monitoring_project_id
-  project_create = false
+  project_create = var.project_create
   iam = {
     "roles/monitoring.metricWriter" = [
       "serviceAccount:${module.net-mon-vm.service_account_email}"
@@ -48,7 +48,7 @@ module "monitoring_project" {
 module "agent_project" {
   source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project"
   name           = var.agent_project_id
-  project_create = false
+  project_create = var.project_create
   services = [
     "storage.googleapis.com",
     "compute.googleapis.com"

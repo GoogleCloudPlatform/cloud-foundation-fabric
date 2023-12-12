@@ -258,8 +258,9 @@ billable charges made afterwards.
 | [cidrs](variables.tf#L56) | CIDR ranges for subnets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  agent &#61; &#34;10.0.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [nat_logging](variables.tf#L69) | Enables Cloud NAT logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'. | <code>string</code> |  | <code>&#34;ERRORS_ONLY&#34;</code> |
 | [net_mon_agent_vm_config](variables.tf#L75) | Network Monitoring agent VM configuration. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;e2-standard-2&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;net-mon-agent&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  private_ip    &#61; optional&#40;string, null&#41;&#10;  public_ip     &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [region](variables.tf#L98) | GCP Region. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
-| [vpc_config](variables.tf#L104) | VPC Network and subnetwork self links for internal LB setup. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_create](variables.tf#L98) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
+| [region](variables.tf#L104) | GCP Region. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
+| [vpc_config](variables.tf#L110) | VPC Network and subnetwork self links for internal LB setup. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 <!-- END TFDOC -->
 
 ## Test
@@ -267,10 +268,11 @@ billable charges made afterwards.
 ```hcl
 module "test" {
   source                = "./fabric/blueprints/cloud-operations/network-monitoring-tool"
-  agent_project_id      = "agent-test-prj"
-  monitoring_project_id = "monitoring-test-prj"
-  prefix                = "tmp"
+  agent_project_id      = "agent-prj-0"
   bootstrap_monitoring  = true
+  monitoring_project_id = "monitoring-prj-0"
+  prefix                = "tmp"
+  project_create        = true
 }
-# tftest modules=8 resources=30
+# tftest modules=9 resources=33
 ```
