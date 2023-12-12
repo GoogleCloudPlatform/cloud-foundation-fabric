@@ -119,9 +119,8 @@ def discover_projects(discovery_root):
   'Discovers projects under a folder or organization.'
   if discovery_root.partition('/')[0] not in ('folders', 'organizations'):
     raise SystemExit(f'Invalid discovery root {discovery_root}.')
-  last_assets_page_reached = False
   next_page_token = ''
-  while not last_assets_page_reached:
+  while True:
     list_assets_results = fetch(
         HTTPRequest(URL_DISCOVERY.format(discovery_root, next_page_token)))
     if 'assets' in list_assets_results:
