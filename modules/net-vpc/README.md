@@ -17,7 +17,7 @@ This module allows creation and management of VPC networks including subnetworks
   - [DNS Policies](#dns-policies)
   - [Subnet Factory](#subnet-factory)
   - [Custom Routes](#custom-routes)
-  - [Custom Routes](#custom-routes)
+  - [Policy Based Routes](#policy-based-routes)
   - [Private Google Access routes](#private-google-access-routes)
   - [Allow Firewall Policy to be evaluated before Firewall Rules](#allow-firewall-policy-to-be-evaluated-before-firewall-rules)
   - [IPv6](#ipv6)
