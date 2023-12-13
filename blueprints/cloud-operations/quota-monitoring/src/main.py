@@ -157,10 +157,6 @@ def fetch(request, delete=False):
     raise SystemExit(f'Error decoding response: {response.content}')
   if response.status_code != 200:
     raise  requests.exceptions.HTTPError(rdata)
-    #error = rdata.get('error', {})
-    #raise  requests.exceptions.HTTPError('API error: {} (HTTP {})'.format(
-    #    error.get('message', 'error message cannot be decoded'),
-    #    error.get('code', 'no code found')))
   return json.loads(response.content)
 
 
