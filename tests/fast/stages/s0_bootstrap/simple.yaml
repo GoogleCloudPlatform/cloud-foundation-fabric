@@ -16,27 +16,36 @@ counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3
   google_logging_organization_sink: 3
-  google_organization_iam_binding: 20
-  google_organization_iam_custom_role: 3
-  google_organization_iam_member: 13
+  google_logging_project_bucket_config: 3
+  google_org_policy_policy: 13
+  google_organization_iam_binding: 22
+  google_organization_iam_custom_role: 6
+  google_organization_iam_member: 20
   google_project: 3
-  google_project_iam_binding: 10
-  google_project_iam_member: 5
+  google_project_iam_binding: 19
+  google_project_iam_member: 6
   google_project_service: 29
   google_project_service_identity: 3
-  google_service_account: 2
-  google_service_account_iam_binding: 1
+  google_service_account: 4
+  google_service_account_iam_binding: 2
   google_storage_bucket: 3
-  google_storage_bucket_iam_binding: 1
-  google_storage_bucket_iam_member: 2
-  google_storage_bucket_object: 5
+  google_storage_bucket_iam_binding: 2
+  google_storage_bucket_iam_member: 4
+  google_storage_bucket_object: 7
   google_storage_project_service_account: 3
-  local_file: 5
+  google_tags_tag_key: 1
+  google_tags_tag_value: 1
+  local_file: 7
+  modules: 15
+  resources: 165
 
 outputs:
   custom_roles:
+    organization_admin_viewer: organizations/123456789012/roles/organizationAdminViewer
     organization_iam_admin: organizations/123456789012/roles/organizationIamAdmin
     service_project_network_admin: organizations/123456789012/roles/serviceProjectNetworkAdmin
+    storage_viewer: organizations/123456789012/roles/storageViewer
+    tag_viewer: organizations/123456789012/roles/tagViewer
     tenant_network_admin: organizations/123456789012/roles/tenantNetworkAdmin
   outputs_bucket: fast-prod-iac-core-outputs-0
   project_ids:
