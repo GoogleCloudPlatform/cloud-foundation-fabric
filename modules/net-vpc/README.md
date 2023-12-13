@@ -456,7 +456,7 @@ module "vpc" {
 # tftest modules=5 resources=15 inventory=routes.yaml
 ```
 
-### Custom Routes
+### Policy Based Routes
 
 Policy based routes can be configured through the `policy_based_routes` variable.
 
