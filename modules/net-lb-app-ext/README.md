@@ -51,7 +51,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=3 resources=9 fixtures=ig
+# tftest modules=3 resources=9 fixtures=ig e2e
 ```
 
 ### Minimal HTTPS examples
