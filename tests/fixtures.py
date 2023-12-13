@@ -202,25 +202,36 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
                            "")
 
     if 'counts' in inventory:
-      expected_counts = inventory['counts']
-      for type_, expected_count in expected_counts.items():
-        assert type_ in summary.counts, \
-            f'{relative_path}: module does not create any resources of type `{type_}`'
-        plan_count = summary.counts[type_]
-        assert plan_count == expected_count, \
-            f'{relative_path}: count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
+      try:
+        expected_counts = inventory['counts']
+        for type_, expected_count in expected_counts.items():
+          assert type_ in summary.counts, \
+              f'{relative_path}: module does not create any resources of type `{type_}`'
+          plan_count = summary.counts[type_]
+          assert plan_count == expected_count, \
+              f'{relative_path}: count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
+      except AssertionError:
+        print(yaml.dump({'counts': summary.counts}))
+        raise
 
     if 'outputs' in inventory:
-      expected_outputs = inventory['outputs']
-      for output_name, expected_output in expected_outputs.items():
-        assert output_name in summary.outputs, \
-            f'{relative_path}: module does not output `{output_name}`'
-        output = summary.outputs[output_name]
-        # assert 'value' in output, \
-        #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
-        plan_output = output.get('value', '__missing__')
-        assert plan_output == expected_output, \
-            f'{relative_path}: output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
+      _buffer = None
+      try:
+        expected_outputs = inventory['outputs']
+        for output_name, expected_output in expected_outputs.items():
+          assert output_name in summary.outputs, \
+              f'{relative_path}: module does not output `{output_name}`'
+          output = summary.outputs[output_name]
+          # assert 'value' in output, \
+          #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
+          plan_output = output.get('value', '__missing__')
+          _buffer = {output_name: plan_output}
+          assert plan_output == expected_output, \
+              f'{relative_path}: output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
+      except AssertionError:
+        if _buffer:
+          print(yaml.dump(_buffer))
+        raise
 
   return summary
 
@@ -282,7 +293,10 @@ def plan_validator_fixture(request):
 
 
 def get_tfvars_for_e2e():
-  _variables = ["billing_account", "group_email", "organization_id", "parent", "prefix", "region"]
+  _variables = [
+      "billing_account", "group_email", "organization_id", "parent", "prefix",
+      "region"
+  ]
   tf_vars = {k: os.environ.get(f"TFTEST_E2E_{k}") for k in _variables}
   return tf_vars
 
@@ -308,7 +322,10 @@ def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
     prefix = get_tfvars_for_e2e()["prefix"]
     # to allow different tests to create projects (or other globally unique resources) with the same name
     # bump prefix forward on each test execution
-    tf_vars = {"prefix": f'{prefix}-{int(time.time())}{os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:]}'}
+    tf_vars = {
+        "prefix":
+            f'{prefix}-{int(time.time())}{os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:]}'
+    }
     try:
       apply = tf.apply(tf_var_file=tf_var_files, tf_vars=tf_vars)
       plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars=tf_vars)
@@ -382,7 +399,9 @@ def e2e_tfvars_path():
       tf = tftest.TerraformTest(test_path, binary=binary)
       tf_vars_file = None
       tf_vars = get_tfvars_for_e2e()
-      tf_vars['suffix'] = os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:]  # take at most 2 last chars for suffix
+      tf_vars['suffix'] = os.environ.get(
+          "PYTEST_XDIST_WORKER",
+          "0")[-2:]  # take at most 2 last chars for suffix
       tf_vars['timestamp'] = str(int(time.time()))
 
       if 'TFTEST_E2E_SETUP_TFVARS_PATH' in os.environ:
