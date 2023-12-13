@@ -121,8 +121,11 @@ def discover_projects(discovery_root):
     raise SystemExit(f'Invalid discovery root {discovery_root}.')
   next_page_token = ''
   while True:
-    list_assets_results = fetch(
-        HTTPRequest(URL_DISCOVERY.format(discovery_root, next_page_token)))
+    try:
+      list_assets_results = fetch(
+          HTTPRequest(URL_DISCOVERY.format(discovery_root, next_page_token)))
+    except requests.exceptions.HTTPError as e:
+     raise SystemExit(e) 
     if 'assets' in list_assets_results:
       for asset in list_assets_results['assets']:
         if (asset['resource']['data']['lifecycleState'] == 'ACTIVE'):
@@ -133,7 +136,7 @@ def discover_projects(discovery_root):
 
 
 def fetch(request, delete=False):
-  'Minimal HTTP client interface for API calls.'
+  'Minimal HTTP client interface for API calls. Raises requests.exceptions.HTTPError when response status code is not 200'
   logging.debug(f'fetch {"POST" if request.data else "GET"} {request.url}')
   logging.debug(request.data)
   try:
@@ -153,11 +156,11 @@ def fetch(request, delete=False):
     logging.critical(e)
     raise SystemExit(f'Error decoding response: {response.content}')
   if response.status_code != 200:
-    logging.critical(rdata)
-    error = rdata.get('error', {})
-    raise SystemExit('API error: {} (HTTP {})'.format(
-        error.get('message', 'error message cannot be decoded'),
-        error.get('code', 'no code found')))
+    raise  requests.exceptions.HTTPError(rdata)
+    #error = rdata.get('error', {})
+    #raise  requests.exceptions.HTTPError('API error: {} (HTTP {})'.format(
+    #    error.get('message', 'error message cannot be decoded'),
+    #    error.get('code', 'no code found')))
   return json.loads(response.content)
 
 
@@ -166,7 +169,11 @@ def write_timeseries(project, data):
   # try
   logging.debug(f'write {len(data["timeSeries"])} timeseries')
   request = HTTPRequest(URL_TS.format(project), data)
-  return fetch(request)
+  try:
+    return fetch(request)
+  except requests.exceptions.HTTPError as e:
+    logging.critical(e)
+    return None
 
 
 def get_quotas(project, region='global'):
@@ -175,7 +182,11 @@ def get_quotas(project, region='global'):
     request = HTTPRequest(URL_PROJECT.format(project))
   else:
     request = HTTPRequest(URL_REGION.format(project, region))
-  resp = fetch(request)
+  try:
+    resp = fetch(request)
+  except requests.exceptions.HTTPError as e:
+     logging.critical(e) 
+     return
   ts = datetime.datetime.utcnow()
   for quota in resp.get('quotas'):
     yield Quota(project, region, ts, **quota)
