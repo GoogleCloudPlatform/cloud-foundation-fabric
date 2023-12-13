@@ -41,6 +41,7 @@ Configure the Terraform variable in your terraform.tfvars file. You need to spec
 ```tfvars
 project_id          = "lcaggioni-sandbox"
 prefix              = "lc"
+region              = "europe-west1"
 ```
 
 You can run now:
@@ -72,6 +73,7 @@ Example:
 network_config = {
   host_project      = "PROJECT"
   network_self_link = "projects/PROJECT/global/networks/VPC_NAME"
+  region            = "europe-west3"
   subnet_self_link  = "projects/PROJECT/regions/REGION/subnetworks/VPC_NAME"
   composer_secondary_ranges = {
     pods     = "pods"
@@ -111,14 +113,14 @@ service_encryption_keys = {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L83) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L101) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [composer_config](variables.tf#L17) | Composer environment configuration. It accepts only following attributes: `environment_size`, `software_config` and `workloads_config`. See [attribute reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/composer_environment#argument-reference---cloud-composer-2) for details on settings variables. | <code title="object&#40;&#123;&#10;  environment_size &#61; string&#10;  software_config  &#61; any&#10;  workloads_config &#61; object&#40;&#123;&#10;    scheduler &#61; object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;        count      &#61; number&#10;      &#125;&#10;    &#41;&#10;    web_server &#61; object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;      &#125;&#10;    &#41;&#10;    worker &#61; object&#40;&#10;      &#123;&#10;        cpu        &#61; number&#10;        memory_gb  &#61; number&#10;        storage_gb &#61; number&#10;        min_count  &#61; number&#10;        max_count  &#61; number&#10;      &#125;&#10;    &#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  environment_size &#61; &#34;ENVIRONMENT_SIZE_SMALL&#34;&#10;  software_config &#61; &#123;&#10;    image_version &#61; &#34;composer-2-airflow-2&#34;&#10;  &#125;&#10;  workloads_config &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [iam_bindings_additive](variables.tf#L58) | Map of Role => principal in IAM format (`group:foo@example.org`) to be added on the project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [network_config](variables.tf#L65) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_create](variables.tf#L92) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [region](variables.tf#L106) | Reagion where instances will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [service_encryption_keys](variables.tf#L112) | Cloud KMS keys to use to encrypt resources. Provide a key for each reagion in use. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L87) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L105) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L110) | Region where instances will be deployed. | <code>string</code> | ✓ |  |
+| [composer_config](variables.tf#L17) | Composer environment configuration. It accepts only following attributes: `environment_size`, `software_config` and `workloads_config`. See [attribute reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/composer_environment#argument-reference---cloud-composer-2) for details on settings variables. | <code title="object&#40;&#123;&#10;  environment_size &#61; optional&#40;string&#41;&#10;  software_config  &#61; optional&#40;any&#41;&#10;  workloads_config &#61; optional&#40;object&#40;&#123;&#10;    scheduler &#61; optional&#40;object&#40;&#10;      &#123;&#10;        count      &#61; optional&#40;number&#41;&#10;        cpu        &#61; optional&#40;number&#41;&#10;        memory_gb  &#61; optional&#40;number&#41;&#10;        storage_gb &#61; optional&#40;number&#41;&#10;      &#125;&#10;    &#41;&#41;&#10;    triggerer &#61; optional&#40;object&#40;&#123;&#10;      count     &#61; number&#10;      cpu       &#61; number&#10;      memory_gb &#61; number&#10;    &#125;&#41;&#41;&#10;    web_server &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; optional&#40;number&#41;&#10;        memory_gb  &#61; optional&#40;number&#41;&#10;        storage_gb &#61; optional&#40;number&#41;&#10;      &#125;&#10;    &#41;&#41;&#10;    worker &#61; optional&#40;object&#40;&#10;      &#123;&#10;        cpu        &#61; optional&#40;number&#41;&#10;        memory_gb  &#61; optional&#40;number&#41;&#10;        min_count  &#61; optional&#40;number&#41;&#10;        max_count  &#61; optional&#40;number&#41;&#10;        storage_gb &#61; optional&#40;number&#41;&#10;      &#125;&#10;    &#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  environment_size &#61; &#34;ENVIRONMENT_SIZE_SMALL&#34;&#10;  software_config &#61; &#123;&#10;    image_version &#61; &#34;composer-2-airflow-2&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [iam_bindings_additive](variables.tf#L62) | Map of Role => principal in IAM format (`group:foo@example.org`) to be added on the project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [network_config](variables.tf#L69) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_create](variables.tf#L96) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [service_encryption_keys](variables.tf#L115) | Cloud KMS keys to use to encrypt resources. Provide a key for each region in use. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -132,12 +134,13 @@ service_encryption_keys = {
 ```hcl
 module "test" {
   source     = "./fabric/blueprints/data-solutions/composer-2/"
-  project_id = "project"
+  project_id = "composer"
   project_create = {
-    billing_account_id = "123456-123456-123456"
-    parent             = "folders/12345678"
+    billing_account_id = var.billing_account_id
+    parent             = var.folder_id
   }
-  prefix = "prefix"
+  prefix = var.prefix
+  region = var.region
 }
-# tftest modules=5 resources=29
+# tftest modules=5 resources=29 e2e
 ```

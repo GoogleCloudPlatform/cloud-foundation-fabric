@@ -121,6 +121,15 @@ resource "google_sql_database_instance" "primary" {
       }
     }
 
+    dynamic "deny_maintenance_period" {
+      for_each = var.maintenance_config.deny_maintenance_period != null ? [1] : []
+      content {
+        start_date = var.maintenance_config.deny_maintenance_period.start_date
+        end_date   = var.maintenance_config.deny_maintenance_period.end_date
+        time       = var.maintenance_config.deny_maintenance_period.start_time
+      }
+    }
+
     dynamic "insights_config" {
       for_each = var.insights_config != null ? [1] : []
       content {
@@ -129,6 +138,15 @@ resource "google_sql_database_instance" "primary" {
         record_application_tags = var.insights_config.record_application_tags
         record_client_address   = var.insights_config.record_client_address
         query_plans_per_minute  = var.insights_config.query_plans_per_minute
+      }
+    }
+
+    dynamic "maintenance_window" {
+      for_each = var.maintenance_config.maintenance_window != null ? [""] : []
+      content {
+        day          = var.maintenance_config.maintenance_window.day
+        hour         = var.maintenance_config.maintenance_window.hour
+        update_track = var.maintenance_config.maintenance_window.update_track
       }
     }
   }

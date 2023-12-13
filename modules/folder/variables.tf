@@ -21,6 +21,15 @@ variable "contacts" {
   nullable    = false
 }
 
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    org_policies = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "firewall_policy" {
   description = "Hierarchical firewall policy to associate to this folder."
   type = object({
@@ -170,12 +179,6 @@ variable "org_policies" {
   }))
   default  = {}
   nullable = false
-}
-
-variable "org_policies_data_path" {
-  description = "Path containing org policies in YAML format."
-  type        = string
-  default     = null
 }
 
 variable "parent" {

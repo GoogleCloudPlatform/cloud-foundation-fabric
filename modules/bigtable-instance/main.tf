@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,11 @@ locals {
 }
 
 resource "google_bigtable_instance" "default" {
-  project = var.project_id
-  name    = var.name
-
-  instance_type       = var.instance_type
-  display_name        = var.display_name == null ? var.display_name : var.name
+  project             = var.project_id
+  name                = var.name
+  display_name        = coalesce(var.display_name, var.name)
   deletion_protection = var.deletion_protection
+  labels              = var.labels
 
   dynamic "cluster" {
     for_each = local.clusters_autoscaling
