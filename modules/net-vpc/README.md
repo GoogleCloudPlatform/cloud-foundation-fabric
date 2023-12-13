@@ -463,7 +463,6 @@ Policy based routes can be configured through the `policy_based_routes` variable
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  for_each   = local.route_types
   project_id = var.project_id
   name       = "my-vpc"
   policy_based_routes = {
