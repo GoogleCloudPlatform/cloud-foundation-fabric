@@ -477,8 +477,8 @@ module "vpc" {
       next_hop_ilb_ip = "10.0.0.253"
       priority        = 101
       filter = {
-        src_range   = "10.0.0.0/8"  
-        dest_range  = "0.0.0.0/0" 
+        src_range  = "10.0.0.0/8"
+        dest_range = "0.0.0.0/0"
       }
       target = {
         interconnect_attachment = "europe-west8"
