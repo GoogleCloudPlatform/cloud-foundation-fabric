@@ -139,7 +139,11 @@ variable "policy_based_routes" {
   validation {
     condition = alltrue([
       for r in var.policy_based_routes :
-      r.use_default_routing != (r.next_hop_ilb_ip != null)
+      (
+        (r.use_default_routing == true ? 1 : 0)
+        +
+        (r.next_hop_ilb_ip != null ? 1 : 0)
+      ) == 1
     ])
     error_message = "Either set `use_default_routing = true` or specify an internal passthrough LB IP."
   }
