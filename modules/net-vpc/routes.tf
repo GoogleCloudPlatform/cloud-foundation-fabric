@@ -125,13 +125,13 @@ resource "google_network_connectivity_policy_based_route" "default" {
     src_range        = each.value.filter.src_range
   }
   dynamic "virtual_machine" {
-    for_each = each.value.target.tags != null ? { 1 = 1 } : {}
+    for_each = each.value.target.tags != null ? [""] : []
     content {
       tags = each.value.target.tags
     }
   }
   dynamic "interconnect_attachment" {
-    for_each = each.value.target.interconnect_attachment != null ? { 1 = 1 } : {}
+    for_each = each.value.target.interconnect_attachment != null ? [""] : []
     content {
       region = each.value.target.interconnect_attachment
     }
