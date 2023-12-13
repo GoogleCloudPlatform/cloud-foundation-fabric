@@ -18,7 +18,7 @@
 
 locals {
   hc = (
-    var.health_check == null ? null : var.health_check_config
+    var.health_check != null ? null : var.health_check_config
   )
   hc_grpc  = try(local.hc.grpc, null) != null
   hc_http  = try(local.hc.http, null) != null
