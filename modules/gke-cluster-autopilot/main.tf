@@ -58,6 +58,10 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  service_external_ips_config {
+    enabled = var.service_external_ips
+  }
+
   dynamic "authenticator_groups_config" {
     for_each = var.enable_features.groups_for_rbac != null ? [""] : []
     content {

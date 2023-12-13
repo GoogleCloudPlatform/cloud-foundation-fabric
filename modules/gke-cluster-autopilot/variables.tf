@@ -236,6 +236,12 @@ variable "release_channel" {
   }
 }
 
+variable "service_external_ips" {
+  description = "Controls whether external ips specified by a service will be allowed."
+  type        = bool
+  default     = true
+}
+
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
