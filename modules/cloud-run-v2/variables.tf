@@ -14,34 +14,26 @@
  * limitations under the License.
  */
 
-variable "container_concurrency" {
-  description = "Maximum allowed in-flight (concurrent) requests per container of the revision."
-  type        = number
-  default     = null
-}
-
 variable "containers" {
-  description = "Containers in arbitrary key => attributes format."
+  description = "Containers in name => attributes format."
   type = map(object({
     image   = string
-    args    = optional(list(string))
     command = optional(list(string))
-    env     = optional(map(string), {})
+    args    = optional(list(string))
+    env     = optional(map(string))
     env_from_key = optional(map(object({
-      key  = string
-      name = string
-    })), {})
+      secret  = string
+      version = string
+    })))
     liveness_probe = optional(object({
-      action = object({
-        grpc = optional(object({
-          port    = optional(number)
-          service = optional(string)
-        }))
-        http_get = optional(object({
-          http_headers = optional(map(string), {})
-          path         = optional(string)
-        }))
-      })
+      grpc = optional(object({
+        port    = optional(number)
+        service = optional(string)
+      }))
+      http_get = optional(object({
+        http_headers = optional(map(string))
+        path         = optional(string)
+      }))
       failure_threshold     = optional(number)
       initial_delay_seconds = optional(number)
       period_seconds        = optional(number)
@@ -50,34 +42,33 @@ variable "containers" {
     ports = optional(map(object({
       container_port = optional(number)
       name           = optional(string)
-    })), {})
+    })))
     resources = optional(object({
       limits = optional(object({
         cpu    = string
         memory = string
       }))
-      cpu_idle = optional(bool)
+      cpu_idle          = optional(bool)
+      startup_cpu_boost = optional(bool)
     }))
     startup_probe = optional(object({
-      action = object({
-        grpc = optional(object({
-          port    = optional(number)
-          service = optional(string)
-        }))
-        http_get = optional(object({
-          http_headers = optional(map(string), {})
-          path         = optional(string)
-        }))
-        tcp_socket = optional(object({
-          port = optional(number)
-        }))
-      })
+      grpc = optional(object({
+        port    = optional(number)
+        service = optional(string)
+      }))
+      http_get = optional(object({
+        http_headers = optional(map(string))
+        path         = optional(string)
+      }))
+      tcp_socket = optional(object({
+        port = optional(number)
+      }))
       failure_threshold     = optional(number)
       initial_delay_seconds = optional(number)
       period_seconds        = optional(number)
       timeout_seconds       = optional(number)
     }))
-    volume_mounts = optional(map(string), {})
+    volume_mounts = optional(map(string))
   }))
   default  = {}
   nullable = false
@@ -89,18 +80,12 @@ variable "eventarc_triggers" {
     audit_log = optional(map(object({
       method  = string
       service = string
-    })), {})
-    pubsub                 = optional(map(string), {})
+    })))
+    pubsub                 = optional(map(string))
     service_account_email  = optional(string)
     service_account_create = optional(bool, false)
   })
   default = {}
-}
-
-variable "gen2_execution_environment" {
-  description = "Use second generation execution environment."
-  type        = bool
-  default     = false
 }
 
 variable "iam" {
@@ -109,16 +94,20 @@ variable "iam" {
   default     = {}
 }
 
-variable "ingress_settings" {
+variable "ingress" {
   description = "Ingress settings."
   type        = string
   default     = null
   validation {
-    condition = contains(
-      ["all", "internal", "internal-and-cloud-load-balancing"],
-      coalesce(var.ingress_settings, "all")
+    condition = (
+      var.ingress == null ? true : contains(
+        ["INGRESS_TRAFFIC_ALL", "INGRESS_TRAFFIC_INTERNAL_ONLY",
+      "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"], var.ingress)
     )
-    error_message = "Ingress settings should be one of 'all', 'internal', 'internal-and-cloud-load-balancing'."
+    error_message = <<EOF
+    Ingress should be one of INGRESS_TRAFFIC_ALL, INGRESS_TRAFFIC_INTERNAL_ONLY,
+    INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER.
+    EOF
   }
 }
 
@@ -133,15 +122,20 @@ variable "launch_stage" {
   type        = string
   default     = null
   validation {
-    condition = contains(
-      ["UNIMPLEMENTED", "PRELAUNCH", "EARLY_ACCESS", "ALPHA", "BETA",
-      "GA", "DEPRECATED"], coalesce(var.launch_stage, "GA")
+    condition = (
+      var.launch_stage == null ? true : contains(
+        ["UNIMPLEMENTED", "PRELAUNCH", "EARLY_ACCESS", "ALPHA", "BETA",
+      "GA", "DEPRECATED"], var.launch_stage)
     )
-    error_message = "The launch stage should be one of UNIMPLEMENTED, PRELAUNCH, EARLY_ACCESS, ALPHA, BETA, GA, DEPRECATED."
+    error_message = <<EOF
+    The launch stage should be one of UNIMPLEMENTED, PRELAUNCH, EARLY_ACCESS, ALPHA,
+    BETA, GA, DEPRECATED.
+    EOF
   }
 }
+
 variable "name" {
-  description = "Name used for cloud run service."
+  description = "Name used for Cloud Run service."
   type        = string
 }
 
@@ -166,29 +160,31 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "revision_annotations" {
-  description = "Configure revision template annotations."
+variable "revision" {
+  description = "Revision template configurations."
   type = object({
-    autoscaling = optional(object({
-      max_scale = number
-      min_scale = number
+    name                       = optional(string)
+    gen2_execution_environment = optional(bool)
+    max_concurrency            = optional(number)
+    max_instance_count         = optional(number)
+    min_instance_count         = optional(number)
+    vpc_access = optional(object({
+      connector = optional(string)
+      egress    = optional(string)
+      subnet    = optional(string)
+      tags      = optional(list(string))
     }))
-    cloudsql_instances  = optional(list(string), [])
-    vpcaccess_connector = optional(string)
-    vpcaccess_egress    = optional(string)
-    network_interfaces = optional(object({
-      subnetwork = optional(string)
-      tags       = optional(list(string))
-    }))
+    timeout = optional(string)
   })
   default  = {}
   nullable = false
-}
-
-variable "revision_name" {
-  description = "Revision name."
-  type        = string
-  default     = null
+  validation {
+    condition = (
+      try(var.revision.vpc_access.egress, null) == null ? true : contains(
+      ["ALL_TRAFFIC", "PRIVATE_RANGES_ONLY"], var.revision.vpc_access.egress)
+    )
+    error_message = "Egress should be one of ALL_TRAFFIC, PRIVATE_RANGES_ONLY."
+  }
 }
 
 variable "service_account" {
@@ -203,23 +199,11 @@ variable "service_account_create" {
   default     = false
 }
 
-variable "startup_cpu_boost" {
-  description = "Enable startup cpu boost."
-  type        = bool
-  default     = false
-}
-
-variable "timeout_seconds" {
-  description = "Maximum duration the instance is allowed for responding to a request."
-  type        = number
-  default     = null
-}
-
 variable "traffic" {
-  description = "Traffic steering configuration. If revision name is null the latest revision will be used."
+  description = "Traffic steering configuration."
   type = map(object({
-    percent = number
     latest  = optional(bool)
+    percent = optional(number)
     tag     = optional(string)
   }))
   default  = {}
@@ -229,19 +213,22 @@ variable "traffic" {
 variable "volumes" {
   description = "Named volumes in containers in name => attributes format."
   type = map(object({
-    secret_name  = string
-    default_mode = optional(string)
-    items = optional(map(object({
-      path = string
-      mode = optional(string)
-    })))
+    secret = optional(object({
+      secret       = string
+      default_mode = optional(string)
+      path         = optional(string)
+      version      = optional(string)
+      mode         = optional(string)
+    }))
+    cloud_sql_instances = optional(list(string))
+    empty_dir_size      = optional(string)
   }))
   default  = {}
   nullable = false
 }
 
 variable "vpc_connector_create" {
-  description = "Populate this to create a VPC connector. You can then refer to it in the template annotations."
+  description = "Populate this to create a Serverless VPC Access connector."
   type = object({
     ip_cidr_range = optional(string)
     vpc_self_link = optional(string)
