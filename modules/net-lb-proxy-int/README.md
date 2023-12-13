@@ -90,7 +90,7 @@ module "int-tcp-proxy" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=3
 ```
 
 ### Instance Groups
