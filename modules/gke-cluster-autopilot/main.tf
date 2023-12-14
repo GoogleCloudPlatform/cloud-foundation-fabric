@@ -59,7 +59,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   service_external_ips_config {
-    enabled = var.service_external_ips
+    enabled = var.enable_features.service_external_ips
   }
 
   dynamic "authenticator_groups_config" {

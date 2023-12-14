@@ -86,7 +86,8 @@ variable "enable_features" {
       enable_network_egress_metering       = optional(bool)
       enable_resource_consumption_metering = optional(bool)
     }))
-    tpu = optional(bool, false)
+    service_external_ips = optional(bool, true)
+    tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
       topic_id = optional(string)
     }))
@@ -234,12 +235,6 @@ variable "release_channel" {
     condition     = contains(["RAPID", "REGULAR", "STABLE"], var.release_channel)
     error_message = "Must be one of: RAPID, REGULAR, STABLE."
   }
-}
-
-variable "service_external_ips" {
-  description = "Controls whether external ips specified by a service will be allowed."
-  type        = bool
-  default     = true
 }
 
 variable "vpc_config" {
