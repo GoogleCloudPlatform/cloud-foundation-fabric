@@ -57,7 +57,7 @@ module "project-factory" {
   # location where the yaml files are read from
   factory_data_path = "data"
 }
-# tftest modules=7 resources=31 files=prj-app-1,prj-app-2,prj-app-3 inventory=example.yaml
+# tftest modules=7 resources=33 files=prj-app-1,prj-app-2,prj-app-3 inventory=example.yaml
 ```
 
 ```yaml
@@ -99,10 +99,13 @@ service_accounts:
 services:
 - compute.googleapis.com
 - container.googleapis.com
+- run.googleapis.com
 - storage.googleapis.com
 shared_vpc_service_config:
   host_project: foo-host
   service_identity_iam:
+    "roles/vpcaccess.user":
+    - cloudrun
     "roles/container.hostServiceAgentUser":
     - container-engine
   service_identity_subnets_iam:
@@ -111,7 +114,7 @@ shared_vpc_service_config:
     - container-engine
   subnets_iam:
     europe-west1/prod-default-ew1:
-    - user:team-1@example.com
+    - group:team-1@example.com
 
 # tftest-file id=prj-app-2 path=data/prj-app-2.yaml
 ```
