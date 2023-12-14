@@ -31,8 +31,20 @@ values:
     host_project: test-host
     service_project: test-service
     timeouts: null
-  module.service-project.google_compute_subnetwork_iam_member.shared_vpc_host_robots["europe-west1:gce:compute"]:
+  module.service-project.google_compute_subnetwork_iam_member.shared_vpc_host_robots["europe-west1:gce:cloudservices"]:
     condition: []
+    project: test-host
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: gce
+  module.service-project.google_compute_subnetwork_iam_member.shared_vpc_host_robots["europe-west1:gce:container-engine"]:
+    condition: [ ]
+    project: test-host
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: gce
+  module.service-project.google_compute_subnetwork_iam_member.shared_vpc_host_subnets_iam["europe-west1:gce:group:team-1@example.com"]:
+    condition: [ ]
     project: test-host
     region: europe-west1
     role: roles/compute.networkUser
@@ -53,14 +65,41 @@ values:
     project: test-service
     service: compute.googleapis.com
     timeouts: null
+  module.service-project.google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-service
+    service: container.googleapis.com
+    timeouts: null
+  module.service-project.google_project_iam_member.shared_vpc_host_robots["roles/container.hostServiceAgentUser:container-engine"]:
+    condition: [ ]
+    project: test-host
+    role: roles/container.hostServiceAgentUser
+  module.service-project.google_org_policy_policy.default["compute.restrictSharedVpcSubnetworks"]:
+    name: projects/test-service/policies/compute.restrictSharedVpcSubnetworks
+    parent: projects/test-service
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: [ ]
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - projects/host/regions/europe-west1/subnetworks/gce
+          denied_values: null
 
 counts:
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
-  google_compute_subnetwork_iam_member: 2
+  google_compute_subnetwork_iam_member: 3
   google_project: 2
-  google_project_service: 1
+  google_project_iam_member: 1
+  google_project_service: 2
+  google_org_policy_policy: 1
   modules: 2
-  resources: 7
+  resources: 11
 
 outputs: {}

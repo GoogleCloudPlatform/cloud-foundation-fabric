@@ -66,7 +66,7 @@ def test_example(plan_validator, tmp_path, example):
     counts = summary.counts
     num_modules, num_resources = counts['modules'], counts['resources']
     assert expected_modules == num_modules, 'wrong number of modules'
-    assert expected_resources == num_resources, 'wrong number of resources'
+    assert expected_resources == num_resources, f'wrong number of resources {counts["resources"]}'
 
     # TODO(jccb): this should probably be done in check_documentation
     # but we already have all the data here.

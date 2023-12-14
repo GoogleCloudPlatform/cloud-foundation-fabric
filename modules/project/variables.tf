@@ -302,10 +302,12 @@ variable "shared_vpc_service_config" {
   description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
   # the list of valid service identities is in service-agents.yaml
   type = object({
-    host_project                = string
-    service_identity_iam        = optional(map(list(string)), {})
-    service_identity_subnet_iam = optional(map(list(string)), {})
-    service_iam_grants          = optional(list(string), [])
+    host_project                 = string
+    host_project_iam             = optional(list(string), [])
+    service_identity_iam         = optional(map(list(string)), {})
+    service_identity_subnets_iam = optional(map(list(string)), {})
+    service_iam_grants           = optional(list(string), [])
+    subnets_iam                  = optional(map(list(string)), {})
   })
   default = {
     host_project = null
@@ -314,10 +316,12 @@ variable "shared_vpc_service_config" {
   validation {
     condition = var.shared_vpc_service_config.host_project != null || (
       var.shared_vpc_service_config.host_project == null &&
+      length(var.shared_vpc_service_config.host_project_iam) == 0 &&
       length(var.shared_vpc_service_config.service_iam_grants) == 0 &&
-      length(var.shared_vpc_service_config.service_iam_grants) == 0
+      length(var.shared_vpc_service_config.service_identity_iam) == 0 &&
+      length(var.shared_vpc_service_config.subnets_iam) == 0
     )
-    error_message = "You need to provide host_project when providing service_identity_iam or service_iam_grants"
+    error_message = "You need to provide host_project when providing shared vpc host and subnets iam permissions."
   }
 }
 
