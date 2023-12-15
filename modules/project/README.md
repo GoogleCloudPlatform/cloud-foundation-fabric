@@ -397,57 +397,6 @@ module "service-project" {
 # tftest modules=2 resources=7 inventory=shared-vpc-subnet-grants.yaml
 ```
 
-The last example provides a reference Shared VPC configuration that adheres to the principle of least privilege by:
-- Granting API services and other identities roles at the subnet level
-- Restricting access to the list of subnets for the new project via Org Policy
-
-```hcl
-module "host-project" {
-  source          = "./fabric/modules/project"
-  billing_account = var.billing_account_id
-  name            = "host"
-  parent          = var.folder_id
-  prefix          = var.prefix
-  shared_vpc_host_config = {
-    enabled = true
-  }
-}
-
-module "service-project" {
-  source          = "./fabric/modules/project"
-  billing_account = var.billing_account_id
-  name            = "service"
-  parent          = var.folder_id
-  prefix          = var.prefix
-  org_policies = {
-    "compute.restrictSharedVpcSubnetworks" = {
-      rules = [{
-        allow = {
-          values = ["projects/host/regions/europe-west1/subnetworks/gce"]
-        }
-      }]
-    }
-  }
-  services = [
-    "compute.googleapis.com",
-    "container.googleapis.com"
-  ]
-  shared_vpc_service_config = {
-    host_project = module.host-project.project_id
-    service_identity_iam = {
-      "roles/container.hostServiceAgentUser" = ["container-engine"]
-    }
-    service_identity_subnet_iam = {
-      "europe-west1/gce" = ["cloudservices", "container-engine"]
-    }
-    network_subnet_users = {
-      "europe-west1/gce" = ["group:team-1@example.com"]
-    }
-  }
-}
-# tftest modules=2 resources=11 inventory=shared-vpc-reference.yaml
-```
-
 ## Organization Policies
 
 To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
