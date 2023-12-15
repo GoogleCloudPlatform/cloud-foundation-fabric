@@ -317,7 +317,7 @@ module "service-project" {
 # tftest modules=2 resources=9 inventory=shared-vpc-auto-grants.yaml e2e
 ```
 
-The `compute.networkUser` role for identities other than API services (e.g. users, groups or service accounts) can be managed via the `network_users` attribute, by specifying the list of identities.
+The `compute.networkUser` role for identities other than API services (e.g. users, groups or service accounts) can be managed via the `network_users` attribute, by specifying the list of identities. Avoid using dynamically generated lists, as this attribute is involved in a `for_each` loop and may result in Terraform errors.
 
 Note that this configuration grants the role at project level which results in the identities being able to configure resources on all the VPCs and subnets belonging to the host project. The most reliable way to restrict which subnets can be used on the newly created project is via the `compute.restrictSharedVpcSubnetworks` organization policy. For more information on the Org Policy configuration check the corresponding [Organization Policy section](#organization-policies). The following example details this configuration.
 
