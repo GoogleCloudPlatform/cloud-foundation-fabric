@@ -51,6 +51,10 @@ HTTPRequest = collections.namedtuple(
     }])
 
 
+class NotFound(Exception):
+  pass
+
+
 class Quota(_Quota):
   'Compute quota.'
 
@@ -152,6 +156,9 @@ def fetch(request, delete=False):
   except json.JSONDecodeError as e:
     logging.critical(e)
     raise SystemExit(f'Error decoding response: {response.content}')
+  if response.status_code == 404:
+    raise NotFound(
+        f'Resource not found. Error: {rdata.get("error")} URL: {request.url}')
   if response.status_code != 200:
     logging.critical(rdata)
     error = rdata.get('error', {})
@@ -175,10 +182,14 @@ def get_quotas(project, region='global'):
     request = HTTPRequest(URL_PROJECT.format(project))
   else:
     request = HTTPRequest(URL_REGION.format(project, region))
-  resp = fetch(request)
-  ts = datetime.datetime.utcnow()
-  for quota in resp.get('quotas'):
-    yield Quota(project, region, ts, **quota)
+  try:
+    resp = fetch(request)
+  except NotFound as e:
+    logging.warn(e.args[0])
+  else:
+    ts = datetime.datetime.utcnow()
+    for quota in resp.get('quotas'):
+      yield Quota(project, region, ts, **quota)
 
 
 @click.command()
