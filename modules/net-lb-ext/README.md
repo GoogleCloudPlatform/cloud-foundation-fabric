@@ -290,7 +290,7 @@ module "nlb" {
 | [group_self_links](outputs.tf#L53) | Optional unmanaged instance group self links. |  |
 | [groups](outputs.tf#L60) | Optional unmanaged instance group resources. |  |
 | [health_check](outputs.tf#L65) | Auto-created health-check resource. |  |
-| [health_check_self_id](outputs.tf#L70) | Auto-created health-check self id. |  |
+| [health_check_id](outputs.tf#L70) | Auto-created health-check id. |  |
 | [health_check_self_link](outputs.tf#L75) | Auto-created health-check self link. |  |
 | [id](outputs.tf#L80) | Fully qualified forwarding rule ids. |  |
 <!-- END TFDOC -->
