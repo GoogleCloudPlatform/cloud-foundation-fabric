@@ -233,7 +233,7 @@ The module allows managing Shared VPC status for both hosts and service projects
 Project service association for VPC host projects can be
 
 - authoritatively managed in the host project by enabling Shared VPC and specifying the set of service projects, or
-- additively managed in service projects by by enabling Shared VPC in the host project and then "attaching" each service project independently
+- additively managed in service projects by enabling Shared VPC in the host project and then "attaching" each service project independently
 
 IAM bindings in the host project for API service identities can be managed from service projects in two different ways:
 
@@ -317,9 +317,9 @@ module "service-project" {
 # tftest modules=2 resources=9 inventory=shared-vpc-auto-grants.yaml e2e
 ```
 
-The 'networkUser' role for identities other than API services (e.g. users, groups or service accounts) can be managed via the `host_project_iam` attribute, by specifying the list of identities.
+The `compute.networkUser` role for identities other than API services (e.g. users, groups or service accounts) can be managed via the `network_users` attribute, by specifying the list of identities.
 
-Note that this configuration grants the 'networkUser' role at project level which results in the identity being able to configure resources on all the VPCs and subnets belonging to the host project without further restrictions. It is possible, or better recommended, to restrict which subnets can be used on the newly created project using an Org Policy. The latter applied at project level can restrict access to a list of subnets from the host project. For more information on the Org Policy configuration check the corresponding [Organization Policy section](#organization-policies). The following example details this configuration.
+Note that this configuration grants the role at project level which results in the identities being able to configure resources on all the VPCs and subnets belonging to the host project. The most reliable way to restrict which subnets can be used on the newly created project is via the `compute.restrictSharedVpcSubnetworks` organization policy. For more information on the Org Policy configuration check the corresponding [Organization Policy section](#organization-policies). The following example details this configuration.
 
 ```hcl
 module "host-project" {
@@ -352,8 +352,8 @@ module "service-project" {
     "container.googleapis.com",
   ]
   shared_vpc_service_config = {
-    host_project     = module.host-project.project_id
-    host_project_iam = ["group:team-1@example.com"]
+    host_project  = module.host-project.project_id
+    network_users = ["group:team-1@example.com"]
     # reuse the list of services from the module's outputs
     service_iam_grants = module.service-project.services
   }
@@ -361,9 +361,7 @@ module "service-project" {
 # tftest modules=2 resources=11 inventory=shared-vpc-host-project-iam.yaml e2e
 ```
 
-In specific cases it might make sense to selectively grant the `compute.networkUser` role for all kind of identities at the subnet level, although you can restrict access via org policies this is also supported by this module.
-
-In this example, Compute service identity and `team-1@example.com` Google Group will be granted compute.networkUser in the `gce` subnet defined in `europe-west1` region via the `service_identity_subnets_iam` and `subnets_iam` attributes.
+In specific cases it might make sense to selectively grant the `compute.networkUser` role for service identities at the subnet level, and while that is best done via org policies it's also supported by this module. In this example, Compute service identity and `team-1@example.com` Google Group will be granted compute.networkUser in the `gce` subnet defined in `europe-west1` region via the `service_identity_subnet_iam` and `network_subnet_users` attributes.
 
 ```hcl
 module "host-project" {
@@ -388,10 +386,10 @@ module "service-project" {
   ]
   shared_vpc_service_config = {
     host_project = module.host-project.project_id
-    service_identity_subnets_iam = {
+    service_identity_subnet_iam = {
       "europe-west1/gce" = ["compute"]
     }
-    subnets_iam = {
+    network_subnet_users = {
       "europe-west1/gce" = ["group:team-1@example.com"]
     }
   }
@@ -439,10 +437,10 @@ module "service-project" {
     service_identity_iam = {
       "roles/container.hostServiceAgentUser" = ["container-engine"]
     }
-    service_identity_subnets_iam = {
+    service_identity_subnet_iam = {
       "europe-west1/gce" = ["cloudservices", "container-engine"]
     }
-    subnets_iam = {
+    network_subnet_users = {
       "europe-west1/gce" = ["group:team-1@example.com"]
     }
   }
@@ -1027,9 +1025,9 @@ module "bucket" {
 | [service_perimeter_standard](variables.tf#L280) | Name of VPC-SC Standard perimeter to add project into. See comment in the variables file for format. | <code>string</code> |  | <code>null</code> |
 | [services](variables.tf#L286) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [shared_vpc_host_config](variables.tf#L292) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code title="object&#40;&#123;&#10;  enabled          &#61; bool&#10;  service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [shared_vpc_service_config](variables.tf#L301) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project                 &#61; string&#10;  host_project_iam             &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_identity_iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_identity_subnets_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  subnets_iam                  &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [skip_delete](variables.tf#L328) | Allows the underlying resources to be destroyed without destroying the project itself. | <code>bool</code> |  | <code>false</code> |
-| [tag_bindings](variables.tf#L334) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [shared_vpc_service_config](variables.tf#L301) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project                &#61; string&#10;  network_users               &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_identity_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_identity_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants          &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  network_subnet_users        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [skip_delete](variables.tf#L329) | Allows the underlying resources to be destroyed without destroying the project itself. | <code>bool</code> |  | <code>false</code> |
+| [tag_bindings](variables.tf#L335) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

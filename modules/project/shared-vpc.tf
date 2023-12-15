@@ -55,8 +55,8 @@ locals {
     "${b.role}:${b.service}" => b
   }
   # normalize the service identity subnet IAM bindings
-  _svpc_service_subnets_iam = flatten([
-    for subnet, services in local._svpc.service_identity_subnets_iam : [
+  _svpc_service_subnet_iam = flatten([
+    for subnet, services in local._svpc.service_identity_subnet_iam : [
       for service in services : [{
         region  = split("/", subnet)[0]
         subnet  = split("/", subnet)[1]
@@ -64,16 +64,16 @@ locals {
       }]
     ]
   ])
-  svpc_service_subnets_iam = {
-    for v in local._svpc_service_subnets_iam :
+  svpc_service_subnet_iam = {
+    for v in local._svpc_service_subnet_iam :
     "${v.region}:${v.subnet}:${v.service}" => v
   }
-  # normalize the service identity subnet IAM bindings
-  _svpc_subnets_iam = (
-    local._svpc.subnets_iam == null || local._svpc.host_project == null
+  # normalize the network user subnet IAM binding
+  _svpc_network_user_subnet_iam = (
+    local._svpc.network_subnet_users == null || local._svpc.host_project == null
     ? []
     : flatten([
-      for subnet, members in local._svpc.subnets_iam : [
+      for subnet, members in local._svpc.network_subnet_users : [
         for member in members : {
           region = split("/", subnet)[0]
           subnet = split("/", subnet)[1]
@@ -82,8 +82,8 @@ locals {
       ]
     ])
   )
-  svpc_subnets_iam = {
-    for v in local._svpc_subnets_iam :
+  svpc_network_user_subnet_iam = {
+    for v in local._svpc_network_user_subnet_iam :
     "${v.region}:${v.subnet}:${v.member}" => v
   }
 }
@@ -130,7 +130,7 @@ resource "google_project_iam_member" "shared_vpc_host_robots" {
 }
 
 resource "google_project_iam_member" "shared_vpc_host_iam" {
-  for_each   = toset(var.shared_vpc_service_config.host_project_iam)
+  for_each   = toset(var.shared_vpc_service_config.network_users)
   project    = var.shared_vpc_service_config.host_project
   role       = "roles/compute.networkUser"
   member     = each.value
@@ -138,7 +138,7 @@ resource "google_project_iam_member" "shared_vpc_host_iam" {
 }
 
 resource "google_compute_subnetwork_iam_member" "shared_vpc_host_robots" {
-  for_each   = local.svpc_service_subnets_iam
+  for_each   = local.svpc_service_subnet_iam
   project    = var.shared_vpc_service_config.host_project
   region     = each.value.region
   subnetwork = each.value.subnet
@@ -159,7 +159,7 @@ resource "google_compute_subnetwork_iam_member" "shared_vpc_host_robots" {
 }
 
 resource "google_compute_subnetwork_iam_member" "shared_vpc_host_subnets_iam" {
-  for_each   = local.svpc_subnets_iam
+  for_each   = local.svpc_network_user_subnet_iam
   project    = var.shared_vpc_service_config.host_project
   region     = each.value.region
   subnetwork = each.value.subnet
