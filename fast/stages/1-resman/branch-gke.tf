@@ -186,7 +186,8 @@ module "branch-gke-dev-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-gke-dev-sa.0.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-gke-dev-sa.0.iam_email]
+    "roles/storage.objectViewer" = [module.branch-gke-dev-r-sa.0.iam_email]
   }
 }
 
@@ -200,6 +201,7 @@ module "branch-gke-prod-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-gke-prod-sa.0.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-gke-prod-sa.0.iam_email]
+    "roles/storage.objectViewer" = [module.branch-gke-prod-r-sa.0.iam_email]
   }
 }

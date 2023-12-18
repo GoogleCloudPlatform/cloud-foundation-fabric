@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description CI/CD resources for the data platform branch.
+# tfdoc:file:description CI/CD resources for the GKE multitenant branch.
 
 # source repositories
 
@@ -179,8 +179,8 @@ module "branch-gke-prod-sa-cicd" {
 module "branch-gke-dev-r-sa-cicd" {
   source = "../../../modules/iam-service-account"
   for_each = (
-    try(local.cicd_repositories.data_platform_dev.name, null) != null
-    ? { 0 = local.cicd_repositories.data_platform_dev }
+    try(local.cicd_repositories.gke_dev.name, null) != null
+    ? { 0 = local.cicd_repositories.gke_dev }
     : {}
   )
   project_id   = var.automation.project_id
@@ -213,8 +213,8 @@ module "branch-gke-dev-r-sa-cicd" {
 module "branch-gke-prod-r-sa-cicd" {
   source = "../../../modules/iam-service-account"
   for_each = (
-    try(local.cicd_repositories.data_platform_prod.name, null) != null
-    ? { 0 = local.cicd_repositories.data_platform_prod }
+    try(local.cicd_repositories.gke_prod.name, null) != null
+    ? { 0 = local.cicd_repositories.gke_prod }
     : {}
   )
   project_id   = var.automation.project_id
