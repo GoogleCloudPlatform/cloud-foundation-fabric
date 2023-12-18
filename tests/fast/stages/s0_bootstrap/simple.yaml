@@ -20,7 +20,7 @@ counts:
   google_org_policy_policy: 13
   google_organization_iam_binding: 22
   google_organization_iam_custom_role: 6
-  google_organization_iam_member: 20
+  google_organization_iam_member: 22
   google_project: 3
   google_project_iam_binding: 19
   google_project_iam_member: 6
@@ -37,7 +37,7 @@ counts:
   google_tags_tag_value: 1
   local_file: 7
   modules: 15
-  resources: 165
+  resources: 167
 
 outputs:
   custom_roles:
