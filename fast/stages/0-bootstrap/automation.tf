@@ -80,7 +80,8 @@ module "automation-project" {
       module.automation-tf-resman-r-sa.iam_email
     ]
     "roles/viewer" = [
-      module.automation-tf-bootstrap-r-sa.iam_email
+      module.automation-tf-bootstrap-r-sa.iam_email,
+      module.automation-tf-resman-r-sa.iam_email
     ]
   }
   iam_bindings = {
