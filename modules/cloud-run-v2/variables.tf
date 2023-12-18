@@ -199,17 +199,6 @@ variable "service_account_create" {
   default     = false
 }
 
-variable "traffic" {
-  description = "Traffic steering configuration."
-  type = map(object({
-    latest  = optional(bool)
-    percent = optional(number)
-    tag     = optional(string)
-  }))
-  default  = {}
-  nullable = false
-}
-
 variable "volumes" {
   description = "Named volumes in containers in name => attributes format."
   type = map(object({

@@ -249,23 +249,6 @@ resource "google_cloud_run_v2_service" "service" {
     }
   }
 
-  dynamic "traffic" {
-    for_each = var.traffic
-    content {
-      type = (
-        traffic.value.latest == true
-        ? "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
-        : "TRAFFIC_TARGET_ALLOCATION_TYPE_REVISION"
-      )
-      revision = (
-        traffic.value.latest == true
-        ? null : "${var.name}-${traffic.key}"
-      )
-      percent = traffic.value.percent
-      tag     = traffic.value.tag
-    }
-  }
-
   lifecycle {
     ignore_changes = [
       template.0.annotations["run.googleapis.com/operation-id"],
