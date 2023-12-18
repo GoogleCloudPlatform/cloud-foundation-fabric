@@ -22,64 +22,88 @@ locals {
         apply = try(module.branch-dp-dev-sa-cicd.0.email, null)
         plan  = try(module.branch-dp-dev-r-sa-cicd.0.email, null)
       }
-      tf_providers_file = "3-data-platform-dev-providers.tf"
-      tf_var_files      = local.cicd_workflow_var_files.stage_3
+      tf_providers_files = {
+        apply = "3-data-platform-dev-providers.tf"
+        plan  = "3-data-platform-dev-providers-r.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
     }
     data_platform_prod = {
       service_accounts = {
         apply = try(module.branch-dp-prod-sa-cicd.0.email, null)
         plan  = try(module.branch-dp-prod-r-sa-cicd.0.email, null)
       }
-      tf_providers_file = "3-data-platform-prod-providers.tf"
-      tf_var_files      = local.cicd_workflow_var_files.stage_3
+      tf_providers_files = {
+        apply = "3-data-platform-prod-providers.tf"
+        plan  = "3-data-platform-prod-providers-r.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
     }
     gke_dev = {
       service_accounts = {
         apply = try(module.branch-gke-dev-sa-cicd.0.email, null)
         plan  = try(module.branch-gke-dev-r-sa-cicd.0.email, null)
       }
-      tf_providers_file = "3-gke-dev-providers.tf"
-      tf_var_files      = local.cicd_workflow_var_files.stage_3
+      tf_providers_files = {
+        apply = "3-gke-dev-providers.tf"
+        plan  = "3-gke-dev-providers-r.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
     }
     gke_prod = {
       service_accounts = {
         apply = try(module.branch-gke-prod-sa-cicd.0.email, null)
         plan  = try(module.branch-gke-prod-r-sa-cicd.0.email, null)
       }
-      tf_providers_file = "3-gke-prod-providers.tf"
-      tf_var_files      = local.cicd_workflow_var_files.stage_3
+      tf_providers_files = {
+        apply = "3-gke-prod-providers.tf"
+        plan  = "3-gke-prod-providers-r.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
     }
     networking = {
       service_accounts = {
         apply = try(module.branch-network-sa-cicd.0.email, null)
         plan  = try(module.branch-network-r-sa-cicd.0.email, null)
       }
-      tf_providers_file = "2-networking-providers.tf"
-      tf_var_files      = local.cicd_workflow_var_files.stage_2
+      tf_providers_files = {
+        apply = "2-networking-providers.tf"
+        plan  = "2-networking-providers-r.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_2
     }
     project_factory_dev = {
       service_accounts = {
         apply = try(module.branch-pf-dev-sa-cicd.0.email, null)
         plan  = try(module.branch-pf-dev-r-sa-cicd.0.email, null)
       }
-      tf_providers_file = "3-project-factory-dev-providers.tf"
-      tf_var_files      = local.cicd_workflow_var_files.stage_3
+      tf_providers_files = {
+        apply = "3-project-factory-dev-providers.tf"
+        plan  = "3-project-factory-dev-providers-r.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
     }
     project_factory_prod = {
       service_accounts = {
         apply = try(module.branch-pf-prod-sa-cicd.0.email, null)
         plan  = try(module.branch-pf-prod-r-sa-cicd.0.email, null)
       }
-      tf_providers_file = "3-project-factory-prod-providers.tf"
-      tf_var_files      = local.cicd_workflow_var_files.stage_3
+      tf_providers_files = {
+        apply = "3-project-factory-prod-providers.tf"
+        plan  = "3-project-factory-prod-providers-r.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
     }
     security = {
       service_accounts = {
         apply = try(module.branch-security-sa-cicd.0.email, null)
         plan  = try(module.branch-security-r-sa-cicd.0.email, null)
       }
-      tf_providers_file = "2-security-providers.tf"
-      tf_var_files      = local.cicd_workflow_var_files.stage_2
+      tf_providers_files = {
+        apply = "2-security-providers.tf"
+        plan  = "2-security-providers-r.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_2
     }
   }
   cicd_workflows = {
@@ -318,7 +342,7 @@ output "cicd_repositories" {
       provider = try(
         local.identity_providers[v.identity_provider].name, null
       )
-      service_account = local.cicd_workflow_attrs[k].service_account
+      service_account = local.cicd_workflow_attrs[k].service_accounts
     } if v != null
   }
 }

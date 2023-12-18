@@ -35,8 +35,8 @@ module "branch-network-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
     "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
     # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-network-r-sa.0.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.0.iam_email]
+    "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
   }
   tag_bindings = {
     context = try(
@@ -151,6 +151,6 @@ module "branch-network-gcs" {
   versioning    = true
   iam = {
     "roles/storage.objectAdmin"  = [module.branch-network-sa.iam_email]
-    "roles/storage.objectViewer" = [module.branch-network-r-sa.0.iam_email]
+    "roles/storage.objectViewer" = [module.branch-network-r-sa.iam_email]
   }
 }

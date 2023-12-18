@@ -34,8 +34,8 @@ module "branch-security-folder" {
     "roles/resourcemanager.folderAdmin"    = [module.branch-security-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-security-sa.iam_email]
     # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-network-r-sa.0.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.0.iam_email]
+    "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
   }
   tag_bindings = {
     context = try(
@@ -97,6 +97,7 @@ module "branch-security-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-security-sa.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-security-sa.iam_email]
+    "roles/storage.objectViewer" = [module.branch-security-r-sa.iam_email]
   }
 }
