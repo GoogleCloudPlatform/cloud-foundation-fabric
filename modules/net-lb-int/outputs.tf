@@ -70,8 +70,8 @@ output "health_check" {
   value       = try(google_compute_health_check.default.0, null)
 }
 
-output "health_check_self_id" {
-  description = "Auto-created health-check self id."
+output "health_check_id" {
+  description = "Auto-created health-check id."
   value       = try(google_compute_health_check.default.0.id, null)
 }
 

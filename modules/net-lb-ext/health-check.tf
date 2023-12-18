@@ -17,7 +17,9 @@
 # tfdoc:file:description Health check resource.
 
 locals {
-  hc       = var.health_check_config
+  hc = (
+    var.health_check != null ? null : var.health_check_config
+  )
   hc_grpc  = try(local.hc.grpc, null) != null
   hc_http  = try(local.hc.http, null) != null
   hc_http2 = try(local.hc.http2, null) != null

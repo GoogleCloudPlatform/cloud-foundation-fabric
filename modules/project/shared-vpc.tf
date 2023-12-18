@@ -68,6 +68,24 @@ locals {
     for v in local._svpc_service_subnet_iam :
     "${v.region}:${v.subnet}:${v.service}" => v
   }
+  # normalize the network user subnet IAM binding
+  _svpc_network_user_subnet_iam = (
+    local._svpc.network_subnet_users == null || local._svpc.host_project == null
+    ? []
+    : flatten([
+      for subnet, members in local._svpc.network_subnet_users : [
+        for member in members : {
+          region = split("/", subnet)[0]
+          subnet = split("/", subnet)[1]
+          member = member
+        }
+      ]
+    ])
+  )
+  svpc_network_user_subnet_iam = {
+    for v in local._svpc_network_user_subnet_iam :
+    "${v.region}:${v.subnet}:${v.member}" => v
+  }
 }
 
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
@@ -111,6 +129,14 @@ resource "google_project_iam_member" "shared_vpc_host_robots" {
   ]
 }
 
+resource "google_project_iam_member" "shared_vpc_host_iam" {
+  for_each   = toset(var.shared_vpc_service_config.network_users)
+  project    = var.shared_vpc_service_config.host_project
+  role       = "roles/compute.networkUser"
+  member     = each.value
+  depends_on = []
+}
+
 resource "google_compute_subnetwork_iam_member" "shared_vpc_host_robots" {
   for_each   = local.svpc_service_subnet_iam
   project    = var.shared_vpc_service_config.host_project
@@ -130,4 +156,13 @@ resource "google_compute_subnetwork_iam_member" "shared_vpc_host_robots" {
     data.google_bigquery_default_service_account.bq_sa,
     data.google_storage_project_service_account.gcs_sa,
   ]
+}
+
+resource "google_compute_subnetwork_iam_member" "shared_vpc_host_subnets_iam" {
+  for_each   = local.svpc_network_user_subnet_iam
+  project    = var.shared_vpc_service_config.host_project
+  region     = each.value.region
+  subnetwork = each.value.subnet
+  role       = "roles/compute.networkUser"
+  member     = each.value.member
 }
