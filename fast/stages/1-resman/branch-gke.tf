@@ -136,7 +136,7 @@ module "branch-gke-prod-sa" {
 
 module "branch-gke-dev-r-sa" {
   source       = "../../../modules/iam-service-account"
-  count        = var.fast_features.data_platform ? 1 : 0
+  count        = var.fast_features.gke ? 1 : 0
   project_id   = var.automation.project_id
   name         = "dev-resman-gke-0r"
   display_name = "Terraform gke multitenant development service account (read-only)."
@@ -156,7 +156,7 @@ module "branch-gke-dev-r-sa" {
 
 module "branch-gke-prod-r-sa" {
   source       = "../../../modules/iam-service-account"
-  count        = var.fast_features.data_platform ? 1 : 0
+  count        = var.fast_features.gke ? 1 : 0
   project_id   = var.automation.project_id
   name         = "prod-resman-gke-0r"
   display_name = "Terraform gke multitenant production service account (read-only)."

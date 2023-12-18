@@ -18,11 +18,6 @@
 
 # source repositories
 
-moved {
-  from = module.branch-teams-dev-pf-cicd-repo
-  to   = module.branch-pf-dev-cicd-repo
-}
-
 module "branch-pf-dev-cicd-repo" {
   source = "../../../modules/source-repository"
   for_each = (
@@ -53,11 +48,6 @@ module "branch-pf-dev-cicd-repo" {
     }
   }
   depends_on = [module.branch-pf-dev-sa-cicd]
-}
-
-moved {
-  from = module.branch-teams-prod-pf-cicd-repo
-  to   = module.branch-pf-prod-cicd-repo
 }
 
 module "branch-pf-prod-cicd-repo" {
@@ -92,12 +82,7 @@ module "branch-pf-prod-cicd-repo" {
   depends_on = [module.branch-pf-prod-sa-cicd]
 }
 
-# SAs used by CI/CD workflows to impersonate automation SAs
-
-moved {
-  from = module.branch-teams-dev-pf-sa-cicd
-  to   = module.branch-pf-dev-sa-cicd
-}
+# read-write (apply) SAs used by CI/CD workflows to impersonate automation SAs
 
 module "branch-pf-dev-sa-cicd" {
   source = "../../../modules/iam-service-account"
@@ -142,11 +127,6 @@ module "branch-pf-dev-sa-cicd" {
   }
 }
 
-moved {
-  from = module.branch-teams-prod-pf-sa-cicd
-  to   = module.branch-pf-prod-sa-cicd
-}
-
 module "branch-pf-prod-sa-cicd" {
   source = "../../../modules/iam-service-account"
   for_each = (
@@ -178,6 +158,76 @@ module "branch-pf-prod-sa-cicd" {
           var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch
+        )
+      ]
+    }
+  )
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/logging.logWriter"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+  }
+}
+
+# read-only (plan) SAs used by CI/CD workflows to impersonate automation SAs
+
+module "branch-pf-dev-r-sa-cicd" {
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    try(local.cicd_repositories.project_factory_dev.name, null) != null
+    ? { 0 = local.cicd_repositories.project_factory_dev }
+    : {}
+  )
+  project_id   = var.automation.project_id
+  name         = "dev-resman-pf-1r"
+  display_name = "Terraform CI/CD project factory development service account (read-only)."
+  prefix       = var.prefix
+  iam = (
+    each.value.type == "sourcerepo"
+    # build trigger for read-only SA is optionally defined by users
+    ? {}
+    # impersonated via workload identity federation for external repos
+    : {
+      "roles/iam.workloadIdentityUser" = [
+        format(
+          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          var.automation.federated_identity_pool,
+          each.value.name
+        )
+      ]
+    }
+  )
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/logging.logWriter"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+  }
+}
+
+module "branch-pf-prod-r-sa-cicd" {
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    try(local.cicd_repositories.project_factory_prod.name, null) != null
+    ? { 0 = local.cicd_repositories.project_factory_prod }
+    : {}
+  )
+  project_id   = var.automation.project_id
+  name         = "prod-resman-pf-1r"
+  display_name = "Terraform CI/CD project factory production service account (read-only)."
+  prefix       = var.prefix
+  iam = (
+    each.value.type == "sourcerepo"
+    # build trigger for read-only SA is optionally defined by users
+    ? {}
+    # impersonated via workload identity federation for external repos
+    : {
+      "roles/iam.workloadIdentityUser" = [
+        format(
+          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          var.automation.federated_identity_pool,
+          each.value.name
         )
       ]
     }
