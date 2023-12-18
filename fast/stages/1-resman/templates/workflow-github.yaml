@@ -24,16 +24,12 @@ on:
       - synchronize
 
 env:
-  FAST_OUTPUTS_BUCKET: ${outputs_bucket}
   FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
   FAST_SERVICE_ACCOUNT_PLAN: ${service_accounts.plan}
   FAST_WIF_PROVIDER: ${identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   TF_PROVIDERS_FILE: ${tf_providers_files.apply}
   TF_PROVIDERS_FILE_PLAN: ${tf_providers_files.plan}
-  %{~ if tf_var_files != [] ~}
-  TF_VAR_FILES: ${join("\n    ", tf_var_files)}
-  %{~ endif ~}
   TF_VERSION: 1.6.5
 
 jobs:
@@ -86,7 +82,7 @@ jobs:
 
       - id: gcp-sdk
         name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v2
         with:
           install_components: alpha
 
@@ -96,7 +92,11 @@ jobs:
         name: Copy Terraform provider file
         run: |
           gcloud alpha storage cp -r \
-            "gs://$${{env.FAST_OUTPUTS_BUCKET}}/providers/$${{env.provider_file}}" ./
+            "gs://${outputs_bucket}/providers/$${{env.provider_file}}" ./
+          %{~ for f in tf_var_files ~}
+          gcloud alpha storage cp -r \
+            "gs://${outputs_bucket}/tfvars/${f}" ./
+          %{~ endfor ~}
 
       - id: tf-setup
         name: Set up Terraform
