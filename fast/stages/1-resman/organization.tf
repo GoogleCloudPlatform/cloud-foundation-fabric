@@ -48,21 +48,21 @@ module "organization" {
       description = "Resource management context."
       iam         = {}
       values = {
-        data       = null
-        gke        = null
-        networking = null
-        sandbox    = null
-        security   = null
-        teams      = null
-        tenant     = null
+        data       = {}
+        gke        = {}
+        networking = {}
+        sandbox    = {}
+        security   = {}
+        teams      = {}
+        tenant     = {}
       }
     }
     (var.tag_names.environment) = {
       description = "Environment definition."
       iam         = {}
       values = {
-        development = null
-        production  = null
+        development = {}
+        production  = {}
       }
     }
     (var.tag_names.tenant) = {
