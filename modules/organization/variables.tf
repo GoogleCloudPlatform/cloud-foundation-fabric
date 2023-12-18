@@ -220,7 +220,8 @@ variable "organization_id" {
 variable "tag_bindings" {
   description = "Tag bindings for this organization, in key => tag value id format."
   type        = map(string)
-  default     = null
+  default     = {}
+  nullable    = false
 }
 
 variable "tags" {
