@@ -453,7 +453,7 @@ module "org" {
         "roles/resourcemanager.tagAdmin" = ["group:${var.group_email}"]
       }
       values = {
-        dev = null
+        dev = {}
         prod = {
           description = "Environment: production."
           iam = {

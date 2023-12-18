@@ -20,7 +20,7 @@ locals {
       for value, value_attrs in attrs.values : {
         description = value_attrs.description,
         key         = "${tag}/${value}"
-        id          = value_attrs.id
+        id          = try(value_attrs.id, null)
         name        = value
         roles       = keys(value_attrs.iam)
         tag         = tag
@@ -83,8 +83,12 @@ resource "google_tags_tag_key" "default" {
 
 resource "google_tags_tag_key_iam_binding" "default" {
   for_each = local.tags_iam
-  tag_key  = coalesce(each.value.tag_id, google_tags_tag_key.default[each.value.tag].id)
-  role     = each.value.role
+  tag_key = (
+    each.value.tag_id == null
+    ? google_tags_tag_key.default[each.value.tag].id
+    : each.value.tag_id
+  )
+  role = each.value.role
   members = coalesce(
     local.tags[each.value.tag]["iam"][each.value.role], []
   )
@@ -93,16 +97,24 @@ resource "google_tags_tag_key_iam_binding" "default" {
 # values
 
 resource "google_tags_tag_value" "default" {
-  for_each    = { for k, v in local.tag_values : k => v if v.id == null }
-  parent      = coalesce(each.value.tag_id, google_tags_tag_key.default[each.value.tag].id)
+  for_each = { for k, v in local.tag_values : k => v if v.id == null }
+  parent = (
+    each.value.tag_id == null
+    ? google_tags_tag_key.default[each.value.tag].id
+    : each.value.tag_id
+  )
   short_name  = each.value.name
   description = each.value.description
 }
 
 resource "google_tags_tag_value_iam_binding" "default" {
-  for_each  = local.tag_values_iam
-  tag_value = coalesce(each.value.id, google_tags_tag_value.default[each.value.key].id)
-  role      = each.value.role
+  for_each = local.tag_values_iam
+  tag_value = (
+    each.value.id == null
+    ? google_tags_tag_value.default[each.value.key].id
+    : each.value.id
+  )
+  role = each.value.role
   members = coalesce(
     local.tags[each.value.tag]["values"][each.value.name]["iam"][each.value.role],
     []
