@@ -18,7 +18,7 @@ counts:
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
   google_org_policy_policy: 13
-  google_organization_iam_binding: 22
+  google_organization_iam_binding: 23
   google_organization_iam_custom_role: 6
   google_organization_iam_member: 22
   google_project: 3
@@ -37,7 +37,7 @@ counts:
   google_tags_tag_value: 1
   local_file: 7
   modules: 15
-  resources: 167
+  resources: 168
 
 outputs:
   custom_roles:

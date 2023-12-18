@@ -152,6 +152,7 @@ locals {
         "roles/logging.viewer",
         "roles/resourcemanager.folderViewer",
         "roles/resourcemanager.tagViewer",
+        "roles/serviceusage.serviceUsageViewer"
       ]
       additive = concat(
         [
