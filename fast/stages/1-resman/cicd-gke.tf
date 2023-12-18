@@ -86,7 +86,7 @@ module "branch-gke-prod-cicd-repo" {
   depends_on = [module.branch-gke-prod-sa-cicd]
 }
 
-# SAs used by CI/CD workflows to impersonate automation SAs
+# read-write (apply) SAs used by CI/CD workflows to impersonate automation SAs
 
 module "branch-gke-dev-sa-cicd" {
   source = "../../../modules/iam-service-account"
@@ -162,6 +162,76 @@ module "branch-gke-prod-sa-cicd" {
           var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch
+        )
+      ]
+    }
+  )
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/logging.logWriter"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+  }
+}
+
+# read-only (plan) SAs used by CI/CD workflows to impersonate automation SAs
+
+module "branch-gke-dev-r-sa-cicd" {
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    try(local.cicd_repositories.data_platform_dev.name, null) != null
+    ? { 0 = local.cicd_repositories.data_platform_dev }
+    : {}
+  )
+  project_id   = var.automation.project_id
+  name         = "dev-resman-gke-1r"
+  display_name = "Terraform CI/CD gke multitenant development service account (read-only)."
+  prefix       = var.prefix
+  iam = (
+    each.value.type == "sourcerepo"
+    # build trigger for read-only SA is optionally defined by users
+    ? {}
+    # impersonated via workload identity federation for external repos
+    : {
+      "roles/iam.workloadIdentityUser" = [
+        format(
+          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          var.automation.federated_identity_pool,
+          each.value.name
+        )
+      ]
+    }
+  )
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/logging.logWriter"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+  }
+}
+
+module "branch-gke-prod-r-sa-cicd" {
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    try(local.cicd_repositories.data_platform_prod.name, null) != null
+    ? { 0 = local.cicd_repositories.data_platform_prod }
+    : {}
+  )
+  project_id   = var.automation.project_id
+  name         = "prod-resman-gke-1r"
+  display_name = "Terraform CI/CD gke multitenant production service account (read-only)."
+  prefix       = var.prefix
+  iam = (
+    each.value.type == "sourcerepo"
+    # build trigger for read-only SA is optionally defined by users
+    ? {}
+    # impersonated via workload identity federation for external repos
+    : {
+      "roles/iam.workloadIdentityUser" = [
+        format(
+          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          var.automation.federated_identity_pool,
+          each.value.name
         )
       ]
     }
