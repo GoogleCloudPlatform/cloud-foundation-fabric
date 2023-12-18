@@ -257,6 +257,14 @@ module "automation-tf-resman-r-sa" {
       }
     }
   )
+  # we grant organization roles here as IAM bindings have precedence over
+  # custom roles in the organization module, so these need to depend on it
+  iam_organization_roles = {
+    (var.organization.id) = [
+      module.organization.custom_role_id["organization_admin_viewer"],
+      module.organization.custom_role_id["tag_viewer"]
+    ]
+  }
   iam_storage_roles = {
     (module.automation-tf-output-gcs.name) = [module.organization.custom_role_id["storage_viewer"]]
   }

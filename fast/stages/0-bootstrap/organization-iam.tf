@@ -115,13 +115,13 @@ locals {
     }
     (module.automation-tf-bootstrap-r-sa.iam_email) = {
       authoritative = [
-        # the organizationAdminViewer custom role is granted via the SA module
         "roles/logging.viewer",
         "roles/resourcemanager.folderViewer",
         "roles/resourcemanager.tagViewer"
       ]
       additive = concat(
         [
+          # the organizationAdminViewer custom role is granted via the SA module
           "roles/iam.organizationRoleViewer",
           "roles/orgpolicy.policyViewer"
         ],
@@ -155,6 +155,7 @@ locals {
       ]
       additive = concat(
         [
+          # the organizationAdminViewer custom role is granted via the SA module
           "roles/orgpolicy.policyViewer"
         ],
         local.billing_mode != "org" ? [] : [
