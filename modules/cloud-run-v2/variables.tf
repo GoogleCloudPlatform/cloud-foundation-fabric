@@ -203,7 +203,7 @@ variable "volumes" {
   description = "Named volumes in containers in name => attributes format."
   type = map(object({
     secret = optional(object({
-      secret       = string
+      name         = string
       default_mode = optional(string)
       path         = optional(string)
       version      = optional(string)

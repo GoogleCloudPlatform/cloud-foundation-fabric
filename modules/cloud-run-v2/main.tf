@@ -223,7 +223,7 @@ resource "google_cloud_run_v2_service" "service" {
         dynamic "secret" {
           for_each = volumes.value.secret == null ? [] : [""]
           content {
-            secret       = volumes.value.secret.secret
+            secret       = volumes.value.secret.name
             default_mode = volumes.value.secret.default_mode
             dynamic "items" {
               for_each = volumes.value.secret.path == null ? [] : [""]
