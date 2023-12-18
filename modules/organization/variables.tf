@@ -220,7 +220,8 @@ variable "organization_id" {
 variable "tag_bindings" {
   description = "Tag bindings for this organization, in key => tag value id format."
   type        = map(string)
-  default     = null
+  default     = {}
+  nullable    = false
 }
 
 variable "tags" {
@@ -238,9 +239,16 @@ variable "tags" {
   nullable = false
   default  = {}
   validation {
-    condition = alltrue([
-      for k, v in var.tags : v != null
-    ])
+    condition = (
+      # all keys are non-null
+      alltrue([
+        for k, v in var.tags : v != null
+      ]) &&
+      # all values are non-null
+      alltrue(flatten([
+        for k, v in var.tags : [for k2, v2 in v.values : v2 != null]
+      ]))
+    )
     error_message = "Use an empty map instead of null as value."
   }
 }
