@@ -103,7 +103,7 @@ module "branch-network-r-sa-cicd" {
     : {}
   )
   project_id   = var.automation.project_id
-  name         = "prod-resman-dp-1r"
+  name         = "prod-resman-net-1r"
   display_name = "Terraform CI/CD stage 2 networking service account (read-only)."
   prefix       = var.prefix
   iam = (

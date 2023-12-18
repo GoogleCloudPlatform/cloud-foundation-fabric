@@ -22,22 +22,20 @@ module "branch-security-folder" {
   name   = "Security"
   group_iam = local.groups.gcp-security-admins == null ? {} : {
     (local.groups.gcp-security-admins) = [
-      # add any needed roles for resources/services not managed via Terraform,
-      # e.g.
-      # "roles/bigquery.admin",
-      # "roles/cloudasset.owner",
-      # "roles/cloudkms.admin",
-      # "roles/logging.admin",
-      # "roles/secretmanager.admin",
-      # "roles/storage.admin",
-      "roles/viewer"
+      # owner and viewer roles are broad and might grant unwanted access
+      # replace them with more selective custom roles for production deployments
+      "roles/editor"
     ]
   }
   iam = {
+    # read-write (apply) automation service account
     "roles/logging.admin"                  = [module.branch-security-sa.iam_email]
     "roles/owner"                          = [module.branch-security-sa.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-security-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-security-sa.iam_email]
+    # read-only (plan) automation service account
+    "roles/viewer"                       = [module.branch-network-r-sa.0.iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.0.iam_email]
   }
   tag_bindings = {
     context = try(
@@ -46,7 +44,7 @@ module "branch-security-folder" {
   }
 }
 
-# automation service account and bucket
+# automation service account
 
 module "branch-security-sa" {
   source       = "../../../modules/iam-service-account"
@@ -66,6 +64,29 @@ module "branch-security-sa" {
     (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
+
+# automation read-only service account
+
+module "branch-security-r-sa" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = var.automation.project_id
+  name         = "prod-resman-sec-0r"
+  display_name = "Terraform resman security service account (read-only)."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-security-r-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
+  }
+}
+
+# automation bucket
 
 module "branch-security-gcs" {
   source        = "../../../modules/gcs"
