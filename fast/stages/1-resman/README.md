@@ -335,7 +335,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [branch-teams.tf](./branch-teams.tf) | Team stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-tenants.tf](./branch-tenants.tf) | Lightweight tenant resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
 | [cicd-data-platform.tf](./cicd-data-platform.tf) | CI/CD resources for the data platform branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
-| [cicd-gke.tf](./cicd-gke.tf) | CI/CD resources for the data platform branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
+| [cicd-gke.tf](./cicd-gke.tf) | CI/CD resources for the GKE multitenant branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-networking.tf](./cicd-networking.tf) | CI/CD resources for the networking branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-project-factory.tf](./cicd-project-factory.tf) | CI/CD resources for the teams branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [cicd-security.tf](./cicd-security.tf) | CI/CD resources for the security branch. | <code>iam-service-account</code> · <code>source-repository</code> |  |
@@ -374,15 +374,15 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L232) | WIF configuration for CI/CD repositories. |  |  |
-| [dataplatform](outputs.tf#L246) | Data for the Data Platform stage. |  |  |
-| [gke_multitenant](outputs.tf#L262) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
-| [networking](outputs.tf#L283) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L292) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L307) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L314) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L328) | Data for the networking stage. |  | <code>02-security</code> |
-| [team_cicd_repositories](outputs.tf#L338) | WIF configuration for Team CI/CD repositories. |  |  |
-| [teams](outputs.tf#L352) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L364) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L336) | WIF configuration for CI/CD repositories. |  |  |
+| [dataplatform](outputs.tf#L350) | Data for the Data Platform stage. |  |  |
+| [gke_multitenant](outputs.tf#L366) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
+| [networking](outputs.tf#L387) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L396) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L411) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L418) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L432) | Data for the networking stage. |  | <code>02-security</code> |
+| [team_cicd_repositories](outputs.tf#L442) | WIF configuration for Team CI/CD repositories. |  |  |
+| [teams](outputs.tf#L456) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L468) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->
