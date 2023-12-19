@@ -354,7 +354,7 @@ module "service-project" {
   ]
   shared_vpc_service_config = {
     host_project  = module.host-project.project_id
-    network_users = ["group:team-1@example.com"]
+    network_users = ["group:${var.group_email}"]
     # reuse the list of services from the module's outputs
     service_iam_grants = module.service-project.services
   }
@@ -362,7 +362,7 @@ module "service-project" {
 # tftest modules=2 resources=11 inventory=shared-vpc-host-project-iam.yaml e2e
 ```
 
-In specific cases it might make sense to selectively grant the `compute.networkUser` role for service identities at the subnet level, and while that is best done via org policies it's also supported by this module. In this example, Compute service identity and `team-1@example.com` Google Group will be granted compute.networkUser in the `gce` subnet defined in `europe-west1` region via the `service_identity_subnet_iam` and `network_subnet_users` attributes.
+In specific cases it might make sense to selectively grant the `compute.networkUser` role for service identities at the subnet level, and while that is best done via org policies it's also supported by this module. In this example, Compute service identity and `team-1@example.com` Google Group will be granted compute.networkUser in the `gce` subnet defined in `europe-west1` region in the `host` project (not included in the example) via the `service_identity_subnet_iam` and `network_subnet_users` attributes.
 
 ```hcl
 module "host-project" {

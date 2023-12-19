@@ -34,7 +34,7 @@ values:
     condition: []
     project: test-host
     role: roles/container.hostServiceAgentUser
-  module.service-project.google_project_iam_member.shared_vpc_host_iam["group:team-1@example.com"]:
+  module.service-project.google_project_iam_member.shared_vpc_host_iam["group:organization-admins@example.org"]:
     condition: [ ]
     project: test-host
     role: roles/compute.networkUser
