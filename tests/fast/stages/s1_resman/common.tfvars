@@ -4,6 +4,9 @@ automation = {
   project_id                   = "fast-prod-automation"
   project_number               = 123456
   outputs_bucket               = "test"
+  service_accounts = {
+    resman-r = "ldj-prod-resman-0r@fast2-prod-iac-core-0.iam.gserviceaccount.com"
+  }
 }
 billing_account = {
   id = "000000-111111-222222"
