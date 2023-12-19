@@ -73,13 +73,13 @@ The emulated on-premises environment can be used to test access to different ser
 
 <br clear="left">
 
--->
-
 ### Network filtering with Squid
 
 <a href="./filtering-proxy/" title="Network filtering with Squid"><img src="./filtering-proxy/squid.png" align="left" width="280px"></a> This [blueprint](./filtering-proxy/) how to deploy a filtering HTTP proxy to restrict Internet access, in a simplified setup using a VPC with two subnets and a Cloud DNS zone, and an optional MIG for scaling.
 
 <br clear="left">
+
+-->
 
 ### Shared VPC with GKE and per-subnet support
 
