@@ -33,6 +33,9 @@ variable "automation" {
       principal_tpl    = string
       principalset_tpl = string
     }))
+    service_accounts = object({
+      resman-r = string
+    })
   })
 }
 

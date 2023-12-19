@@ -176,6 +176,14 @@ module "tenant-self-iac-project" {
       "roles/iam.workloadIdentityPoolAdmin"
     ]
   }
+  iam = {
+    (var.custom_roles.storage_viewer) = [
+      "serviceAccount:${var.automation.service_accounts.resman-r}"
+    ]
+    "roles/viewer" = [
+      "serviceAccount:${var.automation.service_accounts.resman-r}"
+    ]
+  }
   services = [
     "accesscontextmanager.googleapis.com",
     "bigquery.googleapis.com",
