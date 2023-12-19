@@ -79,7 +79,7 @@ The sample code brings up [FRRouting](https://frrouting.org/) container.
 
 ```conf
 # tftest-file id=frr_conf path=./frr.conf
-# Example frr.conmf file
+# Example frr.conf file
 
 log syslog informational
 no ipv6 forwarding
