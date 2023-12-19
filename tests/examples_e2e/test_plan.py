@@ -21,7 +21,8 @@ BASE_PATH = Path(__file__).parent
 
 def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
   (tmp_path / 'fabric').symlink_to(BASE_PATH.parents[1])
-  (tmp_path / 'variables.tf').symlink_to(BASE_PATH.parent / 'examples' / 'variables.tf')
+  (tmp_path / 'variables.tf').symlink_to(BASE_PATH.parent / 'examples' /
+                                         'variables.tf')
   (tmp_path / 'main.tf').write_text(examples_e2e.code)
   assets_path = BASE_PATH.parent / str(examples_e2e.module).replace(
       '-', '_') / 'assets'
@@ -31,7 +32,8 @@ def test_example(e2e_validator, tmp_path, examples_e2e, e2e_tfvars_path):
 
   # add files the same way as it is done for examples
   if match := COUNT_TEST_RE.search(examples_e2e.code):
-      prepare_files(examples_e2e, tmp_path, match.group("files"))
+    prepare_files(examples_e2e, tmp_path, match.group("files"),
+                  match.group('fixtures'))
 
   e2e_validator(module_path=tmp_path, extra_files=[],
                 tf_var_files=[(tmp_path / 'terraform.tfvars')])
