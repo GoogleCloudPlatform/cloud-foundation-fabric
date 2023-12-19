@@ -19,7 +19,7 @@
 ###############################################################################
 
 module "project" {
-  source          = "../../../modules/project"
+  source          = "../../../../modules/project"
   project_create  = var.project_create != null
   billing_account = try(var.project_create.billing_account, null)
   parent          = try(var.project_create.parent, null)
@@ -33,7 +33,7 @@ module "project" {
 }
 
 module "vpc" {
-  source     = "../../../modules/net-vpc"
+  source     = "../../../../modules/net-vpc"
   project_id = module.project.project_id
   name       = "${var.prefix}-vpc"
   subnets = [
@@ -53,7 +53,7 @@ module "vpc" {
 }
 
 module "firewall" {
-  source     = "../../../modules/net-vpc-firewall"
+  source     = "../../../../modules/net-vpc-firewall"
   project_id = module.project.project_id
   network    = module.vpc.name
   ingress_rules = {
@@ -73,7 +73,7 @@ module "firewall" {
 }
 
 module "nat" {
-  source                = "../../../modules/net-cloudnat"
+  source                = "../../../../modules/net-cloudnat"
   project_id            = module.project.project_id
   region                = var.region
   name                  = "default"
@@ -118,7 +118,7 @@ resource "google_compute_service_attachment" "service_attachment" {
 ###############################################################################
 
 module "service-account-squid" {
-  source     = "../../../modules/iam-service-account"
+  source     = "../../../../modules/iam-service-account"
   project_id = module.project.project_id
   name       = "svc-squid"
   iam_project_roles = {
@@ -130,7 +130,7 @@ module "service-account-squid" {
 }
 
 module "cos-squid" {
-  source       = "../../../modules/cloud-config-container/squid"
+  source       = "../../../../modules/cloud-config-container/__need_fixing/squid"
   allow        = var.allowed_domains
   clients      = [var.cidrs.app]
   squid_config = "${path.module}/squid.conf"
@@ -140,7 +140,7 @@ module "cos-squid" {
 }
 
 module "squid-vm" {
-  source          = "../../../modules/compute-vm"
+  source          = "../../../../modules/compute-vm"
   project_id      = module.project.project_id
   zone            = "${var.region}-b"
   name            = "squid-vm"
@@ -165,7 +165,7 @@ module "squid-vm" {
 }
 
 module "squid-mig" {
-  source            = "../../../modules/compute-mig"
+  source            = "../../../../modules/compute-mig"
   project_id        = module.project.project_id
   location          = "${var.region}-b"
   name              = "squid-mig"
@@ -202,7 +202,7 @@ module "squid-mig" {
 }
 
 module "squid-ilb" {
-  source        = "../../../modules/net-lb-int"
+  source        = "../../../../modules/net-lb-int"
   project_id    = module.project.project_id
   region        = var.region
   name          = "squid-ilb"
