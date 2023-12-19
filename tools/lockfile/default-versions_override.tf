@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-data "archive_file" "bundle" {}
-resource "azuread_user" "default" {}
-resource "azurerm_resource_group" "default" {}
-resource "github_branch" "default" { provider = github }
-resource "google_service_account" "sa1" {}
-resource "google_service_account" "sa2" { provider = google-beta }
-resource "local_file" "default" {}
-resource "random_pet" "default" {}
-resource "time_static" "default" {}
-resource "tls_private_key" "default" {}
-resource "vsphere_role" "default" {}
+# This file specifies the required version of the github provider used
+# during testing. This has to be in an override file, otherwise the
+# setup-tf-providers job fails because it copies default-versions.tf
+# before running `terraform init`
+
+terraform {
+  required_providers {
+    github = {
+      source  = "integrations/github"
+      version = "~> 5.0"
+    }
+  }
+}
