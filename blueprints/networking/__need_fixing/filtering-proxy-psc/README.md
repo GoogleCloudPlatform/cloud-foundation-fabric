@@ -29,10 +29,9 @@ To simplify the usage of the proxy, a Cloud DNS private zone is created in each 
 
 ## Test
 
-
 ```hcl
 module "test" {
-  source = "./fabric/blueprints/networking/filtering-proxy-psc"
+  source = "./fabric/blueprints/networking/__need_fixing/filtering-proxy-psc"
   prefix = "fabric"
   project_create = {
     billing_account = "123456-ABCDEF-123456"

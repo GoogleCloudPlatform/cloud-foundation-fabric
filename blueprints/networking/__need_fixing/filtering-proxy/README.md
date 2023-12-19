@@ -41,7 +41,7 @@ You can optionally deploy the Squid server as [Managed Instance Group](https://c
 
 ```hcl
 module "test1" {
-  source          = "./fabric/blueprints/networking/filtering-proxy"
+  source          = "./fabric/blueprints/networking/__need_fixing/filtering-proxy"
   billing_account = "123456-123456-123456"
   mig             = true
   prefix          = "fabric"
@@ -52,7 +52,7 @@ module "test1" {
 
 ```hcl
 module "test2" {
-  source          = "./fabric/blueprints/networking/filtering-proxy"
+  source          = "./fabric/blueprints/networking/__need_fixing/filtering-proxy"
   billing_account = "123456-123456-123456"
   mig             = false
   prefix          = "fabric"

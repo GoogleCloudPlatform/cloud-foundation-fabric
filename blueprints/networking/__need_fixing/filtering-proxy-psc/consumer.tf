@@ -19,7 +19,7 @@
 ###############################################################################
 
 module "vpc-consumer" {
-  source     = "../../../modules/net-vpc"
+  source     = "../../../../modules/net-vpc"
   project_id = module.project.project_id
   name       = "${var.prefix}-app"
   subnets = [
@@ -36,7 +36,7 @@ module "vpc-consumer" {
 ###############################################################################
 
 module "test-vm-consumer" {
-  source        = "../../../modules/compute-vm"
+  source        = "../../../../modules/compute-vm"
   project_id    = module.project.project_id
   zone          = "${var.region}-b"
   name          = "${var.prefix}-test-vm"
@@ -83,7 +83,7 @@ resource "google_compute_forwarding_rule" "psc_ilb_consumer" {
 ###############################################################################
 
 module "private-dns" {
-  source     = "../../../modules/dns"
+  source     = "../../../../modules/dns"
   project_id = module.project.project_id
   name       = "${var.prefix}-internal"
   zone_config = {
@@ -99,7 +99,7 @@ module "private-dns" {
 }
 
 module "firewall-consumer" {
-  source     = "../../../modules/net-vpc-firewall"
+  source     = "../../../../modules/net-vpc-firewall"
   project_id = module.project.project_id
   network    = module.vpc-consumer.name
 }
