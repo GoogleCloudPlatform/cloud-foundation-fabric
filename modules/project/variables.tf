@@ -303,9 +303,11 @@ variable "shared_vpc_service_config" {
   # the list of valid service identities is in service-agents.yaml
   type = object({
     host_project                = string
+    network_users               = optional(list(string), [])
     service_identity_iam        = optional(map(list(string)), {})
     service_identity_subnet_iam = optional(map(list(string)), {})
     service_iam_grants          = optional(list(string), [])
+    network_subnet_users        = optional(map(list(string)), {})
   })
   default = {
     host_project = null
@@ -314,10 +316,13 @@ variable "shared_vpc_service_config" {
   validation {
     condition = var.shared_vpc_service_config.host_project != null || (
       var.shared_vpc_service_config.host_project == null &&
+      length(var.shared_vpc_service_config.network_users) == 0 &&
       length(var.shared_vpc_service_config.service_iam_grants) == 0 &&
-      length(var.shared_vpc_service_config.service_iam_grants) == 0
+      length(var.shared_vpc_service_config.service_identity_iam) == 0 &&
+      length(var.shared_vpc_service_config.service_identity_subnet_iam) == 0 &&
+      length(var.shared_vpc_service_config.network_subnet_users) == 0
     )
-    error_message = "You need to provide host_project when providing service_identity_iam or service_iam_grants"
+    error_message = "You need to provide host_project when providing Shared VPC host and subnet IAM permissions."
   }
 }
 
@@ -325,10 +330,4 @@ variable "skip_delete" {
   description = "Allows the underlying resources to be destroyed without destroying the project itself."
   type        = bool
   default     = false
-}
-
-variable "tag_bindings" {
-  description = "Tag bindings for this project, in key => tag value id format."
-  type        = map(string)
-  default     = null
 }

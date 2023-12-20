@@ -63,14 +63,23 @@ variable "quota_config" {
       "a2", "c2", "c2d", "committed", "g2", "interconnect", "m1", "m2", "m3",
       "nvidia", "preemptible"
     ])
-    include  = optional(list(string))
-    projects = optional(list(string))
-    regions  = optional(list(string))
-    dry_run  = optional(bool, false)
-    verbose  = optional(bool, false)
+    discovery_root = optional(string, "")
+    dry_run        = optional(bool, false)
+    include        = optional(list(string))
+    projects       = optional(list(string))
+    regions        = optional(list(string))
+    verbose        = optional(bool, false)
   })
   nullable = false
   default  = {}
+  validation {
+    condition = (
+      var.quota_config.discovery_root == "" ||
+      startswith(var.quota_config.discovery_root, "folders/") ||
+      startswith(var.quota_config.discovery_root, "organizations/")
+    )
+    error_message = "non-null discovery root needs to start with folders/ or organizations/"
+  }
 }
 
 variable "region" {

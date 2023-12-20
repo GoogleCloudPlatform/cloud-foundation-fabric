@@ -12,18 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# This file specifies the required version of the github provider used
+# during testing. This has to be in an override file, otherwise the
+# setup-tf-providers job fails because it copies default-versions.tf
+# before running `terraform init`
+
 terraform {
-  required_version = ">= 1.4.4"
   required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 5.6.0, < 6.0.0" # tftest
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 5.6.0, < 6.0.0" # tftest
+    github = {
+      source  = "integrations/github"
+      version = "~> 5.0"
     }
   }
 }
-
-

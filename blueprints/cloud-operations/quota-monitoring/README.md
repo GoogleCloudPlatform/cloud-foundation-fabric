@@ -38,9 +38,10 @@ The region, location of the bundle used to deploy the function, and scheduling f
 
 The `quota_config` variable mirrors the arguments accepted by the Python program, and allows configuring several different aspects of its behaviour:
 
+- `quota_config.discover_root` organization or folder to be used to discover all underlying projects to track quotas for, in `organizations/nnnnn` or `folders/nnnnn` format
 - `quota_config.exclude` do not generate metrics for quotas matching prefixes listed here
 - `quota_config.include` only generate metrics for quotas matching prefixes listed here
-- `quota_config.projects` projects to track quotas for, defaults to the project where metrics are stored
+- `quota_config.projects` projects to track quotas for, defaults to the project where metrics are stored, if projects are automatically discovered, those in this list are appended. 
 - `quota_config.regions` regions to track quotas for, defaults to the `global` region for project-level quotas
 - `dry_run` do not write actual metrics
 - `verbose` increase logging verbosity
@@ -54,7 +55,6 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 - `terraform init`
 - `terraform apply -var project_id=my-project-id`
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -64,10 +64,9 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 | [bundle_path](variables.tf#L33) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
 | [name](variables.tf#L39) | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;quota-monitor&#34;</code> |
 | [project_create_config](variables.tf#L45) | Create project instead of using an existing one. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [quota_config](variables.tf#L59) | Cloud function configuration. | <code title="object&#40;&#123;&#10;  exclude &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;a2&#34;, &#34;c2&#34;, &#34;c2d&#34;, &#34;committed&#34;, &#34;g2&#34;, &#34;interconnect&#34;, &#34;m1&#34;, &#34;m2&#34;, &#34;m3&#34;,&#10;    &#34;nvidia&#34;, &#34;preemptible&#34;&#10;  &#93;&#41;&#10;  include  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  projects &#61; optional&#40;list&#40;string&#41;&#41;&#10;  regions  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  dry_run  &#61; optional&#40;bool, false&#41;&#10;  verbose  &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [region](variables.tf#L76) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [schedule_config](variables.tf#L82) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
-
+| [quota_config](variables.tf#L59) | Cloud function configuration. | <code title="object&#40;&#123;&#10;  exclude &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;a2&#34;, &#34;c2&#34;, &#34;c2d&#34;, &#34;committed&#34;, &#34;g2&#34;, &#34;interconnect&#34;, &#34;m1&#34;, &#34;m2&#34;, &#34;m3&#34;,&#10;    &#34;nvidia&#34;, &#34;preemptible&#34;&#10;  &#93;&#41;&#10;  discovery_root &#61; optional&#40;string, &#34;&#34;&#41;&#10;  dry_run        &#61; optional&#40;bool, false&#41;&#10;  include        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  projects       &#61; optional&#40;list&#40;string&#41;&#41;&#10;  regions        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  verbose        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [region](variables.tf#L85) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [schedule_config](variables.tf#L91) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
 <!-- END TFDOC -->
 ## Test
 
@@ -80,5 +79,5 @@ module "test" {
     billing_account = "12345-ABCDE-12345"
   }
 }
-# tftest modules=4 resources=14
+# tftest modules=4 resources=19
 ```

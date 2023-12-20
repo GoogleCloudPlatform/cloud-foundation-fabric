@@ -14,7 +14,7 @@ Logging and monitoring are enabled via the [Google Cloud Logging agent](https://
 
 The module renders the generated cloud config in the `cloud_config` output, to be used in instances or instance templates via the `user-data` metadata.
 
-For convenience during development or for simple use cases, the module can optionally manage a single instance via the `test_instance` variable. If the instance is not needed the `instance*tf` files can be safely removed. Refer to the [top-level README](../README.md) for more details on the included instance.
+For convenience during development or for simple use cases, the module can optionally manage a single instance via the `test_instance` variable. If the instance is not needed the `instance*tf` files can be safely removed. Refer to the [top-level README](../../README.md) for more details on the included instance.
 
 ## Examples
 
@@ -24,7 +24,7 @@ This example will create a `cloud-config` that allows any client in the 10.0.0.0
 
 ```hcl
 module "cos-squid" {
-  source  = "./fabric/modules/cloud-config-container/squid"
+  source  = "./fabric/modules/cloud-config-container/__need_fixing/squid"
   allow   = [".github.com"]
   clients = ["10.0.0.0/8"]
 }
@@ -43,9 +43,11 @@ module "vm" {
     google-logging-enabled = true
   }
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
+    initialize_params = {
+      image = "projects/cos-cloud/global/images/family/cos-stable"
+      type  = "pd-ssd"
+      size  = 10
+    }
   }
   tags = ["http-server", "ssh"]
 }

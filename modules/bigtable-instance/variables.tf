@@ -72,10 +72,10 @@ variable "iam" {
   default     = {}
 }
 
-variable "instance_type" {
-  description = "(deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'."
-  type        = string
-  default     = null
+variable "labels" {
+  description = "Labels to be attached to the instance."
+  type        = map(string)
+  default     = {}
 }
 
 variable "name" {

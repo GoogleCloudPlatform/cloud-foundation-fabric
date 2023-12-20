@@ -79,9 +79,11 @@ locals {
         try(v.shared_vpc_service_config, null) != null
         ? merge(
           {
+            network_users               = []
             service_identity_iam        = {}
             service_identity_subnet_iam = {}
             service_iam_grants          = []
+            network_subnet_users        = {}
           },
           v.shared_vpc_service_config
         )

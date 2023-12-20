@@ -54,6 +54,21 @@ variable "cluster_autoscaling" {
         integrity_monitoring = optional(bool, true)
         secure_boot          = optional(bool, false)
       }))
+      upgrade_settings = optional(object({
+        blue_green = optional(object({
+          node_pool_soak_duration = optional(string)
+          standard_rollout_policy = optional(object({
+            batch_percentage    = optional(number)
+            batch_node_count    = optional(number)
+            batch_soak_duration = optional(string)
+          }))
+        }))
+        surge = optional(object({
+          max         = optional(number)
+          unavailable = optional(number)
+        }))
+      }))
+      # add validation rule to ensure only one is present if upgrade settings is defined
     }))
     cpu_limits = optional(object({
       min = number
@@ -71,12 +86,29 @@ variable "cluster_autoscaling" {
   })
   default = null
   validation {
-    condition     = (var.cluster_autoscaling == null ? true : contains(["BALANCED", "OPTIMIZE_UTILIZATION"], var.cluster_autoscaling.autoscaling_profile))
+    condition = (var.cluster_autoscaling == null ? true : contains(
+      ["BALANCED", "OPTIMIZE_UTILIZATION"],
+      var.cluster_autoscaling.autoscaling_profile
+    ))
     error_message = "Invalid autoscaling_profile."
   }
   validation {
-    condition     = (var.cluster_autoscaling == null ? true : contains(["pd-standard", "pd-ssd", "pd-balanced"], var.cluster_autoscaling.auto_provisioning_defaults.disk_type))
+    condition = (
+      var.cluster_autoscaling == null ? true : contains(
+        ["pd-standard", "pd-ssd", "pd-balanced"],
+      var.cluster_autoscaling.auto_provisioning_defaults.disk_type)
+    )
     error_message = "Invalid disk_type."
+  }
+  validation {
+    condition = (
+      try(var.cluster_autoscaling.upgrade_settings, null) == null || (
+        try(var.cluster_autoscaling.upgrade_settings.blue_green, null) == null ? 0 : 1
+        +
+        try(var.cluster_autoscaling.upgrade_settings.surge, null) == null ? 0 : 1
+      ) == 1
+    )
+    error_message = "Upgrade settings can only use blue/green or surge."
   }
 }
 

@@ -27,7 +27,7 @@ locals {
 ###############################################################################
 
 module "folder-netops" {
-  source = "../../../modules/folder"
+  source = "../../../../modules/folder"
   parent = var.root_node
   name   = "netops"
 }
@@ -37,7 +37,7 @@ module "folder-netops" {
 ###############################################################################
 
 module "project-host" {
-  source          = "../../../modules/project"
+  source          = "../../../../modules/project"
   billing_account = var.billing_account
   name            = "host"
   parent          = module.folder-netops.id
@@ -53,7 +53,7 @@ module "project-host" {
 }
 
 module "vpc" {
-  source     = "../../../modules/net-vpc"
+  source     = "../../../../modules/net-vpc"
   project_id = module.project-host.project_id
   name       = "vpc"
   subnets = [
@@ -71,7 +71,7 @@ module "vpc" {
 }
 
 module "firewall" {
-  source     = "../../../modules/net-vpc-firewall"
+  source     = "../../../../modules/net-vpc-firewall"
   project_id = module.project-host.project_id
   network    = module.vpc.name
   ingress_rules = {
@@ -91,7 +91,7 @@ module "firewall" {
 }
 
 module "nat" {
-  source                = "../../../modules/net-cloudnat"
+  source                = "../../../../modules/net-cloudnat"
   project_id            = module.project-host.project_id
   region                = var.region
   name                  = "default"
@@ -114,7 +114,7 @@ module "nat" {
 }
 
 module "private-dns" {
-  source     = "../../../modules/dns"
+  source     = "../../../../modules/dns"
   project_id = module.project-host.project_id
   name       = "internal"
   zone_config = {
@@ -134,7 +134,7 @@ module "private-dns" {
 ###############################################################################
 
 module "service-account-squid" {
-  source     = "../../../modules/iam-service-account"
+  source     = "../../../../modules/iam-service-account"
   project_id = module.project-host.project_id
   name       = "svc-squid"
   iam_project_roles = {
@@ -146,13 +146,13 @@ module "service-account-squid" {
 }
 
 module "cos-squid" {
-  source  = "../../../modules/cloud-config-container/squid"
+  source  = "../../../../modules/cloud-config-container/__need_fixing/squid"
   allow   = var.allowed_domains
   clients = [var.cidrs.apps]
 }
 
 module "squid-vm" {
-  source          = "../../../modules/compute-vm"
+  source          = "../../../../modules/compute-vm"
   project_id      = module.project-host.project_id
   zone            = "${var.region}-b"
   name            = "squid-vm"
@@ -177,7 +177,7 @@ module "squid-vm" {
 
 module "squid-mig" {
   count             = var.mig ? 1 : 0
-  source            = "../../../modules/compute-mig"
+  source            = "../../../../modules/compute-mig"
   project_id        = module.project-host.project_id
   location          = "${var.region}-b"
   name              = "squid-mig"
@@ -206,7 +206,7 @@ module "squid-mig" {
 
 module "squid-ilb" {
   count         = var.mig ? 1 : 0
-  source        = "../../../modules/net-lb-int"
+  source        = "../../../../modules/net-lb-int"
   project_id    = module.project-host.project_id
   region        = var.region
   name          = "squid-ilb"
@@ -236,7 +236,7 @@ module "squid-ilb" {
 ###############################################################################
 
 module "folder-apps" {
-  source = "../../../modules/folder"
+  source = "../../../../modules/folder"
   parent = var.root_node
   name   = "apps"
   org_policies = {
@@ -248,7 +248,7 @@ module "folder-apps" {
 }
 
 module "project-app" {
-  source          = "../../../modules/project"
+  source          = "../../../../modules/project"
   billing_account = var.billing_account
   name            = "app1"
   parent          = module.folder-apps.id
@@ -263,7 +263,7 @@ module "project-app" {
 }
 
 module "test-vm" {
-  source        = "../../../modules/compute-vm"
+  source        = "../../../../modules/compute-vm"
   project_id    = module.project-app.project_id
   zone          = "${var.region}-b"
   name          = "test-vm"

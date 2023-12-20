@@ -303,10 +303,9 @@ module "org" {
   tags = {
     environment = {
       description = "Environment specification."
-      iam         = null
       values = {
-        dev  = null
-        prod = null
+        dev  = {}
+        prod = {}
       }
     }
   }
