@@ -15,8 +15,8 @@
 values:
   module.gcve-pc.google_vmwareengine_network.private-cloud-network[0]:
     description: Terraform-managed.
-    location: europe-west8
-    name: europe-west8-default
+    location: global
+    name: gcve-pc-network-default
     project: gcve-test-project
     timeouts: null
     type: STANDARD
