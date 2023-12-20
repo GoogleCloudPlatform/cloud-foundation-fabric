@@ -19,7 +19,18 @@ values:
     name: europe-west8-default
     project: gcve-test-project
     timeouts: null
-    type: LEGACY
+    type: STANDARD
+  module.gcve-pc.google_vmwareengine_network_peering.vmw-engine-network-peering["transit-conn1"]:
+    description: Terraform managed.
+    export_custom_routes: false
+    export_custom_routes_with_public_ip: false
+    import_custom_routes: false
+    import_custom_routes_with_public_ip: false
+    name: gcve-pc-transit-conn1
+    peer_network: projects/test-prj-gcve-01/global/networks/default
+    peer_network_type: STANDARD
+    project: gcve-test-project
+    timeouts: null
   module.gcve-pc.google_vmwareengine_private_cloud.private-cloud:
     description: Terraform-managed.
     location: europe-west8-a
@@ -34,9 +45,11 @@ values:
     - management_cidr: 192.168.0.0/24
     project: gcve-test-project
     timeouts: null
+    type: STANDARD
 
 counts:
   google_vmwareengine_network: 1
+  google_vmwareengine_network_peering: 1
   google_vmwareengine_private_cloud: 1
   modules: 1
-  resources: 2
+  resources: 3
