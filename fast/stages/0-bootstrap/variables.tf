@@ -34,16 +34,16 @@ variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     bootstrap = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     resman = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
   })
   default = null
