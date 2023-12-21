@@ -1,4 +1,4 @@
-# Network Dashboard and Discovery Tool
+# Network Quota Monitoring
 
 This repository provides an end-to-end solution to gather some GCP networking quotas, limits, and their corresponding usage, store them in Cloud Operations timeseries which can displayed in one or more dashboards or wired to alerts.
 
