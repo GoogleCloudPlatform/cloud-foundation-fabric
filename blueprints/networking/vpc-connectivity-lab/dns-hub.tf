@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description DNS setup.
+
 module "hub-dns" {
   source     = "../../../modules/dns"
   project_id = module.project.project_id

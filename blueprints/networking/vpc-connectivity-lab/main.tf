@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Project setup.
+
 module "project" {
   source          = "../../../modules/project"
   name            = var.project_id

@@ -66,14 +66,14 @@ $ tcpdump -i any icmp -n
 | name | description | modules | resources |
 |---|---|---|---|
 | [backend.tf](./backend.tf) | None |  |  |
-| [dns-hub.tf](./dns-hub.tf) | None | <code>dns</code> |  |
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>project</code> |  |
+| [dns-hub.tf](./dns-hub.tf) | DNS setup. | <code>dns</code> |  |
+| [main.tf](./main.tf) | Project setup. | <code>project</code> |  |
 | [nva.tf](./nva.tf) | None | <code>compute-vm</code> · <code>simple-nva</code> | <code>google_compute_instance_group</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
 | [test-resources.tf](./test-resources.tf) | None |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
-| [vpc-ext.tf](./vpc-ext.tf) | None | <code>net-address</code> · <code>net-cloudnat</code> · <code>net-lb-int</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> | <code>google_compute_route</code> |
-| [vpc-hub.tf](./vpc-hub.tf) | None | <code>net-address</code> · <code>net-lb-int</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>net-vpn-ha</code> | <code>google_compute_route</code> |
+| [vpc-ext.tf](./vpc-ext.tf) | External VPC. | <code>net-address</code> · <code>net-cloudnat</code> · <code>net-lb-int</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> | <code>google_compute_route</code> |
+| [vpc-hub.tf](./vpc-hub.tf) | Internal Hub VPC. | <code>net-address</code> · <code>net-lb-int</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>net-vpn-ha</code> | <code>google_compute_route</code> |
 | [vpc-peering-a.tf](./vpc-peering-a.tf) | None | <code>net-vpc</code> · <code>net-vpc-firewall</code> |  |
 | [vpc-peering-b.tf](./vpc-peering-b.tf) | None | <code>net-vpc</code> · <code>net-vpc-firewall</code> |  |
 | [vpc-vpn-a.tf](./vpc-vpn-a.tf) | None | <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpn-ha</code> |  |
@@ -94,9 +94,8 @@ $ tcpdump -i any icmp -n
 
 | name | description | sensitive |
 |---|---|:---:|
-| [ping_commands](outputs.tf#L1) |  |  |
+| [ping_commands](outputs.tf#L17) |  |  |
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl
@@ -110,5 +109,5 @@ module "test" {
   prefix     = "fast-sr0-sbox"
 }
 
-# tftest modules=20 resources=79
+# tftest modules=35 resources=131
 ```

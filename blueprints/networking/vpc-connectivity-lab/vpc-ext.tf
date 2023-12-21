@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description External VPC.
+
 module "ext-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id

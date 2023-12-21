@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Internal Hub VPC.
+
 module "hub-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
