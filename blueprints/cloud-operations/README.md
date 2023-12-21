@@ -32,7 +32,13 @@ cases.</p>
 
 ## Compute Engine quota monitoring
 
-<a href="./compute-quota-monitoring" title="Compute Engine quota monitoring"><img src="./compute-quota-monitoring/diagram.png" align="left" width="280px"></a> This [blueprint](./compute-quota-monitoring) shows a practical way of collecting and monitoring [Compute Engine resource quotas](https://cloud.google.com/compute/quotas) via Cloud Monitoring metrics as an alternative to the recently released [built-in quota metrics](https://cloud.google.com/monitoring/alerts/using-quota-metrics). A simple alert on quota thresholds is also part of the blueprint.
+<a href="./compute-quota-monitoring" title="Compute Engine quota monitoring"><img src="./compute-quota-monitoring/diagram.png" align="left" width="280px"></a> <p style="margin-left: 340px">
+This [blueprint](./compute-quota-monitoring) shows a practical way of collecting
+and
+monitoring [Compute Engine resource quotas](https://cloud.google.com/compute/quotas)
+via Cloud Monitoring metrics as an alternative to the recently
+released [built-in quota metrics](https://cloud.google.com/monitoring/alerts/using-quota-metrics).
+A simple alert on quota thresholds is also part of the blueprint. </p>
 
 <br clear="left">
 
@@ -68,7 +74,12 @@ grants to restrict service usage.</p>
 
 ## Network Quota Monitoring
 
-<a href="./network-quota-monitoring" title="Network Quota Monitoring"><img src="./network-quota-monitoring/metric.png" align="left" width="280px"></a> This [blueprint](./network-quota-monitoring) provides an end-to-end solution to gather some GCP Networking quotas and limits (that cannot be seen in the GCP console today) and display them in a dashboard. The goal is to allow for better visibility of these limits, facilitating capacity planning and avoiding hitting these limits.
+<a href="./network-quota-monitoring" title="Network Quota Monitoring"><img src="./network-quota-monitoring/metric.png" align="left" width="280px"></a> <p style="margin-left: 340px">
+This [blueprint](./network-quota-monitoring) provides an end-to-end solution to
+gather some GCP Networking quotas and limits (that cannot be seen in the GCP
+console today) and display them in a dashboard. The goal is to allow for better
+visibility of these limits, facilitating capacity planning and avoiding hitting
+these limits. </p>
 
 <br clear="left">
 
