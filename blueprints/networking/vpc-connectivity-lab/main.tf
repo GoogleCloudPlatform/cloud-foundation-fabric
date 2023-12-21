@@ -23,7 +23,8 @@ module "project" {
   prefix          = var.prefix
   services = [
     "compute.googleapis.com",
+    "dns.googleapis.com",
+    "networkconnectivity.googleapis.com",
     "stackdriver.googleapis.com",
-    "networkconnectivity.googleapis.com"
   ]
 }

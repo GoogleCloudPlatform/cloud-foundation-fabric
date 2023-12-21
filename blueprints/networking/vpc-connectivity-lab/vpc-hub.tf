@@ -217,3 +217,4 @@ module "peering-hub-b" {
   peer_network  = module.spoke-peering-b-vpc.id
   depends_on    = [module.spoke-peering-a-vpc.id]
 }
+
