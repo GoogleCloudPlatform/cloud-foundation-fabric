@@ -17,7 +17,7 @@ values:
     description: Terraform managed.
     dns_name: 0.0.10.in-addr.arpa.
     name: test-example
-    project: myproject
+    project: project-id
     reverse_lookup: true
     visibility: private
 
