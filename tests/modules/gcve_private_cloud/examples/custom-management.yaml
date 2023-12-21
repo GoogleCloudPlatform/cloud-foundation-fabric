@@ -35,8 +35,8 @@ values:
     management_cluster:
     - cluster_id: gcve-pc-pcc_one-mgmt-cluster
       node_type_configs:
-      - custom_core_count: 0
-        node_count: 3
+      - custom_core_count: 28
+        node_count: 6
         node_type_id: standard-72
     name: gcve-pc-pcc_one
     network_config:

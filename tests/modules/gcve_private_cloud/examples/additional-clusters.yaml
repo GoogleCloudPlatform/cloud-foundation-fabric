@@ -13,15 +13,26 @@
 # limitations under the License.
 
 values:
-  module.gcve-pc.google_vmwareengine_network.private-cloud-network[0]:
+  module.gcve-pc.google_vmwareengine_cluster.vmw_engine_additional_clusters["test-cluster-one"]:
+    name: gcve-pc-test-cluster-one
+    node_type_configs:
+    - custom_core_count: 28
+      node_count: 6
+      node_type_id: standard-72
+  module.gcve-pc.google_vmwareengine_cluster.vmw_engine_additional_clusters["test-cluster-two"]:
+    name: gcve-pc-test-cluster-two
+    node_type_configs:
+    - custom_core_count: 28
+      node_count: 4
+      node_type_id: standard-72
+  module.gcve-pc.google_vmwareengine_network.private_cloud_network[0]:
     description: Terraform-managed.
     location: global
-    name: gcve-pc-network-default
+    name: gcve-pc-default
     project: gcve-test-project
-    timeouts: null
     type: STANDARD
-  module.gcve-pc.google_vmwareengine_network_peering.vmw-engine-network-peering["transit-conn1"]:
-    description: Terraform managed.
+  module.gcve-pc.google_vmwareengine_network_peering.vmw_engine_network_peerings["transit-conn1"]:
+    description: Managed by Terraform.
     export_custom_routes: false
     export_custom_routes_with_public_ip: false
     import_custom_routes: false
@@ -30,26 +41,25 @@ values:
     peer_network: projects/test-prj-gcve-01/global/networks/default
     peer_network_type: STANDARD
     project: gcve-test-project
-    timeouts: null
-  module.gcve-pc.google_vmwareengine_private_cloud.private-cloud:
-    description: Terraform-managed.
+  module.gcve-pc.google_vmwareengine_private_cloud.vmw_engine_private_clouds["pcc_one"]:
+    description: Managed by Terraform.
     location: europe-west8-a
     management_cluster:
-    - cluster_id: gcve-pc-mgmt-cluster
+    - cluster_id: gcve-pc-pcc_one-mgmt-cluster
       node_type_configs:
-      - custom_core_count: 28
-        node_count: 6
+      - custom_core_count: 0
+        node_count: 3
         node_type_id: standard-72
-    name: gcve-pc
+    name: gcve-pc-pcc_one
     network_config:
     - management_cidr: 192.168.0.0/24
     project: gcve-test-project
-    timeouts: null
     type: STANDARD
 
 counts:
+  google_vmwareengine_cluster: 2
   google_vmwareengine_network: 1
   google_vmwareengine_network_peering: 1
   google_vmwareengine_private_cloud: 1
   modules: 1
-  resources: 3
+  resources: 5
