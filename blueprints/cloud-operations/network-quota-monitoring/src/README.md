@@ -1,8 +1,8 @@
-# Network Dashboard Discovery Tool
+# Network Quota Monitoring Tool
 
 This tool constitutes the discovery and data gathering side of the Network Dashboard, and can be used in combination with the related [Terraform deployment examples](../), or packaged in different ways including standalone manual use.
 
-- [Network Dashboard Discovery Tool](#network-dashboard-discovery-tool)
+- [Network Quota Monitoring Tool](#network-dashboard-discovery-tool)
   - [Quick Usage Example](#quick-usage-example)
   - [High Level Architecture and Plugin Design](#high-level-architecture-and-plugin-design)
   - [Debugging and Troubleshooting](#debugging-and-troubleshooting)

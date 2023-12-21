@@ -39,7 +39,7 @@ examples/cloud-operations/adfs/ansible/vars/vars.yaml
 examples/cloud-operations/adfs/ansible/gssh.sh
 examples/cloud-operations/multi-cluster-mesh-gke-fleet-api/ansible/vars.yaml
 examples/cloud-operations/multi-cluster-mesh-gke-fleet-api/ansible/gssh.sh
-blueprints/cloud-operations/network-dashboard/cloud-function.zip
+blueprints/cloud-operations/network-quota-monitoring/cloud-function.zip
 blueprints/apigee/bigquery-analytics/bundle-export.zip
 blueprints/apigee/bigquery-analytics/bundle-gcs2bq.zip
 blueprints/apigee/bigquery-analytics/apiproxy.zip
