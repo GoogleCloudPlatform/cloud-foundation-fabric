@@ -82,12 +82,12 @@ $ tcpdump -i any icmp -n
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
+| [prefix](variables.tf#L37) | Prefix used for resource names. | <code>string</code> | ✓ |  |
 | [ip_ranges](variables.tf#L17) | Subnet/Routes IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  ext         &#61; &#34;10.255.0.0&#47;16&#34;&#10;  hub-a       &#61; &#34;10.0.1.0&#47;24&#34;&#10;  hub-all     &#61; &#34;10.0.0.0&#47;16&#34;&#10;  hub-b       &#61; &#34;10.0.2.0&#47;24&#34;&#10;  hub-nva     &#61; &#34;10.0.0.0&#47;24&#34;&#10;  int         &#61; &#34;10.0.0.0&#47;9&#34;&#10;  peering-a   &#61; &#34;10.3.0.0&#47;24&#34;&#10;  peering-b   &#61; &#34;10.4.0.0&#47;24&#34;&#10;  rfc1918_10  &#61; &#34;10.0.0.0&#47;8&#34;&#10;  rfc1918_172 &#61; &#34;172.16.0.0&#47;12&#34;&#10;  rfc1918_192 &#61; &#34;192.168.0.0&#47;16&#34;&#10;  vpn-a       &#61; &#34;10.1.0.0&#47;24&#34;&#10;  vpn-b       &#61; &#34;10.2.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [prefix](variables.tf#L37) |  | <code>string</code> |  | <code>null</code> |
-| [project_create_config](variables.tf#L42) | Populate with billing account id to trigger project creation. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent_id          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_id](variables.tf#L51) | Project id for all resources. | <code>string</code> |  | <code>&#34;net-test-02&#34;</code> |
-| [region](variables.tf#L57) |  | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
-| [test_vms](variables.tf#L62) | Enable the creation of test resources | <code>bool</code> |  | <code>true</code> |
+| [project_create_config](variables.tf#L46) | Populate with billing account id to trigger project creation. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent_id          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_id](variables.tf#L55) | Project id for all resources. | <code>string</code> |  | <code>&#34;net-test-02&#34;</code> |
+| [region](variables.tf#L61) | Region used to deploy resources. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
+| [test_vms](variables.tf#L67) | Enable the creation of test resources. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 

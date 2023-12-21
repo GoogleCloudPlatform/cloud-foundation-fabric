@@ -35,8 +35,12 @@ variable "ip_ranges" {
 }
 
 variable "prefix" {
-  type    = string
-  default = null
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
 variable "project_create_config" {
@@ -55,12 +59,13 @@ variable "project_id" {
 }
 
 variable "region" {
-  type    = string
-  default = "europe-west8"
+  description = "Region used to deploy resources."
+  type        = string
+  default     = "europe-west8"
 }
 
 variable "test_vms" {
-  description = "Enable the creation of test resources"
+  description = "Enable the creation of test resources."
   type        = bool
   default     = true
 }
