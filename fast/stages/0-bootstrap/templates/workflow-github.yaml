@@ -32,7 +32,7 @@ env:
   %{~ if tf_var_files != [] ~}
   TF_VAR_FILES: ${join("\n    ", tf_var_files)}
   %{~ endif ~}
-  TF_VERSION: 1.4.4
+  TF_VERSION: 1.5.1
 
 jobs:
   fast-pr:
@@ -46,19 +46,6 @@ jobs:
       - id: checkout
         name: Checkout repository
         uses: actions/checkout@v3
-
-#      # Print JWT token payload, useful for debugging
-#      - id: jwt-debug
-#        name: Print GITHUB_TOKEN payload
-#        shell: python -u {0}
-#        run: |
-#          import base64
-#          import json
-#
-#          token = '${{ secrets.GITHUB_TOKEN }}'
-#          payload_text = token.split('.')[1]
-#          payload = json.loads(base64.urlsafe_b64decode(payload_text + '=' * (4-len(payload_text) %4)))
-#          print(json.dumps(payload, indent=2))
 
       # set up SSH key authentication to the modules repository
       - id: ssh-config
