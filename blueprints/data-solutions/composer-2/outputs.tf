@@ -23,3 +23,8 @@ output "composer_dag_gcs" {
   description = "The Cloud Storage prefix of the DAGs for the Cloud Composer environment."
   value       = google_composer_environment.env.config[0].dag_gcs_prefix
 }
+
+output "composer_service_account" {
+  description = " Cloud Composer nodes Service Account email"
+  value       = module.comp-sa.email
+}
