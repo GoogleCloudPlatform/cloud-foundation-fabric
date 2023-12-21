@@ -72,7 +72,7 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 ```hcl
 module "test" {
-  source     = "./fabric/blueprints/cloud-operations/quota-monitoring"
+  source     = "./fabric/blueprints/cloud-operations/compute-quota-monitoring"
   name       = "name"
   project_id = "test"
   project_create_config = {
