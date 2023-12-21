@@ -13,6 +13,18 @@
 # limitations under the License.
 
 values:
+  module.gcve-pc.google_vmwareengine_cluster.vmw_engine_additional_clusters["test-cluster-one"]:
+    name: gcve-pc-test-cluster-one
+    node_type_configs:
+    - custom_core_count: 28
+      node_count: 6
+      node_type_id: standard-72
+  module.gcve-pc.google_vmwareengine_cluster.vmw_engine_additional_clusters["test-cluster-two"]:
+    name: gcve-pc-test-cluster-two
+    node_type_configs:
+    - custom_core_count: 28
+      node_count: 4
+      node_type_id: standard-72
   module.gcve-pc.google_vmwareengine_network.private_cloud_network[0]:
     description: Terraform-managed.
     location: global
@@ -45,8 +57,9 @@ values:
     type: STANDARD
 
 counts:
+  google_vmwareengine_cluster: 2
   google_vmwareengine_network: 1
   google_vmwareengine_network_peering: 1
   google_vmwareengine_private_cloud: 1
   modules: 1
-  resources: 3
+  resources: 5

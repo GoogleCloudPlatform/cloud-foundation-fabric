@@ -81,6 +81,12 @@ googleapis-restricted:
 gstatic-all:
   dns_name: "*.gstatic.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+kernels-gu:
+  dns_name: "kernels.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+kernels-gu-all:
+  dns_name: "*.kernels.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 notebooks-all:
   dns_name: "*.notebooks.cloud.google.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
