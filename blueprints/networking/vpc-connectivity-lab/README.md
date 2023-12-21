@@ -93,7 +93,7 @@ $ tcpdump -i any icmp -n
 
 | name | description | sensitive |
 |---|---|:---:|
-| [ping_commands](outputs.tf#L17) |  |  |
+| [ping_commands](outputs.tf#L17) | Ping commands that can be run to check VPC reachability. |  |
 <!-- END TFDOC -->
 ## Test
 
