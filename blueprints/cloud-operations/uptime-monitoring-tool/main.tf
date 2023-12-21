@@ -15,23 +15,23 @@
  */
 
 locals {
-  net_mon_agent_config_filename = "net-mon-agent.conf"
-  net_mon_config = merge({
+  network_self_link    = local.use_shared_vpc ? var.vpc_config.network : module.vpc.0.self_link
+  subnetwork_self_link = local.use_shared_vpc ? var.vpc_config.subnetwork : module.vpc.0.subnet_self_links["${var.region}/agent"]
+  startup_script_config = {
+    bucket_name             = module.uptime_mon_bucket.name
+    config_sync_source_name = local.uptime_mon_config_sync_source_zip_filename
+    config_sync_config_name = local.uptime_mon_config_sync_config_filename
+    uptime_mon_source_name  = local.uptime_mon_source_code_zip_filename
+    uptime_mon_config_name  = local.uptime_mon_agent_config_filename
+  }
+  uptime_mon_agent_config_filename = "uptime-mon-agent.conf"
+  uptime_mon_config = merge({
     mon_project_id = var.monitoring_project_id
   }, var.agent_config)
-  net_mon_config_sync_source_zip_filename = "config-sync-source-code.zip"
-  net_mon_config_sync_config_filename     = "config-sync.conf"
-  net_mon_source_code_zip_filename        = "net-mon-source-code.zip"
-  network_self_link                       = local.use_shared_vpc ? var.vpc_config.network : module.vpc.0.self_link
-  subnetwork_self_link                    = local.use_shared_vpc ? var.vpc_config.subnetwork : module.vpc.0.subnet_self_links["${var.region}/agent"]
-  startup_script_config = {
-    bucket_name             = module.net_mon_bucket.name
-    config_sync_source_name = local.net_mon_config_sync_source_zip_filename
-    config_sync_config_name = local.net_mon_config_sync_config_filename
-    net_mon_source_name     = local.net_mon_source_code_zip_filename
-    net_mon_config_name     = local.net_mon_agent_config_filename
-  }
-  use_shared_vpc = var.vpc_config != null
+  uptime_mon_config_sync_source_zip_filename = "config-sync-source-code.zip"
+  uptime_mon_config_sync_config_filename     = "config-sync.conf"
+  uptime_mon_source_code_zip_filename        = "uptime-mon-source-code.zip"
+  use_shared_vpc                             = var.vpc_config != null
 }
 
 module "monitoring_project" {
@@ -40,7 +40,7 @@ module "monitoring_project" {
   project_create = var.project_create
   iam = {
     "roles/monitoring.metricWriter" = [
-      "serviceAccount:${module.net-mon-vm.service_account_email}"
+      "serviceAccount:${module.uptime-mon-vm.service_account_email}"
     ]
   }
 }
@@ -106,8 +106,8 @@ module "nat" {
 #                          STORAGE SETUP                              #
 #######################################################################
 
-data "archive_file" "net_mon_source_archived" {
-  output_path = "net_mon_source.zip"
+data "archive_file" "uptime_mon_source_archived" {
+  output_path = "uptime_mon_source.zip"
   source_dir  = "${path.module}/source/net-mon-agent"
   type        = "zip"
 }
@@ -118,45 +118,45 @@ data "archive_file" "config_sync_source_archived" {
   type        = "zip"
 }
 
-module "net_mon_bucket" {
+module "uptime_mon_bucket" {
   source        = "github.com/terraform-google-modules/cloud-foundation-fabric//modules//gcs"
   project_id    = module.agent_project.project_id
   location      = var.region
-  name          = "${var.net_mon_agent_vm_config.name}_${var.agent_project_id}"
+  name          = "${var.uptime_mon_agent_vm_config.name}_${var.agent_project_id}"
   prefix        = var.prefix
   storage_class = "STANDARD"
   iam = {
     "roles/storage.objectViewer" = [
-      "serviceAccount:${module.net-mon-vm.service_account_email}"
+      "serviceAccount:${module.uptime-mon-vm.service_account_email}"
     ]
     "roles/storage.legacyBucketReader" = [
-      "serviceAccount:${module.net-mon-vm.service_account_email}"
+      "serviceAccount:${module.uptime-mon-vm.service_account_email}"
     ]
   }
   notification_config = {
     enabled            = true
     payload_format     = "JSON_API_V1"
     sa_email           = module.agent_project.service_accounts.robots.storage
-    topic_name         = "${var.prefix}-${var.net_mon_agent_vm_config.name}.configuration"
+    topic_name         = "${var.prefix}-${var.uptime_mon_agent_vm_config.name}.configuration"
     event_types        = ["OBJECT_FINALIZE", "OBJECT_METADATA_UPDATE"]
     custom_attributes  = {}
-    object_name_prefix = local.net_mon_agent_config_filename
+    object_name_prefix = local.uptime_mon_agent_config_filename
   }
   objects_to_upload = {
-    net-mon-source-code = {
-      name   = local.net_mon_source_code_zip_filename
-      source = data.archive_file.net_mon_source_archived.output_path
+    uptime-mon-source-code = {
+      name   = local.uptime_mon_source_code_zip_filename
+      source = data.archive_file.uptime_mon_source_archived.output_path
     }
-    net-mon-agent-config = {
-      name    = local.net_mon_agent_config_filename
-      content = templatefile("${path.module}/data/net-mon-agent.conf.tpl", local.net_mon_config)
+    uptime-mon-agent-config = {
+      name    = local.uptime_mon_agent_config_filename
+      content = templatefile("${path.module}/data/uptime-mon-agent.conf.tpl", local.uptime_mon_config)
     }
     config-sync-source-code = {
-      name   = local.net_mon_config_sync_source_zip_filename
+      name   = local.uptime_mon_config_sync_source_zip_filename
       source = data.archive_file.config_sync_source_archived.output_path
     }
     conf-sync-config = {
-      name    = local.net_mon_config_sync_config_filename
+      name    = local.uptime_mon_config_sync_config_filename
       content = file("${path.module}/data/config-sync.conf")
     }
   }
@@ -167,11 +167,11 @@ module "net_mon_bucket" {
 #######################################################################
 
 resource "google_pubsub_subscription" "config_update_sub" {
-  name                    = var.net_mon_agent_vm_config.name
+  name                    = var.uptime_mon_agent_vm_config.name
   project                 = module.agent_project.project_id
   ack_deadline_seconds    = 20
   enable_message_ordering = false
-  topic                   = module.net_mon_bucket.topic
+  topic                   = module.uptime_mon_bucket.topic
   retry_policy {
     minimum_backoff = "10s"
   }
@@ -179,7 +179,7 @@ resource "google_pubsub_subscription" "config_update_sub" {
 
 resource "google_pubsub_subscription_iam_member" "config_update_iam" {
   project      = module.agent_project.project_id
-  member       = "serviceAccount:${module.net-mon-vm.service_account_email}"
+  member       = "serviceAccount:${module.uptime-mon-vm.service_account_email}"
   role         = "roles/pubsub.subscriber"
   subscription = google_pubsub_subscription.config_update_sub.name
 }
@@ -192,16 +192,16 @@ module "addresses" {
   source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-address"
   project_id = module.agent_project.project_id
   external_addresses = {
-    net-mon-public-ip = { region = var.region }
+    uptime-mon-public-ip = { region = var.region }
   }
 }
 
-module "net-mon-vm" {
+module "uptime-mon-vm" {
   source        = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/compute-vm"
   project_id    = var.agent_project_id
-  instance_type = var.net_mon_agent_vm_config.instance_type
-  name          = var.net_mon_agent_vm_config.name
-  tags          = var.net_mon_agent_vm_config.network_tags
+  instance_type = var.uptime_mon_agent_vm_config.instance_type
+  name          = var.uptime_mon_agent_vm_config.name
+  tags          = var.uptime_mon_agent_vm_config.network_tags
   zone          = "${var.region}-a"
   metadata = {
     pubsub-subscription = google_pubsub_subscription.config_update_sub.name
@@ -212,9 +212,9 @@ module "net-mon-vm" {
       network    = local.network_self_link
       subnetwork = local.subnetwork_self_link
       addresses = {
-        nat      = var.net_mon_agent_vm_config.public_ip
-        internal = var.net_mon_agent_vm_config.private_ip
-        external = var.net_mon_agent_vm_config.public_ip ? module.addresses.external_addresses["net-mon-public-ip"].address : ""
+        nat      = var.uptime_mon_agent_vm_config.public_ip
+        internal = var.uptime_mon_agent_vm_config.private_ip
+        external = var.uptime_mon_agent_vm_config.public_ip ? module.addresses.external_addresses["uptime-mon-public-ip"].address : ""
       }
     }
   ]

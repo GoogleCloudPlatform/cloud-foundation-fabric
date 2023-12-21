@@ -1,8 +1,8 @@
 #! /bin/bash
 
 # Define shared variables
-NET_MON_SOURCE_NAME=${net_mon_source_name}
-NET_MON_CONFIG_NAME=${net_mon_config_name}
+UPTIME_MON_SOURCE_NAME=${uptime_mon_source_name}
+UPTIME_MON_CONFIG_NAME=${uptime_mon_config_name}
 BUCKET_NAME=${bucket_name}
 CONFIG_SYNC_SOURCE_NAME=${config_sync_source_name}
 CONFIG_SYNC_CONFIG_NAME=${config_sync_config_name}
@@ -17,8 +17,8 @@ mkdir -p /opt/app/source
 mkdir -p /opt/config_sync/source
 
 # Fetch Networking Monitoring agent and config sync source code and config
-gsutil cp gs://$BUCKET_NAME/$NET_MON_SOURCE_NAME /tmp
-gsutil cp gs://$BUCKET_NAME/$NET_MON_CONFIG_NAME /tmp
+gsutil cp gs://$BUCKET_NAME/$UPTIME_MON_SOURCE_NAME /tmp
+gsutil cp gs://$BUCKET_NAME/$UPTIME_MON_CONFIG_NAME /tmp
 gsutil cp gs://$BUCKET_NAME/$CONFIG_SYNC_SOURCE_NAME /tmp
 gsutil cp gs://$BUCKET_NAME/$CONFIG_SYNC_CONFIG_NAME /tmp
 
@@ -29,11 +29,11 @@ supervisorctl stop all
 # for both net-mon-agent and config-sync scripts
 rm -rf /opt/app/source/*
 rm -rf /opt/config_sync/source/*
-unzip /tmp/$NET_MON_SOURCE_NAME -d /opt/app/source
+unzip /tmp/$UPTIME_MON_SOURCE_NAME -d /opt/app/source
 unzip /tmp/$CONFIG_SYNC_SOURCE_NAME -d /opt/config_sync/source
 
 # Put supervisor configuration in proper place
-cp -f /tmp/$NET_MON_CONFIG_NAME /etc/supervisor/conf.d/$NET_MON_CONFIG_NAME
+cp -f /tmp/$UPTIME_MON_CONFIG_NAME /etc/supervisor/conf.d/$UPTIME_MON_CONFIG_NAME
 cp -f /tmp/$CONFIG_SYNC_CONFIG_NAME /etc/supervisor/conf.d/$CONFIG_SYNC_CONFIG_NAME
 
 if id "net-mon-agent" >/dev/null 2>&1; then
@@ -70,9 +70,9 @@ else
 
   # Change group ownership of squid config folder and file
   chgrp net-mon-config-sync /etc/supervisor/conf.d/
-  chgrp net-mon-config-sync /etc/supervisor/conf.d/"$NET_MON_CONFIG_NAME"
+  chgrp net-mon-config-sync /etc/supervisor/conf.d/"$UPTIME_MON_CONFIG_NAME"
   chmod g+rwx /etc/supervisor/conf.d/
-  chmod g+rwx /etc/supervisor/conf.d/"$NET_MON_CONFIG_NAME"
+  chmod g+rwx /etc/supervisor/conf.d/"$UPTIME_MON_CONFIG_NAME"
 fi
 
 # Update supervisorctl permissions

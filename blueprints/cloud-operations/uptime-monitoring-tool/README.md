@@ -1,6 +1,6 @@
-# Network Monitoring Tool
+# Uptime Monitoring Tool
 
-The **Network Monitoring Tool** is a custom solution based on Google Cloud
+The **Uptime Monitoring Tool** is a custom solution based on Google Cloud
 Products and custom Python scripts for running connectivity tests on Google
 Cloud Infrastructure. The tool is capable of running connectivity tests, in the
 form of TCP connections, from agents running on Compute Engine instances hosted
@@ -26,7 +26,7 @@ The tool is composed of the following components:
   Please find more information on this in
   the Dashboard section below.
 
-![Network Monitoring Tool](images/net_mon_tool.png "Network Monitoring Tool")
+![Uptime Monitoring Tool](images/net_mon_tool.png "Uptime Monitoring Tool")
 
 The primary distinction between this solution and the Google Managed one for
 conducting [private uptime checks](https://cloud.google.com/monitoring/uptime-checks/private-checks)
@@ -39,22 +39,22 @@ workloads and the external services that they depend on.
 
 <!-- TOC -->
 
-* [Network Monitoring Tool](#network-monitoring-tool)
-    * [Architecture](#architecture)
-    * [Network Monitoring Dashboard](#network-monitoring-dashboard)
-    * [Configuration Update process](#configuration-update-process)
-    * [Setup](#setup)
-        * [Prerequisites](#prerequisites)
-            * [Setting up the project for the deployment](#setting-up-the-project-for-the-deployment)
-            * [Networking requirements](#networking-requirements)
-        * [Deployment](#deployment)
-            * [Step 0: Cloning the repository](#step-0--cloning-the-repository)
-            * [Step 2: Prepare the variables](#step-2--prepare-the-variables)
-            * [Step 3: Deploy resources](#step-3--deploy-resources)
-            * [Step 4: Use the created resources](#step-4--use-the-created-resources)
-        * [Cleaning up your environment](#cleaning-up-your-environment)
-    * [Variables](#variables)
-    * [Test](#test)
+* [Uptime Monitoring Tool](#uptime-monitoring-tool)
+  * [Architecture](#architecture)
+  * [Uptime Monitoring Dashboard](#uptime-monitoring-dashboard)
+  * [Configuration Update process](#configuration-update-process)
+  * [Setup](#setup)
+    * [Prerequisites](#prerequisites)
+      * [Setting up the project for the deployment](#setting-up-the-project-for-the-deployment)
+      * [Networking requirements](#networking-requirements)
+    * [Deployment](#deployment)
+      * [Step 0: Cloning the repository](#step-0--cloning-the-repository)
+      * [Step 2: Prepare the variables](#step-2--prepare-the-variables)
+      * [Step 3: Deploy resources](#step-3--deploy-resources)
+      * [Step 4: Use the created resources](#step-4--use-the-created-resources)
+    * [Cleaning up your environment](#cleaning-up-your-environment)
+  * [Variables](#variables)
+  * [Test](#test)
 
 <!-- TOC -->
 
@@ -66,7 +66,7 @@ This diagram shows a real-world enterprise scenario based on a traditional
 hub-and-spoke network architecture, where this agent might be deployed for
 testing connectivity towards on-premises endpoints.
 
-![Network Monitoring Tool Architecture](images/architecture.png "Network Monitoring Tool Architecture")
+![Uptime Monitoring Tool Architecture](images/architecture.png "Uptime Monitoring Tool Architecture")
 
 The main components that are deployed in this architecture are the following (
 you can learn about them by following the hyperlinks):
@@ -83,7 +83,7 @@ you can learn about them by following the hyperlinks):
 - [Cloud Monitoring](https://cloud.google.com/monitoring):
   One integrated service for metrics, uptime monitoring, dashboards, and alerts.
 
-## Network Monitoring Dashboard
+## Uptime Monitoring Dashboard
 
 The sample dashboard provides a graphical representation of the custom metrics
 collected by the running agents. The dashboard can be customized to display the
@@ -97,7 +97,7 @@ The dashboard includes the following metrics:
 - **Uptime**: A metric published in case the agent is able to create the
   connection within the configured timeout.
 
-![Network Monitoring Tool Sample Dashboard](images/dashboard.png "Network Monitoring Tool Sample Dashboard")
+![Uptime Monitoring Tool Sample Dashboard](images/dashboard.png "Uptime Monitoring Tool Sample Dashboard")
 
 ## Configuration Update process
 
@@ -110,7 +110,7 @@ management.
 Please find below the overall configuration update process and a short
 explanation:
 
-![Network Monitoring Tool Config Update Process](images/update_process.png "Network Monitoring Tool Config Update Process")
+![Uptime Monitoring Tool Config Update Process](images/update_process.png "Network Monitoring Tool Config Update Process")
 
 1. **Update the Terraform configuration file**. To update the configuration
    file, simply make the necessary changes in either
@@ -206,7 +206,7 @@ alert_config     = {
 }
 bootstrap_monitoring    = true
 monitoring_project_id   = "monitoring-project-id"
-net_mon_agent_vm_config = {
+uptime_mon_agent_vm_config = {
   name         = "test"
   network_tags = ["ssh"]
 }
@@ -243,7 +243,6 @@ terraform destroy
 
 The above command will delete the associated resources so there will be no
 billable charges made afterwards.
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -251,23 +250,22 @@ billable charges made afterwards.
 |---|---|:---:|:---:|:---:|
 | [agent_project_id](variables.tf#L31) | GCP project the agent is provisioned to. | <code>string</code> | ✓ |  |
 | [monitoring_project_id](variables.tf#L64) | GCP Project ID. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L88) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [agent_config](variables.tf#L17) | Network monitoring agent script configuration. | <code title="object&#40;&#123;&#10;  identifier &#61; optional&#40;string, &#34;net-mon-agent&#34;&#41;&#10;  interval   &#61; optional&#40;number, 10&#41;&#10;  target_endpoints &#61; optional&#40;map&#40;string&#41;, &#123;&#10;    &#34;8.8.8.8&#34; &#61; &#34;53&#34;&#10;  &#125;&#41;&#10;  timeout &#61; optional&#40;number, 10&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L75) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [agent_config](variables.tf#L17) | Uptime monitoring agent script configuration. | <code title="object&#40;&#123;&#10;  identifier &#61; optional&#40;string, &#34;uptime-mon-agent&#34;&#41;&#10;  interval   &#61; optional&#40;number, 10&#41;&#10;  target_endpoints &#61; optional&#40;map&#40;string&#41;, &#123;&#10;    &#34;8.8.8.8&#34; &#61; &#34;53&#34;&#10;  &#125;&#41;&#10;  timeout &#61; optional&#40;number, 10&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [alert_config](variables.tf#L36) | Configure creation of monitoring alert. | <code title="object&#40;&#123;&#10;  enabled            &#61; optional&#40;bool, false&#41;&#10;  notification_email &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [bootstrap_monitoring](variables.tf#L50) | Whether to create network dashboard, time series. | <code>bool</code> |  | <code>false</code> |
 | [cidrs](variables.tf#L56) | CIDR ranges for subnets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  agent &#61; &#34;10.0.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [nat_logging](variables.tf#L69) | Enables Cloud NAT logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'. | <code>string</code> |  | <code>&#34;ERRORS_ONLY&#34;</code> |
-| [net_mon_agent_vm_config](variables.tf#L75) | Network Monitoring agent VM configuration. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;e2-standard-2&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;net-mon-agent&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  private_ip    &#61; optional&#40;string, null&#41;&#10;  public_ip     &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_create](variables.tf#L98) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
-| [region](variables.tf#L104) | GCP Region. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
+| [project_create](variables.tf#L85) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
+| [region](variables.tf#L91) | GCP Region. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
+| [uptime_mon_agent_vm_config](variables.tf#L97) | Network Monitoring agent VM configuration. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;e2-standard-2&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;uptime-mon-agent&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  private_ip    &#61; optional&#40;string, null&#41;&#10;  public_ip     &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_config](variables.tf#L110) | VPC Network and subnetwork self links for internal LB setup. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl
 module "test" {
-  source                = "./fabric/blueprints/cloud-operations/network-monitoring-tool"
+  source                = "./fabric/blueprints/cloud-operations/uptime-monitoring-tool"
   agent_project_id      = "agent-prj-0"
   bootstrap_monitoring  = true
   monitoring_project_id = "monitoring-prj-0"

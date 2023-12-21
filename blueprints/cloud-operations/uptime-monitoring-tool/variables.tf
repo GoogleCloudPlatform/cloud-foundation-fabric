@@ -15,9 +15,9 @@
  */
 
 variable "agent_config" {
-  description = "Network monitoring agent script configuration."
+  description = "Uptime monitoring agent script configuration."
   type = object({
-    identifier = optional(string, "net-mon-agent")
+    identifier = optional(string, "uptime-mon-agent")
     interval   = optional(number, 10)
     target_endpoints = optional(map(string), {
       "8.8.8.8" = "53"
@@ -72,19 +72,6 @@ variable "nat_logging" {
   default     = "ERRORS_ONLY"
 }
 
-variable "net_mon_agent_vm_config" {
-  description = "Network Monitoring agent VM configuration."
-  type = object({
-    instance_type = optional(string, "e2-standard-2")
-    name          = optional(string, "net-mon-agent")
-    network_tags  = optional(list(string), [])
-    private_ip    = optional(string, null)
-    public_ip     = optional(bool, false)
-  })
-  nullable = false
-  default  = {}
-}
-
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
@@ -105,6 +92,19 @@ variable "region" {
   description = "GCP Region."
   type        = string
   default     = "europe-west8"
+}
+
+variable "uptime_mon_agent_vm_config" {
+  description = "Network Monitoring agent VM configuration."
+  type = object({
+    instance_type = optional(string, "e2-standard-2")
+    name          = optional(string, "uptime-mon-agent")
+    network_tags  = optional(list(string), [])
+    private_ip    = optional(string, null)
+    public_ip     = optional(bool, false)
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "vpc_config" {

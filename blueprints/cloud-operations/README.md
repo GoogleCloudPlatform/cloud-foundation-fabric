@@ -120,6 +120,18 @@ GCE instances.</p>
 
 <br clear="left">
 
+## Uptime Monitoring Tool
+
+<a href="./uptime-monitoring-tool" title="Uptime Monitoring Tool"><img src="./uptime-monitoring-tool/images/architecture.png" align="left" width="280px"></a> <p style="margin-left: 340px">
+This [blueprint](./uptime-monitoring-tool/) provides a custom solution based on
+Google Cloud Products and custom Python scripts for running connectivity tests
+on Google Cloud Infrastructure. The tool is capable of running connectivity
+tests, in the form of TCP connections, from agents running on Compute Engine
+instances hosted in VPC Networks and endpoints either available in GCP, on-prem
+systems, or publicly available.</p>
+
+<br clear="left">
+
 ## Migrate for Compute Engine (v5)
 
 <a href="./vm-migration" title="Packer image builder"><img src="./vm-migration/host-target-projects/diagram.png" align="left" width="280px"></a> <p style="margin-left: 340px">
