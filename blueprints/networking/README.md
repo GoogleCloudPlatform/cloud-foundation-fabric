@@ -96,3 +96,9 @@ It is meant to be used as a starting point for most Shared VPC configurations, a
 It is meant to be used as a starting point for users that want to explore PSC to reduce some of the complexity in their network setup.
 
 <br clear="left">
+
+### VPC Connectivity Lab
+
+<a href="./vpc-connectivity-lab/" title="VPC Connectivity Lab"><img src="./vpc-connectivity-lab/diagram.png" align="left" width="280px"></a> This [blueprint](./vpc-connectivity-lab/) creates a networking playground showing a number of different VPC connectivity options (peering, HA VPN, NVA), along with PBR routing.
+
+<br clear="left">
