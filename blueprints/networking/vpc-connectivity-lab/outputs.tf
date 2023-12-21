@@ -15,5 +15,6 @@
  */
 
 output "ping_commands" {
-  value = var.test_vms ? join("\n", [for instance, _ in local.test-vms : "ping -c 1 ${instance}.example"]) : ""
+  description = "Ping commands that can be run to check VPC reachability."
+  value       = var.test_vms ? join("\n", [for instance, _ in local.test-vms : "ping -c 1 ${instance}.example"]) : ""
 }
