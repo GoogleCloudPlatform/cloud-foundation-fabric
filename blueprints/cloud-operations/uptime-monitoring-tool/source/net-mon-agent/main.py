@@ -38,21 +38,14 @@ class UptimeCheckResult:
 
   def __init__(self, host: str, port: int, reachable: bool,
                tstamp: datetime = None, latency: int = -1):
-    """Initializes a new UptimeCheckResult object.
-
-        Args:
-          host: The endpoint that was checked.
-          port: The port that was checked.
-          latency: The latency of the check in milliseconds.
-          reachable: Whether or not the endpoint was reachable.
-        """
     self.tstamp = tstamp
     self.host = host
     self.port = port
     self.latency = latency
     self.reachable = reachable
 
-  def _api_format(self, project: str, agent_vm: str, name: str):
+  def _api_format(self, agent_vm: str, name: str):
+    'Return a specific timeseries for this uptime result in API format.'
     d = {
         'metric': {
             'type': f'custom.googleapis.com/{name}',
@@ -84,11 +77,9 @@ class UptimeCheckResult:
 
     return d
 
-  def timeseries(self, project: str, agent_vm: str):
-    yield self._api_format(project=project, agent_vm=agent_vm,
-                           name=ENDPOINT_UPTIME_METRIC)
-    yield self._api_format(project=project, agent_vm=agent_vm,
-                           name=ENDPOINT_LATENCY)
+  def timeseries(self, agent_vm: str):
+    yield self._api_format(agent_vm=agent_vm, name=ENDPOINT_UPTIME_METRIC)
+    yield self._api_format(agent_vm=agent_vm, name=ENDPOINT_LATENCY)
 
 
 def check_host_connectivity(timeout: int, host: str,
@@ -120,9 +111,8 @@ def check_host_connectivity(timeout: int, host: str,
 @click.option('--project', '-p', type=str, required=True,
               help='Target GCP project id for metrics.')
 @click.option(
-    '--endpoint', type=(str, int), multiple=True, help=
-    'Endpoints to test as ip port whitespace separated, this is a repeatable arg.'
-)
+    '--endpoint', type=(str, int), multiple=True,
+    help='Endpoints to test (ip port) whitespace separated, repeatable arg.')
 @click.option('--agent', type=str, required=True,
               help='Agent VM running the script')
 @click.option('--debug', is_flag=True, default=False,
@@ -148,7 +138,7 @@ def main(project: str, endpoint: list, agent: str, debug: bool, interval: int,
       timeseries = []
       for future in concurrent.futures.as_completed(futures):
         uptime_result = future.result()
-        timeseries += uptime_result.timeseries(project=project, agent_vm=agent)
+        timeseries += uptime_result.timeseries(agent_vm=agent)
       i, l = 0, len(timeseries)
       for batch in batched(timeseries, 30):
         data = list(batch)
