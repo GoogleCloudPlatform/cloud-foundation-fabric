@@ -106,12 +106,12 @@ module "branch-pf-dev-sa-cicd" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          local.identity_providers[each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )
         : format(
-          local.identity_providers[each.value.identity_provider].principal_tpl,
+          local.identity_providers[each.value.identity_provider].principal_branch,
           var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch
@@ -149,12 +149,12 @@ module "branch-pf-prod-sa-cicd" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          local.identity_providers[each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )
         : format(
-          local.identity_providers[each.value.identity_provider].principal_tpl,
+          local.identity_providers[each.value.identity_provider].principal_branch,
           var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch
@@ -191,7 +191,7 @@ module "branch-pf-dev-r-sa-cicd" {
     : {
       "roles/iam.workloadIdentityUser" = [
         format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          local.identity_providers[each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )
@@ -225,7 +225,7 @@ module "branch-pf-prod-r-sa-cicd" {
     : {
       "roles/iam.workloadIdentityUser" = [
         format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          local.identity_providers[each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )

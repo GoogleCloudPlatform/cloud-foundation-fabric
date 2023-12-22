@@ -110,12 +110,12 @@ module "branch-gke-dev-sa-cicd" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          local.identity_providers[each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )
         : format(
-          local.identity_providers[each.value.identity_provider].principal_tpl,
+          local.identity_providers[each.value.identity_provider].principal_branch,
           var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch
@@ -153,12 +153,12 @@ module "branch-gke-prod-sa-cicd" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          local.identity_providers[each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )
         : format(
-          local.identity_providers[each.value.identity_provider].principal_tpl,
+          local.identity_providers[each.value.identity_provider].principal_branch,
           var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch
@@ -195,7 +195,7 @@ module "branch-gke-dev-r-sa-cicd" {
     : {
       "roles/iam.workloadIdentityUser" = [
         format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          local.identity_providers[each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )
@@ -229,7 +229,7 @@ module "branch-gke-prod-r-sa-cicd" {
     : {
       "roles/iam.workloadIdentityUser" = [
         format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          local.identity_providers[each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )
