@@ -79,7 +79,8 @@ class UptimeCheckResult:
 
   def timeseries(self, agent_vm: str):
     yield self._api_format(agent_vm=agent_vm, name=ENDPOINT_UPTIME_METRIC)
-    yield self._api_format(agent_vm=agent_vm, name=ENDPOINT_LATENCY)
+    if self.reachable:
+      yield self._api_format(agent_vm=agent_vm, name=ENDPOINT_LATENCY)
 
 
 def check_host_connectivity(timeout: int, host: str,
