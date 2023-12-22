@@ -73,9 +73,7 @@ def handle_pubsub_message(message: pubsub_v1.subscriber.message.Message):
       )
       os.system(
           "/usr/bin/supervisorctl reread && /usr/bin/supervisorctl update")
-      l.info(
-          "Network monitoring configuration updated and reloaded"
-      )
+      l.info("Network monitoring configuration updated and reloaded")
     except Exception as e:
       l.exception("Failed to apply configuration. Error: %s", str(e))
       return
@@ -93,8 +91,7 @@ def main() -> None:
   # Subscribe to the Pub/Sub topic where configuration file changes happen
   subscriber = pubsub_v1.SubscriberClient()
   subscription_path = subscriber.subscription_path(
-      configuration.project_id, configuration.pubsub_subscription_path
-  )
+      configuration.project_id, configuration.pubsub_subscription_path)
   streaming_pull_future = subscriber.subscribe(subscription_path,
                                                callback=handle_pubsub_message)
   l.info(f"Listening for messages on {subscription_path}.")

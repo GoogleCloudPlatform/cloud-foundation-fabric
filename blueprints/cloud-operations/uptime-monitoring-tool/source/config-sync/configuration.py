@@ -33,17 +33,15 @@ def get_metadata(metadata_path: str, alt: str = None) -> str:
   if alt is not None:
     params["alt"] = alt
 
-  response = requests.get(url=f"{METADATA_HOST}{metadata_path}",
-                          params=params,
+  response = requests.get(url=f"{METADATA_HOST}{metadata_path}", params=params,
                           headers={"Metadata-Flavor": "Google"})
   response.raise_for_status()
   return response.text
 
 
 class Configuration:
-  def __init__(self,
-      project_id: str,
-      pubsub_subscription: str):
+
+  def __init__(self, project_id: str, pubsub_subscription: str):
     """Constructor."""
     self._project_id = project_id
     self._pubsub_subscription_path = pubsub_subscription
@@ -64,9 +62,11 @@ class Configuration:
     project_id = str(
         get_metadata(metadata_path="/computeMetadata/v1/project/project-id",
                      alt="text"))
-    pubsub_subscription = str(get_metadata(
-        metadata_path="/computeMetadata/v1/instance/attributes/pubsub-subscription",
-        alt="text"))
+    pubsub_subscription = str(
+        get_metadata(
+            metadata_path=
+            "/computeMetadata/v1/instance/attributes/pubsub-subscription",
+            alt="text"))
 
     return Configuration(project_id=project_id,
                          pubsub_subscription=pubsub_subscription)
