@@ -54,52 +54,52 @@ variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `automation.federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     data_platform_dev = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     data_platform_prod = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     gke_dev = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     gke_prod = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     networking = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     project_factory_dev = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     project_factory_prod = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     security = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
   })
   default = null
