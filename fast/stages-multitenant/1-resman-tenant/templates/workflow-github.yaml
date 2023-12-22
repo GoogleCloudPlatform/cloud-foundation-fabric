@@ -75,7 +75,6 @@ jobs:
       - id: gcp-auth
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
-        uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: $${{env.FAST_WIF_PROVIDER}}
           service_account: $${{env.service_account}}
@@ -177,7 +176,7 @@ jobs:
             })
 
       - id: pr-short-comment
-        name: Post comment to Pull Request
+        name: Post comment to Pull Request (abbreviated)
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request' && steps.pr-comment.outcome != 'success'
         with:

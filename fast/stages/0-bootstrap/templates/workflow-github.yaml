@@ -176,7 +176,7 @@ jobs:
             })
 
       - id: pr-short-comment
-        name: Post comment to Pull Request
+        name: Post comment to Pull Request (abbreviated)
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request' && steps.pr-comment.outcome != 'success'
         with:

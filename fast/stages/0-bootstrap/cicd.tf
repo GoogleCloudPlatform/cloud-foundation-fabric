@@ -27,8 +27,8 @@ locals {
       issuer           = local.identity_providers[k].issuer
       issuer_uri       = try(v.oidc[0].issuer_uri, null)
       name             = v.name
-      principal_tpl    = local.identity_providers[k].principal_tpl
-      principalset_tpl = local.identity_providers[k].principalset_tpl
+      principal_branch = local.identity_providers[k].principal_branch
+      principal_repo   = local.identity_providers[k].principal_repo
     }
   }
   cicd_repositories = {
@@ -121,12 +121,12 @@ module "automation-tf-cicd-sa" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.identity_providers_defs[each.value.type].principalset_tpl,
+          local.identity_providers_defs[each.value.type].principal_repo,
           google_iam_workload_identity_pool.default.0.name,
           each.value.name
         )
         : format(
-          local.identity_providers_defs[each.value.type].principal_tpl,
+          local.identity_providers_defs[each.value.type].principal_branch,
           google_iam_workload_identity_pool.default.0.name,
           each.value.name,
           each.value.branch
@@ -157,7 +157,7 @@ module "automation-tf-cicd-r-sa" {
     : {
       "roles/iam.workloadIdentityUser" = [
         format(
-          local.identity_providers_defs[each.value.type].principalset_tpl,
+          local.identity_providers_defs[each.value.type].principal_repo,
           google_iam_workload_identity_pool.default.0.name,
           each.value.name
         )

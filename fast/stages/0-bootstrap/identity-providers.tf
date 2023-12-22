@@ -36,8 +36,8 @@ locals {
         "attribute.fast_sub"         = "\"repo:\" + assertion.repository + \":ref:\" + assertion.ref"
       }
       issuer_uri       = "https://token.actions.githubusercontent.com"
-      principal_tpl    = "principalSet://iam.googleapis.com/%s/attribute.fast_sub/repo:%s:ref:refs/heads/%s"
-      principalset_tpl = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.fast_sub/repo:%s:ref:refs/heads/%s"
+      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
     # https://docs.gitlab.com/ee/ci/secrets/id_token_authentication.html#token-payload
     gitlab = {
@@ -58,8 +58,8 @@ locals {
         "attribute.ref_type"              = "assertion.ref_type"
       }
       issuer_uri       = "https://gitlab.com"
-      principal_tpl    = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
-      principalset_tpl = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
+      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
   }
 }
