@@ -19,7 +19,7 @@ values:
     name: gcve-pc-default
     project: gcve-test-project
     type: STANDARD
-  module.gcve-pc.google_vmwareengine_network_policy.vmw-engine-network-policy["ew8"]:
+  module.gcve-pc.google_vmwareengine_network_policy.vmw_engine_network_policies["ew8"]:
     description: Terraform-managed.
     edge_services_cidr: 192.168.100.0/26
     external_ip:
