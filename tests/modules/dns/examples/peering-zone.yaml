@@ -14,9 +14,14 @@
 
 values:
   module.private-dns.google_dns_managed_zone.dns_managed_zone[0]:
+    cloud_logging_config:
+    - enable_logging: false
     description: Terraform managed.
     dns_name: .
+    dnssec_config: []
+    force_destroy: false
     forwarding_config: []
+    labels: null
     name: test-example
     peering_config:
     - target_network:
@@ -25,8 +30,13 @@ values:
     - gke_clusters: []
       networks:
       - network_url: projects/xxx/global/networks/aaa
-    project: myproject
+    project: project-id
+    reverse_lookup: false
+    service_directory_config: []
+    timeouts: null
     visibility: private
 
 counts:
   google_dns_managed_zone: 1
+  modules: 1
+  resources: 1

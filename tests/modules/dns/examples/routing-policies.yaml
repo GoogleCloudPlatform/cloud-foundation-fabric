@@ -16,11 +16,11 @@ values:
   module.private-dns.google_dns_managed_zone.dns_managed_zone[0]:
     dns_name: test.example.
     name: test-example
-    project: myproject
+    project: project-id
   module.private-dns.google_dns_record_set.dns_record_set["A geo"]:
     managed_zone: test-example
     name: geo.test.example.
-    project: myproject
+    project: project-id
     routing_policy:
     - enable_geo_fencing: null
       geo:
@@ -44,7 +44,7 @@ values:
   module.private-dns.google_dns_record_set.dns_record_set["A regular"]:
     managed_zone: test-example
     name: regular.test.example.
-    project: myproject
+    project: project-id
     routing_policy: []
     rrdatas:
     - 10.20.0.1
@@ -53,7 +53,7 @@ values:
   module.private-dns.google_dns_record_set.dns_record_set["A wrr"]:
     managed_zone: test-example
     name: wrr.test.example.
-    project: myproject
+    project: project-id
     routing_policy:
     - enable_geo_fencing: null
       geo: []
