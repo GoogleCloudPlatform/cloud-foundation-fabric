@@ -14,7 +14,7 @@ Cloud Run management, with support for IAM roles and Eventarc trigger creation.
     - [PubSub](#pubsub)
     - [Audit logs](#audit-logs)
     - [Using custom service accounts for triggers](#using-custom-service-accounts-for-triggers)
-  - [Cloud Run Service account](#cloud-run-service-account)
+  - [Cloud Run Service Account](#cloud-run-service-account)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
