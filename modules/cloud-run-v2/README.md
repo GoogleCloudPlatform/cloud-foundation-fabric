@@ -81,7 +81,7 @@ module "cloud_run" {
 
 ### Beta features
 
-To use beta features like Direct VPC Egress, set the launch stage to a preview stage to allow its use.
+To use beta features like Direct VPC Egress, set the launch stage to a preview stage.
 
 ```hcl
 module "cloud_run" {
@@ -110,7 +110,7 @@ module "cloud_run" {
 
 ### VPC Access Connector
 
-You can use a [VPC Access Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access) to connect to a VPC from Cloud Run.
+You can use an existing [VPC Access Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access) to connect to a VPC from Cloud Run.
 
 ```hcl
 module "cloud_run" {
@@ -132,7 +132,7 @@ module "cloud_run" {
 # tftest modules=1 resources=1 
 ```
 
-If previous creation of the VPC Access Connector is required, use the `vpc_connector_create` variable which also supports optional attributes like number of instances, machine type, or throughput. The connector will be used automatically.
+If creation of the VPC Access Connector is required, use the `vpc_connector_create` variable which also supports optional attributes like number of instances, machine type, or throughput. The connector will be used automatically.
 
 ```hcl
 module "cloud_run" {
@@ -283,7 +283,7 @@ module "cloud_run" {
 # tftest modules=1 resources=5 
 ```
 
-### Cloud Run Service account
+### Cloud Run Service Account
 
 To use a custom service account managed by the module, set `service_account_create` to `true` and leave `service_account` set to `null` (default).
 
