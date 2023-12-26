@@ -56,7 +56,9 @@ def _prepare_root_module(path):
     with tempfile.TemporaryDirectory(dir=path.parent) as tmp_path:
       tmp_path = Path(tmp_path)
 
-      shutil.copytree(path, tmp_path, dirs_exist_ok=True, symlinks=True,
+      # Running tests in a copy made with symlinks=True makes them run
+      # ~20% slower than when run in a copy made with symlinks=False.
+      shutil.copytree(path, tmp_path, dirs_exist_ok=True, symlinks=False,
                       ignore=ignore_patterns)
       lockfile = _REPO_ROOT / 'tools' / 'lockfile' / '.terraform.lock.hcl'
       if lockfile.exists():
