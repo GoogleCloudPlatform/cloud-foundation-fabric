@@ -50,6 +50,14 @@ locals {
     var.org_policies_config.constraints.allowed_policy_member_domains
   )
   drs_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
+  fast_custom_roles = [
+    "organization_admin_viewer",
+    "organization_iam_admin",
+    "service_project_network_admin",
+    "storage_viewer",
+    "tag_viewer",
+    "tenant_network_admin",
+  ]
   group_iam = {
     for k, v in local.iam_group_bindings : k => v.authoritative
   }
@@ -68,6 +76,8 @@ locals {
     }
   }
 }
+
+# TODO: add a check block to ensure our custom roles exist in the factory files
 
 module "organization" {
   source          = "../../../modules/organization"

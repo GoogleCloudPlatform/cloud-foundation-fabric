@@ -39,7 +39,8 @@ module "log-export-project" {
   prefix          = local.prefix
   billing_account = var.billing_account.id
   iam = {
-    "roles/owner" = [module.automation-tf-bootstrap-sa.iam_email]
+    "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
+    "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]
   }
   services = [
     # "cloudresourcemanager.googleapis.com",

@@ -36,8 +36,8 @@ locals {
         issuer           = local.identity_providers[k].issuer
         issuer_uri       = try(v.oidc[0].issuer_uri, null)
         name             = v.name
-        principal_tpl    = local.identity_providers[k].principal_tpl
-        principalset_tpl = local.identity_providers[k].principalset_tpl
+        principal_branch = local.identity_providers[k].principal_branch
+        principal_repo   = local.identity_providers[k].principal_repo
       }
     }
   )
@@ -118,12 +118,12 @@ module "automation-tf-cicd-sa-bootstrap" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.cicd_providers[each.value.identity_provider].principalset_tpl,
+          local.cicd_providers[each.value.identity_provider].principal_repo,
           local.cicd_identity_pools[each.value.identity_provider],
           each.value.name
         )
         : format(
-          local.cicd_providers[each.value.identity_provider].principal_tpl,
+          local.cicd_providers[each.value.identity_provider].principal_branch,
           local.cicd_identity_pools[each.value.identity_provider],
           each.value.name,
           each.value.branch
@@ -209,12 +209,12 @@ module "automation-tf-cicd-sa-resman" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.cicd_providers[each.value.identity_provider].principalset_tpl,
+          local.cicd_providers[each.value.identity_provider].principal_repo,
           local.cicd_identity_pools[each.value.identity_provider],
           each.value.name
         )
         : format(
-          local.cicd_providers[each.value.identity_provider].principal_tpl,
+          local.cicd_providers[each.value.identity_provider].principal_branch,
           local.cicd_identity_pools[each.value.identity_provider],
           each.value.name,
           each.value.branch

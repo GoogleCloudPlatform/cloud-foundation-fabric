@@ -24,6 +24,7 @@ locals {
     ? []
     : ["serviceAccount:${local.automation_resman_sa}"]
   )
+  # service accounts that receive additional grants on networking/security
   branch_optional_sa_lists = {
     dp-dev   = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])
     dp-prod  = compact([try(module.branch-dp-prod-sa.0.iam_email, "")])
@@ -32,6 +33,15 @@ locals {
     pf-dev   = compact([try(module.branch-pf-dev-sa.0.iam_email, "")])
     pf-prod  = compact([try(module.branch-pf-prod-sa.0.iam_email, "")])
   }
+  branch_optional_r_sa_lists = {
+    dp-dev   = compact([try(module.branch-dp-dev-r-sa.0.iam_email, "")])
+    dp-prod  = compact([try(module.branch-dp-prod-r-sa.0.iam_email, "")])
+    gke-dev  = compact([try(module.branch-gke-dev-r-sa.0.iam_email, "")])
+    gke-prod = compact([try(module.branch-gke-prod-r-sa.0.iam_email, "")])
+    pf-dev   = compact([try(module.branch-pf-dev-r-sa.0.iam_email, "")])
+    pf-prod  = compact([try(module.branch-pf-prod-r-sa.0.iam_email, "")])
+  }
+  # normalize CI/CD repositories
   cicd_repositories = {
     for k, v in coalesce(var.cicd_repositories, {}) : k => v
     if(
