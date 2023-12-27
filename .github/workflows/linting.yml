@@ -77,3 +77,10 @@ jobs:
         id: metadata
         run: |
           python tools/validate_metadata.py -v --failed-only blueprints
+
+      - name: Check modules versions
+        id: versions
+        run: |
+          OUTPUT=$(find . -type f -name 'versions.tf' -exec diff -ub default-versions.tf {} \;)
+          echo "${OUTPUT}"
+          [[ -z "${OUTPUT}" ]]
