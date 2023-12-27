@@ -63,7 +63,7 @@ gcp-setup:
       gcloud iam workload-identity-pools create-cred-config \
         $FAST_WIF_PROVIDER \
         --service-account=$FAST_SERVICE_ACCOUNT \
-        --service-account-token-lifetime-seconds=600 \
+        --service-account-token-lifetime-seconds=900 \
         --output-file=$GOOGLE_CREDENTIALS \
         --credential-source-file=token.txt
     - gcloud config set auth/credential_file_override $GOOGLE_CREDENTIALS
