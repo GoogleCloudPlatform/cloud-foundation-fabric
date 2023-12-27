@@ -24,7 +24,7 @@ locals {
       }
       tf_providers_files = {
         apply = "3-data-platform-dev-providers.tf"
-        plan  = "3-data-platform-dev-providers-r.tf"
+        plan  = "3-data-platform-dev-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
@@ -35,7 +35,7 @@ locals {
       }
       tf_providers_files = {
         apply = "3-data-platform-prod-providers.tf"
-        plan  = "3-data-platform-prod-providers-r.tf"
+        plan  = "3-data-platform-prod-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
@@ -46,7 +46,7 @@ locals {
       }
       tf_providers_files = {
         apply = "3-gke-dev-providers.tf"
-        plan  = "3-gke-dev-providers-r.tf"
+        plan  = "3-gke-dev-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
@@ -57,7 +57,7 @@ locals {
       }
       tf_providers_files = {
         apply = "3-gke-prod-providers.tf"
-        plan  = "3-gke-prod-providers-r.tf"
+        plan  = "3-gke-prod-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
@@ -68,7 +68,7 @@ locals {
       }
       tf_providers_files = {
         apply = "2-networking-providers.tf"
-        plan  = "2-networking-providers-r.tf"
+        plan  = "2-networking-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_2
     }
@@ -79,7 +79,7 @@ locals {
       }
       tf_providers_files = {
         apply = "3-project-factory-dev-providers.tf"
-        plan  = "3-project-factory-dev-providers-r.tf"
+        plan  = "3-project-factory-dev-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
@@ -90,7 +90,7 @@ locals {
       }
       tf_providers_files = {
         apply = "3-project-factory-prod-providers.tf"
-        plan  = "3-project-factory-prod-providers-r.tf"
+        plan  = "3-project-factory-prod-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
@@ -101,7 +101,7 @@ locals {
       }
       tf_providers_files = {
         apply = "2-security-providers.tf"
-        plan  = "2-security-providers-r.tf"
+        plan  = "2-security-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_2
     }
