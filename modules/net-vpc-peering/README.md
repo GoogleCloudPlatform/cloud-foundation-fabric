@@ -82,6 +82,7 @@ module "peering" {
 | [peer_create_peering](variables.tf#L22) | Create the peering on the remote side. If false, only the peering from this network to the remote network is created. | <code>bool</code> |  | <code>true</code> |
 | [prefix](variables.tf#L33) | Optional name prefix for the network peerings. | <code>string</code> |  | <code>null</code> |
 | [routes_config](variables.tf#L43) | Control import/export for local and remote peer. Remote configuration is only used when creating remote peering. | <code title="object&#40;&#123;&#10;  local &#61; optional&#40;object&#40;&#123;&#10;    export        &#61; optional&#40;bool, true&#41;&#10;    import        &#61; optional&#40;bool, true&#41;&#10;    public_export &#61; optional&#40;bool&#41;&#10;    public_import &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  peer &#61; optional&#40;object&#40;&#123;&#10;    export        &#61; optional&#40;bool, true&#41;&#10;    import        &#61; optional&#40;bool, true&#41;&#10;    public_export &#61; optional&#40;bool&#41;&#10;    public_import &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [stack_type](variables.tf#L63) | IP version(s) of traffic and routes that are allowed to be imported or exported between peer networks. Possible values: IPV4_ONLY, IPV4_IPV6. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

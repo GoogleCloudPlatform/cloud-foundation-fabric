@@ -95,7 +95,7 @@ module "organization" {
   iam_bindings = {
     organization_iam_admin_conditional = {
       members = [module.automation-tf-resman-sa.iam_email]
-      role    = module.organization.custom_role_id[var.custom_role_names.organization_iam_admin]
+      role    = module.organization.custom_role_id["organization_iam_admin"]
       condition = {
         expression = format(
           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
@@ -106,7 +106,7 @@ module "organization" {
               "roles/compute.xpnAdmin",
               "roles/orgpolicy.policyAdmin",
               "roles/resourcemanager.organizationViewer",
-              module.organization.custom_role_id[var.custom_role_names.tenant_network_admin]
+              module.organization.custom_role_id["tenant_network_admin"]
             ],
             local.billing_mode == "org" ? [
               "roles/billing.admin",
@@ -120,34 +120,13 @@ module "organization" {
       }
     }
   }
-  custom_roles = merge(var.custom_roles, {
-    # this is needed for use in additive IAM bindings, to avoid conflicts
-    (var.custom_role_names.organization_iam_admin) = [
-      "resourcemanager.organizations.get",
-      "resourcemanager.organizations.getIamPolicy",
-      "resourcemanager.organizations.setIamPolicy"
-    ]
-    (var.custom_role_names.service_project_network_admin) = [
-      "compute.globalOperations.get",
-      # compute.networks.updatePeering and compute.networks.get are
-      # used by automation service accounts who manage service
-      # projects where peering creation might be needed (e.g. GKE). If
-      # you remove them your network administrators should create
-      # peerings for service projects
-      "compute.networks.updatePeering",
-      "compute.networks.get",
-      "compute.organizations.disableXpnResource",
-      "compute.organizations.enableXpnResource",
-      "compute.projects.get",
-      "compute.subnetworks.getIamPolicy",
-      "compute.subnetworks.setIamPolicy",
-      "dns.networks.bindPrivateDNSZone",
-      "resourcemanager.projects.get",
-    ]
-    (var.custom_role_names.tenant_network_admin) = [
-      "compute.globalOperations.get",
-    ]
-  })
+  custom_roles = var.custom_roles
+  factories_config = {
+    custom_roles = var.factories_config.custom_roles
+    org_policies = (
+      var.bootstrap_user != null ? null : var.factories_config.org_policy
+    )
+  }
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
@@ -156,11 +135,6 @@ module "organization" {
       type                 = attrs.type
     }
   }
-  org_policies_data_path = (
-    var.bootstrap_user != null
-    ? null
-    : var.factories_config.org_policy_data_path
-  )
   org_policies = var.bootstrap_user != null ? {} : {
     "iam.allowedPolicyMemberDomains" = {
       rules = [

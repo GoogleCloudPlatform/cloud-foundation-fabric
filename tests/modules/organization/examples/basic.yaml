@@ -14,8 +14,8 @@
 
 values:
   module.org.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
-    name: organizations/1234567890/policies/compute.disableGuestAttributesAccess
-    parent: organizations/1234567890
+    name: organizations/1122334455/policies/compute.disableGuestAttributesAccess
+    parent: organizations/1122334455
     spec:
     - inherit_from_parent: null
       reset: null
@@ -27,8 +27,8 @@ values:
         values: []
     timeouts: null
   module.org.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
-    name: organizations/1234567890/policies/compute.skipDefaultNetworkCreation
-    parent: organizations/1234567890
+    name: organizations/1122334455/policies/compute.skipDefaultNetworkCreation
+    parent: organizations/1122334455
     spec:
     - inherit_from_parent: null
       reset: null
@@ -40,8 +40,8 @@ values:
         values: []
     timeouts: null
   module.org.google_org_policy_policy.default["compute.trustedImageProjects"]:
-    name: organizations/1234567890/policies/compute.trustedImageProjects
-    parent: organizations/1234567890
+    name: organizations/1122334455/policies/compute.trustedImageProjects
+    parent: organizations/1122334455
     spec:
     - inherit_from_parent: null
       reset: null
@@ -56,8 +56,8 @@ values:
           denied_values: null
     timeouts: null
   module.org.google_org_policy_policy.default["compute.vmExternalIpAccess"]:
-    name: organizations/1234567890/policies/compute.vmExternalIpAccess
-    parent: organizations/1234567890
+    name: organizations/1122334455/policies/compute.vmExternalIpAccess
+    parent: organizations/1122334455
     spec:
     - inherit_from_parent: null
       reset: null
@@ -68,22 +68,9 @@ values:
         enforce: null
         values: []
     timeouts: null
-  module.org.google_org_policy_policy.default["custom.gkeEnableAutoUpgrade"]:
-    name: organizations/1234567890/policies/custom.gkeEnableAutoUpgrade
-    parent: organizations/1234567890
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        values: []
-    timeouts: null
   module.org.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
-    name: organizations/1234567890/policies/iam.allowedPolicyMemberDomains
-    parent: organizations/1234567890
+    name: organizations/1122334455/policies/iam.allowedPolicyMemberDomains
+    parent: organizations/1122334455
     spec:
     - inherit_from_parent: null
       reset: null
@@ -114,8 +101,8 @@ values:
           denied_values: null
     timeouts: null
   module.org.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
-    name: organizations/1234567890/policies/iam.disableServiceAccountKeyCreation
-    parent: organizations/1234567890
+    name: organizations/1122334455/policies/iam.disableServiceAccountKeyCreation
+    parent: organizations/1122334455
     spec:
     - inherit_from_parent: null
       reset: null
@@ -127,8 +114,8 @@ values:
         values: []
     timeouts: null
   module.org.google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
-    name: organizations/1234567890/policies/iam.disableServiceAccountKeyUpload
-    parent: organizations/1234567890
+    name: organizations/1122334455/policies/iam.disableServiceAccountKeyUpload
+    parent: organizations/1122334455
     spec:
     - inherit_from_parent: null
       reset: null
@@ -151,29 +138,23 @@ values:
   module.org.google_organization_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - group:cloud-owners@example.org
-    org_id: '1234567890'
+    - group:organization-admins@example.org
+    org_id: '1122334455'
     role: roles/owner
-  module.org.google_organization_iam_binding.authoritative["roles/projectCreator"]:
-    condition: []
-    members:
-    - group:cloud-owners@example.org
-    org_id: '1234567890'
-    role: roles/projectCreator
   module.org.google_organization_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
     condition: []
     members:
-    - group:cloud-admins@example.org
-    org_id: '1234567890'
+    - group:organization-admins@example.org
+    org_id: '1122334455'
     role: roles/resourcemanager.projectCreator
   module.org.google_organization_iam_member.bindings["am1-storage-admin"]:
     condition: []
-    member: user:am1@example.org
-    org_id: '1234567890'
+    member: group:organization-admins@example.org
+    org_id: '1122334455'
     role: roles/storage.admin
   module.org.google_tags_tag_key.default["allowexternal"]:
     description: Allow external identities.
-    parent: organizations/1234567890
+    parent: organizations/1122334455
     purpose: null
     purpose_data: null
     short_name: allowexternal
@@ -188,12 +169,12 @@ values:
     timeouts: null
 
 counts:
-  google_org_policy_policy: 8
-  google_organization_iam_binding: 3
+  google_org_policy_policy: 7
+  google_organization_iam_binding: 2
   google_organization_iam_member: 1
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   modules: 1
-  resources: 15
+  resources: 13
 
 outputs: {}

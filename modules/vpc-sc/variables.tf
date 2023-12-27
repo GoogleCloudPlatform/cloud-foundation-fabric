@@ -99,6 +99,42 @@ variable "egress_policies" {
   }
 }
 
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "iam_bindings" {
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
+  type = map(object({
+    members = list(string)
+    role    = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
+variable "iam_bindings_additive" {
+  description = "Individual additive IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "ingress_policies" {
   description = "Ingress policy definitions that can be referenced in perimeters."
   type = map(object({

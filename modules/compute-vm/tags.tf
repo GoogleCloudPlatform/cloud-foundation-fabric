@@ -16,15 +16,15 @@
 
 # tfdoc:file:description Tag bindings.
 
-# TODO: re-implement once
-# - the provider accepts a project id in the parent without a permadiff
-# - the disk resource exposes an id that can be used to build the parent
-
-# locals {
-#   tag_parent_base = (
-#     "//compute.googleapis.com/projects/${var.project_id}/zones/${var.zone}"
-#   )
-# }
+# TODO: re-implement once the following have been addressed in the provider
+# - permadiff in google_tags_location_tag_binding which returns a project
+#   number in the tag id even when a project id is set
+# - no numeric id exposed from the google_compute_disk resource making it
+#   impossible to derive the tag binding parent
+# - google_compute_instance.params.resource_manager_tags and
+#   google_compute_instance.boot_disk.initialize_params.resource_manager_tags
+#   attributes need a map of tag key => tag value, while only the tag value
+#   is really needed by the API
 
 # resource "google_tags_location_tag_binding" "instance" {
 #   for_each = var.create_template ? {} : coalesce(var.tag_bindings, {})

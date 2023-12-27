@@ -79,14 +79,18 @@ variable "node_config" {
       cpu_manager_policy   = string
       cpu_cfs_quota        = optional(bool)
       cpu_cfs_quota_period = optional(string)
+      pod_pids_limit       = optional(number)
     }))
-    linux_node_config_sysctls = optional(map(string))
-    local_ssd_count           = optional(number)
-    machine_type              = optional(string)
-    metadata                  = optional(map(string))
-    min_cpu_platform          = optional(string)
-    preemptible               = optional(bool)
-    sandbox_config_gvisor     = optional(bool)
+    linux_node_config = optional(object({
+      sysctls     = optional(map(string))
+      cgroup_mode = optional(string)
+    }))
+    local_ssd_count       = optional(number)
+    machine_type          = optional(string)
+    metadata              = optional(map(string))
+    min_cpu_platform      = optional(string)
+    preemptible           = optional(bool)
+    sandbox_config_gvisor = optional(bool)
     shielded_instance_config = optional(object({
       enable_integrity_monitoring = optional(bool)
       enable_secure_boot          = optional(bool)
@@ -100,7 +104,7 @@ variable "node_config" {
   validation {
     condition = (
       alltrue([
-        for k, v in var.node_config.guest_accelerator[*].gpu_driver : contains([
+        for k, v in try(var.node_config.guest_accelerator[0].gpu_driver, {}) : contains([
           "GPU_DRIVER_VERSION_UNSPECIFIED", "INSTALLATION_DISABLED",
           "DEFAULT", "LATEST"
         ], v.version)

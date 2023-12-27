@@ -82,6 +82,10 @@ variable "tunnels" {
         all_peer_vpc_subnets = bool
         ip_ranges            = map(string)
       }))
+      ipv6 = optional(object({
+        nexthop_address      = optional(string)
+        peer_nexthop_address = optional(string)
+      }))
     })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.
@@ -107,6 +111,7 @@ variable "vpn_gateway_create" {
   description = "Create HA VPN Gateway. Set to null to avoid creation."
   type = object({
     description = optional(string, "Terraform managed external VPN gateway")
+    ipv6        = optional(bool, false)
   })
   default = {}
 }

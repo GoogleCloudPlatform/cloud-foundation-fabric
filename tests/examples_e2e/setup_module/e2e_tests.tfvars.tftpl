@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-bucket= "${bucket}"
+bucket = "${bucket}"
 billing_account_id = "${billing_account_id}"
-kms_key= {
-    self_link = "kms_key_self_link"
+kms_key = {
+    id = "${kms_key_id}"
 }
-organization_id = "${organization_id}"
-folder_id = "${folder_id}"
-prefix = "${prefix}"
+group_email = "${group_email}"
+organization_id = "organizations/${organization_id}"
+folder_id = "folders/${folder_id}"
 project_id = "${project_id}"
 region = "${region}"
 service_account = {

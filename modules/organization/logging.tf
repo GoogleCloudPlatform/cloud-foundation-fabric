@@ -21,7 +21,7 @@ locals {
     for type in ["bigquery", "logging", "pubsub", "storage"] :
     type => {
       for name, sink in var.logging_sinks :
-      name => sink if sink.type == type
+      name => sink if sink.iam && sink.type == type
     }
   }
 }

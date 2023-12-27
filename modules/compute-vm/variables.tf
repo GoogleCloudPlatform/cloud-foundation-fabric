@@ -258,8 +258,12 @@ variable "options" {
   type = object({
     allow_stopping_for_update = optional(bool, true)
     deletion_protection       = optional(bool, false)
-    spot                      = optional(bool, false)
-    termination_action        = optional(string)
+    node_affinities = optional(map(object({
+      values = list(string)
+      in     = optional(bool, true)
+    })), {})
+    spot               = optional(bool, false)
+    termination_action = optional(string)
   })
   default = {
     allow_stopping_for_update = true
@@ -356,7 +360,13 @@ variable "snapshot_schedules" {
 }
 
 variable "tag_bindings" {
-  description = "Tag bindings for this instance, in tag key => tag value format."
+  description = "Resource manager tag bindings for this instance, in tag key => tag value format."
+  type        = map(string)
+  default     = null
+}
+
+variable "tag_bindings_firewall" {
+  description = "Firewall (network scoped) tag bindings for this instance, in tag key => tag value format."
   type        = map(string)
   default     = null
 }

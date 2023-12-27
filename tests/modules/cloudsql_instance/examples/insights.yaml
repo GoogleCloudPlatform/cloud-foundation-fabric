@@ -20,18 +20,10 @@ values:
     region: europe-west1
     settings:
     - activation_policy: ALWAYS
-      active_directory_config: []
-      advanced_machine_features: []
       availability_type: ZONAL
-      collation: null
-      data_cache_config: []
-      database_flags: []
       deletion_protection_enabled: true
-      deny_maintenance_period: []
       disk_autoresize: true
-      disk_autoresize_limit: 0
       disk_type: PD_SSD
-      edition: null
       insights_config:
       - query_insights_enabled: true
         query_plans_per_minute: 5
@@ -41,17 +33,9 @@ values:
       ip_configuration:
       - allocated_ip_range: null
         authorized_networks: []
-        enable_private_path_for_google_cloud_services: null
         ipv4_enabled: false
         private_network: projects/xxx/global/networks/aaa
-        psc_config: []
-        require_ssl: null
-      maintenance_window: []
-      password_validation_policy: []
-      pricing_plan: PER_USE
-      sql_server_audit_config: []
       tier: db-g1-small
-      time_zone: null
 
 counts:
   google_sql_database_instance: 1

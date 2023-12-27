@@ -19,9 +19,9 @@
 locals {
   _googleapis_ranges = {
     private      = "199.36.153.8/30"
-    private-6    = "2600:2d00:0002:2000::/64"
+    private-6    = "2600:2d00:2:2000::/64"
     restricted   = "199.36.153.4/30"
-    restricted-6 = "2600:2d00:0002:1000::/64"
+    restricted-6 = "2600:2d00:2:1000::/64"
   }
   _googleapis_routes = {
     for k, v in local._googleapis_ranges : "${k}-googleapis" => {
@@ -107,4 +107,33 @@ resource "google_compute_route" "vpn_tunnel" {
   priority            = each.value.priority
   tags                = each.value.tags
   next_hop_vpn_tunnel = each.value.next_hop
+}
+
+resource "google_network_connectivity_policy_based_route" "default" {
+  for_each              = var.policy_based_routes
+  project               = var.project_id
+  network               = local.network.id
+  name                  = "${var.name}-${each.key}"
+  description           = each.value.description
+  priority              = each.value.priority
+  next_hop_other_routes = each.value.use_default_routing ? "DEFAULT_ROUTING" : null
+  next_hop_ilb_ip       = each.value.use_default_routing ? null : each.value.next_hop_ilb_ip
+  filter {
+    protocol_version = "IPV4"
+    ip_protocol      = each.value.filter.ip_protocol
+    dest_range       = each.value.filter.dest_range
+    src_range        = each.value.filter.src_range
+  }
+  dynamic "virtual_machine" {
+    for_each = each.value.target.tags != null ? [""] : []
+    content {
+      tags = each.value.target.tags
+    }
+  }
+  dynamic "interconnect_attachment" {
+    for_each = each.value.target.interconnect_attachment != null ? [""] : []
+    content {
+      region = each.value.target.interconnect_attachment
+    }
+  }
 }

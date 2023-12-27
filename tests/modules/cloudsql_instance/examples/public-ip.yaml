@@ -18,46 +18,19 @@ values:
     name: db
     project: project-id
     region: europe-west1
-    restore_backup_context: []
     settings:
     - activation_policy: ALWAYS
-      active_directory_config: []
-      advanced_machine_features: []
       availability_type: ZONAL
-      backup_configuration:
-      - backup_retention_settings:
-        - retained_backups: 7
-          retention_unit: COUNT
-        binary_log_enabled: true
-        enabled: true
-        location: null
-        point_in_time_recovery_enabled: null
-        start_time: '23:00'
-        transaction_log_retention_days: 7
-      collation: null
-      data_cache_config: []
-      database_flags: []
       deletion_protection_enabled: true
-      deny_maintenance_period: []
       disk_autoresize: true
-      disk_autoresize_limit: 0
       disk_type: PD_SSD
-      edition: null
       insights_config: []
       ip_configuration:
       - allocated_ip_range: null
         authorized_networks: []
-        enable_private_path_for_google_cloud_services: null
         ipv4_enabled: true
         private_network: projects/xxx/global/networks/aaa
-        psc_config: []
-        require_ssl: null
-      maintenance_window: []
-      password_validation_policy: []
-      pricing_plan: PER_USE
-      sql_server_audit_config: []
       tier: db-g1-small
-      time_zone: null
   module.db.google_sql_database_instance.replicas["replica1"]:
     database_version: MYSQL_8_0
     master_instance_name: db
@@ -66,34 +39,17 @@ values:
     region: europe-west3
     settings:
     - activation_policy: ALWAYS
-      active_directory_config: []
-      advanced_machine_features: []
       availability_type: ZONAL
-      collation: null
-      data_cache_config: []
-      database_flags: []
       deletion_protection_enabled: true
-      deny_maintenance_period: []
       disk_autoresize: true
-      disk_autoresize_limit: 0
       disk_type: PD_SSD
-      edition: null
       insights_config: []
       ip_configuration:
       - allocated_ip_range: null
         authorized_networks: []
-        enable_private_path_for_google_cloud_services: null
         ipv4_enabled: true
-        psc_config: []
         private_network: projects/xxx/global/networks/aaa
-        require_ssl: null
-      maintenance_window: []
-      password_validation_policy: []
-      pricing_plan: PER_USE
-      sql_server_audit_config: []
       tier: db-g1-small
-      time_zone: null
-    timeouts: null
 
 counts:
   google_sql_database_instance: 2

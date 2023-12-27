@@ -17,26 +17,26 @@ values:
   module.project.google_project_iam_binding.authoritative["roles/cloudasset.owner"]:
     condition: []
     members:
-    - group:gcp-security-admins@example.com
-    project: foo-project-example
+    - group:organization-admins@example.org
+    project: test-project
     role: roles/cloudasset.owner
   module.project.google_project_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
     condition: []
     members:
-    - group:gcp-security-admins@example.com
-    project: foo-project-example
+    - group:organization-admins@example.org
+    project: test-project
     role: roles/cloudsupport.techSupportEditor
   module.project.google_project_iam_binding.authoritative["roles/iam.securityReviewer"]:
     condition: []
     members:
-    - group:gcp-security-admins@example.com
-    project: foo-project-example
+    - group:organization-admins@example.org
+    project: test-project
     role: roles/iam.securityReviewer
   module.project.google_project_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
     members:
-    - group:gcp-security-admins@example.com
-    project: foo-project-example
+    - group:organization-admins@example.org
+    project: test-project
     role: roles/logging.admin
 
 counts:

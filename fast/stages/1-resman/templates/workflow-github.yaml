@@ -29,8 +29,10 @@ env:
   FAST_WIF_PROVIDER: ${identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   TF_PROVIDERS_FILE: ${tf_providers_file}
-  TF_VAR_FILES: ${tf_var_files == [] ? "''" : join("\n    ", tf_var_files)}
-  TF_VERSION: 1.4.4
+  %{~ if tf_var_files != [] ~}
+  TF_VAR_FILES: ${join("\n    ", tf_var_files)}
+  %{~ endif ~}
+  TF_VERSION: 1.5.1
 
 jobs:
   fast-pr:
@@ -55,7 +57,7 @@ jobs:
       # set up authentication via Workload identity Federation
       - id: gcp-auth
         name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v0
+        uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: $${{ env.FAST_WIF_PROVIDER }}
           service_account: $${{ env.FAST_SERVICE_ACCOUNT }}
@@ -73,11 +75,13 @@ jobs:
         run: |
           gcloud alpha storage cp -r \
             "gs://$${{env.FAST_OUTPUTS_BUCKET}}/providers/$${{env.TF_PROVIDERS_FILE}}" ./
+          %{~ if tf_var_files != [] ~}
           gcloud alpha storage cp -r \
             "gs://$${{env.FAST_OUTPUTS_BUCKET}}/tfvars" ./
           for f in $${{env.TF_VAR_FILES}}; do
             ln -s "tfvars/$f" ./
           done
+          %{~ endif ~}
 
       - id: tf-setup
         name: Set up Terraform

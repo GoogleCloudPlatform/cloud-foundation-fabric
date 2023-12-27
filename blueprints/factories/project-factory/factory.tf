@@ -16,15 +16,13 @@
 
 locals {
   _data = (
-    var.factory_data.data != null
-    ? var.factory_data.data
-    : {
-      for f in fileset("${local._data_path}", "**/*.yaml") :
+    {
+      for f in fileset(local._data_path, "**/*.yaml") :
       trimsuffix(f, ".yaml") => yamldecode(file("${local._data_path}/${f}"))
     }
   )
-  _data_path = var.factory_data.data_path == null ? null : pathexpand(
-    var.factory_data.data_path
+  _data_path = var.factory_data_path == null ? null : pathexpand(
+    var.factory_data_path
   )
   projects = {
     for k, v in local._data : k => merge(v, {
@@ -80,7 +78,13 @@ locals {
       shared_vpc_service_config = (
         try(v.shared_vpc_service_config, null) != null
         ? merge(
-          { service_identity_iam = {}, service_iam_grants = [] },
+          {
+            network_users               = []
+            service_identity_iam        = {}
+            service_identity_subnet_iam = {}
+            service_iam_grants          = []
+            network_subnet_users        = {}
+          },
           v.shared_vpc_service_config
         )
         : var.data_defaults.shared_vpc_service_config

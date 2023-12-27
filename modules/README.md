@@ -21,7 +21,7 @@ These modules are used in the examples included in this repository. If you are u
 
     ```terraform
     module "project" {
-        source              = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v13.0.0"
+        source              = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v13.0.0&depth=1"
         name                = "my-project"
         billing_account     = "123456-123456-123456"
         parent              = "organizations/123456"
@@ -92,6 +92,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Artifact Registry](./artifact-registry)
 - [Container Registry](./container-registry)
 - [Cloud Source Repository](./source-repository)
+- [Workstation cluster](./workstation-cluster)
 
 ## Security
 
@@ -106,3 +107,4 @@ These modules are used in the examples included in this repository. If you are u
 - [Cloud Functions v1](./cloud-function-v1)
 - [Cloud Functions v2](./cloud-function-v2)
 - [Cloud Run](./cloud-run)
+- [Cloud Run v2](./cloud-run-v2)

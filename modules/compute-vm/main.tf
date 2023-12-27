@@ -58,7 +58,17 @@ locals {
       )
     )
   }
-  termination_action = var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
+  tags_combined = (
+    var.tag_bindings == null && var.tag_bindings_firewall == null
+    ? null
+    : merge(
+      coalesce(var.tag_bindings, {}),
+      coalesce(var.tag_bindings_firewall, {})
+    )
+  )
+  termination_action = (
+    var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
+  )
 }
 
 resource "google_compute_disk" "boot" {
@@ -263,6 +273,16 @@ resource "google_compute_instance" "default" {
     on_host_maintenance         = local.on_host_maintenance
     preemptible                 = var.options.spot
     provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+
+    dynamic "node_affinities" {
+      for_each = var.options.node_affinities
+      iterator = affinity
+      content {
+        key      = affinity.key
+        operator = affinity.value.in ? "IN" : "NOT_IN"
+        values   = affinity.value.values
+      }
+    }
   }
 
   dynamic "scratch_disk" {
@@ -294,9 +314,9 @@ resource "google_compute_instance" "default" {
   }
 
   dynamic "params" {
-    for_each = var.tag_bindings == null ? [] : [""]
+    for_each = local.tags_combined == null ? [] : [""]
     content {
-      resource_manager_tags = var.tag_bindings
+      resource_manager_tags = local.tags_combined
     }
   }
 
@@ -408,6 +428,16 @@ resource "google_compute_instance_template" "default" {
     on_host_maintenance         = local.on_host_maintenance
     preemptible                 = var.options.spot
     provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+
+    dynamic "node_affinities" {
+      for_each = var.options.node_affinities
+      iterator = affinity
+      content {
+        key      = affinity.key
+        operator = affinity.value.in ? "IN" : "NOT_IN"
+        values   = affinity.value.values
+      }
+    }
   }
 
   dynamic "service_account" {

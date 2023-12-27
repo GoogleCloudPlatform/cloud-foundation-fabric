@@ -16,13 +16,13 @@
 tests/examples/test_plan.py::test_example[modules/folder:Tags] values:
   module.folder.google_folder.folder[0]:
     display_name: Test
-    parent: organizations/1122334455
+    parent: folders/1122334455
   module.folder.google_tags_tag_binding.binding["env-prod"]: {}
   module.folder.google_tags_tag_binding.binding["foo"]:
     tag_value: tagValues/12345678
   module.org.google_tags_tag_key.default["environment"]:
     description: Environment specification.
-    parent: organizations/1122334455
+    parent: folders/1122334455
     purpose: null
     purpose_data: null
     short_name: environment
@@ -36,6 +36,6 @@ tests/examples/test_plan.py::test_example[modules/folder:Tags] values:
 
 counts:
   google_folder: 1
-  google_tags_tag_binding: 2
+  google_tags_tag_binding: 1
   google_tags_tag_key: 1
   google_tags_tag_value: 2

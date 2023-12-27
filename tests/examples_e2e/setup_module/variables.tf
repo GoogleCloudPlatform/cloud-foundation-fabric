@@ -15,6 +15,9 @@
 variable "billing_account" {
   type = string
 }
+variable "group_email" {
+  type = string
+}
 variable "organization_id" {
   type = string
 }
@@ -28,7 +31,8 @@ variable "region" {
   type = string
 }
 variable "suffix" {
-  type = string
+  type    = string
+  default = "0"
 }
 variable "timestamp" {
   type = string

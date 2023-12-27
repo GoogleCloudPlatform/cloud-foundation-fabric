@@ -13,19 +13,30 @@
 # limitations under the License.
 
 locals {
-  prefix = "${var.prefix}-${var.timestamp}-${var.suffix}"
+  prefix = "${var.prefix}-${var.timestamp}${var.suffix}"
+  jit_services = [
+    "storage.googleapis.com", # no permissions granted by default
+  ]
   services = [
     # trimmed down list of services, to be extended as needed
+    "apigee.googleapis.com",
+    "bigquery.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudfunctions.googleapis.com",
+    "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
+    "dns.googleapis.com",
+    "eventarc.googleapis.com",
     "iam.googleapis.com",
     "run.googleapis.com",
+    "secretmanager.googleapis.com",
+    "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com",
     "storage-component.googleapis.com",
     "storage.googleapis.com",
+    "vpcaccess.googleapis.com",
   ]
 }
 
@@ -77,14 +88,37 @@ resource "google_service_account" "service_account" {
   depends_on = [google_project_service.project_service]
 }
 
+resource "google_kms_key_ring" "keyring" {
+  name       = "keyring"
+  project    = google_project.project.project_id
+  location   = var.region
+  depends_on = [google_project_service.project_service]
+}
+
+resource "google_kms_crypto_key" "key" {
+  name            = "crypto-key-example"
+  key_ring        = google_kms_key_ring.keyring.id
+  rotation_period = "100000s"
+}
+
+resource "google_project_service_identity" "jit_si" {
+  for_each   = toset(local.jit_services)
+  provider   = google-beta
+  project    = google_project.project.project_id
+  service    = each.value
+  depends_on = [google_project_service.project_service]
+}
+
+
 resource "local_file" "terraform_tfvars" {
   filename = "e2e_tests.tfvars"
   content = templatefile("e2e_tests.tfvars.tftpl", {
     bucket             = google_storage_bucket.bucket.name
     billing_account_id = var.billing_account
-    organization_id    = var.organization_id
     folder_id          = google_folder.folder.folder_id
-    prefix             = local.prefix
+    group_email        = var.group_email
+    kms_key_id         = google_kms_crypto_key.key.id
+    organization_id    = var.organization_id
     project_id         = google_project.project.project_id
     region             = var.region
     service_account = {
