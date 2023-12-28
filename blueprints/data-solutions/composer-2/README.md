@@ -128,7 +128,7 @@ service_encryption_keys = {
 |---|---|:---:|
 | [composer_airflow_uri](outputs.tf#L17) | The URI of the Apache Airflow Web UI hosted within the Cloud Composer environment.. |  |
 | [composer_dag_gcs](outputs.tf#L22) | The Cloud Storage prefix of the DAGs for the Cloud Composer environment. |  |
-| [composer_service_account](outputs.tf#L27) |  Cloud Composer nodes Service Account email |  |
+| [composer_service_account](outputs.tf#L27) | Cloud Composer nodes Service Account email. |  |
 <!-- END TFDOC -->
 ## Test
 
