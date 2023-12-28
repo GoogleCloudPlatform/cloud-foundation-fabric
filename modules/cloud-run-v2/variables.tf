@@ -75,7 +75,7 @@ variable "containers" {
 }
 
 variable "create_job" {
-  description = "Create Cloud Run Job instead of Service"
+  description = "Create Cloud Run Job instead of Service."
   type        = bool
   default     = false
 }
