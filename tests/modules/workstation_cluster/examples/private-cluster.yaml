@@ -21,7 +21,7 @@ values:
     env: null
     labels:
       team: my-team
-    location: region
+    location: europe-west8
     project: project-id
     terraform_labels:
       team: my-team
@@ -34,7 +34,7 @@ values:
     display_name: null
     domain_config: []
     labels: null
-    location: region
+    location: europe-west8
     network: projects/xxx/global/networks/aaa
     private_cluster_config:
     - enable_private_endpoint: true
@@ -49,7 +49,7 @@ values:
     encryption_key: []
     idle_timeout: 1200s
     labels: null
-    location: region
+    location: europe-west8
     project: project-id
     running_timeout: 43200s
     timeouts: null
