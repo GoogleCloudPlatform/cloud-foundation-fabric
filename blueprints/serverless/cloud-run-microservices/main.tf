@@ -20,6 +20,9 @@ locals {
   cloud_run_domain = "run.app."
   svc_a_name       = "svc-a"
   svc_b_name       = "svc-b"
+  two_projects = (
+    try(var.project_configs.service.project_id, null) != null ? true : false
+  )
 }
 
 module "main-project" {
@@ -29,7 +32,7 @@ module "main-project" {
   project_create  = var.project_configs.main.billing_account_id != null
   billing_account = try(var.project_configs.main.billing_account_id, null)
   parent          = try(var.project_configs.main.parent, null)
-  # Enable Shared VPC by default, some use cases will use this project as host
+  # Enable Shared VPC by default, a use case will use this project as host
   shared_vpc_host_config = {
     enabled = true
   }
@@ -44,7 +47,7 @@ module "main-project" {
 
 module "service-project" {
   source          = "../../../modules/project"
-  count           = try(var.project_configs.service.project_id, null) != null ? 1 : 0
+  count           = local.two_projects == true ? 1 : 0
   name            = var.project_configs.service.project_id
   prefix          = var.prefix
   project_create  = var.project_configs.service.billing_account_id != null

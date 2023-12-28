@@ -16,46 +16,51 @@
 
 # tfdoc:file:description Cloud Run services.
 
-resource "google_cloud_run_v2_service" "svc_a" {
-  project      = module.main-project.project_id
+# The use case where both Cloud Run services are in the same project uses
+# a VPC access connector to connect from service A to service B.
+# The use case with Shared VPC and internal ALB uses Direct VPC Egress.
+module "cloud-run-svc-a" {
+  source       = "../../../modules/cloud-run-v2"
+  project_id   = module.main-project.project_id
   name         = local.svc_a_name
-  location     = var.region
+  region       = var.region
   ingress      = "INGRESS_TRAFFIC_ALL"
   launch_stage = "BETA" # Required to use Direct VPC Egress
-  template {
-    containers {
+  containers = {
+    tester = {
       image = var.image_configs.svc_a
     }
-    dynamic "vpc_access" {
-      for_each = try(var.project_configs.service.project_id, null) == null ? [""] : []
-      content { # Use Serverless VPC Access connector
-        connector = google_vpc_access_connector.connector[0].id
-      }
-    }
-    dynamic "vpc_access" {
-      for_each = try(var.project_configs.service.project_id, null) != null ? [""] : []
-      content { # Use Direct VPC Egress
-        network_interfaces {
-          subnetwork = module.vpc-main.subnets["${var.region}/subnet-vpc-direct"].name
-        }
-      }
+  }
+  iam = {
+    "roles/run.invoker" = ["allUsers"]
+  }
+  revision = {
+    vpc_access = {
+      egress = "ALL_TRAFFIC"
+      subnet = ( # Direct VPC Egress
+        local.two_projects == true
+        ? module.vpc-main.subnet_ids["${var.region}/subnet-vpc-direct"]
+        : null
+      )
     }
   }
-}
-
-resource "google_cloud_run_v2_service_iam_binding" "svc_a_binding" {
-  project  = module.main-project.project_id
-  location = var.region
-  name     = google_cloud_run_v2_service.svc_a.name
-  role     = "roles/run.invoker"
-  members  = ["allUsers"]
+  vpc_connector_create = (
+    local.two_projects == false
+    ? {
+      subnet = {
+        name = module.vpc-main.subnets["${var.region}/subnet-vpc-access"].name
+      }
+    }
+    : null
+  )
 }
 
 module "cloud-run-svc-b" {
-  source     = "../../../modules/cloud-run"
+  source     = "../../../modules/cloud-run-v2"
   project_id = try(module.service-project[0].project_id, module.main-project.project_id)
   name       = local.svc_b_name
   region     = var.region
+  ingress    = "INGRESS_TRAFFIC_INTERNAL_ONLY"
   containers = {
     default = {
       image = var.image_configs.svc_b
@@ -63,21 +68,5 @@ module "cloud-run-svc-b" {
   }
   iam = {
     "roles/run.invoker" = ["allUsers"]
-  }
-  ingress_settings = "internal"
-}
-
-# Serverless VPC Access connector
-# The use case where both Cloud Run services are in the same project uses
-# a VPC access connector to connect from service A to service B.
-# The use case with Shared VPC and internal ALB uses Direct VPC Egress.
-resource "google_vpc_access_connector" "connector" {
-  count   = try(var.project_configs.service.project_id, null) == null ? 1 : 0
-  name    = "connector"
-  project = module.main-project.project_id
-  region  = var.region
-  subnet {
-    name       = module.vpc-main.subnets["${var.region}/subnet-vpc-access"].name
-    project_id = module.main-project.project_id
   }
 }

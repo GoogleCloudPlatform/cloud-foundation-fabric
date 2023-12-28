@@ -17,23 +17,21 @@
 output "custom_domain" {
   description = "Custom domain for the Application Load Balancer."
   value = (
-    try(var.project_configs.service.project_id, null) != null
-    ? "http://${var.custom_domain}" : "none"
+    local.two_projects == true ? "http://${var.custom_domain}" : "none"
   )
 }
 
 output "default_URLs" {
   description = "Cloud Run services default URLs."
   value = {
-    service_a = google_cloud_run_v2_service.svc_a.uri
-    service_b = module.cloud-run-svc-b.service.status[0].url
+    service_a = module.cloud-run-svc-a.service.uri
+    service_b = module.cloud-run-svc-b.service.uri
   }
 }
 
 output "load_balancer_ip" {
   description = "Load Balancer IP address."
   value = (
-    try(var.project_configs.service.project_id, null) != null
-    ? module.int-alb[0].address : "none"
+    local.two_projects == true ? module.int-alb[0].address : "none"
   )
 }
