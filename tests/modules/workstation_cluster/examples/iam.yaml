@@ -21,7 +21,7 @@ values:
     env: null
     labels:
       team: my-team
-    location: region
+    location: europe-west8
     project: project-id
     terraform_labels:
       team: my-team
@@ -34,7 +34,7 @@ values:
     display_name: null
     domain_config: []
     labels: null
-    location: region
+    location: europe-west8
     network: projects/xxx/global/networks/aaa
     private_cluster_config:
     - enable_private_endpoint: false
@@ -49,7 +49,7 @@ values:
     encryption_key: []
     idle_timeout: 1200s
     labels: null
-    location: region
+    location: europe-west8
     project: project-id
     running_timeout: 43200s
     timeouts: null
@@ -57,7 +57,7 @@ values:
     workstation_config_id: my-workstation-config
   ? module.workstation-cluster.google_workstations_workstation_config_iam_binding.authoritative["my-workstation-config-roles/viewer"]
   : condition: []
-    location: region
+    location: europe-west8
     members:
     - group:group1@my-org.com
     project: project-id
@@ -66,7 +66,7 @@ values:
     workstation_config_id: my-workstation-config
   ? module.workstation-cluster.google_workstations_workstation_config_iam_binding.bindings["my-workstation-config-workstations-config-viewer"]
   : condition: []
-    location: region
+    location: europe-west8
     members:
     - group:group2@my-org.com
     project: project-id
@@ -75,7 +75,7 @@ values:
     workstation_config_id: my-workstation-config
   ? module.workstation-cluster.google_workstations_workstation_config_iam_member.bindings["my-workstation-config-workstations-config-editor"]
   : condition: []
-    location: region
+    location: europe-west8
     member: group:group3@my-org.com
     project: project-id
     role: roles/editor
@@ -83,7 +83,7 @@ values:
     workstation_config_id: my-workstation-config
   ? module.workstation-cluster.google_workstations_workstation_iam_binding.authoritative["my-workstation-config-my-workstation-roles/workstations.user"]
   : condition: []
-    location: region
+    location: europe-west8
     members:
     - user:user1@my-org.com
     project: project-id

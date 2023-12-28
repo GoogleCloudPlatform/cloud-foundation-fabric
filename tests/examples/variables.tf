@@ -49,7 +49,7 @@ variable "project_id" {
 }
 
 variable "region" {
-  default = "region"
+  default = "europe-west8"
 }
 
 variable "service_account" {

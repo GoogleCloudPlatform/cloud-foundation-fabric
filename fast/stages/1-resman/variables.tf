@@ -30,9 +30,12 @@ variable "automation" {
       issuer           = string
       issuer_uri       = string
       name             = string
-      principal_tpl    = string
-      principalset_tpl = string
+      principal_branch = string
+      principal_repo   = string
     }))
+    service_accounts = object({
+      resman-r = string
+    })
   })
 }
 
@@ -134,6 +137,7 @@ variable "custom_roles" {
   description = "Custom roles defined at the org level, in key => id format."
   type = object({
     service_project_network_admin = string
+    storage_viewer                = string
   })
   default = null
 }

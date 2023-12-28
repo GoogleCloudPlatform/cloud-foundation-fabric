@@ -12,25 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  module.addresses.google_compute_address.internal["ilb-1"]:
-    address_type: INTERNAL
-    labels: null
-    name: ilb-1
-    network: null
-    project: project-id
-    purpose: SHARED_LOADBALANCER_VIP
-    region: europe-west8
-    subnetwork: subnet_self_link
-  module.addresses.google_compute_address.internal["ilb-2"]:
-    address: 10.0.0.2
-    address_type: INTERNAL
-    labels: null
-    name: ilb-2
-    network: null
-    project: project-id
-    region: europe-west8
-    subnetwork: subnet_self_link
-
-counts:
-  google_compute_address: 2
+# the following permissions are a descoped version of tagAdm
+name: tagViewer
+includedPermissions:
+  - resourcemanager.tagHolds.list
+  - resourcemanager.tagKeys.get
+  - resourcemanager.tagKeys.getIamPolicy
+  - resourcemanager.tagKeys.list
+  - resourcemanager.tagValues.get
+  - resourcemanager.tagValues.getIamPolicy
+  - resourcemanager.tagValues.list

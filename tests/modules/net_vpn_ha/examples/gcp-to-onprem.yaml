@@ -26,7 +26,7 @@ values:
     name: mynet-to-onprem
     network: projects/xxx/global/networks/aaa
     project: project-id
-    region: region
+    region: europe-west8
     stack_type: IPV4_ONLY
   module.vpn_ha.google_compute_router.router[0]:
     bgp:
@@ -40,14 +40,14 @@ values:
     name: vpn-mynet-to-onprem
     network: projects/xxx/global/networks/aaa
     project: project-id
-    region: region
+    region: europe-west8
   module.vpn_ha.google_compute_router_interface.router_interface["remote-0"]:
     interconnect_attachment: null
     ip_range: 169.254.1.2/30
     name: mynet-to-onprem-remote-0
     private_ip_address: null
     project: project-id
-    region: region
+    region: europe-west8
     router: vpn-mynet-to-onprem
     subnetwork: null
     vpn_tunnel: mynet-to-onprem-remote-0
@@ -57,7 +57,7 @@ values:
     name: mynet-to-onprem-remote-1
     private_ip_address: null
     project: project-id
-    region: region
+    region: europe-west8
     router: vpn-mynet-to-onprem
     subnetwork: null
     vpn_tunnel: mynet-to-onprem-remote-1
@@ -73,7 +73,7 @@ values:
     peer_asn: 64513
     peer_ip_address: 169.254.1.1
     project: project-id
-    region: region
+    region: europe-west8
     router: vpn-mynet-to-onprem
     router_appliance_instance: null
   module.vpn_ha.google_compute_router_peer.bgp_peer["remote-1"]:
@@ -88,7 +88,7 @@ values:
     peer_asn: 64513
     peer_ip_address: 169.254.2.1
     project: project-id
-    region: region
+    region: europe-west8
     router: vpn-mynet-to-onprem
     router_appliance_instance: null
   module.vpn_ha.google_compute_vpn_tunnel.tunnels["remote-0"]:
@@ -98,7 +98,7 @@ values:
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
     project: project-id
-    region: region
+    region: europe-west8
     router: vpn-mynet-to-onprem
     shared_secret: mySecret
     target_vpn_gateway: null
@@ -110,7 +110,7 @@ values:
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
     project: project-id
-    region: region
+    region: europe-west8
     router: vpn-mynet-to-onprem
     shared_secret: mySecret
     target_vpn_gateway: null
