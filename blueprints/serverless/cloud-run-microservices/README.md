@@ -82,7 +82,7 @@ __Congratulations!__ You have successfully deployed the use case you chose based
 
 ### Use case 1: Service to service communication in the same project
 
-This use case deploys two Cloud Run services in the same project. Service B is protected as an _internal only_ service and communication between Cloud Run services, even in the same project, is not considered internal by default. But there are ways to configure it, and one option is to use PSC/PGA (the second option is shown in the following use case). We will use a PSC endpoint and a Serverless VPC connector to reach it. A DNS record for the PSC endpoint is created.
+This use case deploys two Cloud Run services in the same project. Service B is protected as an _internal only_ service and communication between Cloud Run services, even in the same project, is not considered internal by default. To communicate them, one option is to use PSC/PGA (the second option is shown in the following use case). We will use a PSC endpoint and a Serverless VPC connector to reach Service B. A DNS record for the PSC endpoint is created.
 
 <p align="center"> <img src="images/use-case-1.png" width="600"> </p>
 
@@ -90,7 +90,7 @@ Service A uses an application with a GUI to test connectivity. You can find its 
 
 https://github.com/willypalacin/vpc-network-tester/tree/main
 
-Build an image and push it to Artifact Registry. Set the corresponding image variable to its URL, and the main project ID, in `terraform.tfvars`. E.g.:
+Build an image and push it to Artifact Registry, setting the corresponding Terraform variable to its URL. Add the main project ID in `terraform.tfvars`. E.g.:
 
 ```tfvars
 image_configs = {
@@ -156,7 +156,7 @@ The above command will delete the associated resources so there will be no billa
 | name | description | modules | resources |
 |---|---|---|---|
 | [alb.tf](./alb.tf) | Internal Application Load Balancer resource. | <code>net-lb-app-int</code> |  |
-| [cloudrun.tf](./cloudrun.tf) | Cloud Run services. | <code>cloud-run</code> | <code>google_cloud_run_v2_service</code> · <code>google_cloud_run_v2_service_iam_binding</code> · <code>google_vpc_access_connector</code> |
+| [cloudrun.tf](./cloudrun.tf) | Cloud Run services. | <code>cloud-run-v2</code> |  |
 | [dns.tf](./dns.tf) | DNS resources. | <code>dns</code> |  |
 | [main.tf](./main.tf) | Project resources. | <code>project</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
@@ -180,8 +180,8 @@ The above command will delete the associated resources so there will be no billa
 | name | description | sensitive |
 |---|---|:---:|
 | [custom_domain](outputs.tf#L17) | Custom domain for the Application Load Balancer. |  |
-| [default_URLs](outputs.tf#L25) | Cloud Run services default URLs. |  |
-| [load_balancer_ip](outputs.tf#L33) | Load Balancer IP address. |  |
+| [default_URLs](outputs.tf#L24) | Cloud Run services default URLs. |  |
+| [load_balancer_ip](outputs.tf#L32) | Load Balancer IP address. |  |
 <!-- END TFDOC -->
 ## Tests
 
