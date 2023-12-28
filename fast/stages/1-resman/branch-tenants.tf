@@ -16,6 +16,8 @@
 
 # tfdoc:file:description Lightweight tenant resources.
 
+# TODO(ludo): add support for CI/CD
+
 locals {
   tenant_iam = {
     for k, v in var.tenants : k => [
@@ -172,6 +174,14 @@ module "tenant-self-iac-project" {
       "roles/iam.serviceAccountAdmin",
       "roles/iam.serviceAccountTokenCreator",
       "roles/iam.workloadIdentityPoolAdmin"
+    ]
+  }
+  iam = {
+    (var.custom_roles.storage_viewer) = [
+      "serviceAccount:${var.automation.service_accounts.resman-r}"
+    ]
+    "roles/viewer" = [
+      "serviceAccount:${var.automation.service_accounts.resman-r}"
     ]
   }
   services = [

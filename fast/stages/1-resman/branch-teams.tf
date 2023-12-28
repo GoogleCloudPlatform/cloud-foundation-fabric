@@ -18,8 +18,6 @@
 
 # TODO(ludo): add support for CI/CD
 
-############### top-level Teams branch and automation resources ###############
-
 module "branch-teams-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.teams ? 1 : 0
@@ -68,7 +66,6 @@ module "branch-teams-gcs" {
   }
 }
 
-################## per-team folders and automation resources ##################
 
 module "branch-teams-team-folder" {
   source   = "../../../modules/folder"
