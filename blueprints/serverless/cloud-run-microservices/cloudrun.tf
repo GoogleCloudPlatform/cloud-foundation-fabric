@@ -20,12 +20,14 @@
 # a VPC access connector to connect from service A to service B.
 # The use case with Shared VPC and internal ALB uses Direct VPC Egress.
 module "cloud-run-svc-a" {
-  source       = "../../../modules/cloud-run-v2"
-  project_id   = module.main-project.project_id
-  name         = local.svc_a_name
-  region       = var.region
-  ingress      = "INGRESS_TRAFFIC_ALL"
-  launch_stage = "BETA" # Required to use Direct VPC Egress
+  source     = "../../../modules/cloud-run-v2"
+  project_id = module.main-project.project_id
+  name       = local.svc_a_name
+  region     = var.region
+  ingress    = "INGRESS_TRAFFIC_ALL"
+  # Direct VPC Egress is currently in Beta. Checking its use to avoid permadiff,
+  # when in GA it will need to be removed to avoid permadiff again.
+  launch_stage = local.two_projects == true ? "BETA" : "GA"
   containers = {
     tester = {
       image = var.image_configs.svc_a
