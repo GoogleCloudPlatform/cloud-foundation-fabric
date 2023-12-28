@@ -21,7 +21,7 @@ values:
     prefix_length: 29
     project: project-id
     purpose: IPSEC_INTERCONNECT
-    region: region
+    region: europe-west8
   module.addresses.google_compute_address.ipsec_interconnect["vpn-gw-range-2"]:
     address: 10.255.255.8
     address_type: INTERNAL
@@ -30,7 +30,7 @@ values:
     prefix_length: 29
     project: project-id
     purpose: IPSEC_INTERCONNECT
-    region: region
+    region: europe-west8
 
 counts:
   google_compute_address: 2

@@ -27,7 +27,7 @@ values:
     ports: null
     project: project-id
     recreate_closed_psc: false
-    region: region
+    region: europe-west8
     service_label: null
     source_ip_ranges: null
     target: null
@@ -38,7 +38,7 @@ values:
     named_port: []
     project: project-id
     timeouts: null
-    zone: region-b
+    zone: europe-west8-b
   module.nlb.google_compute_region_backend_service.default:
     affinity_cookie_ttl_sec: null
     circuit_breakers: []
@@ -56,7 +56,7 @@ values:
     outlier_detection: []
     project: project-id
     protocol: UNSPECIFIED
-    region: region
+    region: europe-west8
     security_policy: null
     subsetting: []
     timeouts: null
@@ -77,7 +77,7 @@ values:
     https_health_check: []
     name: nlb-test
     project: project-id
-    region: region
+    region: europe-west8
     ssl_health_check: []
     tcp_health_check: []
     timeout_sec: 5
