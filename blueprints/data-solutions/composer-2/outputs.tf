@@ -25,6 +25,6 @@ output "composer_dag_gcs" {
 }
 
 output "composer_service_account" {
-  description = " Cloud Composer nodes Service Account email"
+  description = "Cloud Composer nodes Service Account email."
   value       = module.comp-sa.email
 }
