@@ -26,7 +26,7 @@ variable "vpc_connector_create" {
       min = optional(number)
     }), {})
     throughput = optional(object({
-      max = optional(number)
+      max = optional(number, 1000) # workaround for a wrong default in provider
       min = optional(number)
     }), {})
     subnet = optional(object({

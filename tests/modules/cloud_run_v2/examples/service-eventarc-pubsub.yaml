@@ -1,0 +1,61 @@
+values:
+  module.cloud_run.google_cloud_run_v2_service.service[0]:
+    location: europe-west8
+    name: hello
+    project: project-id
+    template:
+      - containers:
+          - args: null
+            command: null
+            depends_on: null
+            env: []
+            image: us-docker.pkg.dev/cloudrun/container/hello
+            name: hello
+            volume_mounts: []
+            working_dir: null
+        execution_environment: EXECUTION_ENVIRONMENT_GEN1
+        volumes: []
+        vpc_access: []
+
+  module.cloud_run.google_eventarc_trigger.pubsub_triggers["topic-1"]:
+    destination:
+      - cloud_run_service:
+          - path: null
+            region: europe-west8
+            service: hello
+    location: europe-west8
+    matching_criteria:
+      - attribute: type
+        operator: ''
+        value: google.cloud.pubsub.topic.v1.messagePublished
+    name: pubsub-topic-1
+    project: project-id
+    service_account: null
+    transport:
+      - pubsub:
+          - topic: topic1
+  module.cloud_run.google_eventarc_trigger.pubsub_triggers["topic-2"]:
+    destination:
+      - cloud_run_service:
+          - path: null
+            region: europe-west8
+            service: hello
+    location: europe-west8
+    matching_criteria:
+      - attribute: type
+        operator: ''
+        value: google.cloud.pubsub.topic.v1.messagePublished
+    name: pubsub-topic-2
+    project: project-id
+    service_account: null
+    transport:
+      - pubsub:
+          - topic: topic2
+
+counts:
+  google_cloud_run_v2_service: 1
+  google_eventarc_trigger: 2
+  modules: 1
+  resources: 3
+
+outputs: {}

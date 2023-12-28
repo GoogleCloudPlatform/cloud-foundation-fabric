@@ -1,0 +1,46 @@
+values:
+  module.cloud_run.google_cloud_run_v2_service.service[0]:
+    location: europe-west8
+    name: hello
+    project: project-id
+    template:
+      - containers:
+          - args: null
+            command: null
+            depends_on: null
+            env: []
+            image: us-docker.pkg.dev/cloudrun/container/hello
+            name: hello
+            volume_mounts: []
+            working_dir: null
+        execution_environment: EXECUTION_ENVIRONMENT_GEN1
+        volumes: []
+        vpc_access: []
+  module.cloud_run.google_eventarc_trigger.audit_log_triggers["setiampolicy"]:
+    destination:
+      - cloud_run_service:
+          - path: null
+            region: europe-west8
+            service: hello
+    location: europe-west8
+    matching_criteria:
+      - attribute: methodName
+        operator: ''
+        value: SetIamPolicy
+      - attribute: serviceName
+        operator: ''
+        value: cloudresourcemanager.googleapis.com
+      - attribute: type
+        operator: ''
+        value: google.cloud.audit.log.v1.written
+    name: audit-log-setiampolicy
+    project: project-id
+    service_account: cloud-run-trigger@my-project.iam.gserviceaccount.com
+
+counts:
+  google_cloud_run_v2_service: 1
+  google_eventarc_trigger: 1
+  modules: 1
+  resources: 2
+
+outputs: {}

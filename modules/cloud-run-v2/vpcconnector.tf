@@ -30,9 +30,12 @@ resource "google_vpc_access_connector" "connector" {
   max_throughput = var.vpc_connector_create.throughput.max
   min_instances  = var.vpc_connector_create.instances.min
   min_throughput = var.vpc_connector_create.throughput.min
-  subnet {
-    name       = var.vpc_connector_create.subnet.name
-    project_id = var.vpc_connector_create.subnet.project_id
+  dynamic "subnet" {
+    for_each = var.vpc_connector_create.subnet.name == null ? [] : [""]
+    content {
+      name       = var.vpc_connector_create.subnet.name
+      project_id = var.vpc_connector_create.subnet.project_id
+    }
   }
 }
 

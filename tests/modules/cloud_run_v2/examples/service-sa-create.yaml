@@ -1,0 +1,33 @@
+values:
+  module.cloud_run.google_cloud_run_v2_service.service[0]:
+    location: europe-west8
+    name: hello
+    project: project-id
+    template:
+      - containers:
+          - args: null
+            command: null
+            depends_on: null
+            env: []
+            image: us-docker.pkg.dev/cloudrun/container/hello
+            name: hello
+            volume_mounts: []
+            working_dir: null
+        execution_environment: EXECUTION_ENVIRONMENT_GEN1
+        volumes: []
+        vpc_access: []
+  module.cloud_run.google_service_account.service_account[0]:
+    account_id: tf-cr-hello
+    description: null
+    disabled: false
+    display_name: Terraform Cloud Run hello.
+    project: project-id
+    timeouts: null
+
+counts:
+  google_cloud_run_v2_service: 1
+  google_service_account: 1
+  modules: 1
+  resources: 2
+
+outputs: {}

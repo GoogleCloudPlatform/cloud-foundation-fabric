@@ -1,0 +1,26 @@
+values:
+  module.cloud_run.google_cloud_run_v2_service.service[0]:
+    location: europe-west8
+    name: hello
+    project: project-id
+    template:
+      - containers:
+          - args: null
+            command: null
+            depends_on: null
+            env: []
+            image: us-docker.pkg.dev/cloudrun/container/hello
+            name: hello
+            volume_mounts: []
+            working_dir: null
+        execution_environment: EXECUTION_ENVIRONMENT_GEN1
+        service_account: cloud-run@my-project.iam.gserviceaccount.com
+        volumes: []
+        vpc_access: []
+
+counts:
+  google_cloud_run_v2_service: 1
+  modules: 1
+  resources: 1
+
+outputs: {}
