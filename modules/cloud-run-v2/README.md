@@ -1,6 +1,6 @@
 # Cloud Run Module
 
-Cloud Run management, with support for IAM roles and Eventarc trigger creation supporting both: service and jobs.
+Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger creation.
 
 <!-- BEGIN TOC -->
 - [Examples](#examples)

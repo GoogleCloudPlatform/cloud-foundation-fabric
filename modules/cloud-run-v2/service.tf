@@ -32,7 +32,7 @@ resource "google_cloud_run_v2_service" "service" {
     )
     max_instance_request_concurrency = var.revision.max_concurrency
     dynamic "scaling" {
-      for_each = (var.revision.max_instance_count == null && var.revision.max_instance_count == null) ? [] : [""]
+      for_each = (var.revision.max_instance_count == null && var.revision.min_instance_count == null) ? [] : [""]
       content {
         max_instance_count = var.revision.max_instance_count
         min_instance_count = var.revision.min_instance_count
@@ -157,7 +157,7 @@ resource "google_cloud_run_v2_service" "service" {
             dynamic "tcp_socket" {
               for_each = containers.value.startup_probe.tcp_socket == null ? [] : [""]
               content {
-                port = ontainers.value.startup_probe.tcp_socket.port
+                port = containers.value.startup_probe.tcp_socket.port
               }
             }
             dynamic "grpc" {
