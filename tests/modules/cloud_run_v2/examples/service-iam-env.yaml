@@ -13,14 +13,14 @@
 # limitations under the License.
 
 values:
-  module.cloud_run.google_cloud_run_service_iam_binding.binding["roles/run.invoker"]:
+  module.cloud_run.google_cloud_run_v2_service_iam_binding.binding["roles/run.invoker"]:
     condition: []
     location: europe-west8
+    name: hello
     members:
       - allUsers
     project: project-id
     role: roles/run.invoker
-    service: hello
   module.cloud_run.google_cloud_run_v2_service.service[0]:
     location: europe-west8
     name: hello
@@ -51,7 +51,7 @@ values:
         vpc_access: []
 
 counts:
-  google_cloud_run_service_iam_binding: 1
+  google_cloud_run_v2_service_iam_binding: 1
   google_cloud_run_v2_service: 1
   modules: 2
   resources: 5

@@ -218,7 +218,7 @@ resource "google_cloud_run_v2_service_iam_binding" "binding" {
   for_each = var.create_job ? {} : var.iam
   project  = google_cloud_run_v2_service.service[0].project
   location = google_cloud_run_v2_service.service[0].location
-  service  = google_cloud_run_v2_service.service[0].name
+  name     = google_cloud_run_v2_service.service[0].name
   role     = each.key
   members = (
     each.key != "roles/run.invoker" || !local.trigger_sa_create

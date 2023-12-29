@@ -52,7 +52,7 @@ resource "google_cloud_run_v2_service_iam_member" "default" {
   ) ? 1 : 0
   project  = google_cloud_run_v2_service.service[0].project
   location = google_cloud_run_v2_service.service[0].location
-  service  = google_cloud_run_v2_service.service[0].name
+  name     = google_cloud_run_v2_service.service[0].name
   role     = "roles/run.invoker"
   member   = "serviceAccount:${local.trigger_sa_email}"
 }

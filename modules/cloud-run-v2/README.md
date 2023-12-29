@@ -151,7 +151,7 @@ module "cloud_run" {
   }
   vpc_connector_create = {
     ip_cidr_range = "10.10.10.0/28"
-    vpc_self_link = var.vpc.self_link
+    network       = var.vpc.self_link
     instances = {
       max = 10
       min = 2
