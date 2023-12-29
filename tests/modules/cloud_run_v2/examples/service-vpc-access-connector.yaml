@@ -30,15 +30,16 @@ values:
             working_dir: null
         execution_environment: EXECUTION_ENVIRONMENT_GEN1
         volumes: []
-        vpc_access:
-          - connector: connector-id
-            egress: ALL_TRAFFIC
-            network_interfaces: []
+#       Depends on values known after apply, so empty in the plan
+#        vpc_access:
+#          - connector: connector-id
+#            egress: ALL_TRAFFIC
+#            network_interfaces: []
 
 counts:
   google_cloud_run_v2_service: 1
   modules: 1
-  resources: 1
+  resources: 2
 
 outputs: {}
 

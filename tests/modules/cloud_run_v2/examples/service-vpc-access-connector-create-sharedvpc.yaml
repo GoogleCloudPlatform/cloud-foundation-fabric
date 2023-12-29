@@ -16,7 +16,7 @@ values:
   module.cloud_run.google_cloud_run_v2_service.service[0]:
     location: europe-west8
     name: hello
-    project: project-id
+    project: test-service
     template:
       - containers:
           - args: null
@@ -34,16 +34,16 @@ values:
     max_throughput: 1000
     min_throughput: 200
     name: hello
-    project: project-id
+    project: test-service
     region: europe-west8
     subnet:
-      - name: subnet-name
-        project_id: host-project
+      - name: fixture-subnet-28
+        project_id: test-host
 
 counts:
   google_cloud_run_v2_service: 1
   google_vpc_access_connector: 1
-  modules: 1
-  resources: 2
+  modules: 4
+  resources: 40
 
 outputs: {}

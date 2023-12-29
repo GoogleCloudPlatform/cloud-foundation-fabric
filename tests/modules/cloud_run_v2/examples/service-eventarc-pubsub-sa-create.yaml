@@ -51,23 +51,7 @@ values:
     project: project-id
     transport:
       - pubsub:
-          - topic: topic1
-  module.cloud_run.google_eventarc_trigger.pubsub_triggers["topic-2"]:
-    destination:
-      - cloud_run_service:
-          - path: null
-            region: europe-west8
-            service: hello
-    location: europe-west8
-    matching_criteria:
-      - attribute: type
-        operator: ''
-        value: google.cloud.pubsub.topic.v1.messagePublished
-    name: pubsub-topic-2
-    project: project-id
-    transport:
-      - pubsub:
-          - topic: topic2
+          - topic: topic
   module.cloud_run.google_service_account.trigger_service_account[0]:
     account_id: tf-cr-trigger-hello
     description: null
@@ -79,9 +63,9 @@ values:
 counts:
   google_cloud_run_service_iam_member: 1
   google_cloud_run_v2_service: 1
-  google_eventarc_trigger: 2
+  google_eventarc_trigger: 1
   google_service_account: 1
-  modules: 1
-  resources: 5
+  modules: 2
+  resources: 6
 
 outputs: {}

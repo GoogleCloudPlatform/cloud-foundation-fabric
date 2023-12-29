@@ -41,8 +41,7 @@ values:
                 value: null
                 value_source:
                   - secret_key_ref:
-                      - secret: credentials
-                        version: '1'
+                      - {}
             image: us-docker.pkg.dev/cloudrun/container/hello
             name: hello
             volume_mounts: []
@@ -54,7 +53,7 @@ values:
 counts:
   google_cloud_run_service_iam_binding: 1
   google_cloud_run_v2_service: 1
-  modules: 1
-  resources: 2
+  modules: 2
+  resources: 5
 
 outputs: {}

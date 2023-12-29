@@ -48,6 +48,10 @@ variable "project_id" {
   default = "project-id"
 }
 
+variable "project_number" {
+  default = "123"
+}
+
 variable "region" {
   default = "europe-west8"
 }

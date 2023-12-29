@@ -16,6 +16,7 @@ Cloud Run management, with support for IAM roles and Eventarc trigger creation s
   - [Creating Cloud Run Jobs](#creating-cloud-run-jobs)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Fixtures](#fixtures)
 <!-- END TOC -->
 
 ## Examples
@@ -39,8 +40,8 @@ module "cloud_run" {
       }
       env_from_key = {
         SECRET1 = {
-          secret  = "credentials"
-          version = "1"
+          secret  = module.secret-manager.secrets["credentials"].name
+          version = module.secret-manager.version_versions["credentials:v1"]
         }
       }
     }
@@ -49,7 +50,7 @@ module "cloud_run" {
     "roles/run.invoker" = ["allUsers"]
   }
 }
-# tftest modules=1 resources=2 inventory=service-iam-env.yaml
+# tftest modules=2 resources=5 fixtures=fixtures/secret-credentials.tf inventory=service-iam-env.yaml e2e
 ```
 
 ### Mounting secrets as volumes
@@ -71,13 +72,14 @@ module "cloud_run" {
   volumes = {
     credentials = {
       secret = {
-        name = "secret-manager-id"
-        path = "my-secret"
+        name    = module.secret-manager.secrets["credentials"].id
+        path    = "my-secret"
+        version = "latest" # TODO: should be optional, but results in API error
       }
     }
   }
 }
-# tftest modules=1 resources=1 inventory=service-volume-secretes.yaml
+# tftest modules=2 resources=4 fixtures=fixtures/secret-credentials.tf inventory=service-volume-secretes.yaml e2e
 ```
 
 ### Beta features
@@ -126,12 +128,12 @@ module "cloud_run" {
   }
   revision = {
     vpc_access = {
-      connector = "connector-id"
+      connector = google_vpc_access_connector.connector.id
       egress    = "ALL_TRAFFIC"
     }
   }
 }
-# tftest modules=1 resources=1 inventory=service-vpc-access-connector.yaml
+# tftest modules=1 resources=2 fixtures=fixtures/vpc-connector.tf inventory=service-vpc-access-connector.yaml e2e
 ```
 
 If creation of the VPC Access Connector is required, use the `vpc_connector_create` variable which also supports optional attributes like number of instances, machine type, or throughput. The connector will be used automatically.
@@ -164,7 +166,7 @@ Note that if you are using a Shared VPC for the connector, you need to specify a
 ```hcl
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run-v2"
-  project_id = var.project_id
+  project_id = module.project-service.project_id
   region     = var.region
   name       = "hello"
   containers = {
@@ -175,12 +177,12 @@ module "cloud_run" {
   vpc_connector_create = {
     machine_type = "e2-standard-4"
     subnet = {
-      name       = "subnet-name"
-      project_id = "host-project"
+      name       = module.net-vpc-host.subnets["${var.region}/fixture-subnet-28"].name
+      project_id = module.project-host.project_id
     }
   }
 }
-# tftest modules=1 resources=2 inventory=service-vpc-access-connector-create-sharedvpc.yaml
+# tftest modules=4 resources=40 fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml e2e
 ```
 
 ### Eventarc triggers
@@ -202,12 +204,11 @@ module "cloud_run" {
   }
   eventarc_triggers = {
     pubsub = {
-      topic-1 = "topic1"
-      topic-2 = "topic2"
+      topic-1 = module.pubsub.topic.name
     }
   }
 }
-# tftest modules=1 resources=3 inventory=service-eventarc-pubsub.yaml
+# tftest modules=2 resources=4 fixtures=fixtures/pubsub.tf inventory=service-eventarc-pubsub.yaml e2e
 ```
 
 #### Audit logs
@@ -283,13 +284,12 @@ module "cloud_run" {
   }
   eventarc_triggers = {
     pubsub = {
-      topic-1 = "topic1"
-      topic-2 = "topic2"
+      topic-1 = module.pubsub.topic.name
     }
     service_account_create = true
   }
 }
-# tftest modules=1 resources=5 inventory=service-eventarc-pubsub-sa-create.yaml
+# tftest modules=2 resources=6 fixtures=fixtures/pubsub.tf inventory=service-eventarc-pubsub-sa-create.yaml e2e
 ```
 
 ### Cloud Run Service Account
@@ -325,9 +325,9 @@ module "cloud_run" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
     }
   }
-  service_account = "cloud-run@my-project.iam.gserviceaccount.com"
+  service_account = module.iam-service-account.email
 }
-# tftest modules=1 resources=1 inventory=service-external-sa.yaml
+# tftest modules=2 resources=2 fixtures=fixtures/iam-service-account.tf inventory=service-external-sa.yaml e2e
 ```
 
 ### Creating Cloud Run Jobs
@@ -399,4 +399,12 @@ module "cloud_run" {
 | [service_account_iam_email](outputs.tf#L42) | Service account email. |  |
 | [service_name](outputs.tf#L50) | Cloud Run service name. |  |
 | [vpc_connector](outputs.tf#L55) | VPC connector resource if created. |  |
+
+## Fixtures
+
+- [iam-service-account.tf](../../tests/fixtures/iam-service-account.tf)
+- [pubsub.tf](../../tests/fixtures/pubsub.tf)
+- [secret-credentials.tf](../../tests/fixtures/secret-credentials.tf)
+- [shared-vpc.tf](../../tests/fixtures/shared-vpc.tf)
+- [vpc-connector.tf](../../tests/fixtures/vpc-connector.tf)
 <!-- END TFDOC -->

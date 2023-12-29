@@ -28,13 +28,13 @@ values:
             volume_mounts: []
             working_dir: null
         execution_environment: EXECUTION_ENVIRONMENT_GEN1
-        service_account: cloud-run@my-project.iam.gserviceaccount.com
+        service_account: fixture-service-account@project-id.iam.gserviceaccount.com
         volumes: []
         vpc_access: []
 
 counts:
   google_cloud_run_v2_service: 1
-  modules: 1
-  resources: 1
+  modules: 2
+  resources: 2
 
 outputs: {}
