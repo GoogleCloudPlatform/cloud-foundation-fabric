@@ -110,8 +110,11 @@ resource "google_cloud_run_v2_job" "job" {
               }
             }
           }
-          cloud_sql_instance {
-            instances = volumes.value.cloud_sql_instances
+          dynamic "cloud_sql_instance" {
+            for_each = length(coalesce(volumes.value.cloud_sql_instances, [])) == 0 ? [] : [""]
+            content {
+              instances = volumes.value.cloud_sql_instances
+            }
           }
           dynamic "empty_dir" {
             for_each = volumes.value.empty_dir_size == null ? [] : [""]

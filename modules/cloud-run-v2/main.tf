@@ -43,7 +43,7 @@ locals {
   )
 }
 
-resource "google_cloud_run_service_iam_member" "default" {
+resource "google_cloud_run_v2_service_iam_member" "default" {
   # if authoritative invoker role is not present and we create trigger sa
   # use additive binding to grant it the role
   count = (

@@ -214,7 +214,7 @@ resource "google_cloud_run_v2_service" "service" {
   }
 }
 
-resource "google_cloud_run_service_iam_binding" "binding" {
+resource "google_cloud_run_v2_service_iam_binding" "binding" {
   for_each = var.create_job ? {} : var.iam
   project  = google_cloud_run_v2_service.service[0].project
   location = google_cloud_run_v2_service.service[0].location
