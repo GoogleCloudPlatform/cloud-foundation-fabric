@@ -49,6 +49,7 @@ resource "google_bigtable_instance" "default" {
       zone         = cluster.value.zone
       storage_type = cluster.value.storage_type
       num_nodes    = cluster.value.num_nodes
+      kms_key_name = var.encryption_key
 
       dynamic "autoscaling_config" {
         for_each = cluster.value.autoscaling == null ? [] : [""]
