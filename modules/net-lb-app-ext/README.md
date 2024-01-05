@@ -278,7 +278,7 @@ module "glb-0" {
     default-b = {
       zone = "${var.region}-b"
       instances = [
-        "${module.compute-mig-b.id}"
+        module.compute-mig-b.id
       ]
       named_ports = { http = 80 }
     }
@@ -432,7 +432,7 @@ module "glb-0" {
         endpoints = {
           e-0 = {
             instance   = "my-ig-b"
-            ip_address = "${module.compute-mig-b.internal_ip}"
+            ip_address = module.compute-mig-b.internal_ip
             port       = 80
           }
         }
@@ -761,14 +761,14 @@ module "glb-0" {
     ew4-a = {
       zone = "${var.region}-a"
       instances = [
-        "${module.compute-mig-a.id}"
+        module.compute-mig-a.id
       ]
       named_ports = { http = 80 }
     }
     ew4-b = {
       zone = "${var.region}-b"
       instances = [
-        "${module.compute-mig-b.id}"
+        module.compute-mig-b.id
       ]
       named_ports = { http = 80 }
     }
@@ -795,7 +795,7 @@ module "glb-0" {
         endpoints = {
           e-0 = {
             instance   = "my-ig-b"
-            ip_address = "${module.compute-mig-b.internal_ip}"
+            ip_address = module.compute-mig-b.internal_ip
             port       = 80
           }
         }
