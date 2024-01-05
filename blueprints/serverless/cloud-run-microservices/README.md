@@ -82,7 +82,7 @@ __Congratulations!__ You have successfully deployed the use case you chose based
 
 ### Use case 1: Service to service communication in the same project
 
-This use case deploys two Cloud Run services in the same project. Service B is protected as an _internal only_ service and communication between Cloud Run services, even in the same project, is not considered internal by default. To communicate them, one option is to use PSC/PGA (the second option is shown in the following use case). We will use a PSC endpoint and a Serverless VPC connector to reach Service B. A DNS record for the PSC endpoint is created.
+This use case deploys two Cloud Run services in the same project. Service B is protected as an _internal only_ service and communication between Cloud Run services, even in the same project, is not considered internal by default. To communicate them, one option is to use PSC/PGA (the second option is shown in the use case 2). We will use a PSC endpoint and a Serverless VPC connector to reach Service B. A DNS record for the PSC endpoint is created.
 
 <p align="center"> <img src="images/use-case-1.png" width="600"> </p>
 
@@ -90,7 +90,7 @@ Service A uses an application with a GUI to test connectivity. You can find its 
 
 https://github.com/willypalacin/vpc-network-tester/tree/main
 
-Build an image and push it to Artifact Registry, setting the corresponding Terraform variable to its URL. Add the main project ID in `terraform.tfvars`. E.g.:
+You will need to [build an image and push it to Artifact Registry](https://cloud.google.com/artifact-registry/docs/docker/store-docker-container-images), setting the corresponding Terraform variable to its URL. Add the main project ID in `terraform.tfvars`. E.g.:
 
 ```tfvars
 image_configs = {
@@ -104,13 +104,13 @@ project_configs = {
 }
 ```
 
-Note that final project ids will be of the form "[prefix]-[main-project-id]".
+Note that final project ids will be of the form "[prefix]-[project-id]".
 
 The service B default URL is created and shown as a terraform output variable. It will be similar to the one shown in the picture above. Get into service A and try to reach service B URL as shown below:
 
 <p align="center"> <img src="images/use-case-1-test.png" width="600"> </p>
 
-You can see service A is resolving service B to an internal IP, 10.0.0.100, the PSC endpoint. Public access is restricted, if you try to e.g. `curl` from your laptop you will get an error.
+You can see service A is resolving service B to an internal IP, 10.0.0.100, the PSC endpoint (see variable 'ip_configs'). Public access is restricted, if you try to e.g. `curl` from your laptop you will get an error.
 
 ### Use case 2: Service to service communication in different projects
 

@@ -18,7 +18,7 @@ This blueprint creates multiple architectures depending on the use case. Some ma
 
 ## Prerequisites
 
-Depending on the use case, you will need one or more projects with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project) and a user with the “Project owner” [IAM](https://cloud.google.com/iam) role on those projects. You can use existing projects or let the blueprint create them for you but in that case you will need to add extra information for each project. E.g.:
+Depending on the use case, you will need one or more projects. You can use existing projects or let the blueprint create them for you but in that case you will need to add extra information for each project. E.g.:
 
 ```tfvars
 # Create the main project
@@ -28,7 +28,7 @@ prj_main_create = {
 }
 ```
 
-How to set this information is explained below.
+How to set this kind of information is explained in the next section.
 
 ## Spinning up the architecture
 

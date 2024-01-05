@@ -40,9 +40,9 @@ module "cloud-run-svc-a" {
     vpc_access = {
       egress = "ALL_TRAFFIC"
       subnet = ( # Direct VPC Egress
-        local.two_projects == true
-        ? module.vpc-main.subnet_ids["${var.region}/subnet-vpc-direct"]
-        : null
+        local.two_projects == false
+        ? null
+        : module.vpc-main.subnet_ids["${var.region}/subnet-vpc-direct"]
       )
     }
   }
