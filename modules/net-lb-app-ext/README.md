@@ -59,7 +59,7 @@ module "glb-0" {
 
 #### HTTP backends
 
-An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. THis is an example With HTTP backends and a managed certificate:
+An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. This is an example With HTTP backends and a managed certificate:
 
 ```hcl
 module "glb-0" {
@@ -260,7 +260,7 @@ module "glb-0" {
 
 #### Instance Groups
 
-The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key. THis is the simple HTTP example above but with instance group creation managed by the module:
+The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key. This is the simple HTTP example above but with instance group creation managed by the module:
 
 ```hcl
 module "glb-0" {
@@ -278,7 +278,7 @@ module "glb-0" {
     default-b = {
       zone = "${var.region}-b"
       instances = [
-        "${module.compute-mig-b.id}"
+        module.compute-mig-b.id
       ]
       named_ports = { http = 80 }
     }
@@ -432,7 +432,7 @@ module "glb-0" {
         endpoints = {
           e-0 = {
             instance   = "my-ig-b"
-            ip_address = "${module.compute-mig-b.internal_ip}"
+            ip_address = module.compute-mig-b.internal_ip
             port       = 80
           }
         }
@@ -761,14 +761,14 @@ module "glb-0" {
     ew4-a = {
       zone = "${var.region}-a"
       instances = [
-        "${module.compute-mig-a.id}"
+        module.compute-mig-a.id
       ]
       named_ports = { http = 80 }
     }
     ew4-b = {
       zone = "${var.region}-b"
       instances = [
-        "${module.compute-mig-b.id}"
+        module.compute-mig-b.id
       ]
       named_ports = { http = 80 }
     }
@@ -795,7 +795,7 @@ module "glb-0" {
         endpoints = {
           e-0 = {
             instance   = "my-ig-b"
-            ip_address = "${module.compute-mig-b.internal_ip}"
+            ip_address = module.compute-mig-b.internal_ip
             port       = 80
           }
         }
