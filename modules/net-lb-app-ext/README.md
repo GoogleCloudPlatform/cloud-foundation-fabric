@@ -59,7 +59,7 @@ module "glb-0" {
 
 #### HTTP backends
 
-An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. THis is an example With HTTP backends and a managed certificate:
+An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. This is an example With HTTP backends and a managed certificate:
 
 ```hcl
 module "glb-0" {
@@ -260,7 +260,7 @@ module "glb-0" {
 
 #### Instance Groups
 
-The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key. THis is the simple HTTP example above but with instance group creation managed by the module:
+The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key. This is the simple HTTP example above but with instance group creation managed by the module:
 
 ```hcl
 module "glb-0" {
