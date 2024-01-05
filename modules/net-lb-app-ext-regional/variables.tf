@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,39 +18,6 @@ variable "address" {
   description = "Optional IP address used for the forwarding rule."
   type        = string
   default     = null
-}
-
-variable "backend_buckets_config" {
-  description = "Backend buckets configuration."
-  type = map(object({
-    bucket_name             = string
-    compression_mode        = optional(string)
-    custom_response_headers = optional(list(string))
-    description             = optional(string)
-    edge_security_policy    = optional(string)
-    enable_cdn              = optional(bool)
-    cdn_policy = optional(object({
-      bypass_cache_on_request_headers = optional(list(string))
-      cache_mode                      = optional(string)
-      client_ttl                      = optional(number)
-      default_ttl                     = optional(number)
-      max_ttl                         = optional(number)
-      negative_caching                = optional(bool)
-      request_coalescing              = optional(bool)
-      serve_while_stale               = optional(number)
-      signed_url_cache_max_age_sec    = optional(number)
-      cache_key_policy = optional(object({
-        include_http_headers   = optional(list(string))
-        query_string_whitelist = optional(list(string))
-      }))
-      negative_caching_policy = optional(object({
-        code = optional(number)
-        ttl  = optional(number)
-      }))
-    }))
-  }))
-  default  = {}
-  nullable = true
 }
 
 variable "description" {
@@ -131,15 +98,6 @@ variable "neg_configs" {
         port       = number
       })))
     }))
-    internet = optional(object({
-      use_fqdn = optional(bool, true)
-      # re-enable once provider properly support this
-      # default_port = optional(number)
-      endpoints = optional(map(object({
-        destination = string
-        port        = number
-      })))
-    }))
     psc = optional(object({
       region         = string
       target_service = string
@@ -156,7 +114,6 @@ variable "neg_configs" {
         (try(v.cloudrun, null) == null ? 0 : 1) +
         (try(v.gce, null) == null ? 0 : 1) +
         (try(v.hybrid, null) == null ? 0 : 1) +
-        (try(v.internet, null) == null ? 0 : 1) +
         (try(v.psc, null) == null ? 0 : 1) == 1
       )
     ])
@@ -220,10 +177,6 @@ variable "ssl_certificates" {
     create_configs = optional(map(object({
       certificate = string
       private_key = string
-    })), {})
-    managed_configs = optional(map(object({
-      domains     = list(string)
-      description = optional(string)
     })), {})
   })
   default  = {}

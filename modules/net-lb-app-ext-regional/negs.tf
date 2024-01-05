@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,6 @@
 # tfdoc:file:description NEG resources.
 
 locals {
-  _neg_endpoints_global = flatten([
-    for k, v in local.neg_global : [
-      for kk, vv in v.internet.endpoints : merge(vv, {
-        key = "${k}-${kk}", neg = k, use_fqdn = v.internet.use_fqdn
-      })
-    ]
-  ])
   _neg_endpoints_zonal = flatten([
     for k, v in local.neg_zonal : [
       for kk, vv in v.endpoints : merge(vv, {
@@ -31,15 +24,8 @@ locals {
       })
     ]
   ])
-  neg_endpoints_global = {
-    for v in local._neg_endpoints_global : (v.key) => v
-  }
   neg_endpoints_zonal = {
     for v in local._neg_endpoints_zonal : (v.key) => v
-  }
-  neg_global = {
-    for k, v in var.neg_configs :
-    k => v if v.internet != null
   }
   neg_regional_psc = {
     for k, v in var.neg_configs :
@@ -61,33 +47,6 @@ locals {
     } if v.gce != null || v.hybrid != null
   }
 }
-
-
-resource "google_compute_global_network_endpoint_group" "default" {
-  for_each = local.neg_global
-  project  = var.project_id
-  name     = "${var.name}-${each.key}"
-  # re-enable once provider properly supports this
-  # default_port = each.value.default_port
-  description = coalesce(each.value.description, var.description)
-  network_endpoint_type = (
-    each.value.internet.use_fqdn ? "INTERNET_FQDN_PORT" : "INTERNET_IP_PORT"
-  )
-}
-
-resource "google_compute_global_network_endpoint" "default" {
-  for_each = local.neg_endpoints_global
-  project = (
-    google_compute_global_network_endpoint_group.default[each.value.neg].project
-  )
-  global_network_endpoint_group = (
-    google_compute_global_network_endpoint_group.default[each.value.neg].name
-  )
-  fqdn       = each.value.use_fqdn ? each.value.destination : null
-  ip_address = each.value.use_fqdn ? null : each.value.destination
-  port       = each.value.port
-}
-
 
 resource "google_compute_network_endpoint_group" "default" {
   for_each = local.neg_zonal

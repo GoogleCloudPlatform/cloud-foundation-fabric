@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 locals {
   backend_ids = merge(
     { for k, v in google_compute_region_backend_service.default : k => v.id },
-    { for k, v in google_compute_backend_bucket.default : k => v.id }
   )
 }
 

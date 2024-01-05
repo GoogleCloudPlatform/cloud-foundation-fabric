@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ locals {
   proxy_ssl_certificates = concat(
     coalesce(var.ssl_certificates.certificate_ids, []),
     [for k, v in google_compute_region_ssl_certificate.default : v.id],
-    [for k, v in google_compute_managed_ssl_certificate.default : v.id]
   )
 }
 
@@ -58,19 +57,6 @@ resource "google_compute_region_ssl_certificate" "default" {
   region      = var.region
   certificate = trimspace(each.value.certificate)
   private_key = trimspace(each.value.private_key)
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "google_compute_managed_ssl_certificate" "default" {
-  for_each    = var.ssl_certificates.managed_configs
-  project     = var.project_id
-  name        = "${var.name}-${each.key}"
-  description = each.value.description
-  managed {
-    domains = each.value.domains
-  }
   lifecycle {
     create_before_destroy = true
   }
