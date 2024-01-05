@@ -46,13 +46,13 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-a.group.id },
-        { backend = module.compute-mig-b.group.id }
+        { backend = module.compute-mig-b.group.id },
+        { backend = module.compute-mig-c.group.id }
       ]
     }
   }
 }
-# tftest modules=1 resources=5 fixtures=fixtures/compute-mig-ab.tf
+# tftest modules=3 resources=9 fixtures=fixtures/compute-mig-bc.tf
 ```
 
 ### Minimal HTTPS examples
@@ -90,8 +90,8 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-a.group.id },
-        { backend = module.compute-mig-b.group.id }
+        { backend = module.compute-mig-b.group.id },
+        { backend = module.compute-mig-c.group.id }
       ]
       protocol = "HTTP"
     }
@@ -107,7 +107,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=1 resources=8 fixtures=fixtures/compute-mig-ab.tf
+# tftest modules=3 resources=12 fixtures=fixtures/compute-mig-bc.tf
 ```
 
 #### HTTPS backends
@@ -124,8 +124,8 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-a.group.id },
-        { backend = module.compute-mig-b.group.id }
+        { backend = module.compute-mig-b.group.id },
+        { backend = module.compute-mig-c.group.id }
       ]
       protocol = "HTTPS"
     }
@@ -147,7 +147,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=1 resources=8 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-mig-ab.tf
+# tftest modules=3 resources=12 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-mig-bc.tf
 ```
 
 #### HTTP to HTTPS redirect
@@ -210,7 +210,7 @@ module "ralb-test-0" {
   }
 }
 
-# tftest modules=3 resources=12 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-mig-ab.tf
+# tftest modules=5 resources=16 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-mig-bc.tf
 ```
 
 ### Health Checks
@@ -231,7 +231,7 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-mig-a.group.id
+        backend = module.compute-mig-b.group.id
       }]
       # no need to reference the hc explicitly when using the `default` key
       # health_checks = ["default"]
@@ -243,7 +243,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=9 fixtures=fixtures/compute-mig-bc.tf
 ```
 
 To leverage existing health checks without having the module create them, simply pass their self links to backend services and set the `health_check_configs` variable to an empty map:
@@ -258,14 +258,14 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+        backend = module.compute-mig-b.group.id
       }]
       health_checks = ["projects/${var.project_id}/global/healthChecks/custom"]
     }
   }
   health_check_configs = {}
 }
-# tftest modules=1 resources=4
+# tftest modules=3 resources=8 fixtures=fixtures/compute-mig-bc.tf
 ```
 
 ### Backend Types and Management
@@ -290,15 +290,15 @@ module "ralb-0" {
   }
   group_configs = {
     default-b = {
-      zone = "europe-west8-b"
+      zone = "${var.region}-b"
       instances = [
-        "projects/myprj/zones/europe-west8-b/instances/vm-a"
+        module.compute-mig-b.id
       ]
       named_ports = { http = 80 }
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-bc.tf
 ```
 
 #### Managed Instance Groups
@@ -309,7 +309,7 @@ This example shows how to use the module with a manage instance group as backend
 module "win-template" {
   source          = "./fabric/modules/compute-vm"
   project_id      = var.project_id
-  zone            = "europe-west8-a"
+  zone            = "${var.region}-a"
   name            = "win-template"
   instance_type   = "n2d-standard-2"
   create_template = true
@@ -330,7 +330,7 @@ module "win-template" {
 module "win-mig" {
   source            = "./fabric/modules/compute-mig"
   project_id        = var.project_id
-  location          = "europe-west8-a"
+  location          = "${var.region}-a"
   name              = "win-mig"
   instance_template = module.win-template.template.self_link
   autoscaler_config = {
@@ -418,11 +418,11 @@ module "ralb-0" {
       gce = {
         network    = "projects/myprj-host/global/networks/svpc"
         subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
-        zone       = "europe-west8-b"
+        zone       = "${var.region}-b"
         endpoints = {
           e-0 = {
-            instance   = "myinstance-b-0"
-            ip_address = "10.24.32.25"
+            instance   = "my-ig-b"
+            ip_address = module.compute-mig-b.internal_ip
             port       = 80
           }
         }
@@ -430,7 +430,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=3 resources=11 fixtures=fixtures/compute-mig-bc.tf
 ```
 
 #### Hybrid NEG creation
@@ -459,7 +459,7 @@ module "ralb-0" {
     neg-0 = {
       hybrid = {
         network = "projects/myprj-host/global/networks/svpc"
-        zone    = "europe-west8-b"
+        zone    = "${var.region}-b"
         endpoints = {
           e-0 = {
             ip_address = "10.0.0.10"
@@ -495,8 +495,8 @@ module "ralb-0" {
   neg_configs = {
     neg-0 = {
       psc = {
-        region         = "europe-west8"
-        target_service = "europe-west8-cloudkms.googleapis.com"
+        region         = var.region
+        target_service = "${var.region}-cloudkms.googleapis.com"
       }
     }
   }
@@ -528,7 +528,7 @@ module "ralb-0" {
   neg_configs = {
     neg-0 = {
       cloudrun = {
-        region = "europe-west8"
+        region = var.region
         target_service = {
           name = "hello"
         }
@@ -562,7 +562,7 @@ module "ralb-0" {
   neg_configs = {
     neg-0 = {
       cloudrun = {
-        region = "europe-west8"
+        region = var.region
         target_service = {
           name = "hello"
         }
@@ -597,12 +597,12 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west8-b/instanceGroups/ig-0"
+        backend = module.compute-mig-b.group.id
       }]
     }
     other = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west8-c/instanceGroups/ig-1"
+        backend = module.compute-mig-c.group.id
       }]
     }
   }
@@ -624,7 +624,7 @@ module "ralb-0" {
   }
 }
 
-# tftest modules=1 resources=6
+# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-bc.tf
 ```
 
 ### Complex example
@@ -641,14 +641,14 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "ew8-b" },
-        { backend = "ew8-c" },
+        { backend = "group-zone-b" },
+        { backend = "group-zone-c" },
       ]
     }
     neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend        = "neg-ew8-c"
+        backend        = "neg-zone-c"
         max_rate       = { per_endpoint = 10 }
       }]
     }
@@ -663,17 +663,17 @@ module "ralb-0" {
     }
   }
   group_configs = {
-    ew8-b = {
-      zone = "europe-west8-b"
+    group-zone-b = {
+      zone = "${var.region}-b"
       instances = [
-        "projects/prj-gce/zones/europe-west8-b/instances/nginx-ew8-b"
+        module.compute-mig-b.id
       ]
       named_ports = { http = 80 }
     }
-    ew8-c = {
-      zone = "europe-west8-c"
+    group-zone-c = {
+      zone = "${var.region}-c"
       instances = [
-        "projects/prj-gce/zones/europe-west8-c/instances/nginx-ew8-c"
+        module.compute-mig-c.id
       ]
       named_ports = { http = 80 }
     }
@@ -692,15 +692,15 @@ module "ralb-0" {
     }
   }
   neg_configs = {
-    neg-ew8-c = {
+    neg-zone-c = {
       gce = {
-        network    = "projects/myprj-host/global/networks/svpc"
-        subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
-        zone       = "europe-west8-c"
+        network    = var.vpc.self_link
+        subnetwork = var.subnet.self_link
+        zone       = "${var.region}-c"
         endpoints = {
           e-0 = {
-            instance   = "nginx-ew8-c"
-            ip_address = "10.24.32.26"
+            instance   = "my-ig-c"
+            ip_address = module.compute-mig-c.internal_ip
             port       = 80
           }
         }
@@ -708,8 +708,8 @@ module "ralb-0" {
     }
     neg-hello = {
       hybrid = {
-        network = "projects/myprj-host/global/networks/svpc"
-        zone    = "europe-west8-b"
+        network = var.vpc.self_link
+        zone    = "${var.region}-b"
         endpoints = {
           e-0 = {
             ip_address = "192.168.0.3"
@@ -754,7 +754,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=1 resources=14
+# tftest modules=3 resources=18 fixtures=fixtures/compute-mig-bc.tf
 ```
 
 <!-- TFDOC OPTS files:1 -->
