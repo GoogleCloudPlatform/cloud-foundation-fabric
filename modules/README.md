@@ -48,10 +48,10 @@ These modules are used in the examples included in this repository. If you are u
 - [Firewall policy](./net-firewall-policy)
 - [External Application Load Balancer](./net-lb-app-ext/)
 - [External Passthrough Network Load Balancer](./net-lb-ext)
+- [External Regional Application Load Balancer](./net-lb-app-ext-regional/)
 - [Internal Application Load Balancer](./net-lb-app-int)
 - [Internal Passthrough Network Load Balancer](./net-lb-int)
 - [Internal Proxy Network Load Balancer](./net-lb-proxy-int)
-- [Internal ]
 - [NAT](./net-cloudnat)
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)

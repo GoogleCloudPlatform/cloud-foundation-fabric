@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -167,31 +167,31 @@ values:
     timeout_sec: 5
     timeouts: null
     unhealthy_threshold: 2
-  module.glb-0.google_compute_instance_group.default["ew4-a"]:
+  module.glb-0.google_compute_instance_group.default["group-zone-b"]:
     description: Terraform managed.
-    name: glb-test-0-ew4-a
-    named_port:
-    - name: http
-      port: 80
-    project: project-id
-    timeouts: null
-    zone: europe-west8-a
-  module.glb-0.google_compute_instance_group.default["ew4-b"]:
-    description: Terraform managed.
-    name: glb-test-0-ew4-b
+    name: glb-test-0-group-zone-b
     named_port:
     - name: http
       port: 80
     project: project-id
     timeouts: null
     zone: europe-west8-b
-  module.glb-0.google_compute_network_endpoint.default["neg-ew4-b-e-0"]:
-    instance: my-ig-b
-    network_endpoint_group: glb-test-0-neg-ew4-b
+  module.glb-0.google_compute_instance_group.default["group-zone-c"]:
+    description: Terraform managed.
+    name: glb-test-0-group-zone-c
+    named_port:
+    - name: http
+      port: 80
+    project: project-id
+    timeouts: null
+    zone: europe-west8-c
+  module.glb-0.google_compute_network_endpoint.default["neg-zone-c-e-0"]:
+    instance: my-ig-c
+    network_endpoint_group: glb-test-0-neg-zone-c
     port: 80
     project: project-id
     timeouts: null
-    zone: europe-west8-b
+    zone: europe-west8-c
   module.glb-0.google_compute_network_endpoint.default["neg-hello-e-0"]:
     instance: null
     ip_address: 192.168.0.3
@@ -200,16 +200,16 @@ values:
     project: project-id
     timeouts: null
     zone: europe-west8-b
-  module.glb-0.google_compute_network_endpoint_group.default["neg-ew4-b"]:
+  module.glb-0.google_compute_network_endpoint_group.default["neg-zone-c"]:
     default_port: null
     description: Terraform managed.
-    name: glb-test-0-neg-ew4-b
+    name: glb-test-0-neg-zone-c
     network: projects/xxx/global/networks/aaa
     network_endpoint_type: GCE_VM_IP_PORT
     project: project-id
     subnetwork: subnet_self_link
     timeouts: null
-    zone: europe-west8-b
+    zone: europe-west8-c
   module.glb-0.google_compute_network_endpoint_group.default["neg-hello"]:
     default_port: null
     description: Terraform managed.

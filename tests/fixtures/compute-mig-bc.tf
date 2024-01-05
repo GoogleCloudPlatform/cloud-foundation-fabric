@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
 # limitations under the License.
 
 
-module "compute-mig-a" {
+module "compute-mig-b" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "${var.region}-a"
-  name       = "my-ig-a"
+  zone       = "${var.region}-b"
+  name       = "my-ig-b"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
@@ -30,11 +30,11 @@ module "compute-mig-a" {
   group = { named_ports = {} }
 }
 
-module "compute-mig-b" {
+module "compute-mig-c" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone       = "${var.region}-b"
-  name       = "my-ig-b"
+  zone       = "${var.region}-c"
+  name       = "my-ig-c"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link

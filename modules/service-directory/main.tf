@@ -75,4 +75,5 @@ resource "google_service_directory_endpoint" "default" {
   metadata    = try(var.endpoint_config[each.key].metadata, null)
   address     = try(var.endpoint_config[each.key].address, null)
   port        = try(var.endpoint_config[each.key].port, null)
+  network     = try(var.endpoint_config[each.key].network, null)
 }

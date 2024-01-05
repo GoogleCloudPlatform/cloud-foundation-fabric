@@ -46,20 +46,20 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-a.group.id },
         { backend = module.compute-mig-b.group.id },
+        { backend = module.compute-mig-c.group.id },
       ]
     }
   }
 }
-# tftest modules=3 resources=9 fixtures=fixtures/compute-mig-ab.tf inventory=minimal-http.yaml e2e
+# tftest modules=3 resources=9 fixtures=fixtures/compute-mig-bc.tf inventory=minimal-http.yaml e2e
 ```
 
 ### Minimal HTTPS examples
 
 #### HTTP backends
 
-An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. THis is an example With HTTP backends and a managed certificate:
+An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. This is an example With HTTP backends and a managed certificate:
 
 ```hcl
 module "glb-0" {
@@ -69,8 +69,8 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-a.group.id },
         { backend = module.compute-mig-b.group.id },
+        { backend = module.compute-mig-c.group.id },
       ]
       protocol = "HTTP"
     }
@@ -84,7 +84,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-ab.tf inventory=http-backends.yaml  e2e
+# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-bc.tf inventory=http-backends.yaml  e2e
 ```
 
 #### HTTPS backends
@@ -99,8 +99,8 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-a.group.id },
         { backend = module.compute-mig-b.group.id },
+        { backend = module.compute-mig-c.group.id },
       ]
       protocol = "HTTPS"
     }
@@ -121,7 +121,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-ab.tf inventory=https-backends.yaml e2e
+# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-bc.tf inventory=https-backends.yaml e2e
 ```
 
 #### HTTP to HTTPS redirect
@@ -180,7 +180,7 @@ module "glb-test-0" {
   }
 }
 
-# tftest modules=5 resources=14  fixtures=fixtures/compute-mig-ab.tf inventory=http-https-redirect.yaml e2e
+# tftest modules=5 resources=14  fixtures=fixtures/compute-mig-bc.tf inventory=http-https-redirect.yaml e2e
 ```
 
 ### Classic vs Non-classic
@@ -196,13 +196,13 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-a.group.id },
         { backend = module.compute-mig-b.group.id },
+        { backend = module.compute-mig-c.group.id },
       ]
     }
   }
 }
-# tftest modules=3 resources=9 fixtures=fixtures/compute-mig-ab.tf inventory=classic-vs-non-classic.yaml e2e
+# tftest modules=3 resources=9 fixtures=fixtures/compute-mig-bc.tf inventory=classic-vs-non-classic.yaml e2e
 ```
 
 ### Health Checks
@@ -221,7 +221,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-mig-a.group.id
+        backend = module.compute-mig-b.group.id
       }]
       # no need to reference the hc explicitly when using the `default` key
       # health_checks = ["default"]
@@ -233,7 +233,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=3 resources=9 fixtures=fixtures/compute-mig-ab.tf inventory=health-check-1.yaml e2e
+# tftest modules=3 resources=9 fixtures=fixtures/compute-mig-bc.tf inventory=health-check-1.yaml e2e
 ```
 
 To leverage existing health checks without having the module create them, simply pass their self links to backend services and set the `health_check_configs` variable to an empty map:
@@ -253,14 +253,14 @@ module "glb-0" {
   }
   health_check_configs = {}
 }
-# tftest modules=3 resources=8 fixtures=fixtures/compute-mig-ab.tf inventory=health-check-2.yaml
+# tftest modules=3 resources=8 fixtures=fixtures/compute-mig-bc.tf inventory=health-check-2.yaml
 ```
 
 ### Backend Types and Management
 
 #### Instance Groups
 
-The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key. THis is the simple HTTP example above but with instance group creation managed by the module:
+The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key. This is the simple HTTP example above but with instance group creation managed by the module:
 
 ```hcl
 module "glb-0" {
@@ -278,13 +278,13 @@ module "glb-0" {
     default-b = {
       zone = "${var.region}-b"
       instances = [
-        "${module.compute-mig-b.id}"
+        module.compute-mig-b.id
       ]
       named_ports = { http = 80 }
     }
   }
 }
-# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-ab.tf inventory=instance-groups.yaml e2e
+# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-bc.tf inventory=instance-groups.yaml e2e
 ```
 
 #### Managed Instance Groups
@@ -432,7 +432,7 @@ module "glb-0" {
         endpoints = {
           e-0 = {
             instance   = "my-ig-b"
-            ip_address = "${module.compute-mig-b.internal_ip}"
+            ip_address = module.compute-mig-b.internal_ip
             port       = 80
           }
         }
@@ -440,7 +440,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=3 resources=11 fixtures=fixtures/compute-mig-ab.tf inventory=zonal-neg-creation.yaml e2e
+# tftest modules=3 resources=11 fixtures=fixtures/compute-mig-bc.tf inventory=zonal-neg-creation.yaml e2e
 ```
 
 #### Hybrid NEG creation
@@ -636,12 +636,12 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-mig-a.group.id
+        backend = module.compute-mig-b.group.id
       }]
     }
     other = {
       backends = [{
-        backend = module.compute-mig-b.group.id
+        backend = module.compute-mig-c.group.id
       }]
     }
   }
@@ -663,7 +663,7 @@ module "glb-0" {
   }
 }
 
-# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-ab.tf inventory=url-map.yaml e2e
+# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-bc.tf inventory=url-map.yaml e2e
 ```
 
 ### SSL Certificates
@@ -699,8 +699,8 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-a.group.id },
         { backend = module.compute-mig-b.group.id },
+        { backend = module.compute-mig-c.group.id },
       ]
       protocol = "HTTP"
     }
@@ -716,7 +716,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=3 resources=12 fixtures=fixtures/compute-mig-ab.tf inventory=ssl-certificates.yaml e2e
+# tftest modules=3 resources=12 fixtures=fixtures/compute-mig-bc.tf inventory=ssl-certificates.yaml e2e
 ```
 
 ### Complex example
@@ -736,14 +736,14 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "ew4-a" },
-        { backend = "ew4-b" },
+        { backend = "group-zone-b" },
+        { backend = "group-zone-c" },
       ]
     }
     neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend        = "neg-ew4-b"
+        backend        = "neg-zone-c"
         max_rate       = { per_endpoint = 10 }
       }]
     }
@@ -758,17 +758,17 @@ module "glb-0" {
     }
   }
   group_configs = {
-    ew4-a = {
-      zone = "${var.region}-a"
+    group-zone-b = {
+      zone = "${var.region}-b"
       instances = [
-        "${module.compute-mig-a.id}"
+        module.compute-mig-b.id
       ]
       named_ports = { http = 80 }
     }
-    ew4-b = {
-      zone = "${var.region}-b"
+    group-zone-c = {
+      zone = "${var.region}-c"
       instances = [
-        "${module.compute-mig-b.id}"
+        module.compute-mig-c.id
       ]
       named_ports = { http = 80 }
     }
@@ -787,15 +787,15 @@ module "glb-0" {
     }
   }
   neg_configs = {
-    neg-ew4-b = {
+    neg-zone-c = {
       gce = {
         network    = var.vpc.self_link
         subnetwork = var.subnet.self_link
-        zone       = "${var.region}-b"
+        zone       = "${var.region}-c"
         endpoints = {
           e-0 = {
-            instance   = "my-ig-b"
-            ip_address = "${module.compute-mig-b.internal_ip}"
+            instance   = "my-ig-c"
+            ip_address = module.compute-mig-c.internal_ip
             port       = 80
           }
         }
@@ -849,7 +849,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=3 resources=19 fixtures=fixtures/compute-mig-ab.tf inventory=complex-example.yaml e2e
+# tftest modules=3 resources=19 fixtures=fixtures/compute-mig-bc.tf inventory=complex-example.yaml e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->
@@ -911,5 +911,5 @@ module "glb-0" {
 
 ## Fixtures
 
-- [compute-mig-ab.tf](../../tests/fixtures/compute-mig-ab.tf)
+- [compute-mig-bc.tf](../../tests/fixtures/compute-mig-bc.tf)
 <!-- END TFDOC -->
