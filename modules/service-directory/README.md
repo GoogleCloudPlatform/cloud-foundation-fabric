@@ -91,9 +91,9 @@ module "dns-sd" {
 # tftest modules=2 resources=5 inventory=dns.yaml
 ```
 
-### Services with endpoints using private network access
+### Services with endpoints using Private Network Access
 
-[Private network access](https://cloud.google.com/service-directory/docs/private-network-access-overview) enables supported Google Cloud products to send HTTP requests to resources inside a VPC.
+[Private Network Access](https://cloud.google.com/service-directory/docs/private-network-access-overview) enables supported Google Cloud products to send HTTP requests to resources inside a VPC.
 
 ```hcl
 locals {
