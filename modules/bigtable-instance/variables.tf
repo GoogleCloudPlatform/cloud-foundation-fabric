@@ -66,6 +66,12 @@ variable "display_name" {
   default     = null
 }
 
+variable "encryption_key" {
+  description = "The KMS key id to used for encryption of the Bigtable instance."
+  type        = string
+  default     = null
+}
+
 variable "iam" {
   description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
   type        = map(list(string))

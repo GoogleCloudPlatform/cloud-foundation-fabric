@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-output "composer_airflow_uri" {
-  description = "The URI of the Apache Airflow Web UI hosted within the Cloud Composer environment.."
-  value       = google_composer_environment.env.config[0].airflow_uri
-}
+resource "google_compute_instance_group" "default" {
+  for_each = var.group_configs
+  project = (
+    each.value.project_id == null
+    ? var.project_id
+    : each.value.project_id
+  )
+  zone        = each.value.zone
+  name        = "${var.name}-${each.key}"
+  description = var.description
+  instances   = each.value.instances
 
-output "composer_dag_gcs" {
-  description = "The Cloud Storage prefix of the DAGs for the Cloud Composer environment."
-  value       = google_composer_environment.env.config[0].dag_gcs_prefix
-}
-
-output "composer_service_account" {
-  description = "Cloud Composer nodes Service Account email."
-  value       = module.comp-sa.email
+  dynamic "named_port" {
+    for_each = each.value.named_ports
+    content {
+      name = named_port.key
+      port = named_port.value
+    }
+  }
 }
