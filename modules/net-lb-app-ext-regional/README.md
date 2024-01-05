@@ -365,33 +365,9 @@ module "ralb-0" {
 # tftest modules=3 resources=8
 ```
 
-#### Network Endpoint Groups (NEGs)
-
-Supported Network Endpoint Groups (NEGs) can also be used as backends. Similarly to groups, you can pass a self link for existing NEGs or have the module manage them for you. A simple example using an existing zonal NEG:
-
-```hcl
-module "ralb-0" {
-  source     = "./fabric/modules/net-lb-app-ext-regional"
-  project_id = var.project_id
-  name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
-  region     = var.region
-  backend_service_configs = {
-    default = {
-      backends = [
-        {
-          backend        = "projects/myprj/zones/europe-west8-b/networkEndpointGroups/myneg-b"
-          balancing_mode = "RATE"
-          max_rate       = { per_endpoint = 10 }
-        }
-      ]
-    }
-  }
-}
-# tftest modules=1 resources=5
-```
-
 #### Zonal NEG creation
+
+Supported Network Endpoint Groups (NEGs) can also be used as backends. Similarly to groups, you can pass a self link for existing NEGs or have the module manage them for you.
 
 This example shows how to create and manage zonal NEGs using GCE VMs as endpoints:
 
@@ -532,48 +508,6 @@ module "ralb-0" {
         target_service = {
           name = "hello"
         }
-      }
-    }
-  }
-}
-# tftest modules=1 resources=5
-```
-
-Serverless NEGs don't use the port name but it should be set to `http`. An HTTPS frontend requires the protocol to be set to `HTTPS`, and the port name field will infer this value if omitted so you need to set it explicitly:
-
-```hcl
-module "ralb-0" {
-  source     = "./fabric/modules/net-lb-app-ext-regional"
-  project_id = var.project_id
-  name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
-  region     = var.region
-  backend_service_configs = {
-    default = {
-      backends = [
-        { backend = "neg-0" }
-      ]
-      health_checks = []
-      port_name     = "http"
-    }
-  }
-  # with a single serverless NEG the implied default health check is not needed
-  health_check_configs = {}
-  neg_configs = {
-    neg-0 = {
-      cloudrun = {
-        region = var.region
-        target_service = {
-          name = "hello"
-        }
-      }
-    }
-  }
-  protocol = "HTTPS"
-  ssl_certificates = {
-    managed_configs = {
-      default = {
-        domains = ["ralb-test-0.example.org"]
       }
     }
   }
