@@ -73,6 +73,7 @@
   service_agent: "service-%s@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
 - name: "bigtableadmin"
   service_agent: "service-%s@gcp-sa-bigtable.iam.gserviceaccount.com"
+  jit: true
 - name: "binaryauthorization"
   service_agent: "service-%s@gcp-sa-binaryauthorization.iam.gserviceaccount.com"
 - name: "certificatemanager"
