@@ -157,8 +157,11 @@ Redirect is implemented via an additional HTTP load balancer with a custom URL m
 module "addresses" {
   source     = "./fabric/modules/net-address"
   project_id = var.project_id
-  global_addresses = {
-    "ralb-test-0" = {}
+  external_addresses = {
+    "ralb-test-0" = {
+      region = var.region
+      tier   = "STANDARD"
+    }
   }
 }
 
@@ -169,7 +172,7 @@ module "ralb-test-0-redirect" {
   vpc        = var.vpc.self_link
   region     = var.region
   address = (
-    module.addresses.global_addresses["ralb-test-0"].address
+    module.addresses.external_addresses["ralb-test-0"].id
   )
   health_check_configs = {}
   urlmap_config = {
@@ -188,7 +191,7 @@ module "ralb-test-0" {
   vpc        = var.vpc.self_link
   region     = var.region
   address = (
-    module.addresses.global_addresses["ralb-test-0"].address
+    module.addresses.external_addresses["ralb-test-0"].id
   )
   backend_service_configs = {
     default = {
@@ -745,6 +748,6 @@ module "ralb-0" {
 
 ## Fixtures
 
-- [compute-mig-bc.tf](../../tests/fixtures/compute-vm-group-bc.tf)
+- [compute-vm-group-bc.tf](../../tests/fixtures/compute-vm-group-bc.tf)
 - [ssl-certificate.tf](../../tests/fixtures/ssl-certificate.tf)
 <!-- END TFDOC -->

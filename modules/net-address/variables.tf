@@ -24,6 +24,7 @@ variable "external_addresses" {
     }))
     labels = optional(map(string), {})
     name   = optional(string)
+    tier   = optional(string)
   }))
   default = {}
   validation {
