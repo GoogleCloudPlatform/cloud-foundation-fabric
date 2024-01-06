@@ -31,6 +31,7 @@ resource "google_compute_address" "external" {
   address_type       = "EXTERNAL"
   ip_version         = each.value.ipv6 != null ? "IPV6" : "IPV4"
   ipv6_endpoint_type = try(each.value.ipv6.endpoint_type, null)
+  network_tier       = each.value.tier
   region             = each.value.region
   labels             = each.value.labels
 }
