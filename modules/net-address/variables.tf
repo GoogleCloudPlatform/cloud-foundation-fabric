@@ -22,9 +22,10 @@ variable "external_addresses" {
     ipv6 = optional(object({
       endpoint_type = string
     }))
-    labels = optional(map(string), {})
-    name   = optional(string)
-    tier   = optional(string)
+    labels     = optional(map(string), {})
+    name       = optional(string)
+    subnetwork = optional(string) # for IPv6
+    tier       = optional(string)
   }))
   default = {}
   validation {
