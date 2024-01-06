@@ -100,16 +100,12 @@ module "addresses" {
   project_id = var.project_id
   psc_addresses = {
     one = {
-      address = null
-      network = var.vpc.self_link
-    }
-    two = {
       address = "10.0.0.32"
       network = var.vpc.self_link
     }
   }
 }
-# tftest modules=1 resources=2 inventory=psc.yaml e2e
+# tftest modules=1 resources=1 inventory=psc.yaml e2e
 ```
 
 # IPSec Interconnect addresses
