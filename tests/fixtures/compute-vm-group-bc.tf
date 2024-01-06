@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-module "compute-mig-b" {
+module "compute-vm-group-b" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone       = "${var.region}-b"
@@ -30,7 +30,7 @@ module "compute-mig-b" {
   group = { named_ports = {} }
 }
 
-module "compute-mig-c" {
+module "compute-vm-group-c" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone       = "${var.region}-c"
