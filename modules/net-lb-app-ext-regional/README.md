@@ -51,7 +51,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf e2e
 ```
 
 ### Minimal HTTPS examples
@@ -106,7 +106,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=12 fixtures=fixtures/compute-vm-group-bc.tf
+# tftest modules=3 resources=12 fixtures=fixtures/compute-vm-group-bc.tf e2e
 ```
 
 #### HTTPS backends
@@ -146,7 +146,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=12 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-vm-group-bc.tf
+# tftest modules=3 resources=12 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-vm-group-bc.tf e2e
 ```
 
 #### HTTP to HTTPS redirect
@@ -209,7 +209,7 @@ module "ralb-test-0" {
   }
 }
 
-# tftest modules=5 resources=16 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-vm-group-bc.tf
+# tftest modules=5 resources=16 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-vm-group-bc.tf e2e
 ```
 
 ### Health Checks
@@ -242,7 +242,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf e2e
 ```
 
 To leverage existing health checks without having the module create them, simply pass their self links to backend services and set the `health_check_configs` variable to an empty map:
@@ -259,7 +259,7 @@ module "ralb-0" {
       backends = [{
         backend = module.compute-vm-group-b.group.id
       }]
-      health_checks = ["projects/${var.project_id}/global/healthChecks/custom"]
+      health_checks = ["projects/${var.project_id}/regions/${var.region}/healthChecks/custom"]
     }
   }
   health_check_configs = {}
@@ -297,7 +297,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf e2e
 ```
 
 #### Managed Instance Groups
@@ -361,7 +361,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=8
+# tftest modules=3 resources=8 e2e
 ```
 
 #### Zonal NEG creation
@@ -391,8 +391,8 @@ module "ralb-0" {
   neg_configs = {
     neg-0 = {
       gce = {
-        network    = "projects/myprj-host/global/networks/svpc"
-        subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
+        network    = var.vpc.self_link
+        subnetwork = var.subnet.self_link
         zone       = "${var.region}-b"
         endpoints = {
           e-0 = {
@@ -405,7 +405,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=11 fixtures=fixtures/compute-vm-group-bc.tf
+# tftest modules=3 resources=11 fixtures=fixtures/compute-vm-group-bc.tf e2e
 ```
 
 #### Hybrid NEG creation
@@ -433,7 +433,7 @@ module "ralb-0" {
   neg_configs = {
     neg-0 = {
       hybrid = {
-        network = "projects/myprj-host/global/networks/svpc"
+        network = var.vpc.self_link
         zone    = "${var.region}-b"
         endpoints = {
           e-0 = {
@@ -445,7 +445,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=7 e2e
 ```
 
 #### Private Service Connect NEG creation
@@ -476,7 +476,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 e2e
 ```
 
 #### Serverless NEG creation
@@ -511,7 +511,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 e2e
 ```
 
 ### URL Map
@@ -557,7 +557,7 @@ module "ralb-0" {
   }
 }
 
-# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf e2e
 ```
 
 ### Complex example
@@ -687,7 +687,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=18 fixtures=fixtures/compute-vm-group-bc.tf
+# tftest modules=3 resources=18 fixtures=fixtures/compute-vm-group-bc.tf e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->
