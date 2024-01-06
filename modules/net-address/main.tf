@@ -47,7 +47,6 @@ resource "google_compute_address" "internal" {
   subnetwork   = each.value.subnetwork
   address      = each.value.address
   ip_version   = each.value.ipv6 != null ? "IPV6" : "IPV4"
-  network_tier = each.value.tier
   purpose      = each.value.purpose
   labels       = coalesce(each.value.labels, {})
 }
