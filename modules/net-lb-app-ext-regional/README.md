@@ -45,13 +45,13 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-b.group.id },
-        { backend = module.compute-mig-c.group.id }
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id }
       ]
     }
   }
 }
-# tftest modules=3 resources=9 fixtures=fixtures/compute-mig-bc.tf
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf
 ```
 
 ### Minimal HTTPS examples
@@ -89,8 +89,8 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-b.group.id },
-        { backend = module.compute-mig-c.group.id }
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id }
       ]
       protocol = "HTTP"
     }
@@ -106,7 +106,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=12 fixtures=fixtures/compute-mig-bc.tf
+# tftest modules=3 resources=12 fixtures=fixtures/compute-vm-group-bc.tf
 ```
 
 #### HTTPS backends
@@ -123,8 +123,8 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-b.group.id },
-        { backend = module.compute-mig-c.group.id }
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id }
       ]
       protocol = "HTTPS"
     }
@@ -146,7 +146,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=12 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-mig-bc.tf
+# tftest modules=3 resources=12 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-vm-group-bc.tf
 ```
 
 #### HTTP to HTTPS redirect
@@ -193,7 +193,7 @@ module "ralb-test-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-mig-b.group.id },
+        { backend = module.compute-vm-group-b.group.id },
       ]
       protocol = "HTTP"
     }
@@ -209,7 +209,7 @@ module "ralb-test-0" {
   }
 }
 
-# tftest modules=5 resources=16 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-mig-bc.tf
+# tftest modules=5 resources=16 fixtures=fixtures/ssl-certificate.tf,fixtures/compute-vm-group-bc.tf
 ```
 
 ### Health Checks
@@ -230,7 +230,7 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-mig-b.group.id
+        backend = module.compute-vm-group-b.group.id
       }]
       # no need to reference the hc explicitly when using the `default` key
       # health_checks = ["default"]
@@ -242,7 +242,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=9 fixtures=fixtures/compute-mig-bc.tf
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf
 ```
 
 To leverage existing health checks without having the module create them, simply pass their self links to backend services and set the `health_check_configs` variable to an empty map:
@@ -257,14 +257,14 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-mig-b.group.id
+        backend = module.compute-vm-group-b.group.id
       }]
       health_checks = ["projects/${var.project_id}/global/healthChecks/custom"]
     }
   }
   health_check_configs = {}
 }
-# tftest modules=3 resources=8 fixtures=fixtures/compute-mig-bc.tf
+# tftest modules=3 resources=8 fixtures=fixtures/compute-vm-group-bc.tf
 ```
 
 ### Backend Types and Management
@@ -291,13 +291,13 @@ module "ralb-0" {
     default-b = {
       zone = "${var.region}-b"
       instances = [
-        module.compute-mig-b.id
+        module.compute-vm-group-b.id
       ]
       named_ports = { http = 80 }
     }
   }
 }
-# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-bc.tf
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf
 ```
 
 #### Managed Instance Groups
@@ -397,7 +397,7 @@ module "ralb-0" {
         endpoints = {
           e-0 = {
             instance   = "my-ig-b"
-            ip_address = module.compute-mig-b.internal_ip
+            ip_address = module.compute-vm-group-b.internal_ip
             port       = 80
           }
         }
@@ -405,7 +405,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=11 fixtures=fixtures/compute-mig-bc.tf
+# tftest modules=3 resources=11 fixtures=fixtures/compute-vm-group-bc.tf
 ```
 
 #### Hybrid NEG creation
@@ -530,12 +530,12 @@ module "ralb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-mig-b.group.id
+        backend = module.compute-vm-group-b.group.id
       }]
     }
     other = {
       backends = [{
-        backend = module.compute-mig-c.group.id
+        backend = module.compute-vm-group-c.group.id
       }]
     }
   }
@@ -557,7 +557,7 @@ module "ralb-0" {
   }
 }
 
-# tftest modules=3 resources=10 fixtures=fixtures/compute-mig-bc.tf
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf
 ```
 
 ### Complex example
@@ -599,14 +599,14 @@ module "ralb-0" {
     group-zone-b = {
       zone = "${var.region}-b"
       instances = [
-        module.compute-mig-b.id
+        module.compute-vm-group-b.id
       ]
       named_ports = { http = 80 }
     }
     group-zone-c = {
       zone = "${var.region}-c"
       instances = [
-        module.compute-mig-c.id
+        module.compute-vm-group-c.id
       ]
       named_ports = { http = 80 }
     }
@@ -633,7 +633,7 @@ module "ralb-0" {
         endpoints = {
           e-0 = {
             instance   = "my-ig-c"
-            ip_address = module.compute-mig-c.internal_ip
+            ip_address = module.compute-vm-group-c.internal_ip
             port       = 80
           }
         }
@@ -687,7 +687,7 @@ module "ralb-0" {
     }
   }
 }
-# tftest modules=3 resources=18 fixtures=fixtures/compute-mig-bc.tf
+# tftest modules=3 resources=18 fixtures=fixtures/compute-vm-group-bc.tf
 ```
 
 <!-- TFDOC OPTS files:1 -->
@@ -745,6 +745,6 @@ module "ralb-0" {
 
 ## Fixtures
 
-- [compute-mig-bc.tf](../../tests/fixtures/compute-mig-bc.tf)
+- [compute-mig-bc.tf](../../tests/fixtures/compute-vm-group-bc.tf)
 - [ssl-certificate.tf](../../tests/fixtures/ssl-certificate.tf)
 <!-- END TFDOC -->
