@@ -65,12 +65,6 @@ module "addresses" {
     }
   }
   internal_addresses = {
-    ilb = {
-      ipv6       = {}
-      purpose    = "SHARED_LOADBALANCER_VIP"
-      region     = var.region
-      subnetwork = module.vpc.subnets["${var.region}/ipv6-internal"].self_link
-    }
     vm = {
       ipv6       = {}
       region     = var.region
@@ -78,7 +72,7 @@ module "addresses" {
     }
   }
 }
-# tftest modules=2 resources=8 fixtures=fixtures/net-vpc-ipv6.tf inventory=ipv6.yaml e2e
+# tftest modules=2 resources=7 fixtures=fixtures/net-vpc-ipv6.tf inventory=ipv6.yaml e2e
 ```
 
 ### PSA addresses
