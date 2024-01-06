@@ -57,7 +57,6 @@ variable "internal_addresses" {
     labels      = optional(map(string))
     name        = optional(string)
     purpose     = optional(string)
-    tier        = optional(string)
   }))
   default = {}
 }
