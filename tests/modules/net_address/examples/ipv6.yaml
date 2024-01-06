@@ -29,7 +29,6 @@ values:
     project: project-id
     purpose: SHARED_LOADBALANCER_VIP
     region: europe-west8
-    subnetwork: subnet_self_link
   module.addresses.google_compute_address.internal["vm"]:
     address_type: INTERNAL
     ip_version: IPV6
@@ -38,7 +37,6 @@ values:
     network: null
     project: project-id
     region: europe-west8
-    subnetwork: subnet_self_link
 
 counts:
   google_compute_address: 3
