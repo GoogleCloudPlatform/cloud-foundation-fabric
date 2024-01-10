@@ -86,8 +86,8 @@ values:
 
 counts:
   google_compute_forwarding_rule: 1
-  google_compute_instance_group: 1
+  google_compute_instance_group: 3
   google_compute_region_backend_service: 1
   google_compute_region_health_check: 1
   modules: 3
-  resources: 6
+  resources: 8

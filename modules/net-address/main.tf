@@ -27,12 +27,14 @@ resource "google_compute_address" "external" {
   for_each           = var.external_addresses
   project            = var.project_id
   name               = coalesce(each.value.name, each.key)
-  description        = each.value.description
   address_type       = "EXTERNAL"
+  description        = each.value.description
   ip_version         = each.value.ipv6 != null ? "IPV6" : "IPV4"
   ipv6_endpoint_type = try(each.value.ipv6.endpoint_type, null)
-  region             = each.value.region
   labels             = each.value.labels
+  network_tier       = each.value.tier
+  region             = each.value.region
+  subnetwork         = each.value.subnetwork
 }
 
 resource "google_compute_address" "internal" {
@@ -40,15 +42,14 @@ resource "google_compute_address" "internal" {
   for_each     = var.internal_addresses
   project      = var.project_id
   name         = coalesce(each.value.name, each.key)
-  description  = each.value.description
+  address      = each.value.address
   address_type = "INTERNAL"
+  description  = each.value.description
+  ip_version   = each.value.ipv6 != null ? "IPV6" : "IPV4"
+  labels       = coalesce(each.value.labels, {})
+  purpose      = each.value.purpose
   region       = each.value.region
   subnetwork   = each.value.subnetwork
-  address      = each.value.address
-  ip_version   = each.value.ipv6 != null ? "IPV6" : "IPV4"
-  network_tier = each.value.tier
-  purpose      = each.value.purpose
-  labels       = coalesce(each.value.labels, {})
 }
 
 resource "google_compute_global_address" "psc" {

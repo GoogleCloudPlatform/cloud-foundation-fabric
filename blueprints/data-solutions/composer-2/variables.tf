@@ -20,35 +20,29 @@ variable "composer_config" {
     environment_size = optional(string)
     software_config  = optional(any)
     workloads_config = optional(object({
-      scheduler = optional(object(
-        {
-          count      = optional(number)
-          cpu        = optional(number)
-          memory_gb  = optional(number)
-          storage_gb = optional(number)
-        }
-      ))
+      scheduler = optional(object({
+        count      = optional(number, 1)
+        cpu        = optional(number, 0.5)
+        memory_gb  = optional(number, 2)
+        storage_gb = optional(number, 1)
+      }), {})
       triggerer = optional(object({
         count     = number
         cpu       = number
         memory_gb = number
       }))
-      web_server = optional(object(
-        {
-          cpu        = optional(number)
-          memory_gb  = optional(number)
-          storage_gb = optional(number)
-        }
-      ))
-      worker = optional(object(
-        {
-          cpu        = optional(number)
-          memory_gb  = optional(number)
-          min_count  = optional(number)
-          max_count  = optional(number)
-          storage_gb = optional(number)
-        }
-      ))
+      web_server = optional(object({
+        cpu        = optional(number, 0.5)
+        memory_gb  = optional(number, 2)
+        storage_gb = optional(number, 1)
+      }), {})
+      worker = optional(object({
+        cpu        = optional(number, 0.5)
+        memory_gb  = optional(number, 2)
+        min_count  = optional(number, 1)
+        max_count  = optional(number, 3)
+        storage_gb = optional(number, 1)
+      }), {})
     }))
   })
   default = {
