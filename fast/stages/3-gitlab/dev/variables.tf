@@ -21,6 +21,21 @@ variable "billing_account_id" {
 variable "gitlab_config" {
   type = object({
     hostname = optional(string, "gitlab.example.com")
+    mail     = optional(object({
+      enabled  = optional(bool, false)
+      sendgrid = optional(object({
+        api_key        = optional(string)
+        email_from     = optional(string, null)
+        email_reply_to = optional(string, null)
+      }), null)
+    }), {})
+    saml = optional(object({
+      forced                 = optional(bool, false)
+      idp_cert_fingerprint   = string
+      sso_target_url         = string
+      name_identifier_format = optional(string, "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress")
+    }), null)
+    ha_required = optional(bool, false)
   })
   default = {}
 }
@@ -58,4 +73,15 @@ variable "vpc_self_links" {
   type = object({
     dev-spoke-0 = string
   })
+}
+
+variable "project_id" {
+  description = "GCP project id."
+  type        = string
+}
+
+variable "project_create" {
+  description = "Create project instead of using an existing one."
+  type        = bool
+  default     = false
 }

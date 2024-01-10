@@ -18,23 +18,36 @@ module "project" {
   source          = "../../../../modules/project"
   parent          = var.root_node
   billing_account = var.billing_account_id
+  project_create = var.project_create
   prefix          = var.prefix
-  name            = "gitlab"
+  name            = var.project_id
   services = [
     "compute.googleapis.com",
     "memcache.googleapis.com",
     "redis.googleapis.com",
     "sqladmin.googleapis.com",
     "sql-component.googleapis.com",
-    "stackdriver.googleapis.com"
+    "stackdriver.googleapis.com",
+    "file.googleapis.com"
   ]
-  shared_vpc_service_config = {
-    attach       = true
-    host_project = var.host_project_ids.dev-spoke-0
-    service_identity_iam = {
-      "roles/compute.networkUser" = [
-        "cloudservices", "container-engine"
-      ]
-    }
+#  shared_vpc_service_config = {
+#    attach       = true
+#    host_project = var.host_project_ids.dev-spoke-0
+#    service_identity_iam = {
+#      "roles/compute.networkUser" = [
+#        "cloudservices", "container-engine"
+#      ]
+#    }
+#  }
+}
+
+
+module "squid-proxy-gitlab" {
+  source = "./squid-proxy"
+  project_id = module.project.project_id
+  region = var.region
+  network_config = {
+    network_self_link = var.vpc_self_links.dev-spoke-0
+    proxy_subnet_self_link = var.subnet_self_links.dev-spoke-0["${var.region}/gitlab"]
   }
 }

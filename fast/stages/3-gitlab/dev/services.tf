@@ -16,24 +16,42 @@
 
 # https://docs.gitlab.com/ee/install/requirements.html#database
 
+locals {
+  gitlab_buckets = [
+    "gitlab-artifacts", "gitlab-mr-diffs", "gitlab-lfs", "gitlab-uploads",
+    "gitlab-packages", "gitlab-dependency-proxy", "gitlab-terraform-state",
+    "gitlab-pages"
+  ]
+}
+
 module "db" {
-  source     = "../../../../modules/cloudsql-instance"
-  project_id = module.project.project_id
-  region     = var.region
-  name       = "gitlab-0"
-  network    = var.vpc_self_links.dev-spoke-0
-  allocated_ip_ranges = {
-    primary = "cloudsql"
-  }
-  authorized_networks = {
-    gcp  = "10.0.0.0/8"
-    home = "192.168.0.0/16"
+  source         = "../../../../modules/cloudsql-instance"
+  project_id     = module.project.project_id
+  region         = var.region
+  name           = "gitlab"
+  availability_type = var.gitlab_config.ha_required ? "REGIONAL" : "ZONAL"
+  network_config = {
+    authorized_networks = {
+      gcp  = "10.0.0.0/8"
+      home = "192.168.0.0/16"
+    }
+    connectivity = {
+      psa_config = {
+        private_network = var.vpc_self_links.dev-spoke-0
+      }
+    }
   }
   database_version = "POSTGRES_13"
+  databases = [
+    "gitlabhq_production"
+  ]
   tier             = "db-g1-small"
-  # TODO: create gitlab's own admin-level user
-  users = {
-    sqlserver = null
+  users            = {
+    # generatea password for user1
+    gitlab = {
+      password = null
+      type     = "BUILT_IN"
+    }
   }
 }
 
@@ -51,5 +69,45 @@ resource "google_redis_instance" "cache" {
   persistence_config {
     persistence_mode    = "RDB"
     rdb_snapshot_period = "TWELVE_HOURS"
+  }
+}
+
+#resource "google_filestore_instance" "nfs" {
+#  project = module.project.project_id
+#  name     = "gitlab-nfs"
+#  location = "${var.region}-b"
+#  tier     = "STANDARD"
+#
+#  file_shares {
+#    capacity_gb = 1024
+#    name        = "gitlab"
+#
+#    nfs_export_options {
+##      ip_ranges   = [module.gitlab-instance.internal_ip]
+#      ip_ranges   = ["10.0.0.0/8"]
+#      access_mode = "READ_WRITE"
+#      squash_mode = "NO_ROOT_SQUASH"
+#    }
+#  }
+#
+#  networks {
+#    network      = "gitlab"
+#    modes        = ["MODE_IPV4"]
+#    connect_mode = "DIRECT_PEERING"
+#  }
+#}
+
+module "gitlab_object_storage" {
+  source        = "../../../../modules/gcs"
+  for_each      = toset(local.gitlab_buckets)
+  project_id    = module.project.project_id
+  prefix        = var.prefix
+  name          = each.key
+  storage_class = "STANDARD"
+  location      = var.region
+  iam           = {
+    "roles/storage.objectUser" = [
+      "serviceAccount:${module.gitlab-sa.email}",
+    ]
   }
 }
