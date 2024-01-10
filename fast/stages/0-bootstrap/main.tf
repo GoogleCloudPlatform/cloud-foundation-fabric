@@ -16,7 +16,7 @@
 
 locals {
   gcs_storage_class = (
-    length(split("-", var.locations.gcs)) < 2
+    length(split("-", local.locations.gcs)) < 2
     ? "MULTI_REGIONAL"
     : "REGIONAL"
   )
@@ -27,6 +27,12 @@ locals {
   groups_iam = {
     for k, v in local.groups :
     k => "group:${v}"
+  }
+  locations = local.checklist.location == null ? var.locations : {
+    bq      = var.locations.bq
+    gcs     = var.locations.gcs
+    logging = local.checklist.location
+    pubsub  = var.locations.pubsub
   }
   # naming: environment used in most resource names
   prefix = join("-", compact([var.prefix, "prod"]))

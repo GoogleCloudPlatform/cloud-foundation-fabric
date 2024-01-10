@@ -17,12 +17,6 @@
 # tfdoc:file:description Audit log project and sink.
 
 locals {
-  locations = local.checklist.location == null ? var.locations : {
-    bq      = var.locations.bq
-    gcs     = var.locations.gcs
-    logging = local.checklist.location
-    pubsub  = var.locations.pubsub
-  }
   log_sink_destinations = merge(
     # use the same dataset for all sinks with `bigquery` as  destination
     {
