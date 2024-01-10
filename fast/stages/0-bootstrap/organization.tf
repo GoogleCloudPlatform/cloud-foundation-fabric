@@ -75,6 +75,14 @@ locals {
       role   = b.role
     }
   }
+  # compute authoritative and additive roles for use by add-ons (checklist, etc.)
+  iam_roles_authoritative = distinct(concat(
+    flatten(values(local.group_iam)),
+    keys(local.iam)
+  ))
+  iam_roles_additive = distinct([
+    for k, v in local.iam_bindings_additive : v.role
+  ])
 }
 
 # TODO: add a check block to ensure our custom roles exist in the factory files
