@@ -58,8 +58,11 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  service_external_ips_config {
-    enabled = var.enable_features.service_external_ips
+  dynamic "service_external_ips_config" {
+    for_each = !var.enable_features.service_external_ips ? [""] : []
+    content {
+      enabled = var.enable_features.service_external_ips
+    }
   }
 
   dynamic "authenticator_groups_config" {
