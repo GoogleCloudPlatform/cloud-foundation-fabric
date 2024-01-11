@@ -15,18 +15,6 @@
  */
 
 locals {
-  # group mapping from checklist to ours
-  _cl_groups = {
-    BILLING_ADMINS = local.groups.gcp-billing-admins
-    DEVOPS         = local.groups.gcp-devops
-    # LOGGING_ADMINS
-    # MONITORING_ADMINS
-    NETWORK_ADMINS  = local.groups.gcp-network-admins
-    ORG_ADMINS      = local.groups.gcp-organization-admins
-    SECURITY_ADMINS = local.groups.gcp-security-admins
-  }
-  # hierarchy types
-  # ENV, TEAM_ENV, ENV_DIV_TEAM, DIV_TEAM_ENV
   # parse raw data from JSON files if they exist
   _cl_data_raw = (
     var.factories_config.checklist_data == null
@@ -51,10 +39,6 @@ locals {
       } if v.resource.type == "FOLDER"
     ]
   ])
-  # # normalized IAM bindings frouped by resource
-  # _cl_iam_grouped = {
-  #   for v in local._cl_iam : v.resource => v...
-  # }
   # compile the final data structure we will consume from various places
   checklist = {
     hierarchy = local._cl_data == null ? {} : {
@@ -81,11 +65,6 @@ module "checklist-folder-1" {
     for v in try(local.checklist.iam[each.key], []) :
     v.role => v.principal...
   }
-  # tag_bindings = {
-  #   context = try(
-  #     module.organization.tag_values["${var.tag_names.context}/sandbox"].id, null
-  #   )
-  # }
 }
 
 module "checklist-folder-2" {
@@ -99,11 +78,6 @@ module "checklist-folder-2" {
     for v in try(local.checklist.iam[each.key], []) :
     v.role => v.principal...
   }
-  # tag_bindings = {
-  #   context = try(
-  #     module.organization.tag_values["${var.tag_names.context}/sandbox"].id, null
-  #   )
-  # }
 }
 
 module "checklist-folder-3" {
@@ -117,9 +91,4 @@ module "checklist-folder-3" {
     for v in try(local.checklist.iam[each.key], []) :
     v.role => v.principal...
   }
-  #   # tag_bindings = {
-  #   #   context = try(
-  #   #     module.organization.tag_values["${var.tag_names.context}/sandbox"].id, null
-  #   #   )
-  #   # }
 }
