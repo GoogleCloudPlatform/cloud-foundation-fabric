@@ -325,11 +325,12 @@ locals {
     }
   }
   tfvars = {
-    folder_ids       = local.folder_ids
-    service_accounts = local.service_accounts
-    tag_keys         = { for k, v in try(module.organization.tag_keys, {}) : k => v.id }
-    tag_names        = var.tag_names
-    tag_values       = { for k, v in try(module.organization.tag_values, {}) : k => v.id }
+    checklist_hierarchy = local.checklist.hierarchy
+    folder_ids          = local.folder_ids
+    service_accounts    = local.service_accounts
+    tag_keys            = { for k, v in try(module.organization.tag_keys, {}) : k => v.id }
+    tag_names           = var.tag_names
+    tag_values          = { for k, v in try(module.organization.tag_values, {}) : k => v.id }
   }
 }
 
@@ -462,10 +463,6 @@ output "teams" {
       service_account = module.branch-teams-team-sa[k].email
     }
   }
-}
-
-output "tmp" {
-  value = local._cl_hierarchy
 }
 
 # ready to use variable values for subsequent stages

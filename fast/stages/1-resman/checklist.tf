@@ -41,15 +41,85 @@ locals {
     ? null
     : local._cl_data_raw
   )
-  # normalize hierarchy nodes, we ignore projects as
-  # a) we have a project factory, b) they don't use a naming convention
-  _cl_hierarchy = local._cl_data == null ? {} : {
-    for v in local._cl_data.folders : v.reference_id => {
-      name      = v.display_name
-      parent_id = v.parent
-    }
-  }
+  # normalized IAM bindings one element per binding
+  _cl_iam = local._cl_data == null ? [] : flatten([
+    for v in try(local._cl_data.access_control, []) : [
+      for r in v.role : {
+        principal   = v.principal
+        resource_id = v.resource.id
+        role        = r
+      } if v.resource.type == "FOLDER"
+    ]
+  ])
+  # # normalized IAM bindings frouped by resource
+  # _cl_iam_grouped = {
+  #   for v in local._cl_iam : v.resource => v...
+  # }
   # compile the final data structure we will consume from various places
   checklist = {
+    hierarchy = local._cl_data == null ? {} : {
+      for v in try(local._cl_data.folders, []) : v.reference_id => {
+        level     = length(split("/", v.reference_id))
+        name      = v.display_name
+        parent_id = v.parent
+      }
+    }
+    iam = {
+      for v in local._cl_iam : v.resource_id => v...
+    }
   }
+}
+
+module "checklist-folder-1" {
+  source = "../../../modules/folder"
+  for_each = {
+    for k, v in local.checklist.hierarchy : k => v if v.level == 1
+  }
+  parent = "organizations/${var.organization.id}"
+  name   = each.value.name
+  iam = {
+    for v in try(local.checklist.iam[each.key], []) :
+    v.role => v.principal...
+  }
+  # tag_bindings = {
+  #   context = try(
+  #     module.organization.tag_values["${var.tag_names.context}/sandbox"].id, null
+  #   )
+  # }
+}
+
+module "checklist-folder-2" {
+  source = "../../../modules/folder"
+  for_each = {
+    for k, v in local.checklist.hierarchy : k => v if v.level == 2
+  }
+  parent = module.checklist-folder-1[each.value.parent_id].id
+  name   = each.value.name
+  iam = {
+    for v in try(local.checklist.iam[each.key], []) :
+    v.role => v.principal...
+  }
+  # tag_bindings = {
+  #   context = try(
+  #     module.organization.tag_values["${var.tag_names.context}/sandbox"].id, null
+  #   )
+  # }
+}
+
+module "checklist-folder-3" {
+  source = "../../../modules/folder"
+  for_each = {
+    for k, v in local.checklist.hierarchy : k => v if v.level == 3
+  }
+  parent = module.checklist-folder-2[each.value.parent_id].id
+  name   = each.value.name
+  iam = {
+    for v in try(local.checklist.iam[each.key], []) :
+    v.role => v.principal...
+  }
+  #   # tag_bindings = {
+  #   #   context = try(
+  #   #     module.organization.tag_values["${var.tag_names.context}/sandbox"].id, null
+  #   #   )
+  #   # }
 }
