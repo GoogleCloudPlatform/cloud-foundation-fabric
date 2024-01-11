@@ -464,6 +464,10 @@ output "teams" {
   }
 }
 
+output "tmp" {
+  value = local._cl_hierarchy
+}
+
 # ready to use variable values for subsequent stages
 output "tfvars" {
   description = "Terraform variable files for the following stages."

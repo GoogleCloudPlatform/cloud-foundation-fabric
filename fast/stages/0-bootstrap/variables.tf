@@ -84,12 +84,10 @@ variable "custom_roles" {
 }
 
 variable "factories_config" {
-  description = "Configuration for the organization policies factory."
+  description = "Configuration for the resource factories or external data."
   type = object({
-    checklist_data = optional(
-      string, "data/fabric-fast-compatible-cloud-setup.tfvars.json"
-    )
-    checklist_org_iam = optional(string, "data/org-iam.tfvars.json")
+    checklist_data    = optional(string)
+    checklist_org_iam = optional(string)
     custom_roles      = optional(string, "data/custom-roles")
     org_policy        = optional(string, "data/org-policies")
   })
