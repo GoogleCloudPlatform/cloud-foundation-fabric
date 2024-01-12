@@ -92,7 +92,7 @@ locals {
   iam_bindings_additive = merge(
     local._iam_bindings_additive,
     {
-      for k, v in try(local.checklist.iam_bindings, []) :
+      for k, v in try(local.checklist.iam_bindings, {}) :
       v.key => v if lookup(local._iam_bindings_additive, v.key, null) == null
     }
   )
