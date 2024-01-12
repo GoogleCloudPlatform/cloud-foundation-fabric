@@ -28,10 +28,10 @@ locals {
     for k, v in local.groups :
     k => "group:${v}"
   }
-  locations = local.checklist.location == null ? var.locations : {
+  locations = {
     bq      = var.locations.bq
     gcs     = var.locations.gcs
-    logging = local.checklist.location
+    logging = coalesce(try(local.checklist.location, null), var.locations.logging)
     pubsub  = var.locations.pubsub
   }
   # naming: environment used in most resource names
