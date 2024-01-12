@@ -1,8 +1,8 @@
 {
   "version": "0.1.0",
   "organization": {
-    "id": "366118655033",
-    "name": "ludo.joonix.net"
+    "id": "123456789012",
+    "name": "fast.example.com"
   },
   "billing_account": {},
   "resource_hierarchy": {
@@ -202,8 +202,8 @@
       {
         "destination": {
           "project_id": "logging-eh785-eh349",
-          "name": "ludo.joonix-logging",
-          "location": "global",
+          "name": "checklist-test.joonix-logging",
+          "location": "europe-west1",
           "retention_period_seconds": "2592000"
         },
         "role": "SINK_LOG_BUCKET"
@@ -212,7 +212,7 @@
   },
   "access_control": [
     {
-      "principal": "group:gcp-developers@ludo.joonix.net",
+      "principal": "group:gcp-developers@fast.example.com",
       "group_id": "DEVELOPERS",
       "role": [
         "roles/compute.instanceAdmin.v1",
@@ -224,7 +224,7 @@
       }
     },
     {
-      "principal": "group:gcp-developers@ludo.joonix.net",
+      "principal": "group:gcp-developers@fast.example.com",
       "group_id": "DEVELOPERS",
       "role": [
         "roles/compute.instanceAdmin.v1",
@@ -236,7 +236,7 @@
       }
     },
     {
-      "principal": "group:gcp-developers@ludo.joonix.net",
+      "principal": "group:gcp-developers@fast.example.com",
       "group_id": "DEVELOPERS",
       "role": [
         "roles/compute.instanceAdmin.v1",
@@ -248,7 +248,7 @@
       }
     },
     {
-      "principal": "group:gcp-developers@ludo.joonix.net",
+      "principal": "group:gcp-developers@fast.example.com",
       "group_id": "DEVELOPERS",
       "role": [
         "roles/compute.instanceAdmin.v1",
@@ -260,7 +260,7 @@
       }
     },
     {
-      "principal": "group:gcp-developers@ludo.joonix.net",
+      "principal": "group:gcp-developers@fast.example.com",
       "group_id": "DEVELOPERS",
       "role": [
         "roles/compute.instanceAdmin.v1",
@@ -272,7 +272,7 @@
       }
     },
     {
-      "principal": "group:gcp-developers@ludo.joonix.net",
+      "principal": "group:gcp-developers@fast.example.com",
       "group_id": "DEVELOPERS",
       "role": [
         "roles/compute.instanceAdmin.v1",
@@ -284,7 +284,7 @@
       }
     },
     {
-      "principal": "group:gcp-logging-viewers@ludo.joonix.net",
+      "principal": "group:gcp-logging-viewers@fast.example.com",
       "group_id": "LOGGING_VIEWERS",
       "role": [
         "roles/logging.viewer",
@@ -297,7 +297,7 @@
       }
     },
     {
-      "principal": "group:gcp-security-admins@ludo.joonix.net",
+      "principal": "group:gcp-security-admins@fast.example.com",
       "group_id": "SECURITY_ADMINS",
       "role": [
         "roles/bigquery.dataViewer"

@@ -1,12 +1,12 @@
 {
   "version": "0.1.0",
   "organization": {
-    "id": "366118655033",
-    "name": "ludo.joonix.net"
+    "id": "123456789012",
+    "name": "fast.example.com"
   },
   "iam_bindings": [
     {
-      "principal": "group:gcp-organization-admins@ludo.joonix.net",
+      "principal": "group:gcp-organization-admins@fast.example.com",
       "group_id": "ORG_ADMINS",
       "role": [
         "roles/resourcemanager.organizationAdmin",
@@ -26,11 +26,11 @@
       ],
       "resource": {
         "type": "ORGANIZATION",
-        "id": "366118655033"
+        "id": "123456789012"
       }
     },
     {
-      "principal": "group:gcp-billing-admins@ludo.joonix.net",
+      "principal": "group:gcp-billing-admins@fast.example.com",
       "group_id": "BILLING_ADMINS",
       "role": [
         "roles/billing.admin",
@@ -39,11 +39,11 @@
       ],
       "resource": {
         "type": "ORGANIZATION",
-        "id": "366118655033"
+        "id": "123456789012"
       }
     },
     {
-      "principal": "group:gcp-network-admins@ludo.joonix.net",
+      "principal": "group:gcp-network-admins@fast.example.com",
       "group_id": "NETWORK_ADMINS",
       "role": [
         "roles/compute.networkAdmin",
@@ -53,33 +53,33 @@
       ],
       "resource": {
         "type": "ORGANIZATION",
-        "id": "366118655033"
+        "id": "123456789012"
       }
     },
     {
-      "principal": "group:gcp-logging-admins@ludo.joonix.net",
+      "principal": "group:gcp-logging-admins@fast.example.com",
       "group_id": "LOGGING_ADMINS",
       "role": [
         "roles/logging.admin"
       ],
       "resource": {
         "type": "ORGANIZATION",
-        "id": "366118655033"
+        "id": "123456789012"
       }
     },
     {
-      "principal": "group:gcp-monitoring-admins@ludo.joonix.net",
+      "principal": "group:gcp-monitoring-admins@fast.example.com",
       "group_id": "MONITORING_ADMINS",
       "role": [
         "roles/monitoring.admin"
       ],
       "resource": {
         "type": "ORGANIZATION",
-        "id": "366118655033"
+        "id": "123456789012"
       }
     },
     {
-      "principal": "group:gcp-security-admins@ludo.joonix.net",
+      "principal": "group:gcp-security-admins@fast.example.com",
       "group_id": "SECURITY_ADMINS",
       "role": [
         "roles/orgpolicy.policyAdmin",
@@ -94,18 +94,18 @@
       ],
       "resource": {
         "type": "ORGANIZATION",
-        "id": "366118655033"
+        "id": "123456789012"
       }
     },
     {
-      "principal": "group:gcp-devops@ludo.joonix.net",
+      "principal": "group:gcp-devops@fast.example.com",
       "group_id": "DEVOPS",
       "role": [
         "roles/resourcemanager.folderViewer"
       ],
       "resource": {
         "type": "ORGANIZATION",
-        "id": "366118655033"
+        "id": "123456789012"
       }
     }
   ]
