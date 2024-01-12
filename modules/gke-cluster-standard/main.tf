@@ -110,6 +110,12 @@ resource "google_container_cluster" "cluster" {
       enabled = var.backup_configs.enable_backup_agent
     }
   }
+  dynamic "service_external_ips_config" {
+    for_each = !var.enable_features.service_external_ips ? [""] : []
+    content {
+      enabled = var.enable_features.service_external_ips
+    }
+  }
   dynamic "authenticator_groups_config" {
     for_each = var.enable_features.groups_for_rbac != null ? [""] : []
     content {

@@ -86,7 +86,8 @@ variable "enable_features" {
       enable_network_egress_metering       = optional(bool)
       enable_resource_consumption_metering = optional(bool)
     }))
-    tpu = optional(bool, false)
+    service_external_ips = optional(bool, true)
+    tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
       topic_id = optional(string)
     }))
