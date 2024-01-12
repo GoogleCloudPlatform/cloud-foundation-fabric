@@ -29,12 +29,12 @@ locals {
   _cl_data_raw = (
     var.factories_config.checklist_data == null
     ? null
-    : yamldecode(file(pathexpand(var.factories_config.checklist_data)))
+    : jsondecode(file(pathexpand(var.factories_config.checklist_data)))
   )
   _cl_org_iam_raw = (
     var.factories_config.checklist_org_iam == null
     ? null
-    : yamldecode(file(pathexpand(var.factories_config.checklist_org_iam)))
+    : jsondecode(file(pathexpand(var.factories_config.checklist_org_iam)))
   )
   # check that version and organization id are fine
   _cl_data = local._cl_data_raw == null ? null : (
