@@ -26,31 +26,19 @@ locals {
     SECURITY_ADMINS = local.groups.gcp-security-admins
   }
   # parse raw data from JSON files if they exist
-  _cl_data_raw = (
+  _cl_data = (
     var.factories_config.checklist_data == null
     ? null
     : jsondecode(file(pathexpand(var.factories_config.checklist_data)))
   )
-  _cl_org_iam_raw = (
+  _cl_org_raw = (
     var.factories_config.checklist_org_iam == null
     ? null
     : jsondecode(file(pathexpand(var.factories_config.checklist_org_iam)))
   )
-  # check that version and organization id are fine
-  _cl_data = local._cl_data_raw == null ? null : (
-    local._cl_data_raw.version != "0.1.0"
-    ||
-    local._cl_data_raw.organization.id != tostring(var.organization.id)
-    ? null
-    : local._cl_data_raw
-  )
-  _cl_org_iam = local._cl_org_iam_raw == null ? null : (
-    local._cl_org_iam_raw.version != "0.1.0"
-    ||
-    local._cl_org_iam_raw.organization.id != tostring(var.organization.id)
-    ? null
-    : local._cl_org_iam_raw.iam_bindings
-  )
+
+  _cl_org_iam = local._cl_org_raw == null ? null : local._cl_org_raw.iam_bindings
+
   # do a first pass on IAM bindings to identify groups and normalize
   _cl_org_iam_bindings = local._cl_org_iam == null ? {} : {
     for b in local._cl_org_iam :
@@ -92,7 +80,39 @@ locals {
     location = (
       local._cl_data == null
       ? null
-      : try(local._cl_data_raw.logging.sinks[0].destination.location, null)
+      : try(local._cl_data.logging.sinks[0].destination.location, null)
     )
+  }
+}
+
+check "checklist" {
+  assert {
+    condition = (
+      var.factories_config.checklist_data == null &&
+      var.factories_config.checklist_org_iam == null
+      ) || (
+      try(local._cl_data.version, "") == "0.1.0" &&
+      try(local._cl_org_raw.version, "") == "0.1.0"
+    )
+    error_message = join("", [
+      "Checklist file version must be 0.1.0. ",
+      "File ${coalesce(var.factories_config.checklist_data, "NULL")} has version ${try(local._cl_data.version, "NULL")} and ",
+      "file ${coalesce(var.factories_config.checklist_org_iam, "NULL")} has version ${try(local._cl_org_raw.version, "NULL")}."
+    ])
+  }
+
+  assert {
+    condition = (
+      var.factories_config.checklist_data == null &&
+      var.factories_config.checklist_org_iam == null
+      ) || (
+      try(local._cl_org_raw.organization.id, null) == tostring(var.organization.id) &&
+      try(local._cl_data.organization.id, null) == tostring(var.organization.id)
+    )
+    error_message = join("", [
+      "Organization Id doesn't match. var.organization.id is ${var.organization.id}. ",
+      "File ${coalesce(var.factories_config.checklist_data, "NULL")} has organization ${try(local._cl_data.organization.id, "NULL")} and ",
+      "file ${coalesce(var.factories_config.checklist_org_iam, "NULL")} has organization ${try(local._cl_org_raw.organization.id, "NULL")}."
+    ])
   }
 }
