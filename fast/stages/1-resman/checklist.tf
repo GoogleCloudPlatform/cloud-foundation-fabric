@@ -16,19 +16,12 @@
 
 locals {
   # parse raw data from JSON files if they exist
-  _cl_data_raw = (
+  _cl_data = (
     var.factories_config.checklist_data == null
     ? null
-    : yamldecode(file(pathexpand(var.factories_config.checklist_data)))
+    : jsondecode(file(pathexpand(var.factories_config.checklist_data)))
   )
-  # check that version and organization id are fine
-  _cl_data = local._cl_data_raw == null ? null : (
-    local._cl_data_raw.version != "0.1.0"
-    ||
-    local._cl_data_raw.organization.id != tostring(var.organization.id)
-    ? null
-    : local._cl_data_raw
-  )
+
   # normalized IAM bindings one element per binding
   _cl_iam = local._cl_data == null ? [] : flatten([
     for v in try(local._cl_data.access_control, []) : [
@@ -51,6 +44,32 @@ locals {
     iam = {
       for v in local._cl_iam : v.resource_id => v...
     }
+  }
+}
+
+check "checklist" {
+  assert {
+    condition = (
+      var.factories_config.checklist_data == null
+      ) || (
+      try(local._cl_data.version, "") == "0.1.0"
+    )
+    error_message = join("", [
+      "Checklist file version must be 0.1.0. ",
+      "File ${coalesce(var.factories_config.checklist_data, "NULL")} has version ${try(local._cl_data.version, "NULL")}.",
+    ])
+  }
+
+  assert {
+    condition = (
+      var.factories_config.checklist_data == null
+      ) || (
+      try(local._cl_data.organization.id, null) == tostring(var.organization.id)
+    )
+    error_message = join("", [
+      "Organization Id doesn't match. var.organization.id is ${var.organization.id}. ",
+      "File ${coalesce(var.factories_config.checklist_data, "NULL")} has organization ${try(local._cl_data.organization.id, "NULL")}.",
+    ])
   }
 }
 
