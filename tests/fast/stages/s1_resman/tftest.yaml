@@ -1,4 +1,3 @@
-# skip boilerplate check
 # Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/0-bootstrap
+module: fast/stages/1-resman
 
 tests:
   checklist:
     extra_files:
       - ../../../tests/fast/stages/s0_bootstrap/data/checklist-data.json
-      - ../../../tests/fast/stages/s0_bootstrap/data/checklist-org-iam.json
     tfvars:
       - checklist.tfvars
     inventory:
@@ -29,5 +27,3 @@ tests:
       - simple.tfvars
     inventory:
       - simple.yaml
-      - simple_projects.yaml
-      - simple_sas.yaml
