@@ -34,7 +34,7 @@ Accept-Encoding: gzip, deflate
 Host: compute.googleapis.com
 
 '''
-RE_URL = re.compile(r'nextPageToken=[^&]+&?')
+RE_URL = re.compile(r'pageToken=[^&]+&?')
 
 
 def batched(iterable, n):
