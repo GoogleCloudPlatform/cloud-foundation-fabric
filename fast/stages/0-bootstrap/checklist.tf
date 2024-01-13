@@ -92,14 +92,14 @@ check "checklist" {
   # version mismatch might be ok, we just alert users
   assert {
     condition = (
-      var.factories_config.checklist_data != null &&
+      var.factories_config.checklist_data == null ||
       try(local._cl_data_raw.version, null) == "0.1.0"
     )
     error_message = "Checklist data version mismatch."
   }
   assert {
     condition = (
-      var.factories_config.checklist_org_iam != null &&
+      var.factories_config.checklist_org_iam == null ||
       try(local._cl_org_raw.version, null) == "0.1.0"
     )
     error_message = "Checklist org IAM version mismatch."

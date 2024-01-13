@@ -16,12 +16,17 @@
 
 locals {
   # parse raw data from JSON files if they exist
-  _cl_data = (
+  _cl_data_raw = (
     var.factories_config.checklist_data == null
     ? null
     : jsondecode(file(pathexpand(var.factories_config.checklist_data)))
   )
-
+  # check that files are for the correct organization and ignore them if not
+  _cl_data = (
+    try(local._cl_data_raw.organization.id, null) != tostring(var.organization.id)
+    ? null
+    : local._cl_data_raw
+  )
   # normalized IAM bindings one element per binding
   _cl_iam = local._cl_data == null ? [] : flatten([
     for v in try(local._cl_data.access_control, []) : [
@@ -48,28 +53,21 @@ locals {
 }
 
 check "checklist" {
+  # version mismatch might be ok, we just alert users
   assert {
     condition = (
-      var.factories_config.checklist_data == null
-      ) || (
-      try(local._cl_data.version, "") == "0.1.0"
+      var.factories_config.checklist_data == null ||
+      try(local._cl_data_raw.version, null) == "0.1.0"
     )
-    error_message = join("", [
-      "Checklist file version must be 0.1.0. ",
-      "File ${coalesce(var.factories_config.checklist_data, "NULL")} has version ${try(local._cl_data.version, "NULL")}.",
-    ])
+    error_message = "Checklist data version mismatch."
   }
-
+  # wrong org id forces us to ignore the files, but we also alert users
   assert {
     condition = (
-      var.factories_config.checklist_data == null
-      ) || (
-      try(local._cl_data.organization.id, null) == tostring(var.organization.id)
+      var.factories_config.checklist_data == null ||
+      try(local._cl_data_raw.organization.id, null) == tostring(var.organization.id)
     )
-    error_message = join("", [
-      "Organization Id doesn't match. var.organization.id is ${var.organization.id}. ",
-      "File ${coalesce(var.factories_config.checklist_data, "NULL")} has organization ${try(local._cl_data.organization.id, "NULL")}.",
-    ])
+    error_message = "Checklist data organization id mismatch, file ignored."
   }
 }
 
