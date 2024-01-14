@@ -13,42 +13,13 @@ This module allows managing a GCE Network Load Balancer and integrates the forwa
 This example shows how to reference existing Managed Infrastructure Groups (MIGs).
 
 ```hcl
-module "instance_template" {
-  source          = "./fabric/modules/compute-vm"
-  project_id      = var.project_id
-  zone            = "europe-west1-b"
-  name            = "vm-test"
-  create_template = true
-  service_account = {
-    auto_create = true
-  }
-  network_interfaces = [
-    {
-      network    = var.vpc.self_link
-      subnetwork = var.subnet.self_link
-    }
-  ]
-  tags = [
-    "http-server"
-  ]
-}
-
-module "mig" {
-  source            = "./fabric/modules/compute-mig"
-  project_id        = var.project_id
-  location          = "europe-west1"
-  name              = "mig-test"
-  target_size       = 1
-  instance_template = module.instance_template.template.self_link
-}
-
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
   name       = "nlb-test"
   backends = [{
-    group = module.mig.group_manager.instance_group
+    group = module.compute-mig.group_manager.instance_group
   }]
   health_check_config = {
     http = {
@@ -56,7 +27,7 @@ module "nlb" {
     }
   }
 }
-# tftest modules=3 resources=6
+# tftest modules=3 resources=5 fixtures=fixtures/compute-mig.tf inventory=migs.yaml e2e
 ```
 
 ### Externally managed instances
@@ -67,14 +38,13 @@ This examples shows how to create an NLB by combining externally managed instanc
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
   name       = "nlb-test"
   group_configs = {
     my-group = {
-      zone = "europe-west1-b"
+      zone = "${var.region}-b"
       instances = [
-        "instance-1-self-link",
-        "instance-2-self-link"
+        module.compute-vm-group-b.id,
       ]
     }
   }
@@ -87,10 +57,10 @@ module "nlb" {
     }
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=3 resources=8 fixtures=fixtures/compute-vm-group-bc.tf inventory=ext_migs.yaml e2e
 ```
 
-### Mutiple forwarding rules
+### Multiple forwarding rules
 
 You can add more forwarding rules to your load balancer and override some forwarding rules defaults, including the global access policy, the IP protocol, the IP version and ports.
 
@@ -103,7 +73,7 @@ The example adds two forwarding rules:
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
   name       = "nlb-test"
   backends = [{
     group = module.nlb.groups.my-group.self_link
@@ -116,15 +86,14 @@ module "nlb" {
   }
   group_configs = {
     my-group = {
-      zone = "europe-west1-b"
+      zone = "${var.region}-b"
       instances = [
-        "instance-1-self-link",
-        "instance-2-self-link"
+        module.compute-vm-group-b.id,
       ]
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=fwd_rules.yaml e2e
 ```
 
 ### Dual stack (IPv4 and IPv6)
@@ -136,7 +105,7 @@ In this example we set the load balancer to work as dual stack, meaning it expos
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
   name       = "nlb-test"
   backends = [{
     group = module.nlb.groups.my-group.self_link
@@ -151,15 +120,14 @@ module "nlb" {
   }
   group_configs = {
     my-group = {
-      zone = "europe-west1-b"
+      zone = "${var.region}-b"
       instances = [
-        "instance-1-self-link",
-        "instance-2-self-link"
+        module.compute-vm-group-b.id,
       ]
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=dual_stack.yaml e2e
 ```
 
 ### End to end example
@@ -181,7 +149,7 @@ module "instance-group" {
   source     = "./fabric/modules/compute-vm"
   for_each   = toset(["b", "c"])
   project_id = var.project_id
-  zone       = "europe-west1-${each.key}"
+  zone       = "${var.region}-${each.key}"
   name       = "nlb-test-${each.key}"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -206,7 +174,7 @@ module "instance-group" {
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
   name       = "nlb-test"
   backends = [
     for z, mod in module.instance-group : {
@@ -224,7 +192,7 @@ module "nlb" {
     }
   }
 }
-# tftest modules=3 resources=7
+# tftest modules=3 resources=7 inventory=e2e.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -257,7 +225,12 @@ module "nlb" {
 | [group_self_links](outputs.tf#L53) | Optional unmanaged instance group self links. |  |
 | [groups](outputs.tf#L60) | Optional unmanaged instance group resources. |  |
 | [health_check](outputs.tf#L65) | Auto-created health-check resource. |  |
-| [health_check_self_id](outputs.tf#L70) | Auto-created health-check self id. |  |
+| [health_check_id](outputs.tf#L70) | Auto-created health-check id. |  |
 | [health_check_self_link](outputs.tf#L75) | Auto-created health-check self link. |  |
 | [id](outputs.tf#L80) | Fully qualified forwarding rule ids. |  |
+
+## Fixtures
+
+- [compute-mig.tf](../../tests/fixtures/compute-mig.tf)
+- [compute-vm-group-bc.tf](../../tests/fixtures/compute-vm-group-bc.tf)
 <!-- END TFDOC -->

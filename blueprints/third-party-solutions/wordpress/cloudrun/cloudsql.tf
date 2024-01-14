@@ -52,9 +52,15 @@ resource "google_vpc_access_connector" "connector" {
 
 # Set up CloudSQL
 module "cloudsql" {
-  source           = "../../../../modules/cloudsql-instance"
-  project_id       = module.project.project_id
-  network          = module.vpc.self_link
+  source     = "../../../../modules/cloudsql-instance"
+  project_id = module.project.project_id
+  network_config = {
+    connectivity = {
+      psa_config = {
+        private_network = module.vpc.self_link
+      }
+    }
+  }
   name             = "${var.prefix}-mysql"
   region           = var.region
   database_version = local.cloudsql_conf.database_version

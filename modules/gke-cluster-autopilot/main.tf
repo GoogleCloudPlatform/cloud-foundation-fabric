@@ -58,6 +58,13 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "service_external_ips_config" {
+    for_each = !var.enable_features.service_external_ips ? [""] : []
+    content {
+      enabled = var.enable_features.service_external_ips
+    }
+  }
+
   dynamic "authenticator_groups_config" {
     for_each = var.enable_features.groups_for_rbac != null ? [""] : []
     content {
@@ -80,11 +87,9 @@ resource "google_container_cluster" "cluster" {
   }
 
   cluster_autoscaling {
-    dynamic "auto_provisioning_defaults" {
-      for_each = var.service_account != null ? [""] : []
-      content {
-        service_account = var.service_account
-      }
+    auto_provisioning_defaults {
+      boot_disk_kms_key = var.node_config.boot_disk_kms_key
+      service_account   = var.node_config.service_account
     }
   }
 
@@ -241,10 +246,10 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "node_pool_auto_config" {
-    for_each = length(var.tags) > 0 ? [""] : []
+    for_each = var.node_config.tags != null ? [""] : []
     content {
       network_tags {
-        tags = toset(var.tags)
+        tags = toset(var.node_config.tags)
       }
     }
   }

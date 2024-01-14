@@ -26,10 +26,12 @@ locals {
     "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
+    "dns.googleapis.com",
     "eventarc.googleapis.com",
     "iam.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
+    "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com",
     "storage-component.googleapis.com",
@@ -78,6 +80,37 @@ resource "google_compute_subnetwork" "subnetwork" {
   network       = google_compute_network.network.name
   project       = google_project.project.project_id
   region        = var.region
+}
+
+resource "google_compute_subnetwork" "proxy_only_global" {
+  project       = google_project.project.project_id
+  network       = google_compute_network.network.name
+  name          = "proxy-global"
+  region        = var.region
+  ip_cidr_range = "10.0.17.0/24"
+  purpose       = "GLOBAL_MANAGED_PROXY"
+  role          = "ACTIVE"
+  lifecycle {
+    # Until https://github.com/hashicorp/terraform-provider-google/issues/16804 is fixed
+    # ignore permadiff in ipv6_access_type for proxy_only subnets
+    ignore_changes = [ipv6_access_type]
+  }
+}
+
+resource "google_compute_subnetwork" "proxy_only_regional" {
+  project       = google_project.project.project_id
+  network       = google_compute_network.network.name
+  name          = "proxy-regional"
+  region        = var.region
+  ip_cidr_range = "10.0.18.0/24"
+  purpose       = "REGIONAL_MANAGED_PROXY"
+  role          = "ACTIVE"
+
+  lifecycle {
+    # Until https://github.com/hashicorp/terraform-provider-google/issues/16804 is fixed
+    # ignore permadiff in ipv6_access_type for proxy_only subnets
+    ignore_changes = [ipv6_access_type]
+  }
 }
 
 resource "google_service_account" "service_account" {

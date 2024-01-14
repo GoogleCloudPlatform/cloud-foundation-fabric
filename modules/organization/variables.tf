@@ -28,6 +28,17 @@ variable "custom_roles" {
   nullable    = false
 }
 
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    custom_roles                  = optional(string)
+    org_policies                  = optional(string)
+    org_policy_custom_constraints = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "firewall_policy" {
   description = "Hierarchical firewall policies to associate to the organization."
   type = object({
@@ -134,28 +145,6 @@ variable "logging_sinks" {
   }
 }
 
-variable "network_tags" {
-  description = "Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level."
-  type = map(object({
-    description = optional(string, "Managed by the Terraform organization module.")
-    iam         = optional(map(list(string)), {})
-    id          = optional(string)
-    network     = string # project_id/vpc_name
-    values = optional(map(object({
-      description = optional(string, "Managed by the Terraform organization module.")
-      iam         = optional(map(list(string)), {})
-    })), {})
-  }))
-  nullable = false
-  default  = {}
-  validation {
-    condition = alltrue([
-      for k, v in var.network_tags : v != null
-    ])
-    error_message = "Use an empty map instead of null as value."
-  }
-}
-
 variable "org_policies" {
   description = "Organization policies applied to this organization keyed by policy name."
   type = map(object({
@@ -183,12 +172,6 @@ variable "org_policies" {
   nullable = false
 }
 
-variable "org_policies_data_path" {
-  description = "Path containing org policies in YAML format."
-  type        = string
-  default     = null
-}
-
 variable "org_policy_custom_constraints" {
   description = "Organization policy custom constraints keyed by constraint name."
   type = map(object({
@@ -203,45 +186,11 @@ variable "org_policy_custom_constraints" {
   nullable = false
 }
 
-variable "org_policy_custom_constraints_data_path" {
-  description = "Path containing org policy custom constraints in YAML format."
-  type        = string
-  default     = null
-}
-
 variable "organization_id" {
   description = "Organization id in organizations/nnnnnn format."
   type        = string
   validation {
     condition     = can(regex("^organizations/[0-9]+", var.organization_id))
     error_message = "The organization_id must in the form organizations/nnn."
-  }
-}
-
-variable "tag_bindings" {
-  description = "Tag bindings for this organization, in key => tag value id format."
-  type        = map(string)
-  default     = null
-}
-
-variable "tags" {
-  description = "Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level."
-  type = map(object({
-    description = optional(string, "Managed by the Terraform organization module.")
-    iam         = optional(map(list(string)), {})
-    id          = optional(string)
-    values = optional(map(object({
-      description = optional(string, "Managed by the Terraform organization module.")
-      iam         = optional(map(list(string)), {})
-      id          = optional(string)
-    })), {})
-  }))
-  nullable = false
-  default  = {}
-  validation {
-    condition = alltrue([
-      for k, v in var.tags : v != null
-    ])
-    error_message = "Use an empty map instead of null as value."
   }
 }

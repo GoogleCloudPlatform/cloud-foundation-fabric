@@ -11,7 +11,7 @@ For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https:
 ```hcl
 module "private-dns" {
   source     = "./fabric/modules/dns"
-  project_id = "myproject"
+  project_id = var.project_id
   name       = "test-example"
   zone_config = {
     domain = "test.example."
@@ -24,10 +24,10 @@ module "private-dns" {
     "A myhost"    = { ttl = 600, records = ["10.0.0.120"] }
   }
   iam = {
-    "roles/dns.admin" = ["group:dns-administrators@myorg.com"]
+    "roles/dns.admin" = ["group:${var.group_email}"]
   }
 }
-# tftest modules=1 resources=4 inventory=private-zone.yaml
+# tftest modules=1 resources=4 inventory=private-zone.yaml e2e
 ```
 
 ### Forwarding Zone
@@ -35,7 +35,7 @@ module "private-dns" {
 ```hcl
 module "private-dns" {
   source     = "./fabric/modules/dns"
-  project_id = "myproject"
+  project_id = var.project_id
   name       = "test-example"
   zone_config = {
     domain = "test.example."
@@ -45,7 +45,7 @@ module "private-dns" {
     }
   }
 }
-# tftest modules=1 resources=1 inventory=forwarding-zone.yaml
+# tftest modules=1 resources=1 inventory=forwarding-zone.yaml e2e
 ```
 
 ### Peering Zone
@@ -53,7 +53,7 @@ module "private-dns" {
 ```hcl
 module "private-dns" {
   source     = "./fabric/modules/dns"
-  project_id = "myproject"
+  project_id = var.project_id
   name       = "test-example"
   zone_config = {
     domain = "."
@@ -71,7 +71,7 @@ module "private-dns" {
 ```hcl
 module "private-dns" {
   source     = "./fabric/modules/dns"
-  project_id = "myproject"
+  project_id = var.project_id
   name       = "test-example"
   zone_config = {
     domain = "test.example."
@@ -99,7 +99,7 @@ module "private-dns" {
     }
   }
 }
-# tftest modules=1 resources=4 inventory=routing-policies.yaml
+# tftest modules=1 resources=4 inventory=routing-policies.yaml e2e
 ```
 
 ### Reverse Lookup Zone
@@ -107,7 +107,7 @@ module "private-dns" {
 ```hcl
 module "private-dns" {
   source     = "./fabric/modules/dns"
-  project_id = "myproject"
+  project_id = var.project_id
   name       = "test-example"
   zone_config = {
     domain = "0.0.10.in-addr.arpa."
@@ -116,7 +116,7 @@ module "private-dns" {
     }
   }
 }
-# tftest modules=1 resources=1 inventory=reverse-zone.yaml
+# tftest modules=1 resources=1 inventory=reverse-zone.yaml e2e
 ```
 
 ### Public Zone
@@ -124,20 +124,20 @@ module "private-dns" {
 ```hcl
 module "public-dns" {
   source     = "./fabric/modules/dns"
-  project_id = "myproject"
-  name       = "example"
+  project_id = var.project_id
+  name       = "test-example"
   zone_config = {
-    domain = "example.com."
+    domain = "test.example."
     public = {}
   }
   recordsets = {
     "A myhost" = { ttl = 300, records = ["127.0.0.1"] }
   }
   iam = {
-    "roles/dns.admin" = ["group:dns-administrators@myorg.com"]
+    "roles/dns.admin" = ["group:${var.group_email}"]
   }
 }
-# tftest modules=1 resources=3 inventory=public-zone.yaml
+# tftest modules=1 resources=3 inventory=public-zone.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

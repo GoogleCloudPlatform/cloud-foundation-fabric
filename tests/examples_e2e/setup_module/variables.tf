@@ -31,7 +31,8 @@ variable "region" {
   type = string
 }
 variable "suffix" {
-  type = string
+  type    = string
+  default = "0"
 }
 variable "timestamp" {
   type = string

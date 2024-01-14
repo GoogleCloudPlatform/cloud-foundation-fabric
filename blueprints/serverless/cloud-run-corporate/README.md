@@ -4,12 +4,13 @@
 
 This blueprint contains all the necessary Terraform modules to build and __privately__ expose a Cloud Run service in a variety of use cases.
 
-The content of this blueprint corresponds to the chapter '_Developing an enterprise application - The corporate environment_' of the [__Serverless Networking Guide__](https://services.google.com/fh/files/misc/serverless_networking_guide.pdf). This guide is an easy to follow introduction to Cloud Run, where a couple of friendly characters will guide you from the basics to more advanced topics with a very practical approach and in record time! The code here complements this learning and allows you to test the scenarios presented and your knowledge.
+The content of this blueprint corresponds to the chapter '_The corporate environment - Developing an enterprise application_' of the [__Serverless Networking Guide__](https://services.google.com/fh/files/misc/serverless_networking_guide.pdf). This guide is an easy to follow introduction to Cloud Run, where a couple of friendly characters will guide you from the basics to more advanced topics with a very practical approach and in record time! The code here complements this learning and allows you to test the scenarios presented and your knowledge.
 
 If you are interested in following this guide, take a look to the chapters' blueprints:
 
-* [My serverless "Hello, World! - Exploring Cloud Run](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-explore)
-* [Developing an enterprise application - The corporate environment](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-corporate)
+* [Exploring Cloud Run - My serverless "Hello, World!"](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-explore)
+* [The corporate environment - Developing an enterprise application](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-corporate)
+* [Microservices architectures - Developing Microservices applications](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-microservices)
 
 ## Architecture
 
@@ -17,7 +18,7 @@ This blueprint creates multiple architectures depending on the use case. Some ma
 
 ## Prerequisites
 
-Depending on the use case, you will need one or more projects with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project) and a user with the “Project owner” [IAM](https://cloud.google.com/iam) role on those projects. You can use existing projects or let the blueprint creates them for you but in that case you will need to add extra information for each project. E.g.:
+Depending on the use case, you will need one or more projects. You can use existing projects or let the blueprint create them for you but in that case you will need to add extra information for each project. E.g.:
 
 ```tfvars
 # Create the main project
@@ -27,7 +28,7 @@ prj_main_create = {
 }
 ```
 
-Below it is explained how to set this information.
+How to set this kind of information is explained in the next section.
 
 ## Spinning up the architecture
 
@@ -47,7 +48,7 @@ cd cloud-foundation-fabric/blueprints/serverless/cloud-run-corporate
 
 You should see this README and some terraform files.
 
-3. To deploy a specific use case, you will need to create a file in this directory called `terraform.tfvars` and follow the corresponding instructions to set variables. Sometimes values that are meant to be substituted will be shown inside brackets but you need to omit these brackets. E.g.:
+3. To deploy a specific use case, you will need to create a file in this directory called `terraform.tfvars` and follow the corresponding instructions to set variables. Values that are meant to be substituted will be shown inside brackets but you need to omit these brackets. E.g.:
 
 ```tfvars
 project_id = "[your-project_id]"
@@ -69,7 +70,7 @@ terraform plan
 terraform apply
 ```
 
-The resource creation will take a few minutes but when it’s complete, you should see an output stating the command completed successfully with a list of the created resources, and some output variables with information to access your service.
+It will take a few minutes. When complete, you should see an output stating the command completed successfully, a list of the created resources, and some output variables with information to access your services.
 
 __Congratulations!__ You have successfully deployed the use case you chose based on the variables configuration.
 
@@ -201,7 +202,7 @@ The easiest way to remove all the deployed resources is to run the following com
 terraform destroy
 ```
 
-The above command will delete the associated resources so there will be no billable charges made afterwards. Projects are removed from Terraform state but not deleted from Google Cloud.
+The above command will delete the associated resources so there will be no billable charges afterwards. Projects are removed from Terraform state but not deleted from Google Cloud.
 <!-- BEGIN TFDOC -->
 
 ## Variables

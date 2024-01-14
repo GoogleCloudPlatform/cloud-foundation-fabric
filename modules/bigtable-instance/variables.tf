@@ -66,16 +66,22 @@ variable "display_name" {
   default     = null
 }
 
+variable "encryption_key" {
+  description = "The KMS key id to used for encryption of the Bigtable instance."
+  type        = string
+  default     = null
+}
+
 variable "iam" {
   description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
 }
 
-variable "instance_type" {
-  description = "(deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'."
-  type        = string
-  default     = null
+variable "labels" {
+  description = "Labels to be attached to the instance."
+  type        = map(string)
+  default     = {}
 }
 
 variable "name" {

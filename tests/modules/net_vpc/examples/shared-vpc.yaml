@@ -15,15 +15,14 @@
 values:
   module.vpc-host.google_compute_network.network[0]:
     name: my-host-network
-    project: my-project
+    project: project-id
   module.vpc-host.google_compute_shared_vpc_host_project.shared_vpc_host[0]:
-    project: my-project
-  module.vpc-host.google_compute_shared_vpc_service_project.service_projects["project1"]:
-    host_project: my-project
-    service_project: project1
-  module.vpc-host.google_compute_shared_vpc_service_project.service_projects["project2"]:
-    host_project: my-project
-    service_project: project2
+    project: project-id
+  module.service-project.google_project.project[0]:
+    project_id: test-prj1
+  module.vpc-host.google_compute_shared_vpc_service_project.service_projects["test-prj1"]:
+    host_project: project-id
+    service_project: test-prj1
   module.vpc-host.google_compute_subnetwork.subnetwork["europe-west1/subnet-1"]:
     secondary_ip_range:
     - ip_cidr_range: 172.16.0.0/20
@@ -33,24 +32,26 @@ values:
   module.vpc-host.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.networkUser"]:
     condition: []
     members:
-    - serviceAccount:cloudsvc
-    - serviceAccount:gke
-    project: my-project
+    - serviceAccount:service_account_email
+    project: project-id
     region: europe-west1
     role: roles/compute.networkUser
     subnetwork: subnet-1
   module.vpc-host.google_compute_subnetwork_iam_binding.authoritative["europe-west1/subnet-1.roles/compute.securityAdmin"]:
     condition: []
     members:
-    - serviceAccount:gke
-    project: my-project
+    - serviceAccount:service_account_email
+    project: project-id
     region: europe-west1
     role: roles/compute.securityAdmin
     subnetwork: subnet-1
 
+
 counts:
   google_compute_network: 1
+  google_compute_route: 2
   google_compute_shared_vpc_host_project: 1
-  google_compute_shared_vpc_service_project: 2
+  google_compute_shared_vpc_service_project: 1
   google_compute_subnetwork: 1
   google_compute_subnetwork_iam_binding: 2
+  modules: 2

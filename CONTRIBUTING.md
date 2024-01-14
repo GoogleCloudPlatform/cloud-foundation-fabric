@@ -21,6 +21,7 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
     - [Building tests for blueprints](#building-tests-for-blueprints)
   - [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-tfvars-and-yaml-aka-tftest-based-tests)
     - [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for-tftest-based-tests)
+  - [Running end-to-end tests](#running-end-to-end-tests)
   - [Writing tests in Python (legacy approach)](#writing-tests-in-python-legacy-approach)
   - [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
 - [Fabric tools](#fabric-tools)
@@ -1069,6 +1070,146 @@ outputs:
 ```
 
 You can now use this output to create the inventory file for your test. As mentioned before, please only use those values relevant to your test scenario.
+
+### Running end-to-end tests
+You can use end-to-end tests to verify your code against GCP API. These tests verify that `terraform apply` succeeds, `terraform plan` is empty afterwards and that `terraform destroy` raises no error.
+#### Prerequisites
+Prepare following information:
+* billing account id
+* organization id
+* parent folder under which resources will be created
+  * (you may want to disable / restore to default some organization policies under this folder)
+* decide in which region you want to deploy (choose one, that has wide service coverage)
+* (optional) prepare service account that has necessary permissions (able to assign billing account to project, resource creation etc)
+* prepare a prefix (this is to provide project and other global resources name uniqueness)
+
+#### How does it work
+Each test case is provided by additional environment defined in [variables.tf](tests/examples/variables.tf). This simplifies writing the examples as this follows the same structure as for non-end-to-end tests, and allows multiple, independent and concurrent runs of tests.
+
+The test environment can be provisioned automatically during the test run (which takes ~2 minutes) and destroyed at the end, when all tests finish (option 1 below), which is targeting automated runs in CI/CD pipeline, or it can be provisioned manually (option 2 below) to reduce test time, which might be typical use case for tests run locally.
+
+For development, to keep the feedback loop short, consider using [local sandbox](#creating-sandbox-environment-for-examples) and paste specific example in `main.tf` file.
+
+#### Option 1 - automatically provision and de-provision testing infrastructure
+
+Set variables in environment:
+```bash
+export TFTEST_E2E_billing_account="123456-123456-123456"  # billing account id to associate projects
+export TFTEST_E2E_group_email="group@example.org" # existing group within organization
+export TFTEST_E2E_organization_id="1234567890" # your organization id
+export TFTEST_E2E_parent="folders/1234567890"  # folder under which test resources will be created
+export TFTEST_E2E_prefix="your-unique-prefix"  # unique prefix for projects, no longer than 7 characters
+export TFTEST_E2E_region="europe-west4"  # region to use
+```
+
+To use Service Account Impersonation, use provider environment variable
+```bash
+export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com
+```
+
+You can keep the prefix the same for all the tests run, the tests will add necessary suffix for subsequent runs, and in case tests are run in parallel, use separate suffix for the workers.
+# Run the tests
+```bash
+pytest tests/examples_e2e
+```
+
+#### Option 2 - Provision manually test environment and use it for tests
+##### Provision manually test environment
+In `tests/examples_e2e/setup_module` create `terraform.tfvars` with following values:
+```tfvars
+billing_account = "123456-123456-123456"  # billing account id to associate projects
+group_email     = "group@example.org"  # existing group within organization
+organization_id = "1234567890"  # your organization id
+parent          = "folders/1234567890"  # folder under which test resources will be created
+prefix          = "your-unique-prefix"  # unique prefix for projects
+region          = "europe-west4"  # region to use
+timestamp       = "1696444185" # generate your own timestamp - will be used as a part of prefix for globally unique resources
+```
+
+If you use service account impersonation, set `GOOGLE_IMPERSONATE_SERVICE_ACCOUNT`
+```bash
+export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=<username>@<project-id>.iam.gserviceaccount.com
+```
+
+Provision the environment using terraform
+```bash
+(cd tests/examples_e2e/setup_module/ && terraform init && terraform apply)
+```
+
+This will generate also `tests/examples_e2e/setup_module/e2e_tests.tfvars` for you, which can be used by tests.
+
+##### Setup your environment
+```bash
+export TFTEST_E2E_TFVARS_PATH=`pwd`/tests/examples_e2e/setup_module/e2e_tests.tfvars  # generated above
+export TFTEST_E2E_prefix="your-unique-prefix"  # unique prefix for projects, no longer than 7 characters
+```
+
+##### De-provision the environment
+Once you are done with the tests, run:
+```bash
+(cd tests/examples_e2e/setup_module/ && terraform apply -destroy)
+```
+To remove all resources created for testing and `tests/examples_e2e/setup_module/e2e_tests.tfvars` file.
+
+#### Run tests
+Run tests using:
+```bash
+pytest tests/examples_e2e
+```
+
+#### Creating sandbox environment for examples
+When developing it is convenient to have a module that represents chosen example, so you can inspect the environment after running apply and quickly verify fixes. Shell script [create_e2e_sandbox.sh](tools/create_e2e_sandbox.sh) will create such environment for you.
+
+Prepare the environment variables as defined in Option 1 above and run:
+```bash
+$ tools/create_e2e_sandbox.sh <directory>
+```
+
+The script will create in `<directory>` following structure:
+```
+<directory>
+├── default-versions.tf
+├── e2e_tests.auto.tfvars -> infra/e2e_tests.tfvars
+├── fabric -> <cloud-foundation-fabric root>
+├── infra
+│   ├── e2e_tests.tfvars
+│   ├── e2e_tests.tfvars.tftpl
+│   ├── main.tf
+│   ├── randomizer.auto.tfvars
+│   ├── terraform.tfvars
+│   └── variables.tf
+├── main.tf
+└── variables.tf
+```
+
+The `infra` directory contains the sandbox infrastructure as well as all environment variables dumped into `terraform.tfvars` file. The script runs `terraform init` and `terraform apply -auto-approve` in this folder.
+
+The `<direcotry>` has empty `main.tf` where you can paste any example, and it will get all necessary variables from `e2e_tests.auto.tfvars` file.
+
+If there are any changes to the test sandbox, you can rerun the script and only changes will be applied to the project.
+
+#### Cleaning up interrupted E2E tests / failed destroys
+Tests take the effort to clean after themselves but in following situations some resources may be left in GCP:
+* you interrupt the test run
+* `terraform destroy` failed (for example, because of some bug in the example of module code)
+
+To clean up the old dangling resources you may run this commands, to remove folders and projects older than 1 week
+```bash
+
+for folder_id in $(
+  gcloud resource-manager folders list --folder "${TFTEST_E2E_parent}" --filter="createTime<-P1W" --format='value(name)'
+  ) ; do
+  for project_id in $(
+  gcloud alpha projects list --folder "${folder_id}" --format='value(project_id)'
+  ) ; do
+    echo $project_id
+    gcloud projects delete --quiet "${project_id}"
+  done
+  gcloud resource-manager folders delete --quiet "${folder_id}"
+done
+```
+
+Take care, as this may also attempt to remove folders/projects created for Option 2 or sandbox.
 
 ### Writing tests in Python (legacy approach)
 

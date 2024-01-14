@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,9 @@ locals {
     try(var.trigger_config.service_account_create, false) == true
   )
   trigger_sa_email = try(
-    google_service_account.trigger_service_account[0].email, null
+    google_service_account.trigger_service_account[0].email,
+    var.trigger_config.service_account_email,
+    null
   )
   vpc_connector = (
     var.vpc_connector == null

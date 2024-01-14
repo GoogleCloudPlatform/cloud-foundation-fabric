@@ -31,6 +31,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Fixtures](#fixtures)
 <!-- END TOC -->
 
 ### Minimal HTTP Example
@@ -40,36 +41,36 @@ An HTTP load balancer with a backend service pointing to a GCE instance group:
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id },
       ]
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=minimal-http.yaml e2e
 ```
 
 ### Minimal HTTPS examples
 
 #### HTTP backends
 
-An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. THis is an example With HTTP backends and a managed certificate:
+An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. This is an example With HTTP backends and a managed certificate:
 
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id },
       ]
       protocol = "HTTP"
     }
@@ -83,7 +84,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf inventory=http-backends.yaml  e2e
 ```
 
 #### HTTPS backends
@@ -93,13 +94,13 @@ For HTTPS backends the backend service protocol needs to be set to `HTTPS`. The 
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id },
       ]
       protocol = "HTTPS"
     }
@@ -120,7 +121,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf inventory=https-backends.yaml e2e
 ```
 
 #### HTTP to HTTPS redirect
@@ -130,7 +131,7 @@ Redirect is implemented via an additional HTTP load balancer with a custom URL m
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"
-  project_id = "myprj"
+  project_id = var.project_id
   global_addresses = {
     "glb-test-0" = {}
   }
@@ -138,7 +139,7 @@ module "addresses" {
 
 module "glb-test-0-redirect" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0-redirect"
   address = (
     module.addresses.global_addresses["glb-test-0"].address
@@ -155,7 +156,7 @@ module "glb-test-0-redirect" {
 
 module "glb-test-0" {
   source              = "./fabric/modules/net-lb-app-ext"
-  project_id          = "myprj"
+  project_id          = var.project_id
   name                = "glb-test-0"
   use_classic_version = false
   address = (
@@ -164,7 +165,7 @@ module "glb-test-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
+        { backend = module.compute-vm-group-b.group.id },
       ]
       protocol = "HTTP"
     }
@@ -179,7 +180,7 @@ module "glb-test-0" {
   }
 }
 
-# tftest modules=3 resources=10
+# tftest modules=5 resources=14  fixtures=fixtures/compute-vm-group-bc.tf inventory=http-https-redirect.yaml e2e
 ```
 
 ### Classic vs Non-classic
@@ -189,19 +190,19 @@ The module uses a classic Global Load Balancer by default. To use the non-classi
 ```hcl
 module "glb-0" {
   source              = "./fabric/modules/net-lb-app-ext"
-  project_id          = "myprj"
+  project_id          = var.project_id
   name                = "glb-test-0"
   use_classic_version = false
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id },
       ]
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=classic-vs-non-classic.yaml e2e
 ```
 
 ### Health Checks
@@ -220,7 +221,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+        backend = module.compute-vm-group-b.group.id
       }]
       # no need to reference the hc explicitly when using the `default` key
       # health_checks = ["default"]
@@ -232,7 +233,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=health-check-1.yaml e2e
 ```
 
 To leverage existing health checks without having the module create them, simply pass their self links to backend services and set the `health_check_configs` variable to an empty map:
@@ -245,26 +246,26 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+        backend = module.compute-vm-group-b.group.id
       }]
-      health_checks = ["projects/myprj/global/healthChecks/custom"]
+      health_checks = ["projects/${var.project_id}/global/healthChecks/custom"]
     }
   }
   health_check_configs = {}
 }
-# tftest modules=1 resources=4
+# tftest modules=3 resources=8 fixtures=fixtures/compute-vm-group-bc.tf inventory=health-check-2.yaml
 ```
 
 ### Backend Types and Management
 
 #### Instance Groups
 
-The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key. THis is the simple HTTP example above but with instance group creation managed by the module:
+The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key. This is the simple HTTP example above but with instance group creation managed by the module:
 
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -275,15 +276,15 @@ module "glb-0" {
   }
   group_configs = {
     default-b = {
-      zone = "europe-west8-b"
+      zone = "${var.region}-b"
       instances = [
-        "projects/myprj/zones/europe-west8-b/instances/vm-a"
+        module.compute-vm-group-b.id
       ]
       named_ports = { http = 80 }
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf inventory=instance-groups.yaml e2e
 ```
 
 #### Managed Instance Groups
@@ -293,8 +294,8 @@ This example shows how to use the module with a manage instance group as backend
 ```hcl
 module "win-template" {
   source          = "./fabric/modules/compute-vm"
-  project_id      = "myprj"
-  zone            = "europe-west8-a"
+  project_id      = var.project_id
+  zone            = "${var.region}-a"
   name            = "win-template"
   instance_type   = "n2d-standard-2"
   create_template = true
@@ -314,8 +315,8 @@ module "win-template" {
 
 module "win-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "myprj"
-  location          = "europe-west8-a"
+  project_id        = var.project_id
+  location          = "${var.region}-a"
   name              = "win-mig"
   instance_template = module.win-template.template.self_link
   autoscaler_config = {
@@ -335,7 +336,7 @@ module "win-mig" {
 
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -345,7 +346,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=3 resources=8
+# tftest modules=3 resources=8 inventory=managed-instance-groups.yaml e2e
 ```
 
 #### Storage Buckets
@@ -355,17 +356,17 @@ GCS bucket backends can also be managed and used in this module in a similar way
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_buckets_config = {
     default = {
-      bucket_name = "tf-playground-svpc-gce-public"
+      bucket_name = var.bucket
     }
   }
   # with a single GCS backend the implied default health check is not needed
   health_check_configs = {}
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=storage.yaml e2e
 ```
 
 #### Network Endpoint Groups (NEGs)
@@ -375,21 +376,31 @@ Supported Network Endpoint Groups (NEGs) can also be used as backends. Similarly
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [
         {
-          backend        = "projects/myprj/zones/europe-west8-b/networkEndpointGroups/myneg-b"
+          backend        = "myneg-b"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
       ]
     }
   }
+  neg_configs = {
+    myneg-b = {
+      hybrid = {
+        network    = var.vpc.self_link
+        subnetwork = var.subnet.self_link
+        zone       = "${var.region}-b"
+        endpoints  = {}
+      }
+    }
+  }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=6 inventory=network-endpoint-groups.yaml e2e
 ```
 
 #### Zonal NEG creation
@@ -399,7 +410,7 @@ This example shows how to create and manage zonal NEGs using GCE VMs as endpoint
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -415,13 +426,13 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       gce = {
-        network    = "projects/myprj-host/global/networks/svpc"
-        subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
-        zone       = "europe-west8-b"
+        network    = var.vpc.self_link
+        subnetwork = var.subnet.self_link
+        zone       = "${var.region}-b"
         endpoints = {
           e-0 = {
-            instance   = "myinstance-b-0"
-            ip_address = "10.24.32.25"
+            instance   = "my-ig-b"
+            ip_address = module.compute-vm-group-b.internal_ip
             port       = 80
           }
         }
@@ -429,7 +440,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=3 resources=11 fixtures=fixtures/compute-vm-group-bc.tf inventory=zonal-neg-creation.yaml e2e
 ```
 
 #### Hybrid NEG creation
@@ -439,7 +450,7 @@ This example shows how to create and manage hybrid NEGs:
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -455,8 +466,8 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       hybrid = {
-        network = "projects/myprj-host/global/networks/svpc"
-        zone    = "europe-west8-b"
+        network = var.vpc.self_link
+        zone    = "${var.region}-b"
         endpoints = {
           e-0 = {
             ip_address = "10.0.0.10"
@@ -467,7 +478,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=7 inventory=hybrid-neg.yaml e2e
 ```
 
 #### Internet NEG creation
@@ -477,7 +488,7 @@ This example shows how to create and manage internet NEGs:
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -503,7 +514,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=6 inventory=internet-neg.yaml e2e
 ```
 
 #### Private Service Connect NEG creation
@@ -513,7 +524,7 @@ The module supports managing PSC NEGs if the non-classic version of the load bal
 ```hcl
 module "glb-0" {
   source              = "./fabric/modules/net-lb-app-ext"
-  project_id          = "myprj"
+  project_id          = var.project_id
   name                = "glb-test-0"
   use_classic_version = false
   backend_service_configs = {
@@ -529,13 +540,13 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       psc = {
-        region         = "europe-west8"
-        target_service = "europe-west8-cloudkms.googleapis.com"
+        region         = var.region
+        target_service = "${var.region}-cloudkms.googleapis.com"
       }
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 
 ```
 
 #### Serverless NEG creation
@@ -545,7 +556,7 @@ The module supports managing Serverless NEGs for Cloud Run and Cloud Function. T
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -560,7 +571,7 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       cloudrun = {
-        region = "europe-west8"
+        region = var.region
         target_service = {
           name = "hello"
         }
@@ -568,7 +579,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=serverless-neg.yaml e2e
 ```
 
 Serverless NEGs don't use the port name but it should be set to `http`. An HTTPS frontend requires the protocol to be set to `HTTPS`, and the port name field will infer this value if omitted so you need to set it explicitly:
@@ -576,7 +587,7 @@ Serverless NEGs don't use the port name but it should be set to `http`. An HTTPS
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -592,7 +603,7 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       cloudrun = {
-        region = "europe-west8"
+        region = var.region
         target_service = {
           name = "hello"
         }
@@ -608,7 +619,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=6 inventory=https-sneg.yaml
+# tftest modules=1 resources=6 inventory=https-sneg.yaml e2e
 ```
 
 ### URL Map
@@ -620,17 +631,17 @@ The default URL map configuration sets the `default` backend service as the defa
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west8-b/instanceGroups/ig-0"
+        backend = module.compute-vm-group-b.group.id
       }]
     }
     other = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west8-c/instanceGroups/ig-1"
+        backend = module.compute-vm-group-c.group.id
       }]
     }
   }
@@ -652,7 +663,7 @@ module "glb-0" {
   }
 }
 
-# tftest modules=1 resources=6
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf inventory=url-map.yaml e2e
 ```
 
 ### SSL Certificates
@@ -664,7 +675,7 @@ THe [HTTPS example above](#minimal-https-examples) shows how to configure manage
 ```hcl
 resource "tls_private_key" "default" {
   algorithm = "RSA"
-  rsa_bits  = 4096
+  rsa_bits  = 2048
 }
 
 resource "tls_self_signed_cert" "default" {
@@ -683,13 +694,13 @@ resource "tls_self_signed_cert" "default" {
 
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id },
       ]
       protocol = "HTTP"
     }
@@ -705,7 +716,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=8
+# tftest modules=3 resources=12 fixtures=fixtures/compute-vm-group-bc.tf inventory=ssl-certificates.yaml e2e
 ```
 
 ### Complex example
@@ -715,47 +726,49 @@ This example mixes group and NEG backends, and shows how to set HTTPS for specif
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_buckets_config = {
     gcs-0 = {
-      bucket_name = "my-bucket"
+      bucket_name = var.bucket
     }
   }
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "ew8-b" },
-        { backend = "ew8-c" },
+        { backend = "group-zone-b" },
+        { backend = "group-zone-c" },
       ]
     }
     neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend        = "neg-ew8-c"
+        backend        = "neg-zone-c"
         max_rate       = { per_endpoint = 10 }
       }]
     }
     neg-hybrid-0 = {
       backends = [{
-        backend = "neg-hello"
+        balancing_mode = "RATE"
+        backend        = "neg-hello"
+        max_rate       = { per_endpoint = 10 }
       }]
       health_checks = ["neg"]
       protocol      = "HTTPS"
     }
   }
   group_configs = {
-    ew8-b = {
-      zone = "europe-west8-b"
+    group-zone-b = {
+      zone = "${var.region}-b"
       instances = [
-        "projects/prj-gce/zones/europe-west8-b/instances/nginx-ew8-b"
+        module.compute-vm-group-b.id
       ]
       named_ports = { http = 80 }
     }
-    ew8-c = {
-      zone = "europe-west8-c"
+    group-zone-c = {
+      zone = "${var.region}-c"
       instances = [
-        "projects/prj-gce/zones/europe-west8-c/instances/nginx-ew8-c"
+        module.compute-vm-group-c.id
       ]
       named_ports = { http = 80 }
     }
@@ -774,15 +787,15 @@ module "glb-0" {
     }
   }
   neg_configs = {
-    neg-ew8-c = {
+    neg-zone-c = {
       gce = {
-        network    = "projects/myprj-host/global/networks/svpc"
-        subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
-        zone       = "europe-west8-c"
+        network    = var.vpc.self_link
+        subnetwork = var.subnet.self_link
+        zone       = "${var.region}-c"
         endpoints = {
           e-0 = {
-            instance   = "nginx-ew8-c"
-            ip_address = "10.24.32.26"
+            instance   = "my-ig-c"
+            ip_address = module.compute-vm-group-c.internal_ip
             port       = 80
           }
         }
@@ -790,8 +803,8 @@ module "glb-0" {
     }
     neg-hello = {
       hybrid = {
-        network = "projects/myprj-host/global/networks/svpc"
-        zone    = "europe-west8-b"
+        network = var.vpc.self_link
+        zone    = "${var.region}-b"
         endpoints = {
           e-0 = {
             ip_address = "192.168.0.3"
@@ -836,7 +849,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=15
+# tftest modules=3 resources=19 fixtures=fixtures/compute-vm-group-bc.tf inventory=complex-example.yaml e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->
@@ -888,8 +901,15 @@ module "glb-0" {
 | [backend_service_ids](outputs.tf#L22) | Backend service resources. |  |
 | [backend_service_names](outputs.tf#L29) | Backend service resource names. |  |
 | [forwarding_rule](outputs.tf#L36) | Forwarding rule resource. |  |
-| [group_ids](outputs.tf#L41) | Autogenerated instance group ids. |  |
-| [health_check_ids](outputs.tf#L48) | Autogenerated health check ids. |  |
-| [id](outputs.tf#L55) | Fully qualified forwarding rule id. |  |
-| [neg_ids](outputs.tf#L60) | Autogenerated network endpoint group ids. |  |
+| [global_neg_ids](outputs.tf#L41) | Autogenerated global network endpoint group ids. |  |
+| [group_ids](outputs.tf#L48) | Autogenerated instance group ids. |  |
+| [health_check_ids](outputs.tf#L55) | Autogenerated health check ids. |  |
+| [id](outputs.tf#L62) | Fully qualified forwarding rule id. |  |
+| [neg_ids](outputs.tf#L67) | Autogenerated network endpoint group ids. |  |
+| [psc_neg_ids](outputs.tf#L74) | Autogenerated PSC network endpoint group ids. |  |
+| [serverless_neg_ids](outputs.tf#L81) | Autogenerated serverless network endpoint group ids. |  |
+
+## Fixtures
+
+- [compute-vm-group-bc.tf](../../tests/fixtures/compute-vm-group-bc.tf)
 <!-- END TFDOC -->

@@ -121,12 +121,12 @@ module "branch-pf-dev-sa-cicd" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.cicd_identity_providers[each.value.identity_provider].principalset_tpl,
+          local.cicd_identity_providers[each.value.identity_provider].principal_repo,
           local.cicd_identity_pools[each.value.identity_provider],
           each.value.name
         )
         : format(
-          local.cicd_identity_providers[each.value.identity_provider].principal_tpl,
+          local.cicd_identity_providers[each.value.identity_provider].principal_branch,
           local.cicd_identity_pools[each.value.identity_provider],
           each.value.name,
           each.value.branch
@@ -169,12 +169,12 @@ module "branch-pf-prod-sa-cicd" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.cicd_identity_providers[each.value.identity_provider].principalset_tpl,
+          local.cicd_identity_providers[each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )
         : format(
-          local.cicd_identity_providers[each.value.identity_provider].principal_tpl,
+          local.cicd_identity_providers[each.value.identity_provider].principal_branch,
           var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch

@@ -13,21 +13,21 @@ Note that outputs have no dependencies on IAM bindings to prevent resource cycle
 ```hcl
 module "myproject-default-service-accounts" {
   source     = "./fabric/modules/iam-service-account"
-  project_id = "myproject"
+  project_id = var.project_id
   name       = "vm-default"
   # authoritative roles granted *on* the service accounts to other identities
   iam = {
-    "roles/iam.serviceAccountUser" = ["user:foo@example.com"]
+    "roles/iam.serviceAccountUser" = ["group:${var.group_email}"]
   }
   # non-authoritative roles granted *to* the service accounts on other resources
   iam_project_roles = {
-    "myproject" = [
+    "${var.project_id}" = [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
     ]
   }
 }
-# tftest modules=1 resources=4 inventory=basic.yaml
+# tftest modules=1 resources=4 inventory=basic.yaml e2e
 ```
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->

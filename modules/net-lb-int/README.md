@@ -331,7 +331,7 @@ module "ilb" {
 | [group_self_links](outputs.tf#L56) | Optional unmanaged instance group self links. |  |
 | [groups](outputs.tf#L63) | Optional unmanaged instance group resources. |  |
 | [health_check](outputs.tf#L68) | Auto-created health-check resource. |  |
-| [health_check_self_id](outputs.tf#L73) | Auto-created health-check self id. |  |
+| [health_check_id](outputs.tf#L73) | Auto-created health-check id. |  |
 | [health_check_self_link](outputs.tf#L78) | Auto-created health-check self link. |  |
 | [id](outputs.tf#L83) | Fully qualified forwarding rule ids. |  |
 <!-- END TFDOC -->

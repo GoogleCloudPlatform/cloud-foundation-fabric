@@ -24,13 +24,13 @@ on:
       - synchronize
 
 env:
-  FAST_OUTPUTS_BUCKET: ${outputs_bucket}
-  FAST_SERVICE_ACCOUNT: ${service_account}
+  FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
+  FAST_SERVICE_ACCOUNT_PLAN: ${service_accounts.plan}
   FAST_WIF_PROVIDER: ${identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-  TF_PROVIDERS_FILE: ${tf_providers_file}
-  TF_VAR_FILES: ${tf_var_files == [] ? "''" : join("\n    ", tf_var_files)}
-  TF_VERSION: 1.4.4
+  TF_PROVIDERS_FILE: ${tf_providers_files.apply}
+  TF_PROVIDERS_FILE_PLAN: ${tf_providers_files.plan}
+  TF_VERSION: 1.6.5
 
 jobs:
   fast-pr:
@@ -46,46 +46,66 @@ jobs:
         uses: actions/checkout@v3
 
       # set up SSH key authentication to the modules repository
+
       - id: ssh-config
         name: Configure SSH authentication
         run: |
           ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
           ssh-add - <<< "$${{ secrets.CICD_MODULES_KEY }}"
 
-      # set up authentication via Workload identity Federation
+      # set up step variables for plan / apply
+
+      - id: vars-plan
+        if: github.event.pull_request.merged != true && success()
+        name: Set up plan variables
+        run: |
+          echo "plan_opts=-lock=false" >> "$GITHUB_ENV"
+          echo "provider_file=$${{env.TF_PROVIDERS_FILE_PLAN}}" >> "$GITHUB_ENV"
+          echo "service_account=$${{env.FAST_SERVICE_ACCOUNT_PLAN}}" >> "$GITHUB_ENV"
+
+      - id: vars-apply
+        if: github.event.pull_request.merged == true && success()
+        name: Set up apply variables
+        run: |
+          echo "provider_file=$${{env.TF_PROVIDERS_FILE}}" >> "$GITHUB_ENV"
+          echo "service_account=$${{env.FAST_SERVICE_ACCOUNT}}" >> "$GITHUB_ENV"
+
+      # set up authentication via Workload identity Federation and gcloud
+
       - id: gcp-auth
         name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v0
+        uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: $${{ env.FAST_WIF_PROVIDER }}
-          service_account: $${{ env.FAST_SERVICE_ACCOUNT }}
-          access_token_lifetime: 3600s
+          workload_identity_provider: $${{env.FAST_WIF_PROVIDER}}
+          service_account: $${{env.service_account}}
+          access_token_lifetime: 900s
 
       - id: gcp-sdk
         name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v2
         with:
           install_components: alpha
 
-      # copy provider and tfvars files
-      - id: tf-config
-        name: Copy Terraform output files
+      # copy provider file
+
+      - id: tf-config-provider
+        name: Copy Terraform provider file
         run: |
           gcloud alpha storage cp -r \
-            "gs://$${{env.FAST_OUTPUTS_BUCKET}}/providers/$${{env.TF_PROVIDERS_FILE}}" ./
+            "gs://${outputs_bucket}/providers/$${{env.provider_file}}" ./
+          %{~ for f in tf_var_files ~}
           gcloud alpha storage cp -r \
-            "gs://$${{env.FAST_OUTPUTS_BUCKET}}/tfvars" ./
-          for f in $${{env.TF_VAR_FILES}}; do
-            ln -s "tfvars/$f" ./
-          done
+            "gs://${outputs_bucket}/tfvars/${f}" ./
+          %{~ endfor ~}
 
       - id: tf-setup
         name: Set up Terraform
         uses: hashicorp/setup-terraform@v2.0.3
         with:
-          terraform_version: $${{ env.TF_VERSION }}
+          terraform_version: $${{env.TF_VERSION}}
 
       # run Terraform init/validate/plan
+
       - id: tf-init
         name: Terraform init
         continue-on-error: true
@@ -101,7 +121,7 @@ jobs:
         name: Terraform plan
         continue-on-error: true
         run: |
-          terraform plan -input=false -out ../plan.out -no-color
+          terraform plan -input=false -out ../plan.out -no-color $${{env.plan_opts}}
 
       - id: tf-apply
         if: github.event.pull_request.merged == true && success()
@@ -110,28 +130,31 @@ jobs:
         run: |
           terraform apply -input=false -auto-approve -no-color ../plan.out
 
+      # PR comment with Terraform result from previous steps
+      # length is checked and trimmed for length so as to stay within the limit
+
       - id: pr-comment
         name: Post comment to Pull Request
         continue-on-error: true
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
-          PLAN: $${{ steps.tf-plan.outputs.stdout }}\n$${{ steps.tf-plan.outputs.stderr }}
+          PLAN: $${{steps.tf-plan.outputs.stdout}}\n$${{steps.tf-plan.outputs.stderr}}
         with:
           script: |
-            const output = `### Terraform Initialization \`$${{ steps.tf-init.outcome }}\`
+            const output = `### Terraform Initialization \`$${{steps.tf-init.outcome}}\`
 
-            ### Terraform Validation \`$${{ steps.tf-validate.outcome }}\`
+            ### Terraform Validation \`$${{steps.tf-validate.outcome}}\`
 
             <details><summary>Validation Output</summary>
 
             \`\`\`\n
-            $${{ steps.tf-validate.outputs.stdout }}
+            $${{steps.tf-validate.outputs.stdout}}
             \`\`\`
 
             </details>
 
-            ### Terraform Plan \`$${{ steps.tf-plan.outcome }}\`
+            ### Terraform Plan \`$${{steps.tf-plan.outcome}}\`
 
             <details><summary>Show Plan</summary>
 
@@ -141,9 +164,9 @@ jobs:
 
             </details>
 
-            ### Terraform Apply \`$${{ steps.tf-apply.outcome }}\`
+            ### Terraform Apply \`$${{steps.tf-apply.outcome}}\`
 
-            *Pusher: @$${{ github.actor }}, Action: \`$${{ github.event_name }}\`, Working Directory: \`$${{ env.tf_actions_working_dir }}\`, Workflow: \`$${{ github.workflow }}\`*`;
+            *Pusher: @$${{github.actor}}, Action: \`$${{github.event_name}}\`, Working Directory: \`$${{env.tf_actions_working_dir}}\`, Workflow: \`$${{github.workflow}}\`*`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -153,22 +176,22 @@ jobs:
             })
 
       - id: pr-short-comment
-        name: Post comment to Pull Request
+        name: Post comment to Pull Request (abbreviated)
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request' && steps.pr-comment.outcome != 'success'
         with:
           script: |
-            const output = `### Terraform Initialization \`$${{ steps.tf-init.outcome }}\`
+            const output = `### Terraform Initialization \`$${{steps.tf-init.outcome}}\`
 
-            ### Terraform Validation \`$${{ steps.tf-validate.outcome }}\`
+            ### Terraform Validation \`$${{steps.tf-validate.outcome}}\`
 
-            ### Terraform Plan \`$${{ steps.tf-plan.outcome }}\`
+            ### Terraform Plan \`$${{steps.tf-plan.outcome}}\`
 
             Plan output is in the action log.
 
-            ### Terraform Apply \`$${{ steps.tf-apply.outcome }}\`
+            ### Terraform Apply \`$${{steps.tf-apply.outcome}}\`
 
-            *Pusher: @$${{ github.actor }}, Action: \`$${{ github.event_name }}\`, Working Directory: \`$${{ env.tf_actions_working_dir }}\`, Workflow: \`$${{ github.workflow }}\`*`;
+            *Pusher: @$${{github.actor}}, Action: \`$${{github.event_name}}\`, Working Directory: \`$${{env.tf_actions_working_dir}}\`, Workflow: \`$${{github.workflow}}\`*`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -176,6 +199,8 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
+
+      # exit on error from previous steps
 
       - id: check-init
         name: Check init failure

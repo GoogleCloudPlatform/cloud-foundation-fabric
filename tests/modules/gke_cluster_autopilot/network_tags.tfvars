@@ -5,10 +5,12 @@ vpc_config = {
   network    = "default"
   subnetwork = "default"
 }
-tags = [
-  "deep-dark-wood",
-  "hello-gruffalo",
-  "my--precious---nodes",
-  "cluster-1-nodes",
-  "nodes-cluster-1",
-]
+node_config = {
+  tags = [
+    "deep-dark-wood",
+    "hello-gruffalo",
+    "my--precious---nodes",
+    "cluster-1-nodes",
+    "nodes-cluster-1",
+  ]
+}

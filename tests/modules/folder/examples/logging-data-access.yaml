@@ -14,8 +14,8 @@
 
 values:
   module.folder.google_folder.folder[0]:
-    display_name: my-folder
-    parent: folders/657104291943
+    display_name: Folder name
+    parent: folders/1122334455
     timeouts: null
   module.folder.google_folder_iam_audit_config.default["allServices"]:
     audit_log_config:

@@ -113,6 +113,23 @@ locals {
         ]
       )
     }
+    (module.automation-tf-bootstrap-r-sa.iam_email) = {
+      authoritative = [
+        "roles/logging.viewer",
+        "roles/resourcemanager.folderViewer",
+        "roles/resourcemanager.tagViewer"
+      ]
+      additive = concat(
+        [
+          # the organizationAdminViewer custom role is granted via the SA module
+          "roles/iam.organizationRoleViewer",
+          "roles/orgpolicy.policyViewer"
+        ],
+        local.billing_mode != "org" ? [] : [
+          "roles/billing.viewer"
+        ]
+      )
+    }
     (module.automation-tf-resman-sa.iam_email) = {
       authoritative = [
         "roles/logging.admin",
@@ -127,6 +144,23 @@ locals {
         ],
         local.billing_mode != "org" ? [] : [
           "roles/billing.admin"
+        ]
+      )
+    }
+    (module.automation-tf-resman-r-sa.iam_email) = {
+      authoritative = [
+        "roles/logging.viewer",
+        "roles/resourcemanager.folderViewer",
+        "roles/resourcemanager.tagViewer",
+        "roles/serviceusage.serviceUsageViewer"
+      ]
+      additive = concat(
+        [
+          # the organizationAdminViewer custom role is granted via the SA module
+          "roles/orgpolicy.policyViewer"
+        ],
+        local.billing_mode != "org" ? [] : [
+          "roles/billing.viewer"
         ]
       )
     }

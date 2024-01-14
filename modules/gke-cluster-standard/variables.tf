@@ -50,10 +50,25 @@ variable "cluster_autoscaling" {
         auto_repair  = optional(bool, true)
         auto_upgrade = optional(bool, true)
       }))
-      shielded_instance_config = object({
+      shielded_instance_config = optional(object({
         integrity_monitoring = optional(bool, true)
         secure_boot          = optional(bool, false)
-      })
+      }))
+      upgrade_settings = optional(object({
+        blue_green = optional(object({
+          node_pool_soak_duration = optional(string)
+          standard_rollout_policy = optional(object({
+            batch_percentage    = optional(number)
+            batch_node_count    = optional(number)
+            batch_soak_duration = optional(string)
+          }))
+        }))
+        surge = optional(object({
+          max         = optional(number)
+          unavailable = optional(number)
+        }))
+      }))
+      # add validation rule to ensure only one is present if upgrade settings is defined
     }))
     cpu_limits = optional(object({
       min = number
@@ -71,12 +86,29 @@ variable "cluster_autoscaling" {
   })
   default = null
   validation {
-    condition     = (var.cluster_autoscaling == null ? true : contains(["BALANCED", "OPTIMIZE_UTILIZATION"], var.cluster_autoscaling.autoscaling_profile))
+    condition = (var.cluster_autoscaling == null ? true : contains(
+      ["BALANCED", "OPTIMIZE_UTILIZATION"],
+      var.cluster_autoscaling.autoscaling_profile
+    ))
     error_message = "Invalid autoscaling_profile."
   }
   validation {
-    condition     = (var.cluster_autoscaling == null ? true : contains(["pd-standard", "pd-ssd", "pd-balanced"], var.cluster_autoscaling.auto_provisioning_defaults.disk_type))
+    condition = (
+      var.cluster_autoscaling == null ? true : contains(
+        ["pd-standard", "pd-ssd", "pd-balanced"],
+      var.cluster_autoscaling.auto_provisioning_defaults.disk_type)
+    )
     error_message = "Invalid disk_type."
+  }
+  validation {
+    condition = (
+      try(var.cluster_autoscaling.upgrade_settings, null) == null || (
+        try(var.cluster_autoscaling.upgrade_settings.blue_green, null) == null ? 0 : 1
+        +
+        try(var.cluster_autoscaling.upgrade_settings.surge, null) == null ? 0 : 1
+      ) == 1
+    )
+    error_message = "Upgrade settings can only use blue/green or surge."
   }
 }
 
@@ -135,6 +167,7 @@ variable "enable_features" {
     fqdn_network_policy  = optional(bool, false)
     gateway_api          = optional(bool, false)
     groups_for_rbac      = optional(string)
+    image_streaming      = optional(bool, false)
     intranode_visibility = optional(bool, false)
     l4_ilb_subsetting    = optional(bool, false)
     mesh_certificates    = optional(bool)
@@ -144,8 +177,9 @@ variable "enable_features" {
       enable_network_egress_metering       = optional(bool)
       enable_resource_consumption_metering = optional(bool)
     }))
-    shielded_nodes = optional(bool, false)
-    tpu            = optional(bool, false)
+    service_external_ips = optional(bool, true)
+    shielded_nodes       = optional(bool, false)
+    tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
       topic_id = optional(string)
     }))
@@ -291,6 +325,16 @@ variable "name" {
   type        = string
 }
 
+variable "node_config" {
+  description = "Node-level configuration."
+  type = object({
+    boot_disk_kms_key = optional(string)
+    service_account   = optional(string)
+    tags              = optional(list(string))
+  })
+  default = {}
+}
+
 variable "node_locations" {
   description = "Zones in which the cluster's nodes are located."
   type        = list(string)
@@ -320,18 +364,6 @@ variable "project_id" {
 variable "release_channel" {
   description = "Release channel for GKE upgrades."
   type        = string
-  default     = null
-}
-
-variable "service_account" {
-  description = "Service account used for the default node pool, only useful if the default GCE service account has been disabled."
-  type        = string
-  default     = null
-}
-
-variable "tags" {
-  description = "Network tags applied to nodes."
-  type        = list(string)
   default     = null
 }
 

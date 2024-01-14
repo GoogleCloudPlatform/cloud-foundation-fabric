@@ -48,10 +48,10 @@ These modules are used in the examples included in this repository. If you are u
 - [Firewall policy](./net-firewall-policy)
 - [External Application Load Balancer](./net-lb-app-ext/)
 - [External Passthrough Network Load Balancer](./net-lb-ext)
+- [External Regional Application Load Balancer](./net-lb-app-ext-regional/)
 - [Internal Application Load Balancer](./net-lb-app-int)
 - [Internal Passthrough Network Load Balancer](./net-lb-int)
 - [Internal Proxy Network Load Balancer](./net-lb-proxy-int)
-- [Internal ]
 - [NAT](./net-cloudnat)
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)
@@ -92,6 +92,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Artifact Registry](./artifact-registry)
 - [Container Registry](./container-registry)
 - [Cloud Source Repository](./source-repository)
+- [Workstation cluster](./workstation-cluster)
 
 ## Security
 
@@ -106,3 +107,4 @@ These modules are used in the examples included in this repository. If you are u
 - [Cloud Functions v1](./cloud-function-v1)
 - [Cloud Functions v2](./cloud-function-v2)
 - [Cloud Run](./cloud-run)
+- [Cloud Run v2](./cloud-run-v2)

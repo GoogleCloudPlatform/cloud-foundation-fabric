@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,12 @@
 locals {
   _tag_values = flatten([
     for tag, attrs in local.tags : [
-      for value, value_attrs in coalesce(attrs.values, {}) : {
-        description = coalesce(
-          value_attrs == null ? null : value_attrs.description,
-          "Managed by the Terraform organization module."
-        )
-        key  = "${tag}/${value}"
-        id   = try(value_attrs.id, null)
-        name = value
-        roles = keys(coalesce(
-          value_attrs == null ? null : value_attrs.iam, {}
-        ))
+      for value, value_attrs in attrs.values : {
+        description = value_attrs.description,
+        key         = "${tag}/${value}"
+        id          = try(value_attrs.id, null)
+        name        = value
+        roles       = keys(value_attrs.iam)
         tag         = tag
         tag_id      = attrs.id
         tag_network = try(attrs.network, null) != null
@@ -47,7 +42,7 @@ locals {
   ])
   _tags_iam = flatten([
     for tag, attrs in local.tags : [
-      for role in keys(coalesce(attrs.iam, {})) : {
+      for role in keys(attrs.iam) : {
         role   = role
         tag    = tag
         tag_id = attrs.id
@@ -129,7 +124,7 @@ resource "google_tags_tag_value_iam_binding" "default" {
 # bindings
 
 resource "google_tags_tag_binding" "binding" {
-  for_each  = coalesce(var.tag_bindings, {})
+  for_each  = var.tag_bindings
   parent    = "//cloudresourcemanager.googleapis.com/${var.organization_id}"
   tag_value = each.value
 }

@@ -68,16 +68,23 @@ resource "google_sql_database_instance" "primary" {
     connector_enforcement       = var.connector_enforcement
 
     ip_configuration {
-      ipv4_enabled       = var.ipv4_enabled
-      private_network    = var.network
-      allocated_ip_range = var.allocated_ip_ranges.primary
-      require_ssl        = var.require_ssl
+      ipv4_enabled       = var.network_config.connectivity.public_ipv4
+      private_network    = try(var.network_config.connectivity.psa_config.private_network, null)
+      allocated_ip_range = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.primary, null)
+      require_ssl        = var.network_config.require_ssl
       dynamic "authorized_networks" {
-        for_each = var.authorized_networks != null ? var.authorized_networks : {}
+        for_each = var.network_config.authorized_networks != null ? var.network_config.authorized_networks : {}
         iterator = network
         content {
           name  = network.key
           value = network.value
+        }
+      }
+      dynamic "psc_config" {
+        for_each = var.network_config.connectivity.psc_allowed_consumer_projects != null ? [""] : []
+        content {
+          psc_enabled               = true
+          allowed_consumer_projects = var.network_config.connectivity.psc_allowed_consumer_projects
         }
       }
     }
@@ -114,6 +121,15 @@ resource "google_sql_database_instance" "primary" {
       }
     }
 
+    dynamic "deny_maintenance_period" {
+      for_each = var.maintenance_config.deny_maintenance_period != null ? [1] : []
+      content {
+        start_date = var.maintenance_config.deny_maintenance_period.start_date
+        end_date   = var.maintenance_config.deny_maintenance_period.end_date
+        time       = var.maintenance_config.deny_maintenance_period.start_time
+      }
+    }
+
     dynamic "insights_config" {
       for_each = var.insights_config != null ? [1] : []
       content {
@@ -122,6 +138,15 @@ resource "google_sql_database_instance" "primary" {
         record_application_tags = var.insights_config.record_application_tags
         record_client_address   = var.insights_config.record_client_address
         query_plans_per_minute  = var.insights_config.query_plans_per_minute
+      }
+    }
+
+    dynamic "maintenance_window" {
+      for_each = var.maintenance_config.maintenance_window != null ? [""] : []
+      content {
+        day          = var.maintenance_config.maintenance_window.day
+        hour         = var.maintenance_config.maintenance_window.hour
+        update_track = var.maintenance_config.maintenance_window.update_track
       }
     }
   }
@@ -149,15 +174,22 @@ resource "google_sql_database_instance" "replicas" {
     activation_policy = var.activation_policy
 
     ip_configuration {
-      ipv4_enabled       = var.ipv4_enabled
-      private_network    = var.network
-      allocated_ip_range = var.allocated_ip_ranges.replica
+      ipv4_enabled       = var.network_config.connectivity.public_ipv4
+      private_network    = try(var.network_config.connectivity.psa_config.private_network, null)
+      allocated_ip_range = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.replica, null)
       dynamic "authorized_networks" {
-        for_each = var.authorized_networks != null ? var.authorized_networks : {}
+        for_each = var.network_config.authorized_networks != null ? var.network_config.authorized_networks : {}
         iterator = network
         content {
           name  = network.key
           value = network.value
+        }
+      }
+      dynamic "psc_config" {
+        for_each = var.network_config.connectivity.psc_allowed_consumer_projects != null ? [""] : []
+        content {
+          psc_enabled               = true
+          allowed_consumer_projects = var.network_config.connectivity.psc_allowed_consumer_projects
         }
       }
     }
