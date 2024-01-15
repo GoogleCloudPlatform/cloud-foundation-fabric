@@ -34,7 +34,7 @@ Accept-Encoding: gzip, deflate
 Host: compute.googleapis.com
 
 '''
-RE_URL = re.compile(r'nextPageToken=[^&]+&?')
+RE_URL = re.compile(r'pageToken=[^&]+&?')
 
 
 def batched(iterable, n):
@@ -65,8 +65,10 @@ def parse_page_token(data, url):
   page_token = data.get('nextPageToken')
   if page_token:
     logging.info(f'page  token {page_token}')
-  if page_token:
-    return RE_URL.sub(f'pageToken={page_token}&', url)
+    if 'pageToken' in url:
+      return RE_URL.sub(f'pageToken={page_token}', url)
+    else:
+      return f'{url}&pageToken={page_token}'
 
 
 def poor_man_mp_request(urls, boundary='1234567890'):
