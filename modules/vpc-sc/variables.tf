@@ -92,7 +92,7 @@ variable "egress_policies" {
       for k, v in var.egress_policies :
       v.from.identity_type == null || contains([
         "IDENTITY_TYPE_UNSPECIFIED", "ANY_IDENTITY",
-        "ANY_USER_ACCOUNT", "ANY_SERVICE_ACCOUNT"
+        "ANY_USER_ACCOUNT", "ANY_SERVICE_ACCOUNT", ""
       ], coalesce(v.from.identity_type, "-"))
     ])
     error_message = "Invalid `from.identity_type` value in egress policy."
@@ -160,7 +160,7 @@ variable "ingress_policies" {
       for k, v in var.ingress_policies :
       v.from.identity_type == null || contains([
         "IDENTITY_TYPE_UNSPECIFIED", "ANY_IDENTITY",
-        "ANY_USER", "ANY_SERVICE_ACCOUNT"
+        "ANY_USER_ACCOUNT", "ANY_SERVICE_ACCOUNT", ""
       ], coalesce(v.from.identity_type, "-"))
     ])
     error_message = "Invalid `from.identity_type` value in ingress policy."
