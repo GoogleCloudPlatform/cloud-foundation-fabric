@@ -29,6 +29,10 @@ fast/**/terraform.tfvars
 fast/**/terraform.tfvars.json
 fast/**/terraform-*.auto.tfvars.json
 fast/**/[0-9]*.auto.tfvars*
+/fast/stages/3-gitlab/0-infra/certs/*.crt
+/fast/stages/3-gitlab/0-infra/certs/*.key
+/fast/stages/3-gitlab/1-config/certs/*.crt
+/fast/stages/3-gitlab/1-config/workflows/*.yaml
 **/node_modules
 fast/**/globals.auto.tfvars.json
 cloud_sql_proxy
