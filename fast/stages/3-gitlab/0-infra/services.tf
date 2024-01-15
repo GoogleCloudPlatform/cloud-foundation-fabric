@@ -25,10 +25,10 @@ locals {
 }
 
 module "db" {
-  source         = "../../../../modules/cloudsql-instance"
-  project_id     = module.project.project_id
-  region         = var.region
-  name           = "gitlab"
+  source            = "../../../../modules/cloudsql-instance"
+  project_id        = module.project.project_id
+  region            = var.region
+  name              = "gitlab"
   availability_type = var.gitlab_config.ha_required ? "REGIONAL" : "ZONAL"
   network_config = {
     authorized_networks = {
@@ -45,8 +45,8 @@ module "db" {
   databases = [
     "gitlabhq_production"
   ]
-  tier             = "db-g1-small"
-  users            = {
+  tier = "db-custom-2-8192"
+  users = {
     # generatea password for user1
     gitlab = {
       password = null
@@ -72,6 +72,7 @@ resource "google_redis_instance" "cache" {
   }
 }
 
+# Filestore is not supported, use gitaly for HA deployments
 #resource "google_filestore_instance" "nfs" {
 #  project = module.project.project_id
 #  name     = "gitlab-nfs"
@@ -105,7 +106,7 @@ module "gitlab_object_storage" {
   name          = each.key
   storage_class = "STANDARD"
   location      = var.region
-  iam           = {
+  iam = {
     "roles/storage.objectUser" = [
       "serviceAccount:${module.gitlab-sa.email}",
     ]

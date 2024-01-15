@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-output "postgresql_users" {
-  sensitive = true
-  value     = module.db.user_passwords
+# tfdoc:file:description Output files persistence to local filesystem.
+
+locals {
+  outputs_location = try(pathexpand(var.outputs_location), "")
+}
+
+resource "local_file" "tfvars" {
+  for_each        = var.outputs_location == null ? {} : local.ssl_certs
+  file_permission = "0644"
+  filename        = "${local.outputs_location}/ssl-certs/${each.key}"
+  content         = each.value
 }

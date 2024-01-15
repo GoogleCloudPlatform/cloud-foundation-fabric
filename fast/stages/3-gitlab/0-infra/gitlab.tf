@@ -31,9 +31,10 @@ locals {
     saml     = var.gitlab_config.saml
     hostname = var.gitlab_config.hostname
   })
-  self_signed_ssl_certs_required = fileexists("${path.module}/certs/${var.gitlab_config.hostname}.crt") && fileexists("${path.module}/certs/${var.gitlab_config.hostname}.key") ? false : true
-  gitlab_ssl_key = local.self_signed_ssl_certs_required ? local_file.gitlab_server_key.content : file("${path.module}/certs/${var.gitlab_config.hostname}.key")
-  gitlab_ssl_crt = local.self_signed_ssl_certs_required ? local_file.gitlab_server_crt.content : file("${path.module}/certs/${var.gitlab_config.hostname}.crt")
+  self_signed_ssl_certs_required = fileexists("${path.module}/certs/${var.gitlab_config.hostname}.crt") && fileexists("${path.module}/certs/${var.gitlab_config.hostname}.key") && fileexists("${path.module}/certs/${var.gitlab_config.hostname}.ca.crt") ? false : true
+  gitlab_ssl_key                 = local.self_signed_ssl_certs_required ? tls_private_key.gitlab_server_key.0.private_key_pem : file("${path.module}/certs/${var.gitlab_config.hostname}.key")
+  gitlab_ssl_crt                 = local.self_signed_ssl_certs_required ? tls_locally_signed_cert.gitlab_server_singed_cert.0.cert_pem : file("${path.module}/certs/${var.gitlab_config.hostname}.crt")
+  gitlab_ssl_ca_crt              = local.self_signed_ssl_certs_required ? tls_self_signed_cert.gitlab_ca_cert.0.cert_pem : file("${path.module}/certs/${var.gitlab_config.hostname}.ca.crt")
 }
 
 module "gitlab-sa" {
@@ -102,21 +103,23 @@ module "ilb" {
   region        = var.region
   name          = "ilb"
   service_label = "ilb"
-  vpc_config = {
+  vpc_config    = {
     network    = var.vpc_self_links.dev-spoke-0
     subnetwork = var.subnet_self_links.dev-spoke-0["${var.region}/gitlab"]
   }
   group_configs = {
     gitlab = {
-      zone = "${var.region}-b"
+      zone      = "${var.region}-b"
       instances = [
         module.gitlab-instance.self_link
       ]
     }
   }
-  backends = [{
-    group = module.ilb.groups.gitlab.self_link
-  }]
+  backends = [
+    {
+      group = module.ilb.groups.gitlab.self_link
+    }
+  ]
   health_check_config = {
     https = {
       port = 443
@@ -124,12 +127,14 @@ module "ilb" {
   }
 }
 
+# TODO we should move this into networking stage
+
 module "private-dns" {
-  source     = "../../../../modules/dns"
-  project_id = module.project.project_id
-  name       = "gitlab"
+  source      = "../../../../modules/dns"
+  project_id  = module.project.project_id
+  name        = "gitlab"
   zone_config = {
-    domain = "example.com."
+    domain  = "example.com."
     private = {
       client_networks = [var.vpc_self_links.dev-spoke-0]
     }

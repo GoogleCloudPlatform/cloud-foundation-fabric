@@ -12,11 +12,9 @@
 - [x] ILB / MIG
 - [x] HTTPS SSL
 - [x] Gitlab SSH on port 2222
-- [ ] Runners
 - [x] Check object store, use GCS wherever possible
 - [x] Cloud SQL HA
 - [ ] Memorystore HA?
-- [ ] WIF
 - [ ] DR
 
 ## Installation
@@ -104,9 +102,21 @@ At this time this stage can deal with SAML integration for both user
 authentication and provisioning, in order to setup SAML integration please
 provide the saml block on gitlab_config variable.
 
-### Google Workspace Setup
+### SAML Integration
 
-Setup of Google Workspace is documented in the official Gitlab documentation available at the following [link](https://docs.gitlab.com/ee/integration/saml.html#set-up-google-workspace) which are also reported below for simplicity.
+This section details how configure GitLab to act as a SAML service provider (
+SP). This allows GitLab to consume assertions from a SAML identity provider (
+IdP), such as Cloud Identity, to authenticate users. Please find instructions
+below for integration with:
+
+- [Google Workspace](#google-workspace-setup)
+
+#### Google Workspace Setup
+
+Setup of Google Workspace is documented in the official Gitlab documentation
+available at the
+following [link](https://docs.gitlab.com/ee/integration/saml.html#set-up-google-workspace)
+which are also reported below for simplicity.
 
 Create a custom SAML webapp following instructions available at the
 following [link](https://support.google.com/a/answer/6087519), providing these
@@ -128,29 +138,24 @@ Then setup the following SAML attribute mappings:
 | Basic Information > First name | first_name     |
 | Basic Information > Last name  | last_name      |
 
-After configuring the Google Workspace SAML application, record the following information:
+After configuring the Google Workspace SAML application, record the following
+information:
 
 | Value                  | Description                                                                                                                                                    |
 |------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | SSO URL                | Setup in gitlab_config.saml.sso_target_url variable                                                                                                            |
 | Certificate (download) | Setup in gitlab_config.saml.idp_cert_fingerprint (obtain value with the following command `openssl x509 -in <your_certificate.crt> -noout -fingerprint -sha1`) |
- 
 
-
-### SAML Integration
-
-This section details how configure GitLab to act as a SAML service provider (
-SP). This allows GitLab to consume assertions from a SAML identity provider (
-IdP), such as Cloud Identity, to authenticate users.
+### Others Identity Integration
 
 - [OpenID Connect OmniAuth](https://docs.gitlab.com/ee/administration/auth/oidc.html#configure-google)
 - [Google Secure LDAP](https://docs.gitlab.com/ee/administration/auth/ldap/google_secure_ldap.html)
 
-# Email
+## Email
 
 - [Gmail/Workspace](https://docs.gitlab.com/ee/administration/incoming_email.html#gmail)
 
-## Sendgrid integration
+### Sendgrid integration
 
 Use
 the [Google Cloud Marketplace](https://console.cloud.google.com/marketplace/details/sendgrid-app/sendgrid-email)
@@ -182,7 +187,7 @@ gitlab_config = {
 }
 ```
 
-# SSL Certificate Configuration
+## SSL Certificate Configuration
 
 This module provides flexibility in configuring SSL certificates for the server.
 You have two options:
@@ -190,8 +195,12 @@ You have two options:
 1. **Provide Your Own Certificates**: If you have existing SSL certificates, you
    can place them in the certs folder within the module's directory. The module
    will automatically detect and use them.
-   File Names: Ensure the files are named server.crt (for the certificate) and
-   server.key (for the private key).
+   File Names: Ensure the files are named ${gitlab_hostname}.crt (for the
+   certificate) and
+   gitlab_hostname.key (for the private key). Although it is not required in
+   this stage it is mandatory to also place inside the certs folder the server
+   CA certificate which is later use to secure HTTPS access from the Gitlab
+   runner. Name of the CA certificate should be: ${gitlab_hostname}.ca.crt
 2. **Use Automatically Generated Self-Signed Certificates**: If you don't
    provide certificates, the module will generate a self-signed certificate for
    immediate use.
@@ -209,7 +218,7 @@ For more information on how to configure HTTPS on Gitlab please refer to the
 original Gitlab documentation available at the
 following [link](https://docs.gitlab.com/omnibus/settings/ssl/#configure-https-manually).
 
-# Networking and scalability
+## Networking and scalability
 
 - [Load balancer](https://docs.gitlab.com/ee/administration/load_balancer.html)
 
@@ -219,13 +228,27 @@ following [link](https://docs.gitlab.com/omnibus/settings/ssl/#configure-https-m
 
 ## Setup
 
-Connect to squid-proxy for accessing gitlab instance:
+Connect to squid-proxy for accessing gitlab instance using the gcloud command
+available in the `ssh_to_bastion` terraform output.
 
-gcloud compute ssh squid-vm --project ${project} --zone europe-west8-b -- -L
-3128:127.0.0.1:3128 -N -q -f
+```bash
+terraform output ssh_to_bastion
+```
 
-Set as system proxy ip 127.0.0.1 and port 3128 and connect
-to https://gitlab.example.com
+A gcloud command like the following should be available
+
+```bash 
+gcloud compute ssh squid-vm --project ${project} --zone europe-west8-b -- -L 3128:127.0.0.1:3128 -N -q -f
+```
+
+Set as system proxy ip 127.0.0.1 and port 3128 and connect to Gitlab hostname https://gitlab.example.com.
+Use default admin password available in /run/gitlab/config/initial_root_password or reset admin password via the following command on the Docker container:
+
+```bash
+gitlab-rake “gitlab:password:reset”
+```
+
+Access Gitlab instance and proceed with stage [1-config](./../1-config).
 
 ## Reference and useful links
 
@@ -233,17 +256,6 @@ to https://gitlab.example.com
 - [`/etc/gitlab/gitlab.rb` template](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template)
 - [`/etc/gitlab/gitlab.rb` default options](https://docs.gitlab.com/ee/administration/package_information/defaults.html)
 
-## Ludo's config
-
-```hcl
-billing_account_id = "0189FA-E139FD-136A58"
-gitlab_config      = {
-  hostname = "gitlab.int.qix.it"
-}
-prefix      = "tf-playground-svpc"
-root_node   = "folders/210938489642"
-subnet_name = "gce"
-```
 
 ## Bruzz's config
 
@@ -261,7 +273,9 @@ gitlab_config = {
   }
   # ha_required = true
 }
-billing_account_id = "test"
+billing_account = {
+  id = "test"
+}
 host_project_ids   = {
   dev-spoke-0 = "test-spoke"
 }
