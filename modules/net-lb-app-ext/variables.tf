@@ -82,6 +82,12 @@ variable "https_proxy_config" {
   nullable = false
 }
 
+variable "mtls_policy" {
+  description = "id of the mTLS policy to use for the target proxy."
+  type        = string
+  default     = ""
+}
+
 variable "labels" {
   description = "Labels set on resources."
   type        = map(string)
