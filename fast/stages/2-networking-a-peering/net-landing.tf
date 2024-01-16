@@ -27,6 +27,7 @@ module "landing-project" {
     "dns.googleapis.com",
     "iap.googleapis.com",
     "networkmanagement.googleapis.com",
+    "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com"
   ]
   shared_vpc_host_config = {
@@ -34,10 +35,12 @@ module "landing-project" {
   }
   iam = {
     "roles/dns.admin" = compact([
-      try(local.service_accounts.project-factory-prod, null)
+      try(local.service_accounts.project-factory-prod, null),
+      try(local.service_accounts.gitlab, null)
     ])
     (local.custom_roles.service_project_network_admin) = compact([
-      try(local.service_accounts.project-factory-prod, null)
+      try(local.service_accounts.project-factory-prod, null),
+      try(local.service_accounts.gitlab, null)
     ])
   }
 }
@@ -58,6 +61,9 @@ module "landing-vpc" {
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
   }
+  psa_config = try(var.service_accounts.gitlab, null) != null ? {
+    ranges = { gitlab = "10.0.0.0/20" }
+  } : {}
 }
 
 module "landing-firewall" {

@@ -12,3 +12,11 @@ ingress:
       - protocol: tcp
         ports:
           - 12345
+  allow-proxy-to-gitlab-traffic:
+    description: "Allow traffic from squid to gitlab"
+    source_ranges:
+    - 10.64.1.0/24
+    rules:
+    - protocol: tcp
+      ports:
+      - 443

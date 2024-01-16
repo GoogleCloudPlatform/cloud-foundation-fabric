@@ -29,12 +29,12 @@ output "postgresql_users" {
 
 output "ssh_to_bastion" {
   description = "gcloud command to ssh bastion host proxy."
-  sensitive = true
-  value = "gcloud compute ssh ${module.squid-proxy-gitlab.squid_proxy_vm_name} --project ${module.project.project_id} --zone ${module.gitlab-instance.instance.zone} -- -L 3128:127.0.0.1:3128 -N -q -f"
+  sensitive   = true
+  value       = "gcloud compute ssh ${module.squid-proxy-gitlab.squid_proxy_vm_name} --project ${module.project.project_id} --zone ${module.gitlab-instance.instance.zone} -- -L 3128:127.0.0.1:3128 -N -q -f"
 }
 
 output "ssh_to_gitlab" {
   description = "gcloud command to ssh gitlab instance."
-  sensitive = true
-  value = "gcloud compute ssh ${module.gitlab-instance.instance.name} --project ${module.project.project_id} --zone  ${module.gitlab-instance.instance.zone} -- -L 8080:127.0.0.1:80 -L 2222:127.0.0.1:2222 -L 8443:127.0.0.1:443 -N -q -f"
+  sensitive   = true
+  value       = "gcloud compute ssh ${module.gitlab-instance.instance.name} --project ${module.project.project_id} --zone  ${module.gitlab-instance.instance.zone} -- -L 8080:127.0.0.1:80 -L 2222:127.0.0.1:2222 -L 8443:127.0.0.1:443 -N -q -f"
 }

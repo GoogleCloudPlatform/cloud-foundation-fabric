@@ -65,6 +65,13 @@ variable "cicd_repositories" {
       branch            = optional(string)
       identity_provider = optional(string)
     }))
+    # TODO we may need 2 or 3 repositories
+    gitlab = optional(object({
+      name              = string
+      type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
+    }))
     gke_dev = optional(object({
       name              = string
       type              = string
@@ -147,6 +154,7 @@ variable "fast_features" {
   description = "Selective control for top-level FAST features."
   type = object({
     data_platform   = optional(bool, false)
+    gitlab          = optional(bool, false)
     gke             = optional(bool, false)
     project_factory = optional(bool, false)
     sandbox         = optional(bool, false)

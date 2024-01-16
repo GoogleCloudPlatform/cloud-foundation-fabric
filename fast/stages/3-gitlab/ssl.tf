@@ -55,7 +55,7 @@ resource "tls_self_signed_cert" "gitlab_ca_cert" {
     }
   }
   validity_period_hours = 43800 //  1825 days or 5 years
-  allowed_uses          = [
+  allowed_uses = [
     "digital_signature",
     "cert_signing",
     "crl_signing",

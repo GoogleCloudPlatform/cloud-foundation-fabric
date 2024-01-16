@@ -72,6 +72,9 @@ module "landing-dns-priv-gcp" {
   recordsets = {
     "A localhost" = { records = ["127.0.0.1"] }
   }
+  iam = try(var.service_accounts.gitlab, null) != null ? {
+    "roles/dns.admin" = ["serviceAccount:${var.service_accounts.gitlab}"]
+  } : {}
 }
 
 # Google APIs via response policies

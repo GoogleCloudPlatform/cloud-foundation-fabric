@@ -50,9 +50,17 @@ variable "billing_account" {
   nullable = false
 }
 
+variable "folder_ids" {
+  # tfdoc:variable:source 1-resman
+  description = "Folder to be used for the gitlab resources in folders/nnnn format."
+  type = object({
+    gitlab = string
+  })
+}
+
 variable "gitlab_config" {
   type = object({
-    hostname = optional(string, "gitlab.example.com")
+    hostname = optional(string, "gitlab.gcp.example.com")
     mail = optional(object({
       enabled = optional(bool, false)
       sendgrid = optional(object({
@@ -67,39 +75,78 @@ variable "gitlab_config" {
       sso_target_url         = string
       name_identifier_format = optional(string, "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress")
     }), null)
-    ha_required = optional(bool, false)
+    ha_required  = optional(bool, false)
+    architecture = optional(string, "CENTRALIZED")
   })
   default = {}
+  validation {
+    condition     = var.gitlab_config.architecture == "CENTRALIZED" || var.gitlab_config.architecture == "DISTRIBUTED"
+    error_message = "Error in the provided architecture, only 'CENTRALIZED' or 'DISTRIBUTED' values are supported."
+  }
 }
 
 variable "host_project_ids" {
   type = object({
-    dev-spoke-0 = string
+    dev-spoke-0  = string
+    prod-landing = string
   })
+}
+
+variable "locations" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Optional locations for GCS, BigQuery, and logging buckets created here."
+  type = object({
+    bq      = string
+    gcs     = string
+    logging = string
+    pubsub  = list(string)
+  })
+  nullable = false
+}
+
+variable "outputs_location" {
+  description = "Path where providers and tfvars files for the following stages are written. Leave empty to disable."
+  type        = string
+  default     = null
 }
 
 variable "prefix" {
   type = string
 }
 
-variable "region" {
-  type    = string
-  default = "europe-west8"
+variable "regions" {
+  description = "Region definitions."
+  type = object({
+    primary   = string
+    secondary = string
+  })
+  default = {
+    primary   = "europe-west1"
+    secondary = "europe-west4"
+  }
 }
 
-variable "root_node" {
-  type = string
-}
-
-variable "subnet_name" {
-  type = string
+variable "service_accounts" {
+  # tfdoc:variable:source 1-resman
+  description = "Automation service accounts in name => email format."
+  type = object({
+    data-platform-dev    = string
+    data-platform-prod   = string
+    gitlab               = string
+    gke-dev              = string
+    gke-prod             = string
+    project-factory-dev  = string
+    project-factory-prod = string
+  })
+  default = null
 }
 
 variable "subnet_self_links" {
   # tfdoc:variable:source 2-networking
   description = "Shared VPC subnet self links."
   type = object({
-    dev-spoke-0 = map(string)
+    dev-spoke-0  = map(string)
+    prod-landing = map(string)
   })
   default = null
 }
@@ -108,25 +155,8 @@ variable "vpc_self_links" {
   # tfdoc:variable:source 2-networking
   description = "Shared VPC self links."
   type = object({
-    dev-spoke-0 = string
+    dev-spoke-0  = string
+    prod-landing = string
   })
   default = null
-}
-
-
-variable "project_id" {
-  description = "GCP project id."
-  type        = string
-}
-
-variable "project_create" {
-  description = "Create project instead of using an existing one."
-  type        = bool
-  default     = false
-}
-
-variable "outputs_location" {
-  description = "Path where providers and tfvars files for the following stages are written. Leave empty to disable."
-  type        = string
-  default     = null
 }

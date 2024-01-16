@@ -25,19 +25,16 @@ locals {
 }
 
 module "db" {
-  source            = "../../../../modules/cloudsql-instance"
+  source            = "../../../modules/cloudsql-instance"
   project_id        = module.project.project_id
-  region            = var.region
-  name              = "gitlab"
+  region            = var.regions.primary
+  name              = "gitlab-0"
   availability_type = var.gitlab_config.ha_required ? "REGIONAL" : "ZONAL"
   network_config = {
-    authorized_networks = {
-      gcp  = "10.0.0.0/8"
-      home = "192.168.0.0/16"
-    }
+    authorized_networks = {}
     connectivity = {
       psa_config = {
-        private_network = var.vpc_self_links.dev-spoke-0
+        private_network = var.vpc_self_links.prod-landing
       }
     }
   }
@@ -57,55 +54,29 @@ module "db" {
 
 resource "google_redis_instance" "cache" {
   project            = module.project.project_id
-  region             = var.region
+  region             = var.regions.primary
   name               = "gitlab-0"
   tier               = "BASIC"
   memory_size_gb     = 1
-  authorized_network = var.vpc_self_links.dev-spoke-0
+  authorized_network = var.vpc_self_links.prod-landing
   connect_mode       = "PRIVATE_SERVICE_ACCESS"
 
   redis_version = "REDIS_6_X"
-  display_name  = "Terraform Test Instance"
+  display_name  = "Gitlab Redis Instance"
   persistence_config {
     persistence_mode    = "RDB"
     rdb_snapshot_period = "TWELVE_HOURS"
   }
 }
 
-# Filestore is not supported, use gitaly for HA deployments
-#resource "google_filestore_instance" "nfs" {
-#  project = module.project.project_id
-#  name     = "gitlab-nfs"
-#  location = "${var.region}-b"
-#  tier     = "STANDARD"
-#
-#  file_shares {
-#    capacity_gb = 1024
-#    name        = "gitlab"
-#
-#    nfs_export_options {
-##      ip_ranges   = [module.gitlab-instance.internal_ip]
-#      ip_ranges   = ["10.0.0.0/8"]
-#      access_mode = "READ_WRITE"
-#      squash_mode = "NO_ROOT_SQUASH"
-#    }
-#  }
-#
-#  networks {
-#    network      = "gitlab"
-#    modes        = ["MODE_IPV4"]
-#    connect_mode = "DIRECT_PEERING"
-#  }
-#}
-
 module "gitlab_object_storage" {
-  source        = "../../../../modules/gcs"
+  source        = "../../../modules/gcs"
   for_each      = toset(local.gitlab_buckets)
   project_id    = module.project.project_id
   prefix        = var.prefix
   name          = each.key
   storage_class = "STANDARD"
-  location      = var.region
+  location      = var.locations.gcs
   iam = {
     "roles/storage.objectUser" = [
       "serviceAccount:${module.gitlab-sa.email}",

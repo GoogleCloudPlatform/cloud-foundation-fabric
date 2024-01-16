@@ -16,7 +16,7 @@
 
 
 ################################################################################
-##                               Squid resources                               #
+##                               SQUID RESOURCES                               #
 ################################################################################
 
 locals {
@@ -24,7 +24,7 @@ locals {
 }
 
 module "service-account-squid" {
-  source            = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v22.0.0"
+  source            = "../../../../modules/iam-service-account"
   project_id        = var.project_id
   name              = "svc-squid"
   iam_project_roles = {
@@ -36,7 +36,7 @@ module "service-account-squid" {
 }
 
 module "squid-vm" {
-  source             = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/compute-vm?ref=v22.0.0"
+  source             = "../../../../modules/compute-vm"
   project_id         = var.project_id
   zone               = "${var.region}-b"
   name               = "squid-vm"
@@ -54,8 +54,9 @@ module "squid-vm" {
       image = "debian-cloud/debian-11"
     }
   }
-  service_account        = module.service-account-squid.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account        = {
+    email = module.service-account-squid.email
+  }
   metadata               = {
     startup-script = <<EOF
 apt-get update

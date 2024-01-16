@@ -49,6 +49,7 @@ module "organization" {
       iam         = {}
       values = {
         data       = {}
+        gitlab     = {}
         gke        = {}
         networking = {}
         sandbox    = {}

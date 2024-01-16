@@ -1,0 +1,13 @@
+gitlab_config = {
+  hostname = "gitlab.gcp.example.com"
+  mail = {
+    sendgrid = {
+      api_key = "test"
+    }
+  }
+  saml = {
+    idp_cert_fingerprint = "67:90:96:46:E2:10:2D:92:AE:24:7E:24:07:04:6E:8D:DB:89:7F:14"
+    sso_target_url       = "https://accounts.google.com/o/saml2/idp?idpid=C03elhu2c"
+  }
+  # ha_required = true
+}

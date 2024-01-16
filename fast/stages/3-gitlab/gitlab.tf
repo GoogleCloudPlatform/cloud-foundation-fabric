@@ -17,12 +17,12 @@
 locals {
   gitlab_rb = templatefile("assets/config.rb", {
     project_id = module.project.project_id
-    cloudsql   = {
+    cloudsql = {
       host     = module.db.instances.primary.private_ip_address
       username = "sqlserver"
       password = module.db.user_passwords.gitlab
     }
-    mail  = var.gitlab_config.mail
+    mail = var.gitlab_config.mail
     redis = {
       host = google_redis_instance.cache.host
       port = google_redis_instance.cache.port
@@ -38,11 +38,11 @@ locals {
 }
 
 module "gitlab-sa" {
-  source       = "../../../../modules/iam-service-account"
+  source       = "../../../modules/iam-service-account"
   project_id   = module.project.project_id
   name         = "gitlab-0"
   display_name = "Gitlab instance service account"
-  iam          = {
+  iam = {
     "roles/iam.serviceAccountTokenCreator" = [module.gitlab-sa.iam_email]
   }
   iam_project_roles = {
@@ -55,12 +55,12 @@ module "gitlab-sa" {
 }
 
 module "gitlab-instance" {
-  source        = "../../../../modules/compute-vm"
+  source        = "../../../modules/compute-vm"
   project_id    = module.project.project_id
-  zone          = "${var.region}-b"
+  zone          = "${var.regions.primary}-b"
   name          = "gitlab-0"
   instance_type = "e2-standard-2"
-  boot_disk     = {
+  boot_disk = {
     initialize_params = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
       type  = "pd-balanced"
@@ -68,20 +68,20 @@ module "gitlab-instance" {
   }
   attached_disks = [
     {
-      name    = "data"
-      size    = 40
+      name = "data"
+      size = 40
       options = {
-        replica_zone = "${var.region}-c"
+        replica_zone = "${var.regions.primary}-c"
       }
     }
   ]
   network_interfaces = [
     {
-      network    = var.vpc_self_links.dev-spoke-0
-      subnetwork = var.subnet_self_links.dev-spoke-0["${var.region}/gitlab"]
+      network    = var.vpc_self_links.prod-landing
+      subnetwork = var.subnet_self_links.prod-landing["${var.regions.primary}/landing-gitlab-server-ew1"]
     }
   ]
-  tags     = ["http-server", "https-server", "ssh"]
+  tags = ["http-server", "https-server", "ssh"]
   metadata = {
     user-data = templatefile("assets/cloud-config.yaml", {
       gitlab_config      = var.gitlab_config
@@ -98,18 +98,18 @@ module "gitlab-instance" {
 }
 
 module "ilb" {
-  source        = "../../../../modules/net-lb-int"
+  source        = "../../../modules/net-lb-int"
   project_id    = module.project.project_id
-  region        = var.region
+  region        = var.regions.primary
   name          = "ilb"
   service_label = "ilb"
-  vpc_config    = {
-    network    = var.vpc_self_links.dev-spoke-0
-    subnetwork = var.subnet_self_links.dev-spoke-0["${var.region}/gitlab"]
+  vpc_config = {
+    network    = var.vpc_self_links.prod-landing
+    subnetwork = var.subnet_self_links.prod-landing["${var.regions.primary}/landing-gitlab-server-ew1"]
   }
   group_configs = {
     gitlab = {
-      zone      = "${var.region}-b"
+      zone = "${var.regions.primary}-b"
       instances = [
         module.gitlab-instance.self_link
       ]
@@ -129,17 +129,20 @@ module "ilb" {
 
 # TODO we should move this into networking stage
 
-module "private-dns" {
-  source      = "../../../../modules/dns"
-  project_id  = module.project.project_id
-  name        = "gitlab"
-  zone_config = {
-    domain  = "example.com."
-    private = {
-      client_networks = [var.vpc_self_links.dev-spoke-0]
-    }
-  }
-  recordsets = {
-    "A gitlab" = { records = [module.ilb.forwarding_rule_addresses[""]] }
-  }
+data "google_dns_managed_zone" "landing_dns_priv_gcp" {
+  project = var.host_project_ids.prod-landing
+  name    = "gcp-example-com"
+}
+
+resource "google_dns_record_set" "gitlab_server" {
+  project = var.host_project_ids.prod-landing
+  name    = "gitlab.${data.google_dns_managed_zone.landing_dns_priv_gcp.dns_name}"
+  type    = "A"
+  ttl     = 300
+
+  managed_zone = data.google_dns_managed_zone.landing_dns_priv_gcp.name
+
+  rrdatas = [
+    module.ilb.forwarding_rule_addresses[""]
+  ]
 }
