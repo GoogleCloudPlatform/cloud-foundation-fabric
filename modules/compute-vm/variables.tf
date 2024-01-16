@@ -35,7 +35,7 @@ variable "attached_disk_defaults" {
 }
 
 variable "attached_disks" {
-  description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
+  description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'attach', and null."
   type = list(object({
     name        = string
     device_name = optional(string)

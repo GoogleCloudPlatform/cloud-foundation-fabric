@@ -142,7 +142,7 @@ resource "google_compute_disk_resource_policy_attachment" "attached" {
   )
   disk = (
     each.value.source_type == "attach"
-    ? each.value.source
+    ? element(split("/", each.value.source), length(split("/", each.value.source)) - 1)
     : google_compute_disk.disks[each.key].name
   )
   depends_on = [
@@ -164,7 +164,7 @@ resource "google_compute_region_disk_resource_policy_attachment" "attached" {
   )
   disk = (
     each.value.source_type == "attach"
-    ? each.value.source
+    ? element(split("/", each.value.source), length(split("/", each.value.source)) - 1)
     : google_compute_region_disk.disks[each.key].name
   )
   depends_on = [
