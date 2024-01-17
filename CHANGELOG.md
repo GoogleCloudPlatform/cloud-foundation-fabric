@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#1976](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1976)] Network dashboard - fixing 2 bugs: overriden variable and page token … ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-01-15 13:28:17+00:00 -->
+- [[#1819](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1819)] Serverless networking program ([juliodiez](https://github.com/juliodiez)) <!-- 2024-01-05 21:03:34+00:00 -->
+- [[#1952](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1952)] Composer blueprints improvements ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-29 11:09:16+00:00 -->
+- [[#1939](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1939)] Networking Sandbox Blueprint ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-21 16:50:39+00:00 -->
+- [[#1942](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1942)] Blueprints naming convention update ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-12-21 16:02:25+00:00 -->
 - [[#1936](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1936)] Move squid to __need_fixing ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-19 14:27:37+00:00 -->
 - [[#1931](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1931)] Quota monitor blueprint: don't fail quota fetch on deleted project ([ludoo](https://github.com/ludoo)) <!-- 2023-12-15 19:20:49+00:00 -->
 - [[#1930](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1930)] Allow granting network user role on host project from project module and factory ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-12-15 13:39:21+00:00 -->
@@ -22,6 +27,13 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1819](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1819)] Serverless networking program ([juliodiez](https://github.com/juliodiez)) <!-- 2024-01-05 21:03:34+00:00 -->
+- [[#1959](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1959)] net-lb-app-ext example fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-01-05 13:38:30+00:00 -->
+- [[#1899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1899)] Read-only service accounts for automation and CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2023-12-27 11:33:16+00:00 -->
+- [[#1902](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1902)] First version of Cloud Run module v2 ([juliodiez](https://github.com/juliodiez)) <!-- 2023-12-26 18:19:16+00:00 -->
+- [[#1949](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1949)] Update REFERENCES.md ([juliodiez](https://github.com/juliodiez)) <!-- 2023-12-26 10:57:15+00:00 -->
+- [[#1939](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1939)] Networking Sandbox Blueprint ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-21 16:50:39+00:00 -->
+- [[#1942](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1942)] Blueprints naming convention update ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-12-21 16:02:25+00:00 -->
 - [[#1936](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1936)] Move squid to __need_fixing ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-19 14:27:37+00:00 -->
 - [[#1890](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1890)] Use TFTEST_E2E_ instead of TF_VAR variables ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-30 19:03:59+00:00 -->
 - [[#1871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1871)] Added workstation-cluster module ([apichick](https://github.com/apichick)) <!-- 2023-11-30 06:15:37+00:00 -->
@@ -29,12 +41,36 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1967](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1967)] Add locations on terraform.tfvars.sample for bootstrap stage ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-01-09 07:32:28+00:00 -->
+- [[#1899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1899)] Read-only service accounts for automation and CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2023-12-27 11:33:16+00:00 -->
+- [[#1945](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1945)] Fix GitHub CI/CD provider ([ludoo](https://github.com/ludoo)) <!-- 2023-12-21 17:10:50+00:00 -->
+- [[#1943](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1943)] Revert "Add debug step for JWT tokens" ([ludoo](https://github.com/ludoo)) <!-- 2023-12-21 13:50:28+00:00 -->
+- [[#1940](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1940)] Add kernels.googleusercontent.com zone in dns response policy ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2023-12-20 10:18:11+00:00 -->
+- [[#1938](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1938)] Add debug step for JWT tokens ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-20 08:26:55+00:00 -->
 - [[#1932](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1932)] Simplify organization tags.tf locals ([juliocc](https://github.com/juliocc)) <!-- 2023-12-18 16:09:22+00:00 -->
 - [[#1912](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1912)] **incompatible change:** Custom role factories for organization and project modules ([ludoo](https://github.com/ludoo)) <!-- 2023-12-11 14:16:39+00:00 -->
 - [[#1900](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1900)] Patch Github actions ci google-github-actions/auth@v0 --> v2 ([ibrahimparvez2](https://github.com/ibrahimparvez2)) <!-- 2023-12-04 12:16:02+00:00 -->
 
 ### MODULES
 
+- [[#1978](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1978)] Fix identity_type ([viliampucik](https://github.com/viliampucik)) <!-- 2024-01-15 20:40:06+00:00 -->
+- [[#1970](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1970)] Add support for service_external_ips_config to GKE cluster modules ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-01-12 10:50:54+00:00 -->
+- [[#1968](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1968)] use provided SA for cloud function v2 trigger ([juliocc](https://github.com/juliocc)) <!-- 2024-01-08 16:39:01+00:00 -->
+- [[#1966](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1966)] Support for ANY_USER_ACCOUNT in module vpc-sc egress rule. ([xjantoth](https://github.com/xjantoth)) <!-- 2024-01-08 13:23:07+00:00 -->
+- [[#1964](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1964)] Use fixtures in net-lb-ext ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-06 16:09:49+00:00 -->
+- [[#1958](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1958)] Create bigtable service identity with project if api is enabled ([steenblik](https://github.com/steenblik)) <!-- 2024-01-06 15:38:08+00:00 -->
+- [[#1963](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1963)] net-address end-to-end tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-06 13:02:52+00:00 -->
+- [[#1962](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1962)] Add end-to-end tests for net-lb-app-ext-regional ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-06 11:05:53+00:00 -->
+- [[#1892](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1892)] New module for external regional application load balancer ([juliocc](https://github.com/juliocc)) <!-- 2024-01-05 15:59:27+00:00 -->
+- [[#1960](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1960)] Add PNA support to Service Directory module ([stribioli](https://github.com/stribioli)) <!-- 2024-01-05 15:19:33+00:00 -->
+- [[#1957](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1957)] Add e2e test for net_lb_app_ext module ([andybubu](https://github.com/andybubu)) <!-- 2024-01-05 09:02:23+00:00 -->
+- [[#1956](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1956)] Support CMEK encryption on Bigtable instances. ([steenblik](https://github.com/steenblik)) <!-- 2024-01-05 08:29:37+00:00 -->
+- [[#1902](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1902)] First version of Cloud Run module v2 ([juliodiez](https://github.com/juliodiez)) <!-- 2023-12-26 18:19:16+00:00 -->
+- [[#1944](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1944)] Dns e2e ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2023-12-23 10:29:32+00:00 -->
+- [[#1948](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1948)] Fix GCVE network policy ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-22 10:29:44+00:00 -->
+- [[#1947](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1947)] GCVE: add network policy configuration ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-22 10:02:12+00:00 -->
+- [[#1946](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1946)] Minor fix to GCVE module readme ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-21 17:29:30+00:00 -->
+- [[#1941](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1941)] Use new resources in GCVE module, bump provider versions ([LucaPrete](https://github.com/LucaPrete)) <!-- 2023-12-21 13:23:38+00:00 -->
 - [[#1936](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1936)] Move squid to __need_fixing ([sruffilli](https://github.com/sruffilli)) <!-- 2023-12-19 14:27:37+00:00 -->
 - [[#1935](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1935)] E2E tests fixes ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-19 10:01:03+00:00 -->
 - [[#1933](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1933)] Add project-scoped secure tags ([juliocc](https://github.com/juliocc)) <!-- 2023-12-18 17:24:06+00:00 -->
@@ -70,6 +106,12 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1961](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1961)] Use zones b and c for MIG fixture ([juliocc](https://github.com/juliocc)) <!-- 2024-01-05 15:02:12+00:00 -->
+- [[#1955](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1955)] Add version check to tools/lint.sh ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-30 08:09:10+00:00 -->
+- [[#1914](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1914)] Allow per-module terraform fixtures ([juliocc](https://github.com/juliocc)) <!-- 2023-12-29 09:43:44+00:00 -->
+- [[#1953](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1953)] Fix variable region ([andybubu](https://github.com/andybubu)) <!-- 2023-12-28 14:04:15+00:00 -->
+- [[#1950](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1950)] Add version check ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-27 07:40:23+00:00 -->
+- [[#1937](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1937)] Fix always succeding test ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-21 11:01:08+00:00 -->
 - [[#1932](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1932)] Simplify organization tags.tf locals ([juliocc](https://github.com/juliocc)) <!-- 2023-12-18 16:09:22+00:00 -->
 - [[#1890](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1890)] Use TFTEST_E2E_ instead of TF_VAR variables ([wiktorn](https://github.com/wiktorn)) <!-- 2023-11-30 19:03:59+00:00 -->
 

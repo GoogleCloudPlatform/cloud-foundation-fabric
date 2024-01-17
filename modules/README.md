@@ -50,6 +50,7 @@ These modules are used in the examples included in this repository. If you are u
 - [External Passthrough Network Load Balancer](./net-lb-ext)
 - [External Regional Application Load Balancer](./net-lb-app-ext-regional/)
 - [Internal Application Load Balancer](./net-lb-app-int)
+- [Cross-region Internal Application Load Balancer](./net-lb-app-int-cross-region)
 - [Internal Passthrough Network Load Balancer](./net-lb-int)
 - [Internal Proxy Network Load Balancer](./net-lb-proxy-int)
 - [NAT](./net-cloudnat)
