@@ -69,6 +69,24 @@ variable "subnet" {
   }
 }
 
+variable "subnet1" {
+  default = {
+    name      = "subnet_name"
+    region    = "subnet_region"
+    cidr      = "subnet_cidr"
+    self_link = "subnet_self_link"
+  }
+}
+
+variable "subnet2" {
+  default = {
+    name      = "subnet_name"
+    region    = "subnet_region"
+    cidr      = "subnet_cidr"
+    self_link = "subnet_self_link"
+  }
+}
+
 variable "vpc" {
   default = {
     name      = "vpc-name"
