@@ -77,6 +77,7 @@ variable "https_proxy_config" {
     certificate_map = optional(string)
     quic_override   = optional(string)
     ssl_policy      = optional(string)
+    mtls_policy     = optional(string) # id of the mTLS policy to use for the target proxy.
   })
   default  = {}
   nullable = false

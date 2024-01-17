@@ -43,9 +43,9 @@ def _handle_discovery(resources, response, data):
       yield Resource('folders', name, {'name': result['displayName']})
     elif asset_type == 'Project':
       number = result['project'].split('/')[1]
-      data = {'number': number, 'project_id': name}
-      yield Resource('projects', name, data)
-      yield Resource('projects:number', number, data)
+      data_proj = {'number': number, 'project_id': name}
+      yield Resource('projects', name, data_proj)
+      yield Resource('projects:number', number, data_proj)
     else:
       LOGGER.info(f'unknown resource {name}')
   next_url = parse_page_token(data, response.request.url)
