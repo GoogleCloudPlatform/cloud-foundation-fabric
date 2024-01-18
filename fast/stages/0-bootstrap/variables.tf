@@ -84,10 +84,12 @@ variable "custom_roles" {
 }
 
 variable "factories_config" {
-  description = "Configuration for the organization policies factory."
+  description = "Configuration for the resource factories or external data."
   type = object({
-    custom_roles = optional(string, "data/custom-roles")
-    org_policy   = optional(string, "data/org-policies")
+    checklist_data    = optional(string)
+    checklist_org_iam = optional(string)
+    custom_roles      = optional(string, "data/custom-roles")
+    org_policy        = optional(string, "data/org-policies")
   })
   nullable = false
   default  = {}
@@ -136,10 +138,17 @@ variable "group_iam" {
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
-  type        = map(string)
+  type = object({
+    gcp-billing-admins      = string
+    gcp-devops              = string
+    gcp-network-admins      = string
+    gcp-organization-admins = string
+    gcp-security-admins     = string
+    gcp-support             = string
+  })
   default = {
-    gcp-billing-admins      = "gcp-billing-admins",
-    gcp-devops              = "gcp-devops",
+    gcp-billing-admins      = "gcp-billing-admins"
+    gcp-devops              = "gcp-devops"
     gcp-network-admins      = "gcp-network-admins"
     gcp-organization-admins = "gcp-organization-admins"
     gcp-security-admins     = "gcp-security-admins"

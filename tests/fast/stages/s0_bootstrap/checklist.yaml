@@ -1,0 +1,98 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.log-export-logbucket["audit-logs"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: audit-logs-audit-logs
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: europe-west1
+    locked: null
+    project: fast-prod-audit-logs-0
+    retention_days: 30
+  module.log-export-logbucket["vpc-sc"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: audit-logs-vpc-sc
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: europe-west1
+    locked: null
+    project: fast-prod-audit-logs-0
+    retention_days: 30
+  module.log-export-logbucket["workspace-audit-logs"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: audit-logs-workspace-audit-logs
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: europe-west1
+    locked: null
+    project: fast-prod-audit-logs-0
+    retention_days: 30
+  module.organization.google_organization_iam_binding.authoritative["roles/securitycenter.admin"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    - group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/securitycenter.admin
+  module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
+    condition: []
+    members:
+    - group:gcp-devops@fast.example.com
+    - group:gcp-network-admins@fast.example.com
+    - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/resourcemanager.folderViewer
+  ? module.organization.google_organization_iam_member.bindings["roles/compute.viewer-group:gcp-security-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/compute.viewer
+  ? module.organization.google_organization_iam_member.bindings["roles/container.viewer-group:gcp-security-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/container.viewer
+  ? module.organization.google_organization_iam_member.bindings["roles/monitoring.admin-group:gcp-monitoring-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-monitoring-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/monitoring.admin
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_default_service_account: 3
+  google_logging_organization_sink: 3
+  google_logging_project_bucket_config: 3
+  google_org_policy_policy: 13
+  google_organization_iam_binding: 23
+  google_organization_iam_custom_role: 6
+  google_organization_iam_member: 35
+  google_project: 3
+  google_project_iam_binding: 19
+  google_project_iam_member: 6
+  google_project_service: 29
+  google_project_service_identity: 3
+  google_service_account: 4
+  google_service_account_iam_binding: 2
+  google_storage_bucket: 3
+  google_storage_bucket_iam_binding: 2
+  google_storage_bucket_iam_member: 4
+  google_storage_bucket_object: 7
+  google_storage_project_service_account: 3
+  google_tags_tag_key: 1
+  google_tags_tag_value: 1
+  modules: 15
+  resources: 174
