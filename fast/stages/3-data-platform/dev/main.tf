@@ -23,9 +23,11 @@ module "data-platform" {
   data_catalog_tags   = var.data_catalog_tags
   project_config = {
     billing_account_id = var.billing_account.id
+    project_create     = var.project_config.project_create
     parent             = var.folder_ids.data-platform-dev
+    project_ids        = var.project_config.project_ids
   }
-  groups   = var.groups-dp
+  groups   = var.groups_dp
   location = var.location
   network_config = {
     host_project      = var.host_project_ids.dev-spoke-0

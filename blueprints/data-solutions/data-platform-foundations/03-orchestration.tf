@@ -61,7 +61,7 @@ module "orch-project" {
   source          = "../../../modules/project"
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
-  project_create  = var.project_config.billing_account_id != null
+  project_create  = var.project_config.project_create
   prefix          = local.use_projects ? null : var.prefix
   name = (
     local.use_projects
@@ -162,8 +162,8 @@ module "orch-cs-df-template" {
   project_id     = module.orch-project.project_id
   prefix         = var.prefix
   name           = "orc-cs-df-template"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = !var.deletion_protection
 }
@@ -173,8 +173,8 @@ module "orch-cs-build-staging" {
   project_id     = module.orch-project.project_id
   prefix         = var.prefix
   name           = "orc-cs-build-staging"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = !var.deletion_protection
 }
