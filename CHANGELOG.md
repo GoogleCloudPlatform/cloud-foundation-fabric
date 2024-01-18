@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#1981](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1981)] Added Cross-region internal application load balancer module ([apichick](https://github.com/apichick)) <!-- 2024-01-16 17:10:08+00:00 -->
 - [[#1819](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1819)] Serverless networking program ([juliodiez](https://github.com/juliodiez)) <!-- 2024-01-05 21:03:34+00:00 -->
 - [[#1959](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1959)] net-lb-app-ext example fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-01-05 13:38:30+00:00 -->
 - [[#1899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1899)] Read-only service accounts for automation and CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2023-12-27 11:33:16+00:00 -->
@@ -41,6 +42,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#1969](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1969)] Integrate checklist data in FAST ([ludoo](https://github.com/ludoo)) <!-- 2024-01-18 04:45:30+00:00 -->
 - [[#1967](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1967)] Add locations on terraform.tfvars.sample for bootstrap stage ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-01-09 07:32:28+00:00 -->
 - [[#1899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1899)] Read-only service accounts for automation and CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2023-12-27 11:33:16+00:00 -->
 - [[#1945](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1945)] Fix GitHub CI/CD provider ([ludoo](https://github.com/ludoo)) <!-- 2023-12-21 17:10:50+00:00 -->
@@ -53,6 +55,10 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#1979](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1979)] feat: enable mtls on external application application load balancer ([Tazminia](https://github.com/Tazminia)) <!-- 2024-01-17 06:24:54+00:00 -->
+- [[#1982](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1982)] Add resource manager tags support for instance template ([LucaPrete](https://github.com/LucaPrete)) <!-- 2024-01-16 17:40:15+00:00 -->
+- [[#1981](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1981)] Added Cross-region internal application load balancer module ([apichick](https://github.com/apichick)) <!-- 2024-01-16 17:10:08+00:00 -->
+- [[#1980](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1980)] Proper validation of empty string value in identity_type ([viliampucik](https://github.com/viliampucik)) <!-- 2024-01-16 09:28:30+00:00 -->
 - [[#1978](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1978)] Fix identity_type ([viliampucik](https://github.com/viliampucik)) <!-- 2024-01-15 20:40:06+00:00 -->
 - [[#1970](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1970)] Add support for service_external_ips_config to GKE cluster modules ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-01-12 10:50:54+00:00 -->
 - [[#1968](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1968)] use provided SA for cloud function v2 trigger ([juliocc](https://github.com/juliocc)) <!-- 2024-01-08 16:39:01+00:00 -->
@@ -106,6 +112,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1985](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1985)] Better error reporting when missing setup for E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-17 20:34:20+00:00 -->
 - [[#1961](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1961)] Use zones b and c for MIG fixture ([juliocc](https://github.com/juliocc)) <!-- 2024-01-05 15:02:12+00:00 -->
 - [[#1955](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1955)] Add version check to tools/lint.sh ([wiktorn](https://github.com/wiktorn)) <!-- 2023-12-30 08:09:10+00:00 -->
 - [[#1914](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1914)] Allow per-module terraform fixtures ([juliocc](https://github.com/juliocc)) <!-- 2023-12-29 09:43:44+00:00 -->
