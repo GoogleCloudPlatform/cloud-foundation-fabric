@@ -142,6 +142,15 @@ variable "custom_roles" {
   default = null
 }
 
+variable "factories_config" {
+  description = "Configuration for the resource factories or external data."
+  type = object({
+    checklist_data = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "fast_features" {
   # tfdoc:variable:source 0-0-bootstrap
   description = "Selective control for top-level FAST features."
@@ -161,9 +170,11 @@ variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
   type = object({
-    gcp-devops          = optional(string)
-    gcp-network-admins  = optional(string)
-    gcp-security-admins = optional(string)
+    gcp-billing-admins      = optional(string)
+    gcp-devops              = optional(string)
+    gcp-network-admins      = optional(string)
+    gcp-organization-admins = optional(string)
+    gcp-security-admins     = optional(string)
   })
   default  = {}
   nullable = false

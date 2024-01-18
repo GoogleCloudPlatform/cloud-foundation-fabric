@@ -143,7 +143,7 @@ module "automation-tf-output-gcs" {
   project_id    = module.automation-project.project_id
   name          = "iac-core-outputs-0"
   prefix        = local.prefix
-  location      = var.locations.gcs
+  location      = local.locations.gcs
   storage_class = local.gcs_storage_class
   versioning    = true
   depends_on    = [module.organization]
@@ -156,7 +156,7 @@ module "automation-tf-bootstrap-gcs" {
   project_id    = module.automation-project.project_id
   name          = "iac-core-bootstrap-0"
   prefix        = local.prefix
-  location      = var.locations.gcs
+  location      = local.locations.gcs
   storage_class = local.gcs_storage_class
   versioning    = true
   depends_on    = [module.organization]
@@ -211,7 +211,7 @@ module "automation-tf-resman-gcs" {
   project_id    = module.automation-project.project_id
   name          = "iac-core-resman-0"
   prefix        = local.prefix
-  location      = var.locations.gcs
+  location      = local.locations.gcs
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {

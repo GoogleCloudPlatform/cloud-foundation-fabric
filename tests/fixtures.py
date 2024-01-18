@@ -127,12 +127,10 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
     q = collections.deque([plan.root_module])
     while q:
       e = q.popleft()
-
       if 'type' in e:
         counts[e['type']] += 1
       if 'values' in e:
         values[e['address']] = e['values']
-
       for x in e.get('resources', []):
         counts['resources'] += 1
         q.append(x)
@@ -198,6 +196,8 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
     # - put the values coming from user's inventory the right
     #   side of any comparison operators.
     # - include a descriptive error message to the assert
+    # print(yaml.dump({'values': summary.values}))
+    # print(yaml.dump({'counts': summary.counts}))
 
     if 'values' in inventory:
       validate_plan_object(inventory['values'], summary.values, relative_path,
@@ -234,7 +234,6 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
         if _buffer:
           print(yaml.dump(_buffer))
         raise
-
   return summary
 
 
