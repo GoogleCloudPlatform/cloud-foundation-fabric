@@ -219,17 +219,6 @@ variable "prefix" {
   }
 }
 
-variable "project_services" {
-  description = "List of core services enabled on all projects."
-  type        = list(string)
-  default = [
-    "cloudresourcemanager.googleapis.com",
-    "iam.googleapis.com",
-    "serviceusage.googleapis.com",
-    "stackdriver.googleapis.com"
-  ]
-}
-
 variable "project_config" {
   description = "Provide projects configuration."
   type = object({
@@ -248,6 +237,17 @@ variable "project_config" {
     )
   })
   default = {}
+}
+
+variable "project_services" {
+  description = "List of core services enabled on all projects."
+  type        = list(string)
+  default = [
+    "cloudresourcemanager.googleapis.com",
+    "iam.googleapis.com",
+    "serviceusage.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
 }
 
 variable "project_suffix" {
