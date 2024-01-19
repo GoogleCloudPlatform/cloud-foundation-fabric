@@ -14,8 +14,8 @@
 
 #!/bin/bash
 
-GITLAB_CA_CERT_NAME=${gitlab_ca_cert_name}
 GITLAB_URL=https://${gitlab_hostname}
+GITLAB_RUNNER_CONFIG=${gitlab_runner_config}
 
 GL_NAME=$(curl 169.254.169.254/computeMetadata/v1/instance/name --header "Metadata-Flavor:Google")
 GL_EXECUTOR=$(curl 169.254.169.254/computeMetadata/v1/instance/attributes/gl_executor --header "Metadata-Flavor:Google")
@@ -24,8 +24,8 @@ apt update
 curl --location "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | bash
 
 # Fetch Gitlab Server SSL Private and public keys
-echo "${gitlab_ca_cert}" | base64 -d -w0 >/tmp/$GITLAB_CA_CERT_NAME
-cp -f /tmp/$GITLAB_CA_CERT_NAME /usr/local/share/ca-certificates/
+echo "${gitlab_ca_cert}" | base64 -d -w0 >/tmp/ca.crt
+cp -f /tmp/ca.crt /usr/local/share/ca-certificates/
 update-ca-certificates
 
 # Install Docker
@@ -41,10 +41,13 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 apt-get update
 apt-get install -yq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+# setup new gitlab runner config
+echo $GITLAB_RUNNER_CONFIG | base64 -d > /etc/gitlab-runner/config.toml
+
 # Install Gitlab Runner
 apt install -y gitlab-runner
 gitlab-runner register --non-interactive --name="$GL_NAME" \
-  --url="$GITLAB_URL" --token="${token}" \
+  --url="$GITLAB_URL" --token="${token}" --template-config="/etc/gitlab-runner/config.toml"
   --request-concurrency="12" --executor="docker" \
   --docker-image="alpine:latest"
 systemctl restart gitlab-runner

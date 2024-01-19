@@ -17,6 +17,7 @@
 locals {
   network_repo_files = fileset("${path.module}/../../2-networking-a-peering", "*")
   bootstrap_repo_files = fileset("${path.module}/../../0-bootstrap", "*")
+
 }
 
 resource "gitlab_group" "admins" {

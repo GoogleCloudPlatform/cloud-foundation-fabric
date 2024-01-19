@@ -20,11 +20,11 @@
 variable "automation" {
   # tfdoc:variable:source 0-bootstrap
   description = "Automation resources created by the bootstrap stage."
-  type = object({
-    outputs_bucket          = string
-    project_id              = string
-    project_number          = string
-    federated_identity_pool = string
+  type        = object({
+    outputs_bucket               = string
+    project_id                   = string
+    project_number               = string
+    federated_identity_pool      = string
     federated_identity_providers = map(object({
       audiences        = list(string)
       issuer           = string
@@ -42,7 +42,7 @@ variable "automation" {
 variable "billing_account" {
   # tfdoc:variable:source 0-bootstrap
   description = "Billing account id. If billing account is not part of the same org set `is_org_level` to `false`. To disable handling of billing IAM roles set `no_iam` to `true`."
-  type = object({
+  type        = object({
     id           = string
     is_org_level = optional(bool, true)
     no_iam       = optional(bool, false)
@@ -53,7 +53,7 @@ variable "billing_account" {
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folder to be used for the gitlab resources in folders/nnnn format."
-  type = object({
+  type        = object({
     gitlab = string
   })
 }
@@ -61,8 +61,8 @@ variable "folder_ids" {
 variable "gitlab_config" {
   type = object({
     hostname = optional(string, "gitlab.gcp.example.com")
-    mail = optional(object({
-      enabled = optional(bool, false)
+    mail     = optional(object({
+      enabled  = optional(bool, false)
       sendgrid = optional(object({
         api_key        = optional(string)
         email_from     = optional(string, null)
@@ -75,14 +75,36 @@ variable "gitlab_config" {
       sso_target_url         = string
       name_identifier_format = optional(string, "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress")
     }), null)
-    ha_required  = optional(bool, false)
-    architecture = optional(string, "CENTRALIZED")
+    ha_required = optional(bool, false)
   })
   default = {}
+}
+
+variable "gitlab_runners_config" {
+  description = "Gitlab Runners configuration"
+  type        = object({
+    enable       = optional(bool, false)
+    architecture = optional(string, "CENTRALIZED")
+    tokens       = optional(object({
+      landing = optional(string, null)
+      dev     = optional(string, null)
+      prod    = optional(string, null)
+    }))
+    instance_type = optional(string, "n2-standard-2")
+    name          = optional(string, "gitlab-runner")
+    network_tags  = optional(list(string), [])
+  })
+
   validation {
-    condition     = var.gitlab_config.architecture == "CENTRALIZED" || var.gitlab_config.architecture == "DISTRIBUTED"
+    condition     = var.gitlab_runners_config.architecture == "CENTRALIZED" || var.gitlab_runners_config.architecture == "DISTRIBUTED"
     error_message = "Error in the provided architecture, only 'CENTRALIZED' or 'DISTRIBUTED' values are supported."
   }
+  validation {
+    condition     = (var.gitlab_runners_config.architecture == "CENTRALIZED" && try(var.gitlab_runners_config.tokens.landing != null, false)) || (var.gitlab_runners_config.architecture == "DISTRIBUTED" && try(var.gitlab_runners_config.tokens.dev != null, false) && try(var.gitlab_runners_config.tokens.prod != null, false))
+    error_message = "'CENTRALIZED' architecture requires 'landing' token for registering runners."
+  }
+
+  default = { enable = false }
 }
 
 variable "host_project_ids" {
@@ -95,7 +117,7 @@ variable "host_project_ids" {
 variable "locations" {
   # tfdoc:variable:source 0-bootstrap
   description = "Optional locations for GCS, BigQuery, and logging buckets created here."
-  type = object({
+  type        = object({
     bq      = string
     gcs     = string
     logging = string
@@ -116,7 +138,7 @@ variable "prefix" {
 
 variable "regions" {
   description = "Region definitions."
-  type = object({
+  type        = object({
     primary   = string
     secondary = string
   })
@@ -129,7 +151,7 @@ variable "regions" {
 variable "service_accounts" {
   # tfdoc:variable:source 1-resman
   description = "Automation service accounts in name => email format."
-  type = object({
+  type        = object({
     data-platform-dev    = string
     data-platform-prod   = string
     gitlab               = string
@@ -144,7 +166,7 @@ variable "service_accounts" {
 variable "subnet_self_links" {
   # tfdoc:variable:source 2-networking
   description = "Shared VPC subnet self links."
-  type = object({
+  type        = object({
     dev-spoke-0  = map(string)
     prod-landing = map(string)
   })
@@ -154,7 +176,7 @@ variable "subnet_self_links" {
 variable "vpc_self_links" {
   # tfdoc:variable:source 2-networking
   description = "Shared VPC self links."
-  type = object({
+  type        = object({
     dev-spoke-0  = string
     prod-landing = string
   })

@@ -16,6 +16,7 @@ ingress:
     description: "Allow traffic from squid to gitlab"
     source_ranges:
     - 10.64.1.0/24
+    - 10.64.2.0/24
     rules:
     - protocol: tcp
       ports:

@@ -65,7 +65,6 @@ variable "cicd_repositories" {
       branch            = optional(string)
       identity_provider = optional(string)
     }))
-    # TODO we may need 2 or 3 repositories
     gitlab = optional(object({
       name              = string
       type              = string

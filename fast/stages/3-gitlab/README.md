@@ -16,6 +16,9 @@
 - [x] Cloud SQL HA
 - [ ] Memorystore HA?
 - [ ] DR
+- [x] Runners
+  - [ ] Autoscale Runners:
+        - https://docs.gitlab.com/runner/runner_autoscale/#
 
 ## Installation
 

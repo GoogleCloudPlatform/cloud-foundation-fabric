@@ -627,3 +627,10 @@ The `fast_features` variable consists of 4 toggles:
 | [service_accounts](outputs.tf#L183) | Automation service accounts created by this stage. |  |  |
 | [tfvars](outputs.tf#L192) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->
+
+
+
+curl -d "client_id=CLIENT_ID" -d "client_secret=CLIENT_SECRET" \
+-d "refresh_token=REFRESH_TOKEN" \
+-d "grant_type=refresh_token" \
+https://oauth2.googleapis.com/token

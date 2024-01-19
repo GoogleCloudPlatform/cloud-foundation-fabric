@@ -36,9 +36,11 @@ module "project" {
     # TODO looks like with the current custom role we cannot grant roles at network level
     network_subnet_users = {
       "${var.regions.primary}/landing-gitlab-server-ew1" = ["serviceAccount:${var.service_accounts.gitlab}"]
+      "${var.regions.primary}/landing-gitlab-runners-ew1" = ["serviceAccount:${var.service_accounts.gitlab}"]
     }
     service_identity_subnet_iam = {
       "${var.regions.primary}/landing-gitlab-server-ew1" = ["cloudservices","compute"]
+      "${var.regions.primary}/landing-gitlab-runners-ew1" = ["cloudservices","compute"]
     }
   }
 }

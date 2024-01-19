@@ -2,9 +2,6 @@
 
 ## Open points
 
-- [x] Runners
-- Autoscale Runners: 
-  - https://docs.gitlab.com/runner/runner_autoscale/#
 - [ ] WIF
 - [ ] Structure groups and projects
 - [x] Bootstrap groups, projects and repository
@@ -15,10 +12,7 @@ Connect to Gitlab as detailed in the 0-infra [README.md](./../0-infra/README.md)
 Set the newly created personal access as `gitlab_access_token` variable and then issue the following commands:
 
 ```bash
-gcloud alpha storage cp gs://${prefix}-prod-iac-core-outputs-0/ssl-certs/gitlab.example.com.ca.crt ./certs/ 
-gcloud alpha storage cp gs://${prefix}-prod-iac-core-outputs-0/workflows/resman-workflow.yaml ./workflows/
-gcloud alpha storage cp gs://${prefix}-prod-iac-core-outputs-0/workflows/bootstrap-workflow.yaml ./workflows/
-gcloud alpha storage cp gs://${prefix}-prod-iac-core-outputs-0/workflows/networking-workflow.yaml ./workflows/
+gcloud alpha storage cp gs://${prefix}-prod-iac-core-outputs-0/workflows/*-workflow.yaml ./workflows/
 ```
 
 Set `http_proxy` and `https_proxy` env vars to http://localhost:3128 and then run:
