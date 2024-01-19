@@ -174,4 +174,9 @@ module "public-dns" {
 | [name](outputs.tf#L32) | The DNS zone name. |  |
 | [name_servers](outputs.tf#L37) | The DNS zone name servers. |  |
 | [zone](outputs.tf#L42) | DNS zone resource. |  |
+
+## Fixtures
+
+- [compute-mig.tf](../../tests/fixtures/compute-mig.tf)
+- [net-lb-app-int-cross-region.tf](../../tests/fixtures/net-lb-app-int-cross-region.tf)
 <!-- END TFDOC -->
