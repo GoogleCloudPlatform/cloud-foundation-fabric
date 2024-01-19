@@ -93,7 +93,7 @@ module "private-dns" {
         { location = "europe-west1", health_checked_targets = [
           {
             load_balancer_type = "globalL7ilb",
-            ip_address         = "gil7-forwarding-rule-a",
+            ip_address         = "10.10.2.3",
             port               = "80",
             ip_protocol        = "tcp",
             network_url        = var.vpc.self_link
@@ -103,7 +103,7 @@ module "private-dns" {
         { location = "europe-west2", health_checked_targets = [
           {
             load_balancer_type = "globalL7ilb",
-            ip_address         = "gil7-forwarding-rule-b",
+            ip_address         = "10.10.3.3",
             port               = "80",
             ip_protocol        = "tcp",
             network_url        = var.vpc.self_link

@@ -66,7 +66,7 @@ values:
       geo:
       - health_checked_targets:
         - internal_load_balancers:
-          - ip_address: gil7-forwarding-rule-a
+          - ip_address: 10.10.2.3
             ip_protocol: tcp
             load_balancer_type: globalL7ilb
             network_url: projects/xxx/global/networks/aaa
@@ -77,7 +77,7 @@ values:
         rrdatas: null
       - health_checked_targets:
         - internal_load_balancers:
-          - ip_address: gil7-forwarding-rule-b
+          - ip_address: 10.10.3.3
             ip_protocol: tcp
             load_balancer_type: globalL7ilb
             network_url: projects/xxx/global/networks/aaa
