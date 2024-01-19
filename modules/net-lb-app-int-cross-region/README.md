@@ -36,21 +36,18 @@ module "ilb-l7" {
   backend_service_configs = {
     default = {
       backends = [{
-        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig-ew1"
-        }, {
-        group = "projects/myprj/zones/europe-west2-a/instanceGroups/my-ig-ew4"
+        group = module.compute-mig.group_manager.instance_group
       }]
     }
   }
   vpc_config = {
     network = var.vpc.self_link
     subnetworks = {
-      europe-west1 = var.subnet1.self_link
-      europe-west4 = var.subnet2.self_link
+      var.region = var.subnet.self_link
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=6 fixtures=fixtures/compute-mig.tf e2e
 ```
 
 An HTTPS ILB needs a few additional fields:
