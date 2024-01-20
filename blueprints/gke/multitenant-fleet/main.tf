@@ -63,17 +63,6 @@ module "gke-project-0" {
     })
   }
   # specify project-level org policies here if you need them
-  # policy_boolean = {
-  #   "compute.disableGuestAttributesAccess" = true
-  # }
-  # policy_list = {
-  #   "compute.trustedImageProjects" = {
-  #     inherit_from_parent = null
-  #     suggested_value     = null
-  #     status              = true
-  #     values              = ["projects/fl01-prod-iac-core-0"]
-  #   }
-  # }
 }
 
 module "gke-dataset-resource-usage" {

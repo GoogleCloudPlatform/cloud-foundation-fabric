@@ -8,13 +8,29 @@ The following diagram illustrates the high-level design of created resources, wh
   <img src="diagram.png" alt="GKE multitenant">
 </p>
 
+<!-- BEGIN TOC -->
+- [Design overview and choices](#design-overview-and-choices)
+- [How to run this stage](#how-to-run-this-stage)
+  - [Provider and Terraform variables](#provider-and-terraform-variables)
+  - [Impersonating the automation service account](#impersonating-the-automation-service-account)
+  - [Variable configuration](#variable-configuration)
+  - [Running the stage](#running-the-stage)
+  - [Running in isolation](#running-in-isolation)
+- [Customizations](#customizations)
+  - [Clusters and node pools](#clusters-and-node-pools)
+  - [Fleet management](#fleet-management)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Design overview and choices
 
-> The detailed architecture of the underlying resources is explained in the documentation of [GKE multitenant module](../../../../blueprints/gke/multitenant-fleet/README.md).
+> The detailed architecture of the underlying resources is explained in the documentation of the [GKE multitenant blueprint](../../../../blueprints/gke/multitenant-fleet/README.md).
 
-This stage creates a project containing and as many clusters and node pools as requested by the user through the [variables](#variables) explained below. The GKE clusters are created with the with the following setup:
+This stage creates a project containing as many clusters and node pools as requested by the user, configured via the [variables](#variables) explained below. The GKE clusters are created with the following setup:
 
-- All clusters are assumed to be [private](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters), therefore only [VPC-native clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips) are supported.
+- Even though public clusters are supported, this stage is designed with [private clusters](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters) in mind so it only supports [VPC-native clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips).
 - Logging and monitoring configured to use Cloud Operations for system components and user workloads.
 - [GKE metering](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-usage-metering) enabled by default and stored in a bigquery dataset created within the project.
 - Optional [GKE Fleet](https://cloud.google.com/kubernetes-engine/docs/fleets-overview) support with the possibility to enable any of the following features:
@@ -125,16 +141,41 @@ The VPC host project, VPC and subnets should already exist.
 
 ## Customizations
 
-### Cluster and node pools
+This stage is designed with multi-tenancy in mind, and the expectation is that  GKE clusters will mostly share a common set of defaults. Variables allow management of clusters, nodepools, and fleet registration and configurations.
 
-This stage is designed with multi-tenancy in mind, and the expectation is that  GKE clusters will mostly share a common set of defaults. Variables are designed to support this approach for both clusters and node pools:
+### Clusters and node pools
 
-- the `cluster_default` variable allows defining common defaults for all clusters
-- the `clusters` variable is used to declare the actual GKE clusters and allows overriding defaults on a per-cluster basis
-- the `nodepool_defaults` variable allows defining common defaults for all node pools
-- the `nodepools` variable is used to declare cluster node pools and allows overriding defaults on a per-cluster basis
+This is an example of declaring a private cluster with one nodepool via `tfvars` file:
 
-There are two additional variables that influence cluster configuration: `authenticator_security_group` to configure [Google Groups for RBAC](https://cloud.google.com/kubernetes-engine/docs/how-to/google-groups-rbac), `dns_domain` to configure [Cloud DNS for GKE](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns).
+```hcl
+clusters = {
+  test-00 = {
+    description = "Cluster test 0"
+    location    = "europe-west8"
+    private_cluster_config = {
+      enable_private_endpoint = true
+      master_global_access    = true
+    }
+    vpc_config = {
+      subnetwork             = "projects/ldj-dev-net-spoke-0/regions/europe-west8/subnetworks/gke"
+      master_ipv4_cidr_block = "172.16.20.0/28"
+      master_authorized_ranges = {
+        private = "10.0.0.0/8"
+      }
+    }
+  }
+}
+nodepools = {
+  test-00 = {
+    00 = {
+      node_count = { initial = 1 }
+    }
+  }
+}
+# tftest skip
+```
+
+If clusters share similar configurations, those can be centralized via `locals` blocks in this stage's `main.tf` file, and merged in with clusters via a simple `for_each` loop. One example of this approach is provided in the underlying [GKE multitenant blueprint](../../../../blueprints/gke/multitenant-fleet/).
 
 ### Fleet management
 
@@ -145,7 +186,19 @@ Fleet management is entirely optional, and uses three separate variables:
 - `fleet_configmanagement_clusters`: specifies which clusters are managed by fleet features, and the optional Config Management template for each cluster
 - `fleet_workload_identity`: to enables optional centralized [Workload Identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
 
-Leave all these variables unset (or set to `null`) to disable fleet management.
+Leave all these variables unset (or set to `null`) to disable fleet management. One example of a simple fleet configuration that integrates with the cluster example above:
+
+```hcl
+  fleet_features = {
+    configmanagement             = true
+    identityservice              = true
+    multiclusteringress          = "test-0"
+    multiclusterservicediscovery = true
+    servicemesh                  = true
+  }
+
+# tftest skip
+```
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
