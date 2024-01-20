@@ -50,6 +50,12 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+variable "docker_repository_id" {
+  description = "User managed repository created in Artifact Registry."
+  type        = string
+  default     = null
+}
+
 variable "environment_variables" {
   description = "Cloud function environment variables."
   type        = map(string)
