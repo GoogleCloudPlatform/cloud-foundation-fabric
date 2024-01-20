@@ -129,7 +129,6 @@ restricted:
 # tftest-file id=rules-file path=config/rules.yaml
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -151,4 +150,7 @@ restricted:
 | [name](outputs.tf#L22) | Policy name. |  |
 | [policy](outputs.tf#L27) | Policy resource. |  |
 
+## Fixtures
+
+- [dns-response-policy.tf](../../tests/fixtures/dns-response-policy.tf)
 <!-- END TFDOC -->
