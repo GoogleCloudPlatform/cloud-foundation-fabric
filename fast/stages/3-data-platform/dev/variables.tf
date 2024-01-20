@@ -36,51 +36,91 @@ variable "billing_account" {
 }
 
 variable "composer_config" {
-  description = "Cloud Composer configuration options."
+  description = "Cloud Composer config."
   type = object({
     disable_deployment = optional(bool)
-    environment_size   = string
-    software_config = object({
-      airflow_config_overrides       = optional(any)
-      pypi_packages                  = optional(any)
-      env_variables                  = optional(map(string))
-      image_version                  = string
-      cloud_data_lineage_integration = optional(bool, true)
-    })
-    workloads_config = object({
-      scheduler = object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-          count      = number
-        }
-      )
-      web_server = object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-        }
-      )
-      worker = object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-          min_count  = number
-          max_count  = number
-        }
-      )
-    })
+    environment_size   = optional(string, "ENVIRONMENT_SIZE_SMALL")
+    software_config = optional(
+      object({
+        airflow_config_overrides       = optional(any)
+        pypi_packages                  = optional(any)
+        env_variables                  = optional(map(string))
+        image_version                  = string
+        cloud_data_lineage_integration = optional(bool, true)
+      }),
+      { image_version = "composer-2-airflow-2" }
+    )
+    workloads_config = optional(
+      object({
+        scheduler = optional(
+          object({
+            cpu        = number
+            memory_gb  = number
+            storage_gb = number
+            count      = number
+          }),
+          {
+            cpu        = 0.5
+            memory_gb  = 1.875
+            storage_gb = 1
+            count      = 1
+          }
+        )
+        web_server = optional(
+          object({
+            cpu        = number
+            memory_gb  = number
+            storage_gb = number
+          }),
+          {
+            cpu        = 0.5
+            memory_gb  = 1.875
+            storage_gb = 1
+          }
+        )
+        worker = optional(
+          object({
+            cpu        = number
+            memory_gb  = number
+            storage_gb = number
+            min_count  = number
+            max_count  = number
+          }),
+          {
+            cpu        = 0.5
+            memory_gb  = 1.875
+            storage_gb = 1
+            min_count  = 1
+            max_count  = 3
+          }
+        )
+    }))
   })
   default = {
     environment_size = "ENVIRONMENT_SIZE_SMALL"
     software_config = {
-      image_version                  = "composer-2-airflow-2"
-      cloud_data_lineage_integration = true
+      image_version = "composer-2-airflow-2"
     }
-    workloads_config = null
+    workloads_config = {
+      scheduler = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        count      = 1
+      }
+      web_server = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+      }
+      worker = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        min_count  = 1
+        max_count  = 3
+      }
+    }
   }
 }
 
@@ -113,7 +153,7 @@ variable "folder_ids" {
   })
 }
 
-variable "groups-dp" {
+variable "groups_dp" {
   description = "Data Platform groups."
   type        = map(string)
   default = {
@@ -177,6 +217,26 @@ variable "prefix" {
     condition     = try(length(var.prefix), 0) < 13
     error_message = "Use a maximum of 12 characters for prefix."
   }
+}
+
+variable "project_config" {
+  description = "Provide projects configuration."
+  type = object({
+    project_create = optional(bool, true)
+    project_ids = optional(object({
+      drop     = string
+      load     = string
+      orc      = string
+      trf      = string
+      dwh-lnd  = string
+      dwh-cur  = string
+      dwh-conf = string
+      common   = string
+      exp      = string
+      })
+    )
+  })
+  default = {}
 }
 
 variable "project_services" {
