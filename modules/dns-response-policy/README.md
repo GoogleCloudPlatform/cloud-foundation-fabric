@@ -40,7 +40,7 @@ This example shows how to create a policy with a single rule, that directs all G
 module "dns-policy" {
   source        = "./fabric/modules/dns-response-policy"
   project_id    = var.project_id
-  name          = module.dns-policy-existing.name
+  name          = module.dns-response-policy.name
   policy_create = false
   networks = {
     landing = var.vpc.self_link
@@ -91,7 +91,7 @@ This example shows how to define rules in a factory file, that mirrors the rules
 module "dns-policy" {
   source        = "./fabric/modules/dns-response-policy"
   project_id    = var.project_id
-  name          = module.dns-policy-existing.name
+  name          = module.dns-response-policy.name
   policy_create = false
   networks = {
     landing = var.vpc.self_link
