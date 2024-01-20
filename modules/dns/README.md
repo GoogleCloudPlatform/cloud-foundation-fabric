@@ -112,7 +112,7 @@ module "private-dns" {
     }
   }
 }
-# tftest modules=1 resources=5 fixtures=fixtures/net-lb-app-int-cross-region.tf,fixtures/compute-mig.tf inventory=routing-policies.yaml e2e
+# tftest modules=4 resources=12 fixtures=fixtures/net-lb-app-int-cross-region.tf,fixtures/compute-mig.tf inventory=routing-policies.yaml e2e
 ```
 
 ### Reverse Lookup Zone
