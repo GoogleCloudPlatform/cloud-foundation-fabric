@@ -44,7 +44,7 @@ module "ilb-l7" {
   vpc_config = {
     network = var.vpc.self_link
     subnetworks = {
-      var.region = var.subnet.self_link
+      (var.region) = var.subnet.self_link
     }
   }
 }
