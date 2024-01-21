@@ -28,13 +28,6 @@ resource "google_compute_firewall_policy_association" "hierarchical" {
   firewall_policy   = google_compute_firewall_policy.hierarchical.0.name
 }
 
-output "foo" {
-  value = {
-    rules = local.rules
-    cidrs = local.factory_cidrs
-  }
-}
-
 resource "google_compute_firewall_policy_rule" "hierarchical" {
   # Terraform's type system barfs in the condition if we use the locals map
   for_each = toset(
