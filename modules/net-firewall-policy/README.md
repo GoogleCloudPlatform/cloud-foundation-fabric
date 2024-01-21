@@ -196,7 +196,7 @@ module "firewall-policy" {
     ingress_rules_file_path = "configs/ingress.yaml"
   }
 }
-# tftest modules=1 resources=5 files=cidrs,egress,ingress inventory=factory.yaml
+# tftest modules=1 resources=6 files=cidrs,egress,ingress inventory=factory.yaml
 ```
 
 ```yaml
@@ -205,6 +205,8 @@ rfc1918:
   - 10.0.0.0/8
   - 172.16.0.0/12
   - 192.168.0.0/24
+gke-nodes-range:
+  - 10.0.1.0/24
 ```
 
 ```yaml
@@ -229,7 +231,25 @@ icmp:
    - 10.0.0.0/8
    layer4_configs:
    - protocol: icmp
+issue-1995:
+  priority: 10020
+  description: Allow intra-cluster communication required by k8s networking model
+  enable_logging: true
+  target_service_accounts:
+  - sa-gke-cluster@burner-project.iam.gserviceaccount.com
+  match:
+    source_ranges:
+    - gke-nodes-range
+    layer4_configs:
+    - protocol: tcp
+      ports:
+      - 1-65535
+    - protocol: udp
+      ports:
+      - 1-65535
+    - protocol: icmp
 ```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
