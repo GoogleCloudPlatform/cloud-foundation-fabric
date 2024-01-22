@@ -40,7 +40,6 @@ module "gitlab-runner" {
   }
 }
 
-
 module "gitlab-runner-template" {
   count      = local.runner_config_type == "docker_autoscaler" ? 1 : 0
   source     = "../../../modules/compute-vm"

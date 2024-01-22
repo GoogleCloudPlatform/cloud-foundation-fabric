@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "GCP Project id."
-  type        = string
-}
-
 variable "gitlab_config" {
   type = object({
     hostname    = optional(string, "gitlab.gcp.example.com")
@@ -53,6 +48,20 @@ variable "gitlab_runner_config" {
   }
 }
 
+variable "network_config" {
+  description = "Shared VPC network configurations to use for Gitlab Runner VM."
+  type = object({
+    host_project      = optional(string)
+    network_self_link = string
+    subnet_self_link  = string
+  })
+}
+
+variable "project_id" {
+  description = "GCP Project id."
+  type        = string
+}
+
 variable "vm_config" {
   type = object({
     boot_disk_size = optional(number, 100)
@@ -60,14 +69,5 @@ variable "vm_config" {
     instance_type  = optional(string, "e2-standard-2")
     network_tags   = optional(list(string), [])
     zone           = optional(string, "europe-west1-b")
-  })
-}
-
-variable "network_config" {
-  description = "Shared VPC network configurations to use for Gitlab Runner VM."
-  type = object({
-    host_project      = optional(string)
-    network_self_link = string
-    subnet_self_link  = string
   })
 }
