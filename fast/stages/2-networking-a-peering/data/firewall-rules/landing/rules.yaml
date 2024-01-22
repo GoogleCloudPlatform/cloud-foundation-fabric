@@ -21,3 +21,4 @@ ingress:
     - protocol: tcp
       ports:
       - 443
+      - 22 # gitlab manager to runner

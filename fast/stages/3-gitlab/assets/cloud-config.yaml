@@ -25,7 +25,9 @@ write_files:
       {
         "live-restore": true,
         "storage-driver": "overlay2",
+        "log-driver": "gcplogs",
         "log-opts": {
+          "gcp-meta-name": "gitlab-0",
           "max-size": "1024m"
         }
       }

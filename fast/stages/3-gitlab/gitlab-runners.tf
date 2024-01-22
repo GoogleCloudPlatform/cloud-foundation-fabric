@@ -15,19 +15,43 @@
  */
 
 
-module "gitlab-runner" {
+#module "gitlab-runner" {
+#  source    = "../../../blueprints/third-party-solutions/gitlab-runner"
+#  vm_config = {
+#    project_id = module.project.project_id
+#  }
+#  gitlab_config = {
+#    hostname    = var.gitlab_config.hostname
+#    ca_cert_pem = tls_self_signed_cert.gitlab_ca_cert[0].cert_pem
+#  }
+#  gitlab_runner_config = {
+#    authentication_token = var.gitlab_runners_config.tokens.landing
+#    executors_config       = {
+#      docker = {}
+#    }
+#  }
+#  network_config = {
+#    network_self_link = var.vpc_self_links.prod-landing
+#    subnet_self_link  = var.subnet_self_links.prod-landing["${var.regions.primary}/landing-gitlab-runners-ew1"]
+#  }
+#}
+
+module "gitlab-runner-autoscale" {
   source    = "../../../blueprints/third-party-solutions/gitlab-runner"
   vm_config = {
     project_id = module.project.project_id
   }
+  project_id = module.project.project_id
   gitlab_config = {
     hostname    = var.gitlab_config.hostname
     ca_cert_pem = tls_self_signed_cert.gitlab_ca_cert[0].cert_pem
   }
   gitlab_runner_config = {
     authentication_token = var.gitlab_runners_config.tokens.landing
-    runners_config       = {
-      docker = {}
+    executors_config       = {
+      docker_autoscaler = {
+        gcp_project_id   = module.project.project_id
+      }
     }
   }
   network_config = {

@@ -91,6 +91,7 @@ module "gitlab-instance" {
       gitlab_ssl_key     = indent(6, base64encode(local.gitlab_ssl_key))
       gitlab_ssl_crt     = indent(6, base64encode(local.gitlab_ssl_crt))
     })
+    google-logging-enabled = "true"
   }
   service_account = {
     email = module.gitlab-sa.email
