@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+variable "project_id" {
+  description = "GCP Project id."
+  type        = string
+}
 
 variable "gitlab_config" {
   type = object({
@@ -24,17 +28,16 @@ variable "gitlab_config" {
 
 variable "gitlab_runner_config" {
   description = "Gitlab Runner config."
-  type        = object({
-    authentication_token       = string
-    runners_config = object({
-      docker_machine_autoscaling = optional(object({
-        gcp_project_id   = string
-        zone             = optional(string, "europe-west1")
-        machine_type     = optional(string, "g1-small")
-        machine_image    = optional(string, "coreos-cloud/global/images/family/coreos-stable")
-        network_tags     = optional(list(string), ["gitlab-runner"])
-        preemptible      = optional(bool, true)
-        internal_ip_only = optional(bool, true)
+  type = object({
+    authentication_token = string
+    executors_config = object({
+      docker_autoscaler = optional(object({
+        gcp_project_id = string
+        zone           = optional(string, "europe-west1-b")
+        mig_name       = optional(string, "gitlab-runner")
+        machine_type   = optional(string, "g1-small")
+        machine_image  = optional(string, "coreos-cloud/global/images/family/coreos-stable")
+        network_tags   = optional(list(string), ["gitlab-runner"])
       }), null)
       docker = optional(object({
         tls_verify = optional(bool, true)
@@ -43,8 +46,8 @@ variable "gitlab_runner_config" {
   })
   validation {
     condition = (
-    (try(var.gitlab_runner_config.runners_config.docker_machine_autoscaling, null) == null ? 0 : 1) +
-    (try(var.gitlab_runner_config.runners_config.dockerx, null) == null ? 0 : 1) <= 1
+      (try(var.gitlab_runner_config.executors_config.docker_autoscaler, null) == null ? 0 : 1) +
+      (try(var.gitlab_runner_config.executors_config.dockerx, null) == null ? 0 : 1) <= 1
     )
     error_message = "Only one type of gitlab runner can be configured at a time."
   }
@@ -52,7 +55,6 @@ variable "gitlab_runner_config" {
 
 variable "vm_config" {
   type = object({
-    project_id     = string
     boot_disk_size = optional(number, 100)
     name           = optional(string, "gitlab-runner-0")
     instance_type  = optional(string, "e2-standard-2")
@@ -63,7 +65,7 @@ variable "vm_config" {
 
 variable "network_config" {
   description = "Shared VPC network configurations to use for Gitlab Runner VM."
-  type        = object({
+  type = object({
     host_project      = optional(string)
     network_self_link = string
     subnet_self_link  = string

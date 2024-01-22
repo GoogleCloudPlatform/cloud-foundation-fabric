@@ -15,40 +15,35 @@
  */
 
 locals {
-  _runner_config_type = [
-    for key, value in var.gitlab_runner_config.runners_config : key if value != null
-  ][0]
-
+  runner_config_type = [for key, value in var.gitlab_runner_config.executors_config : key if value != null][0]
   runner_startup_script_config = {
     gitlab_hostname      = var.gitlab_config.hostname
     gitlab_ca_cert       = base64encode(var.gitlab_config.ca_cert_pem)
     token                = var.gitlab_runner_config.authentication_token
-    gitlab_runner_config = base64encode(templatefile("${path.module}/assets/config/${local._runner_config_type}_config.toml.tpl", var.gitlab_runner_config.runners_config[local._runner_config_type]))
+    gitlab_runner_config = base64encode(templatefile("${path.module}/assets/config/${local.runner_config_type}_config.toml.tpl", var.gitlab_runner_config.executors_config[local.runner_config_type]))
+    gitlab_executor_type = replace(local.runner_config_type, "_", "-")
   }
 }
 
-module "gitlab-runner" {
-  source     = "../../../modules/compute-vm"
-  project_id = var.vm_config.project_id
-  boot_disk  = {
-    initialize_params = {
-      size = var.vm_config.boot_disk_size
-    }
-  }
-  instance_type      = var.vm_config.instance_type
-  name               = var.vm_config.name
-  tags               = var.vm_config.network_tags
-  zone               = var.vm_config.zone
-  network_interfaces = [
-    {
-      network    = var.network_config.network_self_link
-      subnetwork = var.network_config.subnet_self_link
-    }
+resource "google_project_iam_custom_role" "gitlab_runner_manager_role" {
+  project     = var.project_id
+  role_id     = "gitlabRunnerManagerRole"
+  title       = "Gitlab Runner Manager custom role"
+  description = "Custom GCP Role for Docker Autoscaler manager SA."
+  permissions = [
+    "compute.instanceGroupManagers.get", "compute.instanceGroupManagers.update",
+    "compute.instances.get", "compute.instances.setMetadata"
   ]
-  metadata = {
-    startup-script = templatefile("${path.module}/assets/startup-script.sh.tpl", local.runner_startup_script_config)
-  }
-  service_account = {
-    auto_create = true
-  }
+}
+
+resource "google_project_iam_member" "gitlab_runner_manager_role" {
+  project = var.project_id
+  role    = google_project_iam_custom_role.gitlab_runner_manager_role.id
+  member  = "serviceAccount:${module.gitlab-runner.service_account.email}"
+}
+
+resource "google_service_account_iam_member" "admin-account-iam" {
+  service_account_id = module.gitlab-runner-template.0.service_account.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${module.gitlab-runner.service_account.email}"
 }

@@ -46,8 +46,16 @@ echo $GITLAB_RUNNER_CONFIG | base64 -d > /etc/gitlab-runner/config.toml
 
 # Install Gitlab Runner
 apt install -y gitlab-runner
+
+%{ if gitlab_executor_type == "docker-autoscaler" }
+# Install GCP fleeting plugin for Docker Autoscale Runner
+# https://docs.gitlab.com/runner/executors/docker_autoscaler.html#install-a-fleeting-plugin
+wget https://gitlab.com/gitlab-org/fleeting/fleeting-plugin-googlecompute/-/releases/v0.1.0/downloads/fleeting-plugin-googlecompute-linux-386
+chmod +x fleeting-plugin-googlecompute-linux-386
+mv ./fleeting-plugin-googlecompute-linux-386 /usr/bin/fleeting-plugin-googlecompute
+%{ endif }
+
 gitlab-runner register --non-interactive --name="$GL_NAME" \
   --url="$GITLAB_URL" --token="${token}" --template-config="/etc/gitlab-runner/config.toml"
-  --request-concurrency="12" --executor="docker" \
-  --docker-image="alpine:latest"
+  --executor="${gitlab_executor_type}"
 systemctl restart gitlab-runner
