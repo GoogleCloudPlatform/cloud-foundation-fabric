@@ -17,108 +17,406 @@ values:
     display_name: Common
     parent: organizations/123456789012
     timeouts: null
-  module.checklist-folder-1["Team 1"].google_folder.folder[0]:
+  module.checklist-folder-1["Department 1"].google_folder.folder[0]:
+    display_name: Department 1
+    parent: organizations/123456789012
+    timeouts: null
+  module.checklist-folder-1["Department 2"].google_folder.folder[0]:
+    display_name: Department 2
+    parent: organizations/123456789012
+    timeouts: null
+  module.checklist-folder-1["Department 3"].google_folder.folder[0]:
+    display_name: Department 3
+    parent: organizations/123456789012
+    timeouts: null
+  module.checklist-folder-2["Department 1/Team 1"].google_folder.folder[0]:
     display_name: Team 1
-    parent: organizations/123456789012
     timeouts: null
-  module.checklist-folder-1["Team 2"].google_folder.folder[0]:
+  module.checklist-folder-2["Department 1/Team 2"].google_folder.folder[0]:
     display_name: Team 2
-    parent: organizations/123456789012
     timeouts: null
-  module.checklist-folder-1["Team 3"].google_folder.folder[0]:
+  module.checklist-folder-2["Department 1/Team 3"].google_folder.folder[0]:
     display_name: Team 3
-    parent: organizations/123456789012
     timeouts: null
-  module.checklist-folder-2["Team 1/Development"].google_folder.folder[0]:
+  module.checklist-folder-2["Department 1/Team 4"].google_folder.folder[0]:
+    display_name: Team 4
+    timeouts: null
+  module.checklist-folder-2["Department 2/Team 1"].google_folder.folder[0]:
+    display_name: Team 1
+    timeouts: null
+  module.checklist-folder-2["Department 2/Team 2"].google_folder.folder[0]:
+    display_name: Team 2
+    timeouts: null
+  module.checklist-folder-2["Department 2/Team 3"].google_folder.folder[0]:
+    display_name: Team 3
+    timeouts: null
+  module.checklist-folder-2["Department 2/Team 4"].google_folder.folder[0]:
+    display_name: Team 4
+    timeouts: null
+  module.checklist-folder-2["Department 3/Team 1"].google_folder.folder[0]:
+    display_name: Team 1
+    timeouts: null
+  module.checklist-folder-2["Department 3/Team 2"].google_folder.folder[0]:
+    display_name: Team 2
+    timeouts: null
+  module.checklist-folder-2["Department 3/Team 3"].google_folder.folder[0]:
+    display_name: Team 3
+    timeouts: null
+  module.checklist-folder-2["Department 3/Team 4"].google_folder.folder[0]:
+    display_name: Team 4
+    timeouts: null
+  module.checklist-folder-3["Department 1/Team 1/Development"].google_folder.folder[0]:
     display_name: Development
     timeouts: null
-  module.checklist-folder-2["Team 1/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]:
-    condition: []
-    members:
-    - group:gcp-developers@fast.example.com
-    role: roles/compute.instanceAdmin.v1
-  module.checklist-folder-2["Team 1/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]:
-    condition: []
-    members:
-    - group:gcp-developers@fast.example.com
-    role: roles/container.admin
-  module.checklist-folder-2["Team 1/Non-Production"].google_folder.folder[0]:
-    display_name: Non-Production
-    timeouts: null
-  ? module.checklist-folder-2["Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  ? module.checklist-folder-3["Department 1/Team 1/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast.example.com
+    - group:gcp-developers@fast-onboarding-0.joonix.net
     role: roles/compute.instanceAdmin.v1
-  module.checklist-folder-2["Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]:
-    condition: []
+  ? module.checklist-folder-3["Department 1/Team 1/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
     members:
-    - group:gcp-developers@fast.example.com
+    - group:gcp-developers@fast-onboarding-0.joonix.net
     role: roles/container.admin
-  module.checklist-folder-2["Team 1/Production"].google_folder.folder[0]:
+  module.checklist-folder-3["Department 1/Team 1/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 1/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 1/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 1/Team 1/Production"].google_folder.folder[0]:
     display_name: Production
     timeouts: null
-  module.checklist-folder-2["Team 2/Development"].google_folder.folder[0]:
+  module.checklist-folder-3["Department 1/Team 2/Development"].google_folder.folder[0]:
     display_name: Development
     timeouts: null
-  module.checklist-folder-2["Team 2/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]:
-    condition: []
-    members:
-    - group:gcp-developers@fast.example.com
-    role: roles/compute.instanceAdmin.v1
-  module.checklist-folder-2["Team 2/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]:
-    condition: []
-    members:
-    - group:gcp-developers@fast.example.com
-    role: roles/container.admin
-  module.checklist-folder-2["Team 2/Non-Production"].google_folder.folder[0]:
-    display_name: Non-Production
-    timeouts: null
-  ? module.checklist-folder-2["Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  ? module.checklist-folder-3["Department 1/Team 2/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast.example.com
+    - group:gcp-developers@fast-onboarding-0.joonix.net
     role: roles/compute.instanceAdmin.v1
-  module.checklist-folder-2["Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]:
-    condition: []
+  ? module.checklist-folder-3["Department 1/Team 2/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
     members:
-    - group:gcp-developers@fast.example.com
+    - group:gcp-developers@fast-onboarding-0.joonix.net
     role: roles/container.admin
-  module.checklist-folder-2["Team 2/Production"].google_folder.folder[0]:
+  module.checklist-folder-3["Department 1/Team 2/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 1/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 1/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 1/Team 2/Production"].google_folder.folder[0]:
     display_name: Production
     timeouts: null
-  module.checklist-folder-2["Team 3/Development"].google_folder.folder[0]:
+  module.checklist-folder-3["Department 1/Team 3/Development"].google_folder.folder[0]:
     display_name: Development
     timeouts: null
-  module.checklist-folder-2["Team 3/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]:
-    condition: []
-    members:
-    - group:gcp-developers@fast.example.com
-    role: roles/compute.instanceAdmin.v1
-  module.checklist-folder-2["Team 3/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]:
-    condition: []
-    members:
-    - group:gcp-developers@fast.example.com
-    role: roles/container.admin
-  module.checklist-folder-2["Team 3/Non-Production"].google_folder.folder[0]:
-    display_name: Non-Production
-    timeouts: null
-  ? module.checklist-folder-2["Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  ? module.checklist-folder-3["Department 1/Team 3/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast.example.com
+    - group:gcp-developers@fast-onboarding-0.joonix.net
     role: roles/compute.instanceAdmin.v1
-  module.checklist-folder-2["Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]:
-    condition: []
+  ? module.checklist-folder-3["Department 1/Team 3/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
     members:
-    - group:gcp-developers@fast.example.com
+    - group:gcp-developers@fast-onboarding-0.joonix.net
     role: roles/container.admin
-  module.checklist-folder-2["Team 3/Production"].google_folder.folder[0]:
+  module.checklist-folder-3["Department 1/Team 3/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 1/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 1/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 1/Team 3/Production"].google_folder.folder[0]:
     display_name: Production
     timeouts: null
+  module.checklist-folder-3["Department 1/Team 4/Development"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  ? module.checklist-folder-3["Department 1/Team 4/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 1/Team 4/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 1/Team 4/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 1/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 1/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 1/Team 4/Production"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+  module.checklist-folder-3["Department 2/Team 1/Development"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  ? module.checklist-folder-3["Department 2/Team 1/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 2/Team 1/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 2/Team 1/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 2/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 2/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 2/Team 1/Production"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+  module.checklist-folder-3["Department 2/Team 2/Development"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  ? module.checklist-folder-3["Department 2/Team 2/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 2/Team 2/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 2/Team 2/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 2/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 2/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 2/Team 2/Production"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+  module.checklist-folder-3["Department 2/Team 3/Development"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  ? module.checklist-folder-3["Department 2/Team 3/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 2/Team 3/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 2/Team 3/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 2/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 2/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 2/Team 3/Production"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+  module.checklist-folder-3["Department 2/Team 4/Development"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  ? module.checklist-folder-3["Department 2/Team 4/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 2/Team 4/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 2/Team 4/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 2/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 2/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 2/Team 4/Production"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+  module.checklist-folder-3["Department 3/Team 1/Development"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  ? module.checklist-folder-3["Department 3/Team 1/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 3/Team 1/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 3/Team 1/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 3/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 3/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 3/Team 1/Production"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+  module.checklist-folder-3["Department 3/Team 2/Development"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  ? module.checklist-folder-3["Department 3/Team 2/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 3/Team 2/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 3/Team 2/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 3/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 3/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 3/Team 2/Production"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+  module.checklist-folder-3["Department 3/Team 3/Development"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  ? module.checklist-folder-3["Department 3/Team 3/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 3/Team 3/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 3/Team 3/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 3/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 3/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 3/Team 3/Production"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+  module.checklist-folder-3["Department 3/Team 4/Development"].google_folder.folder[0]:
+    display_name: Development
+    timeouts: null
+  ? module.checklist-folder-3["Department 3/Team 4/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 3/Team 4/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 3/Team 4/Non-Production"].google_folder.folder[0]:
+    display_name: Non-Production
+    timeouts: null
+  ? module.checklist-folder-3["Department 3/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/compute.instanceAdmin.v1
+  ? module.checklist-folder-3["Department 3/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
+  : condition: []
+    members:
+    - group:gcp-developers@fast-onboarding-0.joonix.net
+    role: roles/container.admin
+  module.checklist-folder-3["Department 3/Team 4/Production"].google_folder.folder[0]:
+    display_name: Production
+    timeouts: null
+
 counts:
-  google_folder: 18
-  google_folder_iam_binding: 31
+  google_folder: 57
+  google_folder_iam_binding: 67
   google_organization_iam_member: 5
   google_project_iam_member: 4
   google_service_account: 4
@@ -130,5 +428,5 @@ counts:
   google_tags_tag_binding: 5
   google_tags_tag_key: 3
   google_tags_tag_value: 9
-  modules: 25
-  resources: 98
+  modules: 64
+  resources: 173
