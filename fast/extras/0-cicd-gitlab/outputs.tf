@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-module "project" {
-  source          = "../../../../modules/project"
-  parent          = var.root_node
-  billing_account = var.billing_account.id
-  project_create = var.project_create
-  prefix          = var.prefix
-  name            = var.project_id
-  services = [
-    "compute.googleapis.com",
-    "memcache.googleapis.com",
-    "redis.googleapis.com",
-    "sqladmin.googleapis.com",
-    "sql-component.googleapis.com",
-    "stackdriver.googleapis.com",
-    "file.googleapis.com"
-  ]
+output "clone" {
+  description = "Clone projects commands."
+  value = {
+    for k, v in var.projects :
+    k => "ssh://git@${var.gitlab_config.hostname}:${var.gitlab_config.ssh_port}/${v.group}/${k}.git"
+  }
 }
