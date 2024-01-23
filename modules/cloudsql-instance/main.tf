@@ -226,30 +226,12 @@ resource "random_password" "passwords" {
 
 resource "google_sql_user" "users" {
   for_each = local.users
-  count    = each.value.ignore_password_change == false ? 1 : 0
   project  = var.project_id
   instance = google_sql_database_instance.primary.name
   name     = each.value.name
   host     = each.value.host
   password = each.value.password
   type     = each.value.type
-}
-
-resource "google_sql_user" "existing_users" {
-  for_each = local.users
-  count    = each.value.ignore_password_change == true ? 1 : 0
-  project  = var.project_id
-  instance = google_sql_database_instance.primary.name
-  name     = each.value.name
-  host     = each.value.host
-  password = each.value.password
-  type     = each.value.type
-
-  lifecycle {
-    ignore_changes = [
-      password
-    ]
-  }
 }
 
 resource "google_sql_ssl_cert" "client_certificates" {
