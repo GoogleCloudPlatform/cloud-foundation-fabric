@@ -13,7 +13,7 @@ This example shows how to create a policy with a single rule, that directs a spe
 ```hcl
 module "dns-policy" {
   source     = "./fabric/modules/dns-response-policy"
-  project_id = "myproject"
+  project_id = var.project_id
   name       = "googleapis"
   networks = {
     landing = var.vpc.self_link
@@ -29,7 +29,7 @@ module "dns-policy" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=simple.yaml
+# tftest modules=1 resources=2 inventory=simple.yaml e2e
 ```
 
 ### Use existing policy and override resolution via wildcard with exceptions
@@ -39,8 +39,8 @@ This example shows how to create a policy with a single rule, that directs all G
 ```hcl
 module "dns-policy" {
   source        = "./fabric/modules/dns-response-policy"
-  project_id    = "myproject"
-  name          = "googleapis"
+  project_id    = var.project_id
+  name          = module.dns-response-policy.name
   policy_create = false
   networks = {
     landing = var.vpc.self_link
@@ -80,7 +80,7 @@ module "dns-policy" {
     }
   }
 }
-# tftest modules=1 resources=4 inventory=complex.yaml
+# tftest modules=2 resources=5 fixtures=fixtures/dns-response-policy.tf inventory=complex.yaml e2e
 ```
 
 ### Define policy rules via a factory file
@@ -90,15 +90,15 @@ This example shows how to define rules in a factory file, that mirrors the rules
 ```hcl
 module "dns-policy" {
   source        = "./fabric/modules/dns-response-policy"
-  project_id    = "myproject"
-  name          = "googleapis"
+  project_id    = var.project_id
+  name          = module.dns-response-policy.name
   policy_create = false
   networks = {
     landing = var.vpc.self_link
   }
   rules_file = "config/rules.yaml"
 }
-# tftest modules=1 resources=4 files=rules-file inventory=complex.yaml
+# tftest modules=2 resources=5 files=rules-file fixtures=fixtures/dns-response-policy.tf inventory=complex.yaml e2e
 ```
 
 ```yaml
@@ -129,7 +129,6 @@ restricted:
 # tftest-file id=rules-file path=config/rules.yaml
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -151,4 +150,7 @@ restricted:
 | [name](outputs.tf#L22) | Policy name. |  |
 | [policy](outputs.tf#L27) | Policy resource. |  |
 
+## Fixtures
+
+- [dns-response-policy.tf](../../tests/fixtures/dns-response-policy.tf)
 <!-- END TFDOC -->

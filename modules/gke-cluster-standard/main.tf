@@ -110,12 +110,6 @@ resource "google_container_cluster" "cluster" {
       enabled = var.backup_configs.enable_backup_agent
     }
   }
-  dynamic "service_external_ips_config" {
-    for_each = !var.enable_features.service_external_ips ? [""] : []
-    content {
-      enabled = var.enable_features.service_external_ips
-    }
-  }
   dynamic "authenticator_groups_config" {
     for_each = var.enable_features.groups_for_rbac != null ? [""] : []
     content {
@@ -248,6 +242,12 @@ resource "google_container_cluster" "cluster" {
       cluster_dns        = var.enable_features.dns.provider
       cluster_dns_scope  = var.enable_features.dns.scope
       cluster_dns_domain = var.enable_features.dns.domain
+    }
+  }
+  dynamic "enable_k8s_beta_apis" {
+    for_each = var.enable_features.beta_apis != null ? [""] : []
+    content {
+      enabled_apis = var.enable_features.beta_apis
     }
   }
   dynamic "gateway_api_config" {
@@ -450,6 +450,12 @@ resource "google_container_cluster" "cluster" {
       bigquery_destination {
         dataset_id = var.enable_features.resource_usage_export.dataset
       }
+    }
+  }
+  dynamic "service_external_ips_config" {
+    for_each = !var.enable_features.service_external_ips ? [""] : []
+    content {
+      enabled = var.enable_features.service_external_ips
     }
   }
   dynamic "vertical_pod_autoscaling" {

@@ -62,7 +62,7 @@ locals {
           ? [{ protocol = "all", ports = null }]
           : [
             for c in v.match.layer4_configs :
-            merge({ protocol = "all", ports = null }, c)
+            merge({ protocol = "all", ports = [] }, c)
           ]
         )
       }
@@ -106,7 +106,7 @@ locals {
           ? [{ protocol = "all", ports = null }]
           : [
             for c in v.match.layer4_configs :
-            merge({ protocol = "all", ports = null }, c)
+            merge({ protocol = "all", ports = [] }, c)
           ]
         )
       }
