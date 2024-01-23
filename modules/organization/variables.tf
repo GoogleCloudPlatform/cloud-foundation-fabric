@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ variable "logging_exclusions" {
 variable "logging_sinks" {
   description = "Logging sinks to create for the organization."
   type = map(object({
-    bq_partitioned_table = optional(bool)
+    bq_partitioned_table = optional(bool, false)
     description          = optional(string)
     destination          = string
     disabled             = optional(bool, false)

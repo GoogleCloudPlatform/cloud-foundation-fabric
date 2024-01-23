@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,7 +182,7 @@ variable "logging_sinks" {
   type = map(object({
     destination          = string
     type                 = string
-    bq_partitioned_table = optional(bool)
+    bq_partitioned_table = optional(bool, false)
     description          = optional(string)
     disabled             = optional(bool, false)
     exclusions = optional(map(object({
