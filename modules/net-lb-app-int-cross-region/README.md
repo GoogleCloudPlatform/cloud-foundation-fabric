@@ -48,7 +48,7 @@ module "ilb-l7" {
     }
   }
 }
-# tftest modules=1 resources=6 fixtures=fixtures/compute-mig.tf e2e
+# tftest modules=3 resources=7 fixtures=fixtures/compute-mig.tf e2e
 ```
 
 An HTTPS ILB needs a few additional fields:
