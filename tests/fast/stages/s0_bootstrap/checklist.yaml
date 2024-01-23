@@ -40,13 +40,93 @@ values:
     locked: null
     project: fast-prod-audit-logs-0
     retention_days: 30
-  module.organization.google_organization_iam_binding.authoritative["roles/securitycenter.admin"]:
+  module.organization.google_organization_iam_binding.authoritative["roles/billing.creator"]:
     condition: []
     members:
+    - group:gcp-billing-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/billing.creator
+  module.organization.google_organization_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - domain:fast.example.com
+    org_id: '123456789012'
+    role: roles/browser
+  module.organization.google_organization_iam_binding.authoritative["roles/cloudasset.owner"]:
+    condition: []
+    members:
+    - group:gcp-network-admins@fast.example.com
     - group:gcp-organization-admins@fast.example.com
     - group:gcp-security-admins@fast.example.com
     org_id: '123456789012'
-    role: roles/securitycenter.admin
+    role: roles/cloudasset.owner
+  module.organization.google_organization_iam_binding.authoritative["roles/cloudsupport.admin"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/cloudsupport.admin
+  module.organization.google_organization_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
+    condition: []
+    members:
+    - group:gcp-devops@fast.example.com
+    - group:gcp-network-admins@fast.example.com
+    - group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/cloudsupport.techSupportEditor
+  module.organization.google_organization_iam_binding.authoritative["roles/compute.osAdminLogin"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/compute.osAdminLogin
+  module.organization.google_organization_iam_binding.authoritative["roles/compute.osLoginExternalUser"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/compute.osLoginExternalUser
+  module.organization.google_organization_iam_binding.authoritative["roles/iam.securityReviewer"]:
+    condition: []
+    members:
+    - group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/iam.securityReviewer
+  module.organization.google_organization_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - group:gcp-security-admins@fast.example.com
+    - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/logging.admin
+  module.organization.google_organization_iam_binding.authoritative["roles/logging.viewer"]:
+    condition: []
+    members:
+    - group:gcp-devops@fast.example.com
+    - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/logging.viewer
+  module.organization.google_organization_iam_binding.authoritative["roles/monitoring.viewer"]:
+    condition: []
+    members:
+    - group:gcp-devops@fast.example.com
+    org_id: '123456789012'
+    role: roles/monitoring.viewer
+  module.organization.google_organization_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/owner
+  module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/resourcemanager.folderAdmin
   module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
     condition: []
     members:
@@ -56,21 +136,226 @@ values:
     - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '123456789012'
     role: roles/resourcemanager.folderViewer
+  module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.organizationAdmin"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/resourcemanager.organizationAdmin
+  module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/resourcemanager.projectCreator
+  module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.projectMover"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/resourcemanager.projectMover
+  module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.tagAdmin"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    - serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/resourcemanager.tagAdmin
+  module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/resourcemanager.tagUser
+  module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.tagViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/resourcemanager.tagViewer
+  module.organization.google_organization_iam_binding.authoritative["roles/securitycenter.admin"]:
+    condition: []
+    members:
+    - group:gcp-organization-admins@fast.example.com
+    - group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/securitycenter.admin
+  module.organization.google_organization_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/serviceusage.serviceUsageViewer
+  module.organization.google_organization_iam_binding.bindings["organization_iam_admin_conditional"]:
+    condition:
+    - description: Automation service account delegated grants.
+      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/accesscontextmanager.policyAdmin','roles/compute.orgFirewallPolicyAdmin','roles/compute.xpnAdmin','roles/orgpolicy.policyAdmin','roles/resourcemanager.organizationViewer','organizations/123456789012/roles/tenantNetworkAdmin','roles/billing.admin','roles/billing.costsManager','roles/billing.user'])
+      title: automation_sa_delegated_grants
+    members:
+    - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/organizationIamAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyAdmin-group:gcp-security-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/accesscontextmanager.policyAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/billing.admin-group:gcp-billing-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-billing-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/billing.admin
+  ? module.organization.google_organization_iam_member.bindings["roles/billing.admin-group:gcp-organization-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-organization-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/billing.admin
+  ? module.organization.google_organization_iam_member.bindings["roles/billing.admin-serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.admin
+  ? module.organization.google_organization_iam_member.bindings["roles/billing.admin-serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.admin
+  ? module.organization.google_organization_iam_member.bindings["roles/billing.user-group:gcp-organization-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-organization-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/billing.user
+  ? module.organization.google_organization_iam_member.bindings["roles/billing.viewer-serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.viewer
+  ? module.organization.google_organization_iam_member.bindings["roles/billing.viewer-serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.viewer
+  ? module.organization.google_organization_iam_member.bindings["roles/compute.networkAdmin-group:gcp-network-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-network-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/compute.networkAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/compute.orgFirewallPolicyAdmin-group:gcp-network-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-network-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/compute.orgFirewallPolicyAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/compute.securityAdmin-group:gcp-network-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-network-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/compute.securityAdmin
   ? module.organization.google_organization_iam_member.bindings["roles/compute.viewer-group:gcp-security-admins@fast.example.com"]
   : condition: []
     member: group:gcp-security-admins@fast.example.com
     org_id: '123456789012'
     role: roles/compute.viewer
+  ? module.organization.google_organization_iam_member.bindings["roles/compute.xpnAdmin-group:gcp-network-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-network-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/compute.xpnAdmin
   ? module.organization.google_organization_iam_member.bindings["roles/container.viewer-group:gcp-security-admins@fast.example.com"]
   : condition: []
     member: group:gcp-security-admins@fast.example.com
     org_id: '123456789012'
     role: roles/container.viewer
-  ? module.organization.google_organization_iam_member.bindings["roles/monitoring.admin-group:gcp-monitoring-admins@fast.example.com"]
+  ? module.organization.google_organization_iam_member.bindings["roles/iam.organizationRoleAdmin-group:gcp-organization-admins@fast.example.com"]
   : condition: []
-    member: group:gcp-monitoring-admins@fast.example.com
+    member: group:gcp-organization-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/iam.organizationRoleAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/iam.organizationRoleAdmin-group:gcp-security-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/iam.organizationRoleAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/iam.organizationRoleAdmin-serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/iam.organizationRoleAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/iam.organizationRoleViewer-group:gcp-security-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/iam.organizationRoleViewer
+  ? module.organization.google_organization_iam_member.bindings["roles/iam.organizationRoleViewer-serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/iam.organizationRoleViewer
+  ? module.organization.google_organization_iam_member.bindings["roles/logging.configWriter-group:gcp-security-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/logging.configWriter
+  ? module.organization.google_organization_iam_member.bindings["roles/logging.privateLogViewer-group:gcp-security-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/logging.privateLogViewer
+  ? module.organization.google_organization_iam_member.bindings["roles/monitoring.admin-group:gcp-monitoring-admins@fast-onboarding-0.joonix.net"]
+  : condition: []
+    member: group:gcp-monitoring-admins@fast-onboarding-0.joonix.net
     org_id: '123456789012'
     role: roles/monitoring.admin
+  ? module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyAdmin-group:gcp-organization-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-organization-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/orgpolicy.policyAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyAdmin-group:gcp-security-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/orgpolicy.policyAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyAdmin-serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-bootstrap-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/orgpolicy.policyAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyAdmin-serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/orgpolicy.policyAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyViewer-serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/orgpolicy.policyViewer
+  ? module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyViewer-serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com"]
+  : condition: []
+    member: serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/orgpolicy.policyViewer
+  ? module.organization.google_organization_iam_member.bindings["roles/resourcemanager.folderIamAdmin-group:gcp-security-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-security-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/resourcemanager.folderIamAdmin
+  ? module.organization.google_organization_iam_member.bindings["roles/resourcemanager.organizationViewer-group:gcp-billing-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-billing-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/resourcemanager.organizationViewer
+  ? module.organization.google_organization_iam_member.bindings["roles/storage.objectAdmin-group:gcp-organization-admins@fast.example.com"]
+  : condition: []
+    member: group:gcp-organization-admins@fast.example.com
+    org_id: '123456789012'
+    role: roles/storage.objectAdmin
+
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3
