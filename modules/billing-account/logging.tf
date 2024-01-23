@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ resource "google_logging_billing_account_sink" "sink" {
   disabled        = each.value.disabled
 
   dynamic "bigquery_options" {
-    for_each = each.value.type == "bigquery" && each.value.bq_partitioned_table != false ? [""] : []
+    for_each = each.value.type == "bigquery" ? [""] : []
     content {
       use_partitioned_tables = each.value.bq_partitioned_table
     }
