@@ -90,26 +90,16 @@ module "private-dns" {
     }
     "A geo2" = {
       geo_routing = [
-        { location = "europe-west1", health_checked_targets = [
+        { location = var.region, health_checked_targets = [
           {
-            load_balancer_type = "globalL7ilb",
-            ip_address         = "10.10.2.3",
-            port               = "80",
-            ip_protocol        = "tcp",
+            load_balancer_type = "globalL7ilb"
+            ip_address         = module.net-lb-app-int-cross-region.addresses[var.region]
+            port               = "80"
+            ip_protocol        = "tcp"
             network_url        = var.vpc.self_link
             project            = var.project_id
           }
-        ] },
-        { location = "europe-west2", health_checked_targets = [
-          {
-            load_balancer_type = "globalL7ilb",
-            ip_address         = "10.10.3.3",
-            port               = "80",
-            ip_protocol        = "tcp",
-            network_url        = var.vpc.self_link
-            project            = var.project_id
-          }
-        ] },
+        ] }
       ]
     }
     "A wrr" = {
@@ -122,7 +112,7 @@ module "private-dns" {
     }
   }
 }
-# tftest modules=1 resources=5 inventory=routing-policies.yaml e2e
+# tftest modules=4 resources=12 fixtures=fixtures/net-lb-app-int-cross-region.tf,fixtures/compute-mig.tf inventory=routing-policies.yaml e2e
 ```
 
 ### Reverse Lookup Zone
@@ -184,4 +174,9 @@ module "public-dns" {
 | [name](outputs.tf#L32) | The DNS zone name. |  |
 | [name_servers](outputs.tf#L37) | The DNS zone name servers. |  |
 | [zone](outputs.tf#L42) | DNS zone resource. |  |
+
+## Fixtures
+
+- [compute-mig.tf](../../tests/fixtures/compute-mig.tf)
+- [net-lb-app-int-cross-region.tf](../../tests/fixtures/net-lb-app-int-cross-region.tf)
 <!-- END TFDOC -->

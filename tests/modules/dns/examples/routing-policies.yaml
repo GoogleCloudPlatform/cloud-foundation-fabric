@@ -64,28 +64,8 @@ values:
     routing_policy:
     - enable_geo_fencing: null
       geo:
-      - health_checked_targets:
-        - internal_load_balancers:
-          - ip_address: 10.10.2.3
-            ip_protocol: tcp
-            load_balancer_type: globalL7ilb
-            network_url: projects/xxx/global/networks/aaa
-            port: '80'
-            project: project-id
-            region: null
-        location: europe-west1
-        rrdatas: null
-      - health_checked_targets:
-        - internal_load_balancers:
-          - ip_address: 10.10.3.3
-            ip_protocol: tcp
-            load_balancer_type: globalL7ilb
-            network_url: projects/xxx/global/networks/aaa
-            port: '80'
-            project: project-id
-            region: null
-        location: europe-west2
-        rrdatas: null
+        - location: europe-west8
+          rrdatas: null
       primary_backup: []
       wrr: []
     rrdatas: null
@@ -128,5 +108,5 @@ values:
 counts:
   google_dns_managed_zone: 1
   google_dns_record_set: 4
-  modules: 1
-  resources: 5
+  modules: 4
+  resources: 12
