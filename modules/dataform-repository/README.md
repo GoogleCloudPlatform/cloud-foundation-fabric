@@ -2,10 +2,6 @@
 
 This module allows managing a single dataform repository including attaching a remote repository if available.
 
-## TODO
-
-- [ ] Add repository specific IAM set possibilities
-
 ## Examples
 
 
