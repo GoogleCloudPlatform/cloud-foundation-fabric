@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,17 @@
 # tfdoc:file:description Data Platform.
 
 module "data-platform" {
-  source             = "../../../../blueprints/data-solutions/data-platform-foundations"
-  composer_config    = var.composer_config
-  data_force_destroy = var.data_force_destroy
-  data_catalog_tags  = var.data_catalog_tags
+  source              = "../../../../blueprints/data-solutions/data-platform-foundations"
+  composer_config     = var.composer_config
+  deletion_protection = var.deletion_protection
+  data_catalog_tags   = var.data_catalog_tags
   project_config = {
     billing_account_id = var.billing_account.id
+    project_create     = var.project_config.project_create
     parent             = var.folder_ids.data-platform-dev
+    project_ids        = var.project_config.project_ids
   }
-  groups   = var.groups
+  groups   = var.groups_dp
   location = var.location
   network_config = {
     host_project      = var.host_project_ids.dev-spoke-0
@@ -46,9 +48,9 @@ module "data-platform" {
     }
   }
   organization_domain     = var.organization.domain
-  prefix                  = "${var.prefix}-dev-dt"
+  prefix                  = "${var.prefix}-dev-dp"
   project_services        = var.project_services
-  project_suffix          = "0"
+  project_suffix          = var.project_suffix
   region                  = var.region
   service_encryption_keys = var.service_encryption_keys
 }

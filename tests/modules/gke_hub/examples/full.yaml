@@ -13,14 +13,129 @@
 # limitations under the License.
 
 values:
+  module.cluster_1.google_container_cluster.cluster:
+    addons_config:
+    - cloudrun_config:
+      - disabled: true
+        load_balancer_type: null
+      config_connector_config:
+      - enabled: false
+      dns_cache_config:
+      - enabled: false
+      gce_persistent_disk_csi_driver_config:
+      - enabled: false
+      gcp_filestore_csi_driver_config:
+      - enabled: false
+      gcs_fuse_csi_driver_config:
+      - enabled: false
+      gke_backup_agent_config:
+      - enabled: false
+      horizontal_pod_autoscaling:
+      - disabled: false
+      http_load_balancing:
+      - disabled: false
+      istio_config:
+      - auth: null
+        disabled: true
+      kalm_config:
+      - enabled: false
+      network_policy_config:
+      - disabled: true
+    allow_net_admin: null
+    binary_authorization: []
+    datapath_provider: ADVANCED_DATAPATH
+    default_max_pods_per_node: 110
+    deletion_protection: true
+    description: null
+    dns_config: []
+    enable_autopilot: null
+    enable_fqdn_network_policy: false
+    enable_intranode_visibility: false
+    enable_k8s_beta_apis: []
+    enable_kubernetes_alpha: false
+    enable_l4_ilb_subsetting: false
+    enable_legacy_abac: false
+    enable_multi_networking: false
+    enable_shielded_nodes: false
+    enable_tpu: false
+    fleet: []
+    initial_node_count: 1
+    location: europe-west1
+    logging_config:
+    - enable_components:
+      - SYSTEM_COMPONENTS
+    maintenance_policy:
+    - daily_maintenance_window:
+      - start_time: 03:00
+      maintenance_exclusion: []
+      recurring_window: []
+    master_auth:
+    - client_certificate_config:
+      - issue_client_certificate: false
+    master_authorized_networks_config:
+    - cidr_blocks:
+      - cidr_block: 10.0.0.0/8
+        display_name: rfc1918_10_8
+    min_master_version: null
+    monitoring_config:
+    - enable_components:
+      - SYSTEM_COMPONENTS
+      managed_prometheus:
+      - enabled: true
+    name: cluster-1
+    network_policy: []
+    node_config:
+    - advanced_machine_features: []
+      boot_disk_kms_key: null
+      enable_confidential_storage: null
+      ephemeral_storage_config: []
+      ephemeral_storage_local_ssd_config: []
+      fast_socket: []
+      gcfs_config: []
+      gvnic: []
+      host_maintenance_policy: []
+      kubelet_config: []
+      linux_node_config: []
+      local_nvme_ssd_block_config: []
+      node_group: null
+      preemptible: false
+      reservation_affinity: []
+      resource_labels: null
+      sandbox_config: []
+      sole_tenant_config: []
+      spot: false
+      tags: null
+      taint: []
+    node_pool_defaults:
+    - node_config_defaults:
+      - gcfs_config:
+        - enabled: false
+    pod_security_policy_config: []
+    private_cluster_config:
+    - enable_private_endpoint: true
+      enable_private_nodes: true
+      master_global_access_config:
+      - enabled: false
+      master_ipv4_cidr_block: 192.168.0.0/28
+      private_endpoint_subnetwork: null
+    project: gkehub-test
+    remove_default_node_pool: true
+    resource_labels: null
+    resource_usage_export_config: []
+    timeouts: null
+    workload_identity_config:
+    - workload_pool: gkehub-test.svc.id.goog
   module.hub.google_gke_hub_feature.default["configmanagement"]:
+    fleet_default_member_config: []
+    labels: null
     location: global
     name: configmanagement
     project: gkehub-test
+    spec: []
+    timeouts: null
   module.hub.google_gke_hub_feature_membership.default["cluster-1"]:
     configmanagement:
-    - binauthz: []
-      config_sync:
+    - config_sync:
       - git:
         - gcp_service_account_email: null
           https_proxy: null
@@ -30,8 +145,8 @@ values:
           sync_repo: https://github.com/danielmarzini/configsync-platform-example
           sync_rev: null
           sync_wait_secs: null
+        metrics_gcp_service_account_email: null
         oci: []
-        prevent_drift: false
         source_format: hierarchy
       hierarchy_controller:
       - enable_hierarchical_resource_quota: true
@@ -40,7 +155,7 @@ values:
       policy_controller:
       - audit_interval_seconds: '120'
         enabled: true
-        exemptable_namespaces: []
+        exemptable_namespaces: null
         log_denies_enabled: true
         mutation_enabled: null
         referential_rules_enabled: true
@@ -49,18 +164,131 @@ values:
     feature: configmanagement
     location: global
     membership: cluster-1
+    membership_location: null
     mesh: []
     project: gkehub-test
+    timeouts: null
   module.hub.google_gke_hub_membership.default["cluster-1"]:
     authority: []
+    description: null
     endpoint:
     - gke_cluster:
       - {}
+    labels: null
+    location: global
     membership_id: cluster-1
     project: gkehub-test
+    timeouts: null
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    folder_id: '12345'
+    labels: null
+    name: gkehub-test
+    org_id: null
+    project_id: gkehub-test
+    skip_delete: false
+    timeouts: null
+  module.project.google_project_service.project_services["anthosconfigmanagement.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: gkehub-test
+    service: anthosconfigmanagement.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: gkehub-test
+    service: container.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["gkeconnect.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: gkehub-test
+    service: gkeconnect.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["gkehub.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: gkehub-test
+    service: gkehub.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["mesh.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: gkehub-test
+    service: mesh.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["multiclusteringress.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: gkehub-test
+    service: multiclusteringress.googleapis.com
+    timeouts: null
+  module.project.google_project_service.project_services["multiclusterservicediscovery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: gkehub-test
+    service: multiclusterservicediscovery.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.jit_si["gkehub.googleapis.com"]:
+    project: gkehub-test
+    service: gkehub.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.jit_si["multiclusteringress.googleapis.com"]:
+    project: gkehub-test
+    service: multiclusteringress.googleapis.com
+    timeouts: null
+  module.vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: network
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    project: gkehub-test
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc.google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: network-private-googleapis
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: gkehub-test
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: network-restricted-googleapis
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: gkehub-test
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/cluster-1"]:
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.0.0/24
+    ipv6_access_type: null
+    log_config: []
+    name: cluster-1
+    private_ip_google_access: true
+    project: gkehub-test
+    region: europe-west1
+    role: null
+    secondary_ip_range: []
+    timeouts: null
 
 counts:
   google_compute_network: 1
+  google_compute_route: 2
   google_compute_subnetwork: 1
   google_container_cluster: 1
   google_gke_hub_feature: 1
@@ -69,3 +297,7 @@ counts:
   google_project: 1
   google_project_service: 7
   google_project_service_identity: 2
+  modules: 4
+  resources: 18
+
+outputs: {}

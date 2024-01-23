@@ -2,30 +2,33 @@
 #
 # sample subset of useful organization policies, edit to suit requirements
 
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 run.allowedIngress:
   rules:
-  - allow:
-      values:
-      - is:internal
-
+    - allow:
+        values:
+          - is:internal
 # run.allowedVPCEgress:
 #   rules:
-#   - allow:
-#       values:
-#       - is:private-ranges-only
+#     - allow:
+#         values:
+#           - is:private-ranges-only
 
 # cloudfunctions.allowedIngressSettings:
 #   rules:
-#   - allow:
-#       values:
-#       - is:ALLOW_INTERNAL_ONLY
+#     - allow:
+#         values:
+#           - is:ALLOW_INTERNAL_ONLY
 
 # cloudfunctions.allowedVpcConnectorEgressSettings:
 #   rules:
-#   - allow:
-#       values:
-#       - is:PRIVATE_RANGES_ONLY
+#     - allow:
+#         values:
+#           - is:PRIVATE_RANGES_ONLY
 
 # cloudfunctions.requireVPCConnector:
 #   rules:
-#   - enforce: true
+#     - enforce: true

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,17 @@ locals {
       )
     )
   }
-  termination_action = var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
+  tags_combined = (
+    var.tag_bindings == null && var.tag_bindings_firewall == null
+    ? null
+    : merge(
+      coalesce(var.tag_bindings, {}),
+      coalesce(var.tag_bindings_firewall, {})
+    )
+  )
+  termination_action = (
+    var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
+  )
 }
 
 resource "google_compute_disk" "boot" {
@@ -216,9 +226,10 @@ resource "google_compute_instance" "default" {
         : [""]
       )
       content {
-        image = var.boot_disk.initialize_params.image
-        size  = var.boot_disk.initialize_params.size
-        type  = var.boot_disk.initialize_params.type
+        image                 = var.boot_disk.initialize_params.image
+        size                  = var.boot_disk.initialize_params.size
+        type                  = var.boot_disk.initialize_params.type
+        resource_manager_tags = var.tag_bindings
       }
     }
   }
@@ -237,6 +248,8 @@ resource "google_compute_instance" "default" {
       network    = config.value.network
       subnetwork = config.value.subnetwork
       network_ip = try(config.value.addresses.internal, null)
+      nic_type   = config.value.nic_type
+      stack_type = config.value.stack_type
       dynamic "access_config" {
         for_each = config.value.nat ? [""] : []
         content {
@@ -251,7 +264,6 @@ resource "google_compute_instance" "default" {
           ip_cidr_range         = config_alias.value
         }
       }
-      nic_type = config.value.nic_type
     }
   }
 
@@ -261,6 +273,16 @@ resource "google_compute_instance" "default" {
     on_host_maintenance         = local.on_host_maintenance
     preemptible                 = var.options.spot
     provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+
+    dynamic "node_affinities" {
+      for_each = var.options.node_affinities
+      iterator = affinity
+      content {
+        key      = affinity.key
+        operator = affinity.value.in ? "IN" : "NOT_IN"
+        values   = affinity.value.values
+      }
+    }
   }
 
   dynamic "scratch_disk" {
@@ -291,6 +313,13 @@ resource "google_compute_instance" "default" {
     }
   }
 
+  dynamic "params" {
+    for_each = local.tags_combined == null ? [] : [""]
+    content {
+      resource_manager_tags = local.tags_combined
+    }
+  }
+
   # guest_accelerator
 }
 
@@ -305,25 +334,27 @@ resource "google_compute_instance_iam_binding" "default" {
 }
 
 resource "google_compute_instance_template" "default" {
-  provider         = google-beta
-  count            = var.create_template ? 1 : 0
-  project          = var.project_id
-  region           = local.region
-  name_prefix      = "${var.name}-"
-  description      = var.description
-  tags             = var.tags
-  machine_type     = var.instance_type
-  min_cpu_platform = var.min_cpu_platform
-  can_ip_forward   = var.can_ip_forward
-  metadata         = var.metadata
-  labels           = var.labels
+  provider              = google-beta
+  count                 = var.create_template ? 1 : 0
+  project               = var.project_id
+  region                = local.region
+  name_prefix           = "${var.name}-"
+  description           = var.description
+  tags                  = var.tags
+  machine_type          = var.instance_type
+  min_cpu_platform      = var.min_cpu_platform
+  can_ip_forward        = var.can_ip_forward
+  metadata              = var.metadata
+  labels                = var.labels
+  resource_manager_tags = local.tags_combined
 
   disk {
-    auto_delete  = var.boot_disk.auto_delete
-    boot         = true
-    disk_size_gb = var.boot_disk.initialize_params.size
-    disk_type    = var.boot_disk.initialize_params.type
-    source_image = var.boot_disk.initialize_params.image
+    auto_delete           = var.boot_disk.auto_delete
+    boot                  = true
+    disk_size_gb          = var.boot_disk.initialize_params.size
+    disk_type             = var.boot_disk.initialize_params.type
+    resource_manager_tags = var.tag_bindings
+    source_image          = var.boot_disk.initialize_params.image
   }
 
   dynamic "confidential_instance_config" {
@@ -357,7 +388,8 @@ resource "google_compute_instance_template" "default" {
       disk_name = (
         config.value.source_type != "attach" ? config.value.name : null
       )
-      type = "PERSISTENT"
+      resource_manager_tags = var.tag_bindings
+      type                  = "PERSISTENT"
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []
         content {
@@ -374,6 +406,8 @@ resource "google_compute_instance_template" "default" {
       network    = config.value.network
       subnetwork = config.value.subnetwork
       network_ip = try(config.value.addresses.internal, null)
+      nic_type   = config.value.nic_type
+      stack_type = config.value.stack_type
       dynamic "access_config" {
         for_each = config.value.nat ? [""] : []
         content {
@@ -388,7 +422,6 @@ resource "google_compute_instance_template" "default" {
           ip_cidr_range         = config_alias.value
         }
       }
-      nic_type = config.value.nic_type
     }
   }
 
@@ -398,6 +431,16 @@ resource "google_compute_instance_template" "default" {
     on_host_maintenance         = local.on_host_maintenance
     preemptible                 = var.options.spot
     provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+
+    dynamic "node_affinities" {
+      for_each = var.options.node_affinities
+      iterator = affinity
+      content {
+        key      = affinity.key
+        operator = affinity.value.in ? "IN" : "NOT_IN"
+        values   = affinity.value.values
+      }
+    }
   }
 
   dynamic "service_account" {

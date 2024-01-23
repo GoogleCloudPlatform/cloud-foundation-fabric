@@ -16,12 +16,13 @@
 
 # tfdoc:file:description Project factory stage resources.
 
+# automation service accounts
+
 module "branch-pf-dev-sa" {
-  source     = "../../../modules/iam-service-account"
-  count      = var.fast_features.project_factory ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "dev-resman-pf-0"
-  # naming: environment in description
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.project_factory ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "dev-resman-pf-0"
   display_name = "Terraform project factory development service account."
   prefix       = var.prefix
   iam = {
@@ -29,17 +30,19 @@ module "branch-pf-dev-sa" {
       try(module.branch-pf-dev-sa-cicd.0.iam_email, null)
     ])
   }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
 
 module "branch-pf-prod-sa" {
-  source     = "../../../modules/iam-service-account"
-  count      = var.fast_features.project_factory ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "prod-resman-pf-0"
-  # naming: environment in description
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.project_factory ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "prod-resman-pf-0"
   display_name = "Terraform project factory production service account."
   prefix       = var.prefix
   iam = {
@@ -47,10 +50,57 @@ module "branch-pf-prod-sa" {
       try(module.branch-pf-prod-sa-cicd.0.iam_email, null)
     ])
   }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.objectAdmin"]
   }
 }
+
+# automation read-only service accounts
+
+module "branch-pf-dev-r-sa" {
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.project_factory ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "dev-resman-pf-0r"
+  display_name = "Terraform project factory development service account (read-only)."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-pf-dev-r-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
+  }
+}
+
+module "branch-pf-prod-r-sa" {
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.project_factory ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "prod-resman-pf-0r"
+  display_name = "Terraform project factory production service account (read-only)."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-pf-prod-r-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
+  }
+}
+
+# automation buckets
 
 module "branch-pf-dev-gcs" {
   source        = "../../../modules/gcs"
@@ -62,7 +112,8 @@ module "branch-pf-dev-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-pf-dev-sa.0.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-pf-dev-sa.0.iam_email]
+    "roles/storage.objectViewer" = [module.branch-pf-dev-r-sa.0.iam_email]
   }
 }
 
@@ -76,6 +127,7 @@ module "branch-pf-prod-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-pf-prod-sa.0.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-pf-prod-sa.0.iam_email]
+    "roles/storage.objectViewer" = [module.branch-pf-prod-r-sa.0.iam_email]
   }
 }

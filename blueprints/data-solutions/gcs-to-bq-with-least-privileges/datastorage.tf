@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ module "gcs-data" {
   location       = var.region
   storage_class  = "REGIONAL"
   encryption_key = var.cmek_encryption ? module.kms[0].keys.key-gcs.id : null
-  force_destroy  = true
+  force_destroy  = !var.deletion_protection
 }
 
 module "gcs-df-tmp" {
@@ -31,7 +31,7 @@ module "gcs-df-tmp" {
   location       = var.region
   storage_class  = "REGIONAL"
   encryption_key = var.cmek_encryption ? module.kms[0].keys.key-gcs.id : null
-  force_destroy  = true
+  force_destroy  = !var.deletion_protection
 }
 
 module "bigquery-dataset" {

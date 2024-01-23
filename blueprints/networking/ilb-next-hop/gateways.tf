@@ -67,7 +67,11 @@ module "ilb-left" {
     network    = module.vpc-left.self_link
     subnetwork = values(module.vpc-left.subnet_self_links)[0]
   }
-  address = local.addresses.ilb-left
+  forwarding_rules_config = {
+    "" = {
+      address = local.addresses.ilb-left
+    }
+  }
   backend_service_config = {
     session_affinity = var.ilb_session_affinity
   }
@@ -91,7 +95,11 @@ module "ilb-right" {
     network    = module.vpc-right.self_link
     subnetwork = values(module.vpc-right.subnet_self_links)[0]
   }
-  address = local.addresses.ilb-right
+  forwarding_rules_config = {
+    "" = {
+      address = local.addresses.ilb-right
+    }
+  }
   backend_service_config = {
     session_affinity = var.ilb_session_affinity
   }

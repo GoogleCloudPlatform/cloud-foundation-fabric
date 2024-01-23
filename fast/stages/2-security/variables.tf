@@ -74,6 +74,7 @@ variable "kms_keys" {
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
+      role    = string
       condition = optional(object({
         expression  = string
         title       = string

@@ -62,7 +62,7 @@ done
 
 7. Configure Billing Account permissions.
 
-If you are using a standalone billing account, the user applying this stage for the first time needs to be a Billing Administrator.
+If you are using a standalone or different organization billing account, the user applying this stage for the first time needs to be a Billing Administrator.
 
 ```bash
 # find your billing account id with gcloud beta billing accounts list
@@ -72,8 +72,6 @@ export FAST_BA_ID=XXXXXX-YYYYYY-ZZZZZZ
 gcloud beta billing accounts add-iam-policy-binding $FAST_BA_ID \
 --member user:$FAST_BU --role roles/billing.admin
 ```
-
-If you are using a billing account in a different organization, please follow [these steps](0-bootstrap#billing-account-in-a-different-organization) instead.
 
 ## Stage 0 (Bootstrap)
 

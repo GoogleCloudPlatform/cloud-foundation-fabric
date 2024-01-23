@@ -53,6 +53,9 @@ resource "google_compute_ssl_certificate" "default" {
   name        = "${var.name}-${each.key}"
   certificate = trimspace(each.value.certificate)
   private_key = trimspace(each.value.private_key)
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "google_compute_managed_ssl_certificate" "default" {
@@ -79,13 +82,14 @@ resource "google_compute_target_http_proxy" "default" {
 }
 
 resource "google_compute_target_https_proxy" "default" {
-  count            = var.protocol == "HTTPS" ? 1 : 0
-  project          = var.project_id
-  name             = var.name
-  description      = var.description
-  certificate_map  = var.https_proxy_config.certificate_map
-  quic_override    = var.https_proxy_config.quic_override
-  ssl_certificates = local.proxy_ssl_certificates
-  ssl_policy       = var.https_proxy_config.ssl_policy
-  url_map          = google_compute_url_map.default.id
+  count             = var.protocol == "HTTPS" ? 1 : 0
+  project           = var.project_id
+  name              = var.name
+  description       = var.description
+  certificate_map   = var.https_proxy_config.certificate_map
+  quic_override     = var.https_proxy_config.quic_override
+  ssl_certificates  = local.proxy_ssl_certificates
+  ssl_policy        = var.https_proxy_config.ssl_policy
+  url_map           = google_compute_url_map.default.id
+  server_tls_policy = var.https_proxy_config.mtls_policy
 }

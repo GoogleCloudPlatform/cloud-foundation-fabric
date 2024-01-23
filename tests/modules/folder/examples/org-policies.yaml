@@ -15,7 +15,7 @@
 values:
   module.folder.google_folder.folder[0]:
     display_name: Folder name
-    parent: organizations/1234567890
+    parent: folders/1122334455
   module.folder.google_org_policy_policy.default["compute.disableGuestAttributesAccess"]:
     spec:
     - inherit_from_parent: null

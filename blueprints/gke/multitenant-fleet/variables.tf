@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,6 +89,13 @@ variable "clusters" {
   nullable = false
 }
 
+variable "deletion_protection" {
+  description = "Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail."
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "fleet_configmanagement_clusters" {
   description = "Config management features enabled on specific sets of member clusters, in config name => [cluster name] format."
   type        = map(list(string))
@@ -98,35 +105,8 @@ variable "fleet_configmanagement_clusters" {
 
 variable "fleet_configmanagement_templates" {
   description = "Sets of config management configurations that can be applied to member clusters, in config name => {options} format."
-  type = map(object({
-    binauthz = bool
-    config_sync = object({
-      git = object({
-        gcp_service_account_email = string
-        https_proxy               = string
-        policy_dir                = string
-        secret_type               = string
-        sync_branch               = string
-        sync_repo                 = string
-        sync_rev                  = string
-        sync_wait_secs            = number
-      })
-      prevent_drift = string
-      source_format = string
-    })
-    hierarchy_controller = object({
-      enable_hierarchical_resource_quota = bool
-      enable_pod_tree_labels             = bool
-    })
-    policy_controller = object({
-      audit_interval_seconds     = number
-      exemptable_namespaces      = list(string)
-      log_denies_enabled         = bool
-      referential_rules_enabled  = bool
-      template_library_installed = bool
-    })
-    version = string
-  }))
+  # refer to the gke-hub module for the full type
+  type     = map(any)
   default  = {}
   nullable = false
 }
@@ -134,12 +114,12 @@ variable "fleet_configmanagement_templates" {
 variable "fleet_features" {
   description = "Enable and configure fleet features. Set to null to disable GKE Hub if fleet workload identity is not used."
   type = object({
-    appdevexperience             = bool
-    configmanagement             = bool
-    identityservice              = bool
-    multiclusteringress          = string
-    multiclusterservicediscovery = bool
-    servicemesh                  = bool
+    appdevexperience             = optional(bool, false)
+    configmanagement             = optional(bool, false)
+    identityservice              = optional(bool, false)
+    multiclusteringress          = optional(string, null)
+    multiclusterservicediscovery = optional(bool, false)
+    servicemesh                  = optional(bool, false)
   })
   default = null
 }
@@ -192,8 +172,7 @@ variable "nodepools" {
     service_account       = optional(any)
     sole_tenant_nodegroup = optional(string)
     tags                  = optional(list(string))
-    taints = optional(list(object({
-      key    = string
+    taints = optional(map(object({
       value  = string
       effect = string
     })))

@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -105,9 +105,7 @@ module "processing-project" {
   iam_bindings_additive = (
     var.project_config.billing_account_id != null ? {} : local.iam_prc_additive
   )
-  compute_metadata = {
-    enable-oslogin = "false"
-  }
+
   services = [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -159,6 +157,7 @@ module "processing-cs-0" {
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = var.service_encryption_keys.storage
+  force_destroy  = !var.deletion_protection
 }
 
 # internal VPC resources

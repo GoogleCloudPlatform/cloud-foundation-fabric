@@ -59,4 +59,7 @@ module "branch-sandbox-sa" {
   name         = "dev-resman-sbox-0"
   display_name = "Terraform resman sandbox service account."
   prefix       = var.prefix
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
 }

@@ -12,6 +12,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
   - [Minimal HTTPS examples](#minimal-https-examples)
     - [HTTP backends](#http-backends)
     - [HTTPS backends](#https-backends)
+    - [HTTP to HTTPS redirect](#http-to-https-redirect)
   - [Classic vs Non-classic](#classic-vs-non-classic)
   - [Health Checks](#health-checks)
   - [Backend Types and Management](#backend-types-and-management)
@@ -30,8 +31,8 @@ Due to the complexity of the underlying resources, changes to the configuration 
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Fixtures](#fixtures)
 <!-- END TOC -->
-
 
 ### Minimal HTTP Example
 
@@ -40,36 +41,36 @@ An HTTP load balancer with a backend service pointing to a GCE instance group:
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id },
       ]
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=minimal-http.yaml e2e
 ```
 
 ### Minimal HTTPS examples
 
 #### HTTP backends
 
-An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. THis is an example With HTTP backends and a managed certificate:
+An HTTPS load balancer needs a certificate and backends can be HTTP or HTTPS. This is an example With HTTP backends and a managed certificate:
 
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id },
       ]
       protocol = "HTTP"
     }
@@ -83,7 +84,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf inventory=http-backends.yaml  e2e
 ```
 
 #### HTTPS backends
@@ -93,13 +94,13 @@ For HTTPS backends the backend service protocol needs to be set to `HTTPS`. The 
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id },
       ]
       protocol = "HTTPS"
     }
@@ -120,7 +121,66 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf inventory=https-backends.yaml e2e
+```
+
+#### HTTP to HTTPS redirect
+
+Redirect is implemented via an additional HTTP load balancer with a custom URL map, similarly to how it's done via the GCP Console. The address shared by the two load balancers needs to be reserved.
+
+```hcl
+module "addresses" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  global_addresses = {
+    "glb-test-0" = {}
+  }
+}
+
+module "glb-test-0-redirect" {
+  source     = "./fabric/modules/net-lb-app-ext"
+  project_id = var.project_id
+  name       = "glb-test-0-redirect"
+  address = (
+    module.addresses.global_addresses["glb-test-0"].address
+  )
+  health_check_configs = {}
+  urlmap_config = {
+    description = "URL redirect for glb-test-0."
+    default_url_redirect = {
+      https         = true
+      response_code = "MOVED_PERMANENTLY_DEFAULT"
+    }
+  }
+}
+
+module "glb-test-0" {
+  source              = "./fabric/modules/net-lb-app-ext"
+  project_id          = var.project_id
+  name                = "glb-test-0"
+  use_classic_version = false
+  address = (
+    module.addresses.global_addresses["glb-test-0"].address
+  )
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = module.compute-vm-group-b.group.id },
+      ]
+      protocol = "HTTP"
+    }
+  }
+  protocol = "HTTPS"
+  ssl_certificates = {
+    managed_configs = {
+      default = {
+        domains = ["glb-test.example.com"]
+      }
+    }
+  }
+}
+
+# tftest modules=5 resources=14  fixtures=fixtures/compute-vm-group-bc.tf inventory=http-https-redirect.yaml e2e
 ```
 
 ### Classic vs Non-classic
@@ -130,19 +190,19 @@ The module uses a classic Global Load Balancer by default. To use the non-classi
 ```hcl
 module "glb-0" {
   source              = "./fabric/modules/net-lb-app-ext"
-  project_id          = "myprj"
+  project_id          = var.project_id
   name                = "glb-test-0"
   use_classic_version = false
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id },
       ]
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=classic-vs-non-classic.yaml e2e
 ```
 
 ### Health Checks
@@ -161,7 +221,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+        backend = module.compute-vm-group-b.group.id
       }]
       # no need to reference the hc explicitly when using the `default` key
       # health_checks = ["default"]
@@ -173,7 +233,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=health-check-1.yaml e2e
 ```
 
 To leverage existing health checks without having the module create them, simply pass their self links to backend services and set the `health_check_configs` variable to an empty map:
@@ -186,26 +246,26 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+        backend = module.compute-vm-group-b.group.id
       }]
-      health_checks = ["projects/myprj/global/healthChecks/custom"]
+      health_checks = ["projects/${var.project_id}/global/healthChecks/custom"]
     }
   }
   health_check_configs = {}
 }
-# tftest modules=1 resources=4
+# tftest modules=3 resources=8 fixtures=fixtures/compute-vm-group-bc.tf inventory=health-check-2.yaml
 ```
 
 ### Backend Types and Management
 
 #### Instance Groups
 
-The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key. THis is the simple HTTP example above but with instance group creation managed by the module:
+The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key. This is the simple HTTP example above but with instance group creation managed by the module:
 
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -216,15 +276,15 @@ module "glb-0" {
   }
   group_configs = {
     default-b = {
-      zone = "europe-west8-b"
+      zone = "${var.region}-b"
       instances = [
-        "projects/myprj/zones/europe-west8-b/instances/vm-a"
+        module.compute-vm-group-b.id
       ]
       named_ports = { http = 80 }
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf inventory=instance-groups.yaml e2e
 ```
 
 #### Managed Instance Groups
@@ -234,8 +294,8 @@ This example shows how to use the module with a manage instance group as backend
 ```hcl
 module "win-template" {
   source          = "./fabric/modules/compute-vm"
-  project_id      = "myprj"
-  zone            = "europe-west8-a"
+  project_id      = var.project_id
+  zone            = "${var.region}-a"
   name            = "win-template"
   instance_type   = "n2d-standard-2"
   create_template = true
@@ -255,8 +315,8 @@ module "win-template" {
 
 module "win-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "myprj"
-  location          = "europe-west8-a"
+  project_id        = var.project_id
+  location          = "${var.region}-a"
   name              = "win-mig"
   instance_template = module.win-template.template.self_link
   autoscaler_config = {
@@ -276,7 +336,7 @@ module "win-mig" {
 
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -286,7 +346,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=3 resources=8
+# tftest modules=3 resources=8 inventory=managed-instance-groups.yaml e2e
 ```
 
 #### Storage Buckets
@@ -296,17 +356,17 @@ GCS bucket backends can also be managed and used in this module in a similar way
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_buckets_config = {
     default = {
-      bucket_name = "tf-playground-svpc-gce-public"
+      bucket_name = var.bucket
     }
   }
   # with a single GCS backend the implied default health check is not needed
   health_check_configs = {}
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=4 inventory=storage.yaml e2e
 ```
 
 #### Network Endpoint Groups (NEGs)
@@ -316,21 +376,31 @@ Supported Network Endpoint Groups (NEGs) can also be used as backends. Similarly
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [
         {
-          backend        = "projects/myprj/zones/europe-west8-b/networkEndpointGroups/myneg-b"
+          backend        = "myneg-b"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
       ]
     }
   }
+  neg_configs = {
+    myneg-b = {
+      hybrid = {
+        network    = var.vpc.self_link
+        subnetwork = var.subnet.self_link
+        zone       = "${var.region}-b"
+        endpoints  = {}
+      }
+    }
+  }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=6 inventory=network-endpoint-groups.yaml e2e
 ```
 
 #### Zonal NEG creation
@@ -340,7 +410,7 @@ This example shows how to create and manage zonal NEGs using GCE VMs as endpoint
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -356,13 +426,13 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       gce = {
-        network    = "projects/myprj-host/global/networks/svpc"
-        subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
-        zone       = "europe-west8-b"
+        network    = var.vpc.self_link
+        subnetwork = var.subnet.self_link
+        zone       = "${var.region}-b"
         endpoints = {
           e-0 = {
-            instance   = "myinstance-b-0"
-            ip_address = "10.24.32.25"
+            instance   = "my-ig-b"
+            ip_address = module.compute-vm-group-b.internal_ip
             port       = 80
           }
         }
@@ -370,7 +440,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=3 resources=11 fixtures=fixtures/compute-vm-group-bc.tf inventory=zonal-neg-creation.yaml e2e
 ```
 
 #### Hybrid NEG creation
@@ -380,7 +450,7 @@ This example shows how to create and manage hybrid NEGs:
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -396,8 +466,8 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       hybrid = {
-        network = "projects/myprj-host/global/networks/svpc"
-        zone    = "europe-west8-b"
+        network = var.vpc.self_link
+        zone    = "${var.region}-b"
         endpoints = {
           e-0 = {
             ip_address = "10.0.0.10"
@@ -408,7 +478,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=7 inventory=hybrid-neg.yaml e2e
 ```
 
 #### Internet NEG creation
@@ -418,7 +488,7 @@ This example shows how to create and manage internet NEGs:
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -444,7 +514,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=6 inventory=internet-neg.yaml e2e
 ```
 
 #### Private Service Connect NEG creation
@@ -454,7 +524,7 @@ The module supports managing PSC NEGs if the non-classic version of the load bal
 ```hcl
 module "glb-0" {
   source              = "./fabric/modules/net-lb-app-ext"
-  project_id          = "myprj"
+  project_id          = var.project_id
   name                = "glb-test-0"
   use_classic_version = false
   backend_service_configs = {
@@ -470,13 +540,13 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       psc = {
-        region         = "europe-west8"
-        target_service = "europe-west8-cloudkms.googleapis.com"
+        region         = var.region
+        target_service = "${var.region}-cloudkms.googleapis.com"
       }
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 
 ```
 
 #### Serverless NEG creation
@@ -486,7 +556,7 @@ The module supports managing Serverless NEGs for Cloud Run and Cloud Function. T
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -501,7 +571,7 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       cloudrun = {
-        region = "europe-west8"
+        region = var.region
         target_service = {
           name = "hello"
         }
@@ -509,7 +579,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=serverless-neg.yaml e2e
 ```
 
 Serverless NEGs don't use the port name but it should be set to `http`. An HTTPS frontend requires the protocol to be set to `HTTPS`, and the port name field will infer this value if omitted so you need to set it explicitly:
@@ -517,7 +587,7 @@ Serverless NEGs don't use the port name but it should be set to `http`. An HTTPS
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
@@ -533,7 +603,7 @@ module "glb-0" {
   neg_configs = {
     neg-0 = {
       cloudrun = {
-        region = "europe-west8"
+        region = var.region
         target_service = {
           name = "hello"
         }
@@ -549,7 +619,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=6 inventory=https-sneg.yaml
+# tftest modules=1 resources=6 inventory=https-sneg.yaml e2e
 ```
 
 ### URL Map
@@ -561,17 +631,17 @@ The default URL map configuration sets the `default` backend service as the defa
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west8-b/instanceGroups/ig-0"
+        backend = module.compute-vm-group-b.group.id
       }]
     }
     other = {
       backends = [{
-        backend = "projects/myprj/zones/europe-west8-c/instanceGroups/ig-1"
+        backend = module.compute-vm-group-c.group.id
       }]
     }
   }
@@ -593,7 +663,7 @@ module "glb-0" {
   }
 }
 
-# tftest modules=1 resources=6
+# tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf inventory=url-map.yaml e2e
 ```
 
 ### SSL Certificates
@@ -605,7 +675,7 @@ THe [HTTPS example above](#minimal-https-examples) shows how to configure manage
 ```hcl
 resource "tls_private_key" "default" {
   algorithm = "RSA"
-  rsa_bits  = 4096
+  rsa_bits  = 2048
 }
 
 resource "tls_self_signed_cert" "default" {
@@ -624,13 +694,13 @@ resource "tls_self_signed_cert" "default" {
 
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/myprj/zones/europe-west8-b/instanceGroups/myig-b" },
-        { backend = "projects/myprj/zones/europe-west8-c/instanceGroups/myig-c" },
+        { backend = module.compute-vm-group-b.group.id },
+        { backend = module.compute-vm-group-c.group.id },
       ]
       protocol = "HTTP"
     }
@@ -646,7 +716,7 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=8
+# tftest modules=3 resources=12 fixtures=fixtures/compute-vm-group-bc.tf inventory=ssl-certificates.yaml e2e
 ```
 
 ### Complex example
@@ -656,47 +726,49 @@ This example mixes group and NEG backends, and shows how to set HTTPS for specif
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "myprj"
+  project_id = var.project_id
   name       = "glb-test-0"
   backend_buckets_config = {
     gcs-0 = {
-      bucket_name = "my-bucket"
+      bucket_name = var.bucket
     }
   }
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "ew8-b" },
-        { backend = "ew8-c" },
+        { backend = "group-zone-b" },
+        { backend = "group-zone-c" },
       ]
     }
     neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend        = "neg-ew8-c"
+        backend        = "neg-zone-c"
         max_rate       = { per_endpoint = 10 }
       }]
     }
     neg-hybrid-0 = {
       backends = [{
-        backend = "neg-hello"
+        balancing_mode = "RATE"
+        backend        = "neg-hello"
+        max_rate       = { per_endpoint = 10 }
       }]
       health_checks = ["neg"]
       protocol      = "HTTPS"
     }
   }
   group_configs = {
-    ew8-b = {
-      zone = "europe-west8-b"
+    group-zone-b = {
+      zone = "${var.region}-b"
       instances = [
-        "projects/prj-gce/zones/europe-west8-b/instances/nginx-ew8-b"
+        module.compute-vm-group-b.id
       ]
       named_ports = { http = 80 }
     }
-    ew8-c = {
-      zone = "europe-west8-c"
+    group-zone-c = {
+      zone = "${var.region}-c"
       instances = [
-        "projects/prj-gce/zones/europe-west8-c/instances/nginx-ew8-c"
+        module.compute-vm-group-c.id
       ]
       named_ports = { http = 80 }
     }
@@ -715,15 +787,15 @@ module "glb-0" {
     }
   }
   neg_configs = {
-    neg-ew8-c = {
+    neg-zone-c = {
       gce = {
-        network    = "projects/myprj-host/global/networks/svpc"
-        subnetwork = "projects/myprj-host/regions/europe-west8/subnetworks/gce"
-        zone       = "europe-west8-c"
+        network    = var.vpc.self_link
+        subnetwork = var.subnet.self_link
+        zone       = "${var.region}-c"
         endpoints = {
           e-0 = {
-            instance   = "nginx-ew8-c"
-            ip_address = "10.24.32.26"
+            instance   = "my-ig-c"
+            ip_address = module.compute-vm-group-c.internal_ip
             port       = 80
           }
         }
@@ -731,8 +803,8 @@ module "glb-0" {
     }
     neg-hello = {
       hybrid = {
-        network = "projects/myprj-host/global/networks/svpc"
-        zone    = "europe-west8-b"
+        network = var.vpc.self_link
+        zone    = "${var.region}-b"
         endpoints = {
           e-0 = {
             ip_address = "192.168.0.3"
@@ -777,12 +849,11 @@ module "glb-0" {
     }
   }
 }
-# tftest modules=1 resources=15
+# tftest modules=3 resources=19 fixtures=fixtures/compute-vm-group-bc.tf inventory=complex-example.yaml e2e
 ```
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
-
 ## Files
 
 | name | description | resources |
@@ -805,22 +876,22 @@ module "glb-0" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L91) | Load balancer name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L193) | Project id. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L92) | Load balancer name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L194) | Project id. | <code>string</code> | ✓ |  |
 | [address](variables.tf#L17) | Optional IP address used for the forwarding rule. | <code>string</code> |  | <code>null</code> |
 | [backend_buckets_config](variables.tf#L23) | Backend buckets configuration. | <code title="map&#40;object&#40;&#123;&#10;  bucket_name             &#61; string&#10;  compression_mode        &#61; optional&#40;string&#41;&#10;  custom_response_headers &#61; optional&#40;list&#40;string&#41;&#41;&#10;  description             &#61; optional&#40;string&#41;&#10;  edge_security_policy    &#61; optional&#40;string&#41;&#10;  enable_cdn              &#61; optional&#40;bool&#41;&#10;  cdn_policy &#61; optional&#40;object&#40;&#123;&#10;    bypass_cache_on_request_headers &#61; optional&#40;list&#40;string&#41;&#41;&#10;    cache_mode                      &#61; optional&#40;string&#41;&#10;    client_ttl                      &#61; optional&#40;number&#41;&#10;    default_ttl                     &#61; optional&#40;number&#41;&#10;    max_ttl                         &#61; optional&#40;number&#41;&#10;    negative_caching                &#61; optional&#40;bool&#41;&#10;    request_coalescing              &#61; optional&#40;bool&#41;&#10;    serve_while_stale               &#61; optional&#40;number&#41;&#10;    signed_url_cache_max_age_sec    &#61; optional&#40;number&#41;&#10;    cache_key_policy &#61; optional&#40;object&#40;&#123;&#10;      include_http_headers   &#61; optional&#40;list&#40;string&#41;&#41;&#10;      query_string_whitelist &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    negative_caching_policy &#61; optional&#40;object&#40;&#123;&#10;      code &#61; optional&#40;number&#41;&#10;      ttl  &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [backend_service_configs](variables-backend-service.tf#L19) | Backend service level configuration. | <code title="map&#40;object&#40;&#123;&#10;  affinity_cookie_ttl_sec         &#61; optional&#40;number&#41;&#10;  compression_mode                &#61; optional&#40;string&#41;&#10;  connection_draining_timeout_sec &#61; optional&#40;number&#41;&#10;  custom_request_headers          &#61; optional&#40;list&#40;string&#41;&#41;&#10;  custom_response_headers         &#61; optional&#40;list&#40;string&#41;&#41;&#10;  enable_cdn                      &#61; optional&#40;bool&#41;&#10;  health_checks                   &#61; optional&#40;list&#40;string&#41;, &#91;&#34;default&#34;&#93;&#41;&#10;  log_sample_rate                 &#61; optional&#40;number&#41;&#10;  port_name                       &#61; optional&#40;string&#41;&#10;  project_id                      &#61; optional&#40;string&#41;&#10;  protocol                        &#61; optional&#40;string&#41;&#10;  security_policy                 &#61; optional&#40;string&#41;&#10;  session_affinity                &#61; optional&#40;string&#41;&#10;  timeout_sec                     &#61; optional&#40;number&#41;&#10;  backends &#61; list&#40;object&#40;&#123;&#10;    backend         &#61; string&#10;    balancing_mode  &#61; optional&#40;string, &#34;UTILIZATION&#34;&#41;&#10;    capacity_scaler &#61; optional&#40;number, 1&#41;&#10;    description     &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;    failover        &#61; optional&#40;bool, false&#41;&#10;    max_connections &#61; optional&#40;object&#40;&#123;&#10;      per_endpoint &#61; optional&#40;number&#41;&#10;      per_group    &#61; optional&#40;number&#41;&#10;      per_instance &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    max_rate &#61; optional&#40;object&#40;&#123;&#10;      per_endpoint &#61; optional&#40;number&#41;&#10;      per_group    &#61; optional&#40;number&#41;&#10;      per_instance &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    max_utilization &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  cdn_policy &#61; optional&#40;object&#40;&#123;&#10;    cache_mode                   &#61; optional&#40;string&#41;&#10;    client_ttl                   &#61; optional&#40;number&#41;&#10;    default_ttl                  &#61; optional&#40;number&#41;&#10;    max_ttl                      &#61; optional&#40;number&#41;&#10;    negative_caching             &#61; optional&#40;bool&#41;&#10;    serve_while_stale            &#61; optional&#40;number&#41;&#10;    signed_url_cache_max_age_sec &#61; optional&#40;number&#41;&#10;    cache_key_policy &#61; optional&#40;object&#40;&#123;&#10;      include_host           &#61; optional&#40;bool&#41;&#10;      include_named_cookies  &#61; optional&#40;list&#40;string&#41;&#41;&#10;      include_protocol       &#61; optional&#40;bool&#41;&#10;      include_query_string   &#61; optional&#40;bool&#41;&#10;      query_string_blacklist &#61; optional&#40;list&#40;string&#41;&#41;&#10;      query_string_whitelist &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    negative_caching_policy &#61; optional&#40;object&#40;&#123;&#10;      code &#61; optional&#40;number&#41;&#10;      ttl  &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  circuit_breakers &#61; optional&#40;object&#40;&#123;&#10;    max_connections             &#61; optional&#40;number&#41;&#10;    max_pending_requests        &#61; optional&#40;number&#41;&#10;    max_requests                &#61; optional&#40;number&#41;&#10;    max_requests_per_connection &#61; optional&#40;number&#41;&#10;    max_retries                 &#61; optional&#40;number&#41;&#10;    connect_timeout &#61; optional&#40;object&#40;&#123;&#10;      seconds &#61; number&#10;      nanos   &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  consistent_hash &#61; optional&#40;object&#40;&#123;&#10;    http_header_name  &#61; optional&#40;string&#41;&#10;    minimum_ring_size &#61; optional&#40;number&#41;&#10;    http_cookie &#61; optional&#40;object&#40;&#123;&#10;      name &#61; optional&#40;string&#41;&#10;      path &#61; optional&#40;string&#41;&#10;      ttl &#61; optional&#40;object&#40;&#123;&#10;        seconds &#61; number&#10;        nanos   &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  iap_config &#61; optional&#40;object&#40;&#123;&#10;    oauth2_client_id            &#61; string&#10;    oauth2_client_secret        &#61; string&#10;    oauth2_client_secret_sha256 &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  outlier_detection &#61; optional&#40;object&#40;&#123;&#10;    consecutive_errors                    &#61; optional&#40;number&#41;&#10;    consecutive_gateway_failure           &#61; optional&#40;number&#41;&#10;    enforcing_consecutive_errors          &#61; optional&#40;number&#41;&#10;    enforcing_consecutive_gateway_failure &#61; optional&#40;number&#41;&#10;    enforcing_success_rate                &#61; optional&#40;number&#41;&#10;    max_ejection_percent                  &#61; optional&#40;number&#41;&#10;    success_rate_minimum_hosts            &#61; optional&#40;number&#41;&#10;    success_rate_request_volume           &#61; optional&#40;number&#41;&#10;    success_rate_stdev_factor             &#61; optional&#40;number&#41;&#10;    base_ejection_time &#61; optional&#40;object&#40;&#123;&#10;      seconds &#61; number&#10;      nanos   &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    interval &#61; optional&#40;object&#40;&#123;&#10;      seconds &#61; number&#10;      nanos   &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  security_settings &#61; optional&#40;object&#40;&#123;&#10;    client_tls_policy &#61; string&#10;    subject_alt_names &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L56) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
 | [group_configs](variables.tf#L62) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  zone        &#61; string&#10;  instances   &#61; optional&#40;list&#40;string&#41;&#41;&#10;  named_ports &#61; optional&#40;map&#40;number&#41;, &#123;&#125;&#41;&#10;  project_id  &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [health_check_configs](variables-health-check.tf#L19) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="map&#40;object&#40;&#123;&#10;  check_interval_sec  &#61; optional&#40;number&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  enable_logging      &#61; optional&#40;bool, false&#41;&#10;  healthy_threshold   &#61; optional&#40;number&#41;&#10;  project_id          &#61; optional&#40;string&#41;&#10;  timeout_sec         &#61; optional&#40;number&#41;&#10;  unhealthy_threshold &#61; optional&#40;number&#41;&#10;  grpc &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    service_name       &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http2 &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  https &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  tcp &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ssl &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  default &#61; &#123;&#10;    http &#61; &#123;&#10;      port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [https_proxy_config](variables.tf#L74) | HTTPS proxy connfiguration. | <code title="object&#40;&#123;&#10;  certificate_map &#61; optional&#40;string&#41;&#10;  quic_override   &#61; optional&#40;string&#41;&#10;  ssl_policy      &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L85) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L96) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  cloudfunction &#61; optional&#40;object&#40;&#123;&#10;    region          &#61; string&#10;    target_function &#61; optional&#40;string&#41;&#10;    target_urlmask  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cloudrun &#61; optional&#40;object&#40;&#123;&#10;    region &#61; string&#10;    target_service &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      tag  &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    target_urlmask &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gce &#61; optional&#40;object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;    zone       &#61; string&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      instance   &#61; string&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  hybrid &#61; optional&#40;object&#40;&#123;&#10;    network &#61; string&#10;    zone    &#61; string&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  internet &#61; optional&#40;object&#40;&#123;&#10;    use_fqdn &#61; optional&#40;bool, true&#41;&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      destination &#61; string&#10;      port        &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  psc &#61; optional&#40;object&#40;&#123;&#10;    region         &#61; string&#10;    target_service &#61; string&#10;    network        &#61; optional&#40;string&#41;&#10;    subnetwork     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ports](variables.tf#L187) | Optional ports for HTTP load balancer, valid ports are 80 and 8080. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [protocol](variables.tf#L198) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
-| [ssl_certificates](variables.tf#L211) | SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates. | <code title="object&#40;&#123;&#10;  certificate_ids &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  create_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    certificate &#61; string&#10;    private_key &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  managed_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    domains     &#61; list&#40;string&#41;&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [urlmap_config](variables-urlmap.tf#L19) | The URL map configuration. | <code title="object&#40;&#123;&#10;  default_route_action &#61; optional&#40;object&#40;&#123;&#10;    request_mirror_backend &#61; optional&#40;string&#41;&#10;    cors_policy &#61; optional&#40;object&#40;&#123;&#10;      allow_credentials    &#61; optional&#40;bool&#41;&#10;      allow_headers        &#61; optional&#40;string&#41;&#10;      allow_methods        &#61; optional&#40;string&#41;&#10;      allow_origin_regexes &#61; list&#40;string&#41;&#10;      allow_origins        &#61; list&#40;string&#41;&#10;      disabled             &#61; optional&#40;bool&#41;&#10;      expose_headers       &#61; optional&#40;string&#41;&#10;      max_age              &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    fault_injection_policy &#61; optional&#40;object&#40;&#123;&#10;      abort &#61; optional&#40;object&#40;&#123;&#10;        percentage &#61; number&#10;        status     &#61; number&#10;      &#125;&#41;&#41;&#10;      delay &#61; optional&#40;object&#40;&#123;&#10;        fixed &#61; object&#40;&#123;&#10;          seconds &#61; number&#10;          nanos   &#61; number&#10;        &#125;&#41;&#10;        percentage &#61; number&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    retry_policy &#61; optional&#40;object&#40;&#123;&#10;      num_retries      &#61; number&#10;      retry_conditions &#61; optional&#40;list&#40;string&#41;&#41;&#10;      per_try_timeout &#61; optional&#40;object&#40;&#123;&#10;        seconds &#61; number&#10;        nanos   &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    timeout &#61; optional&#40;object&#40;&#123;&#10;      seconds &#61; number&#10;      nanos   &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    url_rewrite &#61; optional&#40;object&#40;&#123;&#10;      host        &#61; optional&#40;string&#41;&#10;      path_prefix &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    weighted_backend_services &#61; optional&#40;map&#40;object&#40;&#123;&#10;      weight &#61; number&#10;      header_action &#61; optional&#40;object&#40;&#123;&#10;        request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;          value   &#61; string&#10;          replace &#61; optional&#40;bool, true&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;        response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;          value   &#61; string&#10;          replace &#61; optional&#40;bool, true&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  default_service &#61; optional&#40;string&#41;&#10;  default_url_redirect &#61; optional&#40;object&#40;&#123;&#10;    host          &#61; optional&#40;string&#41;&#10;    https         &#61; optional&#40;bool&#41;&#10;    path          &#61; optional&#40;string&#41;&#10;    prefix        &#61; optional&#40;string&#41;&#10;    response_code &#61; optional&#40;string&#41;&#10;    strip_query   &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  header_action &#61; optional&#40;object&#40;&#123;&#10;    request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;      value   &#61; string&#10;      replace &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;    response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;      value   &#61; string&#10;      replace &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  host_rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    hosts        &#61; list&#40;string&#41;&#10;    path_matcher &#61; string&#10;    description  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  path_matchers &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string&#41;&#10;    default_route_action &#61; optional&#40;object&#40;&#123;&#10;      request_mirror_backend &#61; optional&#40;string&#41;&#10;      cors_policy &#61; optional&#40;object&#40;&#123;&#10;        allow_credentials    &#61; optional&#40;bool&#41;&#10;        allow_headers        &#61; optional&#40;string&#41;&#10;        allow_methods        &#61; optional&#40;string&#41;&#10;        allow_origin_regexes &#61; list&#40;string&#41;&#10;        allow_origins        &#61; list&#40;string&#41;&#10;        disabled             &#61; optional&#40;bool&#41;&#10;        expose_headers       &#61; optional&#40;string&#41;&#10;        max_age              &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      fault_injection_policy &#61; optional&#40;object&#40;&#123;&#10;        abort &#61; optional&#40;object&#40;&#123;&#10;          percentage &#61; number&#10;          status     &#61; number&#10;        &#125;&#41;&#41;&#10;        delay &#61; optional&#40;object&#40;&#123;&#10;          fixed &#61; object&#40;&#123;&#10;            seconds &#61; number&#10;            nanos   &#61; number&#10;          &#125;&#41;&#10;          percentage &#61; number&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      retry_policy &#61; optional&#40;object&#40;&#123;&#10;        num_retries      &#61; number&#10;        retry_conditions &#61; optional&#40;list&#40;string&#41;&#41;&#10;        per_try_timeout &#61; optional&#40;object&#40;&#123;&#10;          seconds &#61; number&#10;          nanos   &#61; optional&#40;number&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      timeout &#61; optional&#40;object&#40;&#123;&#10;        seconds &#61; number&#10;        nanos   &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;      url_rewrite &#61; optional&#40;object&#40;&#123;&#10;        host        &#61; optional&#40;string&#41;&#10;        path_prefix &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      weighted_backend_services &#61; optional&#40;map&#40;object&#40;&#123;&#10;        weight &#61; number&#10;        header_action &#61; optional&#40;object&#40;&#123;&#10;          request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;            value   &#61; string&#10;            replace &#61; optional&#40;bool, true&#41;&#10;          &#125;&#41;&#41;&#41;&#10;          request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;          response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;            value   &#61; string&#10;            replace &#61; optional&#40;bool, true&#41;&#10;          &#125;&#41;&#41;&#41;&#10;          response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    default_service &#61; optional&#40;string&#41;&#10;    default_url_redirect &#61; optional&#40;object&#40;&#123;&#10;      host          &#61; optional&#40;string&#41;&#10;      https         &#61; optional&#40;bool&#41;&#10;      path          &#61; optional&#40;string&#41;&#10;      prefix        &#61; optional&#40;string&#41;&#10;      response_code &#61; optional&#40;string&#41;&#10;      strip_query   &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    header_action &#61; optional&#40;object&#40;&#123;&#10;      request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;        value   &#61; string&#10;        replace &#61; optional&#40;bool, true&#41;&#10;      &#125;&#41;&#41;&#41;&#10;      request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;      response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;        value   &#61; string&#10;        replace &#61; optional&#40;bool, true&#41;&#10;      &#125;&#41;&#41;&#41;&#10;      response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    path_rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;      paths   &#61; list&#40;string&#41;&#10;      service &#61; optional&#40;string&#41;&#10;      route_action &#61; optional&#40;object&#40;&#123;&#10;        request_mirror_backend &#61; optional&#40;string&#41;&#10;        cors_policy &#61; optional&#40;object&#40;&#123;&#10;          allow_credentials    &#61; optional&#40;bool&#41;&#10;          allow_headers        &#61; optional&#40;string&#41;&#10;          allow_methods        &#61; optional&#40;string&#41;&#10;          allow_origin_regexes &#61; list&#40;string&#41;&#10;          allow_origins        &#61; list&#40;string&#41;&#10;          disabled             &#61; optional&#40;bool&#41;&#10;          expose_headers       &#61; optional&#40;string&#41;&#10;          max_age              &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        fault_injection_policy &#61; optional&#40;object&#40;&#123;&#10;          abort &#61; optional&#40;object&#40;&#123;&#10;            percentage &#61; number&#10;            status     &#61; number&#10;          &#125;&#41;&#41;&#10;          delay &#61; optional&#40;object&#40;&#123;&#10;            fixed &#61; object&#40;&#123;&#10;              seconds &#61; number&#10;              nanos   &#61; number&#10;            &#125;&#41;&#10;            percentage &#61; number&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        retry_policy &#61; optional&#40;object&#40;&#123;&#10;          num_retries      &#61; number&#10;          retry_conditions &#61; optional&#40;list&#40;string&#41;&#41;&#10;          per_try_timeout &#61; optional&#40;object&#40;&#123;&#10;            seconds &#61; number&#10;            nanos   &#61; optional&#40;number&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        timeout &#61; optional&#40;object&#40;&#123;&#10;          seconds &#61; number&#10;          nanos   &#61; optional&#40;number&#41;&#10;        &#125;&#41;&#41;&#10;        url_rewrite &#61; optional&#40;object&#40;&#123;&#10;          host        &#61; optional&#40;string&#41;&#10;          path_prefix &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        weighted_backend_services &#61; optional&#40;map&#40;object&#40;&#123;&#10;          weight &#61; number&#10;          header_action &#61; optional&#40;object&#40;&#123;&#10;            request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;              value   &#61; string&#10;              replace &#61; optional&#40;bool, true&#41;&#10;            &#125;&#41;&#41;&#41;&#10;            request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;            response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;              value   &#61; string&#10;              replace &#61; optional&#40;bool, true&#41;&#10;            &#125;&#41;&#41;&#41;&#10;            response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      url_redirect &#61; optional&#40;object&#40;&#123;&#10;        host          &#61; optional&#40;string&#41;&#10;        https         &#61; optional&#40;bool&#41;&#10;        path          &#61; optional&#40;string&#41;&#10;        prefix        &#61; optional&#40;string&#41;&#10;        response_code &#61; optional&#40;string&#41;&#10;        strip_query   &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    route_rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;      priority &#61; number&#10;      service  &#61; optional&#40;string&#41;&#10;      header_action &#61; optional&#40;object&#40;&#123;&#10;        request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;          value   &#61; string&#10;          replace &#61; optional&#40;bool, true&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;        response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;          value   &#61; string&#10;          replace &#61; optional&#40;bool, true&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      match_rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;        ignore_case &#61; optional&#40;bool, false&#41;&#10;        headers &#61; optional&#40;list&#40;object&#40;&#123;&#10;          name         &#61; string&#10;          invert_match &#61; optional&#40;bool, false&#41;&#10;          type         &#61; optional&#40;string, &#34;present&#34;&#41; &#35; exact, prefix, suffix, regex, present, range&#10;          value        &#61; optional&#40;string&#41;&#10;          range_value &#61; optional&#40;object&#40;&#123;&#10;            end   &#61; string&#10;            start &#61; string&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        metadata_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;          labels    &#61; map&#40;string&#41;&#10;          match_all &#61; bool &#35; MATCH_ANY, MATCH_ALL&#10;        &#125;&#41;&#41;&#41;&#10;        path &#61; optional&#40;object&#40;&#123;&#10;          value &#61; string&#10;          type  &#61; optional&#40;string, &#34;prefix&#34;&#41; &#35; full, prefix, regex&#10;        &#125;&#41;&#41;&#10;        query_params &#61; optional&#40;list&#40;object&#40;&#123;&#10;          name  &#61; string&#10;          value &#61; string&#10;          type  &#61; optional&#40;string, &#34;present&#34;&#41; &#35; exact, present, regex&#10;        &#125;&#41;&#41;&#41;&#10;      &#125;&#41;&#41;&#41;&#10;      route_action &#61; optional&#40;object&#40;&#123;&#10;        request_mirror_backend &#61; optional&#40;string&#41;&#10;        cors_policy &#61; optional&#40;object&#40;&#123;&#10;          allow_credentials    &#61; optional&#40;bool&#41;&#10;          allow_headers        &#61; optional&#40;string&#41;&#10;          allow_methods        &#61; optional&#40;string&#41;&#10;          allow_origin_regexes &#61; list&#40;string&#41;&#10;          allow_origins        &#61; list&#40;string&#41;&#10;          disabled             &#61; optional&#40;bool&#41;&#10;          expose_headers       &#61; optional&#40;string&#41;&#10;          max_age              &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        fault_injection_policy &#61; optional&#40;object&#40;&#123;&#10;          abort &#61; optional&#40;object&#40;&#123;&#10;            percentage &#61; number&#10;            status     &#61; number&#10;          &#125;&#41;&#41;&#10;          delay &#61; optional&#40;object&#40;&#123;&#10;            fixed &#61; object&#40;&#123;&#10;              seconds &#61; number&#10;              nanos   &#61; number&#10;            &#125;&#41;&#10;            percentage &#61; number&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        retry_policy &#61; optional&#40;object&#40;&#123;&#10;          num_retries      &#61; number&#10;          retry_conditions &#61; optional&#40;list&#40;string&#41;&#41;&#10;          per_try_timeout &#61; optional&#40;object&#40;&#123;&#10;            seconds &#61; number&#10;            nanos   &#61; optional&#40;number&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        timeout &#61; optional&#40;object&#40;&#123;&#10;          seconds &#61; number&#10;          nanos   &#61; optional&#40;number&#41;&#10;        &#125;&#41;&#41;&#10;        url_rewrite &#61; optional&#40;object&#40;&#123;&#10;          host        &#61; optional&#40;string&#41;&#10;          path_prefix &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        weighted_backend_services &#61; optional&#40;map&#40;object&#40;&#123;&#10;          weight &#61; number&#10;          header_action &#61; optional&#40;object&#40;&#123;&#10;            request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;              value   &#61; string&#10;              replace &#61; optional&#40;bool, true&#41;&#10;            &#125;&#41;&#41;&#41;&#10;            request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;            response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;              value   &#61; string&#10;              replace &#61; optional&#40;bool, true&#41;&#10;            &#125;&#41;&#41;&#41;&#10;            response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      url_redirect &#61; optional&#40;object&#40;&#123;&#10;        host          &#61; optional&#40;string&#41;&#10;        https         &#61; optional&#40;bool&#41;&#10;        path          &#61; optional&#40;string&#41;&#10;        prefix        &#61; optional&#40;string&#41;&#10;        response_code &#61; optional&#40;string&#41;&#10;        strip_query   &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  test &#61; optional&#40;list&#40;object&#40;&#123;&#10;    host        &#61; string&#10;    path        &#61; string&#10;    service     &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  default_service &#61; &#34;default&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [use_classic_version](variables.tf#L228) | Use classic Global Load Balancer. | <code>bool</code> |  | <code>true</code> |
+| [https_proxy_config](variables.tf#L74) | HTTPS proxy connfiguration. | <code title="object&#40;&#123;&#10;  certificate_map &#61; optional&#40;string&#41;&#10;  quic_override   &#61; optional&#40;string&#41;&#10;  ssl_policy      &#61; optional&#40;string&#41;&#10;  mtls_policy     &#61; optional&#40;string&#41; &#35; id of the mTLS policy to use for the target proxy.&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L86) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L97) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  cloudfunction &#61; optional&#40;object&#40;&#123;&#10;    region          &#61; string&#10;    target_function &#61; optional&#40;string&#41;&#10;    target_urlmask  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cloudrun &#61; optional&#40;object&#40;&#123;&#10;    region &#61; string&#10;    target_service &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      tag  &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    target_urlmask &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gce &#61; optional&#40;object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;    zone       &#61; string&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      instance   &#61; string&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  hybrid &#61; optional&#40;object&#40;&#123;&#10;    network &#61; string&#10;    zone    &#61; string&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  internet &#61; optional&#40;object&#40;&#123;&#10;    use_fqdn &#61; optional&#40;bool, true&#41;&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      destination &#61; string&#10;      port        &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  psc &#61; optional&#40;object&#40;&#123;&#10;    region         &#61; string&#10;    target_service &#61; string&#10;    network        &#61; optional&#40;string&#41;&#10;    subnetwork     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ports](variables.tf#L188) | Optional ports for HTTP load balancer, valid ports are 80 and 8080. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [protocol](variables.tf#L199) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
+| [ssl_certificates](variables.tf#L212) | SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates. | <code title="object&#40;&#123;&#10;  certificate_ids &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  create_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    certificate &#61; string&#10;    private_key &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  managed_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    domains     &#61; list&#40;string&#41;&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [urlmap_config](variables-urlmap.tf#L19) | The URL map configuration. | <code title="object&#40;&#123;&#10;  default_route_action &#61; optional&#40;object&#40;&#123;&#10;    request_mirror_backend &#61; optional&#40;string&#41;&#10;    cors_policy &#61; optional&#40;object&#40;&#123;&#10;      allow_credentials    &#61; optional&#40;bool&#41;&#10;      allow_headers        &#61; optional&#40;string&#41;&#10;      allow_methods        &#61; optional&#40;string&#41;&#10;      allow_origin_regexes &#61; list&#40;string&#41;&#10;      allow_origins        &#61; list&#40;string&#41;&#10;      disabled             &#61; optional&#40;bool&#41;&#10;      expose_headers       &#61; optional&#40;string&#41;&#10;      max_age              &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    fault_injection_policy &#61; optional&#40;object&#40;&#123;&#10;      abort &#61; optional&#40;object&#40;&#123;&#10;        percentage &#61; number&#10;        status     &#61; number&#10;      &#125;&#41;&#41;&#10;      delay &#61; optional&#40;object&#40;&#123;&#10;        fixed &#61; object&#40;&#123;&#10;          seconds &#61; number&#10;          nanos   &#61; number&#10;        &#125;&#41;&#10;        percentage &#61; number&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    retry_policy &#61; optional&#40;object&#40;&#123;&#10;      num_retries      &#61; number&#10;      retry_conditions &#61; optional&#40;list&#40;string&#41;&#41;&#10;      per_try_timeout &#61; optional&#40;object&#40;&#123;&#10;        seconds &#61; number&#10;        nanos   &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    timeout &#61; optional&#40;object&#40;&#123;&#10;      seconds &#61; number&#10;      nanos   &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    url_rewrite &#61; optional&#40;object&#40;&#123;&#10;      host        &#61; optional&#40;string&#41;&#10;      path_prefix &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    weighted_backend_services &#61; optional&#40;map&#40;object&#40;&#123;&#10;      weight &#61; number&#10;      header_action &#61; optional&#40;object&#40;&#123;&#10;        request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;          value   &#61; string&#10;          replace &#61; optional&#40;bool, true&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;        response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;          value   &#61; string&#10;          replace &#61; optional&#40;bool, true&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  default_service &#61; optional&#40;string&#41;&#10;  default_url_redirect &#61; optional&#40;object&#40;&#123;&#10;    host          &#61; optional&#40;string&#41;&#10;    https         &#61; optional&#40;bool&#41;&#10;    path          &#61; optional&#40;string&#41;&#10;    prefix        &#61; optional&#40;string&#41;&#10;    response_code &#61; optional&#40;string&#41;&#10;    strip_query   &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  header_action &#61; optional&#40;object&#40;&#123;&#10;    request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;      value   &#61; string&#10;      replace &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;    response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;      value   &#61; string&#10;      replace &#61; optional&#40;bool, true&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  host_rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    hosts        &#61; list&#40;string&#41;&#10;    path_matcher &#61; string&#10;    description  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  path_matchers &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string&#41;&#10;    default_route_action &#61; optional&#40;object&#40;&#123;&#10;      request_mirror_backend &#61; optional&#40;string&#41;&#10;      cors_policy &#61; optional&#40;object&#40;&#123;&#10;        allow_credentials    &#61; optional&#40;bool&#41;&#10;        allow_headers        &#61; optional&#40;string&#41;&#10;        allow_methods        &#61; optional&#40;string&#41;&#10;        allow_origin_regexes &#61; list&#40;string&#41;&#10;        allow_origins        &#61; list&#40;string&#41;&#10;        disabled             &#61; optional&#40;bool&#41;&#10;        expose_headers       &#61; optional&#40;string&#41;&#10;        max_age              &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      fault_injection_policy &#61; optional&#40;object&#40;&#123;&#10;        abort &#61; optional&#40;object&#40;&#123;&#10;          percentage &#61; number&#10;          status     &#61; number&#10;        &#125;&#41;&#41;&#10;        delay &#61; optional&#40;object&#40;&#123;&#10;          fixed &#61; object&#40;&#123;&#10;            seconds &#61; number&#10;            nanos   &#61; number&#10;          &#125;&#41;&#10;          percentage &#61; number&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      retry_policy &#61; optional&#40;object&#40;&#123;&#10;        num_retries      &#61; number&#10;        retry_conditions &#61; optional&#40;list&#40;string&#41;&#41;&#10;        per_try_timeout &#61; optional&#40;object&#40;&#123;&#10;          seconds &#61; number&#10;          nanos   &#61; optional&#40;number&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      timeout &#61; optional&#40;object&#40;&#123;&#10;        seconds &#61; number&#10;        nanos   &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;      url_rewrite &#61; optional&#40;object&#40;&#123;&#10;        host        &#61; optional&#40;string&#41;&#10;        path_prefix &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      weighted_backend_services &#61; optional&#40;map&#40;object&#40;&#123;&#10;        weight &#61; number&#10;        header_action &#61; optional&#40;object&#40;&#123;&#10;          request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;            value   &#61; string&#10;            replace &#61; optional&#40;bool, true&#41;&#10;          &#125;&#41;&#41;&#41;&#10;          request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;          response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;            value   &#61; string&#10;            replace &#61; optional&#40;bool, true&#41;&#10;          &#125;&#41;&#41;&#41;&#10;          response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    default_service &#61; optional&#40;string&#41;&#10;    default_url_redirect &#61; optional&#40;object&#40;&#123;&#10;      host          &#61; optional&#40;string&#41;&#10;      https         &#61; optional&#40;bool&#41;&#10;      path          &#61; optional&#40;string&#41;&#10;      prefix        &#61; optional&#40;string&#41;&#10;      response_code &#61; optional&#40;string&#41;&#10;      strip_query   &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    header_action &#61; optional&#40;object&#40;&#123;&#10;      request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;        value   &#61; string&#10;        replace &#61; optional&#40;bool, true&#41;&#10;      &#125;&#41;&#41;&#41;&#10;      request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;      response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;        value   &#61; string&#10;        replace &#61; optional&#40;bool, true&#41;&#10;      &#125;&#41;&#41;&#41;&#10;      response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    path_rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;      paths   &#61; list&#40;string&#41;&#10;      service &#61; optional&#40;string&#41;&#10;      route_action &#61; optional&#40;object&#40;&#123;&#10;        request_mirror_backend &#61; optional&#40;string&#41;&#10;        cors_policy &#61; optional&#40;object&#40;&#123;&#10;          allow_credentials    &#61; optional&#40;bool&#41;&#10;          allow_headers        &#61; optional&#40;string&#41;&#10;          allow_methods        &#61; optional&#40;string&#41;&#10;          allow_origin_regexes &#61; list&#40;string&#41;&#10;          allow_origins        &#61; list&#40;string&#41;&#10;          disabled             &#61; optional&#40;bool&#41;&#10;          expose_headers       &#61; optional&#40;string&#41;&#10;          max_age              &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        fault_injection_policy &#61; optional&#40;object&#40;&#123;&#10;          abort &#61; optional&#40;object&#40;&#123;&#10;            percentage &#61; number&#10;            status     &#61; number&#10;          &#125;&#41;&#41;&#10;          delay &#61; optional&#40;object&#40;&#123;&#10;            fixed &#61; object&#40;&#123;&#10;              seconds &#61; number&#10;              nanos   &#61; number&#10;            &#125;&#41;&#10;            percentage &#61; number&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        retry_policy &#61; optional&#40;object&#40;&#123;&#10;          num_retries      &#61; number&#10;          retry_conditions &#61; optional&#40;list&#40;string&#41;&#41;&#10;          per_try_timeout &#61; optional&#40;object&#40;&#123;&#10;            seconds &#61; number&#10;            nanos   &#61; optional&#40;number&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        timeout &#61; optional&#40;object&#40;&#123;&#10;          seconds &#61; number&#10;          nanos   &#61; optional&#40;number&#41;&#10;        &#125;&#41;&#41;&#10;        url_rewrite &#61; optional&#40;object&#40;&#123;&#10;          host        &#61; optional&#40;string&#41;&#10;          path_prefix &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        weighted_backend_services &#61; optional&#40;map&#40;object&#40;&#123;&#10;          weight &#61; number&#10;          header_action &#61; optional&#40;object&#40;&#123;&#10;            request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;              value   &#61; string&#10;              replace &#61; optional&#40;bool, true&#41;&#10;            &#125;&#41;&#41;&#41;&#10;            request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;            response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;              value   &#61; string&#10;              replace &#61; optional&#40;bool, true&#41;&#10;            &#125;&#41;&#41;&#41;&#10;            response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      url_redirect &#61; optional&#40;object&#40;&#123;&#10;        host          &#61; optional&#40;string&#41;&#10;        https         &#61; optional&#40;bool&#41;&#10;        path          &#61; optional&#40;string&#41;&#10;        prefix        &#61; optional&#40;string&#41;&#10;        response_code &#61; optional&#40;string&#41;&#10;        strip_query   &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    route_rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;      priority &#61; number&#10;      service  &#61; optional&#40;string&#41;&#10;      header_action &#61; optional&#40;object&#40;&#123;&#10;        request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;          value   &#61; string&#10;          replace &#61; optional&#40;bool, true&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;        response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;          value   &#61; string&#10;          replace &#61; optional&#40;bool, true&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      match_rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;        ignore_case &#61; optional&#40;bool, false&#41;&#10;        headers &#61; optional&#40;list&#40;object&#40;&#123;&#10;          name         &#61; string&#10;          invert_match &#61; optional&#40;bool, false&#41;&#10;          type         &#61; optional&#40;string, &#34;present&#34;&#41; &#35; exact, prefix, suffix, regex, present, range&#10;          value        &#61; optional&#40;string&#41;&#10;          range_value &#61; optional&#40;object&#40;&#123;&#10;            end   &#61; string&#10;            start &#61; string&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        metadata_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;          labels    &#61; map&#40;string&#41;&#10;          match_all &#61; bool &#35; MATCH_ANY, MATCH_ALL&#10;        &#125;&#41;&#41;&#41;&#10;        path &#61; optional&#40;object&#40;&#123;&#10;          value &#61; string&#10;          type  &#61; optional&#40;string, &#34;prefix&#34;&#41; &#35; full, prefix, regex&#10;        &#125;&#41;&#41;&#10;        query_params &#61; optional&#40;list&#40;object&#40;&#123;&#10;          name  &#61; string&#10;          value &#61; string&#10;          type  &#61; optional&#40;string, &#34;present&#34;&#41; &#35; exact, present, regex&#10;        &#125;&#41;&#41;&#41;&#10;      &#125;&#41;&#41;&#41;&#10;      route_action &#61; optional&#40;object&#40;&#123;&#10;        request_mirror_backend &#61; optional&#40;string&#41;&#10;        cors_policy &#61; optional&#40;object&#40;&#123;&#10;          allow_credentials    &#61; optional&#40;bool&#41;&#10;          allow_headers        &#61; optional&#40;string&#41;&#10;          allow_methods        &#61; optional&#40;string&#41;&#10;          allow_origin_regexes &#61; list&#40;string&#41;&#10;          allow_origins        &#61; list&#40;string&#41;&#10;          disabled             &#61; optional&#40;bool&#41;&#10;          expose_headers       &#61; optional&#40;string&#41;&#10;          max_age              &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        fault_injection_policy &#61; optional&#40;object&#40;&#123;&#10;          abort &#61; optional&#40;object&#40;&#123;&#10;            percentage &#61; number&#10;            status     &#61; number&#10;          &#125;&#41;&#41;&#10;          delay &#61; optional&#40;object&#40;&#123;&#10;            fixed &#61; object&#40;&#123;&#10;              seconds &#61; number&#10;              nanos   &#61; number&#10;            &#125;&#41;&#10;            percentage &#61; number&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        retry_policy &#61; optional&#40;object&#40;&#123;&#10;          num_retries      &#61; number&#10;          retry_conditions &#61; optional&#40;list&#40;string&#41;&#41;&#10;          per_try_timeout &#61; optional&#40;object&#40;&#123;&#10;            seconds &#61; number&#10;            nanos   &#61; optional&#40;number&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        timeout &#61; optional&#40;object&#40;&#123;&#10;          seconds &#61; number&#10;          nanos   &#61; optional&#40;number&#41;&#10;        &#125;&#41;&#41;&#10;        url_rewrite &#61; optional&#40;object&#40;&#123;&#10;          host        &#61; optional&#40;string&#41;&#10;          path_prefix &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        weighted_backend_services &#61; optional&#40;map&#40;object&#40;&#123;&#10;          weight &#61; number&#10;          header_action &#61; optional&#40;object&#40;&#123;&#10;            request_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;              value   &#61; string&#10;              replace &#61; optional&#40;bool, true&#41;&#10;            &#125;&#41;&#41;&#41;&#10;            request_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;            response_add &#61; optional&#40;map&#40;object&#40;&#123;&#10;              value   &#61; string&#10;              replace &#61; optional&#40;bool, true&#41;&#10;            &#125;&#41;&#41;&#41;&#10;            response_remove &#61; optional&#40;list&#40;string&#41;&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      url_redirect &#61; optional&#40;object&#40;&#123;&#10;        host          &#61; optional&#40;string&#41;&#10;        https         &#61; optional&#40;bool&#41;&#10;        path          &#61; optional&#40;string&#41;&#10;        prefix        &#61; optional&#40;string&#41;&#10;        response_code &#61; optional&#40;string&#41;&#10;        strip_query   &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  test &#61; optional&#40;list&#40;object&#40;&#123;&#10;    host        &#61; string&#10;    path        &#61; string&#10;    service     &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  default_service &#61; &#34;default&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [use_classic_version](variables.tf#L229) | Use classic Global Load Balancer. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
@@ -830,9 +901,15 @@ module "glb-0" {
 | [backend_service_ids](outputs.tf#L22) | Backend service resources. |  |
 | [backend_service_names](outputs.tf#L29) | Backend service resource names. |  |
 | [forwarding_rule](outputs.tf#L36) | Forwarding rule resource. |  |
-| [group_ids](outputs.tf#L41) | Autogenerated instance group ids. |  |
-| [health_check_ids](outputs.tf#L48) | Autogenerated health check ids. |  |
-| [id](outputs.tf#L55) | Fully qualified forwarding rule id. |  |
-| [neg_ids](outputs.tf#L60) | Autogenerated network endpoint group ids. |  |
+| [global_neg_ids](outputs.tf#L41) | Autogenerated global network endpoint group ids. |  |
+| [group_ids](outputs.tf#L48) | Autogenerated instance group ids. |  |
+| [health_check_ids](outputs.tf#L55) | Autogenerated health check ids. |  |
+| [id](outputs.tf#L62) | Fully qualified forwarding rule id. |  |
+| [neg_ids](outputs.tf#L67) | Autogenerated network endpoint group ids. |  |
+| [psc_neg_ids](outputs.tf#L74) | Autogenerated PSC network endpoint group ids. |  |
+| [serverless_neg_ids](outputs.tf#L81) | Autogenerated serverless network endpoint group ids. |  |
 
+## Fixtures
+
+- [compute-vm-group-bc.tf](../../tests/fixtures/compute-vm-group-bc.tf)
 <!-- END TFDOC -->

@@ -42,23 +42,23 @@ alias k='HTTPS_PROXY=localhost:8888 kubectl $@'
 
 There's a minor glitch that can surface running `terraform destroy`, where the service project attachments to the Shared VPC will not get destroyed even with the relevant API call succeeding. We are investigating the issue, in the meantime just manually remove the attachment in the Cloud console or via the `gcloud beta compute shared-vpc associated-projects remove` command when `terraform destroy` fails, and then relaunch the command.
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [billing_account_id](variables.tf#L15) | Billing account id used as default for new projects. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L62) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [root_node](variables.tf#L94) | Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L69) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [root_node](variables.tf#L101) | Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'. | <code>string</code> | ✓ |  |
 | [cluster_create](variables.tf#L20) | Create GKE cluster and nodepool. | <code>bool</code> |  | <code>true</code> |
-| [ip_ranges](variables.tf#L26) | Subnet IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gce &#61; &#34;10.0.16.0&#47;24&#34;&#10;  gke &#61; &#34;10.0.32.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [ip_secondary_ranges](variables.tf#L35) | Secondary IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gke-pods     &#61; &#34;10.128.0.0&#47;18&#34;&#10;  gke-services &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [owners_gce](variables.tf#L44) | GCE project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [owners_gke](variables.tf#L50) | GKE project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [owners_host](variables.tf#L56) | Host project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [private_service_ranges](variables.tf#L71) | Private service IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [project_services](variables.tf#L79) | Service APIs enabled by default in new projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;container.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [region](variables.tf#L88) | Region used. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [deletion_protection](variables.tf#L26) | Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail. | <code>bool</code> |  | <code>false</code> |
+| [ip_ranges](variables.tf#L33) | Subnet IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gce &#61; &#34;10.0.16.0&#47;24&#34;&#10;  gke &#61; &#34;10.0.32.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [ip_secondary_ranges](variables.tf#L42) | Secondary IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gke-pods     &#61; &#34;10.128.0.0&#47;18&#34;&#10;  gke-services &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [owners_gce](variables.tf#L51) | GCE project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [owners_gke](variables.tf#L57) | GKE project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [owners_host](variables.tf#L63) | Host project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [private_service_ranges](variables.tf#L78) | Private service IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_services](variables.tf#L86) | Service APIs enabled by default in new projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;container.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [region](variables.tf#L95) | Region used. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 
@@ -68,9 +68,7 @@ There's a minor glitch that can surface running `terraform destroy`, where the s
 | [projects](outputs.tf#L24) | Project ids. |  |
 | [vms](outputs.tf#L33) | GCE VMs. |  |
 | [vpc](outputs.tf#L40) | Shared VPC. |  |
-
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl
@@ -80,5 +78,5 @@ module "test" {
   prefix             = "test"
   root_node          = "organizations/0123456789"
 }
-# tftest modules=11 resources=46
+# tftest modules=11 resources=45
 ```

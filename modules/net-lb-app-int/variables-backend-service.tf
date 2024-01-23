@@ -35,11 +35,6 @@ variable "backend_service_configs" {
       capacity_scaler = optional(number, 1)
       description     = optional(string, "Terraform managed.")
       failover        = optional(bool, false)
-      max_connections = optional(object({
-        per_endpoint = optional(number)
-        per_group    = optional(number)
-        per_instance = optional(number)
-      }))
       max_rate = optional(object({
         per_endpoint = optional(number)
         per_group    = optional(number)
@@ -58,11 +53,6 @@ variable "backend_service_configs" {
         nanos   = optional(number)
       }))
     }))
-    connection_tracking = optional(object({
-      idle_timeout_sec          = optional(number)
-      persist_conn_on_unhealthy = optional(string)
-      track_per_session         = optional(bool)
-    }))
     consistent_hash = optional(object({
       http_header_name  = optional(string)
       minimum_ring_size = optional(number)
@@ -79,7 +69,6 @@ variable "backend_service_configs" {
     failover_config = optional(object({
       disable_conn_drain        = optional(bool)
       drop_traffic_if_unhealthy = optional(bool)
-      ratio                     = optional(number)
     }))
     iap_config = optional(object({
       oauth2_client_id            = string
@@ -109,23 +98,36 @@ variable "backend_service_configs" {
   default  = {}
   nullable = false
   validation {
-    condition = contains(
-      [
-        "-", "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH",
-        "RANDOM", "ORIGINAL_DESTINATION", "MAGLEV"
-      ],
-      try(var.backend_service_configs.locality_lb_policy, "-")
-    )
+    condition = alltrue([
+      for backend_service in values(var.backend_service_configs) : contains(
+        [
+          "-", "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH",
+          "RANDOM", "ORIGINAL_DESTINATION", "MAGLEV"
+        ],
+        coalesce(backend_service.locality_lb_policy, "-")
+      )
+    ])
     error_message = "Invalid locality lb policy value."
   }
   validation {
-    condition = contains(
-      [
-        "NONE", "CLIENT_IP", "CLIENT_IP_NO_DESTINATION",
-        "CLIENT_IP_PORT_PROTO", "CLIENT_IP_PROTO"
-      ],
-      try(var.backend_service_configs.session_affinity, "NONE")
-    )
+    condition = alltrue([
+      for backend_service in values(var.backend_service_configs) : contains(
+        [
+          "NONE", "CLIENT_IP", "CLIENT_IP_NO_DESTINATION",
+          "CLIENT_IP_PORT_PROTO", "CLIENT_IP_PROTO"
+        ],
+        coalesce(backend_service.session_affinity, "NONE")
+      )
+    ])
     error_message = "Invalid session affinity value."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for backend_service in values(var.backend_service_configs) : [
+        for backend in backend_service.backends : contains(
+          ["RATE", "UTILIZATION"], coalesce(backend.balancing_mode, "UTILIZATION")
+      )]
+    ]))
+    error_message = "When specified, balancing mode needs to be 'RATE' or 'UTILIZATION'."
   }
 }

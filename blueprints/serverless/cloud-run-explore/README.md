@@ -4,11 +4,13 @@
 
 This blueprint contains all the necessary Terraform modules to build and __publicly__ expose Cloud Run services in a variety of use cases.
 
-The content of this blueprint corresponds to the chapter '_My serverless "Hello, World! - Exploring Cloud Run_' of the [__Serverless Networking Guide__](https://services.google.com/fh/files/misc/serverless_networking_guide.pdf). This guide is an easy to follow introduction to Cloud Run, where a couple of friendly characters will guide you from the basics to more advanced topics with a very practical approach and in record time! The code here complements this learning and allows you to test the scenarios presented and your knowledge.
+The content of this blueprint corresponds to the chapter '_Exploring Cloud Run - My serverless "Hello, World!"_' of the [__Serverless Networking Guide__](https://services.google.com/fh/files/misc/serverless_networking_guide.pdf). This guide is an easy to follow introduction to Cloud Run, where a couple of friendly characters will guide you from the basics to more advanced topics with a very practical approach and in record time! The code here complements this learning and allows you to test the scenarios presented and your knowledge.
 
 If you are interested in following this guide, take a look to the chapters' blueprints:
-* [My serverless "Hello, World! - Exploring Cloud Run](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-explore)
-* [Developing an enterprise application - The corporate environment](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-corporate)
+
+* [Exploring Cloud Run - My serverless "Hello, World!"](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-explore)
+* [The corporate environment - Developing an enterprise application](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-corporate)
+* [Microservices architectures - Developing Microservices applications](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/serverless/cloud-run-microservices)
 
 ## Architecture
 
@@ -37,21 +39,27 @@ You will need an existing [project](https://cloud.google.com/resource-manager/do
 ### General steps
 
 1. Clone the repo to your local machine or Cloud Shell:
+
 ```bash
 git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric
 ```
 
 2. Change to the directory of the blueprint:
+
 ```bash
 cd cloud-foundation-fabric/blueprints/serverless/cloud-run-explore
 ```
+
 You should see this README and some terraform files.
 
-3. To deploy a specific use case, you will need to create a file in this directory called `terraform.tfvars` and follow the corresponding instructions to set variables. Sometimes values that are meant to be substituted will be shown inside brackets but you need to omit these brackets. E.g.:
+3. To deploy a specific use case, you will need to create a file in this directory called `terraform.tfvars` and follow the corresponding instructions to set variables. Values that are meant to be substituted will be shown inside brackets but you need to omit these brackets. E.g.:
+
 ```tfvars
 project_id = "[your-project_id]"
 ```
+
 may become
+
 ```tfvars
 project_id = "spiritual-hour-331417"
 ```
@@ -59,13 +67,14 @@ project_id = "spiritual-hour-331417"
 Although each use case is somehow built around the previous one they are self-contained so you can deploy any of them at will.
 
 4. The usual terraform commands will do the work:
+
 ```bash
 terraform init
 terraform plan
 terraform apply
 ```
 
-The resource creation will take a few minutes but when it’s complete, you should see an output stating the command completed successfully with a list of the created resources, and some output variables with information to access your service.
+It will take a few minutes. When complete, you should see an output stating the command completed successfully, a list of the created resources, and some output variables with information to access your services.
 
 __Congratulations!__ You have successfully deployed the use case you chose based on the variables configuration.
 
@@ -165,7 +174,7 @@ The easiest way to remove all the deployed resources is to run the following com
 ```bash
 terraform destroy
 ```
-The above command will delete the associated resources so there will be no billable charges made afterwards. IAP Brands, though, can only be created once per project and not deleted. Destroying a Terraform-managed IAP Brand will remove it from state but will not delete it from Google Cloud.
+The above command will delete the associated resources so there will be no billable charges afterwards. IAP Brands, though, can only be created once per project and not deleted. Destroying a Terraform-managed IAP Brand will remove it from state but will not delete it from Google Cloud.
 <!-- BEGIN TFDOC -->
 
 ## Variables

@@ -19,15 +19,16 @@ variable "backup_configs" {
   type = object({
     enable_backup_agent = optional(bool, false)
     backup_plans = optional(map(object({
+      region                            = string
+      applications                      = optional(map(list(string)))
       encryption_key                    = optional(string)
       include_secrets                   = optional(bool, true)
       include_volume_data               = optional(bool, true)
       namespaces                        = optional(list(string))
-      region                            = string
-      schedule                          = string
-      retention_policy_days             = optional(string)
+      schedule                          = optional(string)
+      retention_policy_days             = optional(number)
       retention_policy_lock             = optional(bool, false)
-      retention_policy_delete_lock_days = optional(string)
+      retention_policy_delete_lock_days = optional(number)
     })), {})
   })
   default  = {}
@@ -37,11 +38,37 @@ variable "backup_configs" {
 variable "cluster_autoscaling" {
   description = "Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler."
   type = object({
+    autoscaling_profile = optional(string, "BALANCED")
     auto_provisioning_defaults = optional(object({
       boot_disk_kms_key = optional(string)
+      disk_size         = optional(number)
+      disk_type         = optional(string, "pd-standard")
       image_type        = optional(string)
       oauth_scopes      = optional(list(string))
       service_account   = optional(string)
+      management = optional(object({
+        auto_repair  = optional(bool, true)
+        auto_upgrade = optional(bool, true)
+      }))
+      shielded_instance_config = optional(object({
+        integrity_monitoring = optional(bool, true)
+        secure_boot          = optional(bool, false)
+      }))
+      upgrade_settings = optional(object({
+        blue_green = optional(object({
+          node_pool_soak_duration = optional(string)
+          standard_rollout_policy = optional(object({
+            batch_percentage    = optional(number)
+            batch_node_count    = optional(number)
+            batch_soak_duration = optional(string)
+          }))
+        }))
+        surge = optional(object({
+          max         = optional(number)
+          unavailable = optional(number)
+        }))
+      }))
+      # add validation rule to ensure only one is present if upgrade settings is defined
     }))
     cpu_limits = optional(object({
       min = number
@@ -51,8 +78,45 @@ variable "cluster_autoscaling" {
       min = number
       max = number
     }))
+    gpu_resources = optional(list(object({
+      resource_type = string
+      min           = number
+      max           = number
+    })))
   })
   default = null
+  validation {
+    condition = (var.cluster_autoscaling == null ? true : contains(
+      ["BALANCED", "OPTIMIZE_UTILIZATION"],
+      var.cluster_autoscaling.autoscaling_profile
+    ))
+    error_message = "Invalid autoscaling_profile."
+  }
+  validation {
+    condition = (
+      var.cluster_autoscaling == null ? true : contains(
+        ["pd-standard", "pd-ssd", "pd-balanced"],
+      var.cluster_autoscaling.auto_provisioning_defaults.disk_type)
+    )
+    error_message = "Invalid disk_type."
+  }
+  validation {
+    condition = (
+      try(var.cluster_autoscaling.upgrade_settings, null) == null || (
+        try(var.cluster_autoscaling.upgrade_settings.blue_green, null) == null ? 0 : 1
+        +
+        try(var.cluster_autoscaling.upgrade_settings.surge, null) == null ? 0 : 1
+      ) == 1
+    )
+    error_message = "Upgrade settings can only use blue/green or surge."
+  }
+}
+
+variable "deletion_protection" {
+  description = "Whether or not to allow Terraform to destroy the cluster. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the cluster will fail."
+  type        = bool
+  default     = true
+  nullable    = false
 }
 
 variable "description" {
@@ -69,6 +133,7 @@ variable "enable_addons" {
     dns_cache                      = optional(bool, false)
     gce_persistent_disk_csi_driver = optional(bool, false)
     gcp_filestore_csi_driver       = optional(bool, false)
+    gcs_fuse_csi_driver            = optional(bool, false)
     horizontal_pod_autoscaling     = optional(bool, false)
     http_load_balancing            = optional(bool, false)
     istio = optional(object({
@@ -87,6 +152,7 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
+    beta_apis            = optional(list(string))
     binary_authorization = optional(bool, false)
     cost_management      = optional(bool, false)
     dns = optional(object({
@@ -99,8 +165,10 @@ variable "enable_features" {
       key_name = string
     }))
     dataplane_v2         = optional(bool, false)
+    fqdn_network_policy  = optional(bool, false)
     gateway_api          = optional(bool, false)
     groups_for_rbac      = optional(string)
+    image_streaming      = optional(bool, false)
     intranode_visibility = optional(bool, false)
     l4_ilb_subsetting    = optional(bool, false)
     mesh_certificates    = optional(bool)
@@ -110,8 +178,9 @@ variable "enable_features" {
       enable_network_egress_metering       = optional(bool)
       enable_resource_consumption_metering = optional(bool)
     }))
-    shielded_nodes = optional(bool, false)
-    tpu            = optional(bool, false)
+    service_external_ips = optional(bool, true)
+    shielded_nodes       = optional(bool, false)
+    tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
       topic_id = optional(string)
     }))
@@ -120,6 +189,12 @@ variable "enable_features" {
   })
   default = {
     workload_identity = true
+  }
+  validation {
+    condition = (
+      var.enable_features.fqdn_network_policy ? var.enable_features.dataplane_v2 : true
+    )
+    error_message = "FQDN network policy is only supported for clusters with Dataplane v2."
   }
 }
 
@@ -251,6 +326,16 @@ variable "name" {
   type        = string
 }
 
+variable "node_config" {
+  description = "Node-level configuration."
+  type = object({
+    boot_disk_kms_key = optional(string)
+    service_account   = optional(string)
+    tags              = optional(list(string))
+  })
+  default = {}
+}
+
 variable "node_locations" {
   description = "Zones in which the cluster's nodes are located."
   type        = list(string)
@@ -280,18 +365,6 @@ variable "project_id" {
 variable "release_channel" {
   description = "Release channel for GKE upgrades."
   type        = string
-  default     = null
-}
-
-variable "service_account" {
-  description = "Service account used for the default node pool, only useful if the default GCE service account has been disabled."
-  type        = string
-  default     = null
-}
-
-variable "tags" {
-  description = "Network tags applied to nodes."
-  type        = list(string)
   default     = null
 }
 

@@ -17,41 +17,39 @@
 variable "composer_config" {
   description = "Composer environment configuration. It accepts only following attributes: `environment_size`, `software_config` and `workloads_config`. See [attribute reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/composer_environment#argument-reference---cloud-composer-2) for details on settings variables."
   type = object({
-    environment_size = string
-    software_config  = any
-    workloads_config = object({
-      scheduler = object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-          count      = number
-        }
-      )
-      web_server = object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-        }
-      )
-      worker = object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-          min_count  = number
-          max_count  = number
-        }
-      )
-    })
+    environment_size = optional(string)
+    software_config  = optional(any)
+    workloads_config = optional(object({
+      scheduler = optional(object({
+        count      = optional(number, 1)
+        cpu        = optional(number, 0.5)
+        memory_gb  = optional(number, 2)
+        storage_gb = optional(number, 1)
+      }), {})
+      triggerer = optional(object({
+        count     = number
+        cpu       = number
+        memory_gb = number
+      }))
+      web_server = optional(object({
+        cpu        = optional(number, 0.5)
+        memory_gb  = optional(number, 2)
+        storage_gb = optional(number, 1)
+      }), {})
+      worker = optional(object({
+        cpu        = optional(number, 0.5)
+        memory_gb  = optional(number, 2)
+        min_count  = optional(number, 1)
+        max_count  = optional(number, 3)
+        storage_gb = optional(number, 1)
+      }), {})
+    }))
   })
   default = {
     environment_size = "ENVIRONMENT_SIZE_SMALL"
     software_config = {
       image_version = "composer-2-airflow-2"
     }
-    workloads_config = null
   }
 }
 
@@ -104,13 +102,12 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Reagion where instances will be deployed."
+  description = "Region where instances will be deployed."
   type        = string
-  default     = "europe-west1"
 }
 
 variable "service_encryption_keys" {
-  description = "Cloud KMS keys to use to encrypt resources. Provide a key for each reagion in use."
+  description = "Cloud KMS keys to use to encrypt resources. Provide a key for each region in use."
   type        = map(string)
   default     = null
 }

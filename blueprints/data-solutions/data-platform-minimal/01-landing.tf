@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,8 +22,9 @@ locals {
     "roles/storage.objectViewer" = [
       module.processing-sa-cmp-0.iam_email
     ]
-    "roles/storage.objectAdmin" = [
-      module.processing-sa-0.iam_email
+    "roles/storage.admin" = [
+      module.processing-sa-0.iam_email,
+      local.groups_iam.data-engineers
     ]
   }
   # this only works because the service account module uses a static output
@@ -100,7 +101,7 @@ module "land-cs-0" {
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = var.service_encryption_keys.storage
-  force_destroy  = var.data_force_destroy
+  force_destroy  = !var.deletion_protection
 }
 
 module "land-bq-0" {

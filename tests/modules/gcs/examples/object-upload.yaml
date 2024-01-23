@@ -14,11 +14,11 @@
 
 values:
   module.bucket.google_storage_bucket.bucket:
-    name: my-bucket
-    project: myproject
+    name: test-my-bucket
+    project: project-id
   module.bucket.google_storage_bucket_object.objects["sample-data"]:
     name: example-file.csv
-    source: data/example-file.csv
+    source: assets/example-file.csv
     content_type: text/csv
 
 counts:

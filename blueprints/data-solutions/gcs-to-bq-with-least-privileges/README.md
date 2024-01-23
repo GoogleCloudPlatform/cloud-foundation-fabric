@@ -188,18 +188,18 @@ The easiest way to remove all the deployed resources is to run the following com
   
 The above command will delete the associated resources so there will be no billable charges made afterwards.
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L37) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_config](variables.tf#L46) | Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. If project is created, `var.prefix` will be used. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string&#41;,&#10;  parent             &#61; string,&#10;  project_id         &#61; optional&#40;string, &#34;gcs-df-bq&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [prefix](variables.tf#L44) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_config](variables.tf#L53) | Provide 'billing_account_id' value if project creation is needed, uses existing 'project_id' if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. If project is created, `var.prefix` will be used. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; optional&#40;string&#41;,&#10;  parent             &#61; string,&#10;  project_id         &#61; optional&#40;string, &#34;gcs-df-bq&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [cmek_encryption](variables.tf#L15) | Flag to enable CMEK on GCP resources created. | <code>bool</code> |  | <code>false</code> |
 | [data_eng_principals](variables.tf#L21) | Groups with admin/developer role on enabled services and Service Account Token creator role on service accounts in IAM format, eg 'group:group@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [network_config](variables.tf#L27) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project     &#61; optional&#40;string&#41;&#10;  subnet_self_link &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [region](variables.tf#L60) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [vpc_subnet_range](variables.tf#L66) | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
+| [deletion_protection](variables.tf#L27) | Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail. | <code>bool</code> |  | <code>true</code> |
+| [network_config](variables.tf#L34) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project     &#61; optional&#40;string&#41;&#10;  subnet_self_link &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [region](variables.tf#L67) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [vpc_subnet_range](variables.tf#L73) | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
 
 ## Outputs
 
@@ -212,7 +212,6 @@ The above command will delete the associated resources so there will be no billa
 | [command_03_bq](outputs.tf#L54) | BigQuery command to query imported data. |  |
 | [project_id](outputs.tf#L64) | Project id. |  |
 | [service_accounts](outputs.tf#L69) | Service account. |  |
-
 <!-- END TFDOC -->
 ## Test
 

@@ -108,8 +108,8 @@ resource "google_dataproc_cluster" "cluster" {
           dynamic "accelerators" {
             for_each = var.dataproc_config.cluster_config.worker_config.accelerators == null ? [] : [""]
             content {
-              accelerator_type  = var.dataproc_config.cluster_config.accelerators.accelerator_type
-              accelerator_count = var.dataproc_config.cluster_config.accelerators.accelerator_count
+              accelerator_type  = var.dataproc_config.cluster_config.worker_config.accelerators.accelerator_type
+              accelerator_count = var.dataproc_config.cluster_config.worker_config.accelerators.accelerator_count
             }
           }
         }
@@ -185,10 +185,10 @@ resource "google_dataproc_cluster" "cluster" {
         for_each = var.dataproc_config.cluster_config.dataproc_metric_config == null ? [] : [""]
         content {
           dynamic "metrics" {
-            for_each = var.dataproc_config.cluster_config.dataproc_metric_config.metrics == null ? [] : [""]
+            for_each = coalesce(var.dataproc_config.cluster_config.dataproc_metric_config.metrics, [])
             content {
-              metric_source    = var.dataproc_config.cluster_config.dataproc_metric_config.metrics.metric_source
-              metric_overrides = var.dataproc_config.cluster_config.dataproc_metric_config.metrics.metric_overrides
+              metric_source    = metrics.value.metric_source
+              metric_overrides = metrics.value.metric_overrides
             }
           }
         }

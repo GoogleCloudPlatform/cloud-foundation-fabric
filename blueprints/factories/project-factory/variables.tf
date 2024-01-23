@@ -28,14 +28,18 @@ variable "data_defaults" {
     service_perimeter_standard = optional(string)
     services                   = optional(list(string), [])
     shared_vpc_service_config = optional(object({
-      host_project         = string
-      service_identity_iam = optional(map(list(string)), {})
-      service_iam_grants   = optional(list(string), [])
+      host_project                = string
+      network_users               = optional(list(string), [])
+      service_identity_iam        = optional(map(list(string)), {})
+      service_identity_subnet_iam = optional(map(list(string)), {})
+      service_iam_grants          = optional(list(string), [])
+      network_subnet_users        = optional(map(list(string)), {})
     }), { host_project = null })
     tag_bindings = optional(map(string), {})
     # non-project resources
     service_accounts = optional(map(object({
-      default_roles = optional(bool, true)
+      display_name      = optional(string, "Terraform-managed.")
+      iam_project_roles = optional(list(string))
     })), {})
   })
   nullable = false
@@ -54,7 +58,8 @@ variable "data_merges" {
     tag_bindings               = optional(map(string), {})
     # non-project resources
     service_accounts = optional(map(object({
-      default_roles = optional(bool, true)
+      display_name      = optional(string, "Terraform-managed.")
+      iam_project_roles = optional(list(string))
     })), {})
   })
   nullable = false
@@ -75,25 +80,16 @@ variable "data_overrides" {
     services                   = optional(list(string))
     # non-project resources
     service_accounts = optional(map(object({
-      default_roles = optional(bool, true)
+      display_name      = optional(string, "Terraform-managed.")
+      iam_project_roles = optional(list(string))
     })))
   })
   nullable = false
   default  = {}
 }
 
-variable "factory_data" {
-  description = "Project data from either YAML files or externally parsed data."
-  type = object({
-    data      = optional(map(any))
-    data_path = optional(string)
-  })
-  nullable = false
-  validation {
-    condition = (
-      (var.factory_data.data != null ? 1 : 0) +
-      (var.factory_data.data_path != null ? 1 : 0)
-    ) == 1
-    error_message = "One of data or data_path needs to be set."
-  }
+variable "factory_data_path" {
+  description = "Path to folder with YAML project description data files."
+  type        = string
+  nullable    = false
 }

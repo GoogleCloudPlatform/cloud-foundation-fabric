@@ -83,7 +83,7 @@ variable "urlmap_config" {
       path          = optional(string)
       prefix        = optional(string)
       response_code = optional(string)
-      strip_query   = optional(bool)
+      strip_query   = optional(bool, false)
     }))
     header_action = optional(object({
       request_add = optional(map(object({

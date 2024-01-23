@@ -33,10 +33,11 @@ locals {
         "attribute.repository"       = "assertion.repository"
         "attribute.repository_owner" = "assertion.repository_owner"
         "attribute.ref"              = "assertion.ref"
+        "attribute.fast_sub"         = "\"repo:\" + assertion.repository + \":ref:\" + assertion.ref"
       }
       issuer_uri       = "https://token.actions.githubusercontent.com"
-      principal_tpl    = "principal://iam.googleapis.com/%s/subject/repo:%s:ref:refs/heads/%s"
-      principalset_tpl = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.fast_sub/repo:%s:ref:refs/heads/%s"
+      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
     # https://docs.gitlab.com/ee/ci/secrets/id_token_authentication.html#token-payload
     gitlab = {
@@ -57,8 +58,8 @@ locals {
         "attribute.ref_type"              = "assertion.ref_type"
       }
       issuer_uri       = "https://gitlab.com"
-      principal_tpl    = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
-      principalset_tpl = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
+      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
   }
 }
@@ -83,11 +84,14 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   oidc {
     # Setting an empty list configures allowed_audiences to the url of the provider
     allowed_audiences = each.value.custom_settings.audiences
-    # If users don't provide an issuer_uri, we set the public one for the plaform choosed.
+    # If users don't provide an issuer_uri, we set the public one for the platform choosed.
     issuer_uri = (
       each.value.custom_settings.issuer_uri != null
       ? each.value.custom_settings.issuer_uri
       : try(each.value.issuer_uri, null)
     )
+    # OIDC JWKs in JSON String format. If no value is provided, they key is
+    # fetched from the `.well-known` path for the issuer_uri
+    jwks_json = each.value.custom_settings.jwks_json
   }
 }

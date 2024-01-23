@@ -51,6 +51,16 @@ variable "iam_bindings_additive" {
   default  = {}
 }
 
+variable "import_job" {
+  description = "Keyring import job attributes."
+  type = object({
+    id               = string
+    import_method    = string
+    protection_level = string
+  })
+  default = null
+}
+
 variable "keyring" {
   description = "Keyring attributes."
   type = object({
@@ -80,6 +90,7 @@ variable "keys" {
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
+      role    = string
       condition = optional(object({
         expression  = string
         title       = string

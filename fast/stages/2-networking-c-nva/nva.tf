@@ -129,7 +129,11 @@ module "ilb-nva-untrusted" {
   region        = each.value.region
   name          = "nva-untrusted-${each.key}"
   service_label = var.prefix
-  global_access = true
+  forwarding_rules_config = {
+    "" = {
+      global_access = true
+    }
+  }
   vpc_config = {
     network    = module.landing-untrusted-vpc.self_link
     subnetwork = module.landing-untrusted-vpc.subnet_self_links[each.value.subnet]
@@ -160,7 +164,11 @@ module "ilb-nva-trusted" {
   region        = each.value.region
   name          = "nva-trusted-${each.key}"
   service_label = var.prefix
-  global_access = true
+  forwarding_rules_config = {
+    "" = {
+      global_access = true
+    }
+  }
   vpc_config = {
     network    = module.landing-trusted-vpc.self_link
     subnetwork = module.landing-trusted-vpc.subnet_self_links[each.value.subnet]

@@ -33,7 +33,7 @@ module "projects" {
   data_overrides = {
     prefix = "${var.prefix}-dev"
   }
-  factory_data = var.factory_data
+  factory_data_path = var.factory_data_path
 }
 
 

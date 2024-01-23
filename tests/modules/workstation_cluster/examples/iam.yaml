@@ -1,0 +1,103 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.workstation-cluster.google_workstations_workstation.workstations["my-workstation-config-my-workstation"]:
+    annotations: null
+    display_name: null
+    effective_labels:
+      team: my-team
+    env: null
+    labels:
+      team: my-team
+    location: europe-west8
+    project: project-id
+    terraform_labels:
+      team: my-team
+    timeouts: null
+    workstation_cluster_id: my-workstation-cluster
+    workstation_config_id: my-workstation-config
+    workstation_id: my-workstation
+  module.workstation-cluster.google_workstations_workstation_cluster.cluster:
+    annotations: null
+    display_name: null
+    domain_config: []
+    labels: null
+    location: europe-west8
+    network: projects/xxx/global/networks/aaa
+    private_cluster_config:
+    - enable_private_endpoint: false
+    project: project-id
+    subnetwork: subnet_self_link
+    timeouts: null
+    workstation_cluster_id: my-workstation-cluster
+  module.workstation-cluster.google_workstations_workstation_config.configs["my-workstation-config"]:
+    annotations: null
+    display_name: null
+    enable_audit_agent: null
+    encryption_key: []
+    idle_timeout: 1200s
+    labels: null
+    location: europe-west8
+    project: project-id
+    running_timeout: 43200s
+    timeouts: null
+    workstation_cluster_id: my-workstation-cluster
+    workstation_config_id: my-workstation-config
+  ? module.workstation-cluster.google_workstations_workstation_config_iam_binding.authoritative["my-workstation-config-roles/viewer"]
+  : condition: []
+    location: europe-west8
+    members:
+    - group:group1@my-org.com
+    project: project-id
+    role: roles/viewer
+    workstation_cluster_id: my-workstation-cluster
+    workstation_config_id: my-workstation-config
+  ? module.workstation-cluster.google_workstations_workstation_config_iam_binding.bindings["my-workstation-config-workstations-config-viewer"]
+  : condition: []
+    location: europe-west8
+    members:
+    - group:group2@my-org.com
+    project: project-id
+    role: roles/viewer
+    workstation_cluster_id: my-workstation-cluster
+    workstation_config_id: my-workstation-config
+  ? module.workstation-cluster.google_workstations_workstation_config_iam_member.bindings["my-workstation-config-workstations-config-editor"]
+  : condition: []
+    location: europe-west8
+    member: group:group3@my-org.com
+    project: project-id
+    role: roles/editor
+    workstation_cluster_id: my-workstation-cluster
+    workstation_config_id: my-workstation-config
+  ? module.workstation-cluster.google_workstations_workstation_iam_binding.authoritative["my-workstation-config-my-workstation-roles/workstations.user"]
+  : condition: []
+    location: europe-west8
+    members:
+    - user:user1@my-org.com
+    project: project-id
+    role: roles/workstations.user
+    workstation_cluster_id: my-workstation-cluster
+    workstation_config_id: my-workstation-config
+    workstation_id: my-workstation
+
+counts:
+  google_workstations_workstation: 1
+  google_workstations_workstation_cluster: 1
+  google_workstations_workstation_config: 1
+  google_workstations_workstation_config_iam_binding: 2
+  google_workstations_workstation_config_iam_member: 1
+  google_workstations_workstation_iam_binding: 1
+  modules: 1
+  resources: 7

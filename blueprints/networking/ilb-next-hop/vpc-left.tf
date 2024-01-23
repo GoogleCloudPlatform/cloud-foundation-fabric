@@ -29,7 +29,7 @@ module "vpc-left" {
     to-right = {
       dest_range    = var.ip_ranges.right
       next_hop_type = "ilb"
-      next_hop      = module.ilb-left.forwarding_rule.self_link
+      next_hop      = module.ilb-left.forwarding_rule_self_links[""]
     }
   }
 }

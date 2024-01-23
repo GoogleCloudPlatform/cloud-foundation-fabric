@@ -24,10 +24,10 @@ values:
     description: Allow SSH to machines with matching tags.
     disabled: null
     log_config: []
-    name: my-network-ingress-tag-ssh
-    network: my-network
+    name: vpc-name-ingress-tag-ssh
+    network: vpc-name
     priority: 1000
-    project: my-project
+    project: project-id
     source_ranges:
     - 10.0.0.0/8
     source_service_accounts: null

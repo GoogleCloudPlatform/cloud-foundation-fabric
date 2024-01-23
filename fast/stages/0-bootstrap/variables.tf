@@ -34,16 +34,16 @@ variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     bootstrap = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     resman = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
   })
   default = null
@@ -76,20 +76,6 @@ variable "cicd_repositories" {
   }
 }
 
-variable "custom_role_names" {
-  description = "Names of custom roles defined at the org level."
-  type = object({
-    organization_iam_admin        = string
-    service_project_network_admin = string
-    tenant_network_admin          = string
-  })
-  default = {
-    organization_iam_admin        = "organizationIamAdmin"
-    service_project_network_admin = "serviceProjectNetworkAdmin"
-    tenant_network_admin          = "tenantNetworkAdmin"
-  }
-}
-
 variable "custom_roles" {
   description = "Map of role names => list of permissions to additionally create at the organization level."
   type        = map(list(string))
@@ -98,9 +84,12 @@ variable "custom_roles" {
 }
 
 variable "factories_config" {
-  description = "Configuration for the organization policies factory."
+  description = "Configuration for the resource factories or external data."
   type = object({
-    org_policy_data_path = optional(string, "data/org-policies")
+    checklist_data    = optional(string)
+    checklist_org_iam = optional(string)
+    custom_roles      = optional(string, "data/custom-roles")
+    org_policy        = optional(string, "data/org-policies")
   })
   nullable = false
   default  = {}
@@ -127,6 +116,7 @@ variable "federated_identity_providers" {
     custom_settings = optional(object({
       issuer_uri = optional(string)
       audiences  = optional(list(string), [])
+      jwks_json  = optional(string)
     }), {})
   }))
   default  = {}
@@ -148,10 +138,17 @@ variable "group_iam" {
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
-  type        = map(string)
+  type = object({
+    gcp-billing-admins      = string
+    gcp-devops              = string
+    gcp-network-admins      = string
+    gcp-organization-admins = string
+    gcp-security-admins     = string
+    gcp-support             = string
+  })
   default = {
-    gcp-billing-admins      = "gcp-billing-admins",
-    gcp-devops              = "gcp-devops",
+    gcp-billing-admins      = "gcp-billing-admins"
+    gcp-devops              = "gcp-devops"
     gcp-network-admins      = "gcp-network-admins"
     gcp-organization-admins = "gcp-organization-admins"
     gcp-security-admins     = "gcp-security-admins"
@@ -207,11 +204,15 @@ variable "log_sinks" {
   }))
   default = {
     audit-logs = {
-      filter = "logName:\"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName:\"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
+      filter = "logName:\"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName:\"/logs/cloudaudit.googleapis.com%2Fsystem_event\" OR protoPayload.metadata.@type=\"type.googleapis.com/google.cloud.audit.TransparencyLog\""
       type   = "logging"
     }
     vpc-sc = {
       filter = "protoPayload.metadata.@type=\"type.googleapis.com/google.cloud.audit.VpcServiceControlAuditMetadata\""
+      type   = "logging"
+    }
+    workspace-audit-logs = {
+      filter = "logName:\"/logs/cloudaudit.googleapis.com%2Fdata_access\" and protoPayload.serviceName:\"login.googleapis.com\""
       type   = "logging"
     }
   }

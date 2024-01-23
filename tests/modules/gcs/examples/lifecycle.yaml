@@ -29,8 +29,8 @@ values:
         matches_suffix: []
         noncurrent_time_before: ''
         num_newer_versions: null
-    name: my-bucket
-    project: myproject
+    name: test-my-bucket
+    project: project-id
 
 counts:
   google_storage_bucket: 1

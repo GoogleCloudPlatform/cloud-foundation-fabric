@@ -25,9 +25,9 @@ values:
     disabled: false
     log_config: []
     name: allow-healthchecks
-    network: my-network
+    network: vpc-name
     priority: 1000
-    project: my-project
+    project: project-id
     source_ranges:
     - 130.211.0.0/22
     - 209.85.152.0/22
@@ -50,13 +50,11 @@ values:
     disabled: false
     log_config: []
     name: allow-service-1-to-service-2
-    network: my-network
+    network: vpc-name
     priority: 1000
-    project: my-project
-    source_ranges:
-    - 0.0.0.0/0
+    project: project-id
     source_service_accounts:
-    - service-1@my-project.iam.gserviceaccount.com
+    - service-1@project-id.iam.gserviceaccount.com
     source_tags: null
     target_service_accounts:
     - service-2
@@ -74,9 +72,9 @@ values:
     disabled: false
     log_config: []
     name: block-telnet
-    network: my-network
+    network: vpc-name
     priority: 1000
-    project: my-project
+    project: project-id
     source_ranges: null
     source_service_accounts: null
     source_tags: null

@@ -34,6 +34,13 @@ variable "backup_configs" {
   nullable = false
 }
 
+variable "deletion_protection" {
+  description = "Whether or not to allow Terraform to destroy the cluster. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the cluster will fail."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "description" {
   description = "Cluster description."
   type        = string
@@ -43,27 +50,21 @@ variable "description" {
 variable "enable_addons" {
   description = "Addons enabled in the cluster (true means enabled)."
   type = object({
-    cloudrun                   = optional(bool, false)
-    config_connector           = optional(bool, false)
-    dns_cache                  = optional(bool, false)
-    horizontal_pod_autoscaling = optional(bool, false)
-    http_load_balancing        = optional(bool, false)
+    cloudrun         = optional(bool, false)
+    config_connector = optional(bool, false)
     istio = optional(object({
       enable_tls = bool
     }))
-    kalm           = optional(bool, false)
-    network_policy = optional(bool, false)
+    kalm = optional(bool, false)
   })
-  default = {
-    horizontal_pod_autoscaling = true
-    http_load_balancing        = true
-  }
+  default  = {}
   nullable = false
 }
 
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
+    beta_apis            = optional(list(string))
     binary_authorization = optional(bool, false)
     cost_management      = optional(bool, false)
     dns = optional(object({
@@ -86,7 +87,8 @@ variable "enable_features" {
       enable_network_egress_metering       = optional(bool)
       enable_resource_consumption_metering = optional(bool)
     }))
-    tpu = optional(bool, false)
+    service_external_ips = optional(bool, true)
+    tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
       topic_id = optional(string)
     }))
@@ -189,6 +191,16 @@ variable "name" {
   type        = string
 }
 
+variable "node_config" {
+  description = "Configuration for nodes and nodepools."
+  type = object({
+    boot_disk_kms_key = optional(string)
+    service_account   = optional(string)
+    tags              = optional(list(string))
+  })
+  default = {}
+}
+
 variable "node_locations" {
   description = "Zones in which the cluster's nodes are located."
   type        = list(string)
@@ -224,19 +236,6 @@ variable "release_channel" {
     condition     = contains(["RAPID", "REGULAR", "STABLE"], var.release_channel)
     error_message = "Must be one of: RAPID, REGULAR, STABLE."
   }
-}
-
-variable "service_account" {
-  description = "The Google Cloud Platform Service Account to be used by the node VMs created by GKE Autopilot."
-  type        = string
-  default     = null
-}
-
-variable "tags" {
-  description = "Network tags applied to nodes."
-  type        = list(string)
-  default     = []
-  nullable    = false
 }
 
 variable "vpc_config" {

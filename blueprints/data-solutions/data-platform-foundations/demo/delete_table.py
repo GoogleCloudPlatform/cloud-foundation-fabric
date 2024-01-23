@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,9 +43,6 @@ DWH_CURATED_GCS = Variable.get("DWH_CURATED_GCS")
 DWH_CONFIDENTIAL_PRJ = Variable.get("DWH_CONFIDENTIAL_PRJ")
 DWH_CONFIDENTIAL_BQ_DATASET = Variable.get("DWH_CONFIDENTIAL_BQ_DATASET")
 DWH_CONFIDENTIAL_GCS = Variable.get("DWH_CONFIDENTIAL_GCS")
-DWH_PLG_PRJ = Variable.get("DWH_PLG_PRJ")
-DWH_PLG_BQ_DATASET = Variable.get("DWH_PLG_BQ_DATASET")
-DWH_PLG_GCS = Variable.get("DWH_PLG_GCS")
 GCP_REGION = Variable.get("GCP_REGION")
 DRP_PRJ = Variable.get("DRP_PRJ")
 DRP_BQ = Variable.get("DRP_BQ")

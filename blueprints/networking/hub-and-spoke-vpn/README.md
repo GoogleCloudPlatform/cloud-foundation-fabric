@@ -66,7 +66,6 @@ ping test-r2.dev.example.com
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
-
 ## Files
 
 | name | description | modules |
@@ -77,7 +76,6 @@ ping test-r2.dev.example.com
 | [net-prod.tf](./net-prod.tf) | Production spoke VPC. | <code>dns</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
-| [versions.tf](./versions.tf) | Version pins. |  |
 | [vpn-dev-r1.tf](./vpn-dev-r1.tf) | Landing to Development VPN for region 1. | <code>net-vpn-ha</code> |
 | [vpn-prod-r1.tf](./vpn-prod-r1.tf) | Landing to Production VPN for region 1. | <code>net-vpn-ha</code> |
 
@@ -99,9 +97,7 @@ ping test-r2.dev.example.com
 |---|---|:---:|
 | [subnets](outputs.tf#L15) | Subnet details. |  |
 | [vms](outputs.tf#L39) | GCE VMs. |  |
-
 <!-- END TFDOC -->
-
 ## Test
 ```hcl
 module "test" {
@@ -114,5 +110,5 @@ module "test" {
   project_id = "project-1"
 }
 
-# tftest modules=20 resources=84
+# tftest modules=20 resources=79
 ```
