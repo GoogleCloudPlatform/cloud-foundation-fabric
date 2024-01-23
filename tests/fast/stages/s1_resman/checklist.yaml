@@ -71,12 +71,12 @@ values:
   ? module.checklist-folder-3["Department 1/Team 1/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 1/Team 1/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 1/Team 1/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -84,12 +84,12 @@ values:
   ? module.checklist-folder-3["Department 1/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 1/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 1/Team 1/Production"].google_folder.folder[0]:
     display_name: Production
@@ -100,12 +100,12 @@ values:
   ? module.checklist-folder-3["Department 1/Team 2/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 1/Team 2/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 1/Team 2/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -113,12 +113,12 @@ values:
   ? module.checklist-folder-3["Department 1/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 1/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 1/Team 2/Production"].google_folder.folder[0]:
     display_name: Production
@@ -129,12 +129,12 @@ values:
   ? module.checklist-folder-3["Department 1/Team 3/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 1/Team 3/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 1/Team 3/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -142,12 +142,12 @@ values:
   ? module.checklist-folder-3["Department 1/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 1/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 1/Team 3/Production"].google_folder.folder[0]:
     display_name: Production
@@ -158,12 +158,12 @@ values:
   ? module.checklist-folder-3["Department 1/Team 4/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 1/Team 4/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 1/Team 4/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -171,12 +171,12 @@ values:
   ? module.checklist-folder-3["Department 1/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 1/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 1/Team 4/Production"].google_folder.folder[0]:
     display_name: Production
@@ -187,12 +187,12 @@ values:
   ? module.checklist-folder-3["Department 2/Team 1/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 2/Team 1/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 2/Team 1/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -200,12 +200,12 @@ values:
   ? module.checklist-folder-3["Department 2/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 2/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 2/Team 1/Production"].google_folder.folder[0]:
     display_name: Production
@@ -216,12 +216,12 @@ values:
   ? module.checklist-folder-3["Department 2/Team 2/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 2/Team 2/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 2/Team 2/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -229,12 +229,12 @@ values:
   ? module.checklist-folder-3["Department 2/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 2/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 2/Team 2/Production"].google_folder.folder[0]:
     display_name: Production
@@ -245,12 +245,12 @@ values:
   ? module.checklist-folder-3["Department 2/Team 3/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 2/Team 3/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 2/Team 3/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -258,12 +258,12 @@ values:
   ? module.checklist-folder-3["Department 2/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 2/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 2/Team 3/Production"].google_folder.folder[0]:
     display_name: Production
@@ -274,12 +274,12 @@ values:
   ? module.checklist-folder-3["Department 2/Team 4/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 2/Team 4/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 2/Team 4/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -287,12 +287,12 @@ values:
   ? module.checklist-folder-3["Department 2/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 2/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 2/Team 4/Production"].google_folder.folder[0]:
     display_name: Production
@@ -303,12 +303,12 @@ values:
   ? module.checklist-folder-3["Department 3/Team 1/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 3/Team 1/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 3/Team 1/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -316,12 +316,12 @@ values:
   ? module.checklist-folder-3["Department 3/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 3/Team 1/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 3/Team 1/Production"].google_folder.folder[0]:
     display_name: Production
@@ -332,12 +332,12 @@ values:
   ? module.checklist-folder-3["Department 3/Team 2/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 3/Team 2/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 3/Team 2/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -345,12 +345,12 @@ values:
   ? module.checklist-folder-3["Department 3/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 3/Team 2/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 3/Team 2/Production"].google_folder.folder[0]:
     display_name: Production
@@ -361,12 +361,12 @@ values:
   ? module.checklist-folder-3["Department 3/Team 3/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 3/Team 3/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 3/Team 3/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -374,12 +374,12 @@ values:
   ? module.checklist-folder-3["Department 3/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 3/Team 3/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 3/Team 3/Production"].google_folder.folder[0]:
     display_name: Production
@@ -390,12 +390,12 @@ values:
   ? module.checklist-folder-3["Department 3/Team 4/Development"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 3/Team 4/Development"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 3/Team 4/Non-Production"].google_folder.folder[0]:
     display_name: Non-Production
@@ -403,12 +403,12 @@ values:
   ? module.checklist-folder-3["Department 3/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/compute.instanceAdmin.v1"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/compute.instanceAdmin.v1
   ? module.checklist-folder-3["Department 3/Team 4/Non-Production"].google_folder_iam_binding.authoritative["roles/container.admin"]
   : condition: []
     members:
-    - group:gcp-developers@fast-onboarding-0.joonix.net
+    - group:gcp-developers@fast.example.com
     role: roles/container.admin
   module.checklist-folder-3["Department 3/Team 4/Production"].google_folder.folder[0]:
     display_name: Production

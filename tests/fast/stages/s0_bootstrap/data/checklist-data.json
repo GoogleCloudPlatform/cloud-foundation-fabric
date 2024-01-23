@@ -402,7 +402,7 @@
     },
     "access_control": [
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -414,7 +414,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -426,7 +426,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -438,7 +438,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -450,7 +450,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -462,7 +462,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -474,7 +474,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -486,7 +486,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -498,7 +498,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -510,7 +510,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -522,7 +522,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -534,7 +534,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -546,7 +546,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -558,7 +558,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -570,7 +570,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -582,7 +582,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -594,7 +594,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -606,7 +606,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -618,7 +618,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -630,7 +630,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -642,7 +642,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -654,7 +654,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -666,7 +666,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -678,7 +678,7 @@
         }
       },
       {
-        "principal": "group:gcp-developers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-developers@fast.example.com",
         "group_id": "DEVELOPERS",
         "role": [
           "roles/compute.instanceAdmin.v1",
@@ -690,7 +690,7 @@
         }
       },
       {
-        "principal": "group:gcp-logging-viewers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-logging-viewers@fast.example.com",
         "group_id": "LOGGING_VIEWERS",
         "role": [
           "roles/logging.viewer",
@@ -700,11 +700,11 @@
         ],
         "resource": {
           "type": "ORGANIZATION",
-          "id": "656131167402"
+          "id": "123456789012"
         }
       },
       {
-        "principal": "group:gcp-logging-viewers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-logging-viewers@fast.example.com",
         "group_id": "LOGGING_VIEWERS",
         "role": [
           "roles/logging.viewer",
@@ -718,7 +718,7 @@
         }
       },
       {
-        "principal": "group:gcp-logging-viewers@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-logging-viewers@fast.example.com",
         "group_id": "LOGGING_VIEWERS",
         "role": [
           "roles/logging.viewer",
@@ -731,7 +731,7 @@
         }
       },
       {
-        "principal": "group:gcp-security-admins@fast-onboarding-0.joonix.net",
+        "principal": "group:gcp-security-admins@fast.example.com",
         "group_id": "SECURITY_ADMINS",
         "role": [
           "roles/bigquery.dataViewer"
