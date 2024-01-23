@@ -72,6 +72,7 @@ resource "google_sql_database_instance" "primary" {
       private_network    = try(var.network_config.connectivity.psa_config.private_network, null)
       allocated_ip_range = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.primary, null)
       require_ssl        = var.network_config.require_ssl
+      ssl_mode           = var.ssl_mode
       dynamic "authorized_networks" {
         for_each = var.network_config.authorized_networks != null ? var.network_config.authorized_networks : {}
         iterator = network
@@ -223,9 +224,9 @@ resource "random_password" "passwords" {
   special = true
 }
 
-
 resource "google_sql_user" "users" {
   for_each = local.users
+  count    = each.value.ignore_password_change == false ? 1 : 0
   project  = var.project_id
   instance = google_sql_database_instance.primary.name
   name     = each.value.name
@@ -234,8 +235,25 @@ resource "google_sql_user" "users" {
   type     = each.value.type
 }
 
-resource "google_sql_ssl_cert" "postgres_client_certificates" {
-  for_each    = var.postgres_client_certificates != null ? toset(var.postgres_client_certificates) : toset([])
+resource "google_sql_user" "existing_users" {
+  for_each = local.users
+  count    = each.value.ignore_password_change == true ? 1 : 0
+  project  = var.project_id
+  instance = google_sql_database_instance.primary.name
+  name     = each.value.name
+  host     = each.value.host
+  password = each.value.password
+  type     = each.value.type
+
+  lifecycle {
+    ignore_changes = [
+      password
+    ]
+  }
+}
+
+resource "google_sql_ssl_cert" "client_certificates" {
+  for_each    = var.client_certificates != null ? toset(var.client_certificates) : toset([])
   provider    = google-beta
   project     = var.project_id
   instance    = google_sql_database_instance.primary.name

@@ -242,6 +242,32 @@ module "db" {
 }
 # tftest modules=1 resources=1 inventory=insights.yaml
 ```
+
+### Maintenance Config
+
+Provide `maintenance_config` (can be just empty `{}`) to enable [Maintenance](https://cloud.google.com/sql/docs/postgres/maintenance)
+
+```hcl
+module "db" {
+  source     = "./fabric/modules/cloudsql-instance"
+  project_id = var.project_id
+  network_config = {
+    connectivity = {
+      psa_config = {
+        private_network = var.vpc.self_link
+      }
+    }
+  }
+  name             = "db"
+  region           = "europe-west1"
+  database_version = "POSTGRES_13"
+  tier             = "db-g1-small"
+
+  maintenance_config = {}
+}
+# tftest modules=1 resources=1 
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -270,7 +296,7 @@ module "db" {
 | [insights_config](variables.tf#L129) | Query Insights configuration. Defaults to null which disables Query Insights. | <code title="object&#40;&#123;&#10;  query_string_length     &#61; optional&#40;number, 1024&#41;&#10;  record_application_tags &#61; optional&#40;bool, false&#41;&#10;  record_client_address   &#61; optional&#40;bool, false&#41;&#10;  query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [labels](variables.tf#L140) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [maintenance_config](variables.tf#L146) | Set maintenance window configuration and maintenance deny period (up to 90 days). Date format: 'yyyy-mm-dd'. | <code title="object&#40;&#123;&#10;  maintenance_window &#61; optional&#40;object&#40;&#123;&#10;    day          &#61; number&#10;    hour         &#61; number&#10;    update_track &#61; optional&#40;string, null&#41;&#10;  &#125;&#41;, null&#41;&#10;  deny_maintenance_period &#61; optional&#40;object&#40;&#123;&#10;    start_date &#61; string&#10;    end_date   &#61; string&#10;    start_time &#61; optional&#40;string, &#34;00:00:00&#34;&#41;&#10;  &#125;&#41;, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [postgres_client_certificates](variables.tf#L207) | Map of cert keys connect to the application(s) using public IP. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [client_certificates](variables.tf#L207) | Map of cert keys connect to the application(s) using public IP. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [prefix](variables.tf#L213) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
 | [replicas](variables.tf#L233) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [root_password](variables.tf#L242) | Root password of the Cloud SQL instance. Required for MS SQL Server. | <code>string</code> |  | <code>null</code> |
@@ -291,7 +317,7 @@ module "db" {
 | [ips](outputs.tf#L74) | IP addresses of all instances. |  |
 | [name](outputs.tf#L82) | Name of the primary instance. |  |
 | [names](outputs.tf#L87) | Names of all instances. |  |
-| [postgres_client_certificates](outputs.tf#L95) | The CA Certificate used to connect to the SQL Instance via SSL. | ✓ |
+| [client_certificates](outputs.tf#L95) | The CA Certificate used to connect to the SQL Instance via SSL. | ✓ |
 | [psc_service_attachment_link](outputs.tf#L101) | The link to service attachment of PSC instance. |  |
 | [psc_service_attachment_links](outputs.tf#L106) | Links to service attachment of PSC instances. |  |
 | [self_link](outputs.tf#L114) | Self link of the primary instance. |  |
