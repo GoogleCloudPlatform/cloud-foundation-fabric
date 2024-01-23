@@ -18,7 +18,7 @@ resource "google_secret_manager_secret" "secret" {
   count     = var.dataform_remote_repository_url != "" ? 1 : 0
   provider  = google-beta
   project   = var.project_id
-  secret_id = var.dataform_secret_name
+  secret_id = "${var.project_id}-dataform-repository-secret"
 
   replication {
     auto {
@@ -27,12 +27,10 @@ resource "google_secret_manager_secret" "secret" {
 }
 
 resource "google_secret_manager_secret_version" "secret_version" {
-  count    = var.dataform_remote_repository_url != "" ? 1 : 0
-  provider = google-beta
-  secret   = google_secret_manager_secret.secret[0].id
-
+  count       = var.dataform_remote_repository_url != "" ? 1 : 0
+  provider    = google-beta
+  secret      = google_secret_manager_secret.secret[0].id
   secret_data = var.dataform_remote_repository_token
-  depends_on  = [google_secret_manager_secret.secret]
 }
 
 resource "google_dataform_repository" "dataform_repository" {
@@ -43,12 +41,20 @@ resource "google_dataform_repository" "dataform_repository" {
   service_account = var.dataform_service_account
 
   dynamic "git_remote_settings" {
-    for_each = var.dataform_remote_repository_url != "" ? [1] : []
+    for_each = var.dataform_remote_repository_url == true ? [1] : []
     content {
       url                                 = var.dataform_remote_repository_url
       default_branch                      = var.dataform_remote_repository_branch
       authentication_token_secret_version = google_secret_manager_secret_version.secret_version[0].id
     }
   }
-  depends_on = [google_secret_manager_secret_version.secret_version]
+}
+
+resource "google_dataform_repository_iam_binding" "binding" {
+  provider   = google-beta
+  for_each   = var.iam
+  project    = var.project_id
+  repository = google_dataform_repository.dataform_repository.name
+  role       = each.key
+  members    = each.value
 }

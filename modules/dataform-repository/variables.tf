@@ -44,6 +44,11 @@ variable "dataform_service_account" {
   type        = string
   default     = ""
 }
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+}
 variable "project_id" {
   description = "Id of the project where repository will be created."
   type        = string
@@ -51,6 +56,6 @@ variable "project_id" {
 variable "region" {
   description = "Repository region."
   type        = string
-  default     = "us-east1"
+  default     = "europe-west3"
 }
 
