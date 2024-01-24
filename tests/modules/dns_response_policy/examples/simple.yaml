@@ -17,7 +17,7 @@ values:
     gke_clusters: []
     networks:
     - network_url: projects/xxx/global/networks/aaa
-    project: myproject
+    project: project-id
     response_policy_name: googleapis
   module.dns-policy.google_dns_response_policy_rule.default["pubsub"]:
     behavior: null
@@ -30,7 +30,7 @@ values:
         - 199.36.153.5
         ttl: null
         type: A
-    project: myproject
+    project: project-id
     response_policy: googleapis
     rule_name: pubsub
 

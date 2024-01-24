@@ -58,13 +58,6 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic "service_external_ips_config" {
-    for_each = !var.enable_features.service_external_ips ? [""] : []
-    content {
-      enabled = var.enable_features.service_external_ips
-    }
-  }
-
   dynamic "authenticator_groups_config" {
     for_each = var.enable_features.groups_for_rbac != null ? [""] : []
     content {
@@ -109,7 +102,12 @@ resource "google_container_cluster" "cluster" {
       cluster_dns_domain = var.enable_features.dns.domain
     }
   }
-
+  dynamic "enable_k8s_beta_apis" {
+    for_each = var.enable_features.beta_apis != null ? [""] : []
+    content {
+      enabled_apis = var.enable_features.beta_apis
+    }
+  }
   dynamic "gateway_api_config" {
     for_each = var.enable_features.gateway_api ? [""] : []
     content {
@@ -295,6 +293,12 @@ resource "google_container_cluster" "cluster" {
       bigquery_destination {
         dataset_id = var.enable_features.resource_usage_export.dataset
       }
+    }
+  }
+  dynamic "service_external_ips_config" {
+    for_each = !var.enable_features.service_external_ips ? [""] : []
+    content {
+      enabled = var.enable_features.service_external_ips
     }
   }
 

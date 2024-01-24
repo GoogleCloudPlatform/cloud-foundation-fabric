@@ -23,9 +23,9 @@ locals {
   )
   # check that files are for the correct organization and ignore them if not
   _cl_data = (
-    try(local._cl_data_raw.organization.id, null) != tostring(var.organization.id)
+    try(local._cl_data_raw.cloud_setup_config.organization.id, null) != tostring(var.organization.id)
     ? null
-    : local._cl_data_raw
+    : local._cl_data_raw.cloud_setup_config
   )
   # normalized IAM bindings one element per binding
   _cl_iam = local._cl_data == null ? [] : flatten([
@@ -57,7 +57,7 @@ check "checklist" {
   assert {
     condition = (
       var.factories_config.checklist_data == null ||
-      try(local._cl_data_raw.version, null) == "0.1.0"
+      try(local._cl_data_raw.cloud_setup_config.version, null) == "0.1.0"
     )
     error_message = "Checklist data version mismatch."
   }
@@ -65,7 +65,7 @@ check "checklist" {
   assert {
     condition = (
       var.factories_config.checklist_data == null ||
-      try(local._cl_data_raw.organization.id, null) == tostring(var.organization.id)
+      try(local._cl_data_raw.cloud_setup_config.organization.id, null) == tostring(var.organization.id)
     )
     error_message = "Checklist data organization id mismatch, file ignored."
   }
