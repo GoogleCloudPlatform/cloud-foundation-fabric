@@ -15,7 +15,7 @@
 values:
   module.cf-http.google_cloud_run_service_iam_binding.invoker[0]:
     condition: []
-    location: europe-west1
+    location: europe-west8
     members:
     - allUsers
     project: my-project
