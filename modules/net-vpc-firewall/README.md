@@ -262,7 +262,7 @@ module "firewall" {
   }
   default_rules_config = { disabled = true }
   named_ranges = {
-    healthchecks : [
+    healthchecks = [
       "35.191.0.0/16",
       "130.211.0.0/22",
       "209.85.152.0/22",
