@@ -249,6 +249,30 @@ healthchecks:
   - 209.85.152.0/22
   - 209.85.204.0/22
 ```
+
+Instead of using `factories_config.cidr_tpl_file` file, you can pass CIDR blocks directly in the `named_ranges` variable. This approach could be useful for dynamically generated CIDR blocks from outputs of other resources.
+
+```hcl
+module "firewall" {
+  source     = "./fabric/modules/net-vpc-firewall"
+  project_id = var.project_id
+  network    = var.vpc.name
+  factories_config = {
+    rules_folder = "configs/firewall/rules"
+  }
+  default_rules_config = { disabled = true }
+  named_ranges = {
+    healthchecks : [
+      "35.191.0.0/16",
+      "130.211.0.0/22",
+      "209.85.152.0/22",
+      "209.85.204.0/22",
+    ]
+  }
+}
+# tftest modules=1 resources=3 files=lbs inventory=factory.yaml
+```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
