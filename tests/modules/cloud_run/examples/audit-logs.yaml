@@ -23,7 +23,7 @@ values:
 
   module.cloud_run.google_cloud_run_service_iam_binding.binding["roles/run.invoker"]:
     condition: []
-    location: europe-west1
+    location: europe-west8
     members:
       - serviceAccount:eventarc-trigger@project-id.iam.gserviceaccount.com
     project: project-id
@@ -35,11 +35,11 @@ values:
     - cloud_function: null
       cloud_run_service:
       - path: null
-        region: europe-west1
+        region: europe-west8
         service: hello
       gke: []
       workflow: null
-    location: europe-west1
+    location: europe-west8
     matching_criteria:
     - attribute: methodName
       operator: ''
