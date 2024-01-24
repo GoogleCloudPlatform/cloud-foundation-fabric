@@ -57,7 +57,7 @@ module "dataform" {
     }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=2 resources=3
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
