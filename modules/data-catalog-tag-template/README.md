@@ -35,6 +35,37 @@ module "data-catalog-tag-template" {
 # tftest modules=1 resources=1
 ```
 
+### Tag Template with IAM
+
+```hcl
+module "data-catalog-tag-template" {
+  source     = "./fabric/modules/data-catalog-tag-template"
+  project_id = "my-project"
+  tag_templates = {
+    demo_var = {
+      tag_template_id = "my_template"
+      region          = "europe-west1"
+      display_name    = "Demo Tag Template"
+      fields = [
+        {
+          field_id     = "source"
+          display_name = "Source of data asset"
+          type = {
+            primitive_type = "STRING"
+          }
+          is_required = true
+        }
+      ]
+    }
+  }
+  iam = {
+    "roles/datacatalog.tagTemplateOwner" = ["group:data-governance@example.com"]
+    "roles/datacatalog.tagTemplateUser"  = ["group:data-product-eng@example.com"]
+  }
+}
+# tftest modules=1 resources=3
+```
+
 ### Factory
 
 Similarly to other modules, a rules factory (see [Resource Factories](../../blueprints/factories/)) is also included here to allow tag template management via descriptive configuration files.
