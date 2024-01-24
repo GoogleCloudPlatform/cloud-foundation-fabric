@@ -164,7 +164,6 @@ variable "project_id" {
 variable "region" {
   description = "Region used for all resources."
   type        = string
-  default     = "europe-west1"
 }
 
 variable "revision_annotations" {
