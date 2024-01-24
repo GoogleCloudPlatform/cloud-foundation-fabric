@@ -32,7 +32,7 @@ module "data-catalog-tag-template" {
     }
   }
 }
-# tftest modules=1 resources=5 inventory=simple.yaml
+# tftest modules=1 resources=1
 ```
 
 ### Factory
@@ -48,8 +48,8 @@ The name of the file will be used as `tag_template_id` field.
 This is an example of a simple factory:
 
 ```hcl
-module "firewall-policy" {
-  source    = "./fabric/modules/data-catalog-tag-template"
+module "data-catalog-tag-template" {
+  source     = "./fabric/modules/data-catalog-tag-template"
   project_id = "my-project"
   tag_templates = {
     demo_var = {
@@ -70,7 +70,7 @@ module "firewall-policy" {
   }
   factory_config_path = "data"
 }
-# tftest modules=1 resources=6 files=demo_tag
+# tftest modules=1 resources=1 files=demo_tag
 ```
 
 ```yaml
