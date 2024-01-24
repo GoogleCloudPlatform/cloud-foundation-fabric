@@ -24,12 +24,12 @@ variable "repository" {
   type = map(object({
     name            = string
     branch          = optional(string, "main")
-    remote_url      = optional(string, null)
-    secret_name     = optional(string, null)
+    remote_url      = optional(string)
+    secret_name     = optional(string)
     secret_version  = optional(string, "v1")
-    token           = optional(string, null)
-    service_account = optional(string, null)
-    region          = optional(string, null)
+    token           = optional(string)
+    service_account = optional(string)
+    region          = optional(string)
     iam             = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
