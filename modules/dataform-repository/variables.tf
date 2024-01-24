@@ -14,41 +14,72 @@
  * limitations under the License.
  */
 
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iam_bindings" {
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
+  type = map(object({
+    members = list(string)
+    role    = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "iam_bindings_additive" {
+  description = "Keyring individual additive IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "name" {
+  description = "Name of the dataform repository."
+  type        = string
+}
+
 variable "project_id" {
   description = "Id of the project where resources will be created."
   type        = string
 }
 
-variable "repository" {
-  description = "Map of repositories to manage, including setting IAM permissions."
-  type = map(object({
-    name            = string
-    branch          = optional(string, "main")
-    remote_url      = optional(string)
-    secret_name     = optional(string)
-    secret_version  = optional(string, "v1")
-    token           = optional(string)
-    service_account = optional(string)
-    region          = optional(string)
-    iam             = optional(map(list(string)), {})
-    iam_bindings = optional(map(object({
-      members = list(string)
-      condition = optional(object({
-        expression  = string
-        title       = string
-        description = optional(string)
-      }))
-    })), {})
-    iam_bindings_additive = optional(map(object({
-      member = string
-      role   = string
-      condition = optional(object({
-        expression  = string
-        title       = string
-        description = optional(string)
-      }))
-    })), {})
-  }))
-  nullable = false
+variable "region" {
+  description = "The repository's region."
+  type        = string
 }
 
+variable "remote_repository_settings" {
+  description = "Remote settings required to attach the repository to a remote repository."
+  type = object({
+    url            = optional(string)
+    branch         = optional(string, "main")
+    secret_name    = optional(string)
+    secret_version = optional(string, "v1")
+    token          = optional(string)
+  })
+  default = null
+}
+
+variable "service_account" {
+  description = "Service account used to execute the dataform workflow."
+  type        = string
+  default     = ""
+}

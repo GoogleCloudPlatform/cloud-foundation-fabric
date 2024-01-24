@@ -15,13 +15,10 @@ Simple dataform repository and specifying repository access via the IAM variable
 module "dataform" {
   source     = "./fabric/modules/dataform-repository"
   project_id = "my-project"
-  repository = {
-    my-repository = {
-      name = "myrepository"
-      iam = {
-        "roles/dataform.editor" = ["user:user1@example.org"]
-      }
-    }
+  name       = "my-repository"
+  region     = "europe-west1"
+  iam = {
+    "roles/dataform.editor" = ["user:user1@example.org"]
   }
 }
 # tftest modules=1 resources=2
@@ -34,7 +31,7 @@ This creates a dataform repository with a remote repository attached to it. In o
 ```hcl
 module "secret" {
   source     = "./fabric/modules/secret-manager"
-  project_id = "my-project"
+  project_id = "fast-bi-fabric"
   secrets = {
     my-secret = {
     }
@@ -48,13 +45,13 @@ module "secret" {
 
 module "dataform" {
   source     = "./fabric/modules/dataform-repository"
-  project_id = "my-project"
-  repository = {
-    my-repository = {
-      name           = "myrepository"
-      remote_url     = "https://myremoteurl"
-      secret_version = module.secret.version_ids["my-secret:v1"]
-    }
+  project_id = "fast-bi-fabric"
+  name       = "my-repository"
+  region     = "europe-west1"
+  remote_repository_settings = {
+    url         = "my-url"
+    secret_name = "my-secret"
+    token       = module.secret.version_ids["my-secret:v1"]
   }
 }
 # tftest modules=2 resources=3
@@ -64,6 +61,12 @@ module "dataform" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L17) | Id of the project where resources will be created. | <code>string</code> | ✓ |  |
-| [repository](variables.tf#L22) | Map of repositories to manage, including setting IAM permissions. | <code title="map&#40;object&#40;&#123;&#10;  name            &#61; string&#10;  branch          &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  remote_url      &#61; optional&#40;string&#41;&#10;  secret_name     &#61; optional&#40;string&#41;&#10;  secret_version  &#61; optional&#40;string, &#34;v1&#34;&#41;&#10;  token           &#61; optional&#40;string&#41;&#10;  service_account &#61; optional&#40;string&#41;&#10;  region          &#61; optional&#40;string&#41;&#10;  iam             &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [name](variables.tf#L54) | Name of the dataform repository. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L59) | Id of the project where resources will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L64) | The repository's region. | <code>string</code> | ✓ |  |
+| [iam](variables.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_bindings](variables.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_bindings_additive](variables.tf#L39) | Keyring individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [remote_repository_settings](variables.tf#L69) | Remote settings required to attach the repository to a remote repository. | <code title="object&#40;&#123;&#10;  url            &#61; optional&#40;string&#41;&#10;  branch         &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  secret_name    &#61; optional&#40;string&#41;&#10;  secret_version &#61; optional&#40;string, &#34;v1&#34;&#41;&#10;  token          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [service_account](variables.tf#L81) | Service account used to execute the dataform workflow. | <code>string</code> |  | <code>&#34;&#34;</code> |
 <!-- END TFDOC -->

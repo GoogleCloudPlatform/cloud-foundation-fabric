@@ -14,58 +14,20 @@
  * limitations under the License.
  */
 
-locals {
-  repository_iam = flatten([
-    for k, v in var.repository : [
-      for role, members in v.iam : {
-        key     = k
-        role    = role
-        members = members
-      }
-    ]
-  ])
-  repository_iam_bindings = merge([
-    for k, v in var.repository : {
-      for binding_key, data in v.iam_bindings :
-      binding_key => {
-        repository = k
-        role       = data.role
-        members    = data.members
-        condition  = data.condition
-      }
-    }
-  ]...)
-  repository_iam_bindings_additive = merge([
-    for k, v in var.repository : {
-      for binding_key, data in v.iam_bindings_additive :
-      binding_key => {
-        repository = k
-        role       = data.role
-        member     = data.member
-        condition  = data.condition
-      }
-    }
-  ]...)
-}
-
 resource "google_dataform_repository_iam_binding" "authoritative" {
-  provider = google-beta
-  for_each = {
-    for binding in local.repository_iam :
-    "${binding.key}.${binding.role}" => binding
-  }
-  role       = each.value.role
-  members    = each.value.members
-  repository = google_dataform_repository.default[each.value.key].name
-
+  provider   = google-beta
+  for_each   = var.iam
+  role       = each.key
+  members    = each.value
+  repository = google_dataform_repository.default.name
 }
 
 resource "google_dataform_repository_iam_binding" "bindings" {
   provider   = google-beta
-  for_each   = local.repository_iam_bindings
+  for_each   = var.iam_bindings
   role       = each.value.role
   members    = each.value.members
-  repository = google_dataform_repository.default[each.value.key].name
+  repository = google_dataform_repository.default.name
 
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
@@ -77,12 +39,12 @@ resource "google_dataform_repository_iam_binding" "bindings" {
   }
 }
 
-resource "google_dataform_repository_iam_member" "members" {
+resource "google_dataform_repository_iam_member" "bindings" {
   provider   = google-beta
-  for_each   = local.repository_iam_bindings_additive
+  for_each   = var.iam_bindings_additive
   role       = each.value.role
   member     = each.value.member
-  repository = google_dataform_repository.default[each.value.key].name
+  repository = google_dataform_repository.default.name
 
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]

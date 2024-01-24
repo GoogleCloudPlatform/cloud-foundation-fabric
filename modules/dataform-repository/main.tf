@@ -16,18 +16,17 @@
 
 resource "google_dataform_repository" "default" {
   provider        = google-beta
-  for_each        = var.repository
   project         = var.project_id
-  name            = each.value.name
-  region          = each.value.region
-  service_account = each.value.service_account
+  name            = var.name
+  region          = var.region
+  service_account = var.service_account
 
   dynamic "git_remote_settings" {
-    for_each = each.value.remote_url != null ? [1] : []
+    for_each = var.remote_repository_settings != null ? [1] : []
     content {
-      url                                 = each.value.remote_url
-      default_branch                      = each.value.branch
-      authentication_token_secret_version = each.value.secret_version
+      url                                 = var.remote_repository_settings.url
+      default_branch                      = var.remote_repository_settings.branch
+      authentication_token_secret_version = var.remote_repository_settings.secret_version
     }
   }
 }
