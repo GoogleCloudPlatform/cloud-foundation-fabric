@@ -179,6 +179,7 @@ module "test-vm" {
 module "function-hello" {
   source           = "../../../modules/cloud-function-v1"
   project_id       = module.project.project_id
+  region           = var.region
   name             = var.name
   bucket_name      = "${var.name}-tf-cf-deploy"
   ingress_settings = "ALLOW_INTERNAL_ONLY"
