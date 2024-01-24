@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,47 +14,20 @@
  * limitations under the License.
  */
 
-resource "google_secret_manager_secret" "secret" {
-  count     = var.dataform_remote_repository_url != "" ? 1 : 0
-  provider  = google-beta
-  project   = var.project_id
-  secret_id = "${var.project_id}-dataform-repository-secret"
-
-  replication {
-    auto {
-    }
-  }
-}
-
-resource "google_secret_manager_secret_version" "secret_version" {
-  count       = var.dataform_remote_repository_url != "" ? 1 : 0
-  provider    = google-beta
-  secret      = google_secret_manager_secret.secret[0].id
-  secret_data = var.dataform_remote_repository_token
-}
-
-resource "google_dataform_repository" "dataform_repository" {
+resource "google_dataform_repository" "default" {
   provider        = google-beta
+  for_each        = var.repository
   project         = var.project_id
-  name            = var.dataform_repository_name
-  region          = var.region
-  service_account = var.dataform_service_account
+  name            = each.value.name
+  region          = each.value.region
+  service_account = each.value.service_account
 
   dynamic "git_remote_settings" {
-    for_each = var.dataform_remote_repository_url == true ? [1] : []
+    for_each = each.value.remote_url != null ? [1] : []
     content {
-      url                                 = var.dataform_remote_repository_url
-      default_branch                      = var.dataform_remote_repository_branch
-      authentication_token_secret_version = google_secret_manager_secret_version.secret_version[0].id
+      url                                 = each.value.remote_url
+      default_branch                      = each.value.branch
+      authentication_token_secret_version = each.value.secret_version
     }
   }
-}
-
-resource "google_dataform_repository_iam_binding" "binding" {
-  provider   = google-beta
-  for_each   = var.iam
-  project    = var.project_id
-  repository = google_dataform_repository.dataform_repository.name
-  role       = each.key
-  members    = each.value
 }

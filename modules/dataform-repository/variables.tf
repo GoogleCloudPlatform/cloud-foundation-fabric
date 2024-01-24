@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,48 +14,41 @@
  * limitations under the License.
  */
 
-variable "dataform_remote_repository_branch" {
-  description = "Default branch, default is \"main\"."
+variable "project_id" {
+  description = "Id of the project where resources will be created."
   type        = string
-  default     = "main"
-}
-variable "dataform_remote_repository_token" {
-  description = "the token value to be stored in a secret. Attention: this should not be stored on e.g. Github."
-  type        = string
-  default     = ""
 }
 
-variable "dataform_remote_repository_url" {
-  description = "URL of the remote repository."
-  type        = string
-  default     = ""
-}
-variable "dataform_repository_name" {
-  description = "The dataform repositories name."
-  type        = string
-}
-variable "dataform_secret_name" {
-  description = "Name of the secret the token to the remote repository is stored."
-  type        = string
-  default     = ""
-}
-variable "dataform_service_account" {
-  description = "Service account to be used to run workflow executions, if not the default dataform service account."
-  type        = string
-  default     = ""
-}
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-}
-variable "project_id" {
-  description = "Id of the project where repository will be created."
-  type        = string
-}
-variable "region" {
-  description = "Repository region."
-  type        = string
-  default     = "europe-west3"
+variable "repository" {
+  description = "Map of repositories to manage, including setting IAM permissions."
+  type = map(object({
+    name            = string
+    branch          = optional(string, "main")
+    remote_url      = optional(string, null)
+    secret_name     = optional(string, null)
+    secret_version  = optional(string, "v1")
+    token           = optional(string, null)
+    service_account = optional(string, null)
+    region          = optional(string, null)
+    iam             = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+  }))
+  nullable = false
 }
 
