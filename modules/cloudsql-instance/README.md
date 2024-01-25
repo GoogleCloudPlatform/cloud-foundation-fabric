@@ -330,18 +330,18 @@ module "db" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [client_certificates](outputs.tf#L95) | The CA Certificate used to connect to the SQL Instance via SSL. | ✓ |
-| [connection_name](outputs.tf#L24) | Connection name of the primary instance. |  |
-| [connection_names](outputs.tf#L29) | Connection names of all instances. |  |
-| [dns_name](outputs.tf#L37) | The dns name of the instance. |  |
-| [dns_names](outputs.tf#L42) | Dns names of all instances. |  |
-| [id](outputs.tf#L50) | Fully qualified primary instance id. |  |
-| [ids](outputs.tf#L55) | Fully qualified ids of all instances. |  |
-| [instances](outputs.tf#L63) | Cloud SQL instance resources. | ✓ |
-| [ip](outputs.tf#L69) | IP address of the primary instance. |  |
-| [ips](outputs.tf#L74) | IP addresses of all instances. |  |
-| [name](outputs.tf#L82) | Name of the primary instance. |  |
-| [names](outputs.tf#L87) | Names of all instances. |  |
+| [client_certificates](outputs.tf#L24) | The CA Certificate used to connect to the SQL Instance via SSL. | ✓ |
+| [connection_name](outputs.tf#L30) | Connection name of the primary instance. |  |
+| [connection_names](outputs.tf#L35) | Connection names of all instances. |  |
+| [dns_name](outputs.tf#L43) | The dns name of the instance. |  |
+| [dns_names](outputs.tf#L48) | Dns names of all instances. |  |
+| [id](outputs.tf#L56) | Fully qualified primary instance id. |  |
+| [ids](outputs.tf#L61) | Fully qualified ids of all instances. |  |
+| [instances](outputs.tf#L69) | Cloud SQL instance resources. | ✓ |
+| [ip](outputs.tf#L75) | IP address of the primary instance. |  |
+| [ips](outputs.tf#L80) | IP addresses of all instances. |  |
+| [name](outputs.tf#L88) | Name of the primary instance. |  |
+| [names](outputs.tf#L93) | Names of all instances. |  |
 | [psc_service_attachment_link](outputs.tf#L101) | The link to service attachment of PSC instance. |  |
 | [psc_service_attachment_links](outputs.tf#L106) | Links to service attachment of PSC instances. |  |
 | [self_link](outputs.tf#L114) | Self link of the primary instance. |  |
