@@ -21,6 +21,12 @@ locals {
   )
 }
 
+output "client_certificates" {
+  description = "The CA Certificate used to connect to the SQL Instance via SSL."
+  value       = google_sql_ssl_cert.client_certificates
+  sensitive   = true
+}
+
 output "connection_name" {
   description = "Connection name of the primary instance."
   value       = google_sql_database_instance.primary.connection_name
@@ -90,12 +96,6 @@ output "names" {
     for id, instance in local._all_instances :
     id => instance.name
   }
-}
-
-output "client_certificates" {
-  description = "The CA Certificate used to connect to the SQL Instance via SSL."
-  value       = google_sql_ssl_cert.client_certificates
-  sensitive   = true
 }
 
 output "psc_service_attachment_link" {
