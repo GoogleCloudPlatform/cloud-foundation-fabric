@@ -32,7 +32,7 @@ locals {
       action                  = lookup(v, "action", "deny")
       description             = lookup(v, "description", null)
       disabled                = lookup(v, "disabled", false)
-      enable3_logging         = lookup(v, "enable_logging", null)
+      enable_logging          = lookup(v, "enable_logging", null)
       target_resources        = lookup(v, "target_resources", null)
       target_service_accounts = lookup(v, "target_service_accounts", null)
       target_tags             = lookup(v, "target_tags", null)
