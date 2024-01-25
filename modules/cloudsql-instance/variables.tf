@@ -242,15 +242,15 @@ variable "root_password" {
 variable "ssl" {
   description = "Setting to enable SSL, set config and certificates."
   type = object({
-    require_ssl = optional(bool, false)
-    # More details @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#ssl_mode
-    ssl_mode            = optional(string)
     client_certificates = optional(list(string))
-
+    require_ssl         = optional(bool, false)
+    # More details @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#ssl_mode
+    ssl_mode = optional(string)
   })
-  default = null
+  default  = {}
+  nullable = false
   validation {
-    condition     = try(var.ssl.ssl_mode == "ALLOW_UNENCRYPTED_AND_ENCRYPTED" || var.ssl.ssl_mode == "ENCRYPTED_ONLY" || var.ssl.ssl_mode == "TRUSTED_CLIENT_CERTIFICATE_REQUIRED", true)
+    condition     = var.ssl.ssl_mode == null || var.ssl.ssl_mode == "ALLOW_UNENCRYPTED_AND_ENCRYPTED" || var.ssl.ssl_mode == "ENCRYPTED_ONLY" || var.ssl.ssl_mode == "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
     error_message = "The variable ssl_mode can be ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY for all, or TRUSTED_CLIENT_CERTIFICATE_REQUIRED for PostgreSQL or MySQL."
   }
 }
