@@ -243,7 +243,7 @@ variable "ssl" {
   description = "Setting to enable SSL, set config and certificates."
   type = object({
     client_certificates = optional(list(string))
-    require_ssl         = optional(bool, false)
+    require_ssl         = optional(bool)
     # More details @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#ssl_mode
     ssl_mode = optional(string)
   })
