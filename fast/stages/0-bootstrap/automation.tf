@@ -29,6 +29,9 @@ module "automation-project" {
     var.project_parent_ids.automation, "organizations/${var.organization.id}"
   )
   prefix = local.prefix
+  contacts = {
+    (local.groups.gcp-organization-admins) = ["ALL"]
+  }
   # human (groups) IAM bindings
   group_iam = {
     (local.groups.gcp-devops) = [

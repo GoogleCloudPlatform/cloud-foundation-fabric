@@ -17,6 +17,10 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
+  groups = {
+    for k, v in var.groups :
+    k => can(regex(".*@.*", v)) ? v : "${v}@${var.organization.domain}"
+  }
   # combine all regions from variables and subnets
   regions = distinct(concat(
     values(var.regions),
@@ -45,6 +49,9 @@ module "folder" {
   name          = "Networking"
   folder_create = var.folder_ids.networking == null
   id            = var.folder_ids.networking
+  contacts = {
+    (local.groups.gcp-network-admins) = ["ALL"]
+  }
   firewall_policy = {
     name   = "default"
     policy = module.firewall-policy-default.id
