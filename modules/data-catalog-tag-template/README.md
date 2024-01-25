@@ -66,6 +66,48 @@ module "data-catalog-tag-template" {
 # tftest modules=1 resources=3
 ```
 
+```hcl
+module "data-catalog-tag-template" {
+  source     = "./fabric/modules/data-catalog-tag-template"
+  project_id = var.project_id
+  tag_templates = {
+    demo_var = {
+      tag_template_id = "my_template"
+      region          = "europe-west1"
+      display_name    = "Demo Tag Template"
+      fields = [
+        {
+          field_id     = "source"
+          display_name = "Source of data asset"
+          type = {
+            primitive_type = "STRING"
+          }
+          is_required = true
+        }
+      ]
+    }
+  }
+  iam_bindings = {
+    admin-with-delegated_roles = {
+      role    = "roles/datacatalog.tagTemplateOwner"
+      members = ["group:data-governance@example.com"]
+      condition = {
+        title = "delegated-role-grants"
+        expression = format(
+          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+          join(",", formatlist("'%s'",
+            [
+              "roles/datacatalog.tagTemplateOwner"
+            ]
+          ))
+        )
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2
+```
+
 ### Factory
 
 Similarly to other modules, a rules factory (see [Resource Factories](../../blueprints/factories/)) is also included here to allow tag template management via descriptive configuration files.

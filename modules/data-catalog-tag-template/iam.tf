@@ -21,49 +21,76 @@ locals {
     for binding in flatten([
       for role, members in var.iam : [
         for template_k, template_v in google_data_catalog_tag_template.tag_template : {
-          template_key = template_k,
-          template_id  = template_v.id,
-          role         = role,
-          members      = members
+          template = template_v,
+          role     = role,
+          members  = members
         }
       ]
-    ]) : "${binding.template_key}-${binding.role}" => binding
+    ]) : "${binding.template.tag_template_id}-${binding.role}" => binding
+  }
+
+  iam_bindings_template_map = {
+    for binding in flatten([
+      for iam_bindings_k, iam_bindings_v in var.iam_bindings : [
+        for template_k, template_v in google_data_catalog_tag_template.tag_template : {
+          template         = template_v,
+          iam_bindings_key = iam_bindings_k,
+          role             = iam_bindings_v.role,
+          members          = iam_bindings_v.members,
+          condition        = iam_bindings_v.condition
+        }
+      ]
+    ]) : "${binding.template.tag_template_id}-${binding.iam_bindings_key}" => binding
+  }
+
+  iam_bindings_additive_template_map = {
+    for binding in flatten([
+      for iam_bindings_k, iam_bindings_v in var.iam_bindings_additive : [
+        for template_k, template_v in google_data_catalog_tag_template.tag_template : {
+          template         = template_v,
+          iam_bindings_key = iam_bindings_k,
+          role             = iam_bindings_v.role,
+          members          = iam_bindings_v.members,
+          condition        = iam_bindings_v.condition
+        }
+      ]
+    ]) : "${binding.template.tag_template_id}-${binding.iam_bindings_k}" => binding
   }
 }
 
 resource "google_data_catalog_tag_template_iam_binding" "authoritative" {
   for_each     = local.iam_template_map
-  tag_template = each.value.template_id
+  tag_template = each.value.template.id
   role         = each.value.role
   members      = each.value.members
 }
 
-# resource "google_data_catalog_tag_template_iam_binding" "bindings" {
-#   for_each     = var.iam_bindings
-#   tag_template = google_data_catalog_tag_template.tag_template.id
-#   role         = each.value.role
-#   members      = each.value.members
-#   dynamic "condition" {
-#     for_each = each.value.condition == null ? [] : [""]
-#     content {
-#       expression  = each.value.condition.expression
-#       title       = each.value.condition.title
-#       description = each.value.condition.description
-#     }
-#   }
-# }
+resource "google_data_catalog_tag_template_iam_binding" "bindings" {
+  for_each     = local.iam_bindings_template_map
+  tag_template = each.value.template.id
+  role         = each.value.role
+  members      = each.value.members
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
 
-# resource "google_data_catalog_tag_template_iam_member" "bindings" {
-#   for_each     = var.iam_bindings_additive
-#   tag_template = google_data_catalog_tag_template.tag_template.id
-#   role         = each.value.role
-#   member       = each.value.member
-#   dynamic "condition" {
-#     for_each = each.value.condition == null ? [] : [""]
-#     content {
-#       expression  = each.value.condition.expression
-#       title       = each.value.condition.title
-#       description = each.value.condition.description
-#     }
-#   }
-# }
+resource "google_data_catalog_tag_template_iam_member" "bindings" {
+  for_each     = local.iam_bindings_additive_template_map
+  tag_template = each.value.template.id
+  role         = each.value.role
+  member       = each.value.member
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression  = each.value.condition.expression
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
+}
