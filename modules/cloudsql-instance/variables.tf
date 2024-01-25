@@ -53,12 +53,6 @@ variable "backup_configuration" {
   }
 }
 
-variable "client_certificates" {
-  description = "Map of cert keys connect to the application(s) using public IP."
-  type        = list(string)
-  default     = null
-}
-
 variable "collation" {
   description = "The name of server instance collation."
   type        = string
@@ -191,7 +185,6 @@ variable "network_config" {
   description = "Network configuration for the instance. Only one between private_network and psc_config can be used."
   type = object({
     authorized_networks = optional(map(string))
-    require_ssl         = optional(bool)
     connectivity = object({
       public_ipv4 = optional(bool, false)
       psa_config = optional(object({
@@ -210,16 +203,6 @@ variable "network_config" {
   }
 }
 
-variable "ssl_mode" {
-  # More details @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#ssl_mode
-  description = "Specify how SSL connection should be enforced in DB connections. This field provides more SSL enforcment options compared to require_ssl. The options are: ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY or TRUSTED_CLIENT_CERTIFICATE_REQUIRED."
-  type        = string
-  default     = null
-  validation {
-    condition     = var.ssl_mode == null || var.ssl_mode == "ALLOW_UNENCRYPTED_AND_ENCRYPTED" || var.ssl_mode == "ENCRYPTED_ONLY" || var.ssl_mode == "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
-    error_message = "The variable ssl_mode must be ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY or TRUSTED_CLIENT_CERTIFICATE_REQUIRED for PostgreSQL or MySQL."
-  }
-}
 
 variable "prefix" {
   description = "Optional prefix used to generate instance names."
@@ -254,6 +237,22 @@ variable "root_password" {
   description = "Root password of the Cloud SQL instance. Required for MS SQL Server."
   type        = string
   default     = null
+}
+
+variable "ssl" {
+  description = "Setting to enable SSL, set config and certificates."
+  type = object({
+    require_ssl = optional(bool, false)
+    # More details @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#ssl_mode
+    ssl_mode            = optional(string, null)
+    client_certificates = optional(list(string), null)
+
+  })
+  default = null
+  validation {
+    condition     = try(var.ssl.ssl_mode == "ALLOW_UNENCRYPTED_AND_ENCRYPTED" || var.ssl.ssl_mode == "ENCRYPTED_ONLY" || var.ssl.ssl_mode == "TRUSTED_CLIENT_CERTIFICATE_REQUIRED", true)
+    error_message = "The variable ssl_mode can be ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY for all, or TRUSTED_CLIENT_CERTIFICATE_REQUIRED for PostgreSQL or MySQL."
+  }
 }
 
 variable "tier" {
