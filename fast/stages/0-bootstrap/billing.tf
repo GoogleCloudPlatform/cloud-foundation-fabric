@@ -46,6 +46,9 @@ module "billing-export-project" {
     var.project_parent_ids.billing, "organizations/${var.organization.id}"
   )
   prefix = local.prefix
+  contacts = {
+    (local.groups.gcp-organization-admins) = ["ALL"]
+  }
   iam = {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]

@@ -97,6 +97,7 @@ locals {
   iam_sa_bindings = {
     (module.automation-tf-bootstrap-sa.iam_email) = {
       authoritative = [
+        "roles/essentialcontacts.admin",
         "roles/logging.admin",
         "roles/resourcemanager.organizationAdmin",
         "roles/resourcemanager.projectCreator",
@@ -115,6 +116,7 @@ locals {
     }
     (module.automation-tf-bootstrap-r-sa.iam_email) = {
       authoritative = [
+        "roles/essentialcontacts.viewer",
         "roles/logging.viewer",
         "roles/resourcemanager.folderViewer",
         "roles/resourcemanager.tagViewer"

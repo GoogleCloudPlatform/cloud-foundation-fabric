@@ -12,6 +12,9 @@ folder_ids = {
   networking-dev  = null
   networking-prod = null
 }
+groups = {
+  gcp-network-admins = "gcp-network-admins"
+}
 service_accounts = {
   data-platform-dev    = "string"
   data-platform-prod   = "string"
