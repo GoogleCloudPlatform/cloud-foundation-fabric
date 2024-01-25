@@ -53,6 +53,12 @@ variable "backup_configuration" {
   }
 }
 
+variable "client_certificates" {
+  description = "Map of cert keys connect to the application(s) using public IP."
+  type        = list(string)
+  default     = null
+}
+
 variable "collation" {
   description = "The name of server instance collation."
   type        = string
@@ -213,12 +219,6 @@ variable "ssl_mode" {
     condition     = var.ssl_mode == null || var.ssl_mode == "ALLOW_UNENCRYPTED_AND_ENCRYPTED" || var.ssl_mode == "ENCRYPTED_ONLY" || var.ssl_mode == "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
     error_message = "The variable ssl_mode must be ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY or TRUSTED_CLIENT_CERTIFICATE_REQUIRED for PostgreSQL or MySQL."
   }
-}
-
-variable "client_certificates" {
-  description = "Map of cert keys connect to the application(s) using public IP."
-  type        = list(string)
-  default     = null
 }
 
 variable "prefix" {
