@@ -244,8 +244,8 @@ variable "ssl" {
   type = object({
     require_ssl = optional(bool, false)
     # More details @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#ssl_mode
-    ssl_mode            = optional(string, null)
-    client_certificates = optional(list(string), null)
+    ssl_mode            = optional(string)
+    client_certificates = optional(list(string))
 
   })
   default = null
