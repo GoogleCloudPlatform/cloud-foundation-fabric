@@ -205,7 +205,8 @@ variable "network_config" {
 }
 
 variable "ssl_mode" {
-  description = "(Optional) Specify how SSL connection should be enforced in DB connections. This field provides more SSL enforcment options compared to require_ssl. To change this field, also set the correspoding value in require_ssl. For PostgreSQL instances, the value pairs are listed in the API reference doc for ssl_mode field. For MySQL instances, use the same value pairs as the PostgreSQL instances. For SQL Server instances, set it to ALLOW_UNENCRYPTED_AND_ENCRYPTED when require_ssl=false and ENCRYPTED_ONLY otherwise."
+  # More details @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#ssl_mode
+  description = "Specify how SSL connection should be enforced in DB connections. This field provides more SSL enforcment options compared to require_ssl. The options are: ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY or TRUSTED_CLIENT_CERTIFICATE_REQUIRED."
   type        = string
   default     = null
   validation {

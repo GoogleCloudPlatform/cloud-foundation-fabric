@@ -234,6 +234,11 @@ resource "google_sql_user" "users" {
   type     = each.value.type
 }
 
+moved {
+  from = google_sql_ssl_cert.postgres_client_certificates
+  to = google_sql_ssl_cert.client_certificates
+}
+
 resource "google_sql_ssl_cert" "client_certificates" {
   for_each    = var.client_certificates != null ? toset(var.client_certificates) : toset([])
   provider    = google-beta
