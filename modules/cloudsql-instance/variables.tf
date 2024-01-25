@@ -160,7 +160,7 @@ variable "maintenance_config" {
   default = {}
   validation {
     condition = (
-      var.maintenance_config.maintenance_window == null ? true : (
+      try(var.maintenance_config.maintenance_window, null) == null ? true : (
         # Maintenance window day validation below
         var.maintenance_config.maintenance_window.day >= 1 &&
         var.maintenance_config.maintenance_window.day <= 7 &&
@@ -168,7 +168,7 @@ variable "maintenance_config" {
         var.maintenance_config.maintenance_window.hour >= 0 &&
         var.maintenance_config.maintenance_window.hour <= 23 &&
         # Maintenance window update_track validation below
-        var.maintenance_config.maintenance_window.update_track == null ? true :
+        try(var.maintenance_config.maintenance_window.update_track, null) == null ? true :
         contains(["canary", "stable"], var.maintenance_config.maintenance_window.update_track)
       )
     )
@@ -185,7 +185,6 @@ variable "network_config" {
   description = "Network configuration for the instance. Only one between private_network and psc_config can be used."
   type = object({
     authorized_networks = optional(map(string))
-    require_ssl         = optional(bool)
     connectivity = object({
       public_ipv4 = optional(bool, false)
       psa_config = optional(object({
@@ -204,11 +203,6 @@ variable "network_config" {
   }
 }
 
-variable "postgres_client_certificates" {
-  description = "Map of cert keys connect to the application(s) using public IP."
-  type        = list(string)
-  default     = null
-}
 
 variable "prefix" {
   description = "Optional prefix used to generate instance names."
@@ -243,6 +237,22 @@ variable "root_password" {
   description = "Root password of the Cloud SQL instance. Required for MS SQL Server."
   type        = string
   default     = null
+}
+
+variable "ssl" {
+  description = "Setting to enable SSL, set config and certificates."
+  type = object({
+    client_certificates = optional(list(string))
+    require_ssl         = optional(bool)
+    # More details @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#ssl_mode
+    ssl_mode = optional(string)
+  })
+  default  = {}
+  nullable = false
+  validation {
+    condition     = var.ssl.ssl_mode == null || var.ssl.ssl_mode == "ALLOW_UNENCRYPTED_AND_ENCRYPTED" || var.ssl.ssl_mode == "ENCRYPTED_ONLY" || var.ssl.ssl_mode == "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
+    error_message = "The variable ssl_mode can be ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY for all, or TRUSTED_CLIENT_CERTIFICATE_REQUIRED for PostgreSQL or MySQL."
+  }
 }
 
 variable "tier" {
