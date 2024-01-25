@@ -123,6 +123,16 @@ variable "gcp_ranges" {
   }
 }
 
+variable "groups" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
+  type = object({
+    gcp-network-admins = optional(string)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "onprem_cidr" {
   description = "Onprem addresses in name => range format."
   type        = map(string)
