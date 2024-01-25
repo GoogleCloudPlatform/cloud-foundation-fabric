@@ -85,6 +85,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Dataproc](./dataproc)
 - [GCS](./gcs)
 - [Pub/Sub](./pubsub)
+- [Dataform Repository](./dataform-repository/)
 
 ## Development
 
