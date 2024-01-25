@@ -36,7 +36,7 @@ locals {
           template         = template_v,
           iam_bindings_key = iam_bindings_k,
           role             = iam_bindings_v.role,
-          members          = iam_bindings_v.members,
+          member           = iam_bindings_v.members,
           condition        = iam_bindings_v.condition
         }
       ]
@@ -47,11 +47,11 @@ locals {
     for binding in flatten([
       for iam_bindings_k, iam_bindings_v in var.iam_bindings_additive : [
         for template_k, template_v in google_data_catalog_tag_template.tag_template : {
-          template         = template_v,
-          iam_bindings_key = iam_bindings_k,
-          role             = iam_bindings_v.role,
-          members          = iam_bindings_v.members,
-          condition        = iam_bindings_v.condition
+          template       = template_v,
+          iam_bindings_k = iam_bindings_k,
+          role           = iam_bindings_v.role,
+          member         = iam_bindings_v.member,
+          condition      = iam_bindings_v.condition
         }
       ]
     ]) : "${binding.template.tag_template_id}-${binding.iam_bindings_k}" => binding
@@ -69,7 +69,7 @@ resource "google_data_catalog_tag_template_iam_binding" "bindings" {
   for_each     = local.iam_bindings_template_map
   tag_template = each.value.template.id
   role         = each.value.role
-  members      = each.value.members
+  members      = each.value.member
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
