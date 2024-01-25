@@ -17,7 +17,7 @@ counts:
   google_bigquery_default_service_account: 3
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
-  google_org_policy_policy: 13
+  google_org_policy_policy: 16
   google_organization_iam_binding: 23
   google_organization_iam_custom_role: 6
   google_organization_iam_member: 22
@@ -37,7 +37,7 @@ counts:
   google_tags_tag_value: 1
   local_file: 7
   modules: 15
-  resources: 168
+  resources: 171
 
 outputs:
   custom_roles:

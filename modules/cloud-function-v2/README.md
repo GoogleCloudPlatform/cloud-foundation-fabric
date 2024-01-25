@@ -34,6 +34,7 @@ This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bu
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v2"
   project_id  = "my-project"
+  region      = var.region
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
@@ -63,6 +64,7 @@ module "trigger-service-account" {
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v2"
   project_id  = "my-project"
+  region      = var.region
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
@@ -89,6 +91,7 @@ To allow anonymous access to the function, grant the `roles/run.invoker` role to
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v2"
   project_id  = "my-project"
+  region      = var.region
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
@@ -110,6 +113,7 @@ You can have the module auto-create the GCS bucket used for deployment via the `
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v2"
   project_id  = "my-project"
+  region      = var.region
   prefix      = "my-prefix"
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
@@ -131,6 +135,7 @@ To use a custom service account managed by the module, set `service_account_crea
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v2"
   project_id  = "my-project"
+  region      = var.region
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
@@ -148,6 +153,7 @@ To use an externally managed service account, pass its email in `service_account
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v2"
   project_id  = "my-project"
+  region      = var.region
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
@@ -167,6 +173,7 @@ In order to help prevent `archive_zip.output_md5` from changing cross platform (
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v2"
   project_id  = "my-project"
+  region      = var.region
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
@@ -186,6 +193,7 @@ This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bu
 module "cf-http" {
   source            = "./fabric/modules/cloud-function-v2"
   project_id        = "my-project"
+  region            = var.region
   name              = "test-cf-http"
   bucket_name       = "test-cf-bundles"
   build_worker_pool = "projects/my-project/locations/europe-west1/workerPools/my_build_worker_pool"
@@ -205,6 +213,7 @@ When deploying multiple functions do not reuse `bundle_config.output_path` betwe
 module "cf-http-one" {
   source      = "./fabric/modules/cloud-function-v2"
   project_id  = "my-project"
+  region      = var.region
   name        = "test-cf-http-one"
   bucket_name = "test-cf-bundles"
   bundle_config = {
@@ -215,6 +224,7 @@ module "cf-http-one" {
 module "cf-http-two" {
   source      = "./fabric/modules/cloud-function-v2"
   project_id  = "my-project"
+  region      = var.region
   name        = "test-cf-http-two"
   bucket_name = "test-cf-bundles"
   bundle_config = {
@@ -233,6 +243,7 @@ This provides the latest value of the secret `var_secret` as `VARIABLE_SECRET` e
 module "cf-http" {
   source      = "./fabric/modules/cloud-function-v2"
   project_id  = "my-project"
+  region      = var.region
   name        = "test-cf-http"
   bucket_name = "test-cf-bundles"
   bundle_config = {
@@ -272,6 +283,7 @@ module "cf-http" {
 | [bundle_config](variables.tf#L38) | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;  source_dir  &#61; string&#10;  output_path &#61; optional&#40;string&#41;&#10;  excludes    &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [name](variables.tf#L103) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L118) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L123) | Region used for all resources. | <code>string</code> | ✓ |  |
 | [bucket_config](variables.tf#L17) | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;  location                  &#61; optional&#40;string&#41;&#10;  lifecycle_delete_age_days &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [build_worker_pool](variables.tf#L32) | Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format. | <code>string</code> |  | <code>null</code> |
 | [description](variables.tf#L47) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
@@ -282,13 +294,12 @@ module "cf-http" {
 | [ingress_settings](variables.tf#L91) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
 | [labels](variables.tf#L97) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L108) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
-| [region](variables.tf#L123) | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [secrets](variables.tf#L129) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; number&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_account](variables.tf#L141) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L147) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [trigger_config](variables.tf#L153) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event_type   &#61; string&#10;  pubsub_topic &#61; optional&#40;string&#41;&#10;  region       &#61; optional&#40;string&#41;&#10;  event_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;    attribute &#61; string&#10;    value     &#61; string&#10;    operator  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  service_account_email  &#61; optional&#40;string&#41;&#10;  service_account_create &#61; optional&#40;bool, false&#41;&#10;  retry_policy           &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector](variables.tf#L171) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector_config](variables.tf#L181) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [secrets](variables.tf#L128) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; number&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_account](variables.tf#L140) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L146) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| [trigger_config](variables.tf#L152) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event_type   &#61; string&#10;  pubsub_topic &#61; optional&#40;string&#41;&#10;  region       &#61; optional&#40;string&#41;&#10;  event_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;    attribute &#61; string&#10;    value     &#61; string&#10;    operator  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  service_account_email  &#61; optional&#40;string&#41;&#10;  service_account_create &#61; optional&#40;bool, false&#41;&#10;  retry_policy           &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector](variables.tf#L170) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector_config](variables.tf#L180) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

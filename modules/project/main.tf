@@ -59,6 +59,7 @@ resource "google_project_service" "project_services" {
   service                    = each.value
   disable_on_destroy         = var.service_config.disable_on_destroy
   disable_dependent_services = var.service_config.disable_dependent_services
+  depends_on                 = [google_org_policy_policy.default]
 }
 
 resource "google_compute_project_metadata_item" "default" {

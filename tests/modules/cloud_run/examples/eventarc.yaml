@@ -25,11 +25,11 @@ values:
     - cloud_function: null
       cloud_run_service:
       - path: null
-        region: europe-west1
+        region: europe-west8
         service: hello
       gke: []
       workflow: null
-    location: europe-west1
+    location: europe-west8
     matching_criteria:
     - attribute: type
       operator: ''
