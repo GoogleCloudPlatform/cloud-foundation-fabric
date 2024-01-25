@@ -6,8 +6,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2023-11-24 09:21:21+00:00 -->
 
+## [29.0.0] - 2024-01-24
+
 ### BLUEPRINTS
 
+- [[#2004](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2004)] **incompatible change:** Remove default region for Cloud Function and Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-24 10:23:40+00:00 -->
 - [[#1977](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1977)] Add example to FAST GKE stage, streamline GKE Hub module variables and usage ([ludoo](https://github.com/ludoo)) <!-- 2024-01-20 10:06:38+00:00 -->
 - [[#1992](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1992)] Fix Data platform foundation ([lcaggio](https://github.com/lcaggio)) <!-- 2024-01-20 07:49:47+00:00 -->
 - [[#1976](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1976)] Network dashboard - fixing 2 bugs: overriden variable and page token … ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2024-01-15 13:28:17+00:00 -->
@@ -29,6 +32,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#2001](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2001)] Marcwo/dataform module ([marcjwo](https://github.com/marcjwo)) <!-- 2024-01-24 16:13:22+00:00 -->
 - [[#1981](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1981)] Added Cross-region internal application load balancer module ([apichick](https://github.com/apichick)) <!-- 2024-01-16 17:10:08+00:00 -->
 - [[#1819](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1819)] Serverless networking program ([juliodiez](https://github.com/juliodiez)) <!-- 2024-01-05 21:03:34+00:00 -->
 - [[#1959](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1959)] net-lb-app-ext example fixes ([juliocc](https://github.com/juliocc)) <!-- 2024-01-05 13:38:30+00:00 -->
@@ -44,6 +48,9 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2009](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2009)] Tighten up security of automation project (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-01-24 18:40:36+00:00 -->
+- [[#2000](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2000)] Checklist attribution bucket ([ludoo](https://github.com/ludoo)) <!-- 2024-01-23 11:32:15+00:00 -->
+- [[#1997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1997)] Update checklist parsing for top-level key ([ludoo](https://github.com/ludoo)) <!-- 2024-01-23 06:34:03+00:00 -->
 - [[#1992](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1992)] Fix Data platform foundation ([lcaggio](https://github.com/lcaggio)) <!-- 2024-01-20 07:49:47+00:00 -->
 - [[#1969](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1969)] Integrate checklist data in FAST ([ludoo](https://github.com/ludoo)) <!-- 2024-01-18 04:45:30+00:00 -->
 - [[#1967](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1967)] Add locations on terraform.tfvars.sample for bootstrap stage ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-01-09 07:32:28+00:00 -->
@@ -58,6 +65,13 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2009](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2009)] Tighten up security of automation project (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-01-24 18:40:36+00:00 -->
+- [[#2001](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2001)] Marcwo/dataform module ([marcjwo](https://github.com/marcjwo)) <!-- 2024-01-24 16:13:22+00:00 -->
+- [[#2005](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2005)] Fix named ranges behaviour if cidr_tpl_file variable not provided. ([miromichalicka](https://github.com/miromichalicka)) <!-- 2024-01-24 11:18:11+00:00 -->
+- [[#2004](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2004)] **incompatible change:** Remove default region for Cloud Function and Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-24 10:23:40+00:00 -->
+- [[#1993](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1993)] Fix DNS E2E test + add one to net-lb-app-int-cross-region ([wiktorn](https://github.com/wiktorn)) <!-- 2024-01-23 15:34:45+00:00 -->
+- [[#1999](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1999)] Added Enabled Kubernetes Beta APIs feature ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-01-23 11:09:22+00:00 -->
+- [[#1996](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1996)] Fix factory default value for rule ports in firewall policy module ([ludoo](https://github.com/ludoo)) <!-- 2024-01-21 11:38:24+00:00 -->
 - [[#1994](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1994)] DNS response policies e2e changes ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2024-01-20 18:47:02+00:00 -->
 - [[#1977](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1977)] Add example to FAST GKE stage, streamline GKE Hub module variables and usage ([ludoo](https://github.com/ludoo)) <!-- 2024-01-20 10:06:38+00:00 -->
 - [[#1987](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1987)] Specify `docker_repository` field for google_cloudfunctions2_function ([kumadee](https://github.com/kumadee)) <!-- 2024-01-20 09:40:27+00:00 -->
@@ -1876,7 +1890,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v28.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v29.0.0...HEAD
+[29.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v28.0.0...v29.0.0
 [28.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v27.0.0...v28.0.0
 [27.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v26.0.0...v27.0.0
 [26.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v25.0.0...v26.0.0
