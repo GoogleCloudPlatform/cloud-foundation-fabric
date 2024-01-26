@@ -20,16 +20,6 @@ locals {
     trimsuffix(f, ".yaml") => yamldecode(file("${var.factory_config_path}/${f}"))
   }
 
-  _tag_template_default = {
-    display_name = null
-    description  = null
-    force_delete = "false"
-    fields = {
-      display_name = null
-      is_required  = false
-    }
-  }
-
   factory_tag_template = merge(local._factory_tag_template, var.tag_templates)
 }
 
@@ -38,14 +28,14 @@ resource "google_data_catalog_tag_template" "tag_template" {
   project         = var.project_id
   tag_template_id = each.key
   region          = each.value.region
-  display_name    = try(each.value.display_name, local._tag_template_default.display_name)
+  display_name    = try(each.value.display_name, null)
 
   dynamic "fields" {
     for_each = each.value.fields
     content {
       field_id     = fields.value["field_id"]
-      display_name = try(fields.value["display_name"], local._tag_template_default.fields.display_name)
-      is_required  = try(fields.value["is_required"], local._tag_template_default.fields.is_required)
+      display_name = try(fields.value["display_name"], null)
+      is_required  = try(fields.value["is_required"], false)
       type {
         primitive_type = try(fields.value["type"].primitive_type, null)
         dynamic "enum_type" {
@@ -63,5 +53,5 @@ resource "google_data_catalog_tag_template" "tag_template" {
     }
   }
 
-  force_delete = try(each.value.force_delete, local._tag_template_default.force_delete)
+  force_delete = try(each.value.force_delete, false)
 }

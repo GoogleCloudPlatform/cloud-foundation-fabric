@@ -181,7 +181,7 @@ module "data-catalog-tag-template" {
   }
   factory_config_path = "data"
 }
-# tftest modules=1 resources=1 files=demo_tag
+# tftest modules=1 resources=2 files=demo_tag
 ```
 
 ```yaml
