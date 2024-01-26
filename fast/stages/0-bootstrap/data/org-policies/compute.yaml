@@ -44,6 +44,7 @@ compute.trustedImageProjects:
       - "projects/rhel-sap-cloud"
       - "projects/rocky-linux-cloud"
       - "projects/suse-cloud"
+      - "projects/suse-byos-cloud"
       - "projects/suse-sap-cloud"
       - "projects/ubuntu-os-cloud"
       - "projects/ubuntu-os-pro-cloud"
