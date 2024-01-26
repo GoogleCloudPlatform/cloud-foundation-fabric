@@ -28,6 +28,28 @@ compute.vmExternalIpAccess:
   rules:
     - deny:
         all: true
+
+# only allow GCP images by default
+compute.trustedImageProjects:
+  rules:
+  - allow:
+      values:
+      - "projects/centos-cloud"
+      - "projects/cos-cloud"
+      - "projects/debian-cloud"
+      - "projects/fedora-cloud"
+      - "projects/fedora-coreos-cloud"
+      - "projects/opensuse-cloud"
+      - "projects/rhel-cloud"
+      - "projects/rhel-sap-cloud"
+      - "projects/rocky-linux-cloud"
+      - "projects/suse-cloud"
+      - "projects/suse-sap-cloud"
+      - "projects/ubuntu-os-cloud"
+      - "projects/ubuntu-os-pro-cloud"
+      - "projects/windows-cloud"
+      - "projects/windows-sql-cloud"
+
 # compute.disableInternetNetworkEndpointGroup:
 #   rules:
 #   - enforce: true
