@@ -174,7 +174,9 @@ module "data-catalog-tag-template" {
       }
     }
   }
-  factories_config.tag_templates = "data"
+  factories_config = {
+    tag_templates = "data"
+  }
 }
 # tftest modules=1 resources=2 files=demo_tag
 ```
