@@ -15,16 +15,15 @@ module "data-catalog-tag-template" {
       tag_template_id = "my_template"
       region          = "europe-west1"
       display_name    = "Demo Tag Template"
-      fields = [
-        {
-          field_id     = "source"
+      fields = {
+        source = {
           display_name = "Source of data asset"
           type = {
             primitive_type = "STRING"
           }
           is_required = true
         }
-      ]
+      }
     }
   }
 }
@@ -42,16 +41,15 @@ module "data-catalog-tag-template" {
       tag_template_id = "my_template"
       region          = "europe-west1"
       display_name    = "Demo Tag Template"
-      fields = [
-        {
-          field_id     = "source"
+      fields = {
+        source = {
           display_name = "Source of data asset"
           type = {
             primitive_type = "STRING"
           }
           is_required = true
         }
-      ]
+      }
     }
   }
   iam = {
@@ -71,16 +69,15 @@ module "data-catalog-tag-template" {
       tag_template_id = "my_template"
       region          = "europe-west1"
       display_name    = "Demo Tag Template"
-      fields = [
-        {
-          field_id     = "source"
+      fields = {
+        source = {
           display_name = "Source of data asset"
           type = {
             primitive_type = "STRING"
           }
           is_required = true
         }
-      ]
+      }
     }
   }
   iam_bindings = {
@@ -113,16 +110,15 @@ module "data-catalog-tag-template" {
       tag_template_id = "my_template"
       region          = "europe-west1"
       display_name    = "Demo Tag Template"
-      fields = [
-        {
-          field_id     = "source"
+      fields = {
+        source = {
           display_name = "Source of data asset"
           type = {
             primitive_type = "STRING"
           }
           is_required = true
         }
-      ]
+      }
     }
   }
   iam_bindings_additive = {
@@ -167,19 +163,18 @@ module "data-catalog-tag-template" {
       tag_template_id = "my_template"
       region          = "europe-west1"
       display_name    = "Demo Tag Template"
-      fields = [
-        {
-          field_id     = "source"
+      fields = {
+        source = {
           display_name = "Source of data asset"
           type = {
             primitive_type = "STRING"
           }
           is_required = true
         }
-      ]
+      }
     }
   }
-  factory_config_path = "data"
+  factories_config.tag_templates = "data"
 }
 # tftest modules=1 resources=2 files=demo_tag
 ```
@@ -199,12 +194,9 @@ fields:
     display_name: PII type
     type:
       enum_type:
-        - allowed_values:
-            display_name: EMAIL
-        - allowed_values:
-            display_name: SOCIAL SECURITY NUMBER
-        - allowed_values:
-            display_name: NONE
+        - EMAIL
+        - SOCIAL SECURITY NUMBER
+        - NONE
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-variable "factory_config_path" {
-  description = "Path to data files and folders that enable factory functionality."
-  type        = string
-  default     = "data"
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    tag_templates = optional(string)
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "iam" {
@@ -67,8 +70,7 @@ variable "tag_templates" {
     display_name = optional(string)
     force_delete = optional(bool, false)
     region       = string
-    fields = list(object({
-      field_id     = string
+    fields = map(object({
       display_name = optional(string)
       description  = optional(string)
       type = object({

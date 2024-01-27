@@ -16,8 +16,8 @@
 
 locals {
   _factory_tag_template = {
-    for f in fileset(var.factory_config_path, "**/*.yaml") :
-    trimsuffix(f, ".yaml") => yamldecode(file("${var.factory_config_path}/${f}"))
+    for f in try(fileset(var.factories_config.tag_templates, "*.yaml"), []) :
+    trimsuffix(f, ".yaml") => yamldecode(file("${var.factories_config.tag_templates}/${f}"))
   }
 
   factory_tag_template = merge(local._factory_tag_template, var.tag_templates)
@@ -33,7 +33,7 @@ resource "google_data_catalog_tag_template" "tag_template" {
   dynamic "fields" {
     for_each = each.value.fields
     content {
-      field_id     = fields.value["field_id"]
+      field_id     = fields.key
       display_name = try(fields.value["display_name"], null)
       is_required  = try(fields.value["is_required"], false)
       type {
@@ -44,7 +44,7 @@ resource "google_data_catalog_tag_template" "tag_template" {
             dynamic "allowed_values" {
               for_each = fields.value["type"].enum_type
               content {
-                display_name = allowed_values.value["allowed_values"].display_name
+                display_name = allowed_values.value
               }
             }
           }
