@@ -15,6 +15,10 @@
  */
 
 locals {
+  groups = {
+    for k, v in var.groups :
+    k => can(regex(".*@.*", v)) ? v : "${v}@${var.organization.domain}"
+  }
   # additive IAM binding for delegated KMS admins
   kms_restricted_admin_template = {
     role = "roles/cloudkms.admin"
@@ -52,4 +56,15 @@ locals {
     "secretmanager.googleapis.com",
     "stackdriver.googleapis.com"
   ]
+}
+
+module "folder" {
+  source        = "../../../modules/folder"
+  parent        = "organizations/${var.organization.id}"
+  name          = "Security"
+  folder_create = var.folder_ids.security == null
+  id            = var.folder_ids.security
+  contacts = {
+    (local.groups.gcp-security-admins) = ["ALL"]
+  }
 }

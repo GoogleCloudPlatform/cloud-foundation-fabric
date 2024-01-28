@@ -41,8 +41,8 @@ module "branch-dp-dev-folder" {
     (local.custom_roles.service_project_network_admin) = [
       module.branch-dp-dev-sa.0.iam_email
     ]
-    "roles/owner"                          = [module.branch-dp-dev-sa.0.iam_email]
     "roles/logging.admin"                  = [module.branch-dp-dev-sa.0.iam_email]
+    "roles/owner"                          = [module.branch-dp-dev-sa.0.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-dp-dev-sa.0.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-dp-dev-sa.0.iam_email]
     # read-only (plan) automation service account

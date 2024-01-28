@@ -44,6 +44,9 @@ module "log-export-project" {
   )
   prefix          = local.prefix
   billing_account = var.billing_account.id
+  contacts = {
+    (local.groups.gcp-organization-admins) = ["ALL"]
+  }
   iam = {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]

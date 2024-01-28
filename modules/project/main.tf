@@ -87,6 +87,11 @@ resource "google_essential_contacts_contact" "contact" {
   email                               = each.key
   language_tag                        = "en"
   notification_category_subscriptions = each.value
+  depends_on = [
+    google_project_iam_binding.authoritative,
+    google_project_iam_binding.bindings,
+    google_project_iam_member.bindings
+  ]
 }
 
 resource "google_monitoring_monitored_project" "primary" {
