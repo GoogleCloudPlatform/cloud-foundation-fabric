@@ -35,6 +35,8 @@ values:
     project: test-project
     unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["info"]:
+    bigquery_options:
+      - use_partitioned_tables: false
     description: info (Terraform-managed).
     disabled: false
     exclusions: []

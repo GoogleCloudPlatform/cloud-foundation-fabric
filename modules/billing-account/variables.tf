@@ -182,7 +182,7 @@ variable "logging_sinks" {
   type = map(object({
     destination          = string
     type                 = string
-    bq_partitioned_table = optional(bool)
+    bq_partitioned_table = optional(bool, false)
     description          = optional(string)
     disabled             = optional(bool, false)
     exclusions = optional(map(object({

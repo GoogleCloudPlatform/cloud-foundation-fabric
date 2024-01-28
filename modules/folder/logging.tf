@@ -52,7 +52,7 @@ resource "google_logging_folder_sink" "sink" {
   disabled         = each.value.disabled
 
   dynamic "bigquery_options" {
-    for_each = each.value.type == "biquery" && each.value.bq_partitioned_table != false ? [""] : []
+    for_each = each.value.type == "bigquery" ? [""] : []
     content {
       use_partitioned_tables = each.value.bq_partitioned_table
     }
