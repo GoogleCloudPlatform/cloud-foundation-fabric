@@ -364,6 +364,6 @@ module "folder" {
 |---|---|:---:|
 | [folder](outputs.tf#L17) | Folder resource. |  |
 | [id](outputs.tf#L22) | Fully qualified folder id. |  |
-| [name](outputs.tf#L32) | Folder name. |  |
-| [sink_writer_identities](outputs.tf#L37) | Writer identities created for each sink. |  |
+| [name](outputs.tf#L33) | Folder name. |  |
+| [sink_writer_identities](outputs.tf#L38) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->
