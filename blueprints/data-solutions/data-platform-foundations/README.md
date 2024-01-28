@@ -226,8 +226,8 @@ module "data-platform" {
     billing_account_id = "123456-123456-123456"
     parent             = "folders/12345678"
   }
-  # test 9-chars long prefix for FAST compatibility
-  prefix = "test-01234"
+  # test 12-chars long prefix for FAST mt compatibility
+  prefix = "test-0123456"
 }
 # tftest modules=43 resources=293
 ```
