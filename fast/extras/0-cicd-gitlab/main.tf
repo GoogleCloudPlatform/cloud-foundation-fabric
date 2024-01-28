@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,12 @@ locals {
           for f in fileset(path.module, "${v.populate_from}/data/**/*.*") : f
         ] : []),
         [for f in fileset(path.module, "${v.populate_from}/*.tf") : f],
+        [for f in fileset(path.module, "${v.populate_from}/templates/*.tpl") : f],
         [for f in fileset(path.module, "${v.populate_from}/terraform.tfvars") : f]
         ) : {
         project = k
         file    = f
-        name    = replace(replace(f, "${v.populate_from}/", ""), (v.populate_samples ? "data/" : ""), (v.populate_samples ? "data.sample/" : ""))
+        name    = replace(f, "${v.populate_from}/", "")
       }
     ] if v.populate_from != null
   ])
@@ -39,7 +40,8 @@ locals {
     for f in concat(
       [for f in fileset(path.module, "../../../modules/*/*.svg") : f],
       [for f in fileset(path.module, "../../../modules/*/*.md") : f],
-      [for f in fileset(path.module, "../../../modules/*/*.tf") : f]
+      [for f in fileset(path.module, "../../../modules/*/*.tf") : f],
+      [for f in fileset(path.module, "../../../modules/*/*.yaml") : f]
     ) : f => replace(f, "../../../modules/", "")
   }
   modules_ref = (

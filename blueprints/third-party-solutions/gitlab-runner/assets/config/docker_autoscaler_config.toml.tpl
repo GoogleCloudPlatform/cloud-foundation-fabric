@@ -14,7 +14,7 @@
   [runners.autoscaler]
     plugin = "fleeting-plugin-googlecompute"
 
-    capacity_per_instance = 1
+    capacity_per_instance = 5
     max_use_count = 1
     max_instances = 10
 

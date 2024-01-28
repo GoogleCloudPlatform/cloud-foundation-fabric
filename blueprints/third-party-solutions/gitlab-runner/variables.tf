@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+variable "admin_principals" {
+  description = "Users, groups and/or service accounts that are assigned roles, in IAM format (`group:foo@example.com`)."
+  type        = list(string)
+  default     = []
+}
 
 variable "gitlab_config" {
   type = object({
@@ -57,8 +63,27 @@ variable "network_config" {
   })
 }
 
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  nullable    = false
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
+}
+
+variable "project_create" {
+  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  type        = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
 variable "project_id" {
-  description = "GCP Project id."
+  description = "Project id, references existing project if `project_create` is null."
   type        = string
 }
 

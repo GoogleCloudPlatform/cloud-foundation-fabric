@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,23 @@ module "landing-project" {
       try(local.service_accounts.project-factory-prod, null),
       try(local.service_accounts.gitlab, null)
     ])
+  }
+  # allow specific service accounts to assign a set of roles
+  iam_bindings = {
+    sa_delegated_grants = {
+      role = "roles/resourcemanager.projectIamAdmin"
+      members = compact([
+        try(local.service_accounts.gitlab, null)
+      ])
+      condition = {
+        title       = "prod_stage3_sa_delegated_grants"
+        description = "Production host project delegated grants."
+        expression = format(
+          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+          join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
+        )
+      }
+    }
   }
 }
 

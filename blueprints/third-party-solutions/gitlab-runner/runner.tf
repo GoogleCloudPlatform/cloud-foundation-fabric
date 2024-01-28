@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 
 module "gitlab-runner" {
   source     = "../../../modules/compute-vm"
-  project_id = var.project_id
-  boot_disk = {
+  project_id = module.project.project_id
+  boot_disk  = {
     initialize_params = {
       size = var.vm_config.boot_disk_size
     }
   }
-  instance_type = var.vm_config.instance_type
-  name          = var.vm_config.name
-  tags          = var.vm_config.network_tags
-  zone          = var.vm_config.zone
+  instance_type      = var.vm_config.instance_type
+  name               = var.vm_config.name
+  tags               = var.vm_config.network_tags
+  zone               = var.vm_config.zone
   network_interfaces = [
     {
       network    = var.network_config.network_self_link
@@ -41,12 +41,12 @@ module "gitlab-runner" {
 }
 
 module "gitlab-runner-template" {
-  count      = local.runner_config_type == "docker_autoscaler" ? 1 : 0
-  source     = "../../../modules/compute-vm"
-  project_id = var.project_id
-  name       = var.gitlab_runner_config.executors_config.docker_autoscaler.mig_name
-  zone       = var.gitlab_runner_config.executors_config.docker_autoscaler.zone
-  tags       = ["ssh"]
+  count              = local.runner_config_type == "docker_autoscaler" ? 1 : 0
+  source             = "../../../modules/compute-vm"
+  project_id         = module.project.project_id
+  name               = var.gitlab_runner_config.executors_config.docker_autoscaler.mig_name
+  zone               = var.gitlab_runner_config.executors_config.docker_autoscaler.zone
+  tags               = ["ssh"]
   network_interfaces = [
     {
       network    = var.network_config.network_self_link
@@ -67,7 +67,7 @@ module "gitlab-runner-template" {
 module "gitlab-runner-mig" {
   count             = local.runner_config_type == "docker_autoscaler" ? 1 : 0
   source            = "../../../modules/compute-mig"
-  project_id        = var.project_id
+  project_id        = module.project.project_id
   location          = var.gitlab_runner_config.executors_config.docker_autoscaler.zone
   name              = var.gitlab_runner_config.executors_config.docker_autoscaler.mig_name
   target_size       = 1
