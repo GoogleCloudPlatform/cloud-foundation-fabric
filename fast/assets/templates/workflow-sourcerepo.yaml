@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -93,6 +93,6 @@ options:
   logging: CLOUD_LOGGING_ONLY
 substitutions:
   _FAST_OUTPUTS_BUCKET: ${outputs_bucket}
-  _TF_PROVIDERS_FILE: ${tf_providers_file}
+  _TF_PROVIDERS_FILE: ${tf_providers_file.apply}
   _TF_VAR_FILES: ${tf_var_files == [] ? "''" : join("\n    ", tf_var_files)}
   _TF_VERSION: 1.4.4
