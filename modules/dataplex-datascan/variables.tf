@@ -41,6 +41,11 @@ variable "data_quality_spec" {
   type = object({
     sampling_percent = optional(number)
     row_filter       = optional(string)
+    post_scan_actions = optional(object({
+      bigquery_export = optional(object({
+        results_table = optional(string)
+      }))
+    }))
     rules = list(object({
       column               = optional(string)
       ignore_null          = optional(bool, null)
