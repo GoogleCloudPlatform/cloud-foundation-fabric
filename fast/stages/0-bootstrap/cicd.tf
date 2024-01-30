@@ -77,8 +77,8 @@ module "automation-tf-cicd-repo" {
   iam = {
     "roles/source.admin" = [
       each.key == "bootstrap"
-      ? [module.automation-tf-bootstrap-sa.iam_email]
-      : [module.automation-tf-resman-sa.iam_email]
+      ? module.automation-tf-bootstrap-sa.iam_email
+      : module.automation-tf-resman-sa.iam_email
     ]
     "roles/source.reader" = concat(
       [module.automation-tf-cicd-sa[each.key].iam_email],
