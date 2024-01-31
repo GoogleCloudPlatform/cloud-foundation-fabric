@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,5 +68,17 @@ module "dev-dns-peer-landing-rev-10" {
       client_networks = [module.dev-spoke-vpc.self_link]
       peer_network    = module.landing-trusted-vpc.self_link
     }
+  }
+}
+
+
+# DNS policy to enable query logging
+
+resource "google_dns_policy" "dev-dns-logging-policy" {
+  name           = "logging-policy"
+  project        = module.dev-spoke-project.project_id
+  enable_logging = true
+  networks {
+    network_url = module.dev-spoke-vpc.id
   }
 }

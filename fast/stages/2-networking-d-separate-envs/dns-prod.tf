@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,4 +79,15 @@ module "prod-dns-policy-googleapis" {
     prod = module.prod-spoke-vpc.self_link
   }
   rules_file = var.factories_config.dns_policy_rules_file
+}
+
+# DNS policy to enable query logging
+
+resource "google_dns_policy" "prod-dns-logging-policy" {
+  name           = "logging-policy"
+  project        = module.prod-spoke-project.project_id
+  enable_logging = true
+  networks {
+    network_url = module.prod-spoke-vpc.id
+  }
 }
