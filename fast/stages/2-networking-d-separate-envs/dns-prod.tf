@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,13 +40,14 @@ moved {
 
 module "prod-dns-fwd-onprem-example" {
   source     = "../../../modules/dns"
+  count      = length(var.dns.prod_resolvers) > 0 ? 1 : 0
   project_id = module.prod-spoke-project.project_id
   name       = "example-com"
   zone_config = {
     domain = "onprem.example.com."
     forwarding = {
       client_networks = [module.prod-spoke-vpc.self_link]
-      forwarders      = { for ip in var.dns.prod : ip => null }
+      forwarders      = { for ip in var.dns.prod_resolvers : ip => null }
     }
   }
 }
@@ -58,13 +59,14 @@ moved {
 
 module "prod-dns-fwd-onprem-rev-10" {
   source     = "../../../modules/dns"
+  count      = length(var.dns.prod_resolvers) > 0 ? 1 : 0
   project_id = module.prod-spoke-project.project_id
   name       = "root-reverse-10"
   zone_config = {
     domain = "10.in-addr.arpa."
     forwarding = {
       client_networks = [module.prod-spoke-vpc.self_link]
-      forwarders      = { for ip in var.dns.prod : ip => null }
+      forwarders      = { for ip in var.dns.prod_resolvers : ip => null }
     }
   }
 }
@@ -79,4 +81,16 @@ module "prod-dns-policy-googleapis" {
     prod = module.prod-spoke-vpc.self_link
   }
   rules_file = var.factories_config.dns_policy_rules_file
+}
+
+# DNS policy to enable query logging
+
+resource "google_dns_policy" "prod-dns-logging-policy" {
+  name           = "logging-policy"
+  count          = var.dns.enable_logging ? 1 : 0
+  project        = module.prod-spoke-project.project_id
+  enable_logging = true
+  networks {
+    network_url = module.prod-spoke-vpc.id
+  }
 }

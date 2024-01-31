@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,11 +70,13 @@ variable "custom_roles" {
 }
 
 variable "dns" {
-  description = "Onprem DNS resolvers."
-  type        = map(list(string))
-  default = {
-    onprem = ["10.0.200.3"]
-  }
+  description = "DNS configuration."
+  type = object({
+    enable_logging = optional(bool, true)
+    resolvers      = optional(list(string), [])
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "factories_config" {
