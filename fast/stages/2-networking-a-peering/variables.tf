@@ -72,8 +72,8 @@ variable "custom_roles" {
 variable "dns" {
   description = "DNS configuration."
   type = object({
-    resolvers      = optional(list(string), [])
     enable_logging = optional(bool, true)
+    resolvers      = optional(list(string), [])
   })
   default  = {}
   nullable = false

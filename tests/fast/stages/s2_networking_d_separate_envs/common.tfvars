@@ -7,6 +7,11 @@ billing_account = {
 custom_roles = {
   service_project_network_admin = "organizations/123456789012/roles/foo"
 }
+dns = {
+  dev_resolvers  = ["10.10.10.10"]
+  prod_resolvers = ["10.20.10.10"]
+  enable_logging = true
+}
 folder_ids = {
   networking      = null
   networking-dev  = null
