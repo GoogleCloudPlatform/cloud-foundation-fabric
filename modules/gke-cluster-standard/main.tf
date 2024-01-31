@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-locals {
-  cas        = var.cluster_autoscaling
-  cas_apd    = try(local.cas.auto_provisioning_defaults, null)
-  cas_apd_us = try(local.cas_apd.upgrade_settings, null)
-}
-
 resource "google_container_cluster" "cluster" {
   provider    = google-beta
   project     = var.project_id
@@ -129,66 +123,66 @@ resource "google_container_cluster" "cluster" {
     }
   }
   dynamic "cluster_autoscaling" {
-    for_each = local.cas == null ? [] : [""]
+    for_each = var.cluster_autoscaling == null ? [] : [""]
     content {
       enabled             = true
       autoscaling_profile = var.cluster_autoscaling.autoscaling_profile
       dynamic "auto_provisioning_defaults" {
-        for_each = local.cas_apd != null ? [""] : []
+        for_each = var.cluster_autoscaling.auto_provisioning_defaults != null ? [""] : []
         content {
-          boot_disk_kms_key = local.cas_apd.boot_disk_kms_key
-          disk_size         = local.cas_apd.disk_size
-          disk_type         = local.cas_apd.disk_type
-          image_type        = local.cas_apd.image_type
-          oauth_scopes      = local.cas_apd.oauth_scopes
-          service_account   = local.cas_apd.service_account
+          boot_disk_kms_key = var.cluster_autoscaling.auto_provisioning_defaults.boot_disk_kms_key
+          disk_size         = var.cluster_autoscaling.auto_provisioning_defaults.disk_size
+          disk_type         = var.cluster_autoscaling.auto_provisioning_defaults.disk_type
+          image_type        = var.cluster_autoscaling.auto_provisioning_defaults.image_type
+          oauth_scopes      = var.cluster_autoscaling.auto_provisioning_defaults.oauth_scopes
+          service_account   = var.cluster_autoscaling.auto_provisioning_defaults.service_account
           dynamic "management" {
-            for_each = local.cas_apd.management != null ? [""] : []
+            for_each = var.cluster_autoscaling.auto_provisioning_defaults.management != null ? [""] : []
             content {
-              auto_repair  = local.cas_apd.management.auto_repair
-              auto_upgrade = local.cas_apd.management.auto_upgrade
+              auto_repair  = var.cluster_autoscaling.auto_provisioning_defaults.management.auto_repair
+              auto_upgrade = var.cluster_autoscaling.auto_provisioning_defaults.management.auto_upgrade
             }
           }
           dynamic "shielded_instance_config" {
-            for_each = local.cas_apd.shielded_instance_config != null ? [""] : []
+            for_each = var.cluster_autoscaling.auto_provisioning_defaults.shielded_instance_config != null ? [""] : []
             content {
               enable_integrity_monitoring = (
-                local.cas_apd.shielded_instance_config.integrity_monitoring
+                var.cluster_autoscaling.auto_provisioning_defaults.shielded_instance_config.integrity_monitoring
               )
               enable_secure_boot = (
-                local.cas_apd.shielded_instance_config.secure_boot
+                var.cluster_autoscaling.auto_provisioning_defaults.shielded_instance_config.secure_boot
               )
             }
           }
           dynamic "upgrade_settings" {
-            for_each = local.cas_apd_us != null ? [""] : []
+            for_each = var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings != null ? [""] : []
             content {
               strategy = (
-                local.cas_apd_us.blue_green != null ? "BLUE_GREEN" : "SURGE"
+                var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green != null ? "BLUE_GREEN" : "SURGE"
               )
-              max_surge       = try(local.cas_apd_us.surge.max, null)
-              max_unavailable = try(local.cas_apd_us.surge.unavailable, null)
+              max_surge       = try(var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.surge.max, null)
+              max_unavailable = try(var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.surge.unavailable, null)
               dynamic "blue_green_settings" {
-                for_each = local.cas_apd_us.blue_green != null ? [""] : []
+                for_each = var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green != null ? [""] : []
                 content {
                   node_pool_soak_duration = (
-                    local.cas_apd_us.blue_green.node_pool_soak_duration
+                    var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green.node_pool_soak_duration
                   )
                   dynamic "standard_rollout_policy" {
                     for_each = (
-                      local.cas_apd_us.blue_green.standard_rollout_policy != null
+                      var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green.standard_rollout_policy != null
                       ? [""]
                       : []
                     )
                     content {
                       batch_node_count = (
-                        local.cas_apd_us.blue_green.standard_rollout_policy.batch_node_count
+                        var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green.standard_rollout_policy.batch_node_count
                       )
                       batch_percentage = (
-                        local.cas_apd_us.blue_green.standard_rollout_policy.batch_percentage
+                        var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green.standard_rollout_policy.batch_percentage
                       )
                       batch_soak_duration = (
-                        local.cas_apd_us.blue_green.standard_rollout_policy.batch_soak_duration
+                        var.cluster_autoscaling.auto_provisioning_defaults.upgrade_settings.blue_green.standard_rollout_policy.batch_soak_duration
                       )
                     }
                   }
@@ -199,26 +193,26 @@ resource "google_container_cluster" "cluster" {
         }
       }
       dynamic "resource_limits" {
-        for_each = local.cas.cpu_limits != null ? [""] : []
+        for_each = var.cluster_autoscaling.cpu_limits != null ? [""] : []
         content {
           resource_type = "cpu"
-          minimum       = local.cas.cpu_limits.min
-          maximum       = local.cas.cpu_limits.max
+          minimum       = var.cluster_autoscaling.cpu_limits.min
+          maximum       = var.cluster_autoscaling.cpu_limits.max
         }
       }
       dynamic "resource_limits" {
-        for_each = local.cas.mem_limits != null ? [""] : []
+        for_each = var.cluster_autoscaling.mem_limits != null ? [""] : []
         content {
           resource_type = "memory"
-          minimum       = local.cas.mem_limits.min
-          maximum       = local.cas.mem_limits.max
+          minimum       = var.cluster_autoscaling.mem_limits.min
+          maximum       = var.cluster_autoscaling.mem_limits.max
         }
       }
       dynamic "resource_limits" {
         for_each = (
-          try(local.cas.gpu_resources, null) == null
+          try(var.cluster_autoscaling.gpu_resources, null) == null
           ? []
-          : local.cas.gpu_resources
+          : var.cluster_autoscaling.gpu_resources
         )
         iterator = gpu_resources
         content {
