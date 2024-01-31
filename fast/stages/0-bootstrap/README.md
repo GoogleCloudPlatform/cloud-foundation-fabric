@@ -255,9 +255,11 @@ Before the first run, the following IAM groups must exist to allow IAM bindings 
 - `gcp-organization-admins`
 - `gcp-security-admins`
 
-You can refer to [this animated image](./groups.gif) for a step by step on group creation.
+You can refer to [this animated image](./groups.gif) for a step by step on group creation via the [Google Cloud Enterprise Checklist](https://cloud.google.com/docs/enterprise/setup-checklist).
 
-Please note that FAST also supports an additional group for users with permissions to create support tickets and view logging and monitoring data. To remain consistent with the [Google Cloud Enterprise Checklist](https://cloud.google.com/docs/enterprise/setup-checklist) we map these permissions to the `gcp-devops` by default. However, we recommend creating a dedicated `gcp-support` group and updating the `groups` variable with the right value.
+Please not that not all groups defined by the Checklist are actually used by FAST, as our approach to IAM is slightly different. As an example, we do not centralize monitoring functions as in our experience those are typically domain-specific (e.g. networking or application-level), so we don't leverage the corresponing group. You are free of course to create those groups via the Checklist, and assign them roles via the IAM variables exposed by this stage.
+
+One more difference compared to the Checklist is the use in FAST of an additional group to centralize support functions like viewing tickets and accessing logging and monitoring data. To remain consistent with the [Google Cloud Enterprise Checklist](https://cloud.google.com/docs/enterprise/setup-checklist) we map these permissions to the `gcp-devops` group by default. However, we recommend creating a dedicated `gcp-support` group and updating the `groups` variable with the right value.
 
 #### Configure variables
 
