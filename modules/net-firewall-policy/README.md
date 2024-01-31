@@ -49,13 +49,15 @@ module "firewall-policy" {
       }
     }
     mgmt = {
-      priority = 1001
+      priority       = 1001
+      enable_logging = true
       match = {
         source_ranges = ["10.1.1.0/24"]
       }
     }
     ssh = {
-      priority = 1002
+      priority       = 1002
+      enable_logging = true
       match = {
         source_ranges = ["10.0.0.0/8"]
         # source_tags    = ["tagValues/123456"]
@@ -102,13 +104,15 @@ module "firewall-policy" {
       }
     }
     mgmt = {
-      priority = 1001
+      priority       = 1001
+      enable_logging = true
       match = {
         source_ranges = ["10.1.1.0/24"]
       }
     }
     ssh = {
-      priority = 1002
+      priority       = 1002
+      enable_logging = true
       match = {
         source_ranges = ["10.0.0.0/8"]
         # source_tags    = ["tagValues/123456"]

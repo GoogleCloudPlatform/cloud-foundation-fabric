@@ -79,7 +79,7 @@ values:
     action: allow
     direction: INGRESS
     disabled: false
-    enable_logging: null
+    enable_logging: True
     firewall_policy: test-1
     match:
     - dest_address_groups: null
@@ -106,7 +106,7 @@ values:
     action: allow
     direction: INGRESS
     disabled: false
-    enable_logging: null
+    enable_logging: True
     firewall_policy: test-1
     match:
     - dest_address_groups: null
