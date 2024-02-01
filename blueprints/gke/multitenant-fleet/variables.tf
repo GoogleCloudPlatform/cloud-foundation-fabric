@@ -28,6 +28,7 @@ variable "clusters" {
       horizontal_pod_autoscaling = true, http_load_balancing = true
     })
     enable_features = optional(any, {
+      shielded_nodes    = true
       workload_identity = true
     })
     issue_client_certificate = optional(bool, false)
@@ -49,12 +50,10 @@ variable "clusters" {
     min_master_version = optional(string)
     monitoring_config = optional(object({
       enable_system_metrics = optional(bool, true)
-
       # (Optional) control plane metrics
       enable_api_server_metrics         = optional(bool, false)
       enable_controller_manager_metrics = optional(bool, false)
       enable_scheduler_metrics          = optional(bool, false)
-
       # (Optional) kube state metrics
       enable_daemonset_metrics   = optional(bool, false)
       enable_deployment_metrics  = optional(bool, false)
@@ -62,11 +61,9 @@ variable "clusters" {
       enable_pod_metrics         = optional(bool, false)
       enable_statefulset_metrics = optional(bool, false)
       enable_storage_metrics     = optional(bool, false)
-
       # Google Cloud Managed Service for Prometheus
       enable_managed_prometheus = optional(bool, true)
     }), {})
-
     node_locations         = optional(list(string))
     private_cluster_config = optional(any)
     release_channel        = optional(string)
