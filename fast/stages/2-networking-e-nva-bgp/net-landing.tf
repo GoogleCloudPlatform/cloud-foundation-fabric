@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,6 +82,7 @@ moved {
 
 module "landing-nat-primary" {
   source         = "../../../modules/net-cloudnat"
+  count          = var.enable_cloud_nat ? 1 : 0
   project_id     = module.landing-project.project_id
   region         = var.regions.primary
   name           = local.region_shortnames[var.regions.primary]
@@ -97,6 +98,7 @@ moved {
 
 module "landing-nat-secondary" {
   source         = "../../../modules/net-cloudnat"
+  count          = var.enable_cloud_nat ? 1 : 0
   project_id     = module.landing-project.project_id
   region         = var.regions.secondary
   name           = local.region_shortnames[var.regions.secondary]
