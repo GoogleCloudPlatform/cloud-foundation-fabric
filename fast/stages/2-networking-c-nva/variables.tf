@@ -79,6 +79,13 @@ variable "dns" {
   nullable = false
 }
 
+variable "enable_cloud_nat" {
+  description = "Deploy Cloud NAT."
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({

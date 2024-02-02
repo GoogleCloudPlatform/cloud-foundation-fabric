@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,8 +93,8 @@ module "prod-spoke-firewall" {
 }
 
 module "prod-spoke-cloudnat" {
-  for_each       = toset(values(module.prod-spoke-vpc.subnet_regions))
   source         = "../../../modules/net-cloudnat"
+  for_each       = toset(var.enable_cloud_nat ? values(module.prod-spoke-vpc.subnet_regions) : [])
   project_id     = module.prod-spoke-project.project_id
   region         = each.value
   name           = "prod-nat-${local.region_shortnames[each.value]}"
