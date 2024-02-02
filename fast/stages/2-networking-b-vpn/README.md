@@ -107,7 +107,7 @@ As is evident from the table above, the hub/landing VPC acts as the route concen
 
 ### Internet egress
 
-The path of least resistance for Internet egress is using Cloud NAT, and that is what's implemented in this setup, with a NAT gateway configured for each VPC.
+Cloud NAT provides the simplest path for internet egress. This setup uses Cloud NAT, with optional per-VPC NAT gateways. Cloud NAT is disabled by default; enable it by setting the `enable_cloud_nat` variable.
 
 Several other scenarios are possible of course, with varying degrees of complexity:
 

@@ -102,7 +102,7 @@ Following the majority of real-life deployments, **we assume appliances to be st
 By default, the design assumes that:
 
 - on-premise networks (and related resources) are considered trusted. As such, the VPNs connecting with on-premises are terminated in GCP, in the trusted VPC
-- the public Internet is considered untrusted. As such [Cloud NAT](https://cloud.google.com/nat/docs/overview) has been deployed in the untrusted landing VPC only. Also, the default route is set to carry traffic from the trusted VPCs, through the NVAs, to the untrusted VPC.
+- the public Internet is considered untrusted. As such [Cloud NAT](https://cloud.google.com/nat/docs/overview) is deployed in the untrusted landing VPC only. Also, the default route is set to carry traffic from the trusted VPCs, through the NVAs, to the untrusted VPC.
 - cross-spoke (environment) traffic and traffic from any untrusted network to any trusted network (and vice versa) pass through the NVAs.
 - any traffic from a trusted network to an untrusted network (e.g. Internet) is natted by the NVAs. Users can configure further exclusions.
 
@@ -190,7 +190,7 @@ The Cloud Routers (connected to the VPN gateways in the trusted VPC) are configu
 
 ### Internet egress
 
-In this setup, Internet egress is realized through [Cloud NAT](https://cloud.google.com/nat/docs/overview), deployed in the untrusted landing VPC. This allows instances in all other VPCs to reach the Internet, passing through the NVAs (being the public Internet considered untrusted).
+In this setup, Internet egress is realized through [Cloud NAT](https://cloud.google.com/nat/docs/overview), deployed in the untrusted landing VPC. This allows instances in all other VPCs to reach the Internet, passing through the NVAs (being the public Internet considered untrusted). Cloud NAT is disabled by default; enable it by setting the `enable_cloud_nat` variable
 
 Several other scenarios are possible, with various degrees of complexity:
 
