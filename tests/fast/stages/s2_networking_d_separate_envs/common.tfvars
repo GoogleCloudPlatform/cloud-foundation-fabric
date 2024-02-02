@@ -12,6 +12,7 @@ dns = {
   prod_resolvers = ["10.20.10.10"]
   enable_logging = true
 }
+enable_cloud_nat = true
 folder_ids = {
   networking      = null
   networking-dev  = null
