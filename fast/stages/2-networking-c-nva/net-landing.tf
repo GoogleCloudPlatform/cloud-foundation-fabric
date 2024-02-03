@@ -50,8 +50,8 @@ module "landing-untrusted-vpc" {
   name       = "prod-untrusted-landing-0"
   mtu        = 1500
   dns_policy = {
-    inbound = false
-    logging = false
+    inbound = true
+    logging = var.dns.enable_logging
   }
   create_googleapis_routes = null
   factories_config = {

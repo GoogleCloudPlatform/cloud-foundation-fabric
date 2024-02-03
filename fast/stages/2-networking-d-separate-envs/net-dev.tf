@@ -70,6 +70,9 @@ module "dev-spoke-vpc" {
   project_id = module.dev-spoke-project.project_id
   name       = "dev-spoke-0"
   mtu        = 1500
+  dns_policy = {
+    logging = var.dns.enable_logging
+  }
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
   }
