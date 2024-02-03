@@ -82,15 +82,3 @@ module "prod-dns-policy-googleapis" {
   }
   rules_file = var.factories_config.dns_policy_rules_file
 }
-
-# DNS policy to enable query logging
-
-resource "google_dns_policy" "prod-dns-logging-policy" {
-  name           = "logging-policy"
-  count          = var.dns.enable_logging ? 1 : 0
-  project        = module.prod-spoke-project.project_id
-  enable_logging = true
-  networks {
-    network_url = module.prod-spoke-vpc.id
-  }
-}

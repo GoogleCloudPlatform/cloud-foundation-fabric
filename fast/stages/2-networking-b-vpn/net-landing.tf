@@ -49,6 +49,7 @@ module "landing-vpc" {
   mtu        = 1500
   dns_policy = {
     inbound = true
+    logging = var.dns.enable_logging
   }
   # set explicit routes for googleapis in case the default route is deleted
   create_googleapis_routes = {
