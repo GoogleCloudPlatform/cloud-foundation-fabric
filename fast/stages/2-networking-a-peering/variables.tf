@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,11 +70,20 @@ variable "custom_roles" {
 }
 
 variable "dns" {
-  description = "Onprem DNS resolvers."
-  type        = map(list(string))
-  default = {
-    onprem = ["10.0.200.3"]
-  }
+  description = "DNS configuration."
+  type = object({
+    enable_logging = optional(bool, true)
+    resolvers      = optional(list(string), [])
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "enable_cloud_nat" {
+  description = "Deploy Cloud NAT."
+  type        = bool
+  default     = false
+  nullable    = false
 }
 
 variable "factories_config" {
@@ -106,6 +115,16 @@ variable "folder_ids" {
     networking-dev  = string
     networking-prod = string
   })
+}
+
+variable "groups" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
+  type = object({
+    gcp-network-admins = optional(string)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "organization" {

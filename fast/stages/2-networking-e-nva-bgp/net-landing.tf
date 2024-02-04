@@ -51,8 +51,8 @@ module "landing-untrusted-vpc" {
   name       = "prod-untrusted-landing-0"
   mtu        = 1500
   dns_policy = {
-    inbound = false
-    logging = false
+    inbound = true
+    logging = var.dns.enable_logging
   }
   create_googleapis_routes = null
   factories_config = {
@@ -82,6 +82,7 @@ moved {
 
 module "landing-nat-primary" {
   source         = "../../../modules/net-cloudnat"
+  count          = var.enable_cloud_nat ? 1 : 0
   project_id     = module.landing-project.project_id
   region         = var.regions.primary
   name           = local.region_shortnames[var.regions.primary]
@@ -97,6 +98,7 @@ moved {
 
 module "landing-nat-secondary" {
   source         = "../../../modules/net-cloudnat"
+  count          = var.enable_cloud_nat ? 1 : 0
   project_id     = module.landing-project.project_id
   region         = var.regions.secondary
   name           = local.region_shortnames[var.regions.secondary]

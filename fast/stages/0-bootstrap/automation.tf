@@ -29,6 +29,9 @@ module "automation-project" {
     var.project_parent_ids.automation, "organizations/${var.organization.id}"
   )
   prefix = local.prefix
+  contacts = {
+    (local.groups.gcp-organization-admins) = ["ALL"]
+  }
   # human (groups) IAM bindings
   group_iam = {
     (local.groups.gcp-devops) = [
@@ -108,33 +111,48 @@ module "automation-project" {
       role   = "roles/serviceusage.serviceUsageViewer"
     }
   }
-  services = [
-    "accesscontextmanager.googleapis.com",
-    "bigquery.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "billingbudgets.googleapis.com",
-    "cloudbilling.googleapis.com",
-    "cloudbuild.googleapis.com",
-    "cloudkms.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "container.googleapis.com",
-    "compute.googleapis.com",
-    "container.googleapis.com",
-    "essentialcontacts.googleapis.com",
-    "iam.googleapis.com",
-    "iamcredentials.googleapis.com",
-    "orgpolicy.googleapis.com",
-    "pubsub.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "serviceusage.googleapis.com",
-    "sourcerepo.googleapis.com",
-    "sqladmin.googleapis.com",
-    "stackdriver.googleapis.com",
-    "storage-component.googleapis.com",
-    "storage.googleapis.com",
-    "sts.googleapis.com"
-  ]
+  org_policies = var.bootstrap_user != null ? {} : {
+    "compute.skipDefaultNetworkCreation" = {
+      rules = [{ enforce = true }]
+    }
+    "iam.automaticIamGrantsForDefaultServiceAccounts" = {
+      rules = [{ enforce = true }]
+    }
+    "iam.disableServiceAccountKeyCreation" = {
+      rules = [{ enforce = true }]
+    }
+  }
+  services = concat(
+    [
+      "accesscontextmanager.googleapis.com",
+      "bigquery.googleapis.com",
+      "bigqueryreservation.googleapis.com",
+      "bigquerystorage.googleapis.com",
+      "billingbudgets.googleapis.com",
+      "cloudbilling.googleapis.com",
+      "cloudkms.googleapis.com",
+      "cloudresourcemanager.googleapis.com",
+      "essentialcontacts.googleapis.com",
+      "iam.googleapis.com",
+      "iamcredentials.googleapis.com",
+      "orgpolicy.googleapis.com",
+      "pubsub.googleapis.com",
+      "servicenetworking.googleapis.com",
+      "serviceusage.googleapis.com",
+      "sourcerepo.googleapis.com",
+      "stackdriver.googleapis.com",
+      "storage-component.googleapis.com",
+      "storage.googleapis.com",
+      "sts.googleapis.com"
+    ],
+    # enable specific service only after org policies have been applied
+    var.bootstrap_user != null ? [] : [
+      "cloudbuild.googleapis.com",
+      "compute.googleapis.com",
+      "container.googleapis.com",
+      "sqladmin.googleapis.com",
+    ]
+  )
 }
 
 # output files bucket
@@ -144,7 +162,7 @@ module "automation-tf-output-gcs" {
   project_id    = module.automation-project.project_id
   name          = "iac-core-outputs-0"
   prefix        = local.prefix
-  location      = var.locations.gcs
+  location      = local.locations.gcs
   storage_class = local.gcs_storage_class
   versioning    = true
   depends_on    = [module.organization]
@@ -157,7 +175,7 @@ module "automation-tf-bootstrap-gcs" {
   project_id    = module.automation-project.project_id
   name          = "iac-core-bootstrap-0"
   prefix        = local.prefix
-  location      = var.locations.gcs
+  location      = local.locations.gcs
   storage_class = local.gcs_storage_class
   versioning    = true
   depends_on    = [module.organization]
@@ -212,7 +230,7 @@ module "automation-tf-resman-gcs" {
   project_id    = module.automation-project.project_id
   name          = "iac-core-resman-0"
   prefix        = local.prefix
-  location      = var.locations.gcs
+  location      = local.locations.gcs
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {

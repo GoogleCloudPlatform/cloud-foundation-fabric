@@ -69,6 +69,7 @@ module "landing-vpc" {
   mtu        = 1500
   dns_policy = {
     inbound = true
+    logging = var.dns.enable_logging
   }
   # set explicit routes for googleapis in case the default route is deleted
   create_googleapis_routes = {
@@ -103,6 +104,7 @@ moved {
 
 module "landing-nat-primary" {
   source         = "../../../modules/net-cloudnat"
+  count          = var.enable_cloud_nat ? 1 : 0
   project_id     = module.landing-project.project_id
   region         = var.regions.primary
   name           = local.region_shortnames[var.regions.primary]

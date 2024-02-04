@@ -48,6 +48,7 @@ variable "clusters" {
       horizontal_pod_autoscaling = true, http_load_balancing = true
     })
     enable_features = optional(any, {
+      shielded_nodes    = true
       workload_identity = true
     })
     issue_client_certificate = optional(bool, false)

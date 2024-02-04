@@ -17,9 +17,10 @@
 locals {
   prefix = var.prefix == null || var.prefix == "" ? "" : "${var.prefix}-"
   _file_data_quality_spec = var.data_quality_spec_file == null ? null : {
-    sampling_percent = try(local._file_data_quality_spec_raw.samplingPercent, local._file_data_quality_spec_raw.sampling_percent, null)
-    row_filter       = try(local._file_data_quality_spec_raw.rowFilter, local._file_data_quality_spec_raw.row_filter, null)
-    rules            = local._parsed_rules
+    sampling_percent  = try(local._file_data_quality_spec_raw.samplingPercent, local._file_data_quality_spec_raw.sampling_percent, null)
+    row_filter        = try(local._file_data_quality_spec_raw.rowFilter, local._file_data_quality_spec_raw.row_filter, null)
+    rules             = local._parsed_rules
+    post_scan_actions = try(local._file_data_quality_spec_raw.postScanActions, local._file_data_quality_spec_raw.post_scan_actions, null)
   }
   data_quality_spec = (
     var.data_quality_spec != null || var.data_quality_spec_file != null ?
@@ -71,6 +72,17 @@ resource "google_dataplex_datascan" "datascan" {
     content {
       sampling_percent = try(local.data_quality_spec.sampling_percent, null)
       row_filter       = try(local.data_quality_spec.row_filter, null)
+      dynamic "post_scan_actions" {
+        for_each = local.data_quality_spec.post_scan_actions != null ? [""] : []
+        content {
+          dynamic "bigquery_export" {
+            for_each = local.data_quality_spec.post_scan_actions.bigquery_export != null ? [""] : []
+            content {
+              results_table = try(local.data_quality_spec.post_scan_actions.bigquery_export.results_table, null)
+            }
+          }
+        }
+      }
       dynamic "rules" {
         for_each = local.data_quality_spec.rules
         content {

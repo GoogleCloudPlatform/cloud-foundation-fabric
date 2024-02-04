@@ -136,6 +136,8 @@ module "branch-teams-team-dev-folder" {
     "roles/logging.admin"                  = local.branch_optional_sa_lists.pf-dev
     "roles/resourcemanager.folderAdmin"    = local.branch_optional_sa_lists.pf-dev
     "roles/resourcemanager.projectCreator" = local.branch_optional_sa_lists.pf-dev
+    "roles/resourcemanager.folderViewer"   = local.branch_optional_r_sa_lists.pf-dev
+    "roles/viewer"                         = local.branch_optional_r_sa_lists.pf-dev
   }
   tag_bindings = {
     environment = try(
@@ -161,6 +163,8 @@ module "branch-teams-team-prod-folder" {
     "roles/logging.admin"                  = local.branch_optional_sa_lists.pf-prod
     "roles/resourcemanager.folderAdmin"    = local.branch_optional_sa_lists.pf-prod
     "roles/resourcemanager.projectCreator" = local.branch_optional_sa_lists.pf-prod
+    "roles/resourcemanager.folderViewer"   = local.branch_optional_r_sa_lists.pf-prod
+    "roles/viewer"                         = local.branch_optional_r_sa_lists.pf-prod
   }
   tag_bindings = {
     environment = try(

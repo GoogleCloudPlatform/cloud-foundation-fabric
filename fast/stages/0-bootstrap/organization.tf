@@ -58,10 +58,11 @@ locals {
     "tag_viewer",
     "tenant_network_admin",
   ]
-  group_iam = {
+  # intermediate values before we merge in what comes from the checklist
+  _group_iam = {
     for k, v in local.iam_group_bindings : k => v.authoritative
   }
-  iam = merge(
+  _iam = merge(
     {
       for r in local.iam_delete_roles : r => []
     },
@@ -69,12 +70,40 @@ locals {
       for b in local._iam_bindings_auth : b.role => b.member...
     }
   )
-  iam_bindings_additive = {
+  _iam_bindings_additive = {
     for b in local._iam_bindings_add : "${b.role}-${b.member}" => {
       member = b.member
       role   = b.role
     }
   }
+  # final values combining all sources
+  group_iam = {
+    for k, v in local._group_iam : k => distinct(concat(
+      v,
+      try(local.checklist.group_iam[k], [])
+    ))
+  }
+  iam = {
+    for k, v in local._iam : k => distinct(concat(
+      v,
+      try(local.checklist.iam[k].authoritative, [])
+    ))
+  }
+  iam_bindings_additive = merge(
+    local._iam_bindings_additive,
+    {
+      for k, v in try(local.checklist.iam_bindings, {}) :
+      v.key => v if lookup(local._iam_bindings_additive, v.key, null) == null
+    }
+  )
+  # compute authoritative and additive roles for use by add-ons (checklist, etc.)
+  iam_roles_authoritative = distinct(concat(
+    flatten(values(local._group_iam)),
+    keys(local._iam)
+  ))
+  iam_roles_additive = distinct([
+    for k, v in local._iam_bindings_additive : v.role
+  ])
 }
 
 # TODO: add a check block to ensure our custom roles exist in the factory files

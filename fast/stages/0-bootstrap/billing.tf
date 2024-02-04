@@ -46,6 +46,9 @@ module "billing-export-project" {
     var.project_parent_ids.billing, "organizations/${var.organization.id}"
   )
   prefix = local.prefix
+  contacts = {
+    (local.groups.gcp-organization-admins) = ["ALL"]
+  }
   iam = {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]
@@ -66,7 +69,7 @@ module "billing-export-dataset" {
   project_id    = module.billing-export-project.0.project_id
   id            = "billing_export"
   friendly_name = "Billing export."
-  location      = var.locations.bq
+  location      = local.locations.bq
 }
 
 # standalone billing account

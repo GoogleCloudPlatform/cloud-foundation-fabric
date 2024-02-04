@@ -74,7 +74,7 @@ locals {
       ]
     ]) : "${binding.role}-${binding.member}" => binding
   }
-  use_projects   = var.project_config.billing_account_id == null
+  use_projects   = !var.project_config.project_create
   use_shared_vpc = var.network_config != null
 }
 

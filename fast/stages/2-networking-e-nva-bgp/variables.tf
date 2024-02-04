@@ -70,11 +70,20 @@ variable "custom_roles" {
 }
 
 variable "dns" {
-  description = "Onprem DNS resolvers."
-  type        = map(list(string))
-  default = {
-    onprem = ["10.0.200.3"]
-  }
+  description = "DNS configuration."
+  type = object({
+    enable_logging = optional(bool, true)
+    resolvers      = optional(list(string), [])
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "enable_cloud_nat" {
+  description = "Deploy Cloud NAT."
+  type        = bool
+  default     = false
+  nullable    = false
 }
 
 variable "factories_config" {
@@ -121,6 +130,16 @@ variable "gcp_ranges" {
     gcp_prod_primary                = "10.72.0.0/16"
     gcp_prod_secondary              = "10.88.0.0/16"
   }
+}
+
+variable "groups" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
+  type = object({
+    gcp-network-admins = optional(string)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "ncc_asn" {

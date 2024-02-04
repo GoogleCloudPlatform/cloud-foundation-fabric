@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-def test_counts(plan_summary):
-  "Test stage."
-  summary = plan_summary("fast/stages/1-resman",
-                         tf_var_files=["common.tfvars"])
-  assert summary.counts["modules"] > 0
-  assert summary.counts["resources"] > 0
+module "dns-response-policy" {
+  source     = "./fabric/modules/dns-response-policy"
+  project_id = var.project_id
+  name       = "googleapis"
+  networks = {
+    landing = var.vpc.self_link
+  }
+}
