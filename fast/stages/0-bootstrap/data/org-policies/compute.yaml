@@ -55,13 +55,13 @@ compute.trustedImageProjects:
 #   rules:
 #   - enforce: true
 
-# compute.disableNestedVirtualization:
-#   rules:
-#   - enforce: true
+compute.disableNestedVirtualization:
+  rules:
+  - enforce: true
 
-# compute.disableSerialPortAccess:
-#   rules:
-#   - enforce: true
+compute.disableSerialPortAccess:
+  rules:
+  - enforce: true
 
 # compute.restrictCloudNATUsage:
 #   rules:

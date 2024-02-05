@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ counts:
   google_essential_contacts_contact: 3
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
-  google_org_policy_policy: 17
+  google_org_policy_policy: 20
   google_organization_iam_binding: 25
   google_organization_iam_custom_role: 6
   google_organization_iam_member: 22
@@ -38,7 +38,7 @@ counts:
   google_tags_tag_value: 1
   local_file: 7
   modules: 15
-  resources: 177
+  resources: 180
 
 outputs:
   custom_roles:
