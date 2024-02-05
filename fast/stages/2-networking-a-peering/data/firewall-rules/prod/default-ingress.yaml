@@ -7,3 +7,12 @@ ingress:
     priority: 65535
     enable_logging:
       include_metadata: false
+  ingress-allow-composer-nodes:
+    description: "Allow traffic to Composer nodes."
+    sources:
+      - composer-worker
+    targets:
+      - composer-worker
+    rules:
+      - protocol: tcp
+        ports: [80, 443, 3306, 3307]
