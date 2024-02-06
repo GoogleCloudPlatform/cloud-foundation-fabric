@@ -60,10 +60,10 @@ To get started, click Start.
 
 ## Create the Autopilot GKE cluster
 
-1. Change to the ```~/cloud-foundation-fabric/blueprints/gke/jumpstart/jumpstart-0-infra``` directory.
+1. Change to the ```~/cloud-foundation-fabric/blueprints/gke/patterns/autopilot-cluster``` directory.
 
     ```bash
-    cd ~/cloud-foundation-fabric/blueprints/gke/jumpstart/jumpstart-0-infra 
+    cd ~/cloud-foundation-fabric/blueprints/gke/patterns/autopilot-cluster 
     ```
 
 2. Create a new file ```terraform.tfvars``` in that directory.
@@ -71,12 +71,12 @@ To get started, click Start.
     ```bash
     touch terraform.tfvars
     ```
-
-3. Open the <walkthrough-editor-open-file filePath="cloud-foundation-fabric/blueprints/gke/jumpstart/jumpstart-0-infra/terraform.tfvars">file</walkthrough-editor-open-file> for editing.
+j
+3. Open the <walkthrough-editor-open-file filePath="cloud-foundation-fabric/blueprints/gke/patterns/autopilot-cluster/terraform.tfvars">file</walkthrough-editor-open-file> for editing.
 
 4. Paste the following content in the file.
 
-```none
+```hcl
 project_id     = "<walkthrough-project-name/>"
 cluster_name   = "cluster"
 cluster_create = {}
@@ -112,10 +112,10 @@ vpc_create = {
 
 ## Install Kueue and create associated resources
 
-1. Change to the ```~/cloud-foundation-fabric/blueprints/gke/jumpstart/jumpstart-1-batch``` directory.
+1. Change to the ```~/cloud-foundation-fabric/blueprints/gke/patterns/batch``` directory.
 
     ```bash
-    cd ~/cloud-foundation-fabric/blueprints/gke/jumpstart/jumpstart-1-batch 
+    cd ~/cloud-foundation-fabric/blueprints/gke/patterns/batch 
     ```
 
 2. Create a new file ```terraform.tfvars``` in that directory.
@@ -124,11 +124,11 @@ vpc_create = {
     touch terraform.tfvars
     ```
 
-3. Open the <walkthrough-editor-open-file filePath="~/cloud-foundation-fabric/blueprints/gke/jumpstart/jumpstart-1-batch/terraform.tfvars">file</walkthrough-editor-open-file> for editing.
+3. Open the <walkthrough-editor-open-file filePath="~/cloud-foundation-fabric/blueprints/gke/patterns/batch/terraform.tfvars">file</walkthrough-editor-open-file> for editing.
 
 4. Paste the following content in the file.
 
-    ```none
+    ```hcl
     credentials_config = {
     kubeconfig = {
         path = "~/.kube/config"
