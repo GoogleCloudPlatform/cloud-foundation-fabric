@@ -21,7 +21,6 @@ module "gw" {
   zone          = each.value
   name          = "${var.prefix}-gw-${each.key}"
   instance_type = "f1-micro"
-
   boot_disk = {
     initialize_params = {
       image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
@@ -29,7 +28,6 @@ module "gw" {
       size  = 10
     }
   }
-
   network_interfaces = [
     {
       network    = module.vpc-left.self_link
@@ -52,11 +50,12 @@ module "gw" {
       ip_cidr_right = var.ip_ranges.right
     })
   }
-  service_account = try(
-    module.service-accounts.emails["${var.prefix}-gce-vm"], null
-  )
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  group                  = { named_ports = null }
+  service_account = {
+    email = try(
+      module.service-accounts.emails["${var.prefix}-gce-vm"], null
+    )
+  }
+  group = { named_ports = null }
 }
 
 module "ilb-left" {
@@ -68,7 +67,11 @@ module "ilb-left" {
     network    = module.vpc-left.self_link
     subnetwork = values(module.vpc-left.subnet_self_links)[0]
   }
-  address = local.addresses.ilb-left
+  forwarding_rules_config = {
+    "" = {
+      address = local.addresses.ilb-left
+    }
+  }
   backend_service_config = {
     session_affinity = var.ilb_session_affinity
   }
@@ -92,7 +95,11 @@ module "ilb-right" {
     network    = module.vpc-right.self_link
     subnetwork = values(module.vpc-right.subnet_self_links)[0]
   }
-  address = local.addresses.ilb-right
+  forwarding_rules_config = {
+    "" = {
+      address = local.addresses.ilb-right
+    }
+  }
   backend_service_config = {
     session_affinity = var.ilb_session_affinity
   }

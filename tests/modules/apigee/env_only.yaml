@@ -14,7 +14,7 @@
 
 values:
   google_apigee_envgroup_attachment.envgroup_attachments["apis-test-test"]:
-    envgroup_id: test
+    envgroup_id: organizations/my-project/envgroups/test
     environment: apis-test
     timeouts: null
   google_apigee_environment.environments["apis-test"]:

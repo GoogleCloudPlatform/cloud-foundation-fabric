@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,13 +47,12 @@ locals {
       "https://www.googleapis.com/auth/userinfo.email"
     ]
   )
-  taints_windows = (
-    local.image.is_win
-    ? [{
-      key = "node.kubernetes.io/os", value = "windows", effect = "NO_EXECUTE"
-    }]
-    : []
-  )
+  taints = merge(var.taints, !local.image.is_win ? {} : {
+    "node.kubernetes.io/os" = {
+      value  = "windows"
+      effect = "NO_EXECUTE"
+    }
+  })
 }
 
 resource "google_service_account" "service_account" {
@@ -115,9 +114,10 @@ resource "google_container_node_pool" "nodepool" {
   dynamic "network_config" {
     for_each = var.pod_range != null ? [""] : []
     content {
-      create_pod_range    = var.pod_range.secondary_pod_range.create
-      pod_ipv4_cidr_block = var.pod_range.secondary_pod_range.cidr
-      pod_range           = var.pod_range.secondary_pod_range.name
+      create_pod_range     = var.pod_range.secondary_pod_range.create
+      enable_private_nodes = var.pod_range.secondary_pod_range.enable_private_nodes
+      pod_ipv4_cidr_block  = var.pod_range.secondary_pod_range.cidr
+      pod_range            = var.pod_range.secondary_pod_range.name
     }
   }
 
@@ -147,9 +147,6 @@ resource "google_container_node_pool" "nodepool" {
       var.node_config.spot == true && var.node_config.preemptible != true
     )
     tags = var.tags
-    taint = (
-      var.taints == null ? [] : concat(var.taints, local.taints_windows)
-    )
 
     dynamic "ephemeral_storage_config" {
       for_each = var.node_config.ephemeral_ssd_count != null ? [""] : []
@@ -168,7 +165,28 @@ resource "google_container_node_pool" "nodepool" {
       content {
         count              = var.node_config.guest_accelerator.count
         type               = var.node_config.guest_accelerator.type
-        gpu_partition_size = var.node_config.guest_accelerator.gpu_partition_size
+        gpu_partition_size = var.node_config.guest_accelerator.gpu_driver == null ? null : var.node_config.guest_accelerator.gpu_driver.partition_size
+
+        dynamic "gpu_sharing_config" {
+          for_each = try(var.node_config.guest_accelerator.gpu_driver.max_shared_clients_per_gpu, null) != null ? [""] : []
+          content {
+            gpu_sharing_strategy       = var.node_config.guest_accelerator.gpu_driver.max_shared_clients_per_gpu != null ? "TIME_SHARING" : null
+            max_shared_clients_per_gpu = var.node_config.guest_accelerator.gpu_driver.max_shared_clients_per_gpu
+          }
+        }
+
+        dynamic "gpu_driver_installation_config" {
+          for_each = var.node_config.guest_accelerator.gpu_driver != null ? [""] : []
+          content {
+            gpu_driver_version = var.node_config.guest_accelerator.gpu_driver.version
+          }
+        }
+      }
+    }
+    dynamic "local_nvme_ssd_block_config" {
+      for_each = coalesce(var.node_config.local_nvme_ssd_count, 0) > 0 ? [""] : []
+      content {
+        local_ssd_count = var.node_config.local_nvme_ssd_count
       }
     }
     dynamic "gvnic" {
@@ -183,12 +201,14 @@ resource "google_container_node_pool" "nodepool" {
         cpu_manager_policy   = var.node_config.kubelet_config.cpu_manager_policy
         cpu_cfs_quota        = var.node_config.kubelet_config.cpu_cfs_quota
         cpu_cfs_quota_period = var.node_config.kubelet_config.cpu_cfs_quota_period
+        pod_pids_limit       = var.node_config.kubelet_config.pod_pids_limit
       }
     }
     dynamic "linux_node_config" {
-      for_each = var.node_config.linux_node_config_sysctls != null ? [""] : []
+      for_each = var.node_config.linux_node_config != null ? [""] : []
       content {
-        sysctls = var.node_config.linux_node_config_sysctls
+        sysctls     = var.node_config.linux_node_config.sysctls
+        cgroup_mode = try(var.node_config.linux_node_config.cgroup_mode, "CGROUP_MODE_UNSPECIFIED")
       }
     }
     dynamic "reservation_affinity" {
@@ -215,6 +235,14 @@ resource "google_container_node_pool" "nodepool" {
       content {
         enable_secure_boot          = var.node_config.shielded_instance_config.enable_secure_boot
         enable_integrity_monitoring = var.node_config.shielded_instance_config.enable_integrity_monitoring
+      }
+    }
+    dynamic "taint" {
+      for_each = local.taints
+      content {
+        key    = taint.key
+        value  = taint.value.value
+        effect = taint.value.effect
       }
     }
     dynamic "workload_metadata_config" {

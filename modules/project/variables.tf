@@ -66,6 +66,16 @@ variable "descriptive_name" {
   default     = null
 }
 
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    custom_roles = optional(string)
+    org_policies = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "group_iam" {
   description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
   type        = map(list(string))
@@ -81,9 +91,10 @@ variable "iam" {
 }
 
 variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {ROLE => {members = [], condition = {}}}."
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
   type = map(object({
     members = list(string)
+    role    = string
     condition = optional(object({
       expression  = string
       title       = string
@@ -155,7 +166,7 @@ variable "logging_sinks" {
     filter               = string
     iam                  = optional(bool, true)
     type                 = string
-    unique_writer        = optional(bool)
+    unique_writer        = optional(bool, true)
   }))
   default  = {}
   nullable = false
@@ -212,12 +223,6 @@ variable "org_policies" {
   }))
   default  = {}
   nullable = false
-}
-
-variable "org_policies_data_path" {
-  description = "Path containing org policies in YAML format."
-  type        = string
-  default     = null
 }
 
 variable "parent" {
@@ -297,9 +302,12 @@ variable "shared_vpc_service_config" {
   description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
   # the list of valid service identities is in service-agents.yaml
   type = object({
-    host_project         = string
-    service_identity_iam = optional(map(list(string)), {})
-    service_iam_grants   = optional(list(string), [])
+    host_project                = string
+    network_users               = optional(list(string), [])
+    service_identity_iam        = optional(map(list(string)), {})
+    service_identity_subnet_iam = optional(map(list(string)), {})
+    service_iam_grants          = optional(list(string), [])
+    network_subnet_users        = optional(map(list(string)), {})
   })
   default = {
     host_project = null
@@ -308,10 +316,13 @@ variable "shared_vpc_service_config" {
   validation {
     condition = var.shared_vpc_service_config.host_project != null || (
       var.shared_vpc_service_config.host_project == null &&
+      length(var.shared_vpc_service_config.network_users) == 0 &&
       length(var.shared_vpc_service_config.service_iam_grants) == 0 &&
-      length(var.shared_vpc_service_config.service_iam_grants) == 0
+      length(var.shared_vpc_service_config.service_identity_iam) == 0 &&
+      length(var.shared_vpc_service_config.service_identity_subnet_iam) == 0 &&
+      length(var.shared_vpc_service_config.network_subnet_users) == 0
     )
-    error_message = "You need to provide host_project when providing service_identity_iam or service_iam_grants"
+    error_message = "You need to provide host_project when providing Shared VPC host and subnet IAM permissions."
   }
 }
 
@@ -319,10 +330,4 @@ variable "skip_delete" {
   description = "Allows the underlying resources to be destroyed without destroying the project itself."
   type        = bool
   default     = false
-}
-
-variable "tag_bindings" {
-  description = "Tag bindings for this project, in key => tag value id format."
-  type        = map(string)
-  default     = null
 }

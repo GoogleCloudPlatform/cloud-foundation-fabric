@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 # tfdoc:file:description Orchestration Cloud Composer definition.
 
 locals {
-  env_variables = {
+  _env_variables = {
     BQ_LOCATION                 = var.location
     DATA_CAT_TAGS               = try(jsonencode(module.common-datacatalog.tags), "{}")
     DF_KMS_KEY                  = try(var.service_encryption_keys.dataflow, "")
@@ -48,6 +48,12 @@ locals {
     TRF_SA_DF                   = module.transf-sa-df-0.email
     TRF_SA_BQ                   = module.transf-sa-bq-0.email
   }
+  env_variables = {
+    for k, v in merge(
+      try(var.composer_config.software_config.env_variables, null),
+      local._env_variables
+    ) : "AIRFLOW_VAR_${k}" => v
+  }
 }
 module "orch-sa-cmp-0" {
   source       = "../../../modules/iam-service-account"
@@ -62,16 +68,20 @@ module "orch-sa-cmp-0" {
 }
 
 resource "google_composer_environment" "orch-cmp-0" {
-  count   = var.composer_config.disable_deployment == true ? 0 : 1
-  project = module.orch-project.project_id
-  name    = "${var.prefix}-orc-cmp-0"
-  region  = var.region
+  count    = var.composer_config.disable_deployment == true ? 0 : 1
+  provider = google-beta
+  project  = module.orch-project.project_id
+  name     = "${var.prefix}-orc-cmp-0"
+  region   = var.region
   config {
     software_config {
       airflow_config_overrides = try(var.composer_config.software_config.airflow_config_overrides, null)
       pypi_packages            = try(var.composer_config.software_config.pypi_packages, null)
-      env_variables            = merge(try(var.composer_config.software_config.env_variables, null), local.env_variables)
+      env_variables            = local.env_variables
       image_version            = try(var.composer_config.software_config.image_version, null)
+      cloud_data_lineage_integration {
+        enabled = var.composer_config.software_config.cloud_data_lineage_integration
+      }
     }
     dynamic "workloads_config" {
       for_each = (try(var.composer_config.workloads_config, null) != null ? { 1 = 1 } : {})

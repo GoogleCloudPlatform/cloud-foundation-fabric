@@ -158,7 +158,9 @@ resource "google_dns_managed_zone_iam_binding" "iam_bindings" {
 }
 
 data "google_dns_keys" "dns_keys" {
+  count        = try(var.zone_config.public.dnssec_config, null) != null ? 1 : 0
   managed_zone = local.managed_zone.id
+  project      = var.project_id
 }
 
 resource "google_dns_record_set" "dns_record_set" {
@@ -178,6 +180,23 @@ resource "google_dns_record_set" "dns_record_set" {
         content {
           location = geo.value.location
           rrdatas  = geo.value.records
+          dynamic "health_checked_targets" {
+            for_each = try(geo.value.health_checked_targets, null) == null ? [] : [""]
+            content {
+              dynamic "internal_load_balancers" {
+                for_each = geo.value.health_checked_targets
+                content {
+                  load_balancer_type = internal_load_balancers.value.load_balancer_type
+                  ip_address         = internal_load_balancers.value.ip_address
+                  port               = internal_load_balancers.value.port
+                  ip_protocol        = internal_load_balancers.value.ip_protocol
+                  network_url        = internal_load_balancers.value.network_url
+                  project            = internal_load_balancers.value.project
+                  region             = internal_load_balancers.value.region
+                }
+              }
+            }
+          }
         }
       }
       dynamic "wrr" {

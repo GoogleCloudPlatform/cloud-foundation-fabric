@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,8 +43,9 @@ module "test-vm" {
       options     = null
     }
   ]
-  service_account        = module.service-account-sql.email
-  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account = {
+    email = module.service-account-sql.email
+  }
   boot_disk = {
     initialize_params = {
       image = "projects/debian-cloud/global/images/family/debian-10"

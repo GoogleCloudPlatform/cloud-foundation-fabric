@@ -48,7 +48,7 @@ module "branch-network-cicd-repo" {
   depends_on = [module.branch-network-sa-cicd]
 }
 
-# SA used by CI/CD workflows to impersonate automation SAs
+# read-write (apply) SA used by CI/CD workflows to impersonate automation SA
 
 module "branch-network-sa-cicd" {
   source = "../../../modules/iam-service-account"
@@ -72,15 +72,51 @@ module "branch-network-sa-cicd" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.identity_providers[each.value.identity_provider].principalset_tpl,
+          local.identity_providers[each.value.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.name
         )
         : format(
-          local.identity_providers[each.value.identity_provider].principal_tpl,
+          local.identity_providers[each.value.identity_provider].principal_branch,
           var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch
+        )
+      ]
+    }
+  )
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/logging.logWriter"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+  }
+}
+
+# read-only (plan) SA used by CI/CD workflows to impersonate automation SA
+
+module "branch-network-r-sa-cicd" {
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    try(local.cicd_repositories.networking.name, null) != null
+    ? { 0 = local.cicd_repositories.networking }
+    : {}
+  )
+  project_id   = var.automation.project_id
+  name         = "prod-resman-net-1r"
+  display_name = "Terraform CI/CD stage 2 networking service account (read-only)."
+  prefix       = var.prefix
+  iam = (
+    each.value.type == "sourcerepo"
+    # build trigger for read-only SA is optionally defined by users
+    ? {}
+    # impersonated via workload identity federation for external repos
+    : {
+      "roles/iam.workloadIdentityUser" = [
+        format(
+          local.identity_providers[each.value.identity_provider].principal_repo,
+          var.automation.federated_identity_pool,
+          each.value.name
         )
       ]
     }

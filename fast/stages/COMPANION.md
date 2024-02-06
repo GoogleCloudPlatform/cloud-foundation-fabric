@@ -62,7 +62,7 @@ done
 
 7. Configure Billing Account permissions.
 
-If you are using a standalone billing account, the user applying this stage for the first time needs to be a Billing Administrator.
+If you are using a standalone or different organization billing account, the user applying this stage for the first time needs to be a Billing Administrator.
 
 ```bash
 # find your billing account id with gcloud beta billing accounts list
@@ -72,8 +72,6 @@ export FAST_BA_ID=XXXXXX-YYYYYY-ZZZZZZ
 gcloud beta billing accounts add-iam-policy-binding $FAST_BA_ID \
 --member user:$FAST_BU --role roles/billing.admin
 ```
-
-If you are using a billing account in a different organization, please follow [these steps](0-bootstrap#billing-account-in-a-different-organization) instead.
 
 ## Stage 0 (Bootstrap)
 
@@ -138,7 +136,7 @@ cd $FAST_PWD/1-resman
 # link providers and variables from previous stages
 ln -s ~/fast-config/providers/1-resman-providers.tf .
 ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json .
 
 # edit your terraform.tfvars to append Teams configuration (optional)
 edit terraform.tfvars
@@ -186,7 +184,7 @@ cd $FAST_PWD/2-networking-XXX
 ln -s ~/fast-config/providers/2-networking-providers.tf .
 ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json .
 
 # create terraform.tfvars. output_location variable is required to generate networking stage output file
 edit terraform.tfvars
@@ -217,7 +215,7 @@ cd $FAST_PWD/02-security
 ln -s ~/fast-config/providers/2-security-providers.tf .
 ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json .
 
 # edit terraform.tfvars to include KMS and/or VPC-SC configuration
 edit terraform.tfvars
@@ -243,7 +241,7 @@ ln -s ~/fast-config/providers/3-project-factory-ENVIRONMENT-providers.tf .
 ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json . 
 ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json .
 
 # define your environment default values (eg for billing alerts and labels)
 edit data/defaults.yaml

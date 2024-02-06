@@ -1,6 +1,6 @@
 # Serverless blueprints
 
-The blueprints in this folder show implement **end-to-end scenarios** for Serverless topologies that show how to automate common configurations or leverage specific products.
+The blueprints in this folder implement **end-to-end scenarios** for Serverless topologies that show how to automate common configurations or leverage specific products.
 
 They are meant to be used as minimal but complete starting points to create actual infrastructure, and as playgrounds to experiment with Google Cloud features.
 

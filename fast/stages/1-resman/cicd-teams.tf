@@ -71,12 +71,12 @@ module "branch-teams-team-sa-cicd" {
       "roles/iam.workloadIdentityUser" = [
         each.value.cicd.branch == null
         ? format(
-          local.identity_providers[each.value.cicd.identity_provider].principalset_tpl,
+          local.identity_providers[each.value.cicd.identity_provider].principal_repo,
           var.automation.federated_identity_pool,
           each.value.cicd.name
         )
         : format(
-          local.identity_providers[each.value.cicd.identity_provider].principal_tpl,
+          local.identity_providers[each.value.cicd.identity_provider].principal_branch,
           var.automation.federated_identity_pool,
           each.value.cicd.name,
           each.value.cicd.branch

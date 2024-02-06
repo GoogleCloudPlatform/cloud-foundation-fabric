@@ -1,0 +1,580 @@
+{
+  "displayName": "quotas_utilization",
+  "mosaicLayout": {
+    "columns": 12,
+    "tiles": [
+      {
+        "height": 4,
+        "widget": {
+          "title": "Internal L4 forwarding rules utilization",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/forwarding_rules_l4_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "1800s",
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Internal L7 forwarding rules utilization",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/forwarding_rules_l7_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "yPos": 12
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Instance utilization",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/instances_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "yPos": 8
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Peering utilization",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/peerings_total_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "xPos": 6,
+        "yPos": 4
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Active peering utilization",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/peerings_active_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "perSeriesAligner": "ALIGN_INTERPOLATE"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "yPos": 4
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Peering group internal L4 forwarding rules utilization",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/peering_group/forwarding_rules_l4_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "xPos": 6
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Peering group internal L7 forwarding rules utilization",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/peering_group/forwarding_rules_l7_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "xPos": 6,
+        "yPos": 12
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Peering group instance utilization",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/peering_group/instances_used_ratio\" resource.type=\"global\""
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "xPos": 6,
+        "yPos": 8
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Peering group dynamic route utilization",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/peering_group/routes_dynamic_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "yPos": 20
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Project firewall rules used ratio",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_SUM",
+                      "groupByFields": [
+                        "metric.label.\"project\""
+                      ],
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/project/firewall_rules_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "yPos": 28
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Firewall policy tuples used ratio",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/firewall_policy/tuples_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "xPos": 6,
+        "yPos": 24
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "IP addressed per subnetwork used ratio",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/subnetwork/addresses_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "yPos": 16
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Project static routes used",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_SUM",
+                      "groupByFields": [
+                        "metric.label.\"project\""
+                      ],
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/project/routes_static_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "xPos": 6,
+        "yPos": 20
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Peering group static routes used",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/peering_group/routes_static_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "yPos": 24
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "Addresses used ratio per psa range [NEXT OLDER]",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "3600s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "3600s",
+                      "perSeriesAligner": "ALIGN_NEXT_OLDER"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/netmon/network/psa/addresses_used_ratio\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s"
+                    }
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "xPos": 6,
+        "yPos": 16
+      }
+    ]
+  }
+}

@@ -41,6 +41,11 @@ module "dev-firewall" {
 
 ```yaml
 # tftest-file id=common path=firewall/common/common.yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 # allow ingress from GCLB to all instances in the network
 lb-health-checks:
   allow:
@@ -65,6 +70,11 @@ deny-all:
 
 ```yaml
 # tftest-file id=dev path=firewall/dev/app.yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 # Myapp egress
 web-app-dev-egress:
   allow:
@@ -89,6 +99,11 @@ web-app-dev-ingress:
 
 ```yaml
 # tftest-file id=prod path=firewall/prod/app.yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 # Myapp egress
 web-app-prod-egress:
   allow:
@@ -110,7 +125,6 @@ web-app-prod-ingress:
   target_service_accounts:
     - web-app-a@myproject-prod.iam.gserviceaccount.com
 ```
-
 
 ### Configuration Structure
 
@@ -140,6 +154,11 @@ web-app-prod-ingress:
 Firewall rules configuration should be placed in a set of yaml files in a folder/s. Firewall rule entry structure is following:
 
 ```yaml
+
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
+
 rule-name: # descriptive name, naming convention is adjusted by the module
   allow:  # `allow` or `deny`
   - ports: ['443', '80'] # ports for a specific protocol, keep empty list `[]` for all ports

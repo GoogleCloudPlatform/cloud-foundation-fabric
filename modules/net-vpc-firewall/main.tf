@@ -47,7 +47,7 @@ locals {
     if contains(["EGRESS", "INGRESS"], r.direction)
   }
   _named_ranges = merge(
-    try(yamldecode(file(var.factories_config.cidr_tpl_file)), {}),
+    can(var.factories_config.cidr_tpl_file) ? yamldecode(file(var.factories_config.cidr_tpl_file)) : {},
     var.named_ranges
   )
   _rules = merge(
@@ -97,7 +97,7 @@ resource "google_compute_firewall" "custom-rules" {
   source_ranges = (
     each.value.direction == "INGRESS"
     ? (
-      each.value.source_ranges == null
+      each.value.source_ranges == null && each.value.sources == null
       ? ["0.0.0.0/0"]
       : each.value.source_ranges
     )

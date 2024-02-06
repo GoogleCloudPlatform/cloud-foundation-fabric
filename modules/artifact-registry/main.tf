@@ -20,6 +20,7 @@ locals {
 }
 
 resource "google_artifact_registry_repository" "registry" {
+  provider      = google-beta
   project       = var.project_id
   location      = var.location
   description   = var.description
@@ -28,6 +29,35 @@ resource "google_artifact_registry_repository" "registry" {
   repository_id = var.name
   mode          = "${upper(local.mode_string)}_REPOSITORY"
   kms_key_name  = var.encryption_key
+
+  cleanup_policy_dry_run = var.cleanup_policy_dry_run
+  dynamic "cleanup_policies" {
+    for_each = var.cleanup_policies == null ? {} : var.cleanup_policies
+    content {
+      id     = cleanup_policies.key
+      action = cleanup_policies.value.action
+
+      dynamic "condition" {
+        for_each = (cleanup_policies.value.condition != null) ? [""] : []
+        content {
+          tag_state             = cleanup_policies.value.condition.tag_state
+          tag_prefixes          = cleanup_policies.value.condition.tag_prefixes
+          version_name_prefixes = cleanup_policies.value.condition.version_name_prefixes
+          package_name_prefixes = cleanup_policies.value.condition.package_name_prefixes
+          newer_than            = cleanup_policies.value.condition.newer_than
+          older_than            = cleanup_policies.value.condition.older_than
+        }
+      }
+
+      dynamic "most_recent_versions" {
+        for_each = (cleanup_policies.value.most_recent_versions != null) ? [""] : []
+        content {
+          package_name_prefixes = cleanup_policies.value.most_recent_versions.package_name_prefixes
+          keep_count            = cleanup_policies.value.most_recent_versions.keep_count
+        }
+      }
+    }
+  }
 
   dynamic "docker_config" {
     # TODO: open a bug on the provider for this permadiff

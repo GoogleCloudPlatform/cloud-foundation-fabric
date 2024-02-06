@@ -21,6 +21,7 @@ module "bucket" {
   location       = var.location
   name           = "data"
   encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
+  force_destroy  = !var.deletion_protection
 }
 
 module "dataset" {

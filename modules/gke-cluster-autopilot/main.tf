@@ -30,16 +30,18 @@ resource "google_container_cluster" "cluster" {
   enable_l4_ilb_subsetting = var.enable_features.l4_ilb_subsetting
   enable_tpu               = var.enable_features.tpu
   initial_node_count       = 1
-
-  enable_autopilot = true
-  allow_net_admin  = var.enable_features.allow_net_admin
+  enable_autopilot         = true
+  allow_net_admin          = var.enable_features.allow_net_admin
+  deletion_protection      = var.deletion_protection
 
   addons_config {
+    # HTTP Load Balancing is required to be enabled in Autopilot clusters
     http_load_balancing {
-      disabled = !var.enable_addons.http_load_balancing
+      disabled = false
     }
+    # Horizontal Pod Autoscaling is required to be enabled in Autopilot clusters
     horizontal_pod_autoscaling {
-      disabled = !var.enable_addons.horizontal_pod_autoscaling
+      disabled = false
     }
     cloudrun_config {
       disabled = !var.enable_addons.cloudrun
@@ -78,11 +80,9 @@ resource "google_container_cluster" "cluster" {
   }
 
   cluster_autoscaling {
-    dynamic "auto_provisioning_defaults" {
-      for_each = var.service_account != null ? [""] : []
-      content {
-        service_account = var.service_account
-      }
+    auto_provisioning_defaults {
+      boot_disk_kms_key = var.node_config.boot_disk_kms_key
+      service_account   = var.node_config.service_account
     }
   }
 
@@ -102,13 +102,25 @@ resource "google_container_cluster" "cluster" {
       cluster_dns_domain = var.enable_features.dns.domain
     }
   }
+  dynamic "enable_k8s_beta_apis" {
+    for_each = var.enable_features.beta_apis != null ? [""] : []
+    content {
+      enabled_apis = var.enable_features.beta_apis
+    }
+  }
+  dynamic "gateway_api_config" {
+    for_each = var.enable_features.gateway_api ? [""] : []
+    content {
+      channel = "CHANNEL_STANDARD"
+    }
+  }
 
   dynamic "ip_allocation_policy" {
     for_each = var.vpc_config.secondary_range_blocks != null ? [""] : []
     content {
       cluster_ipv4_cidr_block  = var.vpc_config.secondary_range_blocks.pods
       services_ipv4_cidr_block = var.vpc_config.secondary_range_blocks.services
-      stack_type               = try(var.vpc_config.stack_type, null)
+      stack_type               = var.vpc_config.stack_type
     }
   }
 
@@ -117,7 +129,7 @@ resource "google_container_cluster" "cluster" {
     content {
       cluster_secondary_range_name  = var.vpc_config.secondary_range_names.pods
       services_secondary_range_name = var.vpc_config.secondary_range_names.services
-      stack_type                    = try(var.vpc_config.stack_type, null)
+      stack_type                    = var.vpc_config.stack_type
     }
   }
 
@@ -129,13 +141,6 @@ resource "google_container_cluster" "cluster" {
       "SYSTEM_COMPONENTS",
       "WORKLOADS",
     ]))
-  }
-
-  dynamic "gateway_api_config" {
-    for_each = var.enable_features.gateway_api ? [""] : []
-    content {
-      channel = "CHANNEL_STANDARD"
-    }
   }
 
   maintenance_policy {
@@ -207,10 +212,17 @@ resource "google_container_cluster" "cluster" {
     enable_components = toset(compact([
       # System metrics collection cannot be disabled for Autopilot clusters.
       "SYSTEM_COMPONENTS",
-      # Control plane metrics.
+      # Control plane metrics:
       var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
       var.monitoring_config.enable_controller_manager_metrics ? "CONTROLLER_MANAGER" : null,
       var.monitoring_config.enable_scheduler_metrics ? "SCHEDULER" : null,
+      # Kube state metrics:
+      var.monitoring_config.enable_daemonset_metrics ? "DAEMONSET" : null,
+      var.monitoring_config.enable_deployment_metrics ? "DEPLOYMENT" : null,
+      var.monitoring_config.enable_hpa_metrics ? "HPA" : null,
+      var.monitoring_config.enable_pod_metrics ? "POD" : null,
+      var.monitoring_config.enable_statefulset_metrics ? "STATEFULSET" : null,
+      var.monitoring_config.enable_storage_metrics ? "STORAGE" : null,
     ]))
     managed_prometheus {
       enabled = var.monitoring_config.enable_managed_prometheus
@@ -227,6 +239,15 @@ resource "google_container_cluster" "cluster" {
           ? var.enable_features.upgrade_notifications.topic_id
           : google_pubsub_topic.notifications[0].id
         )
+      }
+    }
+  }
+
+  dynamic "node_pool_auto_config" {
+    for_each = var.node_config.tags != null ? [""] : []
+    content {
+      network_tags {
+        tags = toset(var.node_config.tags)
       }
     }
   }
@@ -272,6 +293,12 @@ resource "google_container_cluster" "cluster" {
       bigquery_destination {
         dataset_id = var.enable_features.resource_usage_export.dataset
       }
+    }
+  }
+  dynamic "service_external_ips_config" {
+    for_each = !var.enable_features.service_external_ips ? [""] : []
+    content {
+      enabled = var.enable_features.service_external_ips
     }
   }
 
@@ -323,11 +350,7 @@ resource "google_compute_network_peering_routes_config" "gke_master" {
   count = (
     try(var.private_cluster_config.peering_config, null) != null ? 1 : 0
   )
-  project = (
-    try(var.private_cluster_config.peering_config, null) == null
-    ? var.project_id
-    : var.private_cluster_config.peering_config.project_id
-  )
+  project = coalesce(var.private_cluster_config.peering_config.project_id, var.project_id)
   peering = try(
     google_container_cluster.cluster.private_cluster_config.0.peering_name,
     null

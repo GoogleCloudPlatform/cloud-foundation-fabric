@@ -22,15 +22,15 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 ## Organization (0 and 1)
 
 - [Bootstrap](0-bootstrap/README.md)  
-  Enables critical organization-level functionality that depends on broad permissions. It has two primary purposes. The first is to bootstrap the resources needed for automation of this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level, to avoid the need of broad permissions later on, and to implement a minimum of security features like sinks and exports from the start.\
+  Enables critical organization-level functionality that depends on broad permissions. It has two primary purposes. The first is to bootstrap the resources needed for automation of this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level to avoid the need of broad permissions later on, and to implement from the start critical auditing or security features like organization policies, sinks and exports.\
   Exports: automation variables, organization-level custom roles
 - [Resource Management](1-resman/README.md)  
-  Creates the base resource hierarchy (folders) and the automation resources required later to delegate deployment of each part of the hierarchy to separate stages. This stage also configures organization-level policies and any exceptions needed by different branches of the resource hierarchy.\
-  Exports: folder ids, automation service account emails
+  Creates the base resource hierarchy (folders) and the automation resources that will be required later to delegate deployment of each part of the hierarchy to separate stages. This stage also configures resource management tags used in scoping specific IAM roles on the resource hierarchy.\
+  Exports: folder ids, automation service account emails, tags
 
 ## Multitenancy
 
-Implemented via separate stages that configure separate FAST-enabled  hierarchies for each tenant, check the [multitenant stages folder](../stages-multitenant/).
+Implemented directly in stage 1 for lightweight tenants, and for complex tenancy via separate FAST-enabled  hierarchies for each tenant available in the [multitenant stages folder](../stages-multitenant/).
 
 ## Shared resources (2)
 

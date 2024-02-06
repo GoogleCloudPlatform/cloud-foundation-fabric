@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-variable "encryption_key" {
-  description = "Self link of the KMS keys in {LOCATION => KEY} format. A key must be provided for all replica locations."
-  type        = map(string)
-  default     = null
-}
 
 variable "iam" {
   description = "IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format."
@@ -38,9 +32,12 @@ variable "project_id" {
 }
 
 variable "secrets" {
-  description = "Map of secrets to manage and their locations. If locations is null, automatic management will be set."
-  type        = map(list(string))
-  default     = {}
+  description = "Map of secrets to manage, their locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
+  type = map(object({
+    locations = optional(list(string), null)
+    keys      = optional(map(string), null)
+  }))
+  default = {}
 }
 
 variable "versions" {

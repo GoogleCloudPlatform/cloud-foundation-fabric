@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,49 +36,91 @@ variable "billing_account" {
 }
 
 variable "composer_config" {
-  description = "Cloud Composer configuration options."
+  description = "Cloud Composer config."
   type = object({
     disable_deployment = optional(bool)
-    environment_size   = string
-    software_config = object({
-      airflow_config_overrides = optional(any)
-      pypi_packages            = optional(any)
-      env_variables            = optional(map(string))
-      image_version            = string
-    })
-    workloads_config = object({
-      scheduler = object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-          count      = number
-        }
-      )
-      web_server = object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-        }
-      )
-      worker = object(
-        {
-          cpu        = number
-          memory_gb  = number
-          storage_gb = number
-          min_count  = number
-          max_count  = number
-        }
-      )
-    })
+    environment_size   = optional(string, "ENVIRONMENT_SIZE_SMALL")
+    software_config = optional(
+      object({
+        airflow_config_overrides       = optional(any)
+        pypi_packages                  = optional(any)
+        env_variables                  = optional(map(string))
+        image_version                  = string
+        cloud_data_lineage_integration = optional(bool, true)
+      }),
+      { image_version = "composer-2-airflow-2" }
+    )
+    workloads_config = optional(
+      object({
+        scheduler = optional(
+          object({
+            cpu        = number
+            memory_gb  = number
+            storage_gb = number
+            count      = number
+          }),
+          {
+            cpu        = 0.5
+            memory_gb  = 1.875
+            storage_gb = 1
+            count      = 1
+          }
+        )
+        web_server = optional(
+          object({
+            cpu        = number
+            memory_gb  = number
+            storage_gb = number
+          }),
+          {
+            cpu        = 0.5
+            memory_gb  = 1.875
+            storage_gb = 1
+          }
+        )
+        worker = optional(
+          object({
+            cpu        = number
+            memory_gb  = number
+            storage_gb = number
+            min_count  = number
+            max_count  = number
+          }),
+          {
+            cpu        = 0.5
+            memory_gb  = 1.875
+            storage_gb = 1
+            min_count  = 1
+            max_count  = 3
+          }
+        )
+    }))
   })
   default = {
     environment_size = "ENVIRONMENT_SIZE_SMALL"
     software_config = {
       image_version = "composer-2-airflow-2"
     }
-    workloads_config = null
+    workloads_config = {
+      scheduler = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        count      = 1
+      }
+      web_server = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+      }
+      worker = {
+        cpu        = 0.5
+        memory_gb  = 1.875
+        storage_gb = 1
+        min_count  = 1
+        max_count  = 3
+      }
+    }
   }
 }
 
@@ -96,10 +138,11 @@ variable "data_catalog_tags" {
   }
 }
 
-variable "data_force_destroy" {
-  description = "Flag to set 'force_destroy' on data services like BigQery or Cloud Storage."
+variable "deletion_protection" {
+  description = "Prevent Terraform from destroying data storage resources (storage buckets, GKE clusters, CloudSQL instances) in this blueprint. When this field is set in Terraform state, a terraform destroy or terraform apply that would delete data storage resources will fail."
   type        = bool
-  default     = false
+  default     = true
+  nullable    = false
 }
 
 variable "folder_ids" {
@@ -110,8 +153,8 @@ variable "folder_ids" {
   })
 }
 
-variable "groups" {
-  description = "Groups."
+variable "groups_dp" {
+  description = "Data Platform groups."
   type        = map(string)
   default = {
     data-analysts  = "gcp-data-analysts"
@@ -176,6 +219,26 @@ variable "prefix" {
   }
 }
 
+variable "project_config" {
+  description = "Provide projects configuration."
+  type = object({
+    project_create = optional(bool, true)
+    project_ids = optional(object({
+      drop     = string
+      load     = string
+      orc      = string
+      trf      = string
+      dwh-lnd  = string
+      dwh-cur  = string
+      dwh-conf = string
+      common   = string
+      exp      = string
+      })
+    )
+  })
+  default = {}
+}
+
 variable "project_services" {
   description = "List of core services enabled on all projects."
   type        = list(string)
@@ -185,6 +248,12 @@ variable "project_services" {
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com"
   ]
+}
+
+variable "project_suffix" {
+  description = "Suffix used only for project ids."
+  type        = string
+  default     = null
 }
 
 variable "region" {

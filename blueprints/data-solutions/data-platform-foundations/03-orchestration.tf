@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,16 +21,23 @@ locals {
       "roles/bigquery.dataEditor",
       "roles/bigquery.jobUser",
       "roles/cloudbuild.builds.editor",
+      "roles/composer.admin",
+      "roles/composer.user",
       "roles/composer.environmentAndStorageObjectAdmin",
       "roles/iam.serviceAccountUser",
       "roles/iap.httpsResourceAccessor",
-      "roles/serviceusage.serviceUsageConsumer"
+      "roles/serviceusage.serviceUsageConsumer",
+      "roles/storage.objectAdmin"
     ]
     robots_cloudbuild = [
       "roles/storage.objectAdmin"
     ]
     robots_composer = [
       "roles/composer.ServiceAgentV2Ext",
+      "roles/storage.objectAdmin"
+    ]
+    sa_df_build = [
+      "roles/cloudbuild.serviceAgent",
       "roles/storage.objectAdmin"
     ]
     sa_load = [
@@ -54,7 +61,7 @@ module "orch-project" {
   source          = "../../../modules/project"
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
-  project_create  = var.project_config.billing_account_id != null
+  project_create  = var.project_config.project_create
   prefix          = local.use_projects ? null : var.prefix
   name = (
     local.use_projects
@@ -63,9 +70,7 @@ module "orch-project" {
   )
   iam                   = local.use_projects ? {} : local.orch_iam_auth
   iam_bindings_additive = !local.use_projects ? {} : local.orch_iam_additive
-  compute_metadata = {
-    enable-oslogin = "false"
-  }
+
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",
@@ -79,6 +84,7 @@ module "orch-project" {
     "containerregistry.googleapis.com",
     "artifactregistry.googleapis.com",
     "dataflow.googleapis.com",
+    "datalineage.googleapis.com",
     "orgpolicy.googleapis.com",
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
@@ -103,6 +109,7 @@ module "orch-cs-0" {
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
+  force_destroy  = !var.deletion_protection
 }
 
 module "orch-vpc" {
@@ -155,9 +162,10 @@ module "orch-cs-df-template" {
   project_id     = module.orch-project.project_id
   prefix         = var.prefix
   name           = "orc-cs-df-template"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
+  force_destroy  = !var.deletion_protection
 }
 
 module "orch-cs-build-staging" {
@@ -165,9 +173,10 @@ module "orch-cs-build-staging" {
   project_id     = module.orch-project.project_id
   prefix         = var.prefix
   name           = "orc-cs-build-staging"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
+  force_destroy  = !var.deletion_protection
 }
 
 module "orch-sa-df-build" {

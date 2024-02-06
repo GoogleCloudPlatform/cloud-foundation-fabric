@@ -16,14 +16,14 @@ values:
   module.pubsub.google_pubsub_topic.default:
     name: my-topic
     project: my-project
-  module.pubsub.google_pubsub_topic_iam_binding.default["roles/pubsub.subscriber"]:
+  module.pubsub.google_pubsub_topic_iam_binding.authoritative["roles/pubsub.subscriber"]:
     condition: []
     members:
     - user:user1@example.com
     project: my-project
     role: roles/pubsub.subscriber
     topic: my-topic
-  module.pubsub.google_pubsub_topic_iam_binding.default["roles/pubsub.viewer"]:
+  module.pubsub.google_pubsub_topic_iam_binding.authoritative["roles/pubsub.viewer"]:
     condition: []
     members:
     - group:foo@example.com

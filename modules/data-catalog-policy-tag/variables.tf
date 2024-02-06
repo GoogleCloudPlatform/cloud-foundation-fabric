@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,10 @@ variable "iam" {
 }
 
 variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {ROLE => {members = [], condition = {}}}."
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
   type = map(object({
     members = list(string)
+    role    = string
     condition = optional(object({
       expression  = string
       title       = string
@@ -90,6 +91,7 @@ variable "prefix" {
 
 variable "project_id" {
   description = "GCP project id."
+  type        = string
 }
 
 variable "tags" {

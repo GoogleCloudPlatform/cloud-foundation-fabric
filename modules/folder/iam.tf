@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description IAM bindings, roles and audit logging resources.
+# tfdoc:file:description IAM bindings.
 
 locals {
   _group_iam_roles = distinct(flatten(values(var.group_iam)))
@@ -42,7 +42,7 @@ resource "google_folder_iam_binding" "authoritative" {
 resource "google_folder_iam_binding" "bindings" {
   for_each = var.iam_bindings
   folder   = local.folder.name
-  role     = each.key
+  role     = each.value.role
   members  = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]

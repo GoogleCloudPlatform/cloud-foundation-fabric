@@ -34,8 +34,7 @@ locals {
       authoritative = []
       additive = (
         local.billing_mode != "org" ? [] : [
-          "roles/billing.admin",
-          "roles/billing.costsManager"
+          "roles/billing.admin"
         ]
       )
     }
@@ -59,14 +58,14 @@ locals {
         "roles/resourcemanager.folderAdmin",
         "roles/resourcemanager.organizationAdmin",
         "roles/resourcemanager.projectCreator",
+        "roles/resourcemanager.tagAdmin"
       ]
       additive = concat(
         [
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
-          "roles/billing.admin",
-          "roles/billing.costsManager"
+          "roles/billing.admin"
         ]
       )
     }
@@ -102,6 +101,7 @@ locals {
         "roles/resourcemanager.organizationAdmin",
         "roles/resourcemanager.projectCreator",
         "roles/resourcemanager.projectMover",
+        "roles/resourcemanager.tagAdmin"
       ]
       additive = concat(
         [
@@ -109,8 +109,24 @@ locals {
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
-          "roles/billing.admin",
-          "roles/billing.costsManager"
+          "roles/billing.admin"
+        ]
+      )
+    }
+    (module.automation-tf-bootstrap-r-sa.iam_email) = {
+      authoritative = [
+        "roles/logging.viewer",
+        "roles/resourcemanager.folderViewer",
+        "roles/resourcemanager.tagViewer"
+      ]
+      additive = concat(
+        [
+          # the organizationAdminViewer custom role is granted via the SA module
+          "roles/iam.organizationRoleViewer",
+          "roles/orgpolicy.policyViewer"
+        ],
+        local.billing_mode != "org" ? [] : [
+          "roles/billing.viewer"
         ]
       )
     }
@@ -127,8 +143,24 @@ locals {
           "roles/orgpolicy.policyAdmin"
         ],
         local.billing_mode != "org" ? [] : [
-          "roles/billing.admin",
-          "roles/billing.costsManager"
+          "roles/billing.admin"
+        ]
+      )
+    }
+    (module.automation-tf-resman-r-sa.iam_email) = {
+      authoritative = [
+        "roles/logging.viewer",
+        "roles/resourcemanager.folderViewer",
+        "roles/resourcemanager.tagViewer",
+        "roles/serviceusage.serviceUsageViewer"
+      ]
+      additive = concat(
+        [
+          # the organizationAdminViewer custom role is granted via the SA module
+          "roles/orgpolicy.policyViewer"
+        ],
+        local.billing_mode != "org" ? [] : [
+          "roles/billing.viewer"
         ]
       )
     }
@@ -140,12 +172,13 @@ locals {
         "roles/logging.admin",
         "roles/owner",
         "roles/resourcemanager.organizationAdmin",
-        "roles/resourcemanager.projectCreator"
+        "roles/resourcemanager.projectCreator",
+        "roles/resourcemanager.tagAdmin"
       ]
+      # TODO: align additive roles with the README
       additive = (
         local.billing_mode != "org" ? [] : [
-          "roles/billing.admin",
-          "roles/billing.costsManager"
+          "roles/billing.admin"
         ]
       )
     }

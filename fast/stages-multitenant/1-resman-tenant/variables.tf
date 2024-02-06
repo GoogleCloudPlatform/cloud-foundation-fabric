@@ -30,8 +30,8 @@ variable "automation" {
       issuer           = string
       issuer_uri       = string
       name             = string
-      principal_tpl    = string
-      principalset_tpl = string
+      principal_branch = string
+      principal_repo   = string
     }))
     service_accounts = object({
       networking = string
@@ -157,6 +157,15 @@ variable "data_dir" {
   default     = "data"
 }
 
+variable "factories_config" {
+  description = "Configuration for the organization policies factory."
+  type = object({
+    org_policy = optional(string, "data/org-policies")
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "fast_features" {
   # tfdoc:variable:source 0-0-bootstrap
   description = "Selective control for top-level FAST features."
@@ -210,12 +219,6 @@ variable "organization" {
     id          = number
     customer_id = string
   })
-}
-
-variable "organization_policy_data_path" {
-  description = "Path for the data folder used by the organization policies factory."
-  type        = string
-  default     = null
 }
 
 variable "outputs_location" {

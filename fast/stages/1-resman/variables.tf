@@ -30,9 +30,12 @@ variable "automation" {
       issuer           = string
       issuer_uri       = string
       name             = string
-      principal_tpl    = string
-      principalset_tpl = string
+      principal_branch = string
+      principal_repo   = string
     }))
+    service_accounts = object({
+      resman-r = string
+    })
   })
 }
 
@@ -51,52 +54,52 @@ variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `automation.federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     data_platform_dev = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     data_platform_prod = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     gke_dev = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     gke_prod = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     networking = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     project_factory_dev = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     project_factory_prod = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
     security = optional(object({
-      branch            = string
-      identity_provider = string
       name              = string
       type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
     }))
   })
   default = null
@@ -134,14 +137,18 @@ variable "custom_roles" {
   description = "Custom roles defined at the org level, in key => id format."
   type = object({
     service_project_network_admin = string
+    storage_viewer                = string
   })
   default = null
 }
 
-variable "data_dir" {
-  description = "Relative path for the folder storing configuration data."
-  type        = string
-  default     = "data"
+variable "factories_config" {
+  description = "Configuration for the resource factories or external data."
+  type = object({
+    checklist_data = optional(string)
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "fast_features" {
@@ -163,9 +170,11 @@ variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
   type = object({
-    gcp-devops          = optional(string)
-    gcp-network-admins  = optional(string)
-    gcp-security-admins = optional(string)
+    gcp-billing-admins      = optional(string)
+    gcp-devops              = optional(string)
+    gcp-network-admins      = optional(string)
+    gcp-organization-admins = optional(string)
+    gcp-security-admins     = optional(string)
   })
   default  = {}
   nullable = false
@@ -189,6 +198,18 @@ variable "locations" {
   nullable = false
 }
 
+variable "org_policy_tags" {
+  # tfdoc:variable:source 0-bootstrap
+  description = "Resource management tags for organization policy exceptions."
+  type = object({
+    key_id   = optional(string)
+    key_name = optional(string)
+    values   = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "organization" {
   # tfdoc:variable:source 0-bootstrap
   description = "Organization details."
@@ -197,14 +218,6 @@ variable "organization" {
     id          = number
     customer_id = string
   })
-}
-
-variable "organization_policy_configs" {
-  description = "Organization policies customization."
-  type = object({
-    allowed_policy_member_domains = list(string)
-  })
-  default = null
 }
 
 variable "outputs_location" {
@@ -227,17 +240,11 @@ variable "prefix" {
 variable "tag_names" {
   description = "Customized names for resource management tags."
   type = object({
-    context      = string
-    environment  = string
-    org-policies = string
-    tenant       = string
+    context     = optional(string, "context")
+    environment = optional(string, "environment")
+    tenant      = optional(string, "tenant")
   })
-  default = {
-    context      = "context"
-    environment  = "environment"
-    org-policies = "org-policies"
-    tenant       = "tenant"
-  }
+  default  = {}
   nullable = false
   validation {
     condition     = alltrue([for k, v in var.tag_names : v != null])

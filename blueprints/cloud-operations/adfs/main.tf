@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,7 +79,9 @@ module "server" {
       -Force
     EOT
   }
-  service_account_create = true
+  service_account = {
+    auto_create = true
+  }
   boot_disk = {
     initialize_params = {
       image = var.image

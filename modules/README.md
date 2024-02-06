@@ -21,7 +21,7 @@ These modules are used in the examples included in this repository. If you are u
 
     ```terraform
     module "project" {
-        source              = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v13.0.0"
+        source              = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v13.0.0&depth=1"
         name                = "my-project"
         billing_account     = "123456-123456-123456"
         parent              = "organizations/123456"
@@ -30,14 +30,14 @@ These modules are used in the examples included in this repository. If you are u
 
 ## Foundational modules
 
-- [billing budget](./billing-budget)
+- [Billing account](./billing-account)
 - [Cloud Identity group](./cloud-identity-group/)
-- [folder](./folder)
-- [service accounts](./iam-service-account)
-- [logging bucket](./logging-bucket)
-- [organization](./organization)
-- [project](./project)
-- [projects-data-source](./projects-data-source)
+- [Folder](./folder)
+- [Service accounts](./iam-service-account)
+- [Logging bucket](./logging-bucket)
+- [Organization](./organization)
+- [Project](./project)
+- [Projects (data source)](./projects-data-source)
 
 ## Networking modules
 
@@ -48,10 +48,11 @@ These modules are used in the examples included in this repository. If you are u
 - [Firewall policy](./net-firewall-policy)
 - [External Application Load Balancer](./net-lb-app-ext/)
 - [External Passthrough Network Load Balancer](./net-lb-ext)
+- [External Regional Application Load Balancer](./net-lb-app-ext-regional/)
 - [Internal Application Load Balancer](./net-lb-app-int)
+- [Cross-region Internal Application Load Balancer](./net-lb-app-int-cross-region)
 - [Internal Passthrough Network Load Balancer](./net-lb-int)
 - [Internal Proxy Network Load Balancer](./net-lb-proxy-int)
-- [Internal ]
 - [NAT](./net-cloudnat)
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)
@@ -74,7 +75,6 @@ These modules are used in the examples included in this repository. If you are u
 
 ## Data
 
-- [AlloyDB instance](./alloydb-instance)
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
 - [Dataplex](./dataplex)
@@ -93,6 +93,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Artifact Registry](./artifact-registry)
 - [Container Registry](./container-registry)
 - [Cloud Source Repository](./source-repository)
+- [Workstation cluster](./workstation-cluster)
 
 ## Security
 
@@ -107,3 +108,4 @@ These modules are used in the examples included in this repository. If you are u
 - [Cloud Functions v1](./cloud-function-v1)
 - [Cloud Functions v2](./cloud-function-v2)
 - [Cloud Run](./cloud-run)
+- [Cloud Run v2](./cloud-run-v2)

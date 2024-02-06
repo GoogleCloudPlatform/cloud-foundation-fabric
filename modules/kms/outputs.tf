@@ -23,6 +23,15 @@ output "id" {
   ]
 }
 
+output "import_job" {
+  description = "Keyring import job resources."
+  value       = google_kms_key_ring_import_job.default
+  depends_on = [
+    google_kms_key_ring_iam_binding.authoritative,
+    google_kms_key_ring_iam_binding.bindings
+  ]
+}
+
 output "key_ids" {
   description = "Fully qualified key ids."
   value = {

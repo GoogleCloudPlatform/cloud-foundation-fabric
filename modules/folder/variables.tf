@@ -21,6 +21,15 @@ variable "contacts" {
   nullable    = false
 }
 
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    org_policies = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "firewall_policy" {
   description = "Hierarchical firewall policy to associate to this folder."
   type = object({
@@ -51,9 +60,10 @@ variable "iam" {
 }
 
 variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {ROLE => {members = [], condition = {}}}."
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
   type = map(object({
     members = list(string)
+    role    = string
     condition = optional(object({
       expression  = string
       title       = string
@@ -108,7 +118,7 @@ variable "logging_exclusions" {
 }
 
 variable "logging_sinks" {
-  description = "Logging sinks to create for the organization."
+  description = "Logging sinks to create for the folder."
   type = map(object({
     bq_partitioned_table = optional(bool)
     description          = optional(string)
@@ -116,6 +126,7 @@ variable "logging_sinks" {
     disabled             = optional(bool, false)
     exclusions           = optional(map(string), {})
     filter               = string
+    iam                  = optional(bool, true)
     include_children     = optional(bool, true)
     type                 = string
   }))
@@ -168,12 +179,6 @@ variable "org_policies" {
   }))
   default  = {}
   nullable = false
-}
-
-variable "org_policies_data_path" {
-  description = "Path containing org policies in YAML format."
-  type        = string
-  default     = null
 }
 
 variable "parent" {

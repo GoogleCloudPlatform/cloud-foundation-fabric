@@ -33,13 +33,6 @@ variable "credentials_config" {
   }
 }
 
-# variable "image" {
-#   description = "Container image to use."
-#   type        = string
-#   nullable    = false
-#   default     = "redis:6.2"
-# }
-
 variable "namespace" {
   description = "Namespace used for Redis cluster resources."
   type        = string
@@ -47,23 +40,28 @@ variable "namespace" {
   default     = "kafka"
 }
 
-# variable "statefulset_config" {
-#   description = "Configure Redis cluster statefulset parameters."
-#   type = object({
-#     replicas = optional(number, 6)
-#     resource_requests = optional(object({
-#       cpu    = optional(string, "1")
-#       memory = optional(string, "1Gi")
-#     }), {})
-#     volume_claim_size = optional(string, "10Gi")
-#   })
-#   nullable = false
-#   default  = {}
-#   validation {
-#     condition     = var.statefulset_config.replicas >= 6
-#     error_message = "The minimum number of Redis cluster replicas is 6."
-#   }
-# }
+variable "kafka_config" {
+  description = "Configure Kafka cluster statefulset parameters."
+  type = object({
+    replicas          = optional(number, 3)
+    volume_claim_size = optional(string, "10Gi")
+    version           = optional(string, "3.4.0")
+    jvm_memory        = optional(string, "4096m")
+  })
+  nullable = false
+  default  = {}
+}
+
+variable "zookeeper_config" {
+  description = "Configure Kafka cluster statefulset parameters."
+  type = object({
+    replicas          = optional(number, 3)
+    volume_claim_size = optional(string, "10Gi")
+    jvm_memory        = optional(string, "2048m")
+  })
+  nullable = false
+  default  = {}
+}
 
 variable "templates_path" {
   description = "Path where manifest templates will be read from. Set to null to use the default manifests"

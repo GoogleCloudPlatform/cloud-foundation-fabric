@@ -19,15 +19,32 @@ variable "external_addresses" {
   type = map(object({
     region      = string
     description = optional(string, "Terraform managed.")
-    labels      = optional(map(string), {})
+    ipv6 = optional(object({
+      endpoint_type = string
+    }))
+    labels     = optional(map(string), {})
+    name       = optional(string)
+    subnetwork = optional(string) # for IPv6
+    tier       = optional(string)
   }))
   default = {}
+  validation {
+    condition = (
+      try(var.external_addresses.ipv6, null) == null
+      || can(regex("^(NETLB|VM)$", try(var.external_addresses.ipv6.endpoint_type, null)))
+    )
+    error_message = "IPv6 endpoint type must be NETLB, VM."
+  }
 }
 
 variable "global_addresses" {
   description = "List of global addresses to create."
-  type        = list(string)
-  default     = []
+  type = map(object({
+    description = optional(string, "Terraform managed.")
+    ipv6        = optional(map(string)) # To be left empty for ipv6
+    name        = optional(string)
+  }))
+  default = {}
 }
 
 variable "internal_addresses" {
@@ -37,9 +54,10 @@ variable "internal_addresses" {
     subnetwork  = string
     address     = optional(string)
     description = optional(string, "Terraform managed.")
+    ipv6        = optional(map(string)) # To be left empty for ipv6
     labels      = optional(map(string))
+    name        = optional(string)
     purpose     = optional(string)
-    tier        = optional(string)
   }))
   default = {}
 }
@@ -51,6 +69,7 @@ variable "ipsec_interconnect_addresses" {
     address       = string
     network       = string
     description   = optional(string, "Terraform managed.")
+    name          = optional(string)
     prefix_length = number
   }))
   default = {}
@@ -72,8 +91,10 @@ variable "psa_addresses" {
   type = map(object({
     address       = string
     network       = string
-    description   = optional(string, "Terraform managed.")
     prefix_length = number
+    description   = optional(string, "Terraform managed.")
+    name          = optional(string)
+
   }))
   default = {}
 }
@@ -84,6 +105,7 @@ variable "psc_addresses" {
     address     = string
     network     = string
     description = optional(string, "Terraform managed.")
+    name        = optional(string)
   }))
   default = {}
 }

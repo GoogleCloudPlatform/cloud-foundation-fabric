@@ -45,10 +45,24 @@ locals {
       }
     ]
   ])
-  group_iam = {
+  drs_domains = concat(
+    [var.organization.customer_id],
+    var.org_policies_config.constraints.allowed_policy_member_domains
+  )
+  drs_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
+  fast_custom_roles = [
+    "organization_admin_viewer",
+    "organization_iam_admin",
+    "service_project_network_admin",
+    "storage_viewer",
+    "tag_viewer",
+    "tenant_network_admin",
+  ]
+  # intermediate values before we merge in what comes from the checklist
+  _group_iam = {
     for k, v in local.iam_group_bindings : k => v.authoritative
   }
-  iam = merge(
+  _iam = merge(
     {
       for r in local.iam_delete_roles : r => []
     },
@@ -56,13 +70,43 @@ locals {
       for b in local._iam_bindings_auth : b.role => b.member...
     }
   )
-  iam_bindings_additive = {
+  _iam_bindings_additive = {
     for b in local._iam_bindings_add : "${b.role}-${b.member}" => {
       member = b.member
       role   = b.role
     }
   }
+  # final values combining all sources
+  group_iam = {
+    for k, v in local._group_iam : k => distinct(concat(
+      v,
+      try(local.checklist.group_iam[k], [])
+    ))
+  }
+  iam = {
+    for k, v in local._iam : k => distinct(concat(
+      v,
+      try(local.checklist.iam[k].authoritative, [])
+    ))
+  }
+  iam_bindings_additive = merge(
+    local._iam_bindings_additive,
+    {
+      for k, v in try(local.checklist.iam_bindings, {}) :
+      v.key => v if lookup(local._iam_bindings_additive, v.key, null) == null
+    }
+  )
+  # compute authoritative and additive roles for use by add-ons (checklist, etc.)
+  iam_roles_authoritative = distinct(concat(
+    flatten(values(local._group_iam)),
+    keys(local._iam)
+  ))
+  iam_roles_additive = distinct([
+    for k, v in local._iam_bindings_additive : v.role
+  ])
 }
+
+# TODO: add a check block to ensure our custom roles exist in the factory files
 
 module "organization" {
   source          = "../../../modules/organization"
@@ -88,8 +132,9 @@ module "organization" {
   )
   # delegated role grant for resource manager service account
   iam_bindings = {
-    (module.organization.custom_role_id[var.custom_role_names.organization_iam_admin]) = {
+    organization_iam_admin_conditional = {
       members = [module.automation-tf-resman-sa.iam_email]
+      role    = module.organization.custom_role_id["organization_iam_admin"]
       condition = {
         expression = format(
           "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
@@ -100,7 +145,7 @@ module "organization" {
               "roles/compute.xpnAdmin",
               "roles/orgpolicy.policyAdmin",
               "roles/resourcemanager.organizationViewer",
-              module.organization.custom_role_id[var.custom_role_names.tenant_network_admin]
+              module.organization.custom_role_id["tenant_network_admin"]
             ],
             local.billing_mode == "org" ? [
               "roles/billing.admin",
@@ -114,40 +159,56 @@ module "organization" {
       }
     }
   }
-  custom_roles = merge(var.custom_roles, {
-    # this is needed for use in additive IAM bindings, to avoid conflicts
-    (var.custom_role_names.organization_iam_admin) = [
-      "resourcemanager.organizations.get",
-      "resourcemanager.organizations.getIamPolicy",
-      "resourcemanager.organizations.setIamPolicy"
-    ]
-    (var.custom_role_names.service_project_network_admin) = [
-      "compute.globalOperations.get",
-      # compute.networks.updatePeering and compute.networks.get are
-      # used by automation service accounts who manage service
-      # projects where peering creation might be needed (e.g. GKE). If
-      # you remove them your network administrators should create
-      # peerings for service projects
-      "compute.networks.updatePeering",
-      "compute.networks.get",
-      "compute.organizations.disableXpnResource",
-      "compute.organizations.enableXpnResource",
-      "compute.projects.get",
-      "compute.subnetworks.getIamPolicy",
-      "compute.subnetworks.setIamPolicy",
-      "dns.networks.bindPrivateDNSZone",
-      "resourcemanager.projects.get",
-    ]
-    (var.custom_role_names.tenant_network_admin) = [
-      "compute.globalOperations.get",
-    ]
-  })
+  custom_roles = var.custom_roles
+  factories_config = {
+    custom_roles = var.factories_config.custom_roles
+    org_policies = (
+      var.bootstrap_user != null ? null : var.factories_config.org_policy
+    )
+  }
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
       destination          = local.log_sink_destinations[name].id
       filter               = attrs.filter
       type                 = attrs.type
+    }
+  }
+  org_policies = var.bootstrap_user != null ? {} : {
+    "iam.allowedPolicyMemberDomains" = {
+      rules = [
+        {
+          allow = { values = local.drs_domains }
+          condition = {
+            expression = (
+              "!resource.matchTag('${local.drs_tag_name}', 'allowed-policy-member-domains-all')"
+            )
+          }
+        },
+        {
+          allow = { all = true }
+          condition = {
+            expression = (
+              "resource.matchTag('${local.drs_tag_name}', 'allowed-policy-member-domains-all')"
+            )
+            title = "allow-all"
+          }
+        },
+      ]
+    }
+    # "gcp.resourceLocations" = {}
+    # "iam.workloadIdentityPoolProviders" = {}
+  }
+  tags = {
+    (var.org_policies_config.tag_name) = {
+      description = "Organization policy conditions."
+      iam         = {}
+      values = merge(
+        {
+          allowed-policy-member-domains-all = {}
+        },
+        var.org_policies_config.tag_values
+      )
     }
   }
 }

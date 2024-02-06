@@ -15,13 +15,16 @@
 module: modules/apigee
 
 tests:
-  all:
+  all_psc_mode:
+  all_vpc_mode:
   endpoint_attachment_only:
   env_only:
   env_only_with_api_proxy_type:
   env_only_with_deployment_type:
   envgroup_only:
-  instance_only:
+  instance_only_psc_mode:
+  instance_only_vpc_mode:
   no_instances:
-  organization_only:
+  organization_only_psc_mode:
+  organization_only_vpc_mode:
   organization_retention:

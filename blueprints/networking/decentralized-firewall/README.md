@@ -51,5 +51,5 @@ module "test" {
   root_node          = "organizations/0123456789"
 }
 
-# tftest modules=9 resources=56
+# tftest modules=9 resources=54
 ```

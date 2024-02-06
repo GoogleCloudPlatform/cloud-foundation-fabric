@@ -26,6 +26,7 @@ variable "bucket_config" {
 variable "bucket_name" {
   description = "Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null."
   type        = string
+  nullable    = false
 }
 
 variable "build_worker_pool" {
@@ -47,6 +48,12 @@ variable "description" {
   description = "Optional description."
   type        = string
   default     = "Terraform managed."
+}
+
+variable "docker_repository_id" {
+  description = "User managed repository created in Artifact Registry."
+  type        = string
+  default     = null
 }
 
 variable "environment_variables" {
@@ -179,5 +186,3 @@ variable "vpc_connector_config" {
   })
   default = null
 }
-
-

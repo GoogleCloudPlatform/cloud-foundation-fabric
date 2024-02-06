@@ -44,7 +44,7 @@ resource "google_dataplex_datascan_iam_binding" "bindings" {
   project      = google_dataplex_datascan.datascan.project
   location     = google_dataplex_datascan.datascan.location
   data_scan_id = google_dataplex_datascan.datascan.data_scan_id
-  role         = each.key
+  role         = each.value.role
   members      = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]

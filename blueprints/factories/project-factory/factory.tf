@@ -16,23 +16,21 @@
 
 locals {
   _data = (
-    var.factory_data.data != null
-    ? var.factory_data.data
-    : {
-      for f in fileset("${local._data_path}", "**/*.yaml") :
+    {
+      for f in fileset(local._data_path, "**/*.yaml") :
       trimsuffix(f, ".yaml") => yamldecode(file("${local._data_path}/${f}"))
     }
   )
-  _data_path = var.factory_data.data_path == null ? null : pathexpand(
-    var.factory_data.data_path
+  _data_path = var.factory_data_path == null ? null : pathexpand(
+    var.factory_data_path
   )
   projects = {
     for k, v in local._data : k => merge(v, {
-      billing_account = coalesce(
+      billing_account = try(coalesce(
         var.data_overrides.billing_account,
         try(v.billing_account, null),
         var.data_defaults.billing_account
-      )
+      ), null)
       contacts = coalesce(
         var.data_overrides.contacts,
         try(v.contacts, null),
@@ -45,6 +43,12 @@ locals {
       metric_scopes = coalesce(
         try(v.metric_scopes, null),
         var.data_defaults.metric_scopes
+      )
+      org_policies = try(v.org_policies, {})
+      parent = coalesce(
+        var.data_overrides.parent,
+        try(v.parent, null),
+        var.data_defaults.parent
       )
       prefix = coalesce(
         var.data_overrides.prefix,
@@ -71,9 +75,19 @@ locals {
         try(v.services, null),
         var.data_defaults.services
       )
-      shared_vpc_service_config = coalesce(
-        try(v.shared_vpc_service_config, null),
-        var.data_defaults.shared_vpc_service_config
+      shared_vpc_service_config = (
+        try(v.shared_vpc_service_config, null) != null
+        ? merge(
+          {
+            network_users               = []
+            service_identity_iam        = {}
+            service_identity_subnet_iam = {}
+            service_iam_grants          = []
+            network_subnet_users        = {}
+          },
+          v.shared_vpc_service_config
+        )
+        : var.data_defaults.shared_vpc_service_config
       )
       tag_bindings = coalesce(
         var.data_overrides.tag_bindings,
@@ -91,9 +105,10 @@ locals {
   service_accounts = flatten([
     for k, v in local.projects : [
       for name, opts in v.service_accounts : {
-        project = k
-        name    = name
-        options = opts
+        project           = k
+        name              = name
+        display_name      = try(opts.display_name, "Terraform-managed.")
+        iam_project_roles = try(opts.iam_project_roles, null)
       }
     ]
   ])

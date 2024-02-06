@@ -29,27 +29,17 @@ variable "billing_account" {
   }
 }
 
-variable "factory_data" {
-  description = "Project data from either YAML files or externally parsed data."
-  type = object({
-    data      = optional(map(any))
-    data_path = optional(string)
-  })
-  nullable = false
-  validation {
-    condition = (
-      (var.factory_data.data != null ? 1 : 0) +
-      (var.factory_data.data_path != null ? 1 : 0)
-    ) == 1
-    error_message = "One of data or data_path needs to be set."
-  }
+variable "factory_data_path" {
+  description = "Path to folder containing YAML project data files."
+  type        = string
+  nullable    = false
+  default     = "data/projects"
 }
 
 variable "prefix" {
   # tfdoc:variable:source 0-bootstrap
   description = "Prefix used for resources that need unique names. Use 9 characters or less."
   type        = string
-
   validation {
     condition     = try(length(var.prefix), 0) < 10
     error_message = "Use a maximum of 9 characters for prefix."

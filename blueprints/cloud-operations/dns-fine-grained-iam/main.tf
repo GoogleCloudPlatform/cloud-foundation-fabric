@@ -110,9 +110,11 @@ module "vm-ns-editor" {
     nat        = false
     addresses  = null
   }]
-  metadata               = { startup-script = local.startup-script }
-  service_account_create = true
-  tags                   = ["ssh"]
+  metadata = { startup-script = local.startup-script }
+  service_account = {
+    auto_create = true
+  }
+  tags = ["ssh"]
 }
 
 module "vm-svc-editor" {
@@ -126,7 +128,9 @@ module "vm-svc-editor" {
     nat        = false
     addresses  = null
   }]
-  metadata               = { startup-script = local.startup-script }
-  service_account_create = true
-  tags                   = ["ssh"]
+  metadata = { startup-script = local.startup-script }
+  service_account = {
+    auto_create = true
+  }
+  tags = ["ssh"]
 }

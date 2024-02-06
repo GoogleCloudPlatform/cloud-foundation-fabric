@@ -46,7 +46,7 @@ resource "google_dataproc_cluster_iam_binding" "bindings" {
   project  = var.project_id
   cluster  = google_dataproc_cluster.cluster.name
   region   = var.region
-  role     = each.key
+  role     = each.value.role
   members  = each.value.members
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]

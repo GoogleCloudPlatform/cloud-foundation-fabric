@@ -59,18 +59,7 @@ module "branch-sandbox-sa" {
   name         = "dev-resman-sbox-0"
   display_name = "Terraform resman sandbox service account."
   prefix       = var.prefix
-}
-
-resource "google_organization_iam_member" "org_policy_admin_sandbox" {
-  count  = var.fast_features.sandbox ? 1 : 0
-  org_id = var.organization.id
-  role   = "roles/orgpolicy.policyAdmin"
-  member = module.branch-sandbox-sa.0.iam_email
-  condition {
-    title       = "org_policy_tag_sandbox_scoped"
-    description = "Org policy tag scoped grant for sandbox."
-    expression  = <<-END
-    resource.matchTag('${var.organization.id}/${var.tag_names.context}', 'sandbox')
-    END
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,4 +22,9 @@ output "composer_airflow_uri" {
 output "composer_dag_gcs" {
   description = "The Cloud Storage prefix of the DAGs for the Cloud Composer environment."
   value       = google_composer_environment.env.config[0].dag_gcs_prefix
+}
+
+output "composer_service_account" {
+  description = "Cloud Composer nodes Service Account email."
+  value       = module.comp-sa.email
 }

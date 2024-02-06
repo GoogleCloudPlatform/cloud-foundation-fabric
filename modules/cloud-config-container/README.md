@@ -14,7 +14,6 @@ These modules are designed for several use cases:
 - [CoreDNS](./coredns)
 - [MySQL](./mysql)
 - [Nginx](./nginx)
-- [Squid forward proxy](./squid)
 - On-prem in Docker (*needs fixing*)
 
 ## Using the modules

@@ -1,4 +1,7 @@
 # skip boilerplate check
+---
+# Terraform will be unable to decode this file if it does not contain valid YAML
+# You can retain `---` (start of the document) to indicate an empty document.
 
 accounts:
   dns_name: "accounts.google.com."
@@ -77,6 +80,12 @@ googleapis-restricted:
         - 199.36.153.7
 gstatic-all:
   dns_name: "*.gstatic.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+kernels-gu:
+  dns_name: "kernels.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+kernels-gu-all:
+  dns_name: "*.kernels.googleusercontent.com."
   local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
 notebooks-all:
   dns_name: "*.notebooks.cloud.google.com."

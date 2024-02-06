@@ -17,16 +17,6 @@
 # tfdoc:file:description Organization policies.
 
 locals {
-  all_drs_domains = concat(
-    [var.organization.customer_id],
-    try(local.policy_configs.allowed_policy_member_domains, []),
-    compact([for k, v in var.tenants : try(v.organization.customer_id, "")])
-  )
-  policy_configs = (
-    var.organization_policy_configs == null
-    ? {}
-    : var.organization_policy_configs
-  )
   tags = {
     for k, v in var.tags : k => merge(v, {
       values = {
@@ -51,38 +41,6 @@ module "organization" {
   organization_id = "organizations/${var.organization.id}"
   # additive bindings via delegated IAM grant set in stage 0
   iam_bindings_additive = local.iam_bindings_additive
-  # sample subset of useful organization policies, edit to suit requirements
-  org_policies = {
-    "iam.allowedPolicyMemberDomains" = {
-      rules = [
-        {
-          allow = { values = local.all_drs_domains }
-          condition = {
-            expression = "!resource.matchTag('${var.organization.id}/${var.tag_names.org-policies}', 'allowed-policy-member-domains-all')"
-          }
-        },
-        {
-          allow = { all = true }
-          condition = {
-            expression = "resource.matchTag('${var.organization.id}/${var.tag_names.org-policies}', 'allowed-policy-member-domains-all')"
-            title      = "allow-all"
-          }
-        },
-      ]
-    }
-    #"gcp.resourceLocations" = {
-    #   allow = { values = local.allowed_regions }
-    # }
-    # "iam.workloadIdentityPoolProviders" = {
-    #   allow =  {
-    #     values = [
-    #       for k, v in coalesce(var.automation.federated_identity_providers, {}) :
-    #       v.issuer_uri
-    #     ]
-    #   }
-    # }
-  }
-  org_policies_data_path = "${var.data_dir}/org-policies"
   # do not assign tagViewer or tagUser roles here on tag keys and values as
   # they are managed authoritatively and will break multitenant stages
   tags = merge(local.tags, {
@@ -90,31 +48,21 @@ module "organization" {
       description = "Resource management context."
       iam         = {}
       values = {
-        data       = null
-        gke        = null
-        networking = null
-        sandbox    = null
-        security   = null
-        teams      = null
-        tenant     = null
+        data       = {}
+        gke        = {}
+        networking = {}
+        sandbox    = {}
+        security   = {}
+        teams      = {}
+        tenant     = {}
       }
     }
     (var.tag_names.environment) = {
       description = "Environment definition."
       iam         = {}
       values = {
-        development = null
-        production  = null
-      }
-    }
-    (var.tag_names.org-policies) = {
-      description = "Organization policy conditions."
-      iam         = {}
-      values = {
-        allowed-policy-member-domains-all = merge({}, try(
-          local.tags[var.tag_names.org-policies].values.allowed-policy-member-domains-all,
-          {}
-        ))
+        development = {}
+        production  = {}
       }
     }
     (var.tag_names.tenant) = {

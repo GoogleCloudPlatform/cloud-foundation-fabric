@@ -24,6 +24,10 @@ locals {
     module.automation-tf-bootstrap-sa.iam_email,
     module.automation-tf-resman-sa.iam_email
   ]
+  billing_ext_viewers = [
+    module.automation-tf-bootstrap-r-sa.iam_email,
+    module.automation-tf-resman-r-sa.iam_email
+  ]
   billing_mode = (
     var.billing_account.no_iam
     ? null
@@ -43,7 +47,8 @@ module "billing-export-project" {
   )
   prefix = local.prefix
   iam = {
-    "roles/owner" = [module.automation-tf-bootstrap-sa.iam_email]
+    "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
+    "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]
   }
   services = [
     # "cloudresourcemanager.googleapis.com",
@@ -61,7 +66,7 @@ module "billing-export-dataset" {
   project_id    = module.billing-export-project.0.project_id
   id            = "billing_export"
   friendly_name = "Billing export."
-  location      = var.locations.bq
+  location      = local.locations.bq
 }
 
 # standalone billing account
@@ -75,11 +80,11 @@ resource "google_billing_account_iam_member" "billing_ext_admin" {
   member             = each.key
 }
 
-resource "google_billing_account_iam_member" "billing_ext_cost_manager" {
+resource "google_billing_account_iam_member" "billing_ext_viewer" {
   for_each = toset(
-    local.billing_mode == "resource" ? local.billing_ext_admins : []
+    local.billing_mode == "resource" ? local.billing_ext_viewers : []
   )
   billing_account_id = var.billing_account.id
-  role               = "roles/billing.costsManager"
+  role               = "roles/billing.viewer"
   member             = each.key
 }

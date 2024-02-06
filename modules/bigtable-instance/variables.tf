@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,11 +55,20 @@ variable "default_gc_policy" {
 
 variable "deletion_protection" {
   description = "Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail."
+  type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "display_name" {
   description = "The human-readable display name of the Bigtable instance."
+  type        = string
+  default     = null
+}
+
+variable "encryption_key" {
+  description = "The KMS key id to used for encryption of the Bigtable instance."
+  type        = string
   default     = null
 }
 
@@ -69,10 +78,10 @@ variable "iam" {
   default     = {}
 }
 
-variable "instance_type" {
-  description = "(deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'."
-  type        = string
-  default     = null
+variable "labels" {
+  description = "Labels to be attached to the instance."
+  type        = map(string)
+  default     = {}
 }
 
 variable "name" {

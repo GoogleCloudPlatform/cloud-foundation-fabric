@@ -128,7 +128,7 @@ variable "dataproc_config" {
       dataproc_metric_config = optional(object({
         metrics = list(object({
           metric_source    = string
-          metric_overrides = optional(string)
+          metric_overrides = optional(list(string))
         }))
       }))
       metastore_config = optional(object({
@@ -197,9 +197,10 @@ variable "iam" {
 }
 
 variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {ROLE => {members = [], condition = {}}}."
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
   type = map(object({
     members = list(string)
+    role    = string
     condition = optional(object({
       expression  = string
       title       = string

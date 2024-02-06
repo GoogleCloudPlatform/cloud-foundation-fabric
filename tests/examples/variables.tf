@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,9 +22,13 @@ variable "billing_account_id" {
   default = "123456-123456-123456"
 }
 
+variable "group_email" {
+  default = "organization-admins@example.org"
+}
+
 variable "kms_key" {
   default = {
-    self_link = "kms_key_self_link"
+    id = "kms_key_self_link"
   }
 }
 
@@ -45,7 +49,7 @@ variable "project_id" {
 }
 
 variable "region" {
-  default = "region"
+  default = "europe-west8"
 }
 
 variable "service_account" {
@@ -65,23 +69,42 @@ variable "subnet" {
   }
 }
 
+variable "subnet1" {
+  default = {
+    name      = "subnet_name"
+    region    = "subnet_region"
+    cidr      = "subnet_cidr"
+    self_link = "subnet_self_link"
+  }
+}
+
+variable "subnet2" {
+  default = {
+    name      = "subnet_name"
+    region    = "subnet_region"
+    cidr      = "subnet_cidr"
+    self_link = "subnet_self_link"
+  }
+}
+
 variable "vpc" {
   default = {
-    name      = "vpc_name"
+    name      = "vpc-name"
     self_link = "projects/xxx/global/networks/aaa"
+    id        = "projects/xxx/global/networks/aaa"
   }
 }
 
 variable "vpc1" {
   default = {
-    name      = "vpc_name"
+    name      = "vpc-name"
     self_link = "projects/xxx/global/networks/bbb"
   }
 }
 
 variable "vpc2" {
   default = {
-    name      = "vpc2_name"
+    name      = "vpc2-name"
     self_link = "projects/xxx/global/networks/ccc"
   }
 }

@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ module "exp-project" {
   source          = "../../../modules/project"
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
-  project_create  = var.project_config.billing_account_id != null
+  project_create  = var.project_config.project_create
   prefix          = local.use_projects ? null : var.prefix
   name = (
     local.use_projects

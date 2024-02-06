@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,10 @@
 # limitations under the License.
 
 locals {
-  loadbalancer_outputs = [for aog in var.always_on_groups : format("%s (%s)", module.listener-ilb[aog].forwarding_rule_address, aog)]
+  loadbalancer_outputs = [
+    for aog, ilb in module.listener-ilb
+    : format("%s (%s)", ilb.forwarding_rule_addresses[""], aog)
+  ]
 }
 
 output "instructions" {

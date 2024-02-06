@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "autoclass" {
+  description = "Enable autoclass to automatically transition objects to appropriate storage classes based on their access pattern. If set to true, storage_class must be set to STANDARD. Defaults to false."
+  type        = bool
+  default     = false
+}
+
 variable "cors" {
   description = "CORS configuration for the bucket. Defaults to null."
   type = object({
@@ -23,6 +29,18 @@ variable "cors" {
     max_age_seconds = optional(number)
   })
   default = null
+}
+
+variable "custom_placement_config" {
+  type        = list(string)
+  default     = null
+  description = "The bucket's custom location configuration, which specifies the individual regions that comprise a dual-region bucket. If the bucket is designated as REGIONAL or MULTI_REGIONAL, the parameters are empty."
+}
+
+variable "default_event_based_hold" {
+  description = "Enable event based hold to new objects added to specific bucket, defaults to false."
+  type        = bool
+  default     = null
 }
 
 variable "encryption_key" {
@@ -41,6 +59,36 @@ variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+}
+
+variable "iam_bindings" {
+  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
+  type = map(object({
+    members = list(string)
+    role    = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
+}
+
+variable "iam_bindings_additive" {
+  description = "Individual additive IAM bindings. Keys are arbitrary."
+  type = map(object({
+    member = string
+    role   = string
+    condition = optional(object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    }))
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "labels" {
@@ -171,6 +219,18 @@ variable "prefix" {
 variable "project_id" {
   description = "Bucket project id."
   type        = string
+}
+
+variable "public_access_prevention" {
+  description = "Prevents public access to a bucket. Acceptable values are inherited or enforced. If inherited, the bucket uses public access prevention, only if the bucket is subject to the public access prevention organization policy constraint."
+  type        = string
+  default     = null
+}
+
+variable "requester_pays" {
+  description = "Enables Requester Pays on a storage bucket."
+  type        = bool
+  default     = null
 }
 
 variable "retention_policy" {
