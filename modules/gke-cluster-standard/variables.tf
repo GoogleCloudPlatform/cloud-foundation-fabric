@@ -94,7 +94,8 @@ variable "cluster_autoscaling" {
   }
   validation {
     condition = (
-      var.cluster_autoscaling == null ? true : contains(
+      try(var.cluster_autoscaling, null) == null ||
+      try(var.cluster_autoscaling.auto_provisioning_defaults, null) == null ? true : contains(
         ["pd-standard", "pd-ssd", "pd-balanced"],
       var.cluster_autoscaling.auto_provisioning_defaults.disk_type)
     )
