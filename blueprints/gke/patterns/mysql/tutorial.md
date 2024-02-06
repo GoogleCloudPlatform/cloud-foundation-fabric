@@ -14,10 +14,10 @@ Click the **Start** button to move to the next step.
 
 ## Prepare the infrastructure
 ```sh
-touch blueprints/gke/jumpstart/jumpstart-0-infra/terraform.tfvars
+touch blueprints/gke/patterns/autopilot-cluster/terraform.tfvars
 ```
 
-Open <walkthrough-editor-open-file filePath="cloudshell_open/cloud-foundation-fabric/blueprints/gke/jumpstart/jumpstart-0-infra/terraform.tfvars">../jumpstart-0-infra/terraform.tfvars</walkthrough-editor-open-file> file and provide your project details:
+Open <walkthrough-editor-open-file filePath="cloudshell_open/cloud-foundation-fabric/blueprints/gke/patterns/autopilot-cluster/terraform.tfvars">../jumpstart-0-infra/terraform.tfvars</walkthrough-editor-open-file> file and provide your project details:
 
 <walkthrough-project-setup billing="true"></walkthrough-project-setup>
 
@@ -46,7 +46,7 @@ which helps to create those references:
 ```sh
 cat <<EOF > terraform.tfvars
 credentials_config = {
-  fleet_host = "$(cd ../jumpstart-0-infra && terraform output ... )"
+  fleet_host = "$(cd ../autopilot-cluster && terraform output ... )"
 }
 EOF
 ```

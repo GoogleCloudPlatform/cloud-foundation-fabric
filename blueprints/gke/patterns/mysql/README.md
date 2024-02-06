@@ -1,29 +1,5 @@
-TODO:
-- use static IP address if provided
-- MySQL password as variable or automatically generated?
-     - provide either Secret Manager or generate password and give output
-      - use init container (https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) that runs gcloud to fetch secret into the file
-      - use common volume to share the file between init and normal container
-      - use workload identity federation https://cloud.google.com/kubernetes-engine/docs/tutorials/workload-identity-secrets to grant pods access to secret
-  - otherwise use standard GKE secrets
 
-- consider creation of MySQL Router after cluster is setup (to prevent misconfiguration of the router if it is bootstrapped before configuration completes)
-
-- permanent IP address for LoadBalancer / DNS name?
-  - not needed?
-
-- should the Job that did the setup be removed in the end?
-
-Other reading:
-* https://dev.mysql.com/doc/mysql-operator/en/mysql-operator-introduction.html
-
-
-Caveats:
-* db cluster resize is not properly handled by scripts (changing number of cluster members) 
-* resizing the cluster requires manually adding new members to the cluster / removing members. Adding can be done by rerun of the configuration Job 
-* GKE may schedule the 2 pods within the same zone of 3-pod-cluster, which is undesirable for a long run TODO: (should add anti-affinity to not allow pods to run in the same zone?)
-* GKE may schedule 2 `mysql-router` in the same zone TODO: (should add anti-affinity to not allow pods to run in the same zone?)
-
+# Highly Available MySQL cluster on GKE
 
 ## Architecture
 MySQL cluster is exposed using Regional Internal TCP Passthrough Load Balancer either on random or on provided static IP address. Services are listening on four different ports depending on protocol and intended usage:
@@ -105,4 +81,30 @@ credentials_config = {
 
 # tftest skip
 ```
+
+## TODO
+- use static IP address if provided
+- MySQL password as variable or automatically generated?
+     - provide either Secret Manager or generate password and give output
+      - use init container (https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) that runs gcloud to fetch secret into the file
+      - use common volume to share the file between init and normal container
+      - use workload identity federation https://cloud.google.com/kubernetes-engine/docs/tutorials/workload-identity-secrets to grant pods access to secret
+  - otherwise use standard GKE secrets
+
+- consider creation of MySQL Router after cluster is setup (to prevent misconfiguration of the router if it is bootstrapped before configuration completes)
+
+- permanent IP address for LoadBalancer / DNS name?
+  - not needed?
+
+- should the Job that did the setup be removed in the end?
+
+Other reading:
+* https://dev.mysql.com/doc/mysql-operator/en/mysql-operator-introduction.html
+
+
+Caveats:
+* db cluster resize is not properly handled by scripts (changing number of cluster members) 
+* resizing the cluster requires manually adding new members to the cluster / removing members. Adding can be done by rerun of the configuration Job 
+* GKE may schedule the 2 pods within the same zone of 3-pod-cluster, which is undesirable for a long run TODO: (should add anti-affinity to not allow pods to run in the same zone?)
+* GKE may schedule 2 `mysql-router` in the same zone TODO: (should add anti-affinity to not allow pods to run in the same zone?)
 
