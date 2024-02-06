@@ -85,6 +85,11 @@ locals {
     ]))
     location = try(local._cl_data.logging.sinks[0].destination.location, null)
   }
+  uses_checklist = (
+    var.factories_config.checklist_data != null
+    ||
+    var.factories_config.checklist_org_iam != null
+  )
 }
 
 check "checklist" {
@@ -119,4 +124,32 @@ check "checklist" {
     )
     error_message = "Checklist org IAM organization id mismatch, file ignored."
   }
+}
+
+# checklist files bucket
+
+module "automation-tf-checklist-gcs" {
+  source        = "../../../modules/gcs"
+  count         = local.uses_checklist ? 1 : 0
+  project_id    = module.automation-project.project_id
+  name          = "iac-core-checklist-0"
+  prefix        = local.prefix
+  location      = local.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
+  depends_on    = [module.organization]
+}
+
+resource "google_storage_bucket_object" "checklist_data" {
+  count  = var.factories_config.checklist_data != null ? 1 : 0
+  bucket = module.automation-tf-checklist-gcs.0.name
+  name   = "checklist/data.tfvars.json"
+  source = var.factories_config.checklist_data
+}
+
+resource "google_storage_bucket_object" "checklist_org_iam" {
+  count  = var.factories_config.checklist_org_iam != null ? 1 : 0
+  bucket = module.automation-tf-checklist-gcs.0.name
+  name   = "checklist/org-iam.tfvars.json"
+  source = var.factories_config.checklist_org_iam
 }

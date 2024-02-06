@@ -40,6 +40,11 @@ resource "google_essential_contacts_contact" "contact" {
   email                               = each.key
   language_tag                        = "en"
   notification_category_subscriptions = each.value
+  depends_on = [
+    google_folder_iam_binding.authoritative,
+    google_folder_iam_binding.bindings,
+    google_folder_iam_member.bindings
+  ]
 }
 
 resource "google_compute_firewall_policy_association" "default" {

@@ -25,6 +25,7 @@ output "id" {
   depends_on = [
     google_folder_iam_binding.authoritative,
     google_folder_iam_binding.bindings,
+    google_folder_iam_member.bindings,
     google_org_policy_policy.default,
   ]
 }

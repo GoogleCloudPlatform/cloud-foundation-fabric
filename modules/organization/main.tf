@@ -25,6 +25,11 @@ resource "google_essential_contacts_contact" "contact" {
   email                               = each.key
   language_tag                        = "en"
   notification_category_subscriptions = each.value
+  depends_on = [
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_binding.bindings,
+    google_organization_iam_member.bindings
+  ]
 }
 
 
