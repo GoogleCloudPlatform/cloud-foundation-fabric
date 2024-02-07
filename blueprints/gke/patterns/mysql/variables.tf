@@ -59,9 +59,9 @@ variable "namespace" {
 
 variable "registry_path" {
   description = "Repository path for images. Default is to use Docker Hub images"
-  type     = string
-  nullable = false
-  default = "docker.io"
+  type        = string
+  nullable    = false
+  default     = "docker.io"
 }
 
 variable "templates_path" {

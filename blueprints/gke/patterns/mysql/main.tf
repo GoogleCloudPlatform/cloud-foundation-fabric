@@ -25,7 +25,7 @@ locals {
     "${local.wl_templates_path}/${f}"
   ]
   stage_2_templates = [
-    for f in fileset(local.wl_templates_path, "01*yaml") :
+    for f in fileset(local.wl_templates_path, "02*yaml") :
     "${local.wl_templates_path}/${f}"
   ]
 
@@ -43,29 +43,31 @@ resource "helm_release" "mysql-operator" {
   namespace        = var.namespace
   create_namespace = true
   set {
-    name  = "image.registry"
-    value = var.registry_path
-  }
-  set {
-    name  = "image.repository"
-    value = "mysql"
-  }
-  set {
-    name = "envs.imagesDefaultRegistry"
-    value = var.registry_path
-  }
-  set {
-    name = "envs.imagesDefaultRepository"
-    value = "mysql"
+    name  = "envs.k8sClusterDomain"
+    value = "cluster.local" # avoid lookups during operator startups which sometimes fail
   }
 }
 
-resource "kubectl_manifest" "deploy_cluster" {
-  for_each = toset(local.stage_2_templates)
+resource "kubectl_manifest" "dependencies" {
+  for_each  = toset(local.stage_1_templates)
   yaml_body = templatefile(each.value, local.manifest_template_parameters)
+
+  override_namespace = helm_release.mysql-operator.namespace
 
   timeouts {
     create = "30m"
   }
-  depends_on = [helm_release.mysql-operator]
+}
+
+
+resource "kubectl_manifest" "deploy_cluster" {
+  for_each  = toset(local.stage_2_templates)
+  yaml_body = templatefile(each.value, local.manifest_template_parameters)
+
+  override_namespace = helm_release.mysql-operator.namespace
+
+  timeouts {
+    create = "30m"
+  }
+  depends_on = [kubectl_manifest.dependencies]
 }

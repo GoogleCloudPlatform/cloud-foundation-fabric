@@ -14,7 +14,9 @@ spec:
   loadBalancerIP: "${mysql_config.ip_address}"
   %{ endif }
   selector:
-    app: mysql-router
+    component: mysqlrouter
+    mysql.oracle.com/cluster: mycluster
+    tier: mysql
   ports:
     - name: mysql-rw
       port: 6446
