@@ -1,6 +1,10 @@
 
 # Highly Available MySQL cluster on GKE
 
+<a href="https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git&cloudshell_tutorial=mysql/tutorial.md&cloudshell_git_branch=gke-blueprints/0-redis&cloudshell_workspace=blueprints/gke/patterns&show=ide%2Cterminal">
+<img width="200px" src="../../../../assets/images/cloud-shell-button.png">
+</a>
+
 ## Architecture
 MySQL cluster is exposed using Regional Internal TCP Passthrough Load Balancer either on random or on provided static IP address. Services are listening on four different ports depending on protocol and intended usage:
 * 6446 - read/write access using MySQL protocol (targets primary instance)
