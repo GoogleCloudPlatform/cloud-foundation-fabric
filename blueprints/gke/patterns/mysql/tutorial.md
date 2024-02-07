@@ -32,7 +32,9 @@ Click the **Start** button to move to the next step.
     ```tfvars
     project_id     = "<walkthrough-project-id/>"
     cluster_name   = "cluster-00"
-    cluster_create = {}
+    cluster_create = {
+        deletion_protection = false
+   }
     vpc_create = {
         enable_cloud_nat = true
     }
@@ -96,6 +98,10 @@ You can also customize the sizing of MySQL instance by providing mysql_config (l
    terraform init
     ```
 
+# need to run:
+gcloud container clusters get-credentials cluster-00 --region="europe-west8" --project wns-gke-cloudshell
+???
+
 2. Deploy MySQL
     ```sh
     terraform apply
@@ -108,6 +114,15 @@ You can also customize the sizing of MySQL instance by providing mysql_config (l
 You're all set!
 
 **Don't forget to clean up after yourself**: If you created test projects, be sure to delete them to avoid unnecessary charges. Use `gcloud projects delete <PROJECT-ID>`.
+To remove MySQL resources:
+```sh
+terraform destroy
+```
 
+And then remove the cluster:
+```sh
+cd ../autopilot-cluster
+terraform destroy
+```
 
 Self-link: https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git&cloudshell_tutorial=mysql/tutorial.md&cloudshell_git_branch=gke-blueprints/0-redis&cloudshell_workspace=blueprints/gke/patterns&show=ide%2Cterminal
