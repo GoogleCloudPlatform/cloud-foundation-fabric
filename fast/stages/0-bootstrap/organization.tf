@@ -110,7 +110,7 @@ locals {
 
 # import roles enabled by default on org creation (since Dec 2023)
 import {
-  for_each = toset([
+  for_each = !var.org_policies_config.import_defaults ? toset([]) : toset([
     "compute.requireOsLogin",
     "compute.skipDefaultNetworkCreation",
     "compute.vmExternalIpAccess",
