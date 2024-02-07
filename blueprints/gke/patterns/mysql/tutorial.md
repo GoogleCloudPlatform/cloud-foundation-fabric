@@ -25,7 +25,7 @@ Click the **Start** button to move to the next step.
     touch autopilot-cluster/terraform.tfvars
     ```
 
-2. Open <walkthrough-editor-open-file filePath="cloudshell_open/cloud-foundation-fabric/blueprints/gke/patterns/autopilot-cluster/terraform.tfvars">autopilot-cluster/terraform.tfvars</walkthrough-editor-open-file> file.
+2. Open <walkthrough-editor-open-file filePath="autopilot-cluster/terraform.tfvars">autopilot-cluster/terraform.tfvars</walkthrough-editor-open-file> file.
 
 3. Paste the following content into the file and adapt for your needs if necessary
 
