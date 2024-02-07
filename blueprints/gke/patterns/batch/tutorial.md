@@ -60,10 +60,10 @@ To get started, click Start.
 
 ## Create the Autopilot GKE cluster
 
-1. Change to the ```~/cloud-foundation-fabric/blueprints/gke/patterns/autopilot-cluster``` directory.
+1. Change to the ```autopilot-cluster``` directory.
 
     ```bash
-    cd ~/cloud-foundation-fabric/blueprints/gke/patterns/autopilot-cluster 
+    cd autopilot-cluster 
     ```
 
 2. Create a new file ```terraform.tfvars``` in that directory.
@@ -71,8 +71,8 @@ To get started, click Start.
     ```bash
     touch terraform.tfvars
     ```
-j
-3. Open the <walkthrough-editor-open-file filePath="cloud-foundation-fabric/blueprints/gke/patterns/autopilot-cluster/terraform.tfvars">file</walkthrough-editor-open-file> for editing.
+
+3. Open the <walkthrough-editor-open-file filePath="autopilot-cluster/terraform.tfvars">file</walkthrough-editor-open-file> for editing.
 
 4. Paste the following content in the file.
 
@@ -112,10 +112,10 @@ vpc_create = {
 
 ## Install Kueue and create associated resources
 
-1. Change to the ```~/cloud-foundation-fabric/blueprints/gke/patterns/batch``` directory.
+1. Change to the ```patterns/batch``` directory.
 
     ```bash
-    cd ~/cloud-foundation-fabric/blueprints/gke/patterns/batch 
+    cd ../batch 
     ```
 
 2. Create a new file ```terraform.tfvars``` in that directory.
@@ -124,15 +124,15 @@ vpc_create = {
     touch terraform.tfvars
     ```
 
-3. Open the <walkthrough-editor-open-file filePath="~/cloud-foundation-fabric/blueprints/gke/patterns/batch/terraform.tfvars">file</walkthrough-editor-open-file> for editing.
+3. Open the <walkthrough-editor-open-file filePath="batch/terraform.tfvars">file</walkthrough-editor-open-file> for editing.
 
 4. Paste the following content in the file.
 
     ```hcl
     credentials_config = {
-    kubeconfig = {
+      kubeconfig = {
         path = "~/.kube/config"
-    }
+      }
     }
     ```
 
@@ -176,7 +176,7 @@ vpc_create = {
 
     ```bash
     ./create_jobs.sh job-team-a.yaml job-team-b.yaml 10
-    `lea``
+    ```
 
 2. Observe the Jobs being queued up, admitted in the ClusterQueue, and nodes being brought up with GKE Autopilot.
 
@@ -188,6 +188,19 @@ vpc_create = {
 
     ```bash
     kubectl -n team-a describe workload JOB_NAME
+    ```
+
+## Destroy resources (optional)
+1. Change to the ```patterns/autopilot-cluster``` directory.
+
+    ```bash
+    cd ../autopilot-cluster 
+    ```
+    
+2. Destroy the cluster with the following command.
+
+    ```bash
+    terraform apply
     ```
 
 ## Congratulations
