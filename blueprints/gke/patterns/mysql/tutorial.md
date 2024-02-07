@@ -50,9 +50,27 @@ Click the **Start** button to move to the next step.
     terraform apply
     ````
 
-Once finished successfully (this can take up to 20 minutes) you should see following output at the end:
+Once finished successfully (this should take around 10 minutes) you should see following output at the end:
 ```terminal
-tbd
+Apply complete! Resources: 26 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+created_resources = {
+  "cloud_nat" = "projects/wns-gke-cloudshell/regions/europe-west8/routers/default-nat"
+  "cluster" = "projects/wns-gke-cloudshell/locations/europe-west8/clusters/cluster-00"
+  "node_service_account" = "jump-0@<project-id>.gserviceaccount.com"
+  "registry" = "europe-west8-docker.pkg.dev/<project-id>/jump-0"
+  "router" = "<project-id>/europe-west8/default-nat/default"
+  "subnet_id" = "projects/<project-id>/regions/europe-west8/subnetworks/jump-0-default"
+  "vpc_id" = "projects/<project-id>/global/networks/jump-0"
+}
+fleet_host = "https://connectgateway.googleapis.com/v1/projects/<project-number>/locations/global/gkeMemberships/cluster-00"
+get_credentials = {
+  "direct" = "gcloud container clusters get-credentials cluster-00 --project <project-id> --location europe-west8"
+  "fleet" = "gcloud container fleet memberships get-credentials cluster-00 --project <project-id>"
+}
+
 ```
 
 ## Prepare configuration for MySQL deployment
@@ -65,19 +83,23 @@ which helps to create those references.
     ```
 2. Create `terraform.tfvars` referencing GKE Autopilot cluster
     ```sh
-    cat <<EOF > terraform.tfvars
-    credentials_config = {
-      fleet_host = "$(cd ../autopilot-cluster && terraform output fleet_host )"
-    }
-    EOF
+    echo "credentials_config = {" > terraform.tfvars
+    echo "fleet_host = $(cd ../autopilot-cluster && terraform output fleet_host )"  >> terraform.tfvars
+    echo "}" >> terraform.tfvars
     ```
 
 You can also customize the sizing of MySQL instance by providing mysql_config (link to docs).
 
 ## Deploy
-```sh
-terraform apply
-```
+1. Initialize terraform
+   ```sh
+   terraform init
+    ```
+
+2. Deploy MySQL
+    ```sh
+    terraform apply
+    ````
 
 ## Congratulations
 
