@@ -34,7 +34,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.1
+          terraform_version: 1.7.0
 
       - name: Install dependencies
         run: |

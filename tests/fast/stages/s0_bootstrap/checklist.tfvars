@@ -10,4 +10,7 @@ factories_config = {
   checklist_data    = "checklist-data.json"
   checklist_org_iam = "checklist-org-iam.json"
 }
+org_policies_config = {
+  import_defaults = false
+}
 prefix = "fast"

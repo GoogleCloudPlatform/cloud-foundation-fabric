@@ -6,5 +6,8 @@ organization = {
 billing_account = {
   id = "000000-111111-222222"
 }
-prefix           = "fast"
+prefix = "fast"
+org_policies_config = {
+  import_defaults = false
+}
 outputs_location = "/fast-config"

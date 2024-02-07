@@ -108,6 +108,24 @@ locals {
 
 # TODO: add a check block to ensure our custom roles exist in the factory files
 
+# import roles enabled by default on org creation (since Dec 2023)
+import {
+  for_each = !var.org_policies_config.import_defaults ? toset([]) : toset([
+    "compute.requireOsLogin",
+    "compute.skipDefaultNetworkCreation",
+    "compute.vmExternalIpAccess",
+    "iam.allowedPolicyMemberDomains",
+    "iam.automaticIamGrantsForDefaultServiceAccounts",
+    "iam.disableServiceAccountKeyCreation",
+    "iam.disableServiceAccountKeyUpload",
+    "sql.restrictAuthorizedNetworks",
+    "sql.restrictPublicIp",
+    "storage.uniformBucketLevelAccess",
+  ])
+  id = "organizations/${var.organization.id}/policies/${each.key}"
+  to = module.organization.google_org_policy_policy.default[each.key]
+}
+
 module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
