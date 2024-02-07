@@ -17,7 +17,8 @@
 variable "cluster_create" {
   description = "Cluster configuration for newly created cluster. Set to null to use existing cluster, or create using defaults in new project."
   type = object({
-    labels = optional(map(string))
+    deletion_protection = optional(bool, true)
+    labels              = optional(map(string))
     master_authorized_ranges = optional(map(string), {
       rfc-1918-10-8 = "10.0.0.0/8"
     })

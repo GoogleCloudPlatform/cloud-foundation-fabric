@@ -70,11 +70,12 @@ module "cluster-service-account" {
 }
 
 module "cluster" {
-  source     = "../../../../modules/gke-cluster-autopilot"
-  count      = local.cluster_create ? 1 : 0
-  project_id = module.project.project_id
-  name       = var.cluster_name
-  location   = var.region
+  source              = "../../../../modules/gke-cluster-autopilot"
+  count               = local.cluster_create ? 1 : 0
+  project_id          = module.project.project_id
+  deletion_protection = var.cluster_create.deletion_protection
+  name                = var.cluster_name
+  location            = var.region
   vpc_config = {
     network                  = local.cluster_vpc.network
     subnetwork               = local.cluster_vpc.subnet
