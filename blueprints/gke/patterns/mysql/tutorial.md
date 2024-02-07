@@ -8,6 +8,7 @@ This guide will show you how to deploy MySQL highly available cluster on top Goo
 During this guide you will deploy a new GKE cluster, MySQL database and you will connect to database to check its connectivity.
 
 **Time to complete**: About TBC minutes
+
 **Prerequisites**: A Cloud Billing account
 
 Click the **Start** button to move to the next step.
@@ -21,10 +22,10 @@ Click the **Start** button to move to the next step.
 ## Create GKE autopilot cluster
 1. Create a new `terraform.tfvars` file
     ```sh
-    touch blueprints/gke/patterns/autopilot-cluster/terraform.tfvars
+    touch autopilot-cluster/terraform.tfvars
     ```
 
-2. Open <walkthrough-editor-open-file filePath="cloudshell_open/cloud-foundation-fabric/blueprints/gke/patterns/autopilot-cluster/terraform.tfvars">blueprints/gke/patterns/autopilot-cluster/terraform.tfvars</walkthrough-editor-open-file> file.
+2. Open <walkthrough-editor-open-file filePath="cloudshell_open/cloud-foundation-fabric/blueprints/gke/patterns/autopilot-cluster/terraform.tfvars">autopilot-cluster/terraform.tfvars</walkthrough-editor-open-file> file.
 
 3. Paste the following content into the file and adapt for your needs if necessary
 
@@ -40,7 +41,7 @@ Click the **Start** button to move to the next step.
 4. Initialize terraform
 
     ```sh
-      cd blueprints/gke/patterns/autopilot-cluster/
+      cd autopilot-cluster/
       terraform init
     ```
 
@@ -85,3 +86,6 @@ terraform apply
 You're all set!
 
 **Don't forget to clean up after yourself**: If you created test projects, be sure to delete them to avoid unnecessary charges. Use `gcloud projects delete <PROJECT-ID>`.
+
+
+Self-link: https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git&cloudshell_tutorial=mysql/tutorial.md&cloudshell_git_branch=gke-blueprints/0-redis&cloudshell_workspace=blueprints/gke/patterns&show=ide%2Cterminal
