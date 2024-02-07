@@ -70,7 +70,7 @@ module "gke-fleet" {
   }
   iam = {
     "roles/container.clusterAdmin" = [
-      "cicd@my-cicd-project.iam.gserviceaccount.com"
+      "serviceAccount:cicd@my-cicd-project.iam.gserviceaccount.com"
     ]
   }
   clusters = {
