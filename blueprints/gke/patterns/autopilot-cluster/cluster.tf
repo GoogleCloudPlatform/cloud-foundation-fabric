@@ -86,7 +86,9 @@ module "cluster" {
     enable_private_endpoint = true
     master_global_access    = true
   }
-  service_account = module.cluster-service-account.0.email
+  node_config = {
+    service_account = module.cluster-service-account.0.email
+  }
   labels          = var.cluster_create.labels
   release_channel = var.cluster_create.options.release_channel
   backup_configs = {
