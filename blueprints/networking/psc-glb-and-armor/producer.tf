@@ -74,7 +74,7 @@ resource "google_compute_forwarding_rule" "psc_ilb_target_service" {
   name    = "producer-forwarding-rule"
   region  = var.region
   project = module.producer_project.project_id
-
+  depends_on            = [google_compute_subnetwork.proxy_subnet]
   load_balancing_scheme = "INTERNAL_MANAGED"
   port_range            = "443"
   allow_global_access   = true
@@ -156,9 +156,21 @@ resource "google_compute_subnetwork" "ilb_subnetwork" {
   project = module.producer_project.project_id
 
   network       = google_compute_network.psc_ilb_network.id
-  ip_cidr_range = "10.0.0.0/16"
-  purpose       = "INTERNAL_HTTPS_LOAD_BALANCER"
+  ip_cidr_range = "10.0.0.0/24"
+  
   role          = "ACTIVE"
+}
+
+# proxy-only subnet
+resource "google_compute_subnetwork" "proxy_subnet" {
+  name          = "l7-ilb-proxy-subnet"
+  provider      = google-beta
+  ip_cidr_range = "10.0.1.0/24"
+  region        = var.region
+  project = module.producer_project.project_id
+  purpose       = "REGIONAL_MANAGED_PROXY"
+  role          = "ACTIVE"
+  network       = google_compute_network.psc_ilb_network.id
 }
 
 resource "google_compute_subnetwork" "psc_private_subnetwork" {
