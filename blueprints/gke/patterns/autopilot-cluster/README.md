@@ -189,21 +189,23 @@ For simplicity, multi-tenancy is not used in this blueprint.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [cluster_name](variables.tf#L72) | Name of new or existing cluster. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L92) | Project id of existing or created project. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L97) | Region used for cluster and network resources. | <code>string</code> | ✓ |  |
+| [cluster_name](variables.tf#L42) | Name of new or existing cluster. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L70) | Project id of existing or created project. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L75) | Region used for cluster and network resources. | <code>string</code> | ✓ |  |
 | [cluster_create](variables.tf#L17) | Cluster configuration for newly created cluster. Set to null to use existing cluster, or create using defaults in new project. | <code title="object&#40;&#123;&#10;  deletion_protection &#61; optional&#40;bool, true&#41;&#10;  labels              &#61; optional&#40;map&#40;string&#41;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;, &#123;&#10;    rfc-1918-10-8 &#61; &#34;10.0.0.0&#47;8&#34;&#10;  &#125;&#41;&#10;  master_ipv4_cidr_block &#61; optional&#40;string, &#34;172.16.255.0&#47;28&#34;&#41;&#10;  vpc &#61; optional&#40;object&#40;&#123;&#10;    id        &#61; string&#10;    subnet_id &#61; string&#10;    secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;      pods     &#61; optional&#40;string, &#34;pods&#34;&#41;&#10;      services &#61; optional&#40;string, &#34;services&#34;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  options &#61; optional&#40;object&#40;&#123;&#10;    release_channel     &#61; optional&#40;string, &#34;REGULAR&#34;&#41;&#10;    enable_backup_agent &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [fleet_project_id](variables.tf#L79) | GKE Fleet project id. If null cluster project will also be used for fleet. | <code>string</code> |  | <code>null</code> |
-| [prefix](variables.tf#L85) | Prefix used for resource names. | <code>string</code> |  | <code>&#34;jump-0&#34;</code> |
-| [project_create](variables.tf#L42) | Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;  shared_vpc_host &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [registry_create](variables.tf#L52) | Create remote Docker Artifact Registry. | <code>bool</code> |  | <code>true</code> |
-| [vpc_create](variables.tf#L58) | Project configuration for newly created VPC. Leave null to use existing VPC, or defaults when project creation is required. | <code title="object&#40;&#123;&#10;  name                     &#61; optional&#40;string&#41;&#10;  subnet_name              &#61; optional&#40;string&#41;&#10;  primary_range_nodes      &#61; optional&#40;string, &#34;10.0.0.0&#47;24&#34;&#41;&#10;  secondary_range_pods     &#61; optional&#40;string, &#34;10.16.0.0&#47;20&#34;&#41;&#10;  secondary_range_services &#61; optional&#40;string, &#34;10.32.0.0&#47;24&#34;&#41;&#10;  enable_cloud_nat         &#61; optional&#40;bool, false&#41;&#10;  proxy_only_subnet        &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [fleet_project_id](variables.tf#L47) | GKE Fleet project id. If null cluster project will also be used for fleet. | <code>string</code> |  | <code>null</code> |
+| [prefix](variables.tf#L53) | Prefix used for resource names. | <code>string</code> |  | <code>&#34;jump-0&#34;</code> |
+| [project_create](variables.tf#L60) | Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;  shared_vpc_host &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [registry_create](variables.tf#L80) | Create remote Docker Artifact Registry. | <code>bool</code> |  | <code>true</code> |
+| [vpc_create](variables.tf#L86) | Project configuration for newly created VPC. Leave null to use existing VPC, or defaults when project creation is required. | <code title="object&#40;&#123;&#10;  name                     &#61; optional&#40;string&#41;&#10;  subnet_name              &#61; optional&#40;string&#41;&#10;  primary_range_nodes      &#61; optional&#40;string, &#34;10.0.0.0&#47;24&#34;&#41;&#10;  secondary_range_pods     &#61; optional&#40;string, &#34;10.16.0.0&#47;20&#34;&#41;&#10;  secondary_range_services &#61; optional&#40;string, &#34;10.32.0.0&#47;24&#34;&#41;&#10;  enable_cloud_nat         &#61; optional&#40;bool, false&#41;&#10;  proxy_only_subnet        &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [created_resources](outputs.tf#L17) | IDs of the resources created, if any. |  |
-| [fleet_host](outputs.tf#L44) | Fleet Connect Gateway host that can be used to configure the GKE provider. |  |
-| [get_credentials](outputs.tf#L53) | Run one of these commands to get cluster credentials. Credentials via fleet allow reaching private clusters without no direct connectivity. |  |
+| [credentials_config](outputs.tf#L44) | Configure how Terraform authenticates to the cluster. |  |
+| [fleet_host](outputs.tf#L51) | Fleet Connect Gateway host that can be used to configure the GKE provider. |  |
+| [get_credentials](outputs.tf#L56) | Run one of these commands to get cluster credentials. Credentials via fleet allow reaching private clusters without no direct connectivity. |  |
+| [region](outputs.tf#L70) | Region used for cluster and network resources. |  |
 <!-- END TFDOC -->

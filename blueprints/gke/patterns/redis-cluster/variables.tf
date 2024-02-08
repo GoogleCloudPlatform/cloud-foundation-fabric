@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ variable "statefulset_config" {
 }
 
 variable "templates_path" {
-  description = "Path where manifest templates will be read from. Set to null to use the default manifests"
+  description = "Path where manifest templates will be read from. Set to null to use the default manifests."
   type        = string
   default     = null
 }

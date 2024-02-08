@@ -33,13 +33,6 @@ variable "credentials_config" {
   }
 }
 
-variable "namespace" {
-  description = "Namespace used for Redis cluster resources."
-  type        = string
-  nullable    = false
-  default     = "kafka"
-}
-
 variable "kafka_config" {
   description = "Configure Kafka cluster statefulset parameters."
   type = object({
@@ -52,6 +45,19 @@ variable "kafka_config" {
   default  = {}
 }
 
+variable "namespace" {
+  description = "Namespace used for Redis cluster resources."
+  type        = string
+  nullable    = false
+  default     = "kafka"
+}
+
+variable "templates_path" {
+  description = "Path where manifest templates will be read from. Set to null to use the default manifests."
+  type        = string
+  default     = null
+}
+
 variable "zookeeper_config" {
   description = "Configure Zookeper cluster statefulset parameters."
   type = object({
@@ -61,10 +67,4 @@ variable "zookeeper_config" {
   })
   nullable = false
   default  = {}
-}
-
-variable "templates_path" {
-  description = "Path where manifest templates will be read from. Set to null to use the default manifests"
-  type        = string
-  default     = null
 }

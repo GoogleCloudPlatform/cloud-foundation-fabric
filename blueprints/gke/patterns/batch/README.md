@@ -2,8 +2,10 @@
 
 <!-- BEGIN TOC -->
 - [Introduction](#introduction)
+- [Requirements](#requirements)
 - [Cluster authentication](#cluster-authentication)
 - [Kueue Configuration](#kueue-configuration)
+- [Sample Configuration](#sample-configuration)
 - [Variables](#variables)
 <!-- END TOC -->
 
@@ -32,7 +34,7 @@ Only two variables are available to control Kueue's configuration:
 - `teams_namespaces` which controls the namespaces used by different teams to run jobs.
 - `kueue_namespace` which controls the namepsace to deploy Kueue's own resources.
 
-Any other configuration can be applied by directly modifying the YAML manifests under the [manifests-templates](manifests-templates) directory.
+Any other configuration can be applied by directly modifying the YAML manifests under the [manifest-templates](manifest-templates) directory.
 
 ## Sample Configuration
 
@@ -48,7 +50,6 @@ teams_namespaces = [
   "team-b"
 ]
 ```
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -57,5 +58,5 @@ teams_namespaces = [
 | [credentials_config](variables.tf#L17) | Configure how Terraform authenticates to the cluster. | <code title="object&#40;&#123;&#10;  fleet_host &#61; optional&#40;string&#41;&#10;  kubeconfig &#61; optional&#40;object&#40;&#123;&#10;    context &#61; optional&#40;string&#41;&#10;    path    &#61; optional&#40;string, &#34;&#126;&#47;.kube&#47;config&#34;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [kueue_namespace](variables.tf#L36) | Namespaces of the teams running jobs in the clusters. | <code>string</code> |  | <code>&#34;kueue-system&#34;</code> |
 | [team_namespaces](variables.tf#L43) | Namespaces of the teams running jobs in the clusters. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;team-a&#34;,&#10;  &#34;team-b&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [templates_path](variables.tf#L53) | Path where manifest templates will be read from. Set to null to use the default manifests | <code>string</code> |  | <code>null</code> |
+| [templates_path](variables.tf#L53) | Path where manifest templates will be read from. Set to null to use the default manifests. | <code>string</code> |  | <code>null</code> |
 <!-- END TFDOC -->

@@ -69,5 +69,5 @@ output "get_credentials" {
 
 output "region" {
   description = "Region used for cluster and network resources."
-  value = var.region
+  value       = var.region
 }

@@ -24,10 +24,10 @@ Database admin password is stored either as a Kubernetes Secret or accessed from
 
 ## Usage
 ### Prerequisites
-* GKE cluster is already provisioned and access to it using `kubectl` is configured. You can use [infra](../jumpstart-0-infra) blueprint to create such cluster.
+* GKE cluster is already provisioned and access to it using `kubectl` is configured. You can use [infra](../autopilot-cluster) blueprint to create such cluster.
 * kubectl configuration obtained either by `gcloud container clusters get-credentials` or `gcloud container fleet memberships get-credentials`
-* Cluster node have access to Docker Hub images `mysql/mysql-server` and `mysql/mysql-router` or [remote repository](https://cloud.google.com/artifact-registry/docs/repositories/remote-repo) is configured. [infra](../jumpstart-0-infra) blueprint also provides that
-* Access to the cluster's API from where `terraform` is run either using GKE API endpoint of Fleet endpoint ([infra](../jumpstart-0-infra) blueprint provisions and provides the link to Fleet endpoint)
+* Cluster node have access to Docker Hub images `mysql/mysql-server` and `mysql/mysql-router` or [remote repository](https://cloud.google.com/artifact-registry/docs/repositories/remote-repo) is configured. [infra](../autopilot-cluster) blueprint also provides that
+* Access to the cluster's API from where `terraform` is run either using GKE API endpoint of Fleet endpoint ([infra](../autopilot-cluster) blueprint provisions and provides the link to Fleet endpoint)
 * (optional) Secret Manager instance, secrets storing MySQL admin password and Service Account with permission to access these secrets
 * (optional) static IP address to be used by LoadBalancer that exposes MySQL
 
@@ -35,7 +35,7 @@ Database admin password is stored either as a Kubernetes Secret or accessed from
 ### Default MySQL cluster on GKE with Docker Hub connectivity using Fleet Connection endpoint
 ```hcl
 credentials_config = {
-  fleet_host = "https://connectgateway.googleapis.com/v1/projects/.../locations/global/gkeMemberships/..."  # provided by ../jumpstart-0-infra blueprint
+  fleet_host = "https://connectgateway.googleapis.com/v1/projects/.../locations/global/gkeMemberships/..."  # provided by ../autopilot-cluster blueprint
 }
 
 # tftest skip
@@ -44,7 +44,7 @@ credentials_config = {
 ### Customized MySQL cluster using Remote Repository and Fleet Connection endpoint
 ```hcl
 credentials_config = {
-  fleet_host = "https://connectgateway.googleapis.com/v1/projects/.../locations/global/gkeMemberships/..."  # provided by ../jumpstart-0-infra blueprint
+  fleet_host = "https://connectgateway.googleapis.com/v1/projects/.../locations/global/gkeMemberships/..."  # provided by ../autopilot-cluster blueprint
 }
 
 registry_path = "europe-west8-docker.pkg.dev/.../..."
@@ -66,7 +66,7 @@ mysql_config = {
 
 ```hcl
 credentials_config = {
-  fleet_host = "https://connectgateway.googleapis.com/v1/projects/.../locations/global/gkeMemberships/..."  # provided by ../jumpstart-0-infra blueprint
+  fleet_host = "https://connectgateway.googleapis.com/v1/projects/.../locations/global/gkeMemberships/..."  # provided by ../autopilot-cluster blueprint
 }
 mysql_config = {
   ip_address = "10.0.0.2"
@@ -80,7 +80,7 @@ mysql_config = {
 
 ```hcl
 credentials_config = {
-  fleet_host = "https://connectgateway.googleapis.com/v1/projects/.../locations/global/gkeMemberships/..."  # provided by ../jumpstart-0-infra blueprint
+  fleet_host = "https://connectgateway.googleapis.com/v1/projects/.../locations/global/gkeMemberships/..."  # provided by ../autopilot-cluster blueprint
 }
 
 # tftest skip

@@ -39,6 +39,24 @@ variable "cluster_create" {
   default = null
 }
 
+variable "cluster_name" {
+  description = "Name of new or existing cluster."
+  type        = string
+}
+
+variable "fleet_project_id" {
+  description = "GKE Fleet project id. If null cluster project will also be used for fleet."
+  type        = string
+  default     = null
+}
+
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  nullable    = false
+  default     = "jump-0"
+}
+
 variable "project_create" {
   description = "Project configuration for newly created project. Leave null to use existing project. Project creation forces VPC and cluster creation."
   type = object({
@@ -47,6 +65,16 @@ variable "project_create" {
     shared_vpc_host = optional(string)
   })
   default = null
+}
+
+variable "project_id" {
+  description = "Project id of existing or created project."
+  type        = string
+}
+
+variable "region" {
+  description = "Region used for cluster and network resources."
+  type        = string
 }
 
 variable "registry_create" {
@@ -67,34 +95,4 @@ variable "vpc_create" {
     proxy_only_subnet        = optional(string)
   })
   default = null
-}
-
-variable "cluster_name" {
-  description = "Name of new or existing cluster."
-  type        = string
-}
-
-# https://cloud.google.com/anthos/fleet-management/docs/before-you-begin/gke#gke-cross-project
-
-variable "fleet_project_id" {
-  description = "GKE Fleet project id. If null cluster project will also be used for fleet."
-  type        = string
-  default     = null
-}
-
-variable "prefix" {
-  description = "Prefix used for resource names."
-  type        = string
-  nullable    = false
-  default     = "jump-0"
-}
-
-variable "project_id" {
-  description = "Project id of existing or created project."
-  type        = string
-}
-
-variable "region" {
-  description = "Region used for cluster and network resources."
-  type        = string
 }

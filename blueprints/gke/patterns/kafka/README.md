@@ -33,7 +33,7 @@ This template exposes several variables to configure the Kafka instance:
 - `kafka_config` to customize the configuration of the Kafka instance. The default configuration deploys version 3.6.0 with 3 replicas, with a disk of 10Gi and 4096 MB of RAM.
 - `zookeeper_config` to customize the configuration of the Zookeeper instance. The default configuration deploys 3 replicas, with a disk of 10Gi and 2048 MB of RAM.
 
-Any other configuration can be applied by directly modifying the YAML manifests under the [manifests-templates](manifests-templates) directory.
+Any other configuration can be applied by directly modifying the YAML manifests under the [manifest-templates](manifest-templates) directory.
 
 ## Sample Configuration
 
@@ -59,8 +59,8 @@ zookeeper_config = {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [credentials_config](variables.tf#L17) | Configure how Terraform authenticates to the cluster. | <code title="object&#40;&#123;&#10;  fleet_host &#61; optional&#40;string&#41;&#10;  kubeconfig &#61; optional&#40;object&#40;&#123;&#10;    context &#61; optional&#40;string&#41;&#10;    path    &#61; optional&#40;string, &#34;&#126;&#47;.kube&#47;config&#34;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [kafka_config](variables.tf#L43) | Configure Kafka cluster statefulset parameters. | <code title="object&#40;&#123;&#10;  replicas          &#61; optional&#40;number, 3&#41;&#10;  volume_claim_size &#61; optional&#40;string, &#34;10Gi&#34;&#41;&#10;  version           &#61; optional&#40;string, &#34;3.6.0&#34;&#41;&#10;  jvm_memory        &#61; optional&#40;string, &#34;4096m&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [namespace](variables.tf#L36) | Namespace used for Redis cluster resources. | <code>string</code> |  | <code>&#34;kafka&#34;</code> |
-| [templates_path](variables.tf#L66) | Path where manifest templates will be read from. Set to null to use the default manifests | <code>string</code> |  | <code>null</code> |
-| [zookeeper_config](variables.tf#L55) | Configure Zookeper cluster statefulset parameters. | <code title="object&#40;&#123;&#10;  replicas          &#61; optional&#40;number, 3&#41;&#10;  volume_claim_size &#61; optional&#40;string, &#34;10Gi&#34;&#41;&#10;  jvm_memory        &#61; optional&#40;string, &#34;2048m&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [kafka_config](variables.tf#L36) | Configure Kafka cluster statefulset parameters. | <code title="object&#40;&#123;&#10;  replicas          &#61; optional&#40;number, 3&#41;&#10;  volume_claim_size &#61; optional&#40;string, &#34;10Gi&#34;&#41;&#10;  version           &#61; optional&#40;string, &#34;3.6.0&#34;&#41;&#10;  jvm_memory        &#61; optional&#40;string, &#34;4096m&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [namespace](variables.tf#L48) | Namespace used for Redis cluster resources. | <code>string</code> |  | <code>&#34;kafka&#34;</code> |
+| [templates_path](variables.tf#L55) | Path where manifest templates will be read from. Set to null to use the default manifests. | <code>string</code> |  | <code>null</code> |
+| [zookeeper_config](variables.tf#L61) | Configure Zookeper cluster statefulset parameters. | <code title="object&#40;&#123;&#10;  replicas          &#61; optional&#40;number, 3&#41;&#10;  volume_claim_size &#61; optional&#40;string, &#34;10Gi&#34;&#41;&#10;  jvm_memory        &#61; optional&#40;string, &#34;2048m&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 <!-- END TFDOC -->

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 locals {
-  wl_templates_path = "${path.module}/manifests-templates"
+  wl_templates_path = "${path.module}/manifest-templates"
 }
 
 
@@ -74,7 +74,7 @@ resource "kubectl_manifest" "local_queues_manifests" {
 
 resource "local_file" "job_manifest_files" {
   for_each = toset(var.team_namespaces)
-  content  = templatefile("${local.wl_templates_path}/team-resources/job.yaml", {
+  content = templatefile("${local.wl_templates_path}/team-resources/job.yaml", {
     namespace = each.value
   })
   filename = "${path.module}/job-${each.value}.yaml"

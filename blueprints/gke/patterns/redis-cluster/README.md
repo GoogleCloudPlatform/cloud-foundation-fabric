@@ -30,7 +30,7 @@ This template exposes several variables to configure the Redis cluster:
 - `image` to change the container image used by the Redis cluster. Defaults to `redis:6.2` (i.e. the official Redis image, version 6.2)
 - `stateful_config` to customize the configuration of the Redis' stateful set configuration. The default configuration deploys a 6-node cluster with requests for 1 CPU, 1Gi of RAM and a 10Gi volume.
 
-Any other configuration can be applied by directly modifying the YAML manifests under the [manifests-templates](manifests-templates) directory.
+Any other configuration can be applied by directly modifying the YAML manifests under the [manifest-templates](manifest-templates) directory.
 
 ## Sample Configuration
 
@@ -58,5 +58,5 @@ statefulset_config = {
 | [image](variables.tf#L36) | Container image to use. | <code>string</code> |  | <code>&#34;redis:6.2&#34;</code> |
 | [namespace](variables.tf#L43) | Namespace used for Redis cluster resources. | <code>string</code> |  | <code>&#34;redis&#34;</code> |
 | [statefulset_config](variables.tf#L50) | Configure Redis cluster statefulset parameters. | <code title="object&#40;&#123;&#10;  replicas &#61; optional&#40;number, 6&#41;&#10;  resource_requests &#61; optional&#40;object&#40;&#123;&#10;    cpu    &#61; optional&#40;string, &#34;1&#34;&#41;&#10;    memory &#61; optional&#40;string, &#34;1Gi&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  volume_claim_size &#61; optional&#40;string, &#34;10Gi&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [templates_path](variables.tf#L68) | Path where manifest templates will be read from. Set to null to use the default manifests | <code>string</code> |  | <code>null</code> |
+| [templates_path](variables.tf#L68) | Path where manifest templates will be read from. Set to null to use the default manifests. | <code>string</code> |  | <code>null</code> |
 <!-- END TFDOC -->
