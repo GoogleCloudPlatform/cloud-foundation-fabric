@@ -196,5 +196,3 @@ And then remove the cluster:
 cd ../autopilot-cluster
 terraform destroy
 ```
-
-Self-link: https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git&cloudshell_tutorial=mysql/tutorial.md&cloudshell_git_branch=gke/mysql&cloudshell_workspace=blueprints/gke/patterns&show=ide%2Cterminal
