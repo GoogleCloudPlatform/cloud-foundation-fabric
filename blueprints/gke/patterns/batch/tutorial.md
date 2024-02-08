@@ -74,12 +74,14 @@ To get started, click Start.
 
 3. Open the <walkthrough-editor-open-file filePath="autopilot-cluster/terraform.tfvars">file</walkthrough-editor-open-file> for editing.
 
-4. Paste the following content in the file.
+4. Paste the following content in the file and update any value as needed.
 
 ```hcl
 project_id     = "<walkthrough-project-name/>"
 cluster_name   = "cluster"
-cluster_create = {}
+cluster_create = {
+  deletion_protection = false
+}
 region         = "europe-west1"
 vpc_create = {
   enable_cloud_nat = true
@@ -101,13 +103,13 @@ vpc_create = {
 7. Fetch the cluster credentials.
 
     ```bash
-    gcloud container clusters get-credentials cluster --region="europe-west1"
+    gcloud container fleet memberships get-credentials cluster --project "<walkthrough-project-name/>"
     ```
 
 8. Check the nodes are ready.
 
     ```bash
-    kubectl get nodes
+    kubectl get pods -n kube-system
     ```
 
 ## Install Kueue and create associated resources
@@ -178,6 +180,8 @@ vpc_create = {
     ./create_jobs.sh job-team-a.yaml job-team-b.yaml 10
     ```
 
+    Hit Ctrl-C when you want to stop the creation of jobs
+
 2. Observe the Jobs being queued up, admitted in the ClusterQueue, and nodes being brought up with GKE Autopilot.
 
     ```bash
@@ -194,13 +198,13 @@ vpc_create = {
 1. Change to the ```patterns/autopilot-cluster``` directory.
 
     ```bash
-    cd ../autopilot-cluster 
+    cd ../autopilot-cluster
     ```
-    
+
 2. Destroy the cluster with the following command.
 
     ```bash
-    terraform apply
+    terraform destroy
     ```
 
 ## Congratulations
