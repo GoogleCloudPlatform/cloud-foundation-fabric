@@ -21,7 +21,7 @@ Kueue is a Cloud Native Job scheduler that works with the default Kubernetes sch
 
 This blueprint assumes the GKE cluster already exists. We recommend using the accompanying [Autopilot Cluster Pattern](../autopilot-cluster) to deploy a cluster according to Google's best practices. Once you have the cluster up-and-running, you can use this blueprint to deploy Kueue in it.
 
-The Kueue manifests uses container images hosted by registry.k8s.io, which means that the subnet where the GKE cluster is deployed needs to have Internet connectivity to download the images. If you're using the provided [Autopilot Cluster Pattern](../autopilot-cluster), you can set the `enable_cloud_nat` option of the `vpc_create` variable.
+The Kueue manifests use container images hosted by registry.k8s.io, which means that the subnet where the GKE cluster is deployed needs to have Internet connectivity to download the images. If you're using the provided [Autopilot Cluster Pattern](../autopilot-cluster), you can set the `enable_cloud_nat` option of the `vpc_create` variable.
 
 ## Cluster authentication
 Once you have a cluster with Internet connectivity, create a `terraform.tfvars` and setup the `credentials_config` variable. We recommend using Anthos Fleet to simplify accessing the control plane.
