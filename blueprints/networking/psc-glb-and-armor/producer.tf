@@ -71,9 +71,9 @@ resource "google_compute_region_network_endpoint_group" "neg" {
 }
 
 resource "google_compute_forwarding_rule" "psc_ilb_target_service" {
-  name                  = "producer-forwarding-rule"
-  region                = var.region
-  project               = module.producer_project.project_id
+  name    = "producer-forwarding-rule"
+  region  = var.region
+  project = module.producer_project.project_id
   depends_on            = [google_compute_subnetwork.proxy_subnet]
   load_balancing_scheme = "INTERNAL_MANAGED"
   port_range            = "443"
@@ -155,10 +155,9 @@ resource "google_compute_subnetwork" "ilb_subnetwork" {
   region  = var.region
   project = module.producer_project.project_id
 
-  ip_cidr_range = "10.0.0.0/16"
-  purpose       = "INTERNAL_HTTPS_LOAD_BALANCER"
-  role          = "ACTIVE"
   network       = google_compute_network.psc_ilb_network.id
+  ip_cidr_range = "10.0.0.0/24"
+  role          = "ACTIVE"
 }
 
 resource "google_compute_subnetwork" "proxy_subnet" {
