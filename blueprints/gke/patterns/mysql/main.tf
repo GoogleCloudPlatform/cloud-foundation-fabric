@@ -71,3 +71,29 @@ resource "kubectl_manifest" "deploy_cluster" {
   }
   depends_on = [kubectl_manifest.dependencies]
 }
+
+module "bastion" {
+  source = "../../../../modules/compute-vm"
+
+  name = "bastion"
+  network_interfaces = [{
+    addresses = {
+      internal = "10.0.0.10"
+    }
+    network    = var.created_resources.vpc_id
+    subnetwork = var.created_resources.subnet_id
+  }]
+  project_id    = var.project_id
+  zone          = "${var.region}-b"
+  instance_type = "n2-standard-2"
+  service_account = {
+    auto_create = true
+    #      email       = module.compute-sa.email
+    scopes = [
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring.write",
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
+}

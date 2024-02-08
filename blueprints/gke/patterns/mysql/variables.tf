@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+variable "created_resources" {
+  description = "IDs of the resources created by autopilot cluster to be consumed here."
+  type = object({
+    vpc_id    = string
+    subnet_id = string
+  })
+  nullable = false
+}
+
 variable "credentials_config" {
   description = "Configure how Terraform authenticates to the cluster."
   type = object({
@@ -55,6 +64,16 @@ variable "namespace" {
   type        = string
   nullable    = false
   default     = "mysql1"
+}
+
+variable "project_id" {
+  description = "Project to deploy bastion host"
+  type        = string
+}
+
+variable "region" {
+  description = "Region used for cluster and network resources."
+  type        = string
 }
 
 variable "registry_path" {
