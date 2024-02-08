@@ -12,7 +12,7 @@
 <img width="200px" src="../../../../assets/images/cloud-shell-button.png">
 </a>
 
-This blueprint shows how to deploy a batch system using [Kueue](https://kueue.sigs.k8s.io/docs/overview/) to perform Job queueing on Google Kubernetes Engine (GKE) using Terraform.
+This blueprint shows how to deploy a batch system using [Kueue](https://kueue.sigs.k8s.io/docs/overview/) to perform job queuing on Google Kubernetes Engine (GKE) using Terraform.
 
 Kueue is a Cloud Native Job scheduler that works with the default Kubernetes scheduler, the Job controller, and the cluster autoscaler to provide an end-to-end batch system. Kueue implements Job queueing, deciding when Jobs should wait and when they should start, based on quotas and a hierarchy for sharing resources fairly among teams.
 

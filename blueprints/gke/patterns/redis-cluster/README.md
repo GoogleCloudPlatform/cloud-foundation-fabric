@@ -15,7 +15,7 @@
 <img width="200px" src="../../../../assets/images/cloud-shell-button.png">
 </a>
 
-This blueprints shows how to a hihgly available Redis cluster on GKE following Google's recommended practices for creating a stateful application.
+This blueprint shows how to deploy a highly available Redis cluster on GKE following Google's recommended practices for creating a stateful application.
 
 ## Requirements
 
@@ -32,7 +32,6 @@ This template exposes several variables to configure the Redis cluster:
 - `stateful_config` to customize the configuration of the Redis' stateful set configuration. The default configuration deploys a 6-node cluster with requests for 1 CPU, 1Gi of RAM and a 10Gi volume.
 
 Any other configuration can be applied by directly modifying the YAML manifests under the [manifests-templates](manifests-templates) directory.
-
 
 ## Sample Configuration
 
