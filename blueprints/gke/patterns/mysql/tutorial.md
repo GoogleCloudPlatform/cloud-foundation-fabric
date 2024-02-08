@@ -96,7 +96,7 @@ which helps to create those references.
    ```tfvars
    created_resources = {
      vpc_id    = "jump-0"
-     subnet_id = "jump-0-default"
+     subnet_id = "projects/<walkthrough-project-id/>/regions/europe-west4/subnetworks/jump-0-default"
    }
    credentials_config = {
      kubeconfig = {
