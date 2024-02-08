@@ -168,11 +168,19 @@ You should see following response, when all nodes are ready:
 
 4. Connect to database
    ```sh
-   mysql -h 10.0.0.20 -p 6446 -u root
+   mysql --ssl -h 10.0.0.20 -P 6446 -u root -p
    ```
+And paste copied password.
+
+5. Create a sample table
+```sh
+use mysql
+create table ha_test(id INT NOT NULL AUTO_INCREMENT, data varchar(64), PRIMARY KEY (id));
+insert into ha_test(data) values('123');
+select * from ha_test;
+```
 
 ## Congratulations
-
 <walkthrough-conclusion-trophy></walkthrough-conclusion-trophy>
 
 You're all set!
