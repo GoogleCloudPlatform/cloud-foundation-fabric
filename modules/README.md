@@ -79,6 +79,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Bigtable instance](./bigtable-instance)
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
+- [Data Catalog Tag](./data-catalog-tag)
 - [Data Catalog Tag Template](./data-catalog-tag-template)
 - [Dataform Repository](./dataform-repository/)
 - [Datafusion](./datafusion)
