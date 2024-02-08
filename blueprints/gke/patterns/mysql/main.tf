@@ -16,9 +16,10 @@
 
 locals {
   manifest_template_parameters = {
-    mysql_config  = var.mysql_config
-    namespace     = helm_release.mysql-operator.namespace
-    registry_path = var.registry_path
+    mysql_config   = var.mysql_config
+    namespace      = helm_release.mysql-operator.namespace
+    registry_path  = var.registry_path
+    mysql_password = random_password.mysql_password.result
   }
   stage_1_templates = [
     for f in fileset(local.wl_templates_path, "01*yaml") :
@@ -34,6 +35,13 @@ locals {
     ? "${path.module}/manifest-templates"
     : pathexpand(var.templates_path)
   )
+}
+
+resource "random_password" "mysql_password" {
+  length  = 32
+  lower   = true
+  numeric = true
+  upper   = true
 }
 
 resource "helm_release" "mysql-operator" {

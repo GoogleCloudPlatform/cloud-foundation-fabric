@@ -68,12 +68,15 @@ created_resources = {
   "subnet_id" = "projects/<project-id>/regions/europe-west8/subnetworks/jump-0-default"
   "vpc_id" = "projects/<project-id>/global/networks/jump-0"
 }
+credentials_config = {
+  "fleet_host" = "https://connectgateway.googleapis.com/v1/projects/<project-number>/locations/global/gkeMemberships/cluster-00"
+}
 fleet_host = "https://connectgateway.googleapis.com/v1/projects/<project-number>/locations/global/gkeMemberships/cluster-00"
 get_credentials = {
   "direct" = "gcloud container clusters get-credentials cluster-00 --project <project-id> --location europe-west8"
   "fleet" = "gcloud container fleet memberships get-credentials cluster-00 --project <project-id>"
 }
-
+region = "europe-west4"
 ```
 
 ## Prepare configuration for MySQL deployment
@@ -83,7 +86,12 @@ which helps to create those references.
 1. Pass outputs from autopilot-cluster module to the mysql module
 This passes information about cluster endpoint network, subnetwork and region, so it is not necessary to configure that manually.
    ```sh
-   terraform output -json > ../mysql/terraform.tfvars.json
+   (
+    echo -n "{" ;
+    for i in created_resources credentials_config region
+    do echo -n "\"$i\": $(terraform output -json $i),"
+    done
+   ) | sed -e 's/,$/}/' > ../mysql/terraform.tfvars.json
    ```
 
 2. Change directory to mysql
@@ -110,7 +118,7 @@ This passes information about cluster endpoint network, subnetwork and region, s
       # router_cpu       = "500m"
       # router_memory    = "2Gi"
       # version          = "8.0.34"
-   })
+   }
    namespace  = "mysql-ha"
    project_id = "<walkthrough-project-id/>"
    ```
@@ -132,12 +140,23 @@ This passes information about cluster endpoint network, subnetwork and region, s
     ````
 
 3. Wait until deployment is ready
-It takes some time, as cluster needs to create new nodes to accomodate this workload
+   ```sh
+   kubectl get statefulset -n mysql-ha mycluster -w
+   ```
+You should see following response, when all nodes are ready:
+   ```terminal
+   NAME        READY   AGE
+   mycluster   0/3     118s
+   mycluster   1/3     3m39s
+   mycluster   2/3     3m54s
+   mycluster   3/3     4m5s
+   ```
+   It takes 4-5 minutes time, as cluster needs to create new nodes to accommodate this workload. Once all nodes are ready, press ctrl-c to return to the command line.
 
 ## Check connectivity
-1. Get password to login to server
+1. Get password to MySQL user
    ```sh
-   kubctl secret list
+   echo $(terraform output -raw mysql_password)
    ```
 
 2. Login to bastion host:
@@ -146,14 +165,15 @@ It takes some time, as cluster needs to create new nodes to accomodate this work
    ```
 
 3. Install mysql-client:
-```sh
-apt install mysql-client
-```
+   ```sh
+   sudo apt update
+   sudo apt install -y mariadb-client
+   ```
 
 4. Connect to database
-```sh
-mysql -h 10.0.0.20 -u root
-```
+   ```sh
+   mysql -h 10.0.0.20 -p 6446 -u root
+   ```
 
 ## Congratulations
 
@@ -173,4 +193,4 @@ cd ../autopilot-cluster
 terraform destroy
 ```
 
-Self-link: https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git&cloudshell_tutorial=mysql/tutorial.md&cloudshell_git_branch=gke-blueprints/0-redis&cloudshell_workspace=blueprints/gke/patterns&show=ide%2Cterminal
+Self-link: https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git&cloudshell_tutorial=mysql/tutorial.md&cloudshell_git_branch=gke/mysql&cloudshell_workspace=blueprints/gke/patterns&show=ide%2Cterminal
