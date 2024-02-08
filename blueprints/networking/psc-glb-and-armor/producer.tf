@@ -155,7 +155,6 @@ resource "google_compute_subnetwork" "ilb_subnetwork" {
   region  = var.region
   project = module.producer_project.project_id
 
-  network       = google_compute_network.psc_ilb_network.id
   ip_cidr_range = "10.0.0.0/16"
   purpose       = "INTERNAL_HTTPS_LOAD_BALANCER"
   role          = "ACTIVE"
