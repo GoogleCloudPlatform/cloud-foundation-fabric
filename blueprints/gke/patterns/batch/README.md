@@ -12,15 +12,42 @@
 <img width="200px" src="../../../../assets/images/cloud-shell-button.png">
 </a>
 
-This blueprint shows you how to deploy a batch system using [Kueue](https://kueue.sigs.k8s.io/docs/overview/) to perform Job queueing on Google Kubernetes Engine (GKE) using Terraform.
+This blueprint shows how to deploy a batch system using [Kueue](https://kueue.sigs.k8s.io/docs/overview/) to perform Job queueing on Google Kubernetes Engine (GKE) using Terraform.
 
 Kueue is a Cloud Native Job scheduler that works with the default Kubernetes scheduler, the Job controller, and the cluster autoscaler to provide an end-to-end batch system. Kueue implements Job queueing, deciding when Jobs should wait and when they should start, based on quotas and a hierarchy for sharing resources fairly among teams.
 
-This blueprint assumes the GKE cluster already exists. We recoomend using the accompanying [Autopilot Cluster Pattern](../autopilot-clusters) to deploy a cluster according to Google's best practices. Once you have the cluster up-and-running, you can use this blueprint to deploy Kueue in it
+This blueprint assumes the GKE cluster already exists. We recommend using the accompanying [Autopilot Cluster Pattern](../autopilot-cluster) to deploy a cluster according to Google's best practices. Once you have the cluster up-and-running, you can use this blueprint to deploy Kueue in it.
+
+## Requirements
+
+The Kueue manifests uses container images hosted by registry.k8s.io, which means that the subnet where the GKE cluster is deployed needs to have Internet connectivity to download the images. If you're using the provided [Autopilot Cluster Pattern](../autopilot-cluster), you can set the `enable_cloud_nat` option of the `vpc_create` variable.
 
 ## Cluster authentication
+Once you have cluster with Internet connectivity, create a `terraform.tfvars` and setup the `credentials_config` variable. We recommend using Anthos Fleet to simplify accessing the control plane.
 
 ## Kueue Configuration
+
+Only two variables are available to control Kueue's configuration:
+- `teams_namespaces` which controls the namespaces uses by different teams to run jobs.
+- `kueue_namespace` which controls the namepsace to deploy Kueue's own resources.
+
+Any other configuration can be applied by directly modifying the YAML manifests under the [manifests-templates](manifests-templates) directory
+
+## Sample Configuration
+
+The following template as a starting point for your terraform.tfvars
+```tfvars
+credentials_config = {
+  kubeconfig = {
+    path = "~/.kube/config"
+  }
+}
+teams_namespaces = [
+  "team-a",
+  "team-b"
+]
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
