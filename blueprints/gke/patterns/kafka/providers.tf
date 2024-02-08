@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,22 @@ data "google_client_config" "identity" {
   count = var.credentials_config.fleet_host != null ? 1 : 0
 }
 
-provider "kubernetes" {
-  config_path = (
-    var.credentials_config.kubeconfig == null
-    ? null
-    : pathexpand(var.credentials_config.kubeconfig.path)
-  )
-  config_context = try(
-    var.credentials_config.kubeconfig.context, null
-  )
-  host = (
-    var.credentials_config.fleet_host == null
-    ? null
-    : var.credentials_config.fleet_host
-  )
-  token = try(data.google_client_config.identity.0.access_token, null)
-}
+# provider "kubernetes" {
+#   config_path = (
+#     var.credentials_config.kubeconfig == null
+#     ? null
+#     : pathexpand(var.credentials_config.kubeconfig.path)
+#   )
+#   config_context = try(
+#     var.credentials_config.kubeconfig.context, null
+#   )
+#   host = (
+#     var.credentials_config.fleet_host == null
+#     ? null
+#     : var.credentials_config.fleet_host
+#   )
+#   token = try(data.google_client_config.identity.0.access_token, null)
+# }
 
 provider "kubectl" {
   host = (

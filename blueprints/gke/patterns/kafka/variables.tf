@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ variable "kafka_config" {
   type = object({
     replicas          = optional(number, 3)
     volume_claim_size = optional(string, "10Gi")
-    version           = optional(string, "3.4.0")
+    version           = optional(string, "3.6.0")
     jvm_memory        = optional(string, "4096m")
   })
   nullable = false
