@@ -38,10 +38,11 @@ locals {
 }
 
 resource "random_password" "mysql_password" {
-  length  = 32
+  length  = 28
   lower   = true
   numeric = true
   upper   = true
+  special = false
 }
 
 resource "helm_release" "mysql-operator" {
