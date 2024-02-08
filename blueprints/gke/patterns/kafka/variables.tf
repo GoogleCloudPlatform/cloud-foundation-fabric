@@ -53,7 +53,7 @@ variable "kafka_config" {
 }
 
 variable "zookeeper_config" {
-  description = "Configure Kafka cluster statefulset parameters."
+  description = "Configure Zookeper cluster statefulset parameters."
   type = object({
     replicas          = optional(number, 3)
     volume_claim_size = optional(string, "10Gi")

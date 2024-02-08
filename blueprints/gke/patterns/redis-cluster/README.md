@@ -7,7 +7,6 @@
 - [Redis Cluster Configuration](#redis-cluster-configuration)
 - [Sample Configuration](#sample-configuration)
 - [Variables](#variables)
-- [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Introduction
@@ -60,10 +59,4 @@ statefulset_config = {
 | [namespace](variables.tf#L43) | Namespace used for Redis cluster resources. | <code>string</code> |  | <code>&#34;redis&#34;</code> |
 | [statefulset_config](variables.tf#L50) | Configure Redis cluster statefulset parameters. | <code title="object&#40;&#123;&#10;  replicas &#61; optional&#40;number, 6&#41;&#10;  resource_requests &#61; optional&#40;object&#40;&#123;&#10;    cpu    &#61; optional&#40;string, &#34;1&#34;&#41;&#10;    memory &#61; optional&#40;string, &#34;1Gi&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  volume_claim_size &#61; optional&#40;string, &#34;10Gi&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [templates_path](variables.tf#L68) | Path where manifest templates will be read from. Set to null to use the default manifests | <code>string</code> |  | <code>null</code> |
-
-## Outputs
-
-| name | description | sensitive |
-|---|---|:---:|
-| [start_cluster](outputs.tf#L17) | Run suspended job that initializes and starts the cluster. |  |
 <!-- END TFDOC -->
