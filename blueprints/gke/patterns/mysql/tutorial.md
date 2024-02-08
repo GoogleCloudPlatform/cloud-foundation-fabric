@@ -38,6 +38,7 @@ Click the **Start** button to move to the next step.
      enable_cloud_nat = true
    }
    ```
+MySQL cluster images are downloaded from Oracle repository, thus cluster network requires Internet connectivity. This is provided by provisioning Cloud NAT instance.
 
 4. Initialize terraform
     ```sh
