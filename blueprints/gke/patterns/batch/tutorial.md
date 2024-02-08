@@ -30,7 +30,8 @@ When working with Kueue there are a few concepts that ome needs to be familiar w
     A namespaced resource that groups closely related workloads belonging to a single tenant.
 
 * Workload
-An application that will run to completion. It is the unit of admission in Kueue. Sometimes referred to as job
+    
+    An application that will run to completion. It is the unit of admission in Kueue. Sometimes referred to as job
 
 Kueue refers to jobs defined with any API as Workloads, to avoid the confusion with the specific Kubernetes Job API.
 
@@ -150,7 +151,7 @@ vpc_create = {
     terraform apply
     ```
 
-7. Check that the Kueue pods are ready
+7. Check that the Kueue pods are ready (Use CTRL+C to exit watching)
 
     ```bash
     kubectl get pods -n kueue-system -w
@@ -182,10 +183,10 @@ vpc_create = {
 
     Hit Ctrl-C when you want to stop the creation of jobs
 
-2. Observe the Jobs being queued up, admitted in the ClusterQueue, and nodes being brought up with GKE Autopilot.
+2. Observe the workloads being queued up, admitted in the ClusterQueue, and nodes being brought up with GKE Autopilot.
 
     ```bash
-    kubectl -n team-a get jobs
+    kubectl -n team-a get workloads
     ```
 
 3. Copy a Job name from the previous step and observe the admission status and events for a Job through the W    Workloads API:

@@ -29,16 +29,17 @@ Click the **Start** button to move to the next step.
 
 3. Paste the following content into the file and adapt for your needs if necessary
 
-    ```tfvars
-    project_id     = "<walkthrough-project-id/>"
-    cluster_name   = "cluster-00"
-    cluster_create = {
-        deletion_protection = false
+   ```tfvars
+   project_id     = "<walkthrough-project-id/>"
+   cluster_name   = "cluster-00"
+   cluster_create = {
+     deletion_protection = false
    }
-    vpc_create = {
-        enable_cloud_nat = true
-    }
-    ```
+   region = "europe-west4"
+   vpc_create = {
+     enable_cloud_nat = true
+   }
+   ```
 
 4. Initialize terraform
 
@@ -79,18 +80,45 @@ get_credentials = {
 To deploy MySQL you need to provide a few references to already created GKE cluster. The module used provides outputs
 which helps to create those references.
 
-1. Change directory to mysql
+1. Pass outputs from autopilot-cluster module to the mysql module
+This passes information about cluster endpoint network, subnetwork and region, so it is not necessary to configure that manually.
+   ```sh
+   terraform output -json > ../mysql/terraform.tfvars.json
+   ```
+
+2. Change directory to mysql
     ```sh
     cd ../mysql
     ```
-2. Create `terraform.tfvars` referencing GKE Autopilot cluster
-    ```sh
-    echo "credentials_config = {" > terraform.tfvars
-    echo "fleet_host = $(cd ../autopilot-cluster && terraform output fleet_host )"  >> terraform.tfvars
-    echo "}" >> terraform.tfvars
-    ```
+3. Create a new `terraform.tfvars` for MySQL deployment
+   ```sh
+   touch terraform.tfvars
+   ```
 
-You can also customize the sizing of MySQL instance by providing mysql_config (link to docs).
+4. Open <walkthrough-editor-open-file filePath="mysql/terraform.tfvars">mysql/terraform.tfvars</walkthrough-editor-open-file> file.
+
+5. Paste the following content into the file and adapt for your needs if necessary
+
+   ```tfvars
+   mysql_config = {
+      ip_address       = "10.0.0.20"
+      # db_cpu           = "500m"
+      # db_database_size = "10Gi"
+      # db_memory        = "1Gi"
+      # db_replicas      = 3
+      # router_replicas  = 2 # cannot be higher than number of the zones in region
+      # router_cpu       = "500m"
+      # router_memory    = "2Gi"
+      # version          = "8.0.34"
+   })
+   namespace  = "mysql-ha"
+   project_id = "<walkthrough-project-id/>"
+   ```
+
+6. Get credentials for created cluster
+   ```sh
+   gcloud container fleet memberships get-credentials cluster-00 --project <walkthrough-project-id/>
+   ```
 
 ## Deploy
 1. Initialize terraform
@@ -98,14 +126,34 @@ You can also customize the sizing of MySQL instance by providing mysql_config (l
    terraform init
     ```
 
-# need to run:
-gcloud container clusters get-credentials cluster-00 --region="europe-west8" --project wns-gke-cloudshell
-???
-
 2. Deploy MySQL
     ```sh
     terraform apply
     ````
+
+3. Wait until deployment is ready
+It takes some time, as cluster needs to create new nodes to accomodate this workload
+
+## Check connectivity
+1. Get password to login to server
+   ```sh
+   kubctl secret list
+   ```
+
+2. Login to bastion host:
+   ```sh
+   gcloud compute ssh --project <walkthrough-project-id/>  bastion
+   ```
+
+3. Install mysql-client:
+```sh
+apt install mysql-client
+```
+
+4. Connect to database
+```sh
+mysql -h 10.0.0.20 -u root
+```
 
 ## Congratulations
 

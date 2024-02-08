@@ -22,6 +22,11 @@ locals {
       var.vpc_create != null || var.project_create != null
     )
   )
+  fleet_host = join("", [
+    "https://connectgateway.googleapis.com/v1/",
+    "projects/${local.fleet_project.number}/",
+    "locations/global/gkeMemberships/${var.cluster_name}"
+  ])
   fleet_project = (
     var.fleet_project_id == null
     ? {
