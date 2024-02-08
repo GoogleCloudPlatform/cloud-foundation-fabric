@@ -37,17 +37,20 @@ output "created_resources" {
     },
     local.proxy_only_subnet == null ? {} : {
       proxy_only_subnet = one(values(module.vpc.0.subnets_proxy_only)).id
-    }
+    },
   )
+}
+
+output "credentials_config" {
+  description = "Configure how Terraform authenticates to the cluster."
+  value = {
+    fleet_host = local.fleet_host
+  }
 }
 
 output "fleet_host" {
   description = "Fleet Connect Gateway host that can be used to configure the GKE provider."
-  value = join("", [
-    "https://connectgateway.googleapis.com/v1/",
-    "projects/${local.fleet_project.number}/",
-    "locations/global/gkeMemberships/${var.cluster_name}"
-  ])
+  value       = local.fleet_host
 }
 
 output "get_credentials" {
@@ -62,4 +65,9 @@ output "get_credentials" {
       " --project ${var.project_id}"
     ])
   }
+}
+
+output "region" {
+  description = "Region used for cluster and network resources."
+  value = var.region
 }
