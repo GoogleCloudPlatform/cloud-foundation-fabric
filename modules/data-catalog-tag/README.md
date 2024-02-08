@@ -2,6 +2,10 @@
 
 This module allows managing [Data Catalog Tag](https://cloud.google.com/data-catalog/docs/tags-and-tag-templates) on GCP resources such as BigQuery Datasets, Tables or columns.
 
+## TODO
+
+- Add support for entries different than Bigquery resources.
+
 ## Examples
 
 ### Dataset Tag
