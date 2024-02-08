@@ -1,4 +1,4 @@
-# Highly Available Kafka on GKE
+# Highly Available Redis Cluster on GKE
 
 <!-- BEGIN TOC -->
 - [Introduction](#introduction)
