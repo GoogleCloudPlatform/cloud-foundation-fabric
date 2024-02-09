@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ variable "credentials_config" {
 }
 
 variable "mysql_config" {
-  description = "Configure MySQL server and router instances"
+  description = "Configure MySQL server and router instances."
   type = object({
     db_cpu           = optional(string, "500m")
     db_database_size = optional(string, "10Gi")
@@ -67,7 +67,7 @@ variable "namespace" {
 }
 
 variable "project_id" {
-  description = "Project to deploy bastion host"
+  description = "Project to deploy bastion host."
   type        = string
 }
 
@@ -77,15 +77,14 @@ variable "region" {
 }
 
 variable "registry_path" {
-  description = "Repository path for images. Default is to use Docker Hub images"
+  description = "Repository path for images. Default is to use Docker Hub images."
   type        = string
   nullable    = false
   default     = "docker.io"
 }
 
 variable "templates_path" {
-  description = "Path where manifest templates will be read from. Set to null to use the default manifests"
+  description = "Path where manifest templates will be read from. Set to null to use the default manifests."
   type        = string
   default     = null
 }
-
