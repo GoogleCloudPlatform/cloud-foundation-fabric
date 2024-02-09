@@ -1,0 +1,19 @@
+# skip boilerplate check
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster
+  namespace: ${namespace}
+spec:
+  clusterIP: None
+  ports:
+  - name: redis-port
+    port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: redis
+    appCluster: redis-cluster
+  sessionAffinity: None
+  type: ClusterIP
