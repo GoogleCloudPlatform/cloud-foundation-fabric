@@ -14,6 +14,7 @@
 # limitations under the License.
 
 output "mysql_password" {
-  value     = random_password.mysql_password.result
-  sensitive = true
+  description = "Password for the MySQL root user."
+  value       = random_password.mysql_password.result
+  sensitive   = true
 }

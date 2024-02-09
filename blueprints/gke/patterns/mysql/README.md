@@ -101,5 +101,5 @@ mysql_config = {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [mysql_password](outputs.tf#L16) |  | ✓ |
+| [mysql_password](outputs.tf#L16) | Password for the MySQL root user. | ✓ |
 <!-- END TFDOC -->
