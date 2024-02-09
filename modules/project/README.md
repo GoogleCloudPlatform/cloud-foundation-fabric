@@ -1028,4 +1028,6 @@ module "bucket" {
 | [service_accounts](outputs.tf#L96) | Product robot service accounts in project. |  |
 | [services](outputs.tf#L112) | Service APIs to enabled in the project. |  |
 | [sink_writer_identities](outputs.tf#L121) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L128) | Tag key resources. |  |
+| [tag_values](outputs.tf#L137) | Tag value resources. |  |
 <!-- END TFDOC -->
