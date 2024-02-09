@@ -1,15 +1,14 @@
-# Deploying MySQL highly available cluster on top of Google Kubernetes EngineC
+# Deploying a highly available MySQL cluster on top of Google Kubernetes Engine
 <walkthrough-tutorial-duration duration="40"></walkthrough-tutorial-duration>
 
 ## Let's get started!
-This guide will show you how to deploy MySQL highly available cluster on top Google Kubernetes Engine. The uses
-3 MySQL instances behind MySQL-proxy which is responsible to route traffic to active instance.
+This guide will show you how to deploy MySQL highly available cluster on top Google Kubernetes Engine. The uses 3 MySQL instances behind MySQL-proxy which is responsible to route traffic to active instance.
 
 During this guide you will deploy a new GKE cluster, MySQL database and you will connect to database to check its connectivity.
 
 **Time to complete**: About TBC minutes
 
-**Prerequisites**: A Cloud Billing account
+**Prerequisites**: A GCP Project with billing enabled
 
 Click the **Start** button to move to the next step.
 
