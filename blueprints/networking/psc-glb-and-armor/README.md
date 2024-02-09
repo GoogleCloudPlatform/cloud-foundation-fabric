@@ -123,5 +123,5 @@ module "psc-glb-and-armor-test" {
   consumer_project_id = "project-1"
   producer_project_id = "project-2"
 }
-# tftest modules=3 resources=31
+# tftest modules=3 resources=32
 ```
