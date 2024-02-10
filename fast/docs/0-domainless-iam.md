@@ -89,13 +89,13 @@ This is an example use in the IaC project:
   }
 ```
 
-This proposal addresses the issue by changing the module-level interface to support different principal types. The original goal for `group_iam` -- to allow for better readability -- is preserved at the cost of a slight increase in verbosity, from having to specify the principal type for each principal
+This proposal addresses the issue by changing the module-level interface to support different principal types. The original goal for `group_iam` -- to allow for better readability -- is preserved at the cost of the slight increase in verbosity due to having to specify the principal type.
 
-The trade-off in verbosity is accetable since it makes the new interface a lot more flexible, introducing support for types like `principal:` and `principalSet:` which are becoming more and more common.
+The trade-off in verbosity seems acceptable as it makes the new interface more flexible, and allows using the interface for `principal:` and `principalSet:` types, which are becoming more and more important to support.
 
-FAST code would be unchanged, as the `groups` local already contains the principal prefix for each "group", either interpolated or passed in by the user.
+FAST code remains unchanged, as the `groups` local already contains a prefix for each principal, either interpolated or passed in by the user.
 
-This module-level variable definition would change only its name and description:
+The module-level variable definition changes only its name and description:
 
 ```hcl
 variable "iam_principals" {
