@@ -106,7 +106,7 @@ variable "iam_principals" {
 }
 ```
 
-Use would also be almost identical to the current `group_iam` interface:
+Actual use is basically unchanged from the current `group_iam` interface:
 
 ```hcl
 # current interface
