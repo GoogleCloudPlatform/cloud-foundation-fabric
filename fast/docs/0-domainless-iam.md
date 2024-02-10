@@ -27,7 +27,7 @@ This proposal removes the dependency from groups by allowing to pass in to FAST 
 
 The current `groups` variable was meant as a simple mapping between logical profile names used internally by FAST, and actual group names. The default case was furthermore made easier by interpolating the organization domain when no domain was specified, and adding the `group:` principal prefix for IAM bindings.
 
-The new proposed variable maintains the legacy behaviour, but slightly changes it so that no interpolation happens if the variable attributes have a principal prefix. The variable type is also updated to use `optional`, so that individual group principals can be specified without having to override the whole block.
+The new proposed variable maintains the legacy behaviour, but slightly changes it so that no interpolation happens if the variable attributes have a principal prefix. The variable type is also updated to use `optional`, so that individual logical profiles can be specified without having to override the whole block.
 
 Finally, the name changes to `group_principals` to indicate that any type of principal can be used, not only `group:` or `user:` but more importantly `princpal:` and `principalSet:` to support domain-less organizations.
 
