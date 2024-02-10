@@ -17,17 +17,18 @@
 # tfdoc:file:description IAM bindings.
 
 locals {
-  _group_iam_roles = distinct(flatten(values(var.group_iam)))
-  _group_iam = {
-    for r in local._group_iam_roles : r => [
-      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
+  _iam_principal_roles = distinct(flatten(values(var.iam_principals)))
+  _iam_principals = {
+    for r in local._iam_principal_roles : r => [
+      for k, v in var.iam_principals :
+      k if try(index(v, r), null) != null
     ]
   }
   iam = {
-    for role in distinct(concat(keys(var.iam), keys(local._group_iam))) :
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
     role => concat(
       try(var.iam[role], []),
-      try(local._group_iam[role], [])
+      try(local._iam_principals[role], [])
     )
   }
 }
