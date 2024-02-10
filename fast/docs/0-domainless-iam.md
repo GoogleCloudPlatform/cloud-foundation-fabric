@@ -1,6 +1,6 @@
 # Support for domain-less organizations
 
-**authors:** [Ludo](https://github.com/ludoo)
+**authors:** [Ludo](https://github.com/ludoo) \
 **date:** Feb 11, 2024
 
 ## Status
