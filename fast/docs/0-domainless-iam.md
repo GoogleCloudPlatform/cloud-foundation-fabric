@@ -19,7 +19,7 @@ Removing the assumption that FAST logical principals (e.g. `gcp-organization-adm
 - to define additive IAM bindings via the module-level `iam_bindings_additive` interface
 - to set essential contacts at the folder and project level
 
-This proposal removes the dependency from groups, and tries at the same time to preserve code readability in IAM bindings by changing the `group_iam` module interface so that it can be used for a wider set of principals.
+This proposal removes the dependency from groups by allowing to pass in to FAST any principal type, while still trying to preserve the current default behaviour and code readability in IAM bindings.
 
 ## Proposal
 
