@@ -70,7 +70,9 @@ locals {
 
 ### FAST IAM additive bindings and module interface change
 
-FAST leverages the `group_iam` module interfaces to improve code readability for authoritative bindings, which is a primary goal of the framework. This is an example use in the IaC project:
+FAST leverages the `group_iam` module-level interface to improve code readability for authoritative bindings, which is a primary goal of the framework. Introducing support for any principal type would prevent us from using this interface, with a non-trivial impact on the overall readability of IAM roles in FAST.
+
+This is an example use in the IaC project:
 
 ```hcl
   # human (groups) IAM bindings
@@ -86,13 +88,13 @@ FAST leverages the `group_iam` module interfaces to improve code readability for
   }
 ```
 
-Introducing support for any principal type would prevent us from using this interface, with a non-trivial impact on the overall readability of IAM roles in FAST.
+This proposal addresses the issue by changing the module-level interface to support different principal types. The original goal for `group_iam` -- to allow for better readability -- is preserved at the cost of a slight increase in verbosity, from having to specify the principal type for each principal
 
-This proposal addresses the issue by changing the modules' interface to support different principal types. The original goal for `group_iam` -- to allow for better readability -- is preserved at the cost of a slight increase in verbosity, due to having to specify the principal type for each principal. On the other hand, this would introduce support for types like `principal:` and `principalSet:` to the interface, greatly extending its use.
+The trade-off in verbosity is accetable since it makes the new interface a lot more flexible, introducing support for types like `principal:` and `principalSet:` which are becoming more and more common.
 
-FAST code would not change, as the `groups` local would already contain the principal prefix for each "group".
+FAST code would be unchanged, as the `groups` local already contains the principal prefix for each "group", either interpolated or passed in by the user.
 
-This is how the module-level `group_iam` variable definition would change:
+This module-level variable definition would change only its name and description:
 
 ```hcl
 variable "iam_principals" {
@@ -103,7 +105,7 @@ variable "iam_principals" {
 }
 ```
 
-Use would be mostly equivalent to the current `group_iam` interface:
+Use would also be almost identical to the current `group_iam` interface:
 
 ```hcl
 # current interface
