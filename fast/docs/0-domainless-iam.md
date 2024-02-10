@@ -71,7 +71,7 @@ locals {
 
 ### FAST IAM additive bindings and module interface change
 
-FAST leverages the `group_iam` module-level interface to improve code readability for authoritative bindings, which is a primary goal of the framework. Introducing support for any principal type would prevent us from using this interface, with a non-trivial impact on the overall readability of IAM roles in FAST.
+FAST leverages the `group_iam` module-level interface to improve code readability for authoritative bindings, which is a primary goal of the framework. Introducing support for any principal type prevents us from using this interface, with a non-trivial impact on the overall readability of IAM roles in FAST.
 
 This is an example use in the IaC project:
 
