@@ -9,7 +9,7 @@ Under review
 
 ## Context
 
-The current FAST desigs assumes that operational groups come from the same Cloud Identity instance connected to the GCP organization.
+The current FAST design assumes that operational groups come from the same Cloud Identity instance connected to the GCP organization.
 
 While this approach has worked well in the past, there are already designs that cannot be easily mapped (for example groups coming from a separate CI), and the situations will only get worse once domain-less organizations start to be in wider use.
 
