@@ -11,11 +11,14 @@ Under review
 
 The current FAST design assumes that operational groups come from the same Cloud Identity instance connected to the GCP organization.
 
-While this approach has worked well in the past, there are already designs that cannot be easily mapped (for example groups coming from a separate CI), and the situations will only get worse once domain-less organizations start to be in wider use.
+While this approach has worked well in the past, there are already designs that cannot be easily mapped (for example groups coming from a separate CI), and the situation will only get worse once domain-less organizations start to be in wider use.
 
-Removing the 1:1 mapping from the FAST logical principal (`gcp-organization-admins`) to the group is not as trivial as it looks at first glance, since FAST assumes the `groups` variable contains actual group names that can be used in IAM via the module-level `group_iam` variable, and set as essential contacts.
+Removing the assumption that FAST logical principals (e.g. `gcp-organization-admins`) always map directly to groups is not entirely trivial, since FAST uses data from the `groups` variable in different places:
 
-This proposal esentially decouples principals from groups, and tries at the same time to preserve code readability in IAM bindings by changing the modules interface for authoritative bindings, so that it can be used for a wider set of principals.
+- to define authoritative IAM bindings via the module-level `group_iam` interface
+- to set essential contacts at the folder and project level
+
+This proposal removes the dependency from groups, and tries at the same time to preserve code readability in IAM bindings by changing the `group_iam` module interface so that it can be used for a wider set of principals.
 
 ## Proposal
 
