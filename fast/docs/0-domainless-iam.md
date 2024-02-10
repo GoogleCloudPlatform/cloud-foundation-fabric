@@ -25,7 +25,7 @@ This proposal removes the dependency from groups by allowing to pass in to FAST 
 
 ### FAST variable type change and optional interpolation
 
-The current `groups` variable was meant as a simple mapping between logical profile names used internally by FAST, and actual group names. The organization domain was then interpolated if no domain was specified, and the `group:` prefix added for IAM bindings.
+The current `groups` variable was meant as a simple mapping between logical profile names used internally by FAST, and actual group names. The default case was furthermore made easier by interpolating the organization domain when no domain was specified, and adding the `group:` principal prefix for IAM bindings.
 
 The new proposed variable maintains the legacy behaviour, but slightly changes it so that no interpolation happens if the variable attributes have a principal prefix. The variable type is also updated to use `optional`, so that individual group principals can be specified without having to override the whole block.
 
