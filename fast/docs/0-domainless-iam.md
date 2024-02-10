@@ -16,6 +16,7 @@ While this approach has worked well in the past, there are already designs that 
 Removing the assumption that FAST logical principals (e.g. `gcp-organization-admins`) always map directly to groups is not entirely trivial, since FAST uses data from the `groups` variable in different places:
 
 - to define authoritative IAM bindings via the module-level `group_iam` interface
+- to define additive IAM bindings via the module-level `iam_bindings_additive` interface
 - to set essential contacts at the folder and project level
 
 This proposal removes the dependency from groups, and tries at the same time to preserve code readability in IAM bindings by changing the `group_iam` module interface so that it can be used for a wider set of principals.
