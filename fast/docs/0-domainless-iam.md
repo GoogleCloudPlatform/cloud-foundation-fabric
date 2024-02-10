@@ -99,7 +99,7 @@ The module-level variable definition changes only its name and description:
 
 ```hcl
 variable "iam_principals" {
-  description = "Authoritative IAM binding keyed by principal, in {PRINCIPAL => [ROLES]} format. Principal need to be statically defined. Internally merged with the `iam` variable."
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false
