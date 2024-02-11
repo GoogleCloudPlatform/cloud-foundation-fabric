@@ -86,6 +86,12 @@ variable "enable_cloud_nat" {
   nullable    = false
 }
 
+variable "essential_contacts" {
+  description = "Email used for essential contacts, unset if null."
+  type        = string
+  default     = null
+}
+
 variable "factories_config" {
   description = "Configuration for network resource factories."
   type = object({
@@ -130,16 +136,6 @@ variable "gcp_ranges" {
     gcp_prod_primary                = "10.72.0.0/16"
     gcp_prod_secondary              = "10.88.0.0/16"
   }
-}
-
-variable "groups" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
-  type = object({
-    gcp-network-admins = optional(string)
-  })
-  default  = {}
-  nullable = false
 }
 
 variable "onprem_cidr" {
