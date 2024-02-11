@@ -5,7 +5,7 @@
 
 ## Status
 
-Implemented in [#2064](/pull/2064) pending review and discussion.
+Implemented in [#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/ludo/iam-changes/fast/docs/0-domainless-iam.md) pending review and discussion.
 
 ## Context
 
