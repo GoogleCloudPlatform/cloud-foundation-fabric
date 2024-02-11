@@ -26,8 +26,8 @@ iam = {
     "user:user@example.com",
   ]
 }
-group_iam = {
-  "user-group@example.com" = [
+iam_principals = {
+  "group:user-group@example.com" = [
     "roles/dataplex.dataScanEditor"
   ]
 }
