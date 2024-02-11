@@ -5,7 +5,7 @@
 
 ## Status
 
-Implemented in #2064 pending review and discussion.
+Implemented in [#2064](/pull/2064) pending review and discussion.
 
 ## Context
 
