@@ -71,7 +71,7 @@ variable "iam_bindings_additive" {
 variable "location" {
   description = "Data Catalog Taxonomy location."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "name" {
