@@ -8,7 +8,7 @@ This module simplifies the creation of GCS buckets used by Google Container Regi
 module "container_registry" {
   source     = "./fabric/modules/container-registry"
   project_id = "myproject"
-  location   = "EU"
+  location   = var.region
   iam = {
     "roles/storage.admin" = ["group:cicd@example.com"]
   }
