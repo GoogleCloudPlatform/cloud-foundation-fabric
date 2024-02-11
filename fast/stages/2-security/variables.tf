@@ -35,27 +35,18 @@ variable "billing_account" {
   }
 }
 
+variable "essential_contacts" {
+  description = "Email used for essential contacts, unset if null."
+  type        = string
+  default     = null
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folder name => id mappings, the 'security' folder name must exist."
   type = object({
     security = string
   })
-}
-
-variable "groups" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Group names to grant organization-level permissions."
-  type        = map(string)
-  # https://cloud.google.com/docs/enterprise/setup-checklist
-  default = {
-    gcp-billing-admins      = "gcp-billing-admins",
-    gcp-devops              = "gcp-devops",
-    gcp-network-admins      = "gcp-network-admins"
-    gcp-organization-admins = "gcp-organization-admins"
-    gcp-security-admins     = "gcp-security-admins"
-    gcp-support             = "gcp-support"
-  }
 }
 
 variable "kms_keys" {
