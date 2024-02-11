@@ -29,11 +29,11 @@ module "branch-dp-folder" {
 }
 
 module "branch-dp-dev-folder" {
-  source    = "../../../modules/folder"
-  count     = var.fast_features.data_platform ? 1 : 0
-  parent    = module.branch-dp-folder.0.id
-  name      = "Development"
-  group_iam = {}
+  source         = "../../../modules/folder"
+  count          = var.fast_features.data_platform ? 1 : 0
+  parent         = module.branch-dp-folder.0.id
+  name           = "Development"
+  iam_principals = {}
   # owner and viewer roles are broad and might grant unwanted access
   # replace them with more selective custom roles for production deployments
   iam = {
@@ -58,11 +58,11 @@ module "branch-dp-dev-folder" {
 }
 
 module "branch-dp-prod-folder" {
-  source    = "../../../modules/folder"
-  count     = var.fast_features.data_platform ? 1 : 0
-  parent    = module.branch-dp-folder.0.id
-  name      = "Production"
-  group_iam = {}
+  source         = "../../../modules/folder"
+  count          = var.fast_features.data_platform ? 1 : 0
+  parent         = module.branch-dp-folder.0.id
+  name           = "Production"
+  iam_principals = {}
   # owner and viewer roles are broad and might grant unwanted access
   # replace them with more selective custom roles for production deployments
   iam = {

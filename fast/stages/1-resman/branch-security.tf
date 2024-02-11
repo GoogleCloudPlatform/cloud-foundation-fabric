@@ -20,8 +20,8 @@ module "branch-security-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Security"
-  group_iam = local.groups.gcp-security-admins == null ? {} : {
-    (local.groups.gcp-security-admins) = [
+  iam_principals = {
+    (local.principals.gcp-security-admins) = [
       # owner and viewer roles are broad and might grant unwanted access
       # replace them with more selective custom roles for production deployments
       "roles/editor"
