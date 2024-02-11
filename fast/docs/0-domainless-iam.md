@@ -5,7 +5,7 @@
 
 ## Status
 
-Under review
+Implemented in [#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064) pending review and discussion.
 
 ## Context
 
