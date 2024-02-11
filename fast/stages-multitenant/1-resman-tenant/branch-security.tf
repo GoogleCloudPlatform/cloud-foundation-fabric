@@ -20,8 +20,8 @@ module "branch-security-folder" {
   source = "../../../modules/folder"
   parent = module.root-folder.id
   name   = "Security"
-  group_iam = local.groups.gcp-security-admins == null ? {} : {
-    (local.groups.gcp-security-admins) = [
+  iam_principals = local.principals.gcp-security-admins == null ? {} : {
+    (local.principals.gcp-security-admins) = [
       # add any needed roles for resources/services not managed via Terraform,
       # e.g.
       # "roles/bigquery.admin",
