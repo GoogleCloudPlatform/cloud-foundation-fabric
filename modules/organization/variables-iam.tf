@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "iam" {
   description = "IAM bindings, in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
@@ -56,4 +49,11 @@ variable "iam_bindings_additive" {
   }))
   nullable = false
   default  = {}
+}
+
+variable "iam_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
