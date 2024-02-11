@@ -29,10 +29,8 @@ The current `groups` variable was meant as a simple mapping between logical prof
 
 The new proposed variable maintains the legacy behaviour, but slightly changes it so that no interpolation happens if the variable attributes have a principal prefix. The variable type is also updated to use `optional`, so that individual logical profile / principal mappings can be specified without having to override the whole block.
 
-Finally, the name changes to `group_principals` to indicate that any type of principal can be used, not only `group:` or `user:` but more importantly `princpal:` and `principalSet:` to support domain-less organizations.
-
 ```hcl
-variable "group_principals" {
+variable "groups" {
   type = object({
     gcp-billing-admins      = optional(string, "gcp-billing-admins")
     gcp-devops              = optional(string, "gcp-devops")
@@ -49,7 +47,7 @@ variable "group_principals" {
 Passing in different principals is intuitive:
 
 ```hcl
-group_principals = {
+groups = {
   gcp-devops = "principalSet://iam.googleapis.com/locations/global/workforcePools/mypool/group/abc123"
   gcp-organization-admins = "group:gcp-organization-admins@other.domain"
 }
