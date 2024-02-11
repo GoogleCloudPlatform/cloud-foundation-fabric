@@ -109,7 +109,7 @@ variable "labels" {
 variable "location" {
   description = "Dataset location."
   type        = string
-  default     = "EU"
+  default     = ""
 }
 
 variable "materialized_views" {
