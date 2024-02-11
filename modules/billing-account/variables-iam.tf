@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-variable "iam_principals" {
-  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
@@ -58,3 +51,9 @@ variable "iam_bindings_additive" {
   default  = {}
 }
 
+variable "iam_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
