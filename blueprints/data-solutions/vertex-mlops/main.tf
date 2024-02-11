@@ -16,9 +16,9 @@
 
 
 locals {
-  group_iam = merge(
+  iam_principals = merge(
     var.groups.gcp-ml-viewer == null ? {} : {
-      (var.groups.gcp-ml-viewer) = [
+      "group:${var.groups.gcp-ml-viewer}" = [
         "roles/aiplatform.viewer",
         "roles/artifactregistry.reader",
         "roles/dataflow.viewer",
@@ -27,7 +27,7 @@ locals {
       ]
     },
     var.groups.gcp-ml-ds == null ? {} : {
-      (var.groups.gcp-ml-ds) = [
+      "group:${var.groups.gcp-ml-ds}" = [
         "roles/aiplatform.admin",
         "roles/artifactregistry.admin",
         "roles/bigquery.dataEditor",
@@ -47,7 +47,7 @@ locals {
       ]
     },
     var.groups.gcp-ml-eng == null ? {} : {
-      (var.groups.gcp-ml-eng) = [
+      "group:${var.groups.gcp-ml-eng}" = [
         "roles/aiplatform.admin",
         "roles/artifactregistry.admin",
         "roles/bigquery.dataEditor",
@@ -195,7 +195,7 @@ module "project" {
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
   prefix          = var.prefix
-  group_iam       = local.group_iam
+  iam_principals  = local.iam_principals
   iam = {
     "roles/aiplatform.user" = [
       module.service-account-mlops.iam_email,

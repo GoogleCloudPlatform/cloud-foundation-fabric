@@ -66,8 +66,8 @@ module "sec-project" {
   prefix = (
     var.project_config.billing_account_id == null ? null : var.prefix
   )
-  group_iam = {
-    (local.groups.workload-security) = [
+  iam_principals = {
+    "group:${local.groups.workload-security}" = [
       "roles/editor"
     ]
   }

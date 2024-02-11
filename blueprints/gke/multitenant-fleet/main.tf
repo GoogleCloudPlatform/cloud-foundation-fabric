@@ -32,7 +32,7 @@ module "gke-project-0" {
   name            = var.project_id
   parent          = var.folder_id
   prefix          = var.prefix
-  group_iam       = var.group_iam
+  iam_principals  = var.iam_principals
   labels          = var.labels
   iam = merge(var.iam, {
     "roles/gkehub.serviceAgent" = [
