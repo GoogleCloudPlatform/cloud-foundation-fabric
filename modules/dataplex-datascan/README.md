@@ -382,7 +382,7 @@ module "dataplex-datascan" {
 
 IAM is managed via several variables that implement different features and levels of control:
 
-- `iam` and `group_iam` configure authoritative bindings that manage individual roles exclusively, and are internally merged
+- `iam` and `iam_principals` configure authoritative bindings that manage individual roles exclusively, and are internally merged
 - `iam_bindings` configure authoritative bindings with optional support for conditions, and are not internally merged with the previous two variables
 - `iam_bindings_additive` configure additive bindings via individual role/member pairs with optional support  conditions
 
@@ -409,8 +409,8 @@ module "dataplex-datascan" {
       "user:admin-user@example.com"
     ]
   }
-  group_iam = {
-    "user-group@example.com" = [
+  iam_principals = {
+    "group:user-group@example.com" = [
       "roles/dataplex.dataScanViewer"
     ]
   }
@@ -439,10 +439,10 @@ module "dataplex-datascan" {
 | [data_quality_spec_file](variables.tf#L85) | Path to a YAML file containing DataQualityScan related setting. Input content can use either camelCase or snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec. | <code title="object&#40;&#123;&#10;  path &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [description](variables.tf#L93) | Custom description for DataScan. | <code>string</code> |  | <code>null</code> |
 | [execution_schedule](variables.tf#L99) | Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API. | <code>string</code> |  | <code>null</code> |
-| [group_iam](variables-iam.tf#L17) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables-iam.tf#L24) | Dataplex DataScan IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L31) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L46) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_principals](variables-iam.tf#L17) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [incremental_field](variables.tf#L105) | The unnested field (of type Date or Timestamp) that contains values which monotonically increase over time. If not specified, a data scan will run for all data in the table. | <code>string</code> |  | <code>null</code> |
 | [labels](variables.tf#L111) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L123) | Optional prefix used to generate Dataplex DataScan ID. | <code>string</code> |  | <code>null</code> |
