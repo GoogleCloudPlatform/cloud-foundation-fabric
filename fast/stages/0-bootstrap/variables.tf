@@ -83,6 +83,12 @@ variable "custom_roles" {
   default     = {}
 }
 
+variable "essential_contacts" {
+  description = "Email used for essential contacts, unset if null."
+  type        = string
+  default     = null
+}
+
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
@@ -128,36 +134,20 @@ variable "federated_identity_providers" {
   # }
 }
 
-variable "group_iam" {
-  description = "Organization-level authoritative IAM binding for groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
-  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
+  description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
   type = object({
-    gcp-billing-admins      = string
-    gcp-devops              = string
-    gcp-network-admins      = string
-    gcp-organization-admins = string
-    gcp-security-admins     = string
-    gcp-support             = string
+    gcp-billing-admins      = optional(string, "gcp-billing-admins")
+    gcp-devops              = optional(string, "gcp-devops")
+    gcp-network-admins      = optional(string, "gcp-network-admins")
+    gcp-organization-admins = optional(string, "gcp-organization-admins")
+    gcp-security-admins     = optional(string, "gcp-security-admins")
+    # aliased to gcp-devops as the checklist does not create it
+    gcp-support = optional(string, "gcp-devops")
   })
-  default = {
-    gcp-billing-admins      = "gcp-billing-admins"
-    gcp-devops              = "gcp-devops"
-    gcp-network-admins      = "gcp-network-admins"
-    gcp-organization-admins = "gcp-organization-admins"
-    gcp-security-admins     = "gcp-security-admins"
-    # gcp-support is not included in the official GCP Enterprise
-    # Checklist, so by default we map gcp-support to gcp-devops.
-    # However, we recommend creating gcp-support and updating the
-    # value in the following line
-    gcp-support = "gcp-devops"
-  }
+  nullable = false
+  default  = {}
 }
 
 variable "iam" {
@@ -180,6 +170,13 @@ variable "iam_bindings_additive" {
   }))
   nullable = false
   default  = {}
+}
+
+variable "iam_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "locations" {

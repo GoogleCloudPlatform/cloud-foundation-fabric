@@ -23,7 +23,7 @@ locals {
     local.iam_sa_bindings,
     local.iam_user_bootstrap_bindings,
     {
-      for k, v in local.iam_group_bindings : "group:${k}" => {
+      for k, v in local.iam_principal_bindings : k => {
         authoritative = []
         additive      = v.additive
       }
@@ -59,8 +59,8 @@ locals {
     "tenant_network_admin",
   ]
   # intermediate values before we merge in what comes from the checklist
-  _group_iam = {
-    for k, v in local.iam_group_bindings : k => v.authoritative
+  _iam_principals = {
+    for k, v in local.iam_principal_bindings : k => v.authoritative
   }
   _iam = merge(
     {
@@ -77,10 +77,10 @@ locals {
     }
   }
   # final values combining all sources
-  group_iam = {
-    for k, v in local._group_iam : k => distinct(concat(
+  iam_principals = {
+    for k, v in local._iam_principals : k => distinct(concat(
       v,
-      try(local.checklist.group_iam[k], [])
+      try(local.checklist.iam_principals[k], [])
     ))
   }
   iam = {
@@ -98,7 +98,7 @@ locals {
   )
   # compute authoritative and additive roles for use by add-ons (checklist, etc.)
   iam_roles_authoritative = distinct(concat(
-    flatten(values(local._group_iam)),
+    flatten(values(local._iam_principals)),
     keys(local._iam)
   ))
   iam_roles_additive = distinct([
@@ -132,9 +132,9 @@ module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
   # human (groups) IAM bindings
-  group_iam = {
-    for k, v in local.group_iam :
-    k => distinct(concat(v, lookup(var.group_iam, k, [])))
+  iam_principals = {
+    for k, v in local.iam_principals :
+    k => distinct(concat(v, lookup(var.iam_principals, k, [])))
   }
   # machine (service accounts) IAM bindings
   iam = merge(
