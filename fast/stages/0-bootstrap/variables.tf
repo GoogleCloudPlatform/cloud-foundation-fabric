@@ -231,7 +231,7 @@ variable "org_policies_config" {
     constraints = optional(object({
       allowed_policy_member_domains = optional(list(string), [])
     }), {})
-    import_defaults = optional(bool, true)
+    import_defaults = optional(bool, false)
     tag_name        = optional(string, "org-policies")
     tag_values = optional(map(object({
       description = optional(string, "Managed by the Terraform organization module.")
