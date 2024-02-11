@@ -104,13 +104,15 @@ locals {
   iam_roles_additive = distinct([
     for k, v in local._iam_bindings_additive : v.role
   ])
+  # import org policies only when not using bootstrap user
+  import_org_policies = var.org_policies_config.import_defaults && var.bootstrap_user != null
 }
 
 # TODO: add a check block to ensure our custom roles exist in the factory files
 
 # import roles enabled by default on org creation (since Dec 2023)
 import {
-  for_each = !var.org_policies_config.import_defaults ? toset([]) : toset([
+  for_each = !local.import_org_policies ? toset([]) : toset([
     "compute.requireOsLogin",
     "compute.skipDefaultNetworkCreation",
     "compute.vmExternalIpAccess",
