@@ -29,7 +29,7 @@ module "kms" {
   source     = "./fabric/modules/kms"
   project_id = var.project_id
   keyring = {
-    location = "europe" # location of the KMS must match location of the bucket
+    location = "var.location" # location of the KMS must match location of the bucket
     name     = "test"
   }
   keys = {
