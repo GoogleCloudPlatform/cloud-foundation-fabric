@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Generic and OSLogin-specific IAM bindings and roles.
+# tfdoc:file:description IAM bindings.
 
 # IAM notes:
 # - external users need to have accepted the invitation email to join
@@ -26,10 +26,11 @@ locals {
       file("${var.factories_config.custom_roles}/${f}")
     )
   }
-  _group_iam_roles = distinct(flatten(values(var.group_iam)))
-  _group_iam = {
-    for r in local._group_iam_roles : r => [
-      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
+  _iam_principal_roles = distinct(flatten(values(var.iam_principals)))
+  _iam_principals = {
+    for r in local._iam_principal_roles : r => [
+      for k, v in var.iam_principals :
+      k if try(index(v, r), null) != null
     ]
   }
   custom_roles = merge(
@@ -47,10 +48,10 @@ locals {
     }
   )
   iam = {
-    for role in distinct(concat(keys(var.iam), keys(local._group_iam))) :
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
     role => concat(
       try(var.iam[role], []),
-      try(local._group_iam[role], [])
+      try(local._iam_principals[role], [])
     )
   }
 }
