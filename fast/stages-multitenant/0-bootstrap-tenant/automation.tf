@@ -26,12 +26,12 @@ module "automation-project" {
   )
   prefix = local.prefix
   # human (groups) IAM bindings
-  group_iam = {
-    (local.groups.gcp-admins) = [
+  iam_principals = {
+    (local.principals.gcp-admins) = [
       "roles/iam.serviceAccountAdmin",
       "roles/iam.serviceAccountTokenCreator",
     ]
-    (local.groups.gcp-admins) = [
+    (local.principals.gcp-admins) = [
       "roles/iam.serviceAccountTokenCreator",
       "roles/iam.workloadIdentityPoolAdmin"
     ]

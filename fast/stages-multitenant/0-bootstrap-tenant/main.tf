@@ -20,10 +20,6 @@ locals {
     ? "MULTI_REGIONAL"
     : "REGIONAL"
   )
-  groups = {
-    for k, v in var.tenant_config.groups :
-    k => v == null ? null : can(regex(".*@.*", v)) ? v : "${v}@${var.organization.domain}"
-  }
   fast_features = {
     for k, v in var.tenant_config.fast_features :
     k => v == null ? var.fast_features[k] : v
@@ -32,7 +28,18 @@ locals {
     for k, v in var.tenant_config.locations :
     k => v == null || v == [] ? var.locations[k] : v
   }
-  prefix = var.tenant_config.short_name_is_prefix ? var.tenant_config.short_name : join("-", compact([var.prefix, var.tenant_config.short_name]))
+  prefix = (
+    var.tenant_config.short_name_is_prefix
+    ? var.tenant_config.short_name
+    : join("-", compact([var.prefix, var.tenant_config.short_name]))
+  )
+  principals = {
+    for k, v in var.tenant_config.groups : k => (
+      can(regex("^[a-zA-Z]+:", v)) || v == null
+      ? v
+      : "group:${v}@${var.organization.domain}"
+    )
+  }
   resman_sa = (
     var.test_principal == null
     ? data.google_client_openid_userinfo.resman-sa.0.email
@@ -68,8 +75,8 @@ module "tenant-folder-iam" {
   source        = "../../../modules/folder"
   id            = module.tenant-folder.id
   folder_create = false
-  group_iam = merge(var.group_iam, {
-    (local.groups.gcp-admins) = [
+  iam_principals = merge(var.iam_principals, {
+    (local.principals.gcp-admins) = [
       "roles/logging.admin",
       "roles/owner",
       "roles/resourcemanager.folderAdmin",
