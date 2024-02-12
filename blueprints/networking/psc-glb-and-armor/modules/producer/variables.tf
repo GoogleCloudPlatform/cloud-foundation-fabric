@@ -14,27 +14,8 @@
  * limitations under the License.
  */
 
-variable "consumer_project_id" {
-  description = "The consumer project, in which the GCLB and Cloud Armor should be created."
-  type        = string
-}
-
-variable "prefix" {
-  description = "Prefix used for resource names."
-  type        = string
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty."
-  }
-}
-
-variable "producer_a_project_id" {
-  description = "The producer A project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
-  type        = string
-}
-
-variable "producer_b_project_id" {
-  description = "The producer B project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
+variable "producer_project_id" {
+  description = "The producer project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
   type        = string
 }
 
