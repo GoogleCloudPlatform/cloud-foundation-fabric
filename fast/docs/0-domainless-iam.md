@@ -6,7 +6,7 @@
 
 ## Status
 
-Implemented in [#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064) pending review and discussion.
+Implemented in [#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064).
 
 ## Context
 
@@ -139,7 +139,7 @@ This will require introduction of a new `essential_contacts` top-level variable 
 
 ## Decision
 
-Pending
+Rolled out.
 
 ## Consequences
 
