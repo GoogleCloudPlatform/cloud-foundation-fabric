@@ -7,7 +7,7 @@
 
 - Implemented in [#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595).
 - Authoritative bindings type changed as per [#1622](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/1622).
-- Extended by #2064
+- Extended by [#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/2064).
 
 ## Context
 
@@ -118,7 +118,7 @@ The **proposal** is to remove the IAM policy variable and resources, as its cove
 > [!NOTE]
 > This section was added on 2024-02-12
 
-#2064 replaced `group_iam` with `iam_by_principals`. The structure of `iam_by_principals` is similar to the original `group_iam` with the difference that now the user has to specify the principal type with the correct prefix. The new variable format is shown below
+[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/2064). replaced `group_iam` with `iam_by_principals`. The structure of `iam_by_principals` is similar to the original `group_iam` with the difference that now the user has to specify the principal type with the correct prefix. The new variable format is shown below
 
 ```hcl
 variable "iam_by_principals" {
