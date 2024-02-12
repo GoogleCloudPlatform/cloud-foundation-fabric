@@ -38,7 +38,7 @@ module "addresses" {
       subnetwork = var.subnet.self_link
     }
     ilb-2 = {
-      address    = "10.0.16.2"
+      address    = "10.0.16.102"
       region     = var.region
       subnetwork = var.subnet.self_link
     }
