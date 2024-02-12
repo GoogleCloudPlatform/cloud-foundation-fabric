@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -269,7 +269,7 @@ variable "team_folders" {
   description = "Team folders to be created. Format is described in a code comment."
   type = map(object({
     descriptive_name         = string
-    iam_principals           = optional(map(list(string)), {})
+    iam_by_principals        = optional(map(list(string)), {})
     impersonation_principals = optional(list(string), [])
   }))
   default = null

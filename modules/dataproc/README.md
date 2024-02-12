@@ -92,11 +92,11 @@ module "processing-dp-cluster" {
 
 IAM is managed via several variables that implement different features and levels of control:
 
-- `iam` and `iam_principals` configure authoritative bindings that manage individual roles exclusively, and are internally merged
+- `iam` and `iam_by_principals` configure authoritative bindings that manage individual roles exclusively, and are internally merged
 - `iam_bindings` configure authoritative bindings with optional support for conditions, and are not internally merged with the previous two variables
 - `iam_bindings_additive` configure additive bindings via individual role/member pairs with optional support  conditions
 
-The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `iam_principals` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
+The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `iam_by_principals` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
 Refer to the [project module](../project/README.md#iam) for examples of the IAM interface.
 
@@ -109,7 +109,7 @@ module "processing-dp-cluster" {
   name       = "my-cluster"
   region     = "europe-west1"
   prefix     = "prefix"
-  iam_principals = {
+  iam_by_principals = {
     "group:gcp-data-engineers@example.net" = [
       "roles/dataproc.viewer"
     ]
@@ -153,7 +153,7 @@ module "processing-dp-cluster" {
 | [iam](variables-iam.tf#L24) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L31) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L46) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam_principals](variables-iam.tf#L17) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_by_principals](variables-iam.tf#L17) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L185) | The resource labels for instance to use to annotate any related underlying resources, such as Compute Engine VMs. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L196) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
 | [service_account](variables.tf#L216) | Service account to set on the Dataproc cluster. | <code>string</code> |  | <code>null</code> |

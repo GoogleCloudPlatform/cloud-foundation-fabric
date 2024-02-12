@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ module "tenant-folder-iam" {
   source        = "../../../modules/folder"
   id            = module.tenant-folder.id
   folder_create = false
-  iam_principals = merge(var.iam_principals, {
+  iam_by_principals = merge(var.iam_by_principals, {
     (local.principals.gcp-admins) = [
       "roles/logging.admin",
       "roles/owner",

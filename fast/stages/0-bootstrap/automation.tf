@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ module "automation-project" {
     : { (var.essential_contacts) = ["ALL"] }
   )
   # human (groups) IAM bindings
-  iam_principals = {
+  iam_by_principals = {
     (local.principals.gcp-devops) = [
       "roles/iam.serviceAccountAdmin",
       "roles/iam.serviceAccountTokenCreator",

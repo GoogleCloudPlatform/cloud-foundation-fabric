@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,9 +132,9 @@ module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
   # human (groups) IAM bindings
-  iam_principals = {
+  iam_by_principals = {
     for k, v in local.iam_principals :
-    k => distinct(concat(v, lookup(var.iam_principals, k, [])))
+    k => distinct(concat(v, lookup(var.iam_by_principals, k, [])))
   }
   # machine (service accounts) IAM bindings
   iam = merge(

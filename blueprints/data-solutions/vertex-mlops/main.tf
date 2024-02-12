@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,13 +189,13 @@ module "cloudnat" {
 }
 
 module "project" {
-  source          = "../../../modules/project"
-  name            = var.project_config.project_id
-  parent          = var.project_config.parent
-  billing_account = var.project_config.billing_account_id
-  project_create  = var.project_config.billing_account_id != null
-  prefix          = var.prefix
-  iam_principals  = local.iam_principals
+  source            = "../../../modules/project"
+  name              = var.project_config.project_id
+  parent            = var.project_config.parent
+  billing_account   = var.project_config.billing_account_id
+  project_create    = var.project_config.billing_account_id != null
+  prefix            = var.prefix
+  iam_by_principals = local.iam_principals
   iam = {
     "roles/aiplatform.user" = [
       module.service-account-mlops.iam_email,

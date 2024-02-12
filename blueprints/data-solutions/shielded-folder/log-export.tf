@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ module "log-export-project" {
   prefix = (
     var.project_config.billing_account_id == null ? null : var.prefix
   )
-  iam_principals = {
+  iam_by_principals = {
     "group:${local.groups.workload-security}" = [
       "roles/editor"
     ]

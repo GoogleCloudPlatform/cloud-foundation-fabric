@@ -23,10 +23,10 @@ locals {
       file("${var.factories_config.custom_roles}/${f}")
     )
   }
-  _iam_principal_roles = distinct(flatten(values(var.iam_principals)))
+  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
   _iam_principals = {
     for r in local._iam_principal_roles : r => [
-      for k, v in var.iam_principals :
+      for k, v in var.iam_by_principals :
       k if try(index(v, r), null) != null
     ]
   }

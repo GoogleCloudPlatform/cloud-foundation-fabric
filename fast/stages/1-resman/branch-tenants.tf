@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ module "tenant-top-folder" {
   for_each = var.tenants
   parent   = module.tenant-tenants-folder.id
   name     = each.value.descriptive_name
-  iam_principals = {
+  iam_by_principals = {
     (each.value.admin_principal) = ["roles/browser"]
   }
 }
@@ -169,7 +169,7 @@ module "tenant-self-iac-project" {
   name   = "${each.key}-iac-core-0"
   parent = module.tenant-self-folder[each.key].id
   prefix = var.prefix
-  iam_principals = {
+  iam_by_principals = {
     (each.value.admin_principal) = [
       "roles/iam.serviceAccountAdmin",
       "roles/iam.serviceAccountTokenCreator",

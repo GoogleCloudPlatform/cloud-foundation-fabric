@@ -96,7 +96,7 @@ FAST code remains unchanged, as the `groups` local already contains a prefix for
 The module-level variable definition changes only its name and description:
 
 ```hcl
-variable "iam_principals" {
+variable "iam_by_principals" {
   description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
   type        = map(list(string))
   default     = {}
@@ -116,7 +116,7 @@ Actual use is basically unchanged from the current `group_iam` interface:
     ]
   }
 # proposed interface
-  iam_principals = {
+  iam_by_principals = {
     "group:app1-admins@example.org" = [
       "roles/owner",
       "roles/resourcemanager.folderAdmin",

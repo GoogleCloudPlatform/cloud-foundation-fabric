@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ dns_zones: list(str(), required=False)
 essential_contacts: list(str(), required=False) # Also used for billing alerts
 folder_id: str(matches='(organizations/|folders/)[0-9]*$')
 iam: map(list(str()), key=str(), required=False)
-iam_principals: map(list(str()), key=str(), required=False)
+iam_by_principals: map(list(str()), key=str(), required=False)
 kms_service_agents: map(list(str()), key=str(), required=False)
 labels: map(str(), key=str(), required=False)
 org_policies: include('org_policies', required=False)

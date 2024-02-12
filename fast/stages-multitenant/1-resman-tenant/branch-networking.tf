@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ module "branch-network-folder" {
   source = "../../../modules/folder"
   parent = module.root-folder.id
   name   = "Networking"
-  iam_principals = local.principals.gcp-network-admins == null ? {} : {
+  iam_by_principals = local.principals.gcp-network-admins == null ? {} : {
     (local.principals.gcp-network-admins) = [
       # add any needed roles for resources/services not managed via Terraform,
       # or replace editor with ~viewer if no broad resource management needed

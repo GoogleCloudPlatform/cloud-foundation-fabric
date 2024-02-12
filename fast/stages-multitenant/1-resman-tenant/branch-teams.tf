@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ module "branch-teams-team-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-teams-team-sa[each.key].iam_email]
     "roles/compute.xpnAdmin"               = [module.branch-teams-team-sa[each.key].iam_email]
   }
-  iam_principals = each.value.iam_principals
+  iam_by_principals = each.value.iam_by_principals
 }
 
 module "branch-teams-team-sa" {

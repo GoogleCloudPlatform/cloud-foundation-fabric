@@ -140,7 +140,7 @@ variable "iam" {
   nullable    = false
 }
 
-variable "iam_principals" {
+variable "iam_by_principals" {
   description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
   type        = map(list(string))
   default     = {}
