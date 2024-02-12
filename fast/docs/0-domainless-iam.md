@@ -140,7 +140,3 @@ This will require introduction of a new `essential_contacts` top-level variable 
 ## Decision
 
 Rolled out.
-
-## Consequences
-
-Pending
