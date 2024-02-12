@@ -105,6 +105,11 @@ resource "google_notebooks_instance" "playground" {
 
   instance_owners = try(tolist(var.notebooks[each.key].owner), null)
   service_account = module.service-account-notebook.email
+  service_account_scopes = [
+    "https://www.googleapis.com/auth/cloud-platform",
+    "https://www.googleapis.com/auth/userinfo.email",
+  ]
+
 
   metadata = {
     notebook-disable-nbconvert = "false"
