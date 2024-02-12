@@ -25,12 +25,12 @@ module "consumer_project" {
 }
 
 module "producer_a_project" {
-  source         = "./modules/producer"
+  source              = "./modules/producer"
   producer_project_id = var.producer_a_project_id
 }
 
 module "producer_b_project" {
-  source         = "./modules/producer"
+  source              = "./modules/producer"
   producer_project_id = var.producer_b_project_id
 }
 
