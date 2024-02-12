@@ -180,13 +180,6 @@ variable "folder_ids" {
   })
 }
 
-variable "group_iam" {
-  description = "Project-level authoritative IAM bindings for groups in {GROUP_EMAIL => [ROLES]} format. Use group emails as keys, list of roles as values."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "host_project_ids" {
   # tfdoc:variable:source 2-networking
   description = "Host project for the shared VPC."
@@ -197,6 +190,13 @@ variable "host_project_ids" {
 
 variable "iam" {
   description = "Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iam_by_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false

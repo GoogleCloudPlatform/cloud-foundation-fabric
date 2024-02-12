@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,7 +183,7 @@ variable "fast_features" {
 variable "groups" {
   # tfdoc:variable:source 0-bootstrap
   # https://cloud.google.com/docs/enterprise/setup-checklist
-  description = "Group names to grant organization-level permissions."
+  description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
   type = object({
     gcp-devops          = optional(string)
     gcp-network-admins  = optional(string)
@@ -268,9 +268,9 @@ variable "tags" {
 variable "team_folders" {
   description = "Team folders to be created. Format is described in a code comment."
   type = map(object({
-    descriptive_name     = string
-    group_iam            = map(list(string))
-    impersonation_groups = list(string)
+    descriptive_name         = string
+    iam_by_principals        = optional(map(list(string)), {})
+    impersonation_principals = optional(list(string), [])
   }))
   default = null
 }

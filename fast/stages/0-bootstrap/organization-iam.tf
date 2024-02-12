@@ -29,8 +29,8 @@ locals {
     }
   }
   # human (groups) IAM bindings
-  iam_group_bindings = {
-    (local.groups.gcp-billing-admins) = {
+  iam_principal_bindings = {
+    (local.principals.gcp-billing-admins) = {
       authoritative = []
       additive = (
         local.billing_mode != "org" ? [] : [
@@ -38,7 +38,7 @@ locals {
         ]
       )
     }
-    (local.groups.gcp-network-admins) = {
+    (local.principals.gcp-network-admins) = {
       authoritative = [
         "roles/cloudasset.owner",
         "roles/cloudsupport.techSupportEditor",
@@ -48,7 +48,7 @@ locals {
         "roles/compute.xpnAdmin"
       ]
     }
-    (local.groups.gcp-organization-admins) = {
+    (local.principals.gcp-organization-admins) = {
       authoritative = [
         "roles/cloudasset.owner",
         "roles/cloudsupport.admin",
@@ -69,7 +69,7 @@ locals {
         ]
       )
     }
-    (local.groups.gcp-security-admins) = {
+    (local.principals.gcp-security-admins) = {
       authoritative = [
         "roles/cloudasset.owner",
         "roles/cloudsupport.techSupportEditor",
@@ -83,7 +83,7 @@ locals {
         "roles/orgpolicy.policyAdmin"
       ]
     }
-    (local.groups.gcp-support) = {
+    (local.principals.gcp-support) = {
       authoritative = [
         "roles/cloudsupport.techSupportEditor",
         "roles/logging.viewer",
