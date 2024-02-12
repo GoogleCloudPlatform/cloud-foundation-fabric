@@ -122,7 +122,7 @@ Actual use is basically unchanged from the current `group_iam` interface:
       "roles/resourcemanager.folderAdmin",
       "roles/resourcemanager.projectCreator"
     ]
-    ""principalSet://iam.googleapis.com/locations/global/workforcePools/mypool/group/abc123": = [
+    "principalSet://iam.googleapis.com/locations/global/workforcePools/mypool/group/abc123": = [
       "roles/owner",
       "roles/resourcemanager.folderAdmin",
       "roles/resourcemanager.projectCreator"
