@@ -25,8 +25,8 @@ output "dataset" {
 output "notebook" {
   description = "Vertex AI notebook details."
   value = {
-    name = resource.google_notebooks_instance.playground.name
-    id   = resource.google_notebooks_instance.playground.id
+    name = resource.google_workbench_instance.playground.name
+    id   = resource.google_workbench_instance.playground.id
   }
 }
 
