@@ -203,13 +203,17 @@ resource "google_workbench_instance" "playground" {
     service_accounts {
       email = module.service-account-notebook.email
     }
+    vm_image {
+      project = "cloud-notebooks-managed"
+      name    = "workbench-instances-v20230822-debian-11-py310"
+    }
     network_interfaces {
       network = local.vpc
       subnet  = local.subnet
     }
     metadata = {
       idle-timeout-seconds = "10800"
-      report-event-health  = "false"
+      report-event-health  = "true"
     }
 
     boot_disk {

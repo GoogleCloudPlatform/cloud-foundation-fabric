@@ -12,7 +12,7 @@ This sample creates several distinct groups of resources:
 
 - project
 - networking
-- Vertex AI Workbench notebook configured with a private IP and using a dedicated Service Account
+- [Vertex AI Workbench Instance](https://cloud.google.com/vertex-ai/docs/workbench/instances/introduction)  configured with a private IP and using a dedicated Service Account
 - One GCS bucket
 - One BigQuery dataset
 
