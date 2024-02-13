@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,18 @@ module "automation-project" {
     var.project_parent_ids.automation, "organizations/${var.organization.id}"
   )
   prefix = local.prefix
-  contacts = var.bootstrap_user != null ? {} : {
-    (local.groups.gcp-organization-admins) = ["ALL"]
-  }
+  contacts = (
+    var.bootstrap_user != null || var.essential_contacts == null
+    ? {}
+    : { (var.essential_contacts) = ["ALL"] }
+  )
   # human (groups) IAM bindings
-  group_iam = {
-    (local.groups.gcp-devops) = [
+  iam_by_principals = {
+    (local.principals.gcp-devops) = [
       "roles/iam.serviceAccountAdmin",
       "roles/iam.serviceAccountTokenCreator",
     ]
-    (local.groups.gcp-organization-admins) = [
+    (local.principals.gcp-organization-admins) = [
       "roles/iam.serviceAccountTokenCreator",
       "roles/iam.workloadIdentityPoolAdmin"
     ]

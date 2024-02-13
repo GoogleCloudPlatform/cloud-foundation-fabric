@@ -30,7 +30,7 @@ resource "google_billing_account_iam_member" "billing_ext_admin" {
   for_each = toset(
     local.billing_mode == "resource"
     ? [
-      "group:${local.groups.gcp-admins}",
+      local.principals.gcp-admins,
       module.automation-tf-resman-sa.iam_email
     ]
     : []
@@ -44,7 +44,7 @@ resource "google_billing_account_iam_member" "billing_ext_cost_manager" {
   for_each = toset(
     local.billing_mode == "resource"
     ? [
-      "group:${local.groups.gcp-admins}",
+      local.principals.gcp-admins,
       module.automation-tf-resman-sa.iam_email
     ]
     : []
