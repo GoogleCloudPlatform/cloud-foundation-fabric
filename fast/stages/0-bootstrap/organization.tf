@@ -110,7 +110,7 @@ locals {
 
 # TODO: add a check block to ensure our custom roles exist in the factory files
 
-# import roles enabled by default on org creation (since Dec 2023)
+# import org policy constraints enabled by default in new orgs since February 2024
 import {
   for_each = !local.import_org_policies ? toset([]) : toset([
     "compute.requireOsLogin",
