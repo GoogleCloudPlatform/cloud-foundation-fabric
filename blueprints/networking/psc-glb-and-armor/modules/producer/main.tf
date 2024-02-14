@@ -15,7 +15,7 @@
  */
 
 module "producer_project" {
-  source         = "../../../modules/project"
+  source         = "../../../../../modules/project"
   name           = var.producer_project_id
   project_create = var.project_create
   services = [
@@ -157,9 +157,11 @@ resource "google_compute_subnetwork" "ilb_subnetwork" {
 
   network       = google_compute_network.psc_ilb_network.id
   ip_cidr_range = "10.0.0.0/24"
-  role          = "ACTIVE"
+
+  role = "ACTIVE"
 }
 
+# proxy-only subnet
 resource "google_compute_subnetwork" "proxy_subnet" {
   name          = "l7-ilb-proxy-subnet"
   provider      = google-beta
