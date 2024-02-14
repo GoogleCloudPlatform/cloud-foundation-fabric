@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ locals {
 }
 
 module "gke-project-0" {
-  source          = "../../../modules/project"
-  billing_account = var.billing_account_id
-  name            = var.project_id
-  parent          = var.folder_id
-  prefix          = var.prefix
-  group_iam       = var.group_iam
-  labels          = var.labels
+  source            = "../../../modules/project"
+  billing_account   = var.billing_account_id
+  name              = var.project_id
+  parent            = var.folder_id
+  prefix            = var.prefix
+  iam_by_principals = var.iam_by_principals
+  labels            = var.labels
   iam = merge(var.iam, {
     "roles/gkehub.serviceAgent" = [
       "serviceAccount:${module.gke-project-0.service_accounts.robots.fleet}"

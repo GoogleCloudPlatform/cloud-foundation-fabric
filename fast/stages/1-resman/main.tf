@@ -94,16 +94,16 @@ locals {
     ? "MULTI_REGIONAL"
     : "REGIONAL"
   )
-  groups = {
-    for k, v in var.groups :
-    k => can(regex(".*@.*", v)) ? v : "${v}@${var.organization.domain}"
-  }
-  groups_iam = {
-    for k, v in local.groups : k => v != null ? "group:${v}" : null
-  }
   identity_providers = coalesce(
     try(var.automation.federated_identity_providers, null), {}
   )
+  principals = {
+    for k, v in var.groups : k => (
+      can(regex("^[a-zA-Z]+:", v))
+      ? v
+      : "group:${v}@${var.organization.domain}"
+    )
+  }
 }
 
 data "google_client_openid_userinfo" "provider_identity" {

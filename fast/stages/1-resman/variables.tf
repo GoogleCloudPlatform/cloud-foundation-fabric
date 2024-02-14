@@ -175,16 +175,16 @@ variable "fast_features" {
 variable "groups" {
   # tfdoc:variable:source 0-bootstrap
   # https://cloud.google.com/docs/enterprise/setup-checklist
-  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
+  description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
   type = object({
-    gcp-billing-admins      = optional(string)
-    gcp-devops              = optional(string)
-    gcp-network-admins      = optional(string)
-    gcp-organization-admins = optional(string)
-    gcp-security-admins     = optional(string)
+    gcp-billing-admins      = optional(string, "gcp-billing-admins")
+    gcp-devops              = optional(string, "gcp-devops")
+    gcp-network-admins      = optional(string, "gcp-network-admins")
+    gcp-organization-admins = optional(string, "gcp-organization-admins")
+    gcp-security-admins     = optional(string, "gcp-security-admins")
   })
-  default  = {}
   nullable = false
+  default  = {}
 }
 
 variable "locations" {
@@ -283,9 +283,9 @@ variable "tags" {
 variable "team_folders" {
   description = "Team folders to be created. Format is described in a code comment."
   type = map(object({
-    descriptive_name     = string
-    group_iam            = map(list(string))
-    impersonation_groups = list(string)
+    descriptive_name         = string
+    iam_by_principals        = map(list(string))
+    impersonation_principals = list(string)
     cicd = optional(object({
       branch            = string
       identity_provider = string
@@ -299,9 +299,9 @@ variable "team_folders" {
 variable "tenants" {
   description = "Lightweight tenant definitions."
   type = map(object({
-    admin_group_email = string
-    descriptive_name  = string
-    billing_account   = optional(string)
+    admin_principal  = string
+    descriptive_name = string
+    billing_account  = optional(string)
     organization = optional(object({
       customer_id = string
       domain      = string

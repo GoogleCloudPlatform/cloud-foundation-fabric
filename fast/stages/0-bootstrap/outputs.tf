@@ -114,7 +114,7 @@ locals {
   tfvars_globals = {
     billing_account = var.billing_account
     fast_features   = var.fast_features
-    groups          = var.groups
+    groups          = local.principals
     locations       = local.locations
     organization    = var.organization
     prefix          = var.prefix
@@ -146,16 +146,6 @@ output "cicd_repositories" {
 output "custom_roles" {
   description = "Organization-level custom roles."
   value       = module.organization.custom_role_id
-}
-
-output "federated_identity" {
-  description = "Workload Identity Federation pool and providers."
-  value = {
-    pool = try(
-      google_iam_workload_identity_pool.default.0.name, null
-    )
-    providers = local.cicd_providers
-  }
 }
 
 output "outputs_bucket" {
@@ -202,4 +192,23 @@ output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
   value       = local.tfvars
+}
+
+output "workforce_identity_pool" {
+  description = "Workforce Identity Federation pool."
+  value = {
+    pool = try(
+      google_iam_workforce_pool.default.0.name, null
+    )
+  }
+}
+
+output "workload_identity_pool" {
+  description = "Workload Identity Federation pool and providers."
+  value = {
+    pool = try(
+      google_iam_workload_identity_pool.default.0.name, null
+    )
+    providers = local.cicd_providers
+  }
 }

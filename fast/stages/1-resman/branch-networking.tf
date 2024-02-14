@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ module "branch-network-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Networking"
-  group_iam = local.groups.gcp-network-admins == null ? {} : {
-    (local.groups.gcp-network-admins) = [
+  iam_by_principals = {
+    (local.principals.gcp-network-admins) = [
       # owner and viewer roles are broad and might grant unwanted access
       # replace them with more selective custom roles for production deployments
       "roles/editor",

@@ -63,14 +63,14 @@ module "gke-fleet" {
   billing_account_id = var.billing_account_id
   folder_id          = var.folder_id
   prefix             = "myprefix"
-  group_iam = {
-    "gke-admin@example.com" = [
+  iam_by_principals = {
+    "group:gke-admin@example.com" = [
       "roles/container.admin"
     ]
   }
   iam = {
     "roles/container.clusterAdmin" = [
-      "cicd@my-cicd-project.iam.gserviceaccount.com"
+      "serviceAccount:cicd@my-cicd-project.iam.gserviceaccount.com"
     ]
   }
   clusters = {
@@ -249,8 +249,8 @@ module "gke" {
 | [fleet_configmanagement_templates](variables.tf#L103) | Sets of config management configurations that can be applied to member clusters, in config name => {options} format. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
 | [fleet_features](variables.tf#L111) | Enable and configure fleet features. Set to null to disable GKE Hub if fleet workload identity is not used. | <code title="object&#40;&#123;&#10;  appdevexperience             &#61; optional&#40;bool, false&#41;&#10;  configmanagement             &#61; optional&#40;bool, false&#41;&#10;  identityservice              &#61; optional&#40;bool, false&#41;&#10;  multiclusteringress          &#61; optional&#40;string, null&#41;&#10;  multiclusterservicediscovery &#61; optional&#40;bool, false&#41;&#10;  servicemesh                  &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [fleet_workload_identity](variables.tf#L124) | Use Fleet Workload Identity for clusters. Enables GKE Hub if set to true. | <code>bool</code> |  | <code>false</code> |
-| [group_iam](variables.tf#L136) | Project-level IAM bindings for groups. Use group emails as keys, list of roles as values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam](variables.tf#L143) | Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables.tf#L136) | Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_by_principals](variables.tf#L143) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L150) | Project-level labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [nodepools](variables.tf#L156) | Nodepools configuration. Refer to the gke-nodepool module for type details. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  gke_version           &#61; optional&#40;string&#41;&#10;  labels                &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  max_pods_per_node     &#61; optional&#40;number&#41;&#10;  name                  &#61; optional&#40;string&#41;&#10;  node_config           &#61; optional&#40;any, &#123; disk_type &#61; &#34;pd-balanced&#34; &#125;&#41;&#10;  node_count            &#61; optional&#40;map&#40;number&#41;, &#123; initial &#61; 1 &#125;&#41;&#10;  node_locations        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  nodepool_config       &#61; optional&#40;any&#41;&#10;  pod_range             &#61; optional&#40;any&#41;&#10;  reservation_affinity  &#61; optional&#40;any&#41;&#10;  service_account       &#61; optional&#40;any&#41;&#10;  sole_tenant_nodegroup &#61; optional&#40;string&#41;&#10;  tags                  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  taints &#61; optional&#40;map&#40;object&#40;&#123;&#10;    value  &#61; string&#10;    effect &#61; string&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [project_services](variables.tf#L195) | Additional project services to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
