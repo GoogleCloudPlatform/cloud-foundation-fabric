@@ -70,7 +70,6 @@ terraform apply
 
 | name | description | modules |
 |---|---|---|
-| [3-project-factory-dev-providers.tf](./3-project-factory-dev-providers.tf) | None |  |
 | [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [variables.tf](./variables.tf) | Module variables. |  |

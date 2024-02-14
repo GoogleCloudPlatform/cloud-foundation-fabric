@@ -325,7 +325,6 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [1-resman-providers.tf](./1-resman-providers.tf) | None |  |  |
 | [billing.tf](./billing.tf) | Billing resources for external billing use cases. |  | <code>google_billing_account_iam_member</code> |
 | [branch-data-platform.tf](./branch-data-platform.tf) | Data Platform stages resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-gke.tf](./branch-gke.tf) | GKE multitenant stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
