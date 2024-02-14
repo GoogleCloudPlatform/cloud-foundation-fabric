@@ -58,7 +58,8 @@ locals {
         "roles/resourcemanager.folderAdmin",
         "roles/resourcemanager.organizationAdmin",
         "roles/resourcemanager.projectCreator",
-        "roles/resourcemanager.tagAdmin"
+        "roles/resourcemanager.tagAdmin",
+        "roles/iam.workforcePoolAdmin"
       ]
       additive = concat(
         [
