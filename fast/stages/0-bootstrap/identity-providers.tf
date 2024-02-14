@@ -90,14 +90,14 @@ resource "google_iam_workforce_pool" "default" {
 }
 
 resource "google_iam_workforce_pool_provider" "default" {
-  for_each          = local.workforce_identity_providers
+  for_each            = local.workforce_identity_providers
   attribute_condition = each.value.attribute_condition
   description         = each.value.description
   disabled            = each.value.disabled
   display_name        = each.value.display_name
-  location          = google_iam_workforce_pool.default.0.location
-  provider_id       = "${var.prefix}-bootstrap-${each.key}"
-  workforce_pool_id = google_iam_workforce_pool.default.0.workforce_pool_id
+  location            = google_iam_workforce_pool.default.0.location
+  provider_id         = "${var.prefix}-bootstrap-${each.key}"
+  workforce_pool_id   = google_iam_workforce_pool.default.0.workforce_pool_id
   saml {
     idp_metadata_xml = each.value.saml.idp_metadata_xml
   }
@@ -111,11 +111,11 @@ resource "google_iam_workload_identity_pool" "default" {
 }
 
 resource "google_iam_workload_identity_pool_provider" "default" {
-  provider                  = google-beta
-  for_each                  = local.workload_identity_providers
-  project                   = module.automation-project.project_id
+  provider = google-beta
+  for_each = local.workload_identity_providers
+  project  = module.automation-project.project_id
   workload_identity_pool_id = (
-  google_iam_workload_identity_pool.default.0.workload_identity_pool_id
+    google_iam_workload_identity_pool.default.0.workload_identity_pool_id
   )
   workload_identity_pool_provider_id = "${var.prefix}-bootstrap-${each.key}"
   attribute_condition                = each.value.attribute_condition
@@ -124,10 +124,10 @@ resource "google_iam_workload_identity_pool_provider" "default" {
     # Setting an empty list configures allowed_audiences to the url of the provider
     allowed_audiences = each.value.custom_settings.audiences
     # If users don't provide an issuer_uri, we set the public one for the platform choosed.
-    issuer_uri        = (
-    each.value.custom_settings.issuer_uri != null
-    ? each.value.custom_settings.issuer_uri
-    : try(each.value.issuer_uri, null)
+    issuer_uri = (
+      each.value.custom_settings.issuer_uri != null
+      ? each.value.custom_settings.issuer_uri
+      : try(each.value.issuer_uri, null)
     )
     # OIDC JWKs in JSON String format. If no value is provided, they key is
     # fetched from the `.well-known` path for the issuer_uri

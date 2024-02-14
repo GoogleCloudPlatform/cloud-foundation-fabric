@@ -253,13 +253,13 @@ variable "project_parent_ids" {
 
 variable "workforce_identity_providers" {
   description = "Workforce Identity Federation pools."
-  type        = map(object({
+  type = map(object({
     attribute_condition = optional(string)
     issuer              = string
     display_name        = string
     description         = string
     disabled            = optional(bool, false)
-    saml                = optional(object({
+    saml = optional(object({
       idp_metadata_xml = string
     }), null)
   }))
@@ -269,10 +269,10 @@ variable "workforce_identity_providers" {
 
 variable "workload_identity_providers" {
   description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
-  type        = map(object({
+  type = map(object({
     attribute_condition = optional(string)
     issuer              = string
-    custom_settings     = optional(object({
+    custom_settings = optional(object({
       issuer_uri = optional(string)
       audiences  = optional(list(string), [])
       jwks_json  = optional(string)
