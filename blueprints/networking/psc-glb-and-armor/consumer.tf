@@ -89,12 +89,12 @@ resource "google_compute_url_map" "default" {
     default_service = google_compute_backend_service.backend-a.id
 
     path_rule {
-      paths   = ["/b/*"]
+      paths   = ["/anything/b/*"]
       service = google_compute_backend_service.backend-b.id
     }
 
     path_rule {
-      paths   = ["/*"]
+      paths   = ["/anything/a/*"]
       service = google_compute_backend_service.backend-a.id
     }
   }
