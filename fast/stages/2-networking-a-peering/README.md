@@ -366,6 +366,7 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 
 | name | description | modules | resources |
 |---|---|---|---|
+| [2-networking-providers.tf](./2-networking-providers.tf) | None |  |  |
 | [dns-dev.tf](./dns-dev.tf) | Development spoke DNS zones and peerings setup. | <code>dns</code> |  |
 | [dns-landing.tf](./dns-landing.tf) | Landing DNS zones and peerings setup. | <code>dns</code> · <code>dns-response-policy</code> |  |
 | [dns-prod.tf](./dns-prod.tf) | Production spoke DNS zones and peerings setup. | <code>dns</code> |  |
