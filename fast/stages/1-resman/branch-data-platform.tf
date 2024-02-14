@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,11 +29,11 @@ module "branch-dp-folder" {
 }
 
 module "branch-dp-dev-folder" {
-  source    = "../../../modules/folder"
-  count     = var.fast_features.data_platform ? 1 : 0
-  parent    = module.branch-dp-folder.0.id
-  name      = "Development"
-  group_iam = {}
+  source            = "../../../modules/folder"
+  count             = var.fast_features.data_platform ? 1 : 0
+  parent            = module.branch-dp-folder.0.id
+  name              = "Development"
+  iam_by_principals = {}
   # owner and viewer roles are broad and might grant unwanted access
   # replace them with more selective custom roles for production deployments
   iam = {
@@ -41,8 +41,8 @@ module "branch-dp-dev-folder" {
     (local.custom_roles.service_project_network_admin) = [
       module.branch-dp-dev-sa.0.iam_email
     ]
-    "roles/owner"                          = [module.branch-dp-dev-sa.0.iam_email]
     "roles/logging.admin"                  = [module.branch-dp-dev-sa.0.iam_email]
+    "roles/owner"                          = [module.branch-dp-dev-sa.0.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-dp-dev-sa.0.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-dp-dev-sa.0.iam_email]
     # read-only (plan) automation service account
@@ -58,11 +58,11 @@ module "branch-dp-dev-folder" {
 }
 
 module "branch-dp-prod-folder" {
-  source    = "../../../modules/folder"
-  count     = var.fast_features.data_platform ? 1 : 0
-  parent    = module.branch-dp-folder.0.id
-  name      = "Production"
-  group_iam = {}
+  source            = "../../../modules/folder"
+  count             = var.fast_features.data_platform ? 1 : 0
+  parent            = module.branch-dp-folder.0.id
+  name              = "Production"
+  iam_by_principals = {}
   # owner and viewer roles are broad and might grant unwanted access
   # replace them with more selective custom roles for production deployments
   iam = {

@@ -15,7 +15,7 @@
 values:
   module.cloud_run.google_cloud_run_service.service:
     autogenerate_revision_name: false
-    location: europe-west1
+    location: europe-west8
     metadata:
     - {}
     name: hello
@@ -42,7 +42,7 @@ values:
     name: hello
     network: projects/xxx/global/networks/aaa
     project: project-id
-    region: europe-west1
+    region: europe-west8
     subnet: []
 
 counts:

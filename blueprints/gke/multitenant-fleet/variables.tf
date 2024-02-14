@@ -28,6 +28,7 @@ variable "clusters" {
       horizontal_pod_autoscaling = true, http_load_balancing = true
     })
     enable_features = optional(any, {
+      shielded_nodes    = true
       workload_identity = true
     })
     issue_client_certificate = optional(bool, false)
@@ -49,12 +50,10 @@ variable "clusters" {
     min_master_version = optional(string)
     monitoring_config = optional(object({
       enable_system_metrics = optional(bool, true)
-
       # (Optional) control plane metrics
       enable_api_server_metrics         = optional(bool, false)
       enable_controller_manager_metrics = optional(bool, false)
       enable_scheduler_metrics          = optional(bool, false)
-
       # (Optional) kube state metrics
       enable_daemonset_metrics   = optional(bool, false)
       enable_deployment_metrics  = optional(bool, false)
@@ -62,11 +61,9 @@ variable "clusters" {
       enable_pod_metrics         = optional(bool, false)
       enable_statefulset_metrics = optional(bool, false)
       enable_storage_metrics     = optional(bool, false)
-
       # Google Cloud Managed Service for Prometheus
       enable_managed_prometheus = optional(bool, true)
     }), {})
-
     node_locations         = optional(list(string))
     private_cluster_config = optional(any)
     release_channel        = optional(string)
@@ -105,35 +102,8 @@ variable "fleet_configmanagement_clusters" {
 
 variable "fleet_configmanagement_templates" {
   description = "Sets of config management configurations that can be applied to member clusters, in config name => {options} format."
-  type = map(object({
-    binauthz = bool
-    config_sync = object({
-      git = object({
-        gcp_service_account_email = string
-        https_proxy               = string
-        policy_dir                = string
-        secret_type               = string
-        sync_branch               = string
-        sync_repo                 = string
-        sync_rev                  = string
-        sync_wait_secs            = number
-      })
-      prevent_drift = string
-      source_format = string
-    })
-    hierarchy_controller = object({
-      enable_hierarchical_resource_quota = bool
-      enable_pod_tree_labels             = bool
-    })
-    policy_controller = object({
-      audit_interval_seconds     = number
-      exemptable_namespaces      = list(string)
-      log_denies_enabled         = bool
-      referential_rules_enabled  = bool
-      template_library_installed = bool
-    })
-    version = string
-  }))
+  # refer to the gke-hub module for the full type
+  type     = map(any)
   default  = {}
   nullable = false
 }
@@ -141,12 +111,12 @@ variable "fleet_configmanagement_templates" {
 variable "fleet_features" {
   description = "Enable and configure fleet features. Set to null to disable GKE Hub if fleet workload identity is not used."
   type = object({
-    appdevexperience             = bool
-    configmanagement             = bool
-    identityservice              = bool
-    multiclusteringress          = string
-    multiclusterservicediscovery = bool
-    servicemesh                  = bool
+    appdevexperience             = optional(bool, false)
+    configmanagement             = optional(bool, false)
+    identityservice              = optional(bool, false)
+    multiclusteringress          = optional(string, null)
+    multiclusterservicediscovery = optional(bool, false)
+    servicemesh                  = optional(bool, false)
   })
   default = null
 }
@@ -163,15 +133,15 @@ variable "folder_id" {
   type        = string
 }
 
-variable "group_iam" {
-  description = "Project-level IAM bindings for groups. Use group emails as keys, list of roles as values."
+variable "iam" {
+  description = "Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
   nullable    = false
 }
 
-variable "iam" {
-  description = "Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format."
+variable "iam_by_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
   type        = map(list(string))
   default     = {}
   nullable    = false

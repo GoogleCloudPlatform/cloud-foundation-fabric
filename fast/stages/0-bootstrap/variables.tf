@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,11 +83,19 @@ variable "custom_roles" {
   default     = {}
 }
 
+variable "essential_contacts" {
+  description = "Email used for essential contacts, unset if null."
+  type        = string
+  default     = null
+}
+
 variable "factories_config" {
-  description = "Configuration for the organization policies factory."
+  description = "Configuration for the resource factories or external data."
   type = object({
-    custom_roles = optional(string, "data/custom-roles")
-    org_policy   = optional(string, "data/org-policies")
+    checklist_data    = optional(string)
+    checklist_org_iam = optional(string)
+    custom_roles      = optional(string, "data/custom-roles")
+    org_policy        = optional(string, "data/org-policies")
   })
   nullable = false
   default  = {}
@@ -115,20 +123,18 @@ variable "group_iam" {
 
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
-  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
-  type        = map(string)
-  default = {
-    gcp-billing-admins      = "gcp-billing-admins",
-    gcp-devops              = "gcp-devops",
-    gcp-network-admins      = "gcp-network-admins"
-    gcp-organization-admins = "gcp-organization-admins"
-    gcp-security-admins     = "gcp-security-admins"
-    # gcp-support is not included in the official GCP Enterprise
-    # Checklist, so by default we map gcp-support to gcp-devops.
-    # However, we recommend creating gcp-support and updating the
-    # value in the following line
-    gcp-support = "gcp-devops"
-  }
+  description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
+  type = object({
+    gcp-billing-admins      = optional(string, "gcp-billing-admins")
+    gcp-devops              = optional(string, "gcp-devops")
+    gcp-network-admins      = optional(string, "gcp-network-admins")
+    gcp-organization-admins = optional(string, "gcp-organization-admins")
+    gcp-security-admins     = optional(string, "gcp-security-admins")
+    # aliased to gcp-devops as the checklist does not create it
+    gcp-support = optional(string, "gcp-devops")
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "iam" {
@@ -151,6 +157,13 @@ variable "iam_bindings_additive" {
   }))
   nullable = false
   default  = {}
+}
+
+variable "iam_by_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "locations" {
@@ -202,7 +215,8 @@ variable "org_policies_config" {
     constraints = optional(object({
       allowed_policy_member_domains = optional(list(string), [])
     }), {})
-    tag_name = optional(string, "org-policies")
+    import_defaults = optional(bool, false)
+    tag_name        = optional(string, "org-policies")
     tag_values = optional(map(object({
       description = optional(string, "Managed by the Terraform organization module.")
       iam         = optional(map(list(string)), {})

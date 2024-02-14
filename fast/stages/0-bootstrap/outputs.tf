@@ -114,8 +114,8 @@ locals {
   tfvars_globals = {
     billing_account = var.billing_account
     fast_features   = var.fast_features
-    groups          = var.groups
-    locations       = var.locations
+    groups          = local.principals
+    locations       = local.locations
     organization    = var.organization
     prefix          = var.prefix
   }
@@ -177,6 +177,15 @@ output "service_accounts" {
     resman    = module.automation-tf-resman-sa.email
   }
 }
+
+# output "test" {
+#   value = {
+#     checklist               = local.checklist
+#     iam_roles_authoritative = local.iam_roles_authoritative
+#     iam_roles_additive      = local.iam_roles_additive
+#     test                    = local.checklist
+#   }
+# }
 
 # ready to use variable values for subsequent stages
 output "tfvars" {

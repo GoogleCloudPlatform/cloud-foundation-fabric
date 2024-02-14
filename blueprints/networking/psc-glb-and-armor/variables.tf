@@ -28,8 +28,13 @@ variable "prefix" {
   }
 }
 
-variable "producer_project_id" {
-  description = "The producer project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
+variable "producer_a_project_id" {
+  description = "The producer A project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
+  type        = string
+}
+
+variable "producer_b_project_id" {
+  description = "The producer B project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
   type        = string
 }
 

@@ -6,5 +6,12 @@ organization = {
 billing_account = {
   id = "000000-111111-222222"
 }
-prefix           = "fast"
+essential_contacts = "gcp-organization-admins@fast.example.com"
+prefix             = "fast"
+org_policies_config = {
+  import_defaults = false
+}
 outputs_location = "/fast-config"
+groups = {
+  gcp-support = "group:gcp-support@example.com"
+}

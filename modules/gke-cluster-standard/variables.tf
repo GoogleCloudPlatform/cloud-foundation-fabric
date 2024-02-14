@@ -94,7 +94,8 @@ variable "cluster_autoscaling" {
   }
   validation {
     condition = (
-      var.cluster_autoscaling == null ? true : contains(
+      try(var.cluster_autoscaling, null) == null ||
+      try(var.cluster_autoscaling.auto_provisioning_defaults, null) == null ? true : contains(
         ["pd-standard", "pd-ssd", "pd-balanced"],
       var.cluster_autoscaling.auto_provisioning_defaults.disk_type)
     )
@@ -152,6 +153,7 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
+    beta_apis            = optional(list(string))
     binary_authorization = optional(bool, false)
     cost_management      = optional(bool, false)
     dns = optional(object({

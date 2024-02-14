@@ -277,9 +277,11 @@ Before the first run, the following IAM groups must exist to allow IAM bindings 
 - `gcp-organization-admins`
 - `gcp-security-admins`
 
-You can refer to [this animated image](./groups.gif) for a step by step on group creation.
+You can refer to [this animated image](./groups.gif) for a step by step on group creation via the [Google Cloud Enterprise Checklist](https://cloud.google.com/docs/enterprise/setup-checklist).
 
-Please note that FAST also supports an additional group for users with permissions to create support tickets and view logging and monitoring data. To remain consistent with the [Google Cloud Enterprise Checklist](https://cloud.google.com/docs/enterprise/setup-checklist) we map these permissions to the `gcp-devops` by default. However, we recommend creating a dedicated `gcp-support` group and updating the `groups` variable with the right value.
+Please note that not all groups defined by the Checklist are actually used by FAST, as our approach to IAM is slightly different. As an example, we do not centralize monitoring functions as in our experience those are typically domain-specific (e.g. networking or application-level), so we don't leverage the corresponding groups. You are free of course to create those groups via the Checklist, and assign them roles via the IAM variables exposed by this stage.
+
+One more difference compared to the Checklist is the use in FAST of an additional group to centralize support functions like viewing tickets and accessing logging and monitoring data. To remain consistent with the [Google Cloud Enterprise Checklist](https://cloud.google.com/docs/enterprise/setup-checklist) we map these permissions to the `gcp-devops` group by default. However, we recommend creating a dedicated `gcp-support` group and updating the `groups` variable with the right value.
 
 #### Configure variables
 
@@ -393,12 +395,19 @@ ln -s ~/fast-config/providers/0-bootstrap-providers.tf ./
 gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/0-bootstrap-providers.tf ./
 ```
 
-Copy/paste the command returned by the script to link or copy the provider file, then migrate state with `terraform init` and run `terraform apply`:
+Copy/paste the command returned by the script to link or copy the provider file, then migrate state with `terraform init` and run `terraform apply`. If your organization was created with "Secure by Default Org Policy", that is with some of the org policies enabled, add `-var 'org_policies_config={"import_defaults": true}'` to `terraform apply`:
 
 ```bash
 terraform init -migrate-state
 terraform apply
 ```
+
+or
+```bash
+terraform init -migrate-state
+terraform apply -var 'org_policies_config={"import_defaults": true}'
+```
+if there default policies are enabled.
 
 Make sure the user you're logged in with is a member of the `gcp-organization-admins` group or impersonation will not be possible.
 
@@ -652,3 +661,4 @@ The `fast_features` variable consists of 4 toggles:
 | [workforce_identity_pool](outputs.tf#L188) | Workforce Identity Federation pool. |  |  |
 | [workload_identity_pool](outputs.tf#L198) | Workload Identity Federation pool and providers. |  |  |
 <!-- END TFDOC -->
+

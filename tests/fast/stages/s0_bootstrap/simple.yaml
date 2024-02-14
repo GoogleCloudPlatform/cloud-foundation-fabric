@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.organization.google_organization_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
+    condition: []
+    members:
+    - group:gcp-network-admins@fast.example.com
+    - group:gcp-security-admins@fast.example.com
+    - group:gcp-support@example.com
+    org_id: '123456789012'
+    role: roles/cloudsupport.techSupportEditor
+  module.organization.google_organization_iam_binding.authoritative["roles/logging.viewer"]:
+    condition: []
+    members:
+    - group:gcp-support@example.com
+    - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/logging.viewer
+  module.organization.google_organization_iam_binding.authoritative["roles/monitoring.viewer"]:
+    condition: []
+    members:
+    - group:gcp-support@example.com
+    org_id: '123456789012'
+    role: roles/monitoring.viewer
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3
+  google_essential_contacts_contact: 3
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
-  google_org_policy_policy: 13
-  google_organization_iam_binding: 23
+  google_org_policy_policy: 20
+  google_organization_iam_binding: 25
   google_organization_iam_custom_role: 6
   google_organization_iam_member: 22
   google_project: 3
@@ -37,7 +61,7 @@ counts:
   google_tags_tag_value: 1
   local_file: 7
   modules: 15
-  resources: 168
+  resources: 180
 
 outputs:
   custom_roles:

@@ -45,6 +45,11 @@ module "folder" {
   name          = "Networking"
   folder_create = var.folder_ids.networking == null
   id            = var.folder_ids.networking
+  contacts = (
+    var.essential_contacts == null
+    ? {}
+    : { (var.essential_contacts) = ["ALL"] }
+  )
   firewall_policy = {
     name   = "default"
     policy = module.firewall-policy-default.id

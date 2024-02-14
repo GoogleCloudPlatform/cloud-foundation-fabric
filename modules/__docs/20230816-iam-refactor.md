@@ -1,12 +1,13 @@
 # Refactor IAM interface
 
 **authors:** [Ludo](https://github.com/ludoo), [Julio](https://github.com/juliocc)
-**last modified:** August 17, 2023
+**last modified:** February 12, 2024
 
 ## Status
 
-Implemented in [#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595).
-Authoritative bindings type changed as per [#1622](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/1622).
+- Implemented in [#1595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1595).
+- Authoritative bindings type changed as per [#1622](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/1622).
+- Extended by [#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/2064).
 
 ## Context
 
@@ -113,9 +114,29 @@ variable "iam_bindings_additive" {
 
 The **proposal** is to remove the IAM policy variable and resources, as its coverage is very uneven and we never used it in practice. This will also simplify data access log management, which is currently split between its own variable/resource and the IAM policy ones.
 
+### IAM by Principals
+> [!NOTE]
+> This section was added on 2024-02-12
+
+[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/2064). replaced `group_iam` with `iam_by_principals`. The structure of `iam_by_principals` is similar to the original `group_iam` with the difference that now the user has to specify the principal type with the correct prefix. The new variable format is shown below
+
+```hcl
+variable "iam_by_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+```
+
+
+See #2064 and [this ADR](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/ludo/iam-changes/fast/docs/0-domainless-iam.md) for more details.
+
+
 ## Decision
 
 The proposal above summarizes the state of discussions between the authors, and implementation will be tested.
+
 
 ## Consequences
 
@@ -180,13 +201,36 @@ variable "iam_bindings_additive" {
   default  = {}
   nullable = false
 }
+
+variable "iam_by_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
 ```
 
 ```terraform
 # iam.tf
 
+locals {
+  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  _iam_principals = {
+    for r in local._iam_principal_roles : r => [
+      for k, v in var.iam_by_principals :
+      k if try(index(v, r), null) != null
+    ]
+  }
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local._iam_principals[role], [])
+    )
+  }
+}
 resource "google_RESOURCE_TYPE_iam_binding" "authoritative" {
-  for_each = var.iam
+  for_each = local.iam
   role     = each.key
   members  = each.value
   // add extra attributes (e.g. resource id)

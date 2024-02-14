@@ -63,12 +63,7 @@ module "hub" {
   project_id = module.fleet_project.project_id
   clusters   = { for k, v in module.clusters : k => v.id }
   features = {
-    appdevexperience             = false
-    configmanagement             = false
-    identityservice              = false
-    multiclusteringress          = null
-    servicemesh                  = true
-    multiclusterservicediscovery = false
+    servicemesh = true
   }
   depends_on = [
     module.fleet_project

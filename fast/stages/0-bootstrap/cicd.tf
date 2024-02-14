@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,8 +83,8 @@ module "automation-tf-cicd-repo" {
     "roles/source.reader" = concat(
       [module.automation-tf-cicd-sa[each.key].iam_email],
       each.key == "bootstrap"
-      ? module.automation-tf-bootstrap-r-sa.iam_email
-      : module.automation-tf-resman-r-sa.iam_email
+      ? [module.automation-tf-bootstrap-r-sa.iam_email]
+      : [module.automation-tf-resman-r-sa.iam_email]
     )
   }
   triggers = {

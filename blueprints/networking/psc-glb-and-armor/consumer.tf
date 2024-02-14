@@ -24,12 +24,35 @@ module "consumer_project" {
   ]
 }
 
-resource "google_compute_region_network_endpoint_group" "psc_neg" {
-  name                  = "psc-neg"
+module "producer_a_project" {
+  source              = "./modules/producer"
+  producer_project_id = var.producer_a_project_id
+  project_create      = var.project_create
+}
+
+module "producer_b_project" {
+  source              = "./modules/producer"
+  producer_project_id = var.producer_b_project_id
+  project_create      = var.project_create
+}
+
+resource "google_compute_region_network_endpoint_group" "psc_neg_a" {
+  name                  = "psc-neg-a"
   region                = var.region
   project               = module.consumer_project.project_id
   network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
-  psc_target_service    = google_compute_service_attachment.psc_ilb_service_attachment.self_link
+  psc_target_service    = module.producer_a_project.psc_ilb_service_attachment.self_link
+
+  network    = "default"
+  subnetwork = "default"
+}
+
+resource "google_compute_region_network_endpoint_group" "psc_neg_b" {
+  name                  = "psc-neg-b"
+  region                = var.region
+  project               = module.consumer_project.project_id
+  network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
+  psc_target_service    = module.producer_b_project.psc_ilb_service_attachment.self_link
 
   network    = "default"
   subnetwork = "default"
@@ -54,7 +77,7 @@ resource "google_compute_url_map" "default" {
   project         = module.consumer_project.project_id
   name            = "url-map-target-proxy"
   description     = "A simple URL Map, routing all traffic to the PSC NEG"
-  default_service = google_compute_backend_service.default.id
+  default_service = google_compute_backend_service.backend-a.id
 
   host_rule {
     hosts        = ["*"]
@@ -63,11 +86,16 @@ resource "google_compute_url_map" "default" {
 
   path_matcher {
     name            = "allpaths"
-    default_service = google_compute_backend_service.default.id
+    default_service = google_compute_backend_service.backend-a.id
+
+    path_rule {
+      paths   = ["/b/*"]
+      service = google_compute_backend_service.backend-b.id
+    }
 
     path_rule {
       paths   = ["/*"]
-      service = google_compute_backend_service.default.id
+      service = google_compute_backend_service.backend-a.id
     }
   }
 }
@@ -83,15 +111,27 @@ resource "google_compute_security_policy" "policy" {
   }
 }
 
-resource "google_compute_backend_service" "default" {
+resource "google_compute_backend_service" "backend-a" {
   provider              = google-beta
   project               = module.consumer_project.project_id
-  name                  = "backend"
+  name                  = "backend-a"
   load_balancing_scheme = "EXTERNAL_MANAGED"
   protocol              = "HTTPS"
-  security_policy       = google_compute_security_policy.policy.id
   backend {
-    group           = google_compute_region_network_endpoint_group.psc_neg.id
+    group           = google_compute_region_network_endpoint_group.psc_neg_a.id
+    balancing_mode  = "UTILIZATION"
+    capacity_scaler = 1.0
+  }
+}
+
+resource "google_compute_backend_service" "backend-b" {
+  provider              = google-beta
+  project               = module.consumer_project.project_id
+  name                  = "backend-b"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  protocol              = "HTTPS"
+  backend {
+    group           = google_compute_region_network_endpoint_group.psc_neg_b.id
     balancing_mode  = "UTILIZATION"
     capacity_scaler = 1.0
   }

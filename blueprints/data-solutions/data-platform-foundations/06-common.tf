@@ -50,7 +50,7 @@ module "common-project" {
   source          = "../../../modules/project"
   parent          = var.project_config.parent
   billing_account = var.project_config.billing_account_id
-  project_create  = var.project_config.billing_account_id != null
+  project_create  = var.project_config.project_create
   prefix          = local.use_projects ? null : var.prefix
   name = (
     local.use_projects

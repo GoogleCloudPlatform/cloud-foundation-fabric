@@ -35,6 +35,7 @@ variable "egress_rules" {
     description             = optional(string)
     disabled                = optional(bool, false)
     enable_logging          = optional(bool)
+    target_resources        = optional(list(string))
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
     match = object({
@@ -70,6 +71,7 @@ variable "ingress_rules" {
     description             = optional(string)
     disabled                = optional(bool, false)
     enable_logging          = optional(bool)
+    target_resources        = optional(list(string))
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
     match = object({
