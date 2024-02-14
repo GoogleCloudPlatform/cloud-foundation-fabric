@@ -1,36 +1,39 @@
-# Gitlab notes
+# Gitlab Blueprint
 
-## Open points
+This blueprint is responsible for provisioning a production ready Gitlab instance on the landing zone infrastructure. The [reference architecture](https://docs.gitlab.com/ee/administration/reference_architectures/1k_users.html) of this deployment target 1K users, updates to the current code is required in of HA and/or higher capacity requirements.
 
-- [x] Configure as FAST stage 3
-- Integrations
-    - [x] Identity
-        - [x] SAML
-    - [ ] Email:
-        - [ ] Gmail / Workspace
-        - [x] Sendgrid
-- [x] ILB / MIG
-- [x] HTTPS SSL
-- [x] Gitlab SSH on port 2222
-- [x] Check object store, use GCS wherever possible
-- [x] Cloud SQL HA
-- [ ] Memorystore HA?
-- [ ] DR
-- [x] Integration with Cloud Logging for Docker
-- [x] Runners
-  - [ ] Autoscale Runners:
-        - https://docs.gitlab.com/runner/runner_autoscale/#
+The following diagram illustrates the high-level design of created resources, which can be adapted to specific requirements via variables:
 
-## Installation
+<p align="center">
+  <img src="diagram.png" alt="Gitlab">
+</p>
 
-- [Docker image](https://docs.gitlab.com/ee/install/docker.html)
+## Table of contents
 
-## Network Requirements
-
-- PSA for Cloud SQL on the VPC
-- Existing subnet with PGA and Cloud NAT for internet access
-- Firewall rule for IAP on port 22
-- Firewall rule for TCP ports 80, 443, 2222 from gitlab subnet CIDR
+<!-- TOC -->
+* [Gitlab Blueprint](#gitlab-blueprint)
+  * [Table of contents](#table-of-contents)
+  * [Managed Services for Seamless Operations](#managed-services-for-seamless-operations)
+    * [Object Storage <-> Google Cloud Storage](#object-storage-----google-cloud-storage)
+  * [Identity](#identity)
+    * [SAML Integration](#saml-integration)
+      * [Google Workspace Setup](#google-workspace-setup)
+    * [Others Identity Integration](#others-identity-integration)
+  * [Email](#email)
+    * [Sendgrid integration](#sendgrid-integration)
+  * [SSL Certificate Configuration](#ssl-certificate-configuration)
+  * [Networking and scalability](#networking-and-scalability)
+  * [HA](#ha)
+    * [Deployment](#deployment)
+      * [Step 0: Cloning the repository](#step-0--cloning-the-repository)
+      * [Step 2: Prepare the variables](#step-2--prepare-the-variables)
+      * [Step 3: Deploy resources](#step-3--deploy-resources)
+      * [Step 4: Use the created resources](#step-4--use-the-created-resources)
+  * [Reference and useful links](#reference-and-useful-links)
+  * [Files](#files)
+  * [Variables](#variables)
+  * [Outputs](#outputs)
+<!-- TOC -->
 
 ## Managed Services for Seamless Operations
 
@@ -230,81 +233,52 @@ following [link](https://docs.gitlab.com/omnibus/settings/ssl/#configure-https-m
 
 - [High Availability](http://ubimol.it/12.0/ee/administration/high_availability/README.html)
 
-## How to run this stage
+### Deployment
 
-This stage is meant to be executed after the FAST "foundational" stages: bootstrap, resource management, security and networking stages.
+#### Step 0: Cloning the repository
 
-It's of course possible to run this stage in isolation, refer to the *[Running in isolation](#running-in-isolation)* section below for details.
+If you want to deploy from your Cloud Shell, click on the image below, sign in
+if required and when the prompt appears, click on “confirm”.
 
-Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
+[![Open Cloudshell](../../../assets/images/cloud-shell-button.png)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fcloud-foundation-fabric&cloudshell_workspace=blueprints%2Fthird-party-solutions%2Fwordpress%2Fcloudrun)
 
-### Provider and Terraform variables
-
-As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
-
-The commands to link or copy the provider and terraform variable files can be easily derived from the `stage-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
+Otherwise, in your console of choice:
 
 ```bash
-../../stage-links.sh ~/fast-config
-
-# copy and paste the following commands for '3-gitlab'
-
-ln -s ~/fast-config/providers/3-gitlab-providers.tf ./
-ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
+git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric
 ```
 
-```bash
-../../stage-links.sh gs://xxx-prod-iac-core-outputs-0
+Before you deploy the architecture, you will need at least the following
+information (for more precise configuration see the Variables section):
 
-# copy and paste the following commands for '3-gitlab'
+* The project ID
 
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-gitlab-providers.tf ./
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
-gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.auto.tfvars.json ./
-```
+The VPC host project, VPC and subnets should already exist and the following networking requirements are satisfied:
+- configured PSA for Cloud SQL on the VPC
+- subnets configured with PGA and Cloud NAT for internet access
+- Inbound firewall rule for IAP on port 22
+- Inbound firewall rule for TCP ports 80, 443, 2222 from proxy subnet CIDR (gitlab)
 
-### Impersonating the automation service account
+#### Step 2: Prepare the variables
 
-The preconfigured provider file uses impersonation to run with this stage's automation service account's credentials. The `gcp-devops` and `organization-admins` groups have the necessary IAM bindings in place to do that, so make sure the current user is a member of one of those groups.
+Once you have the required information, head back to your cloned repository.
+Make sure you’re in the directory of this tutorial (where this README is in).
 
-### Variable configuration
+Configure the Terraform variables in your `terraform.tfvars` file.
+See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just
+copy it to `terraform.tfvars` and edit the latter. See the variables
+documentation below.
 
-Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
+#### Step 3: Deploy resources
 
-- variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `0-globals.auto.tfvars.json` file linked or copied above
-- variables which refer to resources managed by previous stage, which are prepopulated here via the `*.auto.tfvars.json` files linked or copied above
-- and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
+Initialize your Terraform environment and deploy the resources:
 
-The full list can be found in the [Variables](#variables) table at the bottom of this document.
-
-Note that the `outputs_location` variable is disabled by default, you need to explicitly set it in your `terraform.tfvars` file if you want output files to be generated by this stage. This is a sample `terraform.tfvars` that configures it, refer to the [bootstrap stage documentation](../0-bootstrap/README.md#output-files-and-cross-stage-variables) for more details:
-
-### Using delayed billing association for projects
-
-This configuration is possible but unsupported and only exists for development purposes, use at your own risk:
-
-- temporarily switch `billing_account.id` to `null` in `0-globals.auto.tfvars.json`
-- create gcp project with apply using `-target` as follows: `terraform apply -target 'module.project.google_project.project[0]'`
-- untaint the project resource after applying with this command: `terraform untaint 'module.project.google_project.project[0]'`
-- go through the process to associate the billing account with the project
-- switch `billing_account.id` back to the real billing account id
-- resume applying normally
-
-### Running the stage
-
-Once provider and variable values are in place and the correct user is configured, the stage can be run:
-
-```bash
+```shell
 terraform init
 terraform apply
 ```
 
-### Post-deployment activities
+#### Step 4: Use the created resources
 
 Connect to squid-proxy for accessing gitlab instance using the gcloud command
 available in the `ssh_to_bastion` terraform output.
@@ -325,8 +299,6 @@ Use default admin password available in /run/gitlab/config/initial_root_password
 ```bash
 gitlab-rake “gitlab:password:reset”
 ```
-
-Access Gitlab instance and proceed with stage [0-bootstrap-gitlab](./0-bootstrap-gitlab).
 
 ## Reference and useful links
 

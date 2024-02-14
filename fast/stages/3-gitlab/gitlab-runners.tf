@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 module "gitlab-runner-docker" {
   count         = var.gitlab_runner_config.authentication_token != null ? 1 : 0
   source        = "../../../blueprints/third-party-solutions/gitlab-runner"

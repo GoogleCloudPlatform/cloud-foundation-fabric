@@ -16,16 +16,16 @@
 
 locals {
   ssl_certs = {
-#    "${var.gitlab_config.hostname}.key"    = local.gitlab_ssl_key,
-#    "${var.gitlab_config.hostname}.ca.crt" = local.gitlab_ssl_ca_crt,
-#    "${var.gitlab_config.hostname}.crt"    = local.gitlab_ssl_crt
+    "${var.gitlab_config.hostname}.key"    = local.gitlab_ssl_key,
+    "${var.gitlab_config.hostname}.ca.crt" = local.gitlab_ssl_ca_crt,
+    "${var.gitlab_config.hostname}.crt"    = local.gitlab_ssl_crt
   }
 }
 
-#output "postgresql_users" {
-#  sensitive = true
-#  value     = module.db.user_passwords
-#}
+output "postgresql_users" {
+  sensitive = true
+  value     = module.db.user_passwords
+}
 
 output "ssh_to_bastion" {
   description = "gcloud command to ssh bastion host proxy."

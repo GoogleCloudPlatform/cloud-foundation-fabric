@@ -1,11 +1,34 @@
-# Gitlab notes
+# Gitlab Stage
 
-## Network Requirements
+This stage is responsible for provisioning a production ready Gitlab instance on the landing zone infrastructure. The [reference architecture](https://docs.gitlab.com/ee/administration/reference_architectures/1k_users.html) of this deployment target 1K users, updates to the current code is required in of HA and/or higher capacity requirements.
 
-- PSA for Cloud SQL on the VPC
-- Existing subnet with PGA and Cloud NAT for internet access
-- Firewall rule for IAP on port 22
-- Firewall rule for TCP ports 80, 443, 2222 from gitlab subnet CIDR
+The following diagram illustrates the high-level design of created resources, which can be adapted to specific requirements via variables:
+
+<p align="center">
+  <img src="diagram.png" alt="Gitlab">
+</p>
+
+## Table of contents
+
+<!-- TOC -->
+* [Gitlab Stage](#gitlab-stage)
+  * [Managed Services for Seamless Operations](#managed-services-for-seamless-operations)
+  * [How to run this stage](#how-to-run-this-stage)
+    * [Provider and Terraform variables](#provider-and-terraform-variables)
+    * [Impersonating the automation service account](#impersonating-the-automation-service-account)
+    * [Variable configuration](#variable-configuration)
+    * [Using delayed billing association for projects](#using-delayed-billing-association-for-projects)
+    * [Running the stage](#running-the-stage)
+    * [Post-deployment activities](#post-deployment-activities)
+    * [Running in isolation](#running-in-isolation)
+  * [Customizations](#customizations)
+    * [Gitlab config](#gitlab-config)
+    * [Gitlab runner config](#gitlab-runner-config)
+  * [Reference and useful links](#reference-and-useful-links)
+  * [Files](#files)
+  * [Variables](#variables)
+  * [Outputs](#outputs)
+<!-- TOC -->
 
 ## Managed Services for Seamless Operations
 
@@ -124,6 +147,71 @@ gitlab-rake “gitlab:password:reset”
 ```
 
 Access Gitlab instance and proceed with stage [0-bootstrap-gitlab](./0-bootstrap-gitlab).
+
+### Running in isolation
+
+It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
+
+- on the organization or network folder level
+   - `roles/xpnAdmin` or a custom role which includes the following permissions
+      - `compute.organizations.enableXpnResource`,
+      - `compute.organizations.disableXpnResource`,
+      - `compute.subnetworks.setIamPolicy`,
+- on each folder where projects are created
+   - `roles/logging.admin`
+   - `roles/owner`
+   - `roles/resourcemanager.folderAdmin`
+   - `roles/resourcemanager.projectCreator`
+   - `roles/xpnAdmin`
+- on the host project for the Shared VPC
+   - `roles/browser`
+   - `roles/compute.viewer`
+- on the organization or billing account
+   - `roles/billing.admin`
+
+The VPC host project, VPC and subnets should already exist and the following networking requirements are satisfied:
+- configured PSA for Cloud SQL on the VPC
+- subnets configured with PGA and Cloud NAT for internet access
+- Inbound firewall rule for IAP on port 22
+- Inbound firewall rule for TCP ports 80, 443, 2222 from proxy subnet CIDR (gitlab)
+
+## Customizations
+
+This stage is designed to be flexible in terms of gitlab and gitlab runners configuration, both in terms of infrastructure and gitlab product configuration. Please check the variables.tf file for more information on how to customize this stage.
+
+### Gitlab config
+
+This is an example of customizing a gitlab instance:
+
+```hcl
+gitlab_config = {
+   hostname = "gitlab.gcp.example.com"
+   mail     = {
+      sendgrid = {
+         api_key = "test"
+      }
+   }
+   saml = {
+      idp_cert_fingerprint = "67:90:96..."
+      sso_target_url       = "https://accounts.google.com/o/saml2/idp?idpid=XXXXX"
+   }
+}
+# tftest skip
+```
+
+### Gitlab runner config
+
+This is an example of a simple Gitlab runner configuration based on a single VM with docker executor:
+
+```hcl
+gitlab_runner_config = {
+   authentication_token = "XXXXXX"
+   executors_config = {
+      docker = {}
+   }
+}
+# tftest skip
+```
 
 ## Reference and useful links
 
