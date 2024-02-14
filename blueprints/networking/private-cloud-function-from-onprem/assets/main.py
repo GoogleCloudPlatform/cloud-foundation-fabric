@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def main(request):
   request_json = request.get_json()
   if request.args and 'message' in request.args:
