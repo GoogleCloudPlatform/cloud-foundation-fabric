@@ -84,7 +84,7 @@ __Congratulations__! You have successfully deployed an HTTP Load Balancer with C
 
 You can simply invoke the service by calling
 
-       Check the default path:
+       Check the default path (producer A):
        curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" -H "Content-Type: application/json" http://$LB_IP/anything
 
        Specifically call the producer A path:
