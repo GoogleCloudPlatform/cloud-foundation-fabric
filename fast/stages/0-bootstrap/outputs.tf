@@ -191,7 +191,6 @@ output "workforce_identity_pool" {
     pool = try(
       google_iam_workforce_pool.default.0.name, null
     )
-    providers = local.cicd_providers
   }
 }
 

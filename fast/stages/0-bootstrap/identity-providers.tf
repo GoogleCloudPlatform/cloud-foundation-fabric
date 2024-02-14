@@ -92,6 +92,7 @@ resource "google_iam_workforce_pool" "default" {
 resource "google_iam_workforce_pool_provider" "default" {
   for_each            = local.workforce_identity_providers
   attribute_condition = each.value.attribute_condition
+  attribute_mapping   = each.value.attribute_mapping
   description         = each.value.description
   disabled            = each.value.disabled
   display_name        = each.value.display_name
