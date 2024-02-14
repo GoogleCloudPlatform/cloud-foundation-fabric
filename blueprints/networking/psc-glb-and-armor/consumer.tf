@@ -27,11 +27,13 @@ module "consumer_project" {
 module "producer_a_project" {
   source              = "./modules/producer"
   producer_project_id = var.producer_a_project_id
+  project_create      = var.project_create
 }
 
 module "producer_b_project" {
   source              = "./modules/producer"
   producer_project_id = var.producer_b_project_id
+  project_create      = var.project_create
 }
 
 resource "google_compute_region_network_endpoint_group" "psc_neg_a" {

@@ -116,12 +116,12 @@ The above command will delete the associated resources so there will be no billa
 
 ```hcl
 module "psc-glb-and-armor-test" {
-  source              = "./fabric/blueprints/networking/psc-glb-and-armor"
-  prefix              = "test"
-  project_create      = true
-  consumer_project_id = "project-1"
+  source                = "./fabric/blueprints/networking/psc-glb-and-armor"
+  prefix                = "test"
+  project_create        = true
+  consumer_project_id   = "project-1"
   producer_a_project_id = "project-2"
   producer_b_project_id = "project-3"
 }
-# tftest modules=3 resources=32
+# tftest modules=6 resources=57
 ```
