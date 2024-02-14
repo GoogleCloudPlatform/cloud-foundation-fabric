@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,31 @@
 # tfdoc:file:description Workload Identity Federation provider definitions.
 
 locals {
-  identity_providers = {
-    for k, v in var.federated_identity_providers : k => merge(
+  workforce_identity_providers = {
+    for k, v in var.workforce_identity_providers : k => merge(
       v,
-      lookup(local.identity_providers_defs, v.issuer, {})
+      lookup(local.workforce_identity_providers_defs, v.issuer, {})
     )
   }
-  identity_providers_defs = {
+  workforce_identity_providers_defs = {
+    azuread = {
+      attribute_mapping = {
+        "google.subject"       = "assertion.subject"
+        "google.display_name"  = "assertion.attributes.userprincipalname[0]"
+        "google.groups"        = "assertion.attributes.groups"
+        "attribute.first_name" = "assertion.attributes.givenname[0]"
+        "attribute.last_name"  = "assertion.attributes.surname[0]"
+        "attribute.user_email" = "assertion.attributes.mail[0]"
+      }
+    }
+  }
+  workload_identity_providers = {
+    for k, v in var.workload_identity_providers : k => merge(
+      v,
+      lookup(local.workload_identity_providers_defs, v.issuer, {})
+    )
+  }
+  workload_identity_providers_defs = {
     # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
     github = {
       attribute_mapping = {
@@ -64,19 +82,40 @@ locals {
   }
 }
 
+resource "google_iam_workforce_pool" "default" {
+  count             = length(local.workforce_identity_providers) > 0 ? 1 : 0
+  parent            = "organizations/${var.organization.id}"
+  location          = "global"
+  workforce_pool_id = "${var.prefix}-bootstrap"
+}
+
+resource "google_iam_workforce_pool_provider" "default" {
+  for_each          = local.workforce_identity_providers
+  attribute_condition = each.value.attribute_condition
+  description         = each.value.description
+  disabled            = each.value.disabled
+  display_name        = each.value.display_name
+  location          = google_iam_workforce_pool.default.0.location
+  provider_id       = "${var.prefix}-bootstrap-${each.key}"
+  workforce_pool_id = google_iam_workforce_pool.default.0.workforce_pool_id
+  saml {
+    idp_metadata_xml = each.value.saml.idp_metadata_xml
+  }
+}
+
 resource "google_iam_workload_identity_pool" "default" {
   provider                  = google-beta
-  count                     = length(local.identity_providers) > 0 ? 1 : 0
+  count                     = length(local.workload_identity_providers) > 0 ? 1 : 0
   project                   = module.automation-project.project_id
   workload_identity_pool_id = "${var.prefix}-bootstrap"
 }
 
 resource "google_iam_workload_identity_pool_provider" "default" {
-  provider = google-beta
-  for_each = local.identity_providers
-  project  = module.automation-project.project_id
+  provider                  = google-beta
+  for_each                  = local.workload_identity_providers
+  project                   = module.automation-project.project_id
   workload_identity_pool_id = (
-    google_iam_workload_identity_pool.default.0.workload_identity_pool_id
+  google_iam_workload_identity_pool.default.0.workload_identity_pool_id
   )
   workload_identity_pool_provider_id = "${var.prefix}-bootstrap-${each.key}"
   attribute_condition                = each.value.attribute_condition
@@ -85,10 +124,10 @@ resource "google_iam_workload_identity_pool_provider" "default" {
     # Setting an empty list configures allowed_audiences to the url of the provider
     allowed_audiences = each.value.custom_settings.audiences
     # If users don't provide an issuer_uri, we set the public one for the platform choosed.
-    issuer_uri = (
-      each.value.custom_settings.issuer_uri != null
-      ? each.value.custom_settings.issuer_uri
-      : try(each.value.issuer_uri, null)
+    issuer_uri        = (
+    each.value.custom_settings.issuer_uri != null
+    ? each.value.custom_settings.issuer_uri
+    : try(each.value.issuer_uri, null)
     )
     # OIDC JWKs in JSON String format. If no value is provided, they key is
     # fetched from the `.well-known` path for the issuer_uri
