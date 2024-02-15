@@ -572,5 +572,16 @@ resource "google_compute_region_url_map" "default" {
       description = test.value.description
     }
   }
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.urlmap_replace_trigger
 
+    ]
+  }
+}
+
+resource "terraform_data" "urlmap_replace_trigger" {
+  triggers_replace = {
+    group_ids = local.backend_ids
+  }
 }

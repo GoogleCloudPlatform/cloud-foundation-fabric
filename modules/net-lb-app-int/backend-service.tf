@@ -212,4 +212,16 @@ resource "google_compute_region_backend_service" "default" {
       policy = "CONSISTENT_HASH_SUBSETTING"
     }
   }
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.backend_replace_trigger
+
+    ]
+  }
+}
+
+resource "terraform_data" "backend_replace_trigger" {
+  triggers_replace = {
+    group_ids = local.group_ids
+  }
 }

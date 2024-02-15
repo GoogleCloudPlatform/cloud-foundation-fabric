@@ -641,12 +641,12 @@ module "ilb-l7" {
 
 | name | description | resources |
 |---|---|---|
-| [backend-service.tf](./backend-service.tf) | Backend service resources. | <code>google_compute_region_backend_service</code> |
+| [backend-service.tf](./backend-service.tf) | Backend service resources. | <code>google_compute_region_backend_service</code> · <code>terraform_data</code> |
 | [groups.tf](./groups.tf) | None | <code>google_compute_instance_group</code> |
 | [health-check.tf](./health-check.tf) | Health check resource. | <code>google_compute_health_check</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_forwarding_rule</code> · <code>google_compute_network_endpoint</code> · <code>google_compute_network_endpoint_group</code> · <code>google_compute_region_network_endpoint_group</code> · <code>google_compute_region_ssl_certificate</code> · <code>google_compute_region_target_http_proxy</code> · <code>google_compute_region_target_https_proxy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
-| [urlmap.tf](./urlmap.tf) | URL map resources. | <code>google_compute_region_url_map</code> |
+| [urlmap.tf](./urlmap.tf) | URL map resources. | <code>google_compute_region_url_map</code> · <code>terraform_data</code> |
 | [variables-backend-service.tf](./variables-backend-service.tf) | Backend services variables. |  |
 | [variables-health-check.tf](./variables-health-check.tf) | Health check variable. |  |
 | [variables-urlmap.tf](./variables-urlmap.tf) | URLmap variable. |  |
