@@ -22,7 +22,7 @@ variable "consumer_project_id" {
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "producer_a_project_id" {

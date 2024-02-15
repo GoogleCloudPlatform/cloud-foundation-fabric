@@ -19,8 +19,8 @@ module "consumer-project" {
   name           = var.consumer_project_id
   project_create = var.project_create_config != null
 
-  billing_account = try(var.project_create_config.billing_account)
-  parent          = try(var.project_create_config.parent)
+  billing_account = try(var.project_create_config.billing_account, null)
+  parent          = try(var.project_create_config.parent, null)
   prefix          = var.prefix
   services = [
     "iam.googleapis.com",
