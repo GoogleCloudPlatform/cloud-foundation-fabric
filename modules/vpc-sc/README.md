@@ -6,6 +6,23 @@ Given the complexity of the underlying resources, the module intentionally mimic
 
 If you are using [Application Default Credentials](https://cloud.google.com/sdk/gcloud/reference/auth/application-default) with Terraform and run into permissions issues, make sure to check out the recommended provider configuration in the [VPC SC resources documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_access_level).
 
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Access policy](#access-policy)
+    - [Scoped policy](#scoped-policy)
+    - [Access policy IAM](#access-policy-iam)
+  - [Access levels](#access-levels)
+  - [Service perimeters](#service-perimeters)
+    - [Bridge type](#bridge-type)
+    - [Regular type](#regular-type)
+- [Factories](#factories)
+- [Notes](#notes)
+- [TODO](#todo)
+- [Files](#files)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
 ## Examples
 
 ### Access policy
@@ -192,6 +209,83 @@ module "test" {
   }
 }
 # tftest modules=1 resources=3 inventory=regular.yaml
+```
+
+## Factories
+
+This module implements support for three distinct factories, used to create and manage access levels, egress policies and ingress policies via YAML files. The YAML files syntax is a 1:1 match for the corresponding variables, and the factory data is merged at runtime with any data set in variables, which take precedence in case of key overlaps.
+
+This is an example that uses all three factories. Note that the factory configuration points to folders, where each file represents one resource.
+
+```hcl
+module "test" {
+  source        = "./fabric/modules/vpc-sc"
+  access_policy = "12345678"
+  factories_config = {
+    access_levels    = "data/access-levels"
+    egress_policies  = "data/egress-policies"
+    ingress_policies = "data/ingress-policies"
+  }
+  service_perimeters_regular = {
+    r1 = {
+      status = {
+        access_levels       = ["geo-it", "identity-user1"]
+        resources           = ["projects/11111", "projects/111111"]
+        restricted_services = ["storage.googleapis.com"]
+        egress_policies     = ["gcs-sa-foo"]
+        ingress_policies    = ["sa-tf-test"]
+        vpc_accessible_services = {
+          allowed_services   = ["storage.googleapis.com"]
+          enable_restriction = true
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=3 files=a1,a2,e1,i1 inventory=factory.yaml
+```
+
+```yaml
+conditions:
+  - members:
+    - user:user1@example.com
+# tftest-file id=a1 path=data/access-levels/identity-user1.yaml
+```
+
+```yaml
+conditions:
+  - regions:
+      - IT
+# tftest-file id=a2 path=data/access-levels/geo-it.yaml
+```
+
+```yaml
+from:
+  identities:
+    - serviceAccount:foo@myproject.iam.gserviceaccount.com
+to:
+  operations:
+    - method_selectors:
+        - "*"
+      service_name: storage.googleapis.com
+  resources:
+    - projects/123456789
+
+# tftest-file id=e1 path=data/egress-policies/gcs-sa-foo.yaml
+```
+
+```yaml
+from:
+  access_levels:
+    - "*"
+  identities:
+    - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
+to:
+  operations:
+    - service_name: "*"
+  resources:
+    - "*"
+# tftest-file id=i1 path=data/ingress-policies/sa-tf-test.yaml
 ```
 
 ## Notes

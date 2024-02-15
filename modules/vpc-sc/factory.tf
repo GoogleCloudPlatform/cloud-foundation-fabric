@@ -16,8 +16,8 @@
 
 locals {
   _data = {
-    for k, v in local._data_paths : k => v == null ? {} : {
-      for f in fileset(v, "**/*.yaml") :
+    for k, v in local._data_paths : k => {
+      for f in try(fileset(v, "**/*.yaml"), []) :
       trimsuffix(f, ".yaml") => yamldecode(file("${v}/${f}"))
     }
   }
@@ -53,14 +53,14 @@ locals {
         }, try(v.from, {}))
         to = {
           operations = [
-            for o in try(v.operations, []) : merge({
+            for o in try(v.to.operations, []) : merge({
               method_selectors     = []
               permission_selectors = []
               service_name         = null
             }, o)
           ]
-          resources              = try(v.resources, [])
-          resource_type_external = try(v.resource_type_external, false)
+          resources              = try(v.to.resources, [])
+          resource_type_external = try(v.to.resource_type_external, false)
         }
       }
     }
@@ -80,7 +80,7 @@ locals {
               service_name         = null
             }, o)
           ]
-          resources = try(v.resources, [])
+          resources = try(v.to.resources, [])
         }
       }
     }
