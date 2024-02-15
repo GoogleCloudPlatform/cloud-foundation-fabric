@@ -45,5 +45,4 @@ variable "project_create_config" {
 variable "region" {
   description = "The GCP region in which the resources should be deployed."
   type        = string
-  default     = "europe-west1"
 }

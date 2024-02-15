@@ -34,6 +34,7 @@ module "producer-a" {
   prefix                = var.prefix
   producer_project_id   = var.producer_a_project_id
   project_create_config = var.project_create_config
+  region                = var.region
 }
 
 module "producer-b" {
@@ -42,6 +43,7 @@ module "producer-b" {
   prefix                = var.prefix
   producer_project_id   = var.producer_b_project_id
   project_create_config = var.project_create_config
+  region                = var.region
 }
 
 module "consumer-vpc" {
