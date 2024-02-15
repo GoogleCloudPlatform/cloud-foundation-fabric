@@ -14,25 +14,35 @@
  * limitations under the License.
  */
 
+variable "consumer_project_id" {
+  description = "The producer project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
+  type        = string
+}
+
+variable "prefix" {
+  description = "Prefix used for resource names."
+  type        = string
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
+}
+
 variable "producer_project_id" {
   description = "The producer project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
   type        = string
 }
 
-variable "project_create" {
+variable "project_create_config" {
   description = "Create project instead of using an existing one."
-  type        = bool
-  default     = false
+  type = object({
+    billing_account = string
+    parent          = optional(string)
+  })
+  default = null
 }
 
 variable "region" {
   description = "The GCP region in which the resources should be deployed."
   type        = string
-  default     = "europe-west1"
-}
-
-variable "zone" {
-  description = "The GCP zone for the VM."
-  type        = string
-  default     = "europe-west1-b"
 }

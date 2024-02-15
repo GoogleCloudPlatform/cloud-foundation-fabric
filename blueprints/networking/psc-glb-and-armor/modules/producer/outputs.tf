@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-output "psc_ilb_service_attachment" {
-  value = google_compute_service_attachment.psc_ilb_service_attachment
+output "exposed_service_psc_attachment" {
+  value = google_compute_service_attachment.exposed-psc-service
 }
