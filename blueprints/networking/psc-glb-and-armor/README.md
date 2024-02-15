@@ -109,7 +109,7 @@ The above command will delete the associated resources so there will be no billa
 | [producer_a_project_id](variables.tf#L28) | The producer A project, in which the LB, PSC Service Attachment and Cloud Run service should be created. | <code>string</code> | ✓ |  |
 | [producer_b_project_id](variables.tf#L33) | The producer B project, in which the LB, PSC Service Attachment and Cloud Run service should be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L47) | The GCP region in which the resources should be deployed. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L22) | Prefix used for resource names. | <code>string</code> |  | <code>&#34;&#34;</code> |
+| [prefix](variables.tf#L22) | Prefix used for resource names. | <code>string</code> |  | <code>null</code> |
 | [project_create_config](variables.tf#L38) | Create project instead of using an existing one. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
