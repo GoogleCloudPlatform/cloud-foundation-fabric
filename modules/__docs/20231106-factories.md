@@ -1,7 +1,7 @@
 # Factories Refactor and Plan Forward
 
 **authors:** [Ludo](https://github.com/ludoo)
-**last modified:** November 6, 2023
+**last modified:** February 16, 2024
 
 ## Status
 
@@ -94,7 +94,8 @@ Factory files schema must mimick and implement the variable interface for the mo
 With notable exceptions (currently only the `cidrs.yaml` file consumed by firewall factories), the following convention for files/directory is proposed:
 
 - Factories should consume directories (vs single files)
-- All files should contain a dictionary
+- All files should contain a dictionary of resources or a single resource
+- If the factory accepts one resource per file (e.g. VPC subnets), the file name should be used for the resource name and the YAML should allow defining a `name:` override
 - Files in a directory should be parsed together and flattened into a single dictionary
 
 This allows developers to implement multiple resources in a single file or to use one file per resource, as they see fit.
