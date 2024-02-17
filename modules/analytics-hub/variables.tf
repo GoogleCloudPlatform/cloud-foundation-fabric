@@ -15,7 +15,7 @@
  */
 
 variable "description" {
-  description = "Resource description for data exchange"
+  description = "Resource description for data exchange."
   default     = null
   type        = string
 }
@@ -87,7 +87,7 @@ variable "prefix" {
 }
 
 variable "primary_contact" {
-  description = "Email or URL of the primary point of contact of the data exchange.."
+  description = "Email or URL of the primary point of contact of the data exchange."
   type        = string
   default     = null
 }
@@ -98,6 +98,6 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Region for the data exchange"
+  description = "Region for the data exchange."
   type        = string
 }

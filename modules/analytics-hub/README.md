@@ -145,15 +145,15 @@ iam:
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L78) | The ID of the data exchange. Must contain only Unicode letters, numbers (0-9), underscores (_). Should not use characters that require URL-escaping, or characters outside of ASCII, spaces. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L95) | The ID of the project where the Analytics Hub Exchange will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L100) | Region for the data exchange | <code>string</code> | ✓ |  |
-| [description](variables.tf#L17) | Resource description for data exchange | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L100) | Region for the data exchange. | <code>string</code> | ✓ |  |
+| [description](variables.tf#L17) | Resource description for data exchange. | <code>string</code> |  | <code>null</code> |
 | [documentation](variables.tf#L23) | Documentation describing the data exchange. | <code>string</code> |  | <code>null</code> |
 | [factories_config](variables.tf#L29) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  listings &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables.tf#L38) | Authoritative IAM bindings for the data exchange in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [icon](variables.tf#L45) | Base64 encoded image representing the data exchange. | <code>string</code> |  | <code>null</code> |
 | [listings](variables.tf#L51) | Listings definitions in the form {LISTING_ID => LISTING_CONFIGS}. LISTING_ID must contain only Unicode letters, numbers (0-9), underscores (_). Should not use characters that require URL-escaping, or characters outside of ASCII, spaces. | <code title="map&#40;object&#40;&#123;&#10;  description      &#61; optional&#40;string&#41;&#10;  bigquery_dataset &#61; string&#10;  iam              &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  primary_contact  &#61; optional&#40;string&#41;&#10;  documentation    &#61; optional&#40;string&#41;&#10;  icon             &#61; optional&#40;string&#41;&#10;  request_access   &#61; optional&#40;string&#41;&#10;  data_provider &#61; optional&#40;object&#40;&#123;&#10;    name            &#61; string&#10;    primary_contact &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  publisher &#61; optional&#40;object&#40;&#123;&#10;    name            &#61; string&#10;    primary_contact &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  categories &#61; optional&#40;list&#40;string&#41;&#41;&#10;  restricted_export_config &#61; optional&#40;object&#40;&#123;&#10;    enabled               &#61; optional&#40;bool&#41;&#10;    restrict_query_result &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L83) | Optional prefix for Analytics Hub Exchange ID. | <code>string</code> |  | <code>null</code> |
-| [primary_contact](variables.tf#L89) | Email or URL of the primary point of contact of the data exchange.. | <code>string</code> |  | <code>null</code> |
+| [primary_contact](variables.tf#L89) | Email or URL of the primary point of contact of the data exchange. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
