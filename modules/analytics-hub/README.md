@@ -32,7 +32,7 @@ module "analytics-hub" {
       bigquery_dataset = "projects/{project}/datasets/{dataset}"
     },
     "listing_id_2" = {
-      bigquery_dataset = "projects/thinhha-pso-test-project/datasets/biglake_test"
+      bigquery_dataset = "projects/{project}/datasets/{dataset}"
       restricted_export_config = {
         enabled               = true
         restrict_query_result = true
@@ -59,6 +59,8 @@ module "analytics-hub" {
 ### IAM
 
 This module supports setting IAM permissions on both the exchange and listing resources. IAM permissions on the exchange is inherited on the listings. See [this page](https://cloud.google.com/bigquery/docs/analytics-hub-grant-roles) for IAM roles that can be granted on exchange and listings.
+
+IAM bindings created by this module are authoritative for each given role.
 
 ```hcl
 module "analytics-hub" {
