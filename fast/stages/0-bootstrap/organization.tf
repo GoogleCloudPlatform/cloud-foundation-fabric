@@ -153,34 +153,48 @@ module "organization" {
     var.iam_bindings_additive
   )
   # delegated role grant for resource manager service account
-  iam_bindings = {
-    organization_iam_admin_conditional = {
-      members = [module.automation-tf-resman-sa.iam_email]
-      role    = module.organization.custom_role_id["organization_iam_admin"]
-      condition = {
-        expression = format(
-          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-          join(",", formatlist("'%s'", concat(
-            [
+  iam_bindings = merge(
+    {
+      organization_iam_admin_conditional = {
+        members = [module.automation-tf-resman-sa.iam_email]
+        role    = module.organization.custom_role_id["organization_iam_admin"]
+        condition = {
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            join(",", formatlist("'%s'", [
               "roles/accesscontextmanager.policyAdmin",
               "roles/compute.orgFirewallPolicyAdmin",
               "roles/compute.xpnAdmin",
               "roles/orgpolicy.policyAdmin",
+              "roles/orgpolicy.policyViewer",
               "roles/resourcemanager.organizationViewer",
               module.organization.custom_role_id["tenant_network_admin"]
-            ],
-            local.billing_mode == "org" ? [
+            ]))
+          )
+          title       = "automation_sa_delegated_grants"
+          description = "Automation service account delegated grants."
+        }
+      }
+    },
+    local.billing_mode != "org" ? {} : {
+      organization_billing_conditional = {
+        members = [module.automation-tf-resman-sa.iam_email]
+        role    = module.organization.custom_role_id["organization_iam_admin"]
+        condition = {
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            join(",", formatlist("'%s'", [
               "roles/billing.admin",
               "roles/billing.costsManager",
               "roles/billing.user",
-            ] : []
-          )))
-        )
-        title       = "automation_sa_delegated_grants"
-        description = "Automation service account delegated grants."
+            ]))
+          )
+          title       = "automation_sa_delegated_grants"
+          description = "Automation service account delegated grants."
+        }
       }
     }
-  }
+  )
   custom_roles = var.custom_roles
   factories_config = {
     custom_roles = var.factories_config.custom_roles
