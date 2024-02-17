@@ -25,7 +25,7 @@ locals {
 
 resource "google_data_catalog_tag" "engine" {
   for_each = local.factory_tag_template
-  parent   = "projects/${each.value.project_id}/locations/${each.value.project_id}/entryGroups/@bigquery/entries/${trim(base64encode(each.value.parent), "=")}"
+  parent   = "projects/${each.value.project_id}/locations/${each.value.location}/entryGroups/@bigquery/entries/${trim(base64encode(each.value.parent), "=")}"
   column   = try(each.value.column, null)
   template = each.value.template
   dynamic "fields" {

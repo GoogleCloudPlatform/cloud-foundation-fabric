@@ -17,7 +17,7 @@ module "data-catalog-tag" {
     "landing/countries" = {
       project_id = "project-data-product"
       parent     = "projects/project-data-product/datasets/landing"
-      location   = "europe-west-1"
+      location   = "europe-west1"
       template   = "projects/project-datagov/locations/europe-west1/tagTemplates/demo"
       fields = {
         source = "DB-1"
@@ -37,7 +37,7 @@ module "data-catalog-tag" {
     "landing/countries" = {
       project_id = "project-data-product"
       parent     = "projects/project-data-product/datasets/landing/tables/countries"
-      location   = "europe-west-1"
+      location   = "europe-west1"
       template   = "projects/project-datagov/locations/europe-west1/tagTemplates/demo"
       fields = {
         source = "DB-1 Table-A"
@@ -58,7 +58,7 @@ module "data-catalog-tag" {
       project_id = "project-data-product"
       parent     = "projects/project-data-product/datasets/landing/tables/countries"
       column     = "country"
-      location   = "europe-west-1"
+      location   = "europe-west1"
       template   = "projects/project-datagov/locations/europe-west1/tagTemplates/demo"
       fields = {
         source = "DB-1 Table-A Column-B"
@@ -87,7 +87,7 @@ module "data-catalog-tag" {
       project_id = "project-data-product"
       parent     = "projects/project-data-product/datasets/landing/tables/countries"
       column     = "country"
-      location   = "europe-west-1"
+      location   = "europe-west1"
       template   = "projects/project-datagov/locations/europe-west1/tagTemplates/demo"
       fields = {
         source = "DB-1 Table-A Column-B"
@@ -106,6 +106,7 @@ module "data-catalog-tag" {
 
 project_id: project-data-product
 parent: projects/project-data-product/datasets/exposure
+location: europe-west1
 template: projects/project-datagov/locations/europe-west1/tagTemplates/test
 fields:
   owner_email: example@example.com
