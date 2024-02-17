@@ -42,7 +42,7 @@ module "gke-project-0" {
   iam_bindings_additive = {
     for r in local.gke_nodes_sa_roles : "gke-nodes-sa-${r}" => {
       member = module.gke-nodes-service-account.iam_email
-      role   = r
+      role   = "roles/${r}"
     }
   }
   services = concat(
