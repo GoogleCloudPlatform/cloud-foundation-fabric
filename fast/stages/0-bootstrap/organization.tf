@@ -46,7 +46,7 @@ locals {
     ]
   ])
   drs_domains = concat(
-    [var.organization.customer_id],
+    var.organization.customer_id == null ? [] : [var.organization.customer_id],
     var.org_policies_config.constraints.allowed_policy_member_domains
   )
   drs_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
@@ -104,26 +104,28 @@ locals {
   iam_roles_additive = distinct([
     for k, v in local._iam_bindings_additive : v.role
   ])
-  # import org policies only when not using bootstrap user
-  import_org_policies = var.org_policies_config.import_defaults && var.bootstrap_user != null
 }
 
 # TODO: add a check block to ensure our custom roles exist in the factory files
 
 # import org policy constraints enabled by default in new orgs since February 2024
 import {
-  for_each = !local.import_org_policies ? toset([]) : toset([
-    "compute.requireOsLogin",
-    "compute.skipDefaultNetworkCreation",
-    "compute.vmExternalIpAccess",
-    "iam.allowedPolicyMemberDomains",
-    "iam.automaticIamGrantsForDefaultServiceAccounts",
-    "iam.disableServiceAccountKeyCreation",
-    "iam.disableServiceAccountKeyUpload",
-    "sql.restrictAuthorizedNetworks",
-    "sql.restrictPublicIp",
-    "storage.uniformBucketLevelAccess",
-  ])
+  for_each = (
+    !var.org_policies_config.import_defaults || var.bootstrap_user != null
+    ? toset([])
+    : toset([
+      "compute.requireOsLogin",
+      "compute.skipDefaultNetworkCreation",
+      "compute.vmExternalIpAccess",
+      "iam.allowedPolicyMemberDomains",
+      "iam.automaticIamGrantsForDefaultServiceAccounts",
+      "iam.disableServiceAccountKeyCreation",
+      "iam.disableServiceAccountKeyUpload",
+      "sql.restrictAuthorizedNetworks",
+      "sql.restrictPublicIp",
+      "storage.uniformBucketLevelAccess",
+    ])
+  )
   id = "organizations/${var.organization.id}/policies/${each.key}"
   to = module.organization.google_org_policy_policy.default[each.key]
 }
