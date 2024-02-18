@@ -289,7 +289,6 @@ values:
     role: roles/monitoring.metricWriter
   module.project-factory.module.service-accounts["prj-app-1-app-1-be"].google_service_account.service_account[0]:
     account_id: app-1-be
-    create_ignore_already_exists: null
     description: null
     disabled: false
     display_name: null
@@ -297,7 +296,6 @@ values:
     timeouts: null
   module.project-factory.module.service-accounts["prj-app-1-app-1-fe"].google_service_account.service_account[0]:
     account_id: app-1-fe
-    create_ignore_already_exists: null
     description: null
     disabled: false
     display_name: Test app 1 frontend.
@@ -305,7 +303,6 @@ values:
     timeouts: null
   module.project-factory.module.service-accounts["prj-app-2-app-2-be"].google_service_account.service_account[0]:
     account_id: app-2-be
-    create_ignore_already_exists: null
     description: null
     disabled: false
     display_name: null
