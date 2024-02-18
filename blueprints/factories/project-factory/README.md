@@ -57,7 +57,7 @@ module "project-factory" {
   # location where the yaml files are read from
   factory_data_path = "data"
 }
-# tftest modules=7 resources=33 files=prj-app-1,prj-app-2,prj-app-3 inventory=example.yaml
+# tftest modules=10 resources=36 files=prj-app-1,prj-app-2,prj-app-3 inventory=example.yaml
 ```
 
 ```yaml
@@ -79,6 +79,21 @@ service_accounts:
     - roles/monitoring.metricWriter
   app-1-fe:
     display_name: "Test app 1 frontend."
+billing_alert:
+  display_name: 100 dollars in current spend
+  amount:
+    units: 100
+  filter:
+    period:
+     calendar: MONTH
+  threshold_rules:
+  - percent: 0.5
+  - percent: 0.75
+  update_rules:
+    default:
+      disable_default_iam_recipients: true
+      monitoring_notification_channels:
+      - billing-default
 
 # tftest-file id=prj-app-1 path=data/prj-app-1.yaml
 ```
@@ -115,6 +130,21 @@ shared_vpc_service_config:
   network_subnet_users:
     europe-west1/prod-default-ew1:
     - group:team-1@example.com
+billing_alert:
+  display_name: 100 dollars in current spend
+  amount:
+    units: 100
+  filter:
+    period:
+     calendar: MONTH
+  threshold_rules:
+  - percent: 0.5
+  - percent: 0.75
+  update_rules:
+    default:
+      disable_default_iam_recipients: true
+      monitoring_notification_channels:
+      - billing-default
 
 # tftest-file id=prj-app-2 path=data/prj-app-2.yaml
 ```
@@ -124,6 +154,21 @@ parent: folders/12345678
 services:
 - run.googleapis.com
 - storage.googleapis.com
+billing_alert:
+  display_name: 100 dollars in current spend
+  amount:
+    units: 100
+  filter:
+    period:
+     calendar: MONTH
+  threshold_rules:
+  - percent: 0.5
+  - percent: 0.75
+  update_rules:
+    default:
+      disable_default_iam_recipients: true
+      monitoring_notification_channels:
+      - billing-default
 
 # tftest-file id=prj-app-3 path=data/prj-app-3.yaml
 ```
@@ -169,7 +214,7 @@ module "project-factory" {
   }
   factory_data_path = "data"
 }
-# tftest modules=4 resources=14 files=test-0,test-1,test-2
+# tftest modules=7 resources=17 files=test-0,test-1,test-2
 ```
 
 ```yaml
@@ -178,6 +223,22 @@ services:
   - iam.googleapis.com
   - contactcenteraiplatform.googleapis.com
   - container.googleapis.com
+billing_alert:
+  display_name: 100 dollars in current spend
+  amount:
+    units: 100
+  filter:
+    period:
+     calendar: MONTH
+  threshold_rules:
+  - percent: 0.5
+  - percent: 0.75
+  update_rules:
+    default:
+      disable_default_iam_recipients: true
+      monitoring_notification_channels:
+      - billing-default
+
 # tftest-file id=test-0 path=data/test-0.yaml
 ```
 
@@ -186,6 +247,22 @@ parent: folders/1234567890
 services:
   - iam.googleapis.com
   - contactcenteraiplatform.googleapis.com
+billing_alert:
+  display_name: 100 dollars in current spend
+  amount:
+    units: 100
+  filter:
+    period:
+     calendar: MONTH
+  threshold_rules:
+  - percent: 0.5
+  - percent: 0.75
+  update_rules:
+    default:
+      disable_default_iam_recipients: true
+      monitoring_notification_channels:
+      - billing-default
+
 # tftest-file id=test-1 path=data/test-1.yaml
 ```
 
@@ -194,5 +271,21 @@ parent: folders/1234567890
 services:
   - iam.googleapis.com
   - storage.googleapis.com
+billing_alert:
+  display_name: 100 dollars in current spend
+  amount:
+    units: 100
+  filter:
+    period:
+     calendar: MONTH
+  threshold_rules:
+  - percent: 0.5
+  - percent: 0.75
+  update_rules:
+    default:
+      disable_default_iam_recipients: true
+      monitoring_notification_channels:
+      - billing-default
+      
 # tftest-file id=test-2 path=data/test-2.yaml
 ```

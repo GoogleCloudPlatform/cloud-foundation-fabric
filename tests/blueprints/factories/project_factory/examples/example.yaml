@@ -13,6 +13,66 @@
 # limitations under the License.
 
 values:
+  module.project-factory.module.billing-account["prj-app-1"].google_billing_budget.default["prj-app-1"]:
+    all_updates_rule: []
+    amount:
+    - last_period_amount: null
+      specified_amount:
+      - nanos: null
+        units: '100'
+    billing_account: 012345-67890A-ABCDEF
+    budget_filter:
+    - calendar_period: null
+      credit_types_treatment: INCLUDE_ALL_CREDITS
+      custom_period: []
+      resource_ancestors: null
+    display_name: 100 dollars in current spend
+    threshold_rules:
+    - spend_basis: CURRENT_SPEND
+      threshold_percent: 0.5
+    - spend_basis: CURRENT_SPEND
+      threshold_percent: 0.75
+    timeouts: null
+  module.project-factory.module.billing-account["prj-app-2"].google_billing_budget.default["prj-app-2"]:
+    all_updates_rule: []
+    amount:
+    - last_period_amount: null
+      specified_amount:
+      - nanos: null
+        units: '100'
+    billing_account: 012345-67890A-ABCDEF
+    budget_filter:
+    - calendar_period: null
+      credit_types_treatment: INCLUDE_ALL_CREDITS
+      custom_period: []
+      resource_ancestors: null
+    display_name: 100 dollars in current spend
+    threshold_rules:
+    - spend_basis: CURRENT_SPEND
+      threshold_percent: 0.5
+    - spend_basis: CURRENT_SPEND
+      threshold_percent: 0.75
+    timeouts: null
+  module.project-factory.module.billing-account["prj-app-3"].google_billing_budget.default["prj-app-3"]:
+    all_updates_rule: []
+    amount:
+    - last_period_amount: null
+      specified_amount:
+      - nanos: null
+        units: '100'
+    billing_account: 012345-67890A-ABCDEF
+    budget_filter:
+    - calendar_period: null
+      credit_types_treatment: INCLUDE_ALL_CREDITS
+      custom_period: []
+      resource_ancestors: null
+    display_name: 100 dollars in current spend
+    threshold_rules:
+    - spend_basis: CURRENT_SPEND
+      threshold_percent: 0.5
+    - spend_basis: CURRENT_SPEND
+      threshold_percent: 0.75
+    timeouts: null
   module.project-factory.module.projects["prj-app-1"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-prj-app-1
     user_project: null
@@ -74,12 +134,48 @@ values:
     host_project: foo-host
     service_project: test-pf-prj-app-2
     timeouts: null
+  ? module.project-factory.module.projects["prj-app-2"].google_compute_subnetwork_iam_member.shared_vpc_host_robots["europe-west1:prod-default-ew1:cloudservices"]
+  : condition: []
+    project: foo-host
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: prod-default-ew1
+  ? module.project-factory.module.projects["prj-app-2"].google_compute_subnetwork_iam_member.shared_vpc_host_robots["europe-west1:prod-default-ew1:container-engine"]
+  : condition: []
+    project: foo-host
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: prod-default-ew1
+  ? module.project-factory.module.projects["prj-app-2"].google_compute_subnetwork_iam_member.shared_vpc_host_subnets_iam["europe-west1:prod-default-ew1:group:team-1@example.com"]
+  : condition: []
+    member: group:team-1@example.com
+    project: foo-host
+    region: europe-west1
+    role: roles/compute.networkUser
+    subnetwork: prod-default-ew1
   module.project-factory.module.projects["prj-app-2"].google_essential_contacts_contact.contact["admin@example.com"]:
     email: admin@example.com
     language_tag: en
     notification_category_subscriptions:
     - ALL
     parent: projects/test-pf-prj-app-2
+    timeouts: null
+  ? module.project-factory.module.projects["prj-app-2"].google_org_policy_policy.default["compute.restrictSharedVpcSubnetworks"]
+  : dry_run_spec: []
+    name: projects/test-pf-prj-app-2/policies/compute.restrictSharedVpcSubnetworks
+    parent: projects/test-pf-prj-app-2
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        values:
+        - allowed_values:
+          - projects/foo-host/regions/europe-west1/subnetworks/prod-default-ew1
+          denied_values: null
     timeouts: null
   module.project-factory.module.projects["prj-app-2"].google_project.project[0]:
     auto_create_network: false
@@ -110,18 +206,6 @@ values:
   : condition: []
     project: foo-host
     role: roles/vpcaccess.user
-  ? module.project-factory.module.projects["prj-app-2"].google_compute_subnetwork_iam_member.shared_vpc_host_robots["europe-west1:prod-default-ew1:cloudservices"]
-  : condition: [ ]
-    project: foo-host
-    role: roles/compute.networkUser
-  ? module.project-factory.module.projects["prj-app-2"].google_compute_subnetwork_iam_member.shared_vpc_host_robots["europe-west1:prod-default-ew1:container-engine"]
-  : condition: [ ]
-    project: foo-host
-    role: roles/compute.networkUser
-  ? module.project-factory.module.projects["prj-app-2"].google_compute_subnetwork_iam_member.shared_vpc_host_subnets_iam["europe-west1:prod-default-ew1:group:team-1@example.com"]
-  : condition: [ ]
-    project: foo-host
-    role: roles/compute.networkUser
   module.project-factory.module.projects["prj-app-2"].google_project_service.project_services["compute.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -152,21 +236,6 @@ values:
     project: test-pf-prj-app-2
     service: storage.googleapis.com
     timeouts: null
-  module.project-factory.module.projects["prj-app-2"].google_org_policy_policy.default["compute.restrictSharedVpcSubnetworks"]:
-    name: projects/test-pf-prj-app-2/policies/compute.restrictSharedVpcSubnetworks
-    parent: projects/test-pf-prj-app-2
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: [ ]
-        deny_all: null
-        enforce: null
-        values:
-        - allowed_values:
-          - projects/foo-host/regions/europe-west1/subnetworks/prod-default-ew1
-          denied_values: null
   module.project-factory.module.projects["prj-app-3"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-prj-app-3
     user_project: null
@@ -220,6 +289,7 @@ values:
     role: roles/monitoring.metricWriter
   module.project-factory.module.service-accounts["prj-app-1-app-1-be"].google_service_account.service_account[0]:
     account_id: app-1-be
+    create_ignore_already_exists: null
     description: null
     disabled: false
     display_name: null
@@ -227,6 +297,7 @@ values:
     timeouts: null
   module.project-factory.module.service-accounts["prj-app-1-app-1-fe"].google_service_account.service_account[0]:
     account_id: app-1-fe
+    create_ignore_already_exists: null
     description: null
     disabled: false
     display_name: Test app 1 frontend.
@@ -234,6 +305,7 @@ values:
     timeouts: null
   module.project-factory.module.service-accounts["prj-app-2-app-2-be"].google_service_account.service_account[0]:
     account_id: app-2-be
+    create_ignore_already_exists: null
     description: null
     disabled: false
     display_name: null
@@ -241,17 +313,18 @@ values:
     timeouts: null
 
 counts:
+  google_billing_budget: 3
   google_compute_shared_vpc_service_project: 1
   google_compute_subnetwork_iam_member: 3
   google_essential_contacts_contact: 3
   google_kms_crypto_key_iam_member: 1
+  google_org_policy_policy: 1
   google_project: 3
   google_project_iam_member: 4
   google_project_service: 11
   google_service_account: 3
   google_storage_project_service_account: 3
-  google_org_policy_policy: 1
-  modules: 7
-  resources: 33
+  modules: 10
+  resources: 36
 
 outputs: {}
