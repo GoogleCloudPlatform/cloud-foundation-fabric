@@ -112,4 +112,7 @@ locals {
       }
     ]
   ])
+  billing_alert = {
+    for k, v in local._data : k => v.billing_alert
+  }
 }

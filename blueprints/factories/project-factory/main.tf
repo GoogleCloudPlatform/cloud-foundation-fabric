@@ -76,3 +76,23 @@ module "service-accounts" {
     (module.projects[each.value.project].project_id) = each.value.iam_project_roles
   }
 }
+
+module "billing-account" {
+  source   = "../../../modules/billing-account"
+  for_each = local.billing_alert
+  id = coalesce(
+    var.data_overrides.billing_account,
+    var.data_defaults.billing_account
+  )
+  budgets = {
+    "${each.key}" = {
+      display_name = each.value.display_name
+      amount       = each.value.amount
+      filter = {
+        period   = each.value.filter.period
+        projects = ["projects/${module.projects[each.key].number}"]
+      }
+      threshold_rules = each.value.threshold_rules
+    }
+  }
+}

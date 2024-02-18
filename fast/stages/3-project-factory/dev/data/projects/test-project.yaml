@@ -18,3 +18,20 @@ parent: folders/1234567890
 services:
 - compute.googleapis.com
 - storage.googleapis.com
+
+### Billing budget alert
+billing_alert:
+  display_name: 100 dollars in current spend
+  amount:
+    units: 100
+  filter:
+    period:
+     calendar: MONTH
+  threshold_rules:
+  - percent: 0.5
+  - percent: 0.75
+  update_rules:
+    default:
+      disable_default_iam_recipients: true
+      monitoring_notification_channels:
+      - billing-default
