@@ -254,7 +254,7 @@ This is an example that shows how to populate the relevant variables.
 ```tfvars
 tenants = {
   tn0 = {
-    admin_group_email = "tn-0-admins@tenant.example.org"
+    admin_principal   = "group:tn-0-admins@tenant.example.org"
     descriptive_name  = "Tenant 0"
     # an optional billing account and org can be specified for the tenant
     organization = {
@@ -264,7 +264,7 @@ tenants = {
     }
   }
   tnq = {
-    admin_group_email = "tn-1-admins@example.org"
+    admin_principal   = "group:tn-1-admins@example.org"
     descriptive_name  = "Tenant 1"
   }
 }
