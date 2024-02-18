@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ locals {
   groups_iam = {
     for k, v in local.groups : k => "group:${v}"
   }
-  group_iam = {
-    (local.groups.workload-engineers) = [
+  iam_principals = {
+    "group:${local.groups.workload-engineers}" = [
       "roles/editor",
       "roles/iam.serviceAccountTokenCreator"
     ]
@@ -71,12 +71,12 @@ locals {
 }
 
 module "folder" {
-  source        = "../../../modules/folder"
-  folder_create = var.folder_config.folder_create != null
-  parent        = try(var.folder_config.folder_create.parent, null)
-  name          = try(var.folder_config.folder_create.display_name, null)
-  id            = var.folder_config.folder_create != null ? null : var.folder_config.folder_id
-  group_iam     = local.group_iam
+  source            = "../../../modules/folder"
+  folder_create     = var.folder_config.folder_create != null
+  parent            = try(var.folder_config.folder_create.parent, null)
+  name              = try(var.folder_config.folder_create.display_name, null)
+  id                = var.folder_config.folder_create != null ? null : var.folder_config.folder_id
+  iam_by_principals = local.iam_principals
   factories_config = {
     org_policies = var.data_dir != null ? "${var.data_dir}/org-policies" : null
   }

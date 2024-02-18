@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """ Sample pyspark script to be uploaded to Cloud Storage and run on
 Cloud Dataproc.
 Note this file is not intended to be run directly, but run inside a PySpark

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,12 @@ variable "custom_roles" {
   default     = {}
 }
 
+variable "essential_contacts" {
+  description = "Email used for essential contacts, unset if null."
+  type        = string
+  default     = null
+}
+
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
@@ -108,26 +114,6 @@ variable "fast_features" {
   nullable = false
 }
 
-variable "federated_identity_providers" {
-  description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
-  type = map(object({
-    attribute_condition = optional(string)
-    issuer              = string
-    custom_settings = optional(object({
-      issuer_uri = optional(string)
-      audiences  = optional(list(string), [])
-      jwks_json  = optional(string)
-    }), {})
-  }))
-  default  = {}
-  nullable = false
-  # TODO: fix validation
-  # validation {
-  #   condition     = var.federated_identity_providers.custom_settings == null
-  #   error_message = "Custom settings cannot be null."
-  # }
-}
-
 variable "group_iam" {
   description = "Organization-level authoritative IAM binding for groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
   type        = map(list(string))
@@ -137,27 +123,18 @@ variable "group_iam" {
 
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
-  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
+  description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
   type = object({
-    gcp-billing-admins      = string
-    gcp-devops              = string
-    gcp-network-admins      = string
-    gcp-organization-admins = string
-    gcp-security-admins     = string
-    gcp-support             = string
+    gcp-billing-admins      = optional(string, "gcp-billing-admins")
+    gcp-devops              = optional(string, "gcp-devops")
+    gcp-network-admins      = optional(string, "gcp-network-admins")
+    gcp-organization-admins = optional(string, "gcp-organization-admins")
+    gcp-security-admins     = optional(string, "gcp-security-admins")
+    # aliased to gcp-devops as the checklist does not create it
+    gcp-support = optional(string, "gcp-devops")
   })
-  default = {
-    gcp-billing-admins      = "gcp-billing-admins"
-    gcp-devops              = "gcp-devops"
-    gcp-network-admins      = "gcp-network-admins"
-    gcp-organization-admins = "gcp-organization-admins"
-    gcp-security-admins     = "gcp-security-admins"
-    # gcp-support is not included in the official GCP Enterprise
-    # Checklist, so by default we map gcp-support to gcp-devops.
-    # However, we recommend creating gcp-support and updating the
-    # value in the following line
-    gcp-support = "gcp-devops"
-  }
+  nullable = false
+  default  = {}
 }
 
 variable "iam" {
@@ -180,6 +157,13 @@ variable "iam_bindings_additive" {
   }))
   nullable = false
   default  = {}
+}
+
+variable "iam_by_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "locations" {
@@ -279,4 +263,40 @@ variable "project_parent_ids" {
     logging    = null
   }
   nullable = false
+}
+
+variable "workforce_identity_providers" {
+  description = "Workforce Identity Federation pools."
+  type = map(object({
+    attribute_condition = optional(string)
+    issuer              = string
+    display_name        = string
+    description         = string
+    disabled            = optional(bool, false)
+    saml = optional(object({
+      idp_metadata_xml = string
+    }), null)
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "workload_identity_providers" {
+  description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
+  type = map(object({
+    attribute_condition = optional(string)
+    issuer              = string
+    custom_settings = optional(object({
+      issuer_uri = optional(string)
+      audiences  = optional(list(string), [])
+      jwks_json  = optional(string)
+    }), {})
+  }))
+  default  = {}
+  nullable = false
+  # TODO: fix validation
+  # validation {
+  #   condition     = var.federated_identity_providers.custom_settings == null
+  #   error_message = "Custom settings cannot be null."
+  # }
 }

@@ -4,6 +4,7 @@ automation = {
 billing_account = {
   id = "000000-111111-222222"
 }
+essential_contacts = "gcp-security-admins@fast.example.com"
 folder_ids = {
   security = null
 }

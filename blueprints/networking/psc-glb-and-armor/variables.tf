@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,31 +22,29 @@ variable "consumer_project_id" {
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty."
-  }
+  default     = null
 }
 
-variable "producer_project_id" {
-  description = "The producer project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
+variable "producer_a_project_id" {
+  description = "The producer A project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
   type        = string
 }
 
-variable "project_create" {
+variable "producer_b_project_id" {
+  description = "The producer B project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
+  type        = string
+}
+
+variable "project_create_config" {
   description = "Create project instead of using an existing one."
-  type        = bool
-  default     = false
+  type = object({
+    billing_account = string
+    parent          = optional(string)
+  })
+  default = null
 }
 
 variable "region" {
   description = "The GCP region in which the resources should be deployed."
   type        = string
-  default     = "europe-west1"
-}
-
-variable "zone" {
-  description = "The GCP zone for the VM."
-  type        = string
-  default     = "europe-west1-b"
 }

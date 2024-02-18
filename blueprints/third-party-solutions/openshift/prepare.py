@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 '''Prepare OCP installation files for UPI installation on GCP.
 
 This module helps generating installation files for OpenShift on GCP with User
@@ -36,7 +35,6 @@ import hcl
 
 from ruamel import yaml
 
-
 __author__ = 'ludomagno@google.com'
 __version__ = '1.0'
 
@@ -51,8 +49,7 @@ def _parse_tfvars(tfvars=None, tfdir=None):
   result = {}
   try:
     with open(os.path.join(tfdir, 'variables.tf')) as f:
-      result = {k: v.get('default')
-                for k, v in hcl.load(f)['variable'].items()}
+      result = {k: v.get('default') for k, v in hcl.load(f)['variable'].items()}
     if tfvars:
       with open(os.path.join(tfdir, tfvars)) as f:
         result.update(hcl.load(f))
@@ -104,10 +101,10 @@ def _run_installer(cmdline, env=None):
               help='Terraform folder.')
 @click.option('--tfvars',
               help='Terraform vars file, relative to Terraform folder.')
-@click.option('-v', '--verbosity', default='INFO',
-              type=click.Choice(
-                  ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']),
-              help='Verbosity level (logging constant).')
+@click.option(
+    '-v', '--verbosity', default='INFO',
+    type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR',
+                       'CRITICAL']), help='Verbosity level (logging constant).')
 @click.pass_context
 def cli(ctx=None, credentials=None, tfdir=None, tfvars=None, verbosity='INFO'):
   'Program entry point.'
@@ -122,8 +119,9 @@ def cli(ctx=None, credentials=None, tfdir=None, tfvars=None, verbosity='INFO'):
     print(f'Error: {e.args[0]}')
     sys.exit(1)
   if ctx.invoked_subcommand is None:
-    commands = ['install-config', 'manifests',
-                'manifests-edit', 'ignition-configs']
+    commands = [
+        'install-config', 'manifests', 'manifests-edit', 'ignition-configs'
+    ]
   else:
     commands = [ctx.invoked_subcommand]
   try:
@@ -141,9 +139,9 @@ def ignition_configs(ctx=None):
   'Create ignition config files from manifests.'
   logging.info('generating ignition config files')
   cmdline = [
-      str(ctx.obj['paths']['openshift_install']),
-      'create', 'ignition-configs',
-      '--dir', str(ctx.obj['paths']['config_dir'])
+      str(ctx.obj['paths']['openshift_install']), 'create', 'ignition-configs',
+      '--dir',
+      str(ctx.obj['paths']['config_dir'])
   ]
   env = {'GOOGLE_APPLICATION_CREDENTIALS': ctx.obj['paths']['credentials']}
   _run_installer(cmdline, env)
@@ -174,26 +172,30 @@ def install_config(ctx=None):
   data['platform']['gcp']['region'] = vars['region']
   data_disk['diskSizeGB'] = int(vars['install_config_params']['disk_size'])
   if vars_key and vars_key != 'null':
-    data_disk.insert(len(data_disk), 'encryptionKey', {'kmsKey': {
-        'projectID': vars_key['project_id'],
-        'keyRing': vars_key['keyring'],
-        'location': vars_key['location'],
-        'name': vars_key['name']
-    }})
+    data_disk.insert(
+        len(data_disk), 'encryptionKey', {
+            'kmsKey': {
+                'projectID': vars_key['project_id'],
+                'keyRing': vars_key['keyring'],
+                'location': vars_key['location'],
+                'name': vars_key['name']
+            }
+        })
   data['networking']['clusterNetwork'][0]['cidr'] = vars_net['cluster']
-  data['networking']['clusterNetwork'][0]['hostPrefix'] = vars_net['host_prefix']
+  data['networking']['clusterNetwork'][0]['hostPrefix'] = vars_net[
+      'host_prefix']
   data['networking']['machineNetwork'][0]['cidr'] = vars_net['machine']
   data['networking']['serviceNetwork'][0] = vars_net['service']
   if vars_proxy and vars_proxy != 'null':
-    noproxy = [t.strip()
-               for t in vars_proxy['noproxy'].split(',') if t.strip()]
+    noproxy = [t.strip() for t in vars_proxy['noproxy'].split(',') if t.strip()]
     noproxy += [f'.{vars["domain"]}', vars_net['machine']]
     noproxy += vars['allowed_ranges']
-    data.insert(len(data), 'proxy', {
-        'httpProxy': vars_proxy['http'],
-        'httpsProxy': vars_proxy['https'],
-        'noProxy': ','.join(noproxy)
-    })
+    data.insert(
+        len(data), 'proxy', {
+            'httpProxy': vars_proxy['http'],
+            'httpsProxy': vars_proxy['https'],
+            'noProxy': ','.join(noproxy)
+        })
   for k, v in dict(pull_secret='pullSecret', ssh_key='sshKey').items():
     if k not in paths:
       raise Error(f'Key \'{k}\' missing from fs_paths in Terraform variables.')
@@ -217,9 +219,9 @@ def manifests(ctx=None):
   'Create manifests from install config.'
   logging.info('generating manifests')
   cmdline = [
-      str(ctx.obj['paths']['openshift_install']),
-      'create', 'manifests',
-      '--dir', str(ctx.obj['paths']['config_dir'])
+      str(ctx.obj['paths']['openshift_install']), 'create', 'manifests',
+      '--dir',
+      str(ctx.obj['paths']['config_dir'])
   ]
   env = {'GOOGLE_APPLICATION_CREDENTIALS': ctx.obj['paths']['credentials']}
   _run_installer(cmdline, env)
