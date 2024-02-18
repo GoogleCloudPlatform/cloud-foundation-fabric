@@ -21,7 +21,7 @@
 # google_access_context_manager_access_levels resource
 
 resource "google_access_context_manager_access_level" "basic" {
-  for_each    = var.access_levels
+  for_each    = merge(local.data.access_levels, var.access_levels)
   parent      = "accessPolicies/${local.access_policy}"
   name        = "accessPolicies/${local.access_policy}/accessLevels/${each.key}"
   title       = each.key

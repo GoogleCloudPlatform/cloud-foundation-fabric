@@ -148,16 +148,6 @@ output "custom_roles" {
   value       = module.organization.custom_role_id
 }
 
-output "federated_identity" {
-  description = "Workload Identity Federation pool and providers."
-  value = {
-    pool = try(
-      google_iam_workload_identity_pool.default.0.name, null
-    )
-    providers = local.cicd_providers
-  }
-}
-
 output "outputs_bucket" {
   description = "GCS bucket where generated output files are stored."
   value       = module.automation-tf-output-gcs.name
@@ -202,4 +192,23 @@ output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
   value       = local.tfvars
+}
+
+output "workforce_identity_pool" {
+  description = "Workforce Identity Federation pool."
+  value = {
+    pool = try(
+      google_iam_workforce_pool.default.0.name, null
+    )
+  }
+}
+
+output "workload_identity_pool" {
+  description = "Workload Identity Federation pool and providers."
+  value = {
+    pool = try(
+      google_iam_workload_identity_pool.default.0.name, null
+    )
+    providers = local.cicd_providers
+  }
 }

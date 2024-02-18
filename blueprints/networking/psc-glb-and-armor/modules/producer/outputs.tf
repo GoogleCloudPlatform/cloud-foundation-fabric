@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-output "lb_ip" {
-  description = "Load balancer IP address."
-  value       = module.glb.address
+output "exposed_service_psc_attachment" {
+  value = google_compute_service_attachment.exposed-psc-service
 }

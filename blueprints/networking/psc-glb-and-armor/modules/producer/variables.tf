@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,21 @@
  */
 
 variable "consumer_project_id" {
-  description = "The consumer project, in which the GCLB and Cloud Armor should be created."
+  description = "The producer project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
   type        = string
 }
 
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
-  default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty."
+  }
 }
 
-variable "producer_a_project_id" {
-  description = "The producer A project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
-  type        = string
-}
-
-variable "producer_b_project_id" {
-  description = "The producer B project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
+variable "producer_project_id" {
+  description = "The producer project, in which the LB, PSC Service Attachment and Cloud Run service should be created."
   type        = string
 }
 

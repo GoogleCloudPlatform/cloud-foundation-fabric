@@ -37,7 +37,7 @@ This solution assumes you already have two projects created and set up where you
 
 * Have an [organization](https://cloud.google.com/resource-manager/docs/creating-managing-organization) set up in Google cloud.
 * Have a [billing account](https://cloud.google.com/billing/docs/how-to/manage-billing-account) set up.
-* Have two existing [projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project).
+* Have three existing [projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project).
 
 ### Roles & Permissions
 
@@ -72,9 +72,9 @@ Before we deploy the architecture, you will need the following information:
 
        terraform init
 
-4. Copy the following command into a console and replace __[consumer-project-id]__ and __[produce-project-id]__ with your project’s IDs. Then run the following command to run the terraform script and create all relevant resources for this architecture:
+4. Copy the following command into a console and replace __[consumer-project-id]__ and __[producer-a-project-id]__ and __[producer-b-project-id]__ with your project’s IDs. Then run the following command to run the terraform script and create all relevant resources for this architecture:
 
-       terraform apply -var consumer_project_id=[consumer-project-id] -var producer_project_id=[producer-project-id]
+       terraform apply -var consumer_project_id=[consumer-project-id] -var producer_a_project_id=[producer-a-project-id] -var producer_b_project_id=[producer-b-project-id] -var region=[gcp-region]
 
 The resource creation will take a few minutes… but when it’s complete, you should see an output stating the command completed successfully with a list of the created resources.
 
@@ -84,7 +84,14 @@ __Congratulations__! You have successfully deployed an HTTP Load Balancer with C
 
 You can simply invoke the service by calling
 
-       curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" -H "Content-Type: application/json" http://$LB_IP
+       Check the default path (producer A):
+       curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" -H "Content-Type: application/json" http://$(terraform output -raw lb_ip)/uuid
+
+       Specifically call the producer A path:
+       curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" -H "Content-Type: application/json" http://$(terraform output -raw lb_ip)/a/uuid
+
+       Specifically call the producer B path:
+       curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" -H "Content-Type: application/json" http://$(terraform output -raw lb_ip)/b/uuid
 
 ## Cleaning up your environment
 
@@ -94,34 +101,36 @@ The easiest way to remove all the deployed resources is to run the following com
 
 The above command will delete the associated resources so there will be no billable charges made afterwards.
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [consumer_project_id](variables.tf#L17) | The consumer project, in which the GCLB and Cloud Armor should be created. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L22) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [producer_project_id](variables.tf#L31) | The producer project, in which the LB, PSC Service Attachment and Cloud Run service should be created. | <code>string</code> | ✓ |  |
-| [project_create](variables.tf#L36) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
-| [region](variables.tf#L42) | The GCP region in which the resources should be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [zone](variables.tf#L48) | The GCP zone for the VM. | <code>string</code> |  | <code>&#34;europe-west1-b&#34;</code> |
+| [producer_a_project_id](variables.tf#L28) | The producer A project, in which the LB, PSC Service Attachment and Cloud Run service should be created. | <code>string</code> | ✓ |  |
+| [producer_b_project_id](variables.tf#L33) | The producer B project, in which the LB, PSC Service Attachment and Cloud Run service should be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L47) | The GCP region in which the resources should be deployed. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L22) | Prefix used for resource names. | <code>string</code> |  | <code>null</code> |
+| [project_create_config](variables.tf#L38) | Create project instead of using an existing one. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  parent          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [lb_ip](outputs.tf#L17) | Load balancer IP address. |  |
-
 <!-- END TFDOC -->
 ## Test
 
 ```hcl
 module "psc-glb-and-armor-test" {
-  source              = "./fabric/blueprints/networking/psc-glb-and-armor"
-  prefix              = "test"
-  project_create      = true
-  consumer_project_id = "project-1"
-  producer_project_id = "project-2"
+  source = "./fabric/blueprints/networking/psc-glb-and-armor"
+  prefix = "test"
+  project_create_config = {
+    billing_account = var.billing_account_id
+  }
+  consumer_project_id   = "project-1"
+  producer_a_project_id = "project-2"
+  producer_b_project_id = "project-3"
+  region                = "europe-west2"
 }
-# tftest modules=3 resources=32
+# tftest modules=14 resources=57
 ```

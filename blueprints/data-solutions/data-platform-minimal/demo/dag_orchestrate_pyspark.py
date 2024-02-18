@@ -20,8 +20,7 @@ from airflow import models
 from airflow.models.variable import Variable
 from airflow.operators import empty
 from airflow.providers.google.cloud.operators.dataproc import (
-    DataprocCreateBatchOperator
-)
+    DataprocCreateBatchOperator)
 from airflow.utils.dates import days_ago
 
 # --------------------------------------------------------------------------------
@@ -57,37 +56,31 @@ with models.DAG(
     default_args=default_args,  # The interval with which to schedule the DAG
     schedule_interval=None,  # Override to match your needs
 ) as dag:
-    start = empty.EmptyOperator(
-        task_id='start',
-        trigger_rule='all_success'
-    )
+  start = empty.EmptyOperator(task_id='start', trigger_rule='all_success')
 
-    end = empty.EmptyOperator(
-        task_id='end',
-        trigger_rule='all_success'
-    )    
+  end = empty.EmptyOperator(task_id='end', trigger_rule='all_success')
 
-    create_batch = DataprocCreateBatchOperator(
-        task_id="batch_create",
-        project_id=PROCESSING_PRJ,
-        batch={
-            "environment_config": {
-                "execution_config": {
-                    "service_account": PROCESSING_SA,
-                    "subnetwork_uri": PROCESSING_SUBNET
-                },
-                "peripherals_config": {
-                    "spark_history_server_config":{
-                        "dataproc_cluster": PHS_CLUSTER_PATH
-                    }
-                }
-            },
-            "pyspark_batch": {
-                "args": ["pippo"],
-                "main_python_file_uri": PYTHON_FILE_LOCATION,
-            }
-        },
-        batch_id=BATCH_ID,
-    )
+  create_batch = DataprocCreateBatchOperator(
+      task_id="batch_create",
+      project_id=PROCESSING_PRJ,
+      batch={
+          "environment_config": {
+              "execution_config": {
+                  "service_account": PROCESSING_SA,
+                  "subnetwork_uri": PROCESSING_SUBNET
+              },
+              "peripherals_config": {
+                  "spark_history_server_config": {
+                      "dataproc_cluster": PHS_CLUSTER_PATH
+                  }
+              }
+          },
+          "pyspark_batch": {
+              "args": ["pippo"],
+              "main_python_file_uri": PYTHON_FILE_LOCATION,
+          }
+      },
+      batch_id=BATCH_ID,
+  )
 
-    start >> create_batch >> end
+  start >> create_batch >> end

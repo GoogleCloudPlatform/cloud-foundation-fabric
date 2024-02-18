@@ -363,7 +363,7 @@ counts:
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
   google_org_policy_policy: 20
-  google_organization_iam_binding: 25
+  google_organization_iam_binding: 26
   google_organization_iam_custom_role: 6
   google_organization_iam_member: 35
   google_project: 3
@@ -381,4 +381,4 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   modules: 16
-  resources: 189
+  resources: 190

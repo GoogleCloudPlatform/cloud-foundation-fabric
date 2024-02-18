@@ -8,15 +8,37 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2082](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2082)] Fix GKE multitenant blueprint roles ([ludoo](https://github.com/ludoo)) <!-- 2024-02-16 14:15:22+00:00 -->
+- [[#2076](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2076)] Use Fabric modules in blueprints/networking/psc-glb-and-armor ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-15 20:57:47+00:00 -->
+- [[#2075](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2075)] Updated path matchers to be more user friendly, added better test exa… ([bswenka](https://github.com/bswenka)) <!-- 2024-02-15 17:27:26+00:00 -->
+- [[#2079](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2079)] Format python files in blueprints ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-15 08:37:49+00:00 -->
+- [[#2071](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2071)] Bswenka/psc glb and armor 2 producers ([bswenka](https://github.com/bswenka)) <!-- 2024-02-14 15:40:51+00:00 -->
+- [[#2072](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2072)] Fix e2e tests - vertex mlops and net-address ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-13 06:40:31+00:00 -->
+- [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
+- [[#2058](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2058)] glb and armor subnet fix ([bswenka](https://github.com/bswenka)) <!-- 2024-02-09 10:41:14+00:00 -->
+- [[#2061](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2061)] HA MySQL cluster deployment on GKE ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-09 10:23:35+00:00 -->
+- [[#2059](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2059)] GKE stateful blueprints ([juliocc](https://github.com/juliocc)) <!-- 2024-02-08 18:28:41+00:00 -->
 - [[#2036](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2036)] Shielded nodes and custom service account in FAST GKE stage and blueprint (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-02-01 15:16:00+00:00 -->
 - [[#2016](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2016)] Ensure data platform service accounts meet FAST requirements ([ludoo](https://github.com/ludoo)) <!-- 2024-01-28 13:00:33+00:00 -->
 
 ### DOCUMENTATION
 
+- [[#2060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2060)] Data catalog Tag module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-13 16:24:17+00:00 -->
+- [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
+- [[#2061](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2061)] HA MySQL cluster deployment on GKE ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-09 10:23:35+00:00 -->
+- [[#2059](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2059)] GKE stateful blueprints ([juliocc](https://github.com/juliocc)) <!-- 2024-02-08 18:28:41+00:00 -->
 - [[#2013](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2013)] Add Tag Template module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-01-27 11:30:21+00:00 -->
 
 ### FAST
 
+- [[#2077](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2077)] Add workforce_identity_federation in 0-bootstrap ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-14 23:10:24+00:00 -->
+- [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
+- [[#2065](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2065)] Fix imports of org policies ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-11 06:22:11+00:00 -->
+- [[#2057](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2057)] Postpone setting essential contacts until provisioning using SA ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-07 19:08:44+00:00 -->
+- [[#2056](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2056)] import default org-level org-policies  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-07 16:25:11+00:00 -->
+- [[#2050](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2050)] Enable additional recommended org policies ([juliocc](https://github.com/juliocc)) <!-- 2024-02-05 09:46:37+00:00 -->
+- [[#2041](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2041)] Leverage net-vpc module for DNS logging in FAST ([ludoo](https://github.com/ludoo)) <!-- 2024-02-03 07:16:00+00:00 -->
+- [[#2038](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2038)] Make Cloud NAT creation optional in FAST net stages. ([juliocc](https://github.com/juliocc)) <!-- 2024-02-02 09:58:17+00:00 -->
 - [[#2036](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2036)] Shielded nodes and custom service account in FAST GKE stage and blueprint (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-02-01 15:16:00+00:00 -->
 - [[#2033](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2033)] Add DNS query logging to FAST net stages ([juliocc](https://github.com/juliocc)) <!-- 2024-01-31 12:44:51+00:00 -->
 - [[#2032](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2032)] Selectively enable logging in FAST and firewall policy module rules (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-01-31 08:50:35+00:00 -->
@@ -29,6 +51,13 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2081](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2081)] VPC-SC module factories ([ludoo](https://github.com/ludoo)) <!-- 2024-02-17 07:02:16+00:00 -->
+- [[#2060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2060)] Data catalog Tag module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-13 16:24:17+00:00 -->
+- [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
+- [[#2062](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2062)] Add Tags in project output. ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-09 09:42:18+00:00 -->
+- [[#2056](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2056)] import default org-level org-policies  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-07 16:25:11+00:00 -->
+- [[#2053](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2053)] Added destroy_scheduled_duration variable ([luigi-bitonti](https://github.com/luigi-bitonti)) <!-- 2024-02-07 15:47:50+00:00 -->
+- [[#2051](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2051)] fix: auto_provisioning_defaults is not really optional ([kumadee](https://github.com/kumadee)) <!-- 2024-02-06 06:09:13+00:00 -->
 - [[#2035](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2035)] Fix dnssec_config issue on state off ([haraldhaas](https://github.com/haraldhaas)) <!-- 2024-02-01 06:53:33+00:00 -->
 - [[#2030](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2030)] logging for default ingress rules in FAST (CSPR-related) ([juliocc](https://github.com/juliocc)) <!-- 2024-01-30 16:53:01+00:00 -->
 - [[#2008](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2008)] Updated the DataQualitySpec for Dataplex Datascan ([shourya116](https://github.com/shourya116)) <!-- 2024-01-30 15:14:50+00:00 -->
@@ -38,6 +67,12 @@ All notable changes to this project will be documented in this file.
 - [[#2012](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2012)] Add support for target_resources to net-firewall-policy module ([bcorbitt-ps](https://github.com/bcorbitt-ps)) <!-- 2024-01-25 17:56:17+00:00 -->
 - [[#2002](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2002)] Fixes and additional support for ssl_mode for CloudSQL module ([spica29](https://github.com/spica29)) <!-- 2024-01-25 15:29:08+00:00 -->
 - [[#2010](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2010)] Add support for essential contacts to FAST (CSPR-related) ([ludoo](https://github.com/ludoo)) <!-- 2024-01-25 11:20:14+00:00 -->
+
+### TOOLS
+
+- [[#2079](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2079)] Format python files in blueprints ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-15 08:37:49+00:00 -->
+- [[#2056](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2056)] import default org-level org-policies  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-07 16:25:11+00:00 -->
+- [[#2039](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2039)] Remove unused tfeditor ([juliocc](https://github.com/juliocc)) <!-- 2024-02-02 10:14:14+00:00 -->
 
 ## [29.0.0] - 2024-01-24
 

@@ -114,24 +114,11 @@ variable "fast_features" {
   nullable = false
 }
 
-variable "federated_identity_providers" {
-  description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
-  type = map(object({
-    attribute_condition = optional(string)
-    issuer              = string
-    custom_settings = optional(object({
-      issuer_uri = optional(string)
-      audiences  = optional(list(string), [])
-      jwks_json  = optional(string)
-    }), {})
-  }))
-  default  = {}
-  nullable = false
-  # TODO: fix validation
-  # validation {
-  #   condition     = var.federated_identity_providers.custom_settings == null
-  #   error_message = "Custom settings cannot be null."
-  # }
+variable "group_iam" {
+  description = "Organization-level authoritative IAM binding for groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "groups" {
@@ -276,4 +263,40 @@ variable "project_parent_ids" {
     logging    = null
   }
   nullable = false
+}
+
+variable "workforce_identity_providers" {
+  description = "Workforce Identity Federation pools."
+  type = map(object({
+    attribute_condition = optional(string)
+    issuer              = string
+    display_name        = string
+    description         = string
+    disabled            = optional(bool, false)
+    saml = optional(object({
+      idp_metadata_xml = string
+    }), null)
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "workload_identity_providers" {
+  description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
+  type = map(object({
+    attribute_condition = optional(string)
+    issuer              = string
+    custom_settings = optional(object({
+      issuer_uri = optional(string)
+      audiences  = optional(list(string), [])
+      jwks_json  = optional(string)
+    }), {})
+  }))
+  default  = {}
+  nullable = false
+  # TODO: fix validation
+  # validation {
+  #   condition     = var.federated_identity_providers.custom_settings == null
+  #   error_message = "Custom settings cannot be null."
+  # }
 }
