@@ -77,6 +77,18 @@ variable "cicd_repositories" {
       branch            = optional(string)
       identity_provider = optional(string)
     }))
+    gcve_dev = optional(object({
+      name              = string
+      type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
+    }))
+    gcve_prod = optional(object({
+      name              = string
+      type              = string
+      branch            = optional(string)
+      identity_provider = optional(string)
+    }))
     networking = optional(object({
       name              = string
       type              = string
@@ -157,6 +169,7 @@ variable "fast_features" {
   type = object({
     data_platform   = optional(bool, false)
     gke             = optional(bool, false)
+    gcve            = optional(bool, false)
     project_factory = optional(bool, false)
     sandbox         = optional(bool, false)
     teams           = optional(bool, false)

@@ -54,12 +54,14 @@ module "branch-network-prod-folder" {
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.dp-prod,
       local.branch_optional_sa_lists.gke-prod,
+      local.branch_optional_sa_lists.gcve-prod,
       local.branch_optional_sa_lists.pf-prod,
     )
     # read-only (plan) automation service accounts
     "roles/compute.networkViewer" = concat(
       local.branch_optional_r_sa_lists.dp-prod,
       local.branch_optional_r_sa_lists.gke-prod,
+      local.branch_optional_r_sa_lists.gcve-prod,
       local.branch_optional_r_sa_lists.pf-prod,
     )
   }
@@ -80,12 +82,14 @@ module "branch-network-dev-folder" {
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.dp-dev,
       local.branch_optional_sa_lists.gke-dev,
+      local.branch_optional_sa_lists.gcve-dev,
       local.branch_optional_sa_lists.pf-dev,
     )
     # read-only (plan) automation service accounts
     "roles/compute.networkViewer" = concat(
       local.branch_optional_r_sa_lists.dp-prod,
       local.branch_optional_r_sa_lists.gke-prod,
+      local.branch_optional_r_sa_lists.gcve-dev,
       local.branch_optional_r_sa_lists.pf-prod,
     )
   }

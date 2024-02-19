@@ -100,6 +100,7 @@ variable "fast_features" {
   type = object({
     data_platform   = optional(bool, false)
     gke             = optional(bool, false)
+    gcve            = optional(bool, false)
     project_factory = optional(bool, false)
     sandbox         = optional(bool, false)
     teams           = optional(bool, false)
