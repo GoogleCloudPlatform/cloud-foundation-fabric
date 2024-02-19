@@ -19,7 +19,8 @@ output "data_exchange_id" {
   value       = google_bigquery_analytics_hub_data_exchange.data_exchange.data_exchange_id
   depends_on = [
     google_bigquery_analytics_hub_data_exchange.data_exchange,
-    google_bigquery_analytics_hub_data_exchange_iam_binding.exchange_iam_bindings
+    google_bigquery_analytics_hub_data_exchange_iam_binding.exchange_iam_bindings,
+    google_bigquery_analytics_hub_data_exchange_iam_member.exchange_iam_members
   ]
 }
 

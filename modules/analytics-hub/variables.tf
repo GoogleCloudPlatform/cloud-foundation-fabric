@@ -35,13 +35,6 @@ variable "factories_config" {
   default  = {}
 }
 
-variable "iam" {
-  description = "Authoritative IAM bindings for the data exchange in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "icon" {
   description = "Base64 encoded image representing the data exchange."
   default     = null
@@ -49,24 +42,24 @@ variable "icon" {
 }
 
 variable "listings" {
-  description = "Listings definitions in the form {LISTING_ID => LISTING_CONFIGS}. LISTING_ID must contain only Unicode letters, numbers (0-9), underscores (_). Should not use characters that require URL-escaping, or characters outside of ASCII, spaces."
+  description = "Listings definitions in the form {LISTING_ID => LISTING_CONFIGS}. LISTING_ID must contain only Unicode letters, numbers (0-9), underscores (_). Should not use characters that require URL-escaping or characters outside of ASCII spaces."
   type = map(object({
-    description      = optional(string)
     bigquery_dataset = string
-    iam              = optional(map(list(string)))
-    primary_contact  = optional(string)
+    description      = optional(string)
     documentation    = optional(string)
+    categories       = optional(list(string))
     icon             = optional(string)
+    primary_contact  = optional(string)
     request_access   = optional(string)
     data_provider = optional(object({
       name            = string
       primary_contact = optional(string)
     }))
+    iam = optional(map(list(string)))
     publisher = optional(object({
       name            = string
       primary_contact = optional(string)
     }))
-    categories = optional(list(string))
     restricted_export_config = optional(object({
       enabled               = optional(bool)
       restrict_query_result = optional(bool)
@@ -76,12 +69,12 @@ variable "listings" {
 }
 
 variable "name" {
-  description = "The ID of the data exchange. Must contain only Unicode letters, numbers (0-9), underscores (_). Should not use characters that require URL-escaping, or characters outside of ASCII, spaces."
+  description = "The ID of the data exchange. Must contain only Unicode letters, numbers (0-9), underscores (_). Should not use characters that require URL-escaping or characters outside of ASCII spaces."
   type        = string
 }
 
 variable "prefix" {
-  description = "Optional prefix for Analytics Hub Exchange ID."
+  description = "Optional prefix for data exchange ID."
   type        = string
   default     = null
 }
@@ -93,7 +86,7 @@ variable "primary_contact" {
 }
 
 variable "project_id" {
-  description = "The ID of the project where the Analytics Hub Exchange will be created."
+  description = "The ID of the project where the data exchange will be created."
   type        = string
 }
 

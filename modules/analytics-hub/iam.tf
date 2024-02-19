@@ -15,6 +15,25 @@
  */
 
 locals {
+  _exchange_iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  _exchange_iam_principals = {
+    for r in local._exchange_iam_principal_roles : r => [
+      for k, v in var.iam_by_principals :
+      k if try(index(v, r), null) != null
+    ]
+  }
+  _exchange_iam_bindings = {
+    for key, iam_bindings in var.iam_bindings :
+    iam_bindings.role => iam_bindings.members
+  }
+  exchange_iam = {
+    for role in distinct(concat(keys(var.iam), keys(local._exchange_iam_principals), keys(local._exchange_iam_bindings))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local._exchange_iam_principals[role], []),
+      try(local._exchange_iam_bindings[role], []),
+    )
+  }
   listing_iam = flatten([
     for listing_id, listing_configs in local.factory_listings : [
       for role, members in coalesce(listing_configs.iam, tomap({})) : {
@@ -26,13 +45,23 @@ locals {
   ])
 }
 
+
 resource "google_bigquery_analytics_hub_data_exchange_iam_binding" "exchange_iam_bindings" {
-  for_each         = var.iam
+  for_each         = local.exchange_iam
   project          = google_bigquery_analytics_hub_data_exchange.data_exchange.project
   location         = google_bigquery_analytics_hub_data_exchange.data_exchange.location
   data_exchange_id = google_bigquery_analytics_hub_data_exchange.data_exchange.data_exchange_id
   role             = each.key
   members          = each.value
+}
+
+resource "google_bigquery_analytics_hub_data_exchange_iam_member" "exchange_iam_members" {
+  for_each         = var.iam_bindings_additive
+  project          = google_bigquery_analytics_hub_data_exchange.data_exchange.project
+  location         = google_bigquery_analytics_hub_data_exchange.data_exchange.location
+  data_exchange_id = google_bigquery_analytics_hub_data_exchange.data_exchange.data_exchange_id
+  role             = each.value.role
+  member           = each.value.member
 }
 
 resource "google_bigquery_analytics_hub_listing_iam_binding" "listing_iam_bindings" {
@@ -43,8 +72,7 @@ resource "google_bigquery_analytics_hub_listing_iam_binding" "listing_iam_bindin
   project          = google_bigquery_analytics_hub_data_exchange.data_exchange.project
   location         = google_bigquery_analytics_hub_data_exchange.data_exchange.location
   data_exchange_id = google_bigquery_analytics_hub_data_exchange.data_exchange.data_exchange_id
-  listing_id       = each.value.listing_id
+  listing_id       = google_bigquery_analytics_hub_listing.listing[each.value.listing_id].id
   role             = each.value.role
   members          = each.value.members
-  depends_on       = [google_bigquery_analytics_hub_listing.listing]
 }
