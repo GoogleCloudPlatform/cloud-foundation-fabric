@@ -229,9 +229,9 @@ variable "org_policies_config" {
 variable "organization" {
   description = "Organization details."
   type = object({
-    domain      = string
     id          = number
-    customer_id = string
+    domain      = optional(string)
+    customer_id = optional(string)
   })
 }
 

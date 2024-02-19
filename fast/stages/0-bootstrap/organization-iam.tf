@@ -22,7 +22,7 @@ locals {
     "roles/billing.creator"
   ]
   # domain IAM bindings
-  iam_domain_bindings = {
+  iam_domain_bindings = var.organization.domain == null ? {} : {
     "domain:${var.organization.domain}" = {
       authoritative = ["roles/browser"]
       additive      = []
