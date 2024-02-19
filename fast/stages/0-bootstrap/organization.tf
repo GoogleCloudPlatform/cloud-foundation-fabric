@@ -46,7 +46,7 @@ locals {
     ]
   ])
   drs_domains = concat(
-    [var.organization.customer_id],
+    var.organization.customer_id == null ? [] : [var.organization.customer_id],
     var.org_policies_config.constraints.allowed_policy_member_domains
   )
   drs_tag_name = "${var.organization.id}/${var.org_policies_config.tag_name}"
@@ -104,26 +104,28 @@ locals {
   iam_roles_additive = distinct([
     for k, v in local._iam_bindings_additive : v.role
   ])
-  # import org policies only when not using bootstrap user
-  import_org_policies = var.org_policies_config.import_defaults && var.bootstrap_user != null
 }
 
 # TODO: add a check block to ensure our custom roles exist in the factory files
 
 # import org policy constraints enabled by default in new orgs since February 2024
 import {
-  for_each = !local.import_org_policies ? toset([]) : toset([
-    "compute.requireOsLogin",
-    "compute.skipDefaultNetworkCreation",
-    "compute.vmExternalIpAccess",
-    "iam.allowedPolicyMemberDomains",
-    "iam.automaticIamGrantsForDefaultServiceAccounts",
-    "iam.disableServiceAccountKeyCreation",
-    "iam.disableServiceAccountKeyUpload",
-    "sql.restrictAuthorizedNetworks",
-    "sql.restrictPublicIp",
-    "storage.uniformBucketLevelAccess",
-  ])
+  for_each = (
+    !var.org_policies_config.import_defaults || var.bootstrap_user != null
+    ? toset([])
+    : toset([
+      "compute.requireOsLogin",
+      "compute.skipDefaultNetworkCreation",
+      "compute.vmExternalIpAccess",
+      "iam.allowedPolicyMemberDomains",
+      "iam.automaticIamGrantsForDefaultServiceAccounts",
+      "iam.disableServiceAccountKeyCreation",
+      "iam.disableServiceAccountKeyUpload",
+      "sql.restrictAuthorizedNetworks",
+      "sql.restrictPublicIp",
+      "storage.uniformBucketLevelAccess",
+    ])
+  )
   id = "organizations/${var.organization.id}/policies/${each.key}"
   to = module.organization.google_org_policy_policy.default[each.key]
 }
@@ -151,34 +153,48 @@ module "organization" {
     var.iam_bindings_additive
   )
   # delegated role grant for resource manager service account
-  iam_bindings = {
-    organization_iam_admin_conditional = {
-      members = [module.automation-tf-resman-sa.iam_email]
-      role    = module.organization.custom_role_id["organization_iam_admin"]
-      condition = {
-        expression = format(
-          "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-          join(",", formatlist("'%s'", concat(
-            [
+  iam_bindings = merge(
+    {
+      organization_iam_admin_conditional = {
+        members = [module.automation-tf-resman-sa.iam_email]
+        role    = module.organization.custom_role_id["organization_iam_admin"]
+        condition = {
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            join(",", formatlist("'%s'", [
               "roles/accesscontextmanager.policyAdmin",
               "roles/compute.orgFirewallPolicyAdmin",
               "roles/compute.xpnAdmin",
               "roles/orgpolicy.policyAdmin",
+              "roles/orgpolicy.policyViewer",
               "roles/resourcemanager.organizationViewer",
               module.organization.custom_role_id["tenant_network_admin"]
-            ],
-            local.billing_mode == "org" ? [
+            ]))
+          )
+          title       = "automation_sa_delegated_grants"
+          description = "Automation service account delegated grants."
+        }
+      }
+    },
+    local.billing_mode != "org" ? {} : {
+      organization_billing_conditional = {
+        members = [module.automation-tf-resman-sa.iam_email]
+        role    = module.organization.custom_role_id["organization_iam_admin"]
+        condition = {
+          expression = format(
+            "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+            join(",", formatlist("'%s'", [
               "roles/billing.admin",
               "roles/billing.costsManager",
               "roles/billing.user",
-            ] : []
-          )))
-        )
-        title       = "automation_sa_delegated_grants"
-        description = "Automation service account delegated grants."
+            ]))
+          )
+          title       = "automation_sa_delegated_grants"
+          description = "Automation service account delegated grants."
+        }
       }
     }
-  }
+  )
   custom_roles = var.custom_roles
   factories_config = {
     custom_roles = var.factories_config.custom_roles

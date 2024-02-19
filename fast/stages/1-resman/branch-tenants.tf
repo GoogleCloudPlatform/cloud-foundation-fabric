@@ -21,7 +21,7 @@
 locals {
   tenant_iam = {
     for k, v in var.tenants : k => [
-      "group:${v.admin_group_email}",
+      v.admin_principal,
       module.tenant-self-iac-sa[k].iam_email
     ]
   }

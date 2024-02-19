@@ -34,8 +34,8 @@ module "branch-security-folder" {
     "roles/resourcemanager.folderAdmin"    = [module.branch-security-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-security-sa.iam_email]
     # read-only (plan) automation service account
-    "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
-    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
+    "roles/viewer"                       = [module.branch-security-r-sa.iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-security-r-sa.iam_email]
   }
   tag_bindings = {
     context = try(
