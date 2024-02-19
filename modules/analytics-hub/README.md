@@ -86,18 +86,18 @@ module "analytics-hub" {
   iam_bindings = {
     "viewers" = {
       role    = "roles/analyticshub.viewer"
-      members = ["user:thinhha@google.com"]
+      members = ["user:user@domain.com"]
     }
   }
   iam_by_principals = {
-    "user:thinhha@google.com" = [
+    "user:user@domain.com" = [
       "roles/analyticshub.viewer"
     ]
   }
   iam_bindings_additive = {
     "subscribers" = {
       role   = "roles/analyticshub.subscriber"
-      member = "user:thinhha@google.com"
+      member = "user:user@domain.com"
     }
   }
 }

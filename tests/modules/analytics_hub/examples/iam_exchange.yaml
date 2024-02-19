@@ -29,14 +29,14 @@ values:
     location: us-central1
     members:
     - group:viewer@domain.com
-    - user:thinhha@google.com
+    - user:user@domain.com
     project: project-id
     role: roles/analyticshub.viewer
   module.analytics-hub.google_bigquery_analytics_hub_data_exchange_iam_member.exchange_iam_members["subscribers"]:
     condition: []
     data_exchange_id: exchange
     location: us-central1
-    member: user:thinhha@google.com
+    member: user:user@domain.com
     project: project-id
     role: roles/analyticshub.subscriber
 
