@@ -4,9 +4,9 @@ This module allows managing [Analytics Hub](https://cloud.google.com/bigquery/do
 
 ## Examples
 
-Listing argument references can be found in: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_listing
-
 ### Exchange
+
+Exchange argument references can be found in: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_data_exchange
 
 ```hcl
 module "analytics-hub" {
@@ -23,7 +23,7 @@ module "analytics-hub" {
 
 ### Listings
 
-Listing definitions can be provided in the form in the form {LISTING_ID => LISTING_CONFIGS}. Listing argument references can be found in: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_listing
+Listing definitions can be provided in the form {LISTING_ID => LISTING_CONFIGS}. Listing argument references can be found in: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_analytics_hub_listing
 
 ```hcl
 module "analytics-hub" {
