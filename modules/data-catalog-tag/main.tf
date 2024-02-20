@@ -31,8 +31,13 @@ resource "google_data_catalog_tag" "engine" {
   dynamic "fields" {
     for_each = each.value.fields
     content {
-      field_name   = fields.key
-      string_value = fields.value
+      field_name      = fields.key
+      display_name    = try(fields.value.display_name, null)
+      order           = try(fields.value.order, null)
+      string_value    = try(fields.value.string_value, null)
+      double_value    = try(fields.value.double_value, null)
+      enum_value      = try(fields.value.enum_value, null)
+      timestamp_value = try(fields.value.timestamp_value, null)
     }
   }
 }
