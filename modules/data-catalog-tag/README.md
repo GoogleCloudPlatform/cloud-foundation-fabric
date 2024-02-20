@@ -5,7 +5,7 @@ This module allows managing [Data Catalog Tag](https://cloud.google.com/data-cat
 ## TODO
 
 - Add support for entries different than Bigquery resources.
-- Ass support to BOOL when [issue](https://github.com/hashicorp/terraform-provider-google/issues/16856) is fixed.
+- Add support to BOOL when [issue](https://github.com/hashicorp/terraform-provider-google/issues/16856) is fixed.
 - Add support to RICHTEXT when [issue](https://github.com/hashicorp/terraform-provider-google/issues/13597) is fixed.
 
 ## Examples
