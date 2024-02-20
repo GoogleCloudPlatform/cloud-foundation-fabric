@@ -231,6 +231,17 @@ module "bucket" {
   id          = "${var.prefix}-bucket"
 }
 
+module "destination-project" {
+  source          = "./fabric/modules/project"
+  name            = "destination-project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "logging.googleapis.com"
+  ]
+}
+
 module "folder-sink" {
   source = "./fabric/modules/folder"
   name   = "Folder name"
@@ -259,12 +270,17 @@ module "folder-sink" {
       }
       type = "logging"
     }
+    alert = {
+      destination = module.destination-project.id
+      filter      = "severity=ALERT"
+      type        = "project"
+    }
   }
   logging_exclusions = {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest modules=5 resources=14 inventory=logging.yaml e2e
+# tftest modules=6 resources=18 inventory=logging.yaml e2e
 ```
 
 ## Data Access Logs

@@ -20,10 +20,10 @@ locals {
   logging_sinks = {
     for k, v in var.logging_sinks :
     # rewrite destination and type and type="project"
-    k => merge(v, v.type == "project" ? {
+    k => merge(v, v.type != "project" ? {} : {
       destination = "projects/${v.destination}"
       type        = "logging"
-    } : {})
+    })
   }
   sink_bindings = {
     for type in ["bigquery", "logging", "project", "pubsub", "storage"] :
