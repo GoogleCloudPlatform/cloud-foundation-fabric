@@ -17,8 +17,16 @@
 # tfdoc:file:description Log sinks and data access logs.
 
 locals {
+  logging_sinks = {
+    for k, v in var.logging_sinks :
+    # rewrite destination and type when type="project"
+    k => merge(v, v.type != "project" ? {} : {
+      destination = "projects/${v.destination}"
+      type        = "logging"
+    })
+  }
   sink_bindings = {
-    for type in ["bigquery", "logging", "pubsub", "storage"] :
+    for type in ["bigquery", "logging", "project", "pubsub", "storage"] :
     type => {
       for name, sink in var.logging_sinks :
       name => sink if sink.iam && sink.type == type
@@ -41,7 +49,7 @@ resource "google_organization_iam_audit_config" "default" {
 }
 
 resource "google_logging_organization_sink" "sink" {
-  for_each         = var.logging_sinks
+  for_each         = local.logging_sinks
   name             = each.key
   description      = coalesce(each.value.description, "${each.key} (Terraform-managed).")
   org_id           = local.organization_id_numeric
@@ -106,6 +114,13 @@ resource "google_project_iam_member" "bucket-sinks-binding" {
     description = "Grants bucketWriter to ${google_logging_organization_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${var.organization_id}"
     expression  = "resource.name.endsWith('${each.value.destination}')"
   }
+}
+
+resource "google_project_iam_member" "project-sinks-binding" {
+  for_each = local.sink_bindings["project"]
+  project  = each.value.destination
+  role     = "roles/logging.logWriter"
+  member   = google_logging_organization_sink.sink[each.key].writer_identity
 }
 
 resource "google_logging_organization_exclusion" "logging-exclusion" {
