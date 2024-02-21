@@ -33,7 +33,7 @@ module "processing-dp-cluster-2" {
 # tftest modules=1 resources=1
 ```
 
-### Cluster configuration
+### Cluster configuration on GCE
 
 To set cluster configuration use the 'dataproc_config.cluster_config' variable.
 
@@ -59,7 +59,7 @@ module "processing-dp-cluster" {
 # tftest modules=1 resources=1
 ```
 
-### Cluster with CMEK encryption
+### Cluster configuration on GCE with CMEK encryption
 
 To set cluster configuration use the Customer Managed Encryption key, set `dataproc_config.encryption_config.` variable. The Compute Engine service agent and the Cloud Storage service agent need to have `CryptoKey Encrypter/Decrypter` role on they configured KMS key ([Documentation](https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/customer-managed-encryption)).
 
@@ -82,6 +82,43 @@ module "processing-dp-cluster" {
     }
     encryption_config = {
       kms_key_name = "projects/project-id/locations/region/keyRings/key-ring-name/cryptoKeys/key-name"
+    }
+  }
+}
+# tftest modules=1 resources=1
+```
+
+### Cluster configuration on GKE
+
+To set cluster configuration GKE use the 'dataproc_config.virtual_cluster_config' variable.
+
+```hcl
+module "processing-dp-cluster" {
+  source     = "./fabric/modules/dataproc"
+  project_id = "my-project"
+  name       = "my-gke-cluster"
+  region     = "europe-west1"
+  prefix     = "prefix"
+  dataproc_config = {
+    virtual_cluster_config = {
+      kubernetes_cluster_config = {
+        kubernetes_namespace   = "foobar"
+        kubernetes_software_config = {
+          component_version = {
+            "SPARK": "3.1-dataproc-7"
+          }
+          properties = {
+            "spark:spark.kubernetes.container.image": "us-east4-docker.pkg.dev/cloud-dataproc/dpgke/sparkengine:dataproc-14"
+          }
+        }
+        gke_cluster_config = {
+          gke_cluster_target = "projects/my-project/locations/my-location/clusters/gke-cluster-name"
+          node_pool_target = {
+            node_pool = "projects/my-project/locations/my-location/clusters/gke-cluster-name/nodePools/node-name"
+            roles = ["DEFAULT"]
+          }
+        }
+      }
     }
   }
 }
