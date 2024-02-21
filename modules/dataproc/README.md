@@ -114,7 +114,7 @@ module "processing-dp-cluster" {
         gke_cluster_config = {
           gke_cluster_target = "projects/my-project/locations/my-location/clusters/gke-cluster-name"
           node_pool_target = {
-            node_pool = "projects/my-project/locations/my-location/clusters/gke-cluster-name/nodePools/node-name"
+            node_pool = "node-pool-name"
             roles = ["DEFAULT"]
           }
         }
