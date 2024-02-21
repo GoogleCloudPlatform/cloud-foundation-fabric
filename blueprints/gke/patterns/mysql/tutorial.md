@@ -6,7 +6,7 @@ This guide will show you how to deploy MySQL highly available cluster on top Goo
 
 During this guide you will deploy a new GKE cluster, MySQL database and you will connect to database to check its connectivity.
 
-**Time to complete**: About TBC minutes
+**Time to complete**: About 30 minutes
 
 **Prerequisites**: A GCP Project with billing enabled
 
