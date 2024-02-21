@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#2094](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2094)] update README to add analytics hub module ([thinhha](https://github.com/thinhha)) <!-- 2024-02-19 16:07:57+00:00 -->
 - [[#2060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2060)] Data catalog Tag module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-13 16:24:17+00:00 -->
 - [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
 - [[#2061](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2061)] HA MySQL cluster deployment on GKE ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-09 10:23:35+00:00 -->
@@ -31,7 +32,9 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
-- [[#2077](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2077)] Add workforce_identity_federation in 0-bootstrap ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-14 23:10:24+00:00 -->
+- [[#2101](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2101)] Make all project_parent_ids fields optional ([juliocc](https://github.com/juliocc)) <!-- 2024-02-20 15:21:56+00:00 -->
+- [[#2086](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2086)] Support domainless orgs in FAST ([ludoo](https://github.com/ludoo)) <!-- 2024-02-19 08:29:37+00:00 -->
+- [[#2077](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2077)] **incompatible change:** Add workforce_identity_federation in 0-bootstrap ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-14 23:10:24+00:00 -->
 - [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
 - [[#2065](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2065)] Fix imports of org policies ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-11 06:22:11+00:00 -->
 - [[#2057](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2057)] Postpone setting essential contacts until provisioning using SA ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-07 19:08:44+00:00 -->
@@ -51,6 +54,13 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2098](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2098)] Fix cors policy type in lb app ext modules ([ludoo](https://github.com/ludoo)) <!-- 2024-02-20 07:17:25+00:00 -->
+- [[#2097](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2097)] Fix #2095 for other types of load balancers ([juliocc](https://github.com/juliocc)) <!-- 2024-02-19 21:33:25+00:00 -->
+- [[#2096](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2096)] Do not convert route rules to set ([juliocc](https://github.com/juliocc)) <!-- 2024-02-19 21:14:03+00:00 -->
+- [[#2087](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2087)] add analytics hub module ([thinhha](https://github.com/thinhha)) <!-- 2024-02-19 15:55:00+00:00 -->
+- [[#2091](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2091)] Accept email in service account module name ([ludoo](https://github.com/ludoo)) <!-- 2024-02-19 12:43:05+00:00 -->
+- [[#1954](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1954)] Add support for Cloud Run v2 jobs ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-18 13:57:34+00:00 -->
+- [[#2083](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2083)] Fix data-catalog tag module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-17 09:56:18+00:00 -->
 - [[#2081](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2081)] VPC-SC module factories ([ludoo](https://github.com/ludoo)) <!-- 2024-02-17 07:02:16+00:00 -->
 - [[#2060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2060)] Data catalog Tag module ([lcaggio](https://github.com/lcaggio)) <!-- 2024-02-13 16:24:17+00:00 -->
 - [[#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2064)] **incompatible change:** Extend FAST to support different principal types ([ludoo](https://github.com/ludoo)) <!-- 2024-02-12 13:35:30+00:00 -->
@@ -70,6 +80,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#1954](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1954)] Add support for Cloud Run v2 jobs ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-18 13:57:34+00:00 -->
 - [[#2079](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2079)] Format python files in blueprints ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-15 08:37:49+00:00 -->
 - [[#2056](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2056)] import default org-level org-policies  ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-07 16:25:11+00:00 -->
 - [[#2039](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2039)] Remove unused tfeditor ([juliocc](https://github.com/juliocc)) <!-- 2024-02-02 10:14:14+00:00 -->

@@ -123,7 +123,8 @@ module "secret-manager" {
 | [ids](outputs.tf#L17) | Fully qualified secret ids. |  |
 | [secrets](outputs.tf#L24) | Secret resources. |  |
 | [version_ids](outputs.tf#L29) | Version ids keyed by secret name : version name. |  |
-| [versions](outputs.tf#L36) | Secret versions. | ✓ |
+| [version_versions](outputs.tf#L36) | Version versions keyed by secret name : version name. |  |
+| [versions](outputs.tf#L43) | Secret versions. | ✓ |
 <!-- END TFDOC -->
 ## Requirements
 

@@ -75,6 +75,7 @@ These modules are used in the examples included in this repository. If you are u
 
 ## Data
 
+- [Analytics Hub](./analytics-hub)
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
 - [Cloud SQL instance](./cloudsql-instance)
