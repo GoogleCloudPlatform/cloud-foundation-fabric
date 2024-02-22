@@ -31,7 +31,12 @@ variable "tags" {
     column     = optional(string)
     location   = string
     template   = string
-    fields     = map(string)
+    fields = map(object({
+      double_value    = optional(number)
+      string_value    = optional(string)
+      timestamp_value = optional(string)
+      enum_value      = optional(string)
+    }))
   }))
   default = {}
 }
