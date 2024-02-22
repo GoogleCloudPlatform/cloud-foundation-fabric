@@ -103,20 +103,20 @@ module "processing-dp-cluster" {
   dataproc_config = {
     virtual_cluster_config = {
       kubernetes_cluster_config = {
-        kubernetes_namespace   = "foobar"
+        kubernetes_namespace = "foobar"
         kubernetes_software_config = {
           component_version = {
-            "SPARK": "3.1-dataproc-7"
+            "SPARK" : "3.1-dataproc-7"
           }
           properties = {
-            "spark:spark.kubernetes.container.image": "us-east4-docker.pkg.dev/cloud-dataproc/dpgke/sparkengine:dataproc-14"
+            "spark:spark.kubernetes.container.image" : "us-east4-docker.pkg.dev/cloud-dataproc/dpgke/sparkengine:dataproc-14"
           }
         }
         gke_cluster_config = {
           gke_cluster_target = "projects/my-project/locations/my-location/clusters/gke-cluster-name"
           node_pool_target = {
             node_pool = "node-pool-name"
-            roles = ["DEFAULT"]
+            roles     = ["DEFAULT"]
           }
         }
       }
