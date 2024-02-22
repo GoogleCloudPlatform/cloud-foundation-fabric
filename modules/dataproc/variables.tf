@@ -149,8 +149,8 @@ variable "dataproc_config" {
       kubernetes_cluster_config = object({
         kubernetes_namespace = optional(string)
         kubernetes_software_config = object({
-          component_version = list(map(string))
-          properties        = optional(list(map(string)))
+          component_version = map(string)
+          properties        = optional(map(string))
         })
 
         gke_cluster_config = object({
