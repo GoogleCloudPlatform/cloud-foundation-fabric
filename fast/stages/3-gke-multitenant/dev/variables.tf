@@ -211,12 +211,20 @@ variable "labels" {
 variable "nodepools" {
   description = "Nodepools configuration. Refer to the gke-nodepool module for type details."
   type = map(map(object({
-    gke_version           = optional(string)
-    labels                = optional(map(string), {})
-    max_pods_per_node     = optional(number)
-    name                  = optional(string)
-    node_config           = optional(any, { disk_type = "pd-balanced" })
-    node_count            = optional(map(number), { initial = 1 })
+    gke_version       = optional(string)
+    labels            = optional(map(string), {})
+    max_pods_per_node = optional(number)
+    name              = optional(string)
+    node_config = optional(any, {
+      disk_type = "pd-balanced"
+      shielded_instance_config = {
+        enable_integrity_monitoring = true
+        enable_secure_boot          = true
+      }
+    })
+    node_count = optional(map(number), {
+      initial = 1
+    })
     node_locations        = optional(list(string))
     nodepool_config       = optional(any)
     pod_range             = optional(any)
