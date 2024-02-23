@@ -295,7 +295,7 @@ module "bucket" {
 
 module "destination-project" {
   source          = "./fabric/modules/project"
-  name            = "destination-project"
+  name            = "dest-project"
   billing_account = var.billing_account_id
   parent          = var.folder_id
   prefix          = var.prefix

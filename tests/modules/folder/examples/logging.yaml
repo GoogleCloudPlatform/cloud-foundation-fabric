@@ -39,14 +39,14 @@ values:
     billing_account: 123456-123456-123456
     folder_id: '1122334455'
     labels: null
-    name: test-destination-project
+    name: test-dest-project
     org_id: null
-    project_id: test-destination-project
+    project_id: test-dest-project
     skip_delete: false
   module.destination-project.google_project_service.project_services["logging.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: test-destination-project
+    project: test-dest-project
     service: logging.googleapis.com
   module.folder-sink.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
     condition: []
@@ -61,7 +61,7 @@ values:
     name: no-gce-instances
   module.folder-sink.google_logging_folder_sink.sink["alert"]:
     description: alert (Terraform-managed).
-    destination: logging.googleapis.com/projects/test-destination-project
+    destination: logging.googleapis.com/projects/test-dest-project
     disabled: false
     exclusions: []
     filter: severity=ALERT
@@ -109,7 +109,7 @@ values:
     role: roles/logging.bucketWriter
   module.folder-sink.google_project_iam_member.project-sinks-binding["alert"]:
     condition: []
-    project: test-destination-project
+    project: test-dest-project
     role: roles/logging.logWriter
   module.folder-sink.google_pubsub_topic_iam_member.pubsub-sinks-binding["notice"]:
     condition: []
