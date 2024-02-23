@@ -66,6 +66,7 @@ resource "google_sql_database_instance" "primary" {
     activation_policy           = var.activation_policy
     collation                   = var.collation
     connector_enforcement       = var.connector_enforcement
+    time_zone                   = var.time_zone
 
     ip_configuration {
       ipv4_enabled       = var.network_config.connectivity.public_ipv4
