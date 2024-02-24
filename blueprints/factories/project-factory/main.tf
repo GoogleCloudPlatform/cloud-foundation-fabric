@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,10 @@ module "projects" {
   )
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
-  group_iam               = try(each.value.group_iam, {})
   iam                     = try(each.value.iam, {})
   iam_bindings            = try(each.value.iam_bindings, {})
   iam_bindings_additive   = try(each.value.iam_bindings_additive, {})
+  iam_by_principals       = try(each.value.iam_by_principals, {})
   labels = merge(
     each.value.labels, var.data_merges.labels
   )

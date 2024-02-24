@@ -1,0 +1,55 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cloud_run.google_cloud_run_v2_job.job[0]:
+    location: europe-west8
+    name: hello
+    project: project-id
+    template:
+      - template:
+          - containers:
+              - args: null
+                command: null
+                env:
+                  - name: VAR1
+                    value: VALUE1
+                    value_source: []
+                  - name: VAR2
+                    value: VALUE2
+                    value_source: []
+                image: us-docker.pkg.dev/cloudrun/container/hello
+                name: hello
+                ports: []
+                volume_mounts: []
+                working_dir: null
+            max_retries: 3
+            volumes: []
+            vpc_access: []
+  module.cloud_run.google_cloud_run_v2_job_iam_binding.binding["roles/run.invoker"]:
+    condition: []
+    location: europe-west8
+    members:
+      - group:organization-admins@example.org
+    name: hello
+    project: project-id
+    role: roles/run.invoker
+
+counts:
+  google_cloud_run_v2_job: 1
+  google_cloud_run_v2_job_iam_binding: 1
+  modules: 1
+  resources: 2
+
+outputs: {}

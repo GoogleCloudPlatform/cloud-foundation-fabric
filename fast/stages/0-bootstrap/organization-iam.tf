@@ -22,15 +22,15 @@ locals {
     "roles/billing.creator"
   ]
   # domain IAM bindings
-  iam_domain_bindings = {
+  iam_domain_bindings = var.organization.domain == null ? {} : {
     "domain:${var.organization.domain}" = {
       authoritative = ["roles/browser"]
       additive      = []
     }
   }
   # human (groups) IAM bindings
-  iam_group_bindings = {
-    (local.groups.gcp-billing-admins) = {
+  iam_principal_bindings = {
+    (local.principals.gcp-billing-admins) = {
       authoritative = []
       additive = (
         local.billing_mode != "org" ? [] : [
@@ -38,7 +38,7 @@ locals {
         ]
       )
     }
-    (local.groups.gcp-network-admins) = {
+    (local.principals.gcp-network-admins) = {
       authoritative = [
         "roles/cloudasset.owner",
         "roles/cloudsupport.techSupportEditor",
@@ -48,7 +48,7 @@ locals {
         "roles/compute.xpnAdmin"
       ]
     }
-    (local.groups.gcp-organization-admins) = {
+    (local.principals.gcp-organization-admins) = {
       authoritative = [
         "roles/cloudasset.owner",
         "roles/cloudsupport.admin",
@@ -58,7 +58,8 @@ locals {
         "roles/resourcemanager.folderAdmin",
         "roles/resourcemanager.organizationAdmin",
         "roles/resourcemanager.projectCreator",
-        "roles/resourcemanager.tagAdmin"
+        "roles/resourcemanager.tagAdmin",
+        "roles/iam.workforcePoolAdmin"
       ]
       additive = concat(
         [
@@ -69,7 +70,7 @@ locals {
         ]
       )
     }
-    (local.groups.gcp-security-admins) = {
+    (local.principals.gcp-security-admins) = {
       authoritative = [
         "roles/cloudasset.owner",
         "roles/cloudsupport.techSupportEditor",
@@ -83,7 +84,7 @@ locals {
         "roles/orgpolicy.policyAdmin"
       ]
     }
-    (local.groups.gcp-support) = {
+    (local.principals.gcp-support) = {
       authoritative = [
         "roles/cloudsupport.techSupportEditor",
         "roles/logging.viewer",
@@ -97,6 +98,7 @@ locals {
   iam_sa_bindings = {
     (module.automation-tf-bootstrap-sa.iam_email) = {
       authoritative = [
+        "roles/essentialcontacts.admin",
         "roles/logging.admin",
         "roles/resourcemanager.organizationAdmin",
         "roles/resourcemanager.projectCreator",
@@ -115,6 +117,7 @@ locals {
     }
     (module.automation-tf-bootstrap-r-sa.iam_email) = {
       authoritative = [
+        "roles/essentialcontacts.viewer",
         "roles/logging.viewer",
         "roles/resourcemanager.folderViewer",
         "roles/resourcemanager.tagViewer"

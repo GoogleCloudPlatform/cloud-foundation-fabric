@@ -29,11 +29,11 @@ module "organization" {
   iam_bindings_additive = merge(
     {
       admins_org_viewer = {
-        member = "group:${local.groups.gcp-admins}"
+        member = local.principals.gcp-admins
         role   = "roles/resourcemanager.organizationViewer"
       }
       admins_org_policy_admin = {
-        member = "group:${local.groups.gcp-admins}"
+        member = local.principals.gcp-admins
         role   = "roles/orgpolicy.policyAdmin"
         condition = {
           title       = "org_policy_tag_${var.tenant_config.short_name}_scoped_admins"
@@ -53,11 +53,11 @@ module "organization" {
     },
     local.billing_mode != "org" ? {} : {
       admins_billing_admin = {
-        member = "group:${local.groups.gcp-admins}"
+        member = local.principals.gcp-admins
         role   = "roles/billing.admin"
       }
       admins_billing_costs_manager = {
-        member = "group:${local.groups.gcp-admins}"
+        member = local.principals.gcp-admins
         role   = "roles/billing.costsManager"
       }
       sa_resman_billing_admin = {
@@ -89,7 +89,7 @@ resource "google_tags_tag_value_iam_member" "admins_tag_viewer" {
   for_each  = var.tag_values
   tag_value = each.value
   role      = "roles/resourcemanager.tagViewer"
-  member    = "group:${local.groups.gcp-admins}"
+  member    = local.principals.gcp-admins
 }
 
 # tag-based condition for service accounts is in the automation-sa file

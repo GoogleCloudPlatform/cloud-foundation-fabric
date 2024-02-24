@@ -28,7 +28,7 @@
 #
 set -e
 
-DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && cd .. && pwd )
 DEST=$1
 INFRA="${DEST}/infra"
 TIMESTAMP=$(date +%s)

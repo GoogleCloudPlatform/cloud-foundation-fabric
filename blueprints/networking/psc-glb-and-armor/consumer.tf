@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,85 +14,137 @@
  * limitations under the License.
  */
 
-module "consumer_project" {
+module "consumer-project" {
   source         = "../../../modules/project"
   name           = var.consumer_project_id
-  project_create = var.project_create
+  project_create = var.project_create_config != null
+
+  billing_account = try(var.project_create_config.billing_account, null)
+  parent          = try(var.project_create_config.parent, null)
+  prefix          = var.prefix
   services = [
     "iam.googleapis.com",
     "compute.googleapis.com",
   ]
 }
 
-resource "google_compute_region_network_endpoint_group" "psc_neg" {
-  name                  = "psc-neg"
+module "producer-a" {
+  source                = "./modules/producer"
+  consumer_project_id   = module.consumer-project.project_id
+  prefix                = var.prefix
+  producer_project_id   = var.producer_a_project_id
+  project_create_config = var.project_create_config
   region                = var.region
-  project               = module.consumer_project.project_id
-  network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
-  psc_target_service    = google_compute_service_attachment.psc_ilb_service_attachment.self_link
-
-  network    = "default"
-  subnetwork = "default"
 }
 
-resource "google_compute_global_forwarding_rule" "default" {
-  project               = module.consumer_project.project_id
-  name                  = "global-rule"
-  load_balancing_scheme = "EXTERNAL_MANAGED"
-  target                = google_compute_target_http_proxy.default.id
-  port_range            = "80"
+module "producer-b" {
+  source                = "./modules/producer"
+  consumer_project_id   = module.consumer-project.project_id
+  prefix                = var.prefix
+  producer_project_id   = var.producer_b_project_id
+  project_create_config = var.project_create_config
+  region                = var.region
 }
 
-resource "google_compute_target_http_proxy" "default" {
-  project     = module.consumer_project.project_id
-  name        = "target-proxy"
-  description = "a description"
-  url_map     = google_compute_url_map.default.id
+module "consumer-vpc" {
+  source = "../../../modules/net-vpc"
+
+  name       = "consumer"
+  project_id = module.consumer-project.project_id
+  subnets = [
+    {
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "consumer"
+      region        = var.region
+    },
+  ]
 }
 
-resource "google_compute_url_map" "default" {
-  project         = module.consumer_project.project_id
-  name            = "url-map-target-proxy"
-  description     = "A simple URL Map, routing all traffic to the PSC NEG"
-  default_service = google_compute_backend_service.default.id
-
-  host_rule {
-    hosts        = ["*"]
-    path_matcher = "allpaths"
+module "glb" {
+  source              = "./../../../modules/net-lb-app-ext"
+  name                = "glb"
+  project_id          = module.consumer-project.project_id
+  use_classic_version = false
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = "neg-a" }
+      ]
+      health_checks   = []
+      protocol        = "HTTPS"
+      security_policy = google_compute_security_policy.cloud-armor-policy.name
+    }
+    other = {
+      backends = [
+        { backend = "neg-b" }
+      ]
+      health_checks   = []
+      protocol        = "HTTPS"
+      security_policy = google_compute_security_policy.cloud-armor-policy.name
+    }
   }
-
-  path_matcher {
-    name            = "allpaths"
-    default_service = google_compute_backend_service.default.id
-
-    path_rule {
-      paths   = ["/*"]
-      service = google_compute_backend_service.default.id
+  # with a single serverless NEG the implied default health check is not needed
+  health_check_configs = {}
+  neg_configs = {
+    neg-a = {
+      psc = {
+        region         = var.region
+        target_service = module.producer-a.exposed_service_psc_attachment.self_link
+        network        = module.consumer-vpc.id
+        subnetwork     = module.consumer-vpc.subnet_ids["${var.region}/consumer"]
+      }
+    }
+    neg-b = {
+      psc = {
+        region         = var.region
+        target_service = module.producer-b.exposed_service_psc_attachment.self_link
+        network        = module.consumer-vpc.id
+        subnetwork     = module.consumer-vpc.subnet_ids["${var.region}/consumer"]
+      }
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [{
+      hosts        = ["*"]
+      path_matcher = "pathmap"
+    }]
+    path_matchers = {
+      pathmap = {
+        default_service = "default"
+        path_rules = [
+          {
+            paths   = ["/b/*"]
+            service = "other"
+            route_action = {
+              url_rewrite = {
+                path_prefix = "/" # rewrite "/b/*" to "/*"
+              }
+            }
+          },
+          {
+            paths   = ["/a/*"]
+            service = "default"
+            route_action = {
+              url_rewrite = {
+                path_prefix = "/" # rewrite "/b/*" to "/*"
+              }
+            }
+          },
+        ]
+      }
     }
   }
 }
 
-resource "google_compute_security_policy" "policy" {
+
+resource "google_compute_security_policy" "cloud-armor-policy" {
   provider = google-beta
-  project  = module.consumer_project.project_id
+  project  = module.consumer-project.project_id
   name     = "ddos-protection"
   adaptive_protection_config {
     layer_7_ddos_defense_config {
       enable = true
     }
-  }
-}
-
-resource "google_compute_backend_service" "default" {
-  provider              = google-beta
-  project               = module.consumer_project.project_id
-  name                  = "backend"
-  load_balancing_scheme = "EXTERNAL_MANAGED"
-  protocol              = "HTTPS"
-  security_policy       = google_compute_security_policy.policy.id
-  backend {
-    group           = google_compute_region_network_endpoint_group.psc_neg.id
-    balancing_mode  = "UTILIZATION"
-    capacity_scaler = 1.0
   }
 }

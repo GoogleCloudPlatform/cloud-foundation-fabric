@@ -124,3 +124,20 @@ output "sink_writer_identities" {
     for name, sink in google_logging_project_sink.sink : name => sink.writer_identity
   }
 }
+
+output "tag_keys" {
+  description = "Tag key resources."
+  value = {
+    for k, v in google_tags_tag_key.default : k => v if(
+      v.purpose == null || v.purpose == ""
+    )
+  }
+}
+
+output "tag_values" {
+  description = "Tag value resources."
+  value = {
+    for k, v in google_tags_tag_value.default :
+    k => v if !local.tag_values[k].tag_network
+  }
+}

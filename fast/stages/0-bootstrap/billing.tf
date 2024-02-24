@@ -19,8 +19,8 @@
 locals {
   # used here for convenience, in organization.tf members are explicit
   billing_ext_admins = [
-    local.groups_iam.gcp-billing-admins,
-    local.groups_iam.gcp-organization-admins,
+    local.principals.gcp-billing-admins,
+    local.principals.gcp-organization-admins,
     module.automation-tf-bootstrap-sa.iam_email,
     module.automation-tf-resman-sa.iam_email
   ]
@@ -46,6 +46,11 @@ module "billing-export-project" {
     var.project_parent_ids.billing, "organizations/${var.organization.id}"
   )
   prefix = local.prefix
+  contacts = (
+    var.bootstrap_user != null || var.essential_contacts == null
+    ? {}
+    : { (var.essential_contacts) = ["ALL"] }
+  )
   iam = {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]
@@ -66,7 +71,7 @@ module "billing-export-dataset" {
   project_id    = module.billing-export-project.0.project_id
   id            = "billing_export"
   friendly_name = "Billing export."
-  location      = var.locations.bq
+  location      = local.locations.bq
 }
 
 # standalone billing account

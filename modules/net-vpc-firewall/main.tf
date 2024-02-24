@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ locals {
         for name, rule in ruleset : {
           name                 = name
           deny                 = try(rule.deny, false)
-          rules                = try(rule.rules, [{ protocol = "all" }])
+          rules                = try(rule.rules, [{ protocol = "all", ports = null }])
           description          = try(rule.description, null)
           destination_ranges   = try(rule.destination_ranges, null)
           direction            = upper(direction)
@@ -47,7 +47,7 @@ locals {
     if contains(["EGRESS", "INGRESS"], r.direction)
   }
   _named_ranges = merge(
-    can(var.factories_config.cidr_tpl_file) ? yamldecode(file(var.factories_config.cidr_tpl_file)) : {},
+    can(var.factories_config.cidr_tpl_file) ? var.factories_config.cidr_tpl_file != null ? yamldecode(file(var.factories_config.cidr_tpl_file)) : {} : {},
     var.named_ranges
   )
   _rules = merge(

@@ -50,6 +50,7 @@ These modules are used in the examples included in this repository. If you are u
 - [External Passthrough Network Load Balancer](./net-lb-ext)
 - [External Regional Application Load Balancer](./net-lb-app-ext-regional/)
 - [Internal Application Load Balancer](./net-lb-app-int)
+- [Cross-region Internal Application Load Balancer](./net-lb-app-int-cross-region)
 - [Internal Passthrough Network Load Balancer](./net-lb-int)
 - [Internal Proxy Network Load Balancer](./net-lb-proxy-int)
 - [NAT](./net-cloudnat)
@@ -74,13 +75,17 @@ These modules are used in the examples included in this repository. If you are u
 
 ## Data
 
+- [Analytics Hub](./analytics-hub)
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
-- [Dataplex](./dataplex)
-- [Dataplex DataScan](./dataplex-datascan/)
 - [Cloud SQL instance](./cloudsql-instance)
 - [Data Catalog Policy Tag](./data-catalog-policy-tag)
+- [Data Catalog Tag](./data-catalog-tag)
+- [Data Catalog Tag Template](./data-catalog-tag-template)
+- [Dataform Repository](./dataform-repository/)
 - [Datafusion](./datafusion)
+- [Dataplex](./dataplex)
+- [Dataplex DataScan](./dataplex-datascan/)
 - [Dataproc](./dataproc)
 - [GCS](./gcs)
 - [Pub/Sub](./pubsub)

@@ -25,7 +25,7 @@ env:
   PYTEST_ADDOPTS: "--color=yes"
   PYTHON_VERSION: "3.10"
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
-  TF_VERSION: 1.5.1
+  TF_VERSION: 1.7.0
   TFTEST_COPY: 1
 
 jobs:

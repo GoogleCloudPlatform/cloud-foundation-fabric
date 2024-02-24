@@ -59,6 +59,7 @@ resource "google_project_service" "project_services" {
   service                    = each.value
   disable_on_destroy         = var.service_config.disable_on_destroy
   disable_dependent_services = var.service_config.disable_dependent_services
+  depends_on                 = [google_org_policy_policy.default]
 }
 
 resource "google_compute_project_metadata_item" "default" {
@@ -86,6 +87,11 @@ resource "google_essential_contacts_contact" "contact" {
   email                               = each.key
   language_tag                        = "en"
   notification_category_subscriptions = each.value
+  depends_on = [
+    google_project_iam_binding.authoritative,
+    google_project_iam_binding.bindings,
+    google_project_iam_member.bindings
+  ]
 }
 
 resource "google_monitoring_monitored_project" "primary" {
