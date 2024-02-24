@@ -27,3 +27,9 @@ The blueprints in this folder show how to automate installation of specific thir
 <a href="./f5-bigip/" title="F5 BigIP"><img src="./phpipam/diagram.png" align="left" width="320px"></a> <p style="margin-left: 340px">These examples show how to deploy F5 BigIP-VE load balancers in GCP.</p>
 
 <br clear="left">
+
+### Gitlab
+
+<a href="./gitlab/" title="Gitlab"><img src="./gitlab/diagram.png" align="left" width="320px"></a> <p style="margin-left: 340px">This blueprint show how to deploy a Gitlab instance in GCP. The architecture is based on the reference described in the official documentation available at this [link](https://docs.gitlab.com/ee/administration/reference_architectures/1k_users.html) with managed services such as Cloud SQL, Memorystore and Cloud Storage.</p>
+
+<br clear="left">
