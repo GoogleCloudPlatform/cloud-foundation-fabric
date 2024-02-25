@@ -118,7 +118,7 @@ variable "budgets" {
   }
 }
 
-variable "factory_config" {
+variable "factories_config" {
   # TODO: align all other factory variable names
   description = "Path to folder containing budget alerts data files."
   type = object({
