@@ -18,9 +18,10 @@
 
 locals {
   _factory_data = {
-    for f in try(fileset(var.factories_config.subnets_folder, "**/*.yaml"), []) :
-    trimsuffix(basename(f), ".yaml") => yamldecode(file("${var.factories_config.subnets_folder}/${f}"))
+    for f in try(fileset(local._factory_path, "**/*.yaml"), []) :
+    trimsuffix(basename(f), ".yaml") => yamldecode(file("${local._factory_path}/${f}"))
   }
+  _factory_path = try(pathexpand(var.factories_config.subnets_folder), null)
   _factory_subnets = {
     for k, v in local._factory_data :
     "${v.region}/${try(v.name, k)}" => {
