@@ -1,44 +1,79 @@
-# The why and the how of Resource Factories
+# Resource Factories
 
-Terraform modules can be designed - where it makes sense - to implement a resource factory, which is a configuration-driven approach to resource creation meant to:
+This README explains the rationale and high level approach for resource factories, a pattern that is widely used in this repository across modules and in the FAST framework. It also collects pointers to all the different factories implemented in modules to simplify discovery.
 
-- accelerate and rationalize the repetitive creation of common resources, such as firewall rules and subnets
-- enable teams without Terraform specific knowledge to leverage IaC via human-friendly and machine-parseable YAML files
-- make it simple to implement specific requirements and best practices (e.g. "always enable PGA for GCP subnets", or "only allow using regions `europe-west1` and `europe-west3`")
-- codify and centralise business logics and policies (e.g. labels and naming conventions)
-- allow to easily parse and understand sets of specific resources, for documentation purposes
+<!-- BEGIN TOC -->
+- [The why](#the-why)
+- [The how](#the-how)
+- [Factory implementations](#factory-implementations)
+  - [Module-level factory interfaces](#module-level-factory-interfaces)
+  - [Standalone factories](#standalone-factories)
+<!-- END TOC -->
 
-Generally speaking, the configurations for a resource factory consists in one or more YaML files, optionally grouped in folders, that describe resources following a well defined, validable schema, such as in the example below for the subnet factory of the [`net-vpc`](../../modules/net-vpc) module, which allows for the massive creation of subnets for a given VPC.
+## The why
 
-```yaml
-region: europe-west3
-ip_cidr_range: 10.0.0.0/24
-description: Sample Subnet in project project-prod-a, vpc-alpha
-secondary_ip_ranges:
-  secondary-range-a: 192.168.0.0/24
-  secondary-range-b: 192.168.1.0/24
-```
+Managing large sets of uniform resources with Terraform usually involves different teams collaborating on the same codebase, complex authorization processes and checks managed via CI/CD approvals, or even integrating with external systems that manage digital workflows.
 
-Terraform natively supports YaML, JSON and CSV parsing - however Fabric has decided to embrace YaML for the following reasons:
+Factories are a way to simplify all above use cases, by moving repetitive resource definitions out of the Terraform codebase and into sets of files that leverage different formats.
 
-- YaML is easier to parse for a human, and allows for comments and nested, complex structures
-- JSON and CSV can't include comments, which can be used to document configurations, but are often useful to bridge from other systems in automated pipelines
-- JSON is more verbose (reads: longer) and harder to parse visually for humans
-- CSV isn't often expressive enough (e.g. dit doesn't allow for nested structures)
+Using factories, repetive resource creation and management becomes easier
 
-If needed, converting factories to consume JSON is a matter of switching from `yamldecode()` to `jsondecode()` in the right place on each module.
+- for humans who have no direct experience with Terraform, by exposing filesystem hierarchies and YAML-based configuration data
+- for connected systems, by accepting well know data exchange formats like JSON or CSV
+- for external code that needs to enforce checks or policies, by eliminating the need to parse HCL code or Terraform outputs
+- to implement authorization processes or workwflows in CI/CD, by removing the dependency on Terraform and HCL knowledge for the teams involved
 
-## Resource factories in Fabric
+## The how
 
-### Fabric Modules
+Fabric resource-level factories can be broadly split into two different types
 
-- [folder](../../modules/folder/README.md#firewall-policy-factory) and [organization](../../modules/organization/README.md#firewall-policy-factory) implement factories for [hierarchical firewall policies](https://cloud.google.com/vpc/docs/firewall-policies)
-- [net-vpc](../../modules/net-vpc/README.md#subnet-factory) for subnets creation
-- [net-vpc-firewall](../../modules/net-vpc-firewall/README.md#rules-factory) for massive rules creation
+- simple factories that manage one simple resource type (firewalls, VPC-SC policies)
+- complex factories that manage a set of connected resources to implement a complex flow that is usually perceived as a single unit (project creation)
 
-### Dedicated Factories
+The first factory type is implemented at the module level, where one module exposes one or more factories for some of the resources that depend on the main module resource (e.g. firewall rules for a VPC). The main goal with this approach is to simplify resource management at scale by removing the dependency on Terraform and HCL.
 
-- [cloud-identity-group-factory](cloud-identity-group-factory/README.md) for Cloud Identity group
-- [net-vpc-firewall-yaml](net-vpc-firewall-yaml/README.md) for VPC firewall rules across different projects/VPCs
-- [project-factory](project-factory/README.md) for projects
- 
+These factories are often designed as module-level interfaces which are then exposed by any module that manages a specific type of resource. All these factories leverage a single `factory_configs` variable, that allows passing in the paths for all the different factories supported in the module.
+
+The second factory type is implemented as a standalone module that internally references other modules, and implements complex management of different resource sets as part of a single process implemented via the factory. The typical example is the project factory, that brings together the project, service accounts, and billing accounts modules to cover all the main aspects of project creation as a single unit.
+
+## Factory implementations
+
+### Module-level factory interfaces
+
+- **BigQuery Analicts Hub rules**
+  - `analytics-hub`
+- **billing budgets**
+  - `billing-account`
+- **Data Catalog tags**
+  - `data-catalog-tag`
+- **Data Catalog tag templates**
+  - `data-catalog-tag-template`
+- **Dataplex Datascan rules**
+  - `dataplex-datascan`
+- **firewall policy rules**
+  - `net-firewall-policy`
+- **hierarchical firewall policies**
+  - `folder`
+  - `project`
+- **IAM custom roles**
+  - `organization`
+  - `project`
+- **organization policies**
+  - `organization`
+  - `folder`
+  - `project`
+- **organization policy custom constraints**
+  - `organization`
+- **DNS response policy rules**
+  - `dns-response-policy`
+- **VPC firewall rules**
+  - `net-vpc-firewall`
+- **VPC subnets**
+  - `net-vpc`
+- **VPC-SC access levels and policies**
+  - `vpc-sc`
+
+### Standalone factories
+
+- **projects**
+  - `project-factory`
