@@ -45,7 +45,6 @@ values:
         region: europe-west8
         service: hello
       gke: []
-      http_endpoint: []
       network_config: []
       workflow: null
     labels: null
