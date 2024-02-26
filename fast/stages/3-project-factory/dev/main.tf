@@ -17,7 +17,7 @@
 # tfdoc:file:description Project factory.
 
 module "projects" {
-  source = "../../../../blueprints/factories/project-factory"
+  source = "../../../../modules/project-factory"
   data_defaults = {
     billing_account = var.billing_account.id
     # more defaults are available, check the project factory variables
