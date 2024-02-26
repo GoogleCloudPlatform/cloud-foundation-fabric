@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,17 @@ locals {
       tf_providers_files = {
         apply = "3-data-platform-prod-providers.tf"
         plan  = "3-data-platform-prod-r-providers.tf"
+      }
+      tf_var_files = local.cicd_workflow_var_files.stage_3
+    }
+    gitlab = {
+      service_accounts = {
+        apply = try(module.branch-gitlab-sa-cicd.0.email, null)
+        plan  = try(module.branch-gitlab-r-sa-cicd.0.email, null)
+      }
+      tf_providers_files = {
+        apply = "2-gitlab-providers.tf"
+        plan  = "2-gitlab-r-providers.tf"
       }
       tf_var_files = local.cicd_workflow_var_files.stage_3
     }
@@ -125,6 +136,7 @@ locals {
     {
       data-platform-dev  = try(module.branch-dp-dev-folder.0.id, null)
       data-platform-prod = try(module.branch-dp-prod-folder.0.id, null)
+      gitlab             = try(module.branch-gitlab-folder.0.id, null)
       gke-dev            = try(module.branch-gke-dev-folder.0.id, null)
       gke-prod           = try(module.branch-gke-prod-folder.0.id, null)
       networking         = try(module.branch-network-folder.id, null)
@@ -198,6 +210,20 @@ locals {
         bucket        = module.branch-dp-prod-gcs.0.name
         name          = "dp-prod"
         sa            = module.branch-dp-prod-r-sa.0.email
+      })
+    },
+    !var.fast_features.gitlab ? {} : {
+      "3-gitlab" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-gitlab-gcs.0.name
+        name          = "gitlab"
+        sa            = module.branch-gitlab-sa.0.email
+      })
+      "3-gitlab-r" = templatefile(local._tpl_providers, {
+        backend_extra = null
+        bucket        = module.branch-gitlab-gcs.0.name
+        name          = "gitlab"
+        sa            = module.branch-gitlab-r-sa.0.email
       })
     },
     !var.fast_features.gke ? {} : {
@@ -286,6 +312,8 @@ locals {
       data-platform-dev-r    = try(module.branch-dp-dev-r-sa.0.email, null)
       data-platform-prod     = try(module.branch-dp-prod-sa.0.email, null)
       data-platform-prod-r   = try(module.branch-dp-prod-r-sa.0.email, null)
+      gitlab                 = try(module.branch-gitlab-sa.0.email, null)
+      gitlab-r               = try(module.branch-gitlab-r-sa.0.email, null)
       gke-dev                = try(module.branch-gke-dev-sa.0.email, null)
       gke-dev-r              = try(module.branch-gke-dev-r-sa.0.email, null)
       gke-prod               = try(module.branch-gke-prod-sa.0.email, null)
@@ -361,6 +389,15 @@ output "dataplatform" {
       gcs_bucket      = module.branch-dp-prod-gcs.0.name
       service_account = module.branch-dp-prod-sa.0.email
     }
+  }
+}
+
+output "gitlab" {
+  description = "Data for the Gitlab stage."
+  value = !var.fast_features.gitlab ? {} : {
+    folder          = module.branch-gitlab-folder.0.id
+    gcs_bucket      = module.branch-gitlab-gcs.0.name
+    service_account = module.branch-gitlab-sa.0.email
   }
 }
 

@@ -1,0 +1,19 @@
+gitlab_config = {
+  hostname = "gitlab.gcp.example.com"
+  mail     = {
+    sendgrid = {
+      api_key = "sample_api_key"
+    }
+  }
+  saml = {
+    idp_cert_fingerprint = "67:90:96.....REPLACE_ME"
+    sso_target_url       = "https://accounts.google.com/o/saml2/idp?idpid=REPLACE_ME"
+  }
+}
+network_config = {
+  host_project      = "host-project"
+  network_self_link = "network_self_link"
+  subnet_self_link  = "subnetwork_self_link"
+}
+prefix     = "prefix"
+project_id = "prod-gitlab-0"

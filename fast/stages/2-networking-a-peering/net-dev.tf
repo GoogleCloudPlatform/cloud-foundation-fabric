@@ -38,6 +38,7 @@ module "dev-spoke-project" {
   metric_scopes = [module.landing-project.project_id]
   iam = {
     "roles/dns.admin" = compact([
+      try(local.service_accounts.gitlab, null),
       try(local.service_accounts.gke-dev, null),
       try(local.service_accounts.project-factory-dev, null),
       try(local.service_accounts.project-factory-prod, null),
@@ -49,6 +50,7 @@ module "dev-spoke-project" {
       role = "roles/resourcemanager.projectIamAdmin"
       members = compact([
         try(local.service_accounts.data-platform-dev, null),
+        try(local.service_accounts.gitlab, null),
         try(local.service_accounts.project-factory-dev, null),
         try(local.service_accounts.project-factory-prod, null),
         try(local.service_accounts.gke-dev, null),

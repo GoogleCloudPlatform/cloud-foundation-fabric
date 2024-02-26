@@ -152,6 +152,7 @@ module "automation-project" {
       "cloudbuild.googleapis.com",
       "compute.googleapis.com",
       "container.googleapis.com",
+      "sqladmin.googleapis.com",
     ]
   )
 }

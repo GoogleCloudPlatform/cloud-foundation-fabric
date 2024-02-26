@@ -1,0 +1,22 @@
+gitlab_config = {
+  hostname = "gitlab.gcp.example.com"
+  mail     = {
+    sendgrid = {
+      api_key = "sample_api_key"
+    }
+  }
+  saml = {
+    idp_cert_fingerprint = "67:90:96.....REPLACE_ME"
+    sso_target_url       = "https://accounts.google.com/o/saml2/idp?idpid=REPLACE_ME"
+  }
+}
+
+# Uncomment this section after first apply once gitlab has been bootstrapped
+# First register a runner on gitlab and get an authentication token to use in the
+# corresponding argument of the gitlab_runner_config variable
+#gitlab_runner_config = {
+#  authentication_token = "REPLACE_ME"
+#  executors_config = {
+#    docker = {}
+#  }
+#}

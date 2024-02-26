@@ -663,3 +663,10 @@ The `fast_features` variable consists of 4 toggles:
 | [workforce_identity_pool](outputs.tf#L197) | Workforce Identity Federation pool. |  |  |
 | [workload_identity_pool](outputs.tf#L206) | Workload Identity Federation pool and providers. |  |  |
 <!-- END TFDOC -->
+
+
+
+curl -d "client_id=CLIENT_ID" -d "client_secret=CLIENT_SECRET" \
+-d "refresh_token=REFRESH_TOKEN" \
+-d "grant_type=refresh_token" \
+https://oauth2.googleapis.com/token
