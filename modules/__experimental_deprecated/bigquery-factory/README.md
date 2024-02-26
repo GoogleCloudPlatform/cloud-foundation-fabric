@@ -11,6 +11,7 @@ You can create as many files as you like, the code will loop through it and crea
 ### Terraform code
 
 In this section we show how to create tables and views from a file structure similar to the one shown below.
+
 ```bash
 bigquery
 │
@@ -53,12 +54,12 @@ With this file structure, we can use the factory as follows:
 
 ```hcl
 module "bq" {
-  source      = "./fabric/blueprints/factories/bigquery-factory"
+  source      = "./fabric/modules/__experimental_deprecated/bigquery-factory"
   project_id  = var.project_id
   tables_path = "bigquery/tables"
   views_path  = "bigquery/views"
 }
-# tftest modules=2 resources=3 files=table,view inventory=simple.yaml
+# tftest modules=2 resources=3 files=table,view
 ```
 <!-- BEGIN TFDOC -->
 
@@ -76,4 +77,3 @@ module "bq" {
 
 - [ ] add external table support
 - [ ] add materialized view support
-
