@@ -44,9 +44,6 @@ values:
       - path: null
         region: europe-west8
         service: hello
-      gke: []
-      network_config: []
-      workflow: null
     labels: null
     location: europe-west8
     matching_criteria:
