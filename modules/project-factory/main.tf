@@ -15,7 +15,7 @@
  */
 
 module "projects" {
-  source              = "../../../modules/project"
+  source              = "../project"
   for_each            = local.projects
   billing_account     = each.value.billing_account
   name                = each.key
@@ -65,7 +65,7 @@ module "projects" {
 }
 
 module "service-accounts" {
-  source = "../../../modules/iam-service-account"
+  source = "../iam-service-account"
   for_each = {
     for k in local.service_accounts : "${k.project}-${k.name}" => k
   }

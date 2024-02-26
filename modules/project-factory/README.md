@@ -1,31 +1,30 @@
 # Project Factory
 
-This is a working example of how to manage project creation at scale, by wrapping the [project module](../../../modules/project/) and driving it via external data, either directly provided or parsed via YAML files.
+This module implements in code the end-to-end project creation process for multiple projects via YAML data configurations.
 
-The wrapping layer around the project module is intentionally thin, so that
+It supports
 
-- all the features of the project module are available
-- no "magic" or hidden side effects are implemented in code
-- debugging and integration of new features is simple
+- all project-level attributes exposed by the [project module](../project/), including Shared VPC host/service configuration
+- optional service account creation in the project, including basic IAM grants
+- KMS key encrypt/decrypt permissions for service identities in the project
+- membership in VPC SC standard or bridge perimeters
+- billing budgets (TODO)
+- per-project IaC configuration (TODO)
+
+The factory is implemented as a thin wrapping layer, so that no "magic" or hidden side effects are implemented in code, and debugging or integration of new features are simple.
 
 The code is meant to be executed by a high level service accounts with powerful permissions:
 
 - Shared VPC connection if service project attachment is desired
 - project creation on the nodes (folder or org) where projects will be defined
 
-The module also supports optional creation of specific resources that are usually part of the project creation flow:
-
-- service accounts used for VM instances, and associated basic roles
-- KMS key encrypt/decrypt permissions for service identities in the project
-- membership in VPC SC standard or bridge perimeters
-
 ## Leveraging data defaults, merges, optionals
 
-In addition to the yaml files describing projects, the project factory accepts three additional sets of inputs:
+In addition to the YAML-based project configurations, the factory accepts three additional sets of inputs via Terraform variables:
 
-- the `data_defaults` variable allows specifying defaults for specific project attributes, which are only used if the attributes are not present in a project yaml
-- the `data_overrides` variable works similarly to defaults, but the values specified here take precedence over those in yaml files
-- the `data_merges` variable allows specifying additional values that are merged to sets of maps present in the yaml file, which are preserved
+- the `data_defaults` variable allows defining defaults for specific project attributes, which are only used if the attributes are not passed in via YAML
+- the `data_overrides` variable works similarly to defaults, but the values specified here take precedence over those in YAML files
+- the `data_merges` variable allows specifying additional values for map or set based variables, which are merged with the data coming from YAML
 
 Some examples on where to use each of the three sets are provided below.
 
@@ -33,7 +32,7 @@ Some examples on where to use each of the three sets are provided below.
 
 ```hcl
 module "project-factory" {
-  source = "./fabric/blueprints/factories/project-factory"
+  source = "./fabric/modules/project-factory"
   # use a default billing account if none is specified via yaml
   data_defaults = {
     billing_account = "012345-67890A-ABCDEF"
@@ -152,7 +151,7 @@ These tests validate fixes to the project factory.
 
 ```hcl
 module "project-factory" {
-  source = "./fabric/blueprints/factories/project-factory"
+  source = "./fabric/modules/project-factory"
   data_defaults = {
     billing_account = "012345-67890A-ABCDEF"
   }

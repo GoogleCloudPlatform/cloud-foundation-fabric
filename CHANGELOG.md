@@ -1653,7 +1653,7 @@ All notable changes to this project will be documented in this file.
 - add support for VPC-SC perimeters in Data Foundation end to end example
 - fix `vpc-sc` module
 - new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](./blueprints/networking/private-cloud-function-from-onprem/)
-- new networking example showing how to organize [decentralized firewall](./blueprints/networking/decentralized-firewall/) management on GCP
+- new networking example showing how to organize decentralized firewall management on GCP
 
 ## [5.0.0] - 2021-06-17
 

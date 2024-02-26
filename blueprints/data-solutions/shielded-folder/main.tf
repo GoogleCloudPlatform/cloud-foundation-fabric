@@ -94,7 +94,7 @@ module "firewall-policy" {
   source    = "../../../modules/net-firewall-policy"
   name      = "default"
   parent_id = module.folder.id
-  rules_factory_config = var.data_dir == null ? {} : {
+  factories_config = var.data_dir == null ? {} : {
     cidr_file_path          = "${var.data_dir}/firewall-policies/cidrs.yaml"
     ingress_rules_file_path = "${var.data_dir}/firewall-policies/hierarchical-ingress-rules.yaml"
   }

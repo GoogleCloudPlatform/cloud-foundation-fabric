@@ -18,9 +18,10 @@ locals {
   prefix = var.prefix == null || var.prefix == "" ? "" : "${var.prefix}_"
   _factory_listings = {
     for f in try(fileset(var.factories_config.listings, "*.yaml"), []) :
-    trimsuffix(f, ".yaml") => yamldecode(file("${var.factories_config.listings}/${f}"))
+    trimsuffix(f, ".yaml") => yamldecode(
+      file("${var.factories_config.listings}/${f}")
+    )
   }
-
   factory_listings = merge(local._factory_listings, var.listings)
 }
 
