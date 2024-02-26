@@ -39,6 +39,10 @@ These modules are used in the examples included in this repository. If you are u
 - [Project](./project)
 - [Projects (data source)](./projects-data-source)
 
+## Process factories
+
+- [Project factory](./project-factory/)
+
 ## Networking modules
 
 - [Address reservation](./net-address)
