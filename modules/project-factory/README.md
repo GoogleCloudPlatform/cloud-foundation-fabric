@@ -32,7 +32,7 @@ Some examples on where to use each of the three sets are [provided below](#examp
 
 Service accounts can be managed as part of each project's YAML configuration. This allows creation of default service accounts used for GCE instances, in firewall rules, or for application-level credentials without resorting to a separate Terraform configuration.
 
-Each service account is represented by one key and a set of optional key/value pairs in the `service_accounts` top-evel YAML map, like in this example:
+Each service account is represented by one key and a set of optional key/value pairs in the `service_accounts` top-level YAML map, like in this example:
 
 ```yaml
 service_accounts:
