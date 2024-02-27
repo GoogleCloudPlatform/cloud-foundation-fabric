@@ -88,6 +88,12 @@ variable "ingress_settings" {
   default     = null
 }
 
+variable "https_security_level" {
+  description = "The security level for the function: Allowed values are SECURE_ALWAYS, SECURE_OPTIONAL"
+  type        = string
+  default     = null
+}
+
 variable "labels" {
   description = "Resource labels."
   type        = map(string)

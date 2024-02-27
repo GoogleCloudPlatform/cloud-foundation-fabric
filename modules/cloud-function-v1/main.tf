@@ -66,6 +66,7 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_object = google_storage_bucket_object.bundle.name
   labels                = var.labels
   trigger_http          = var.trigger_config == null ? true : null
+  https_trigger_security_level = var.https_security_level == null ? "SECURE_ALWAYS" : var.https_security_level
 
   ingress_settings  = var.ingress_settings
   build_worker_pool = var.build_worker_pool
