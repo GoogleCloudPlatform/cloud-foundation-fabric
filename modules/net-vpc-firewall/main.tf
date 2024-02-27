@@ -15,10 +15,11 @@
  */
 
 locals {
+  _factory_rules_folder = try(pathexpand(var.factories_config.rules_folder), null)
   # define list of rule files
-  _factory_rule_files = [
-    for f in try(fileset(var.factories_config.rules_folder, "**/*.yaml"), []) :
-    "${var.factories_config.rules_folder}/${f}"
+  _factory_rule_files = local._factory_rules_folder == null ? [] : [
+    for f in try(fileset(local._factory_rules_folder, "**/*.yaml"), []) :
+    "${local._factory_rules_folder}/${f}"
   ]
   # decode rule files and account for optional attributes
   _factory_rule_list = flatten([
@@ -47,7 +48,11 @@ locals {
     if contains(["EGRESS", "INGRESS"], r.direction)
   }
   _named_ranges = merge(
-    can(var.factories_config.cidr_tpl_file) ? var.factories_config.cidr_tpl_file != null ? yamldecode(file(var.factories_config.cidr_tpl_file)) : {} : {},
+    (
+      var.factories_config.cidr_tpl_file != null
+      ? yamldecode(pathexpand(file(var.factories_config.cidr_tpl_file)))
+      : {}
+    ),
     var.named_ranges
   )
   _rules = merge(

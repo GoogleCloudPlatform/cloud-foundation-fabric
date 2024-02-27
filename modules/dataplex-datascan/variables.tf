@@ -82,14 +82,6 @@ variable "data_quality_spec" {
   })
 }
 
-variable "data_quality_spec_file" {
-  description = "Path to a YAML file containing DataQualityScan related setting. Input content can use either camelCase or snake_case. Variables description are provided in https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualitySpec."
-  default     = null
-  type = object({
-    path = string
-  })
-}
-
 variable "description" {
   description = "Custom description for DataScan."
   default     = null
@@ -100,6 +92,15 @@ variable "execution_schedule" {
   description = "Schedule DataScan to run periodically based on a cron schedule expression. If not specified, the DataScan is created with `on_demand` schedule, which means it will not run until the user calls `dataScans.run` API."
   type        = string
   default     = null
+}
+
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    data_quality_spec = optional(string)
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "incremental_field" {

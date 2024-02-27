@@ -15,17 +15,31 @@
  */
 
 locals {
-  prefix = var.prefix == null || var.prefix == "" ? "" : "${var.prefix}-"
-  _file_data_quality_spec = var.data_quality_spec_file == null ? null : {
-    sampling_percent  = try(local._file_data_quality_spec_raw.samplingPercent, local._file_data_quality_spec_raw.sampling_percent, null)
-    row_filter        = try(local._file_data_quality_spec_raw.rowFilter, local._file_data_quality_spec_raw.row_filter, null)
-    rules             = local._parsed_rules
-    post_scan_actions = try(local._file_data_quality_spec_raw.postScanActions, local._file_data_quality_spec_raw.post_scan_actions, null)
+  data_quality_spec = {
+    post_scan_actions = try(
+      var.data_quality_spec.post_scan_actions,
+      local.factory_data.post_scan_actions,
+      null
+    )
+    row_filter = try(
+      var.data_quality_spec.row_filter,
+      local.factory_data.row_filter,
+      null
+    )
+    rules = concat(
+      try(var.data_quality_spec.rules, []),
+      try(local.factory_data.rules, [])
+    )
+    sampling_percent = try(
+      var.data_quality_spec.sampling_percent,
+      local.factory_data.sampling_percent,
+      null
+    )
   }
-  data_quality_spec = (
-    var.data_quality_spec != null || var.data_quality_spec_file != null ?
-    merge(var.data_quality_spec, local._file_data_quality_spec) :
-    null
+  prefix = var.prefix == null || var.prefix == "" ? "" : "${var.prefix}-"
+  use_data_quality = (
+    var.data_quality_spec != null ||
+    var.factories_config.data_quality_spec != null
   )
 }
 
@@ -68,7 +82,7 @@ resource "google_dataplex_datascan" "datascan" {
   }
 
   dynamic "data_quality_spec" {
-    for_each = local.data_quality_spec != null ? [""] : []
+    for_each = local.use_data_quality ? [""] : []
     content {
       sampling_percent = try(local.data_quality_spec.sampling_percent, null)
       row_filter       = try(local.data_quality_spec.row_filter, null)
@@ -76,9 +90,16 @@ resource "google_dataplex_datascan" "datascan" {
         for_each = local.data_quality_spec.post_scan_actions != null ? [""] : []
         content {
           dynamic "bigquery_export" {
-            for_each = local.data_quality_spec.post_scan_actions.bigquery_export != null ? [""] : []
+            for_each = (
+              local.data_quality_spec.post_scan_actions.bigquery_export != null
+              ? [""]
+              : []
+            )
             content {
-              results_table = try(local.data_quality_spec.post_scan_actions.bigquery_export.results_table, null)
+              results_table = try(
+                local.data_quality_spec.post_scan_actions.bigquery_export.results_table,
+                null
+              )
             }
           }
         }
@@ -98,55 +119,85 @@ resource "google_dataplex_datascan" "datascan" {
           }
 
           dynamic "range_expectation" {
-            for_each = try(rules.value.range_expectation, null) != null ? [""] : []
+            for_each = (
+              try(rules.value.range_expectation, null) != null ? [""] : []
+            )
             content {
-              min_value          = try(rules.value.range_expectation.min_value, null)
-              max_value          = try(rules.value.range_expectation.max_value, null)
-              strict_min_enabled = try(rules.value.range_expectation.strict_min_enabled, null)
-              strict_max_enabled = try(rules.value.range_expectation.strict_max_enabled, null)
+              min_value = try(
+                rules.value.range_expectation.min_value, null
+              )
+              max_value = try(
+                rules.value.range_expectation.max_value, null
+              )
+              strict_min_enabled = try(
+                rules.value.range_expectation.strict_min_enabled, null
+              )
+              strict_max_enabled = try(
+                rules.value.range_expectation.strict_max_enabled, null
+              )
             }
           }
 
           dynamic "set_expectation" {
-            for_each = try(rules.value.set_expectation, null) != null ? [""] : []
+            for_each = (
+              try(rules.value.set_expectation, null) != null ? [""] : []
+            )
             content {
               values = rules.value.set_expectation.values
             }
           }
 
           dynamic "uniqueness_expectation" {
-            for_each = try(rules.value.uniqueness_expectation, null) != null ? [""] : []
+            for_each = (
+              try(rules.value.uniqueness_expectation, null) != null ? [""] : []
+            )
             content {
             }
           }
 
           dynamic "regex_expectation" {
-            for_each = try(rules.value.regex_expectation, null) != null ? [""] : []
+            for_each = (
+              try(rules.value.regex_expectation, null) != null ? [""] : []
+            )
             content {
               regex = rules.value.regex_expectation.regex
             }
           }
 
           dynamic "statistic_range_expectation" {
-            for_each = try(rules.value.statistic_range_expectation, null) != null ? [""] : []
+            for_each = (
+              try(rules.value.statistic_range_expectation, null) != null ? [""] : []
+            )
             content {
-              min_value          = try(rules.value.statistic_range_expectation.min_value, null)
-              max_value          = try(rules.value.statistic_range_expectation.max_value, null)
-              strict_min_enabled = try(rules.value.statistic_range_expectation.strict_min_enabled, null)
-              strict_max_enabled = try(rules.value.statistic_range_expectation.strict_max_enabled, null)
-              statistic          = rules.value.statistic_range_expectation.statistic
+              min_value = try(
+                rules.value.statistic_range_expectation.min_value, null
+              )
+              max_value = try(
+                rules.value.statistic_range_expectation.max_value, null
+              )
+              strict_min_enabled = try(
+                rules.value.statistic_range_expectation.strict_min_enabled, null
+              )
+              strict_max_enabled = try(
+                rules.value.statistic_range_expectation.strict_max_enabled, null
+              )
+              statistic = rules.value.statistic_range_expectation.statistic
             }
           }
 
           dynamic "row_condition_expectation" {
-            for_each = try(rules.value.row_condition_expectation, null) != null ? [""] : []
+            for_each = (
+              try(rules.value.row_condition_expectation, null) != null ? [""] : []
+            )
             content {
               sql_expression = rules.value.row_condition_expectation.sql_expression
             }
           }
 
           dynamic "table_condition_expectation" {
-            for_each = try(rules.value.table_condition_expectation, null) != null ? [""] : []
+            for_each = (
+              try(rules.value.table_condition_expectation, null) != null ? [""] : []
+            )
             content {
               sql_expression = rules.value.table_condition_expectation.sql_expression
             }
@@ -159,8 +210,16 @@ resource "google_dataplex_datascan" "datascan" {
 
   lifecycle {
     precondition {
-      condition     = length([for spec in [var.data_profile_spec, var.data_quality_spec, var.data_quality_spec_file] : spec if spec != null]) == 1
-      error_message = "DataScan can only contain one of 'data_profile_spec', 'data_quality_spec', 'data_quality_spec_file'."
+      condition = (
+        length([
+          for spec in [
+            var.data_profile_spec,
+            var.data_quality_spec,
+            var.factories_config.data_quality_spec
+          ] : spec if spec != null
+        ]) == 1
+      )
+      error_message = "DataScan can only contain one of 'data_profile_spec', 'data_quality_spec', 'factories_config.data_quality_spec'."
     }
     precondition {
       condition = alltrue([

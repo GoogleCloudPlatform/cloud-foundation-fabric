@@ -18,12 +18,6 @@ They are meant to be used as minimal but complete starting points to create actu
 
 <br clear="left">
 
-### Decentralized firewall management
-
-<a href="./decentralized-firewall/" title="Decentralized firewall management"><img src="./decentralized-firewall/diagram.png" align="left" width="280px"></a> This [blueprint](./decentralized-firewall/) shows how a decentralized firewall management can be organized using the [firewall factory](../factories/net-vpc-firewall-yaml/).
-
-<br clear="left">
-
 ### GLB and multi-regional daisy-chaining through hybrid NEGs
 
 <a href="./glb-hybrid-neg-internal/" title="XGLB and multi-regional daisy-chaining through hybrid NEGs"><img src="./glb-hybrid-neg-internal/diagram.png" align="left" width="280px"></a> This [blueprint](./glb-hybrid-neg-internal/) shows the experimental use of hybrid NEGs behind external Global Load Balancers (GLBs) to connect to GCP instances living in spoke VPCs and behind Network Virtual Appliances (NVAs).

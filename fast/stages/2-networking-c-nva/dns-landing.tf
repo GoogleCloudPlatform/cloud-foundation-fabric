@@ -91,9 +91,11 @@ module "landing-dns-policy-googleapis" {
   source     = "../../../modules/dns-response-policy"
   project_id = module.landing-project.project_id
   name       = "googleapis"
+  factories_config = {
+    rules = var.factories_config.dns_policy_rules_file
+  }
   networks = {
     landing-trusted   = module.landing-trusted-vpc.self_link
     landing-untrusted = module.landing-untrusted-vpc.self_link
   }
-  rules_file = var.factories_config.dns_policy_rules_file
 }

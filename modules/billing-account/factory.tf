@@ -19,7 +19,7 @@ locals {
     for f in fileset("${local._factory_path}", "**/*.yaml") :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._factory_path}/${f}"))
   }
-  _factory_path = var.factory_config.budgets_data_path
+  _factory_path = try(pathexpand(var.factories_config.budgets_data_path), "")
   factory_budgets = {
     for k, v in local._factory_data : k => merge(v, {
       amount = merge(
