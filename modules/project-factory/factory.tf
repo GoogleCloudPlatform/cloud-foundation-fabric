@@ -17,13 +17,11 @@
 locals {
   _data = (
     {
-      for f in fileset(local._data_path, "**/*.yaml") :
+      for f in try(fileset(local._data_path, "**/*.yaml"), []) :
       trimsuffix(f, ".yaml") => yamldecode(file("${local._data_path}/${f}"))
     }
   )
-  _data_path = var.factory_data_path == null ? null : pathexpand(
-    var.factory_data_path
-  )
+  _data_path = try(pathexpand(var.factories_config.projects), null)
   projects = {
     for k, v in local._data : k => merge(v, {
       billing_account = try(coalesce(
