@@ -29,11 +29,17 @@ variable "billing_account" {
   }
 }
 
-variable "factory_data_path" {
-  description = "Path to folder containing YAML project data files."
-  type        = string
-  nullable    = false
-  default     = "data/projects"
+variable "factories_config" {
+  description = "Path to folder with YAML resource description data files."
+  type = object({
+    projects_data_path = string
+    budgets = optional(object({
+      billing_account       = string
+      budgets_data_path     = string
+      notification_channels = optional(map(any), {})
+    }))
+  })
+  nullable = false
 }
 
 variable "prefix" {

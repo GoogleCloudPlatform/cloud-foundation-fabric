@@ -133,7 +133,7 @@ variable "id" {
 }
 
 variable "logging_sinks" {
-  description = "Logging sinks to create for the organization."
+  description = "Logging sinks to create for the billing account."
   type = map(object({
     destination          = string
     type                 = string
