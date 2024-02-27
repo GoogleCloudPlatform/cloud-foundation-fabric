@@ -325,17 +325,17 @@ gitlab-rake “gitlab:password:reset”
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [gitlab_instance_config](variables.tf#L66) | Gitlab Compute Engine instance config. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;n1-highcpu-8&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;gitlab-0&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  replica_zone  &#61; optional&#40;string, &#34;europe-west8-c&#34;&#41;&#10;  zone          &#61; optional&#40;string, &#34;europe-west8-b&#34;&#41;&#10;  boot_disk &#61; optional&#40;object&#40;&#123;&#10;    size &#61; optional&#40;number, 20&#41;&#10;    type &#61; optional&#40;string, &#34;pd-standard&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  data_disk &#61; optional&#40;object&#40;&#123;&#10;    size         &#61; optional&#40;number, 100&#41;&#10;    type         &#61; optional&#40;string, &#34;pd-ssd&#34;&#41;&#10;    replica_zone &#61; optional&#40;string, &#34;europe-west8-c&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
-| [network_config](variables.tf#L86) | Shared VPC network configurations to use for Gitlab Runner VM. | <code title="object&#40;&#123;&#10;  host_project      &#61; optional&#40;string&#41;&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
-| [prefix](variables.tf#L95) | Prefix used for resource names. | <code>string</code> | ✓ |  |  |
-| [project_id](variables.tf#L114) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |  |
+| [gitlab_instance_config](variables.tf#L69) | Gitlab Compute Engine instance config. | <code title="object&#40;&#123;&#10;  instance_type &#61; optional&#40;string, &#34;n1-highcpu-8&#34;&#41;&#10;  name          &#61; optional&#40;string, &#34;gitlab-0&#34;&#41;&#10;  network_tags  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  replica_zone  &#61; optional&#40;string&#41;&#10;  zone          &#61; optional&#40;string&#41;&#10;  boot_disk &#61; optional&#40;object&#40;&#123;&#10;    size &#61; optional&#40;number, 20&#41;&#10;    type &#61; optional&#40;string, &#34;pd-standard&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  data_disk &#61; optional&#40;object&#40;&#123;&#10;    size         &#61; optional&#40;number, 100&#41;&#10;    type         &#61; optional&#40;string, &#34;pd-ssd&#34;&#41;&#10;    replica_zone &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [network_config](variables.tf#L89) | Shared VPC network configurations to use for Gitlab Runner VM. | <code title="object&#40;&#123;&#10;  host_project      &#61; optional&#40;string&#41;&#10;  network_self_link &#61; string&#10;  subnet_self_link  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [prefix](variables.tf#L98) | Prefix used for resource names. | <code>string</code> | ✓ |  |  |
+| [project_id](variables.tf#L117) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |  |
+| [region](variables.tf#L136) | GCP Region. | <code>string</code> | ✓ |  |  |
 | [admin_principals](variables.tf#L17) | Users, groups and/or service accounts that are assigned roles, in IAM format (`group:foo@example.com`). | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |  |
 | [cloudsql_config](variables.tf#L23) | Cloud SQL Postgres config. | <code title="object&#40;&#123;&#10;  name             &#61; optional&#40;string, &#34;gitlab-0&#34;&#41;&#10;  database_version &#61; optional&#40;string, &#34;POSTGRES_13&#34;&#41;&#10;  tier             &#61; optional&#40;string, &#34;db-custom-2-8192&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [gcs_config](variables.tf#L33) | GCS for Object Storage config. | <code title="object&#40;&#123;&#10;  enable_versioning &#61; optional&#40;bool, false&#41;&#10;  location          &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  storage_class     &#61; optional&#40;string, &#34;STANDARD&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [gitlab_config](variables.tf#L43) | Gitlab configuration. | <code title="object&#40;&#123;&#10;  hostname &#61; optional&#40;string, &#34;gitlab.gcp.example.com&#34;&#41;&#10;  mail &#61; optional&#40;object&#40;&#123;&#10;    enabled &#61; optional&#40;bool, false&#41;&#10;    sendgrid &#61; optional&#40;object&#40;&#123;&#10;      api_key        &#61; optional&#40;string&#41;&#10;      email_from     &#61; optional&#40;string, null&#41;&#10;      email_reply_to &#61; optional&#40;string, null&#41;&#10;    &#125;&#41;, null&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  saml &#61; optional&#40;object&#40;&#123;&#10;    forced                 &#61; optional&#40;bool, false&#41;&#10;    idp_cert_fingerprint   &#61; string&#10;    sso_target_url         &#61; string&#10;    name_identifier_format &#61; optional&#40;string, &#34;urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress&#34;&#41;&#10;  &#125;&#41;, null&#41;&#10;  ha_required &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [project_create](variables.tf#L105) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [redis_config](variables.tf#L119) | Redis Config. | <code title="object&#40;&#123;&#10;  memory_size_gb      &#61; optional&#40;number, 1&#41;&#10;  name                &#61; optional&#40;string, &#34;gitlab-0&#34;&#41;&#10;  persistence_mode    &#61; optional&#40;string, &#34;RDB&#34;&#41;&#10;  rdb_snapshot_period &#61; optional&#40;string, &#34;TWELVE_HOURS&#34;&#41;&#10;  tier                &#61; optional&#40;string, &#34;BASIC&#34;&#41;&#10;  version             &#61; optional&#40;string, &#34;REDIS_6_X&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [region](variables.tf#L132) | GCP Region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |  |
+| [gcs_config](variables.tf#L34) | GCS for Object Storage config. | <code title="object&#40;&#123;&#10;  enable_versioning &#61; optional&#40;bool, false&#41;&#10;  location          &#61; optional&#40;string, &#34;EU&#34;&#41;&#10;  storage_class     &#61; optional&#40;string, &#34;STANDARD&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [gitlab_config](variables.tf#L45) | Gitlab configuration. | <code title="object&#40;&#123;&#10;  hostname &#61; optional&#40;string, &#34;gitlab.gcp.example.com&#34;&#41;&#10;  mail &#61; optional&#40;object&#40;&#123;&#10;    enabled &#61; optional&#40;bool, false&#41;&#10;    sendgrid &#61; optional&#40;object&#40;&#123;&#10;      api_key        &#61; optional&#40;string&#41;&#10;      email_from     &#61; optional&#40;string, null&#41;&#10;      email_reply_to &#61; optional&#40;string, null&#41;&#10;    &#125;&#41;, null&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  saml &#61; optional&#40;object&#40;&#123;&#10;    forced                 &#61; optional&#40;bool, false&#41;&#10;    idp_cert_fingerprint   &#61; string&#10;    sso_target_url         &#61; string&#10;    name_identifier_format &#61; optional&#40;string, &#34;urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress&#34;&#41;&#10;  &#125;&#41;, null&#41;&#10;  ha_required &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [project_create](variables.tf#L108) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [redis_config](variables.tf#L122) | Redis Config. | <code title="object&#40;&#123;&#10;  memory_size_gb      &#61; optional&#40;number, 1&#41;&#10;  name                &#61; optional&#40;string, &#34;gitlab-0&#34;&#41;&#10;  persistence_mode    &#61; optional&#40;string, &#34;RDB&#34;&#41;&#10;  rdb_snapshot_period &#61; optional&#40;string, &#34;TWELVE_HOURS&#34;&#41;&#10;  tier                &#61; optional&#40;string, &#34;BASIC&#34;&#41;&#10;  version             &#61; optional&#40;string, &#34;REDIS_6_X&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 
 ## Outputs
 
@@ -346,5 +346,40 @@ gitlab-rake “gitlab:password:reset”
 | [postgresql_users](outputs.tf#L36) | Gitlab postgres user password. | ✓ |  |
 | [project](outputs.tf#L42) | GCP project. |  |  |
 | [ssh_to_gitlab](outputs.tf#L47) | gcloud command to ssh gitlab instance. |  |  |
-| [ssl_certs](outputs.tf#L52) | Gitlab SSL Certificates. |  |  |
+| [ssl_certs](outputs.tf#L52) | Gitlab SSL Certificates. | ✓ |  |
 <!-- END TFDOC -->
+## Test
+
+```hcl
+module "test" {
+  source = "./fabric/blueprints/third-party-solutions/gitlab"
+  gitlab_config = {
+    hostname = "gitlab.gcp.example.com"
+    mail = {
+      sendgrid = {
+        api_key = "sample_api_key"
+      }
+    }
+    saml = {
+      idp_cert_fingerprint = "67:90:96.....REPLACE_ME"
+      sso_target_url       = "https://accounts.google.com/o/saml2/idp?idpid=REPLACE_ME"
+    }
+  }
+  gitlab_instance_config = {
+    replica_zone = "europe-west8-c"
+    zone         = "europe-west8-b"
+    data_disk = {
+      replica_zone = "europe-west8-c"
+    }
+  }
+  network_config = {
+    host_project      = "host-project"
+    network_self_link = "https://www.googleapis.com/compute/v1/projects/prod-net-landing-0/global/networks/prod-landing-0"
+    subnet_self_link  = "https://www.googleapis.com/compute/v1/projects/prod-net-landing-0/regions/europe-west1/subnetworks/landing-default-ew1"
+  }
+  prefix     = "prefix"
+  project_id = "bruzz-prod-gitlab-0"
+  region     = "europe-west8"
+}
+# tftest modules=14 resources=49
+```

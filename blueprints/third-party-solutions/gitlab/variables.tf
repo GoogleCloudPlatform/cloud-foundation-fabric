@@ -27,7 +27,8 @@ variable "cloudsql_config" {
     database_version = optional(string, "POSTGRES_13")
     tier             = optional(string, "db-custom-2-8192")
   })
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "gcs_config" {
@@ -37,7 +38,8 @@ variable "gcs_config" {
     location          = optional(string, "EU")
     storage_class     = optional(string, "STANDARD")
   })
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "gitlab_config" {
@@ -60,7 +62,8 @@ variable "gitlab_config" {
     }), null)
     ha_required = optional(bool, false)
   })
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "gitlab_instance_config" {
@@ -69,8 +72,8 @@ variable "gitlab_instance_config" {
     instance_type = optional(string, "n1-highcpu-8")
     name          = optional(string, "gitlab-0")
     network_tags  = optional(list(string), [])
-    replica_zone  = optional(string, "europe-west8-c")
-    zone          = optional(string, "europe-west8-b")
+    replica_zone  = optional(string)
+    zone          = optional(string)
     boot_disk = optional(object({
       size = optional(number, 20)
       type = optional(string, "pd-standard")
@@ -78,7 +81,7 @@ variable "gitlab_instance_config" {
     data_disk = optional(object({
       size         = optional(number, 100)
       type         = optional(string, "pd-ssd")
-      replica_zone = optional(string, "europe-west8-c")
+      replica_zone = optional(string)
     }), {})
   })
 }
@@ -126,11 +129,11 @@ variable "redis_config" {
     tier                = optional(string, "BASIC")
     version             = optional(string, "REDIS_6_X")
   })
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "region" {
   description = "GCP Region."
   type        = string
-  default     = "europe-west1"
 }

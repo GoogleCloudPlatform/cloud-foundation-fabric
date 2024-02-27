@@ -52,4 +52,5 @@ output "ssh_to_gitlab" {
 output "ssl_certs" {
   description = "Gitlab SSL Certificates."
   value       = local.ssl_certs
+  sensitive   = true
 }
