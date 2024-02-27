@@ -377,9 +377,13 @@ module "test" {
     network_self_link = "https://www.googleapis.com/compute/v1/projects/prod-net-landing-0/global/networks/prod-landing-0"
     subnet_self_link  = "https://www.googleapis.com/compute/v1/projects/prod-net-landing-0/regions/europe-west1/subnetworks/landing-default-ew1"
   }
-  prefix     = "prefix"
+  prefix = "prefix"
+  project_create = {
+    billing_account_id = "1234-ABCD-1234"
+    parent             = "folders/1234563"
+  }
   project_id = "my-project"
   region     = "europe-west8"
 }
-# tftest modules=14 resources=49
+# tftest modules=14 resources=50
 ```
