@@ -91,8 +91,12 @@ variable "data_overrides" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
-    projects = string
-    budgets  = optional(string)
+    projects_data_path = string
+    budgets = optional(object({
+      billing_account       = string
+      budgets_data_path     = string
+      notification_channels = optional(map(any), {})
+    }))
   })
   nullable = false
 }

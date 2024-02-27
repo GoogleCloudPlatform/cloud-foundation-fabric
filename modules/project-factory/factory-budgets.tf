@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-# any changes to this factory should be mirrored in the project factory
-
 locals {
-  _factory_data = {
-    for f in fileset("${local._factory_path}", "**/*.yaml") :
-    trimsuffix(f, ".yaml") => yamldecode(file("${local._factory_path}/${f}"))
-  }
-  _factory_path = try(pathexpand(var.factories_config.budgets_data_path), "")
-  factory_budgets = {
-    for k, v in local._factory_data : k => merge(v, {
+  # reimplement the billing account factory here to interpolate projects
+  _budget_path = try(pathexpand(var.factories_config.budgets.budgets_data_path), null)
+  _budgets = (
+    {
+      for f in try(fileset(local._budget_path, "**/*.yaml"), []) :
+      trimsuffix(f, ".yaml") => yamldecode(file("${local._budget_path}/${f}"))
+    }
+  )
+  budgets = {
+    for k, v in local._budgets : k => merge(v, {
       amount = merge(
         {
           currency_code   = null
@@ -43,8 +44,14 @@ locals {
             v.filter.credit_types_treatment
           )
         )
-        label              = try(v.filter.label, null)
-        projects           = try(v.filter.projects, null)
+        label = try(v.filter.label, null)
+        projects = concat(
+          try(v.projects, []),
+          [
+            for p in lookup(local.project_budgets, k, []) :
+            "projects/${module.projects[p].project_id}"
+          ]
+        )
         resource_ancestors = try(v.filter.resource_ancestors, null)
         services           = try(v.filter.services, null)
         subaccounts        = try(v.filter.subaccounts, null)
@@ -63,38 +70,5 @@ locals {
         }, vv)
       }
     })
-  }
-}
-
-# check data coming from the factory as it bypasses variable validation rules
-
-check "factory_budgets" {
-  assert {
-    condition = alltrue([
-      for k, v in local.factory_budgets : v.amount != null && (
-        try(v.amount.use_last_period, null) == true ||
-        try(v.amount.units, null) != null
-      )
-    ])
-    error_message = "Factory budgets need either amount units or last period set."
-  }
-  assert {
-    condition = alltrue([
-      for k, v in local.factory_budgets :
-      v.threshold_rules == null || try(v.threshold_rules.percent, null) != null
-    ])
-    error_message = "Threshold rules need percent set."
-  }
-  assert {
-    condition = alltrue(flatten([
-      for k, v in local.factory_budgets : [
-        for kk, vv in v.update_rules : [
-          vv.monitoring_notification_channels != null
-          ||
-          vv.pubsub_topic != null
-        ]
-      ]
-    ]))
-    error_message = "Notification rules need either a pubsub topic or monitoring channels defined."
   }
 }

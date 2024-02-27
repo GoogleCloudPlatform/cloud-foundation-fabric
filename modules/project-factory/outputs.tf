@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-output "projects" {
-  description = "Project module outputs."
-  value       = module.projects
-}
+# output "projects" {
+#   description = "Project module outputs."
+#   value       = module.projects
+# }
 
 output "service_accounts" {
   description = "Service account emails."

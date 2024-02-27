@@ -13,17 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 locals {
-  _data = (
+  _project_path = try(pathexpand(var.factories_config.projects_data_path), null)
+  _projects = (
     {
-      for f in try(fileset(local._data_path, "**/*.yaml"), []) :
-      trimsuffix(f, ".yaml") => yamldecode(file("${local._data_path}/${f}"))
+      for f in try(fileset(local._project_path, "**/*.yaml"), []) :
+      trimsuffix(f, ".yaml") => yamldecode(file("${local._project_path}/${f}"))
     }
   )
-  _data_path = try(pathexpand(var.factories_config.projects), null)
+  _project_budgets = flatten([
+    for k, v in local._projects : [
+      for b in try(v.billing_budgets, []) : {
+        budget  = b
+        project = k
+      }
+    ]
+  ])
+  project_budgets = {
+    for v in local._project_budgets : v.budget => v.project...
+  }
   projects = {
-    for k, v in local._data : k => merge(v, {
+    for k, v in local._projects : k => merge(v, {
       billing_account = try(coalesce(
         var.data_overrides.billing_account,
         try(v.billing_account, null),
