@@ -6,7 +6,7 @@ It supports
 
 - multiple project creation and management exposing the full configuration options available in the [project module](../project/), including KMS key grants and VPC-SC perimeter membership
 - optional per-project [service account management](#service-accounts) including basic IAM grants
-- optional billing budgets factory and budget/project associations (TODO)
+- optional [billing budgets](#billing-budgets) factory and budget/project associations
 - optional per-project IaC configuration (TODO)
 
 The factory is implemented as a thin wrapping layer, so that no "magic" or hidden side effects are implemented in code, and debugging or integration of new features are simple.
