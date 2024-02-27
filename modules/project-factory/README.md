@@ -16,6 +16,17 @@ The code is meant to be executed by a high level service accounts with powerful 
 - Shared VPC connection if service project attachment is desired
 - project creation on the nodes (folder or org) where projects will be defined
 
+<!-- BEGIN TOC -->
+- [Leveraging data defaults, merges, optionals](#leveraging-data-defaults-merges-optionals)
+- [Additional resources](#additional-resources)
+  - [Service accounts](#service-accounts)
+  - [Billing budgets](#billing-budgets)
+- [Example](#example)
+- [Variables](#variables)
+- [Outputs](#outputs)
+- [Tests](#tests)
+<!-- END TOC -->
+
 ## Leveraging data defaults, merges, optionals
 
 In addition to the YAML-based project configurations, the factory accepts three additional sets of inputs via Terraform variables:
