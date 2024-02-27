@@ -220,6 +220,7 @@ update_rules:
 
 | name | description | sensitive |
 |---|---|:---:|
+| [projects](outputs.tf#L17) | Project module outputs. |  |
 | [service_accounts](outputs.tf#L22) | Service account emails. |  |
 <!-- END TFDOC -->
 ## Tests
