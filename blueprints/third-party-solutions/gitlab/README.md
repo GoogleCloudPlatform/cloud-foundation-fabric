@@ -378,7 +378,7 @@ module "test" {
     subnet_self_link  = "https://www.googleapis.com/compute/v1/projects/prod-net-landing-0/regions/europe-west1/subnetworks/landing-default-ew1"
   }
   prefix     = "prefix"
-  project_id = "bruzz-prod-gitlab-0"
+  project_id = "my-project"
   region     = "europe-west8"
 }
 # tftest modules=14 resources=49
