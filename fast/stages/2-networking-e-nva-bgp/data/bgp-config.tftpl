@@ -5,15 +5,15 @@ no ipv6 forwarding
 service integrated-vtysh-config
 
 interface lo
- ip address ${ip_untrusted}/32
+ ip address ${ip_dmz}/32
 
 ip prefix-list DEFAULT seq 10 permit 0.0.0.0/0
 !
-ip prefix-list PRIMARY seq 10 permit ${gcp_landing_trusted_primary}
+ip prefix-list PRIMARY seq 10 permit ${gcp_landing_landing_primary}
 ip prefix-list PRIMARY seq 20 permit ${gcp_dev_primary}
 ip prefix-list PRIMARY seq 30 permit ${gcp_prod_primary}
 !
-ip prefix-list SECONDARY seq 10 permit ${gcp_landing_trusted_secondary}
+ip prefix-list SECONDARY seq 10 permit ${gcp_landing_landing_secondary}
 ip prefix-list SECONDARY seq 20 permit ${gcp_dev_secondary}
 ip prefix-list SECONDARY seq 30 permit ${gcp_prod_secondary}
 
@@ -34,7 +34,7 @@ route-map TO-NVA permit 10
   set metric 50
 
 router bgp ${asn_nva}
- bgp router-id ${ip_untrusted}
+ bgp router-id ${ip_dmz}
  bgp bestpath as-path ignore
  bgp disable-ebgp-connected-route-check
  bgp timers 20 60
@@ -42,13 +42,13 @@ router bgp ${asn_nva}
  no bgp ebgp-requires-policy
  no bgp network import-check
 !
- neighbor ${ip_neighbor_untrusted_0} remote-as ${asn_untrusted}
- neighbor ${ip_neighbor_untrusted_1} remote-as ${asn_untrusted}
+ neighbor ${ip_neighbor_dmz_0} remote-as ${asn_dmz}
+ neighbor ${ip_neighbor_dmz_1} remote-as ${asn_dmz}
 !
- neighbor ${ip_neighbor_trusted_0} remote-as ${asn_trusted}
- neighbor ${ip_neighbor_trusted_0} update-source ${ip_trusted}
- neighbor ${ip_neighbor_trusted_1} remote-as ${asn_trusted}
- neighbor ${ip_neighbor_trusted_1} update-source ${ip_trusted}
+ neighbor ${ip_neighbor_landing_0} remote-as ${asn_landing}
+ neighbor ${ip_neighbor_landing_0} update-source ${ip_landing}
+ neighbor ${ip_neighbor_landing_1} remote-as ${asn_landing}
+ neighbor ${ip_neighbor_landing_1} update-source ${ip_landing}
 !
  neighbor ${ip_neighbor_cross_region_nva_0} remote-as ${asn_nva_cross_region}
  neighbor ${ip_neighbor_cross_region_nva_0} ebgp-multihop 2
@@ -56,17 +56,17 @@ router bgp ${asn_nva}
  neighbor ${ip_neighbor_cross_region_nva_1} ebgp-multihop 2
 !
  address-family ipv4 unicast
-  neighbor ${ip_neighbor_untrusted_0} route-map TO-UNTRUSTED out
-  neighbor ${ip_neighbor_untrusted_0} soft-reconfiguration inbound
+  neighbor ${ip_neighbor_dmz_0} route-map TO-UNTRUSTED out
+  neighbor ${ip_neighbor_dmz_0} soft-reconfiguration inbound
 !
-  neighbor ${ip_neighbor_untrusted_1} route-map TO-UNTRUSTED out
-  neighbor ${ip_neighbor_untrusted_1} soft-reconfiguration inbound
+  neighbor ${ip_neighbor_dmz_1} route-map TO-UNTRUSTED out
+  neighbor ${ip_neighbor_dmz_1} soft-reconfiguration inbound
 !
-  neighbor ${ip_neighbor_trusted_0} route-map TO-TRUSTED out
-  neighbor ${ip_neighbor_trusted_0} soft-reconfiguration inbound
+  neighbor ${ip_neighbor_landing_0} route-map TO-TRUSTED out
+  neighbor ${ip_neighbor_landing_0} soft-reconfiguration inbound
 !
-  neighbor ${ip_neighbor_trusted_1} route-map TO-TRUSTED out
-  neighbor ${ip_neighbor_trusted_1} soft-reconfiguration inbound
+  neighbor ${ip_neighbor_landing_1} route-map TO-TRUSTED out
+  neighbor ${ip_neighbor_landing_1} soft-reconfiguration inbound
 !
   neighbor ${ip_neighbor_cross_region_nva_0} route-map TO-NVA out
   neighbor ${ip_neighbor_cross_region_nva_0} soft-reconfiguration inbound

@@ -43,20 +43,20 @@ locals {
         ? var.ncc_asn.nva_secondary
         : var.ncc_asn.nva_primary
       )
-      asn_trusted   = var.ncc_asn.landing
-      asn_untrusted = var.ncc_asn.dmz
+      asn_landing = var.ncc_asn.landing
+      asn_dmz     = var.ncc_asn.dmz
       # To guarantee traffic to remain symmetric,
       # NVAs need to advertise cross-region routes with a higher cost (10100)
-      cost_primary                    = v.0 == "primary" ? "100" : "10100"
-      cost_secondary                  = v.0 == "primary" ? "10100" : "100"
-      gcp_dev_primary                 = var.gcp_ranges.gcp_dev_primary
-      gcp_dev_secondary               = var.gcp_ranges.gcp_dev_secondary
-      gcp_landing_trusted_primary     = var.gcp_ranges.gcp_landing_primary
-      gcp_landing_trusted_secondary   = var.gcp_ranges.gcp_landing_secondary
-      gcp_landing_untrusted_primary   = var.gcp_ranges.gcp_dmz_primary
-      gcp_landing_untrusted_secondary = var.gcp_ranges.gcp_dmz_secondary
-      gcp_prod_primary                = var.gcp_ranges.gcp_prod_primary
-      gcp_prod_secondary              = var.gcp_ranges.gcp_prod_secondary
+      cost_primary                  = v.0 == "primary" ? "100" : "10100"
+      cost_secondary                = v.0 == "primary" ? "10100" : "100"
+      gcp_dev_primary               = var.gcp_ranges.gcp_dev_primary
+      gcp_dev_secondary             = var.gcp_ranges.gcp_dev_secondary
+      gcp_landing_landing_primary   = var.gcp_ranges.gcp_landing_primary
+      gcp_landing_landing_secondary = var.gcp_ranges.gcp_landing_secondary
+      gcp_landing_dmz_primary       = var.gcp_ranges.gcp_dmz_primary
+      gcp_landing_dmz_secondary     = var.gcp_ranges.gcp_dmz_secondary
+      gcp_prod_primary              = var.gcp_ranges.gcp_prod_primary
+      gcp_prod_secondary            = var.gcp_ranges.gcp_prod_secondary
       # The IPs of cross-region NVA VMs in the untrusted VPC (x.y.w.z)
       ip_neighbor_cross_region_nva_0 = cidrhost(
         module.dmz-vpc.subnet_ips["${local._regions_cross[v.0]}/dmz-default"], 101
@@ -66,25 +66,25 @@ locals {
       )
       # The Cloud router IPs (x.y.w.z) in the untrusted
       # and in the trusted VPCs, where the NVA connects to
-      ip_neighbor_trusted_0 = cidrhost(
+      ip_neighbor_landing_0 = cidrhost(
         module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"], 201
       )
-      ip_neighbor_trusted_1 = cidrhost(
+      ip_neighbor_landing_1 = cidrhost(
         module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"], 202
       )
-      ip_neighbor_untrusted_0 = cidrhost(
+      ip_neighbor_dmz_0 = cidrhost(
         module.dmz-vpc.subnet_ips["${var.regions[v.0]}/dmz-default"], 201
       )
-      ip_neighbor_untrusted_1 = cidrhost(
+      ip_neighbor_dmz_1 = cidrhost(
         module.dmz-vpc.subnet_ips["${var.regions[v.0]}/dmz-default"], 202
       )
       # The IPs to assign to the NVA NICs
       # in the trusted and in the untrusted VPCs.
-      ip_trusted = cidrhost(
+      ip_landing = cidrhost(
         module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"],
         101 + index(var.zones, v.1)
       )
-      ip_untrusted = cidrhost(
+      ip_dmz = cidrhost(
         module.dmz-vpc.subnet_ips["${var.regions[v.0]}/dmz-default"],
         101 + index(var.zones, v.1)
       )
@@ -142,7 +142,7 @@ resource "google_compute_address" "nva_static_ip_landing" {
   project      = module.landing-project.project_id
   subnetwork   = module.landing-vpc.subnet_self_links["${each.value.region}/landing-default"]
   address_type = "INTERNAL"
-  address      = each.value.ip_trusted
+  address      = each.value.ip_landing
   region       = each.value.region
 }
 
@@ -152,7 +152,7 @@ resource "google_compute_address" "nva_static_ip_dmz" {
   project      = module.landing-project.project_id
   subnetwork   = module.dmz-vpc.subnet_self_links["${each.value.region}/dmz-default"]
   address_type = "INTERNAL"
-  address      = each.value.ip_untrusted
+  address      = each.value.ip_dmz
   region       = each.value.region
 }
 
