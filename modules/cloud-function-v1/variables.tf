@@ -76,6 +76,12 @@ variable "function_config" {
   }
 }
 
+variable "https_security_level" {
+  description = "The security level for the function: Allowed values are SECURE_ALWAYS, SECURE_OPTIONAL."
+  type        = string
+  default     = null
+}
+
 variable "iam" {
   description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
