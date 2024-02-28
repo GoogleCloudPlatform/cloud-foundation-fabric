@@ -76,6 +76,12 @@ variable "function_config" {
   }
 }
 
+variable "https_security_level" {
+  description = "The security level for the function: Allowed values are SECURE_ALWAYS, SECURE_OPTIONAL."
+  type        = string
+  default     = null
+}
+
 variable "iam" {
   description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
@@ -84,12 +90,6 @@ variable "iam" {
 
 variable "ingress_settings" {
   description = "Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY ."
-  type        = string
-  default     = null
-}
-
-variable "https_security_level" {
-  description = "The security level for the function: Allowed values are SECURE_ALWAYS, SECURE_OPTIONAL"
   type        = string
   default     = null
 }
