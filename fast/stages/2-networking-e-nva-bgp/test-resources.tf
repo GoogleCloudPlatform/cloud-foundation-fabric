@@ -24,8 +24,8 @@
 #   zone       = "${var.regions.primary}-b"
 #   name       = "test-vm-lnd-unt-primary-0"
 #   network_interfaces = [{
-#     network    = module.landing-untrusted-vpc.self_link
-#     subnetwork = module.landing-untrusted-vpc.subnet_self_links["${var.regions.primary}/dmz-default-${local.region_shortnames[var.regions.primary]}"]
+#     network    = module.dmz-vpc.self_link
+#     subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.primary}/dmz-default-${local.region_shortnames[var.regions.primary]}"]
 #   }]
 #   tags = ["primary", "ssh"]
 #   boot_disk = {
@@ -51,8 +51,8 @@
 #   zone       = "${var.regions.secondary}-a"
 #   name       = "test-vm-lnd-unt-secondary-0"
 #   network_interfaces = [{
-#     network    = module.landing-untrusted-vpc.self_link
-#     subnetwork = module.landing-untrusted-vpc.subnet_self_links["${var.regions.secondary}/dmz-default-${local.region_shortnames[var.regions.secondary]}"]
+#     network    = module.dmz-vpc.self_link
+#     subnetwork = module.dmz-vpc.subnet_self_links["${var.regions.secondary}/dmz-default-${local.region_shortnames[var.regions.secondary]}"]
 #   }]
 #   tags = ["secondary", "ssh"]
 #   boot_disk = {
@@ -80,8 +80,8 @@
 #   zone       = "${var.regions.primary}-b"
 #   name       = "test-vm-lnd-tru-primary-0"
 #   network_interfaces = [{
-#     network    = module.landing-trusted-vpc.self_link
-#     subnetwork = module.landing-trusted-vpc.subnet_self_links["${var.regions.primary}/landing-default-${local.region_shortnames[var.regions.primary]}"]
+#     network    = module.landing-vpc.self_link
+#     subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default-${local.region_shortnames[var.regions.primary]}"]
 #   }]
 #   tags = ["primary", "ssh"]
 #   boot_disk = {
@@ -107,8 +107,8 @@
 #   zone       = "${var.regions.secondary}-a"
 #   name       = "test-vm-lnd-tru-secondary-0"
 #   network_interfaces = [{
-#     network    = module.landing-trusted-vpc.self_link
-#     subnetwork = module.landing-trusted-vpc.subnet_self_links["${var.regions.secondary}/landing-default-${local.region_shortnames[var.regions.secondary]}"]
+#     network    = module.landing-vpc.self_link
+#     subnetwork = module.landing-vpc.subnet_self_links["${var.regions.secondary}/landing-default-${local.region_shortnames[var.regions.secondary]}"]
 #   }]
 #   tags = ["secondary", "ssh"]
 #   boot_disk = {
