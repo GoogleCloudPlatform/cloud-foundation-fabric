@@ -35,6 +35,7 @@ module "cloudsql" {
   users = {
     "${local.cloudsql_conf.user}" = {
       password = var.cloudsql_password
+      type     = "BUILT_IN"
     }
   }
 }
