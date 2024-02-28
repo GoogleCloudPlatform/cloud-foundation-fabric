@@ -366,8 +366,8 @@ def create_toc(readme):
   for h in headings[1:]:
     title = h.children[0].children
     slug = title.lower().strip()
-    slug = re.sub('[^\w\s-]', '', slug)
-    slug = re.sub('[-\s]+', '-', slug)
+    slug = re.sub(r'[^\w\s-]', '', slug)
+    slug = re.sub(r'[-\s]+', '-', slug)
     link = f'- [{title}](#{slug})'
     indent = '  ' * (h.level - 2)
     lines.append(f'{indent}{link}')
