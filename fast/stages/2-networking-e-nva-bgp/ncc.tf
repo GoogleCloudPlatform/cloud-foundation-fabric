@@ -48,8 +48,8 @@ module "spokes-trusted" {
 
   router_config = {
     asn           = var.ncc_asn.trusted
-    ip_interface0 = cidrhost(module.landing-trusted-vpc.subnet_ips["${each.value}/landing-trusted-default-${local.region_shortnames[each.value]}"], 201)
-    ip_interface1 = cidrhost(module.landing-trusted-vpc.subnet_ips["${each.value}/landing-trusted-default-${local.region_shortnames[each.value]}"], 202)
+    ip_interface0 = cidrhost(module.landing-trusted-vpc.subnet_ips["${each.value}/landing-default"], 201)
+    ip_interface1 = cidrhost(module.landing-trusted-vpc.subnet_ips["${each.value}/landing-default"], 202)
     peer_asn = (
       each.key == "primary"
       ? var.ncc_asn.nva_primary
@@ -72,7 +72,7 @@ module "spokes-trusted" {
 
   vpc_config = {
     network_name     = module.landing-trusted-vpc.self_link
-    subnet_self_link = module.landing-trusted-vpc.subnet_self_links["${each.value}/landing-trusted-default-${local.region_shortnames[each.value]}"]
+    subnet_self_link = module.landing-trusted-vpc.subnet_self_links["${each.value}/landing-default"]
   }
 }
 
@@ -98,8 +98,8 @@ module "spokes-untrusted" {
 
   router_config = {
     asn           = var.ncc_asn.untrusted
-    ip_interface0 = cidrhost(module.landing-untrusted-vpc.subnet_ips["${each.value}/landing-untrusted-default-${local.region_shortnames[each.value]}"], 201)
-    ip_interface1 = cidrhost(module.landing-untrusted-vpc.subnet_ips["${each.value}/landing-untrusted-default-${local.region_shortnames[each.value]}"], 202)
+    ip_interface0 = cidrhost(module.landing-untrusted-vpc.subnet_ips["${each.value}/dmz-default"], 201)
+    ip_interface1 = cidrhost(module.landing-untrusted-vpc.subnet_ips["${each.value}/dmz-default"], 202)
     peer_asn = (
       each.key == "primary"
       ? var.ncc_asn.nva_primary
@@ -115,6 +115,6 @@ module "spokes-untrusted" {
 
   vpc_config = {
     network_name     = module.landing-untrusted-vpc.self_link
-    subnet_self_link = module.landing-untrusted-vpc.subnet_self_links["${each.value}/landing-untrusted-default-${local.region_shortnames[each.value]}"]
+    subnet_self_link = module.landing-untrusted-vpc.subnet_self_links["${each.value}/dmz-default"]
   }
 }

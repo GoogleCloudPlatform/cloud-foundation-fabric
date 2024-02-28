@@ -56,7 +56,7 @@ module "landing-untrusted-vpc" {
   }
   create_googleapis_routes = null
   factories_config = {
-    subnets_folder = "${var.factories_config.data_dir}/subnets/landing-untrusted"
+    subnets_folder = "${var.factories_config.data_dir}/subnets/dmz"
   }
 }
 
@@ -69,7 +69,7 @@ module "landing-untrusted-firewall" {
   }
   factories_config = {
     cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing-untrusted"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/dmz"
   }
 }
 
@@ -116,7 +116,7 @@ module "landing-trusted-vpc" {
   delete_default_routes_on_create = true
   mtu                             = 1500
   factories_config = {
-    subnets_folder = "${var.factories_config.data_dir}/subnets/landing-trusted"
+    subnets_folder = "${var.factories_config.data_dir}/subnets/landing"
   }
   dns_policy = {
     inbound = true
@@ -137,6 +137,6 @@ module "landing-trusted-firewall" {
   }
   factories_config = {
     cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing-trusted"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing"
   }
 }

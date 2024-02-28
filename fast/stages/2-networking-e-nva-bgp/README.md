@@ -154,10 +154,10 @@ This is a summary of the subnets allocated by default in this setup:
 
 | name | description | CIDR |
 |---|---|---|
-| landing-trusted-default-ew1 | Trusted landing subnet - europe-west1 | 10.128.64.0/24 |
-| landing-trusted-default-ew4 | Trusted landing subnet - europe-west4 | 10.128.96.0/24 |
-| landing-untrusted-default-ew1 | Untrusted landing subnet - europe-west1 | 10.128.0.0/24 |
-| landing-untrusted-default-ew4 | Untrusted landing subnet - europe-west4 | 10.128.32.0/24 |
+| landing-default-ew1 | Trusted landing subnet - europe-west1 | 10.128.64.0/24 |
+| landing-default-ew4 | Trusted landing subnet - europe-west4 | 10.128.96.0/24 |
+| dmz-default-ew1 | Untrusted landing subnet - europe-west1 | 10.128.0.0/24 |
+| dmz-default-ew4 | Untrusted landing subnet - europe-west4 | 10.128.32.0/24 |
 | dev-default-ew1 | Dev spoke subnet - europe-west1 | 10.68.0.0/24 |
 | dev-default-ew1 | Free (PSA) - europe-west1 | 10.68.253.0/24 |
 | dev-default-ew1 | Free (PSA) - europe-west1 | 10.68.254.0/24 |
