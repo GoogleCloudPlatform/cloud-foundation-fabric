@@ -18,11 +18,6 @@
 
 # forwarding to on-prem DNS resolvers
 
-moved {
-  from = module.onprem-example-dns-forwarding
-  to   = module.landing-dns-fwd-onprem-example
-}
-
 module "landing-dns-fwd-onprem-example" {
   source     = "../../../modules/dns"
   count      = length(var.dns.resolvers) > 0 ? 1 : 0
@@ -37,11 +32,6 @@ module "landing-dns-fwd-onprem-example" {
   }
 }
 
-moved {
-  from = module.reverse-10-dns-forwarding
-  to   = module.landing-dns-fwd-onprem-rev-10
-}
-
 module "landing-dns-fwd-onprem-rev-10" {
   source     = "../../../modules/dns"
   count      = length(var.dns.resolvers) > 0 ? 1 : 0
@@ -54,11 +44,6 @@ module "landing-dns-fwd-onprem-rev-10" {
       forwarders      = { for ip in var.dns.resolvers : ip => null }
     }
   }
-}
-
-moved {
-  from = module.gcp-example-dns-private-zone
-  to   = module.landing-dns-priv-gcp
 }
 
 module "landing-dns-priv-gcp" {
