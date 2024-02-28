@@ -83,7 +83,7 @@ values:
     timeouts: null
   module.project-factory.module.projects["prj-app-2"].google_project.project[0]:
     auto_create_network: false
-    billing_account: 012345-67890A-ABCDEF
+    billing_account: 123456-123456-123456
     effective_labels:
       app: app-2
       environment: test
@@ -179,7 +179,7 @@ values:
     timeouts: null
   module.project-factory.module.projects["prj-app-3"].google_project.project[0]:
     auto_create_network: false
-    billing_account: 012345-67890A-ABCDEF
+    billing_account: 123456-123456-123456
     effective_labels:
       environment: test
     folder_id: '12345678'
@@ -241,17 +241,19 @@ values:
     timeouts: null
 
 counts:
+  google_billing_budget: 1
   google_compute_shared_vpc_service_project: 1
   google_compute_subnetwork_iam_member: 3
   google_essential_contacts_contact: 3
   google_kms_crypto_key_iam_member: 1
+  google_monitoring_notification_channel: 1
+  google_org_policy_policy: 1
   google_project: 3
   google_project_iam_member: 4
   google_project_service: 11
   google_service_account: 3
   google_storage_project_service_account: 3
-  google_org_policy_policy: 1
-  modules: 7
-  resources: 33
+  modules: 8
+  resources: 35
 
 outputs: {}
