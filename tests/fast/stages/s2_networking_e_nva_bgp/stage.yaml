@@ -1635,7 +1635,7 @@ values:
     byte_length: 8
     keepers: null
     prefix: null
-  module.landing-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-trusted"]:
+  module.landing-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-landing"]:
     allow:
     - ports:
       - '22'
@@ -1645,7 +1645,7 @@ values:
     direction: INGRESS
     disabled: false
     log_config: []
-    name: allow-hc-nva-ssh-trusted
+    name: allow-hc-nva-ssh-landing
     priority: 1000
     project: fast2-prod-net-landing-0
     source_ranges:
@@ -1658,7 +1658,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.landing-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-trusted"]:
+  module.landing-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-landing"]:
     allow:
     - ports:
       - '179'
@@ -1668,7 +1668,7 @@ values:
     direction: INGRESS
     disabled: false
     log_config: []
-    name: allow-ncc-nva-bgp-trusted
+    name: allow-ncc-nva-bgp-landing
     priority: 1000
     project: fast2-prod-net-landing-0
     source_ranges:
@@ -1682,7 +1682,7 @@ values:
     target_tags:
     - nva
     timeouts: null
-  module.landing-firewall.google_compute_firewall.custom-rules["allow-onprem-probes-trusted-example"]:
+  module.landing-firewall.google_compute_firewall.custom-rules["allow-onprem-probes-landing-example"]:
     allow:
     - ports:
       - '12345'
@@ -1692,7 +1692,7 @@ values:
     direction: INGRESS
     disabled: false
     log_config: []
-    name: allow-onprem-probes-trusted-example
+    name: allow-onprem-probes-landing-example
     priority: 1000
     project: fast2-prod-net-landing-0
     source_ranges:
@@ -1791,7 +1791,7 @@ values:
     - {}
     project: fast2-prod-net-landing-0
     timeouts: null
-  module.dmz-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-untrusted"]:
+  module.dmz-firewall.google_compute_firewall.custom-rules["allow-hc-nva-ssh-dmz"]:
     allow:
     - ports:
       - '22'
@@ -1801,7 +1801,7 @@ values:
     direction: INGRESS
     disabled: false
     log_config: []
-    name: allow-hc-nva-ssh-untrusted
+    name: allow-hc-nva-ssh-dmz
     priority: 1000
     project: fast2-prod-net-landing-0
     source_ranges:
@@ -1814,7 +1814,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.dmz-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-untrusted"]:
+  module.dmz-firewall.google_compute_firewall.custom-rules["allow-ncc-nva-bgp-dmz"]:
     allow:
     - ports:
       - '179'
@@ -1824,7 +1824,7 @@ values:
     direction: INGRESS
     disabled: false
     log_config: []
-    name: allow-ncc-nva-bgp-untrusted
+    name: allow-ncc-nva-bgp-dmz
     priority: 1000
     project: fast2-prod-net-landing-0
     source_ranges:
@@ -1838,7 +1838,7 @@ values:
     target_tags:
     - nva
     timeouts: null
-  module.dmz-firewall.google_compute_firewall.custom-rules["allow-nva-nva-bgp-untrusted"]:
+  module.dmz-firewall.google_compute_firewall.custom-rules["allow-nva-nva-bgp-dmz"]:
     allow:
     - ports:
       - '179'
@@ -1848,7 +1848,7 @@ values:
     direction: INGRESS
     disabled: false
     log_config: []
-    name: allow-nva-nva-bgp-untrusted
+    name: allow-nva-nva-bgp-dmz
     priority: 1000
     project: fast2-prod-net-landing-0
     source_ranges: null

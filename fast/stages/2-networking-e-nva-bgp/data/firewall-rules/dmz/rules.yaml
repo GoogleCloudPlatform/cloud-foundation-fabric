@@ -4,7 +4,7 @@
 # You can retain `---` (start of the document) to indicate an empty document.
 
 ingress:
-  allow-hc-nva-ssh-untrusted:
+  allow-hc-nva-ssh-dmz:
     description: "Allow traffic from Google healthchecks to NVA appliances"
     source_ranges:
       - healthchecks
@@ -15,16 +15,16 @@ ingress:
   # these are not really needed, but it's good to have them
   # in place if the more generic hierarchical firewall policies
   # get deleted
-  allow-ncc-nva-bgp-untrusted:
+  allow-ncc-nva-bgp-dmz:
     description: "Allow BGP traffic from NCC Cloud Routers to NVAs"
     source_ranges:
-      - ncc_cloud_routers_untrusted
+      - ncc_cloud_routers_dmz
     targets: ["nva"]
     rules:
       - protocol: tcp
         ports:
           - 179
-  allow-nva-nva-bgp-untrusted:
+  allow-nva-nva-bgp-dmz:
     description: "Allow BGP traffic from cross-regional NVAs"
     sources: ["nva"]
     targets: ["nva"]

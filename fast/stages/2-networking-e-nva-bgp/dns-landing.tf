@@ -95,7 +95,7 @@ module "landing-dns-policy-googleapis" {
     rules = var.factories_config.dns_policy_rules_file
   }
   networks = {
-    landing-trusted   = module.landing-vpc.self_link
-    landing-untrusted = module.dmz-vpc.self_link
+    landing = module.landing-vpc.self_link
+    dmz     = module.dmz-vpc.self_link
   }
 }
