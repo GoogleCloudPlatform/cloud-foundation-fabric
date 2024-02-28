@@ -1702,7 +1702,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.landing-firewall.google_compute_firewall.custom-rules["trusted-ingress-default-deny"]:
+  module.landing-firewall.google_compute_firewall.custom-rules["landing-ingress-default-deny"]:
     allow: []
     deny:
     - ports: []
@@ -1712,7 +1712,7 @@ values:
     disabled: false
     log_config:
     - metadata: EXCLUDE_ALL_METADATA
-    name: trusted-ingress-default-deny
+    name: landing-ingress-default-deny
     priority: 65535
     project: fast2-prod-net-landing-0
     source_ranges:
@@ -1758,7 +1758,7 @@ values:
     tags: null
     timeouts: null
   module.landing-vpc.google_compute_subnetwork.subnetwork["europe-west1/landing-default"]:
-    description: Default europe-west1 subnet for landing trusted
+    description: Default europe-west1 subnet for landing
     ip_cidr_range: 10.64.0.0/24
     ipv6_access_type: null
     log_config: []
@@ -1770,7 +1770,7 @@ values:
     secondary_ip_range: []
     timeouts: null
   module.landing-vpc.google_compute_subnetwork.subnetwork["europe-west4/landing-default"]:
-    description: Default europe-west4 subnet for landing trusted
+    description: Default europe-west4 subnet for landing
     ip_cidr_range: 10.80.0.0/24
     ipv6_access_type: null
     log_config: []
@@ -1859,7 +1859,7 @@ values:
     target_tags:
     - nva
     timeouts: null
-  module.dmz-firewall.google_compute_firewall.custom-rules["untrusted-ingress-default-deny"]:
+  module.dmz-firewall.google_compute_firewall.custom-rules["dmz-ingress-default-deny"]:
     allow: []
     deny:
     - ports: []
@@ -1869,7 +1869,7 @@ values:
     disabled: false
     log_config:
     - metadata: EXCLUDE_ALL_METADATA
-    name: untrusted-ingress-default-deny
+    name: dmz-ingress-default-deny
     priority: 65535
     project: fast2-prod-net-landing-0
     source_ranges:
@@ -1891,7 +1891,7 @@ values:
     routing_mode: GLOBAL
     timeouts: null
   module.dmz-vpc.google_compute_subnetwork.subnetwork["europe-west1/dmz-default"]:
-    description: Default europe-west1 subnet for landing untrusted
+    description: Default europe-west1 subnet for DMZ
     ip_cidr_range: 10.64.128.0/24
     ipv6_access_type: null
     log_config: []
@@ -1903,7 +1903,7 @@ values:
     secondary_ip_range: []
     timeouts: null
   module.dmz-vpc.google_compute_subnetwork.subnetwork["europe-west4/dmz-default"]:
-    description: Default europe-west4 subnet for landing untrusted
+    description: Default europe-west4 subnet for DMZ
     ip_cidr_range: 10.80.128.0/24
     ipv6_access_type: null
     log_config: []
@@ -1999,10 +1999,10 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-UNTRUSTED permit 10\n        match ip address\
-        \ prefix-list PRIMARY\n        set metric 100\n      !\n      route-map TO-UNTRUSTED\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address\
+        \ prefix-list PRIMARY\n        set metric 100\n      !\n      route-map TO-DMZ\
         \ permit 20\n        match ip address prefix-list SECONDARY\n        set metric\
-        \ 10100\n      !\n      route-map TO-TRUSTED permit 10\n        match ip address\
+        \ 10100\n      !\n      route-map TO-LANDING permit 10\n        match ip address\
         \ prefix-list DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA\
         \ permit 10\n        match ip address prefix-list PRIMARY\n        set metric\
         \ 50\n      \n      router bgp 64513\n       bgp router-id 10.64.128.101\n\
@@ -2016,12 +2016,12 @@ values:
         \ 10.80.128.101 remote-as 64514\n       neighbor 10.80.128.101 ebgp-multihop\
         \ 2\n       neighbor 10.80.128.102 remote-as 64514\n       neighbor 10.80.128.102\
         \ ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n        neighbor\
-        \ 10.64.128.201 route-map TO-UNTRUSTED out\n        neighbor 10.64.128.201\
+        \ 10.64.128.201 route-map TO-DMZ out\n        neighbor 10.64.128.201\
         \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.202 route-map\
-        \ TO-UNTRUSTED out\n        neighbor 10.64.128.202 soft-reconfiguration inbound\n\
-        \      !\n        neighbor 10.64.0.201 route-map TO-TRUSTED out\n        neighbor\
+        \ TO-DMZ out\n        neighbor 10.64.128.202 soft-reconfiguration inbound\n\
+        \      !\n        neighbor 10.64.0.201 route-map TO-LANDING out\n        neighbor\
         \ 10.64.0.201 soft-reconfiguration inbound\n      !\n        neighbor 10.64.0.202\
-        \ route-map TO-TRUSTED out\n        neighbor 10.64.0.202 soft-reconfiguration\
+        \ route-map TO-LANDING out\n        neighbor 10.64.0.202 soft-reconfiguration\
         \ inbound\n      !\n        neighbor 10.80.128.101 route-map TO-NVA out\n\
         \        neighbor 10.80.128.101 soft-reconfiguration inbound\n      !\n  \
         \      neighbor 10.80.128.102 route-map TO-NVA out\n        neighbor 10.80.128.102\
@@ -2247,10 +2247,10 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-UNTRUSTED permit 10\n        match ip address\
-        \ prefix-list PRIMARY\n        set metric 100\n      !\n      route-map TO-UNTRUSTED\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address\
+        \ prefix-list PRIMARY\n        set metric 100\n      !\n      route-map TO-DMZ\
         \ permit 20\n        match ip address prefix-list SECONDARY\n        set metric\
-        \ 10100\n      !\n      route-map TO-TRUSTED permit 10\n        match ip address\
+        \ 10100\n      !\n      route-map TO-LANDING permit 10\n        match ip address\
         \ prefix-list DEFAULT\n        set metric 100\n      !\n      route-map TO-NVA\
         \ permit 10\n        match ip address prefix-list PRIMARY\n        set metric\
         \ 50\n      \n      router bgp 64513\n       bgp router-id 10.64.128.102\n\
@@ -2264,12 +2264,12 @@ values:
         \ 10.80.128.101 remote-as 64514\n       neighbor 10.80.128.101 ebgp-multihop\
         \ 2\n       neighbor 10.80.128.102 remote-as 64514\n       neighbor 10.80.128.102\
         \ ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n        neighbor\
-        \ 10.64.128.201 route-map TO-UNTRUSTED out\n        neighbor 10.64.128.201\
+        \ 10.64.128.201 route-map TO-DMZ out\n        neighbor 10.64.128.201\
         \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.202 route-map\
-        \ TO-UNTRUSTED out\n        neighbor 10.64.128.202 soft-reconfiguration inbound\n\
-        \      !\n        neighbor 10.64.0.201 route-map TO-TRUSTED out\n        neighbor\
+        \ TO-DMZ out\n        neighbor 10.64.128.202 soft-reconfiguration inbound\n\
+        \      !\n        neighbor 10.64.0.201 route-map TO-LANDING out\n        neighbor\
         \ 10.64.0.201 soft-reconfiguration inbound\n      !\n        neighbor 10.64.0.202\
-        \ route-map TO-TRUSTED out\n        neighbor 10.64.0.202 soft-reconfiguration\
+        \ route-map TO-LANDING out\n        neighbor 10.64.0.202 soft-reconfiguration\
         \ inbound\n      !\n        neighbor 10.80.128.101 route-map TO-NVA out\n\
         \        neighbor 10.80.128.101 soft-reconfiguration inbound\n      !\n  \
         \      neighbor 10.80.128.102 route-map TO-NVA out\n        neighbor 10.80.128.102\
@@ -2495,10 +2495,10 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-UNTRUSTED permit 10\n        match ip address\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address\
         \ prefix-list PRIMARY\n        set metric 10100\n      !\n      route-map\
-        \ TO-UNTRUSTED permit 20\n        match ip address prefix-list SECONDARY\n\
-        \        set metric 100\n      !\n      route-map TO-TRUSTED permit 10\n \
+        \ TO-DMZ permit 20\n        match ip address prefix-list SECONDARY\n\
+        \        set metric 100\n      !\n      route-map TO-LANDING permit 10\n \
         \       match ip address prefix-list DEFAULT\n        set metric 100\n   \
         \   !\n      route-map TO-NVA permit 10\n        match ip address prefix-list\
         \ SECONDARY\n        set metric 50\n      \n      router bgp 64514\n     \
@@ -2512,12 +2512,12 @@ values:
         \      !\n       neighbor 10.64.128.101 remote-as 64513\n       neighbor 10.64.128.101\
         \ ebgp-multihop 2\n       neighbor 10.64.128.102 remote-as 64513\n       neighbor\
         \ 10.64.128.102 ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n\
-        \        neighbor 10.80.128.201 route-map TO-UNTRUSTED out\n        neighbor\
+        \        neighbor 10.80.128.201 route-map TO-DMZ out\n        neighbor\
         \ 10.80.128.201 soft-reconfiguration inbound\n      !\n        neighbor 10.80.128.202\
-        \ route-map TO-UNTRUSTED out\n        neighbor 10.80.128.202 soft-reconfiguration\
-        \ inbound\n      !\n        neighbor 10.80.0.201 route-map TO-TRUSTED out\n\
+        \ route-map TO-DMZ out\n        neighbor 10.80.128.202 soft-reconfiguration\
+        \ inbound\n      !\n        neighbor 10.80.0.201 route-map TO-LANDING out\n\
         \        neighbor 10.80.0.201 soft-reconfiguration inbound\n      !\n    \
-        \    neighbor 10.80.0.202 route-map TO-TRUSTED out\n        neighbor 10.80.0.202\
+        \    neighbor 10.80.0.202 route-map TO-LANDING out\n        neighbor 10.80.0.202\
         \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.101 route-map\
         \ TO-NVA out\n        neighbor 10.64.128.101 soft-reconfiguration inbound\n\
         \      !\n        neighbor 10.64.128.102 route-map TO-NVA out\n        neighbor\
@@ -2743,10 +2743,10 @@ values:
         \ PRIMARY seq 30 permit 10.72.0.0/16\n      !\n      ip prefix-list SECONDARY\
         \ seq 10 permit 10.80.0.0/17\n      ip prefix-list SECONDARY seq 20 permit\
         \ 10.84.0.0/16\n      ip prefix-list SECONDARY seq 30 permit 10.88.0.0/16\n\
-        \      \n      route-map TO-UNTRUSTED permit 10\n        match ip address\
+        \      \n      route-map TO-DMZ permit 10\n        match ip address\
         \ prefix-list PRIMARY\n        set metric 10100\n      !\n      route-map\
-        \ TO-UNTRUSTED permit 20\n        match ip address prefix-list SECONDARY\n\
-        \        set metric 100\n      !\n      route-map TO-TRUSTED permit 10\n \
+        \ TO-DMZ permit 20\n        match ip address prefix-list SECONDARY\n\
+        \        set metric 100\n      !\n      route-map TO-LANDING permit 10\n \
         \       match ip address prefix-list DEFAULT\n        set metric 100\n   \
         \   !\n      route-map TO-NVA permit 10\n        match ip address prefix-list\
         \ SECONDARY\n        set metric 50\n      \n      router bgp 64514\n     \
@@ -2760,12 +2760,12 @@ values:
         \      !\n       neighbor 10.64.128.101 remote-as 64513\n       neighbor 10.64.128.101\
         \ ebgp-multihop 2\n       neighbor 10.64.128.102 remote-as 64513\n       neighbor\
         \ 10.64.128.102 ebgp-multihop 2\n      !\n       address-family ipv4 unicast\n\
-        \        neighbor 10.80.128.201 route-map TO-UNTRUSTED out\n        neighbor\
+        \        neighbor 10.80.128.201 route-map TO-DMZ out\n        neighbor\
         \ 10.80.128.201 soft-reconfiguration inbound\n      !\n        neighbor 10.80.128.202\
-        \ route-map TO-UNTRUSTED out\n        neighbor 10.80.128.202 soft-reconfiguration\
-        \ inbound\n      !\n        neighbor 10.80.0.201 route-map TO-TRUSTED out\n\
+        \ route-map TO-DMZ out\n        neighbor 10.80.128.202 soft-reconfiguration\
+        \ inbound\n      !\n        neighbor 10.80.0.201 route-map TO-LANDING out\n\
         \        neighbor 10.80.0.201 soft-reconfiguration inbound\n      !\n    \
-        \    neighbor 10.80.0.202 route-map TO-TRUSTED out\n        neighbor 10.80.0.202\
+        \    neighbor 10.80.0.202 route-map TO-LANDING out\n        neighbor 10.80.0.202\
         \ soft-reconfiguration inbound\n      !\n        neighbor 10.64.128.101 route-map\
         \ TO-NVA out\n        neighbor 10.64.128.101 soft-reconfiguration inbound\n\
         \      !\n        neighbor 10.64.128.102 route-map TO-NVA out\n        neighbor\
@@ -3178,13 +3178,13 @@ values:
     - advertise_mode: CUSTOM
       advertised_groups: []
       advertised_ip_ranges:
-      - description: GCP landing trusted primary.
+      - description: GCP landing primary.
         range: 10.64.0.0/17
       - description: GCP dev primary.
         range: 10.68.0.0/16
       - description: GCP prod primary.
         range: 10.72.0.0/16
-      - description: GCP landing trusted secondary.
+      - description: GCP landing secondary.
         range: 10.80.0.0/17
       - description: GCP dev secondary.
         range: 10.84.0.0/16
@@ -3293,13 +3293,13 @@ values:
     - advertise_mode: CUSTOM
       advertised_groups: []
       advertised_ip_ranges:
-      - description: GCP landing trusted primary.
+      - description: GCP landing primary.
         range: 10.64.0.0/17
       - description: GCP dev primary.
         range: 10.68.0.0/16
       - description: GCP prod primary.
         range: 10.72.0.0/16
-      - description: GCP landing trusted secondary.
+      - description: GCP landing secondary.
         range: 10.80.0.0/17
       - description: GCP dev secondary.
         range: 10.84.0.0/16

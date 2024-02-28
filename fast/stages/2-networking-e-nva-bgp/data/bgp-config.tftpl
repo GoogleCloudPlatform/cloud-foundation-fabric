@@ -17,15 +17,15 @@ ip prefix-list SECONDARY seq 10 permit ${gcp_landing_landing_secondary}
 ip prefix-list SECONDARY seq 20 permit ${gcp_dev_secondary}
 ip prefix-list SECONDARY seq 30 permit ${gcp_prod_secondary}
 
-route-map TO-UNTRUSTED permit 10
+route-map TO-DMZ permit 10
   match ip address prefix-list PRIMARY
   set metric ${cost_primary}
 !
-route-map TO-UNTRUSTED permit 20
+route-map TO-DMZ permit 20
   match ip address prefix-list SECONDARY
   set metric ${cost_secondary}
 !
-route-map TO-TRUSTED permit 10
+route-map TO-LANDING permit 10
   match ip address prefix-list DEFAULT
   set metric 100
 !
@@ -56,16 +56,16 @@ router bgp ${asn_nva}
  neighbor ${ip_neighbor_cross_region_nva_1} ebgp-multihop 2
 !
  address-family ipv4 unicast
-  neighbor ${ip_neighbor_dmz_0} route-map TO-UNTRUSTED out
+  neighbor ${ip_neighbor_dmz_0} route-map TO-DMZ out
   neighbor ${ip_neighbor_dmz_0} soft-reconfiguration inbound
 !
-  neighbor ${ip_neighbor_dmz_1} route-map TO-UNTRUSTED out
+  neighbor ${ip_neighbor_dmz_1} route-map TO-DMZ out
   neighbor ${ip_neighbor_dmz_1} soft-reconfiguration inbound
 !
-  neighbor ${ip_neighbor_landing_0} route-map TO-TRUSTED out
+  neighbor ${ip_neighbor_landing_0} route-map TO-LANDING out
   neighbor ${ip_neighbor_landing_0} soft-reconfiguration inbound
 !
-  neighbor ${ip_neighbor_landing_1} route-map TO-TRUSTED out
+  neighbor ${ip_neighbor_landing_1} route-map TO-LANDING out
   neighbor ${ip_neighbor_landing_1} soft-reconfiguration inbound
 !
   neighbor ${ip_neighbor_cross_region_nva_0} route-map TO-NVA out

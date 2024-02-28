@@ -16,9 +16,7 @@
 
 # tfdoc:file:description temporary instances for testing
 
-# # Untrusted (Landing)
-
-# module "test-vm-landing-untrusted-primary-0" {
+# module "test-vm-dmz-primary-0" {
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.landing-project.project_id
 #   zone       = "${var.regions.primary}-b"
@@ -45,7 +43,7 @@
 #   }
 # }
 
-# module "test-vm-landing-untrusted-secondary-0" {
+# module "test-vm-dmz-secondary-0" {
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.landing-project.project_id
 #   zone       = "${var.regions.secondary}-a"
@@ -72,16 +70,16 @@
 #   }
 # }
 
-# # Trusted (hub)
+# # Landing (hub)
 
-# module "test-vm-landing-trusted-primary-0" {
+# module "test-vm-landing-primary-0" {
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.landing-project.project_id
 #   zone       = "${var.regions.primary}-b"
 #   name       = "test-vm-lnd-tru-primary-0"
 #   network_interfaces = [{
 #     network    = module.landing-vpc.self_link
-#     subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default-${local.region_shortnames[var.regions.primary]}"]
+#     subnetwork = module.landing-vpc.subnet_self_links["${var.regions.primary}/landing-default"]
 #   }]
 #   tags = ["primary", "ssh"]
 #   boot_disk = {
@@ -101,14 +99,14 @@
 #   }
 # }
 
-# module "test-vm-landing-trusted-secondary-0" {
+# module "test-vm-landing-secondary-0" {
 #   source     = "../../../modules/compute-vm"
 #   project_id = module.landing-project.project_id
 #   zone       = "${var.regions.secondary}-a"
 #   name       = "test-vm-lnd-tru-secondary-0"
 #   network_interfaces = [{
 #     network    = module.landing-vpc.self_link
-#     subnetwork = module.landing-vpc.subnet_self_links["${var.regions.secondary}/landing-default-${local.region_shortnames[var.regions.secondary]}"]
+#     subnetwork = module.landing-vpc.subnet_self_links["${var.regions.secondary}/landing-default"]
 #   }]
 #   tags = ["secondary", "ssh"]
 #   boot_disk = {
@@ -138,7 +136,7 @@
 #   network_interfaces = [{
 #     network = module.dev-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
-#     subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default-${local.region_shortnames[var.regions.primary]}"]
+#     subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.primary}/dev-default"]
 #   }]
 #   tags = ["primary", "ssh"]
 #   boot_disk = {
@@ -166,7 +164,7 @@
 #   network_interfaces = [{
 #     network = module.dev-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
-#     subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.secondary}/dev-default-${local.region_shortnames[var.regions.secondary]}"]
+#     subnetwork = module.dev-spoke-vpc.subnet_self_links["${var.regions.secondary}/dev-default"]
 #   }]
 #   tags = ["secondary", "ssh"]
 #   boot_disk = {
@@ -196,7 +194,7 @@
 #   network_interfaces = [{
 #     network = module.prod-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
-#     subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.primary}/prod-default-${local.region_shortnames[var.regions.primary]}"]
+#     subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.primary}/prod-default"]
 #   }]
 #   tags = ["primary", "ssh"]
 #   boot_disk = {
@@ -224,7 +222,7 @@
 #   network_interfaces = [{
 #     network = module.prod-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
-#     subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.secondary}/prod-default-${local.region_shortnames[var.regions.secondary]}"]
+#     subnetwork = module.prod-spoke-vpc.subnet_self_links["${var.regions.secondary}/prod-default"]
 #   }]
 #   tags = ["secondary", "ssh"]
 #   boot_disk = {

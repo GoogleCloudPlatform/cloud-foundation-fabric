@@ -57,15 +57,15 @@ locals {
       gcp_landing_dmz_secondary     = var.gcp_ranges.gcp_dmz_secondary
       gcp_prod_primary              = var.gcp_ranges.gcp_prod_primary
       gcp_prod_secondary            = var.gcp_ranges.gcp_prod_secondary
-      # The IPs of cross-region NVA VMs in the untrusted VPC (x.y.w.z)
+      # The IPs of cross-region NVA VMs in the DMZ VPC (x.y.w.z)
       ip_neighbor_cross_region_nva_0 = cidrhost(
         module.dmz-vpc.subnet_ips["${local._regions_cross[v.0]}/dmz-default"], 101
       )
       ip_neighbor_cross_region_nva_1 = cidrhost(
         module.dmz-vpc.subnet_ips["${local._regions_cross[v.0]}/dmz-default"], 102
       )
-      # The Cloud router IPs (x.y.w.z) in the untrusted
-      # and in the trusted VPCs, where the NVA connects to
+      # The Cloud router IPs (x.y.w.z) in the DMZ
+      # and in the landing VPCs, where the NVA connects to
       ip_neighbor_landing_0 = cidrhost(
         module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"], 201
       )
@@ -79,7 +79,7 @@ locals {
         module.dmz-vpc.subnet_ips["${var.regions[v.0]}/dmz-default"], 202
       )
       # The IPs to assign to the NVA NICs
-      # in the trusted and in the untrusted VPCs.
+      # in the landing and in the DMZ VPCs.
       ip_landing = cidrhost(
         module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"],
         101 + index(var.zones, v.1)

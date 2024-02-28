@@ -3,4 +3,4 @@
 name: landing-default
 region: europe-west4
 ip_cidr_range: 10.80.0.0/24
-description: Default europe-west4 subnet for landing trusted
+description: Default europe-west4 subnet for landing
