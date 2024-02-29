@@ -79,9 +79,12 @@ To get started, click Start.
 
 ```hcl
 project_id     = "<walkthrough-project-name/>"
-cluster_name   = "cluster"
+cluster_name   = "gke-patterns-cluster"
 cluster_create = {
   deletion_protection = false
+  labels = {
+    pattern = "kafka"
+  }
 }
 region         = "europe-west1"
 vpc_create = {
