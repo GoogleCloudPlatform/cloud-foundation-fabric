@@ -21,8 +21,11 @@ locals {
     db               = "phpipam"
     user             = "admin"
   }
-  cloudsql_password = var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
-  connector         = var.connector == null ? module.cloud_run.vpc_connector : var.connector
+  cloudsql_password = coalesce(
+    var.cloudsql_password,
+    module.cloudsql.user_passwords[local.cloudsql_conf.user]
+  )
+  connector = coalesce(var.connector, module.cloud_run.vpc_connector)
   domain = (
     var.custom_domain != null ? var.custom_domain : (
       var.phpipam_exposure == "EXTERNAL" ?
@@ -117,7 +120,7 @@ module "cloud_run" {
         "IPAM_TRUST_X_FORWARDED" = "true"
         "IPAM_DATABASE_HOST"     = module.cloudsql.ip
         "IPAM_DATABASE_USER"     = local.cloudsql_conf.user
-        "IPAM_DATABASE_PASS"     = var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
+        "IPAM_DATABASE_PASS"     = local.cloudsql_password
         "IPAM_DATABASE_NAME"     = local.cloudsql_conf.db
         "IPAM_DATABASE_PORT"     = "3306"
       }
