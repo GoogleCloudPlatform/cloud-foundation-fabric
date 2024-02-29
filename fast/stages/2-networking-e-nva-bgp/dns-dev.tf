@@ -25,7 +25,7 @@ module "dev-dns-private-zone" {
   zone_config = {
     domain = "dev.gcp.example.com."
     private = {
-      client_networks = [module.landing-trusted-vpc.self_link, module.landing-untrusted-vpc.self_link]
+      client_networks = [module.landing-vpc.self_link, module.dmz-vpc.self_link]
     }
   }
   recordsets = {
@@ -48,7 +48,7 @@ module "dev-dns-peer-landing-root" {
     domain = "."
     peering = {
       client_networks = [module.dev-spoke-vpc.self_link]
-      peer_network    = module.landing-trusted-vpc.self_link
+      peer_network    = module.landing-vpc.self_link
     }
   }
 }
@@ -66,7 +66,7 @@ module "dev-dns-peer-landing-rev-10" {
     domain = "10.in-addr.arpa."
     peering = {
       client_networks = [module.dev-spoke-vpc.self_link]
-      peer_network    = module.landing-trusted-vpc.self_link
+      peer_network    = module.landing-vpc.self_link
     }
   }
 }

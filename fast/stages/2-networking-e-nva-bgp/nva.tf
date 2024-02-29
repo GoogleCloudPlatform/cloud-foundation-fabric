@@ -18,7 +18,7 @@ locals {
   _nva_zones = ["b", "c"]
 
   # The configurations used to create the NVA VMs.
-  # 
+  #
   # Rendered as following:
   # nva_configs = {
   #   primary-b   = {...}
@@ -43,33 +43,51 @@ locals {
         ? var.ncc_asn.nva_secondary
         : var.ncc_asn.nva_primary
       )
-      asn_trusted   = var.ncc_asn.trusted
-      asn_untrusted = var.ncc_asn.untrusted
+      asn_landing = var.ncc_asn.landing
+      asn_dmz     = var.ncc_asn.dmz
       # To guarantee traffic to remain symmetric,
       # NVAs need to advertise cross-region routes with a higher cost (10100)
-      cost_primary                    = v.0 == "primary" ? "100" : "10100"
-      cost_secondary                  = v.0 == "primary" ? "10100" : "100"
-      gcp_dev_primary                 = var.gcp_ranges.gcp_dev_primary
-      gcp_dev_secondary               = var.gcp_ranges.gcp_dev_secondary
-      gcp_landing_trusted_primary     = var.gcp_ranges.gcp_landing_trusted_primary
-      gcp_landing_trusted_secondary   = var.gcp_ranges.gcp_landing_trusted_secondary
-      gcp_landing_untrusted_primary   = var.gcp_ranges.gcp_landing_untrusted_primary
-      gcp_landing_untrusted_secondary = var.gcp_ranges.gcp_landing_untrusted_secondary
-      gcp_prod_primary                = var.gcp_ranges.gcp_prod_primary
-      gcp_prod_secondary              = var.gcp_ranges.gcp_prod_secondary
-      # The IPs of cross-region NVA VMs in the untrusted VPC (x.y.w.z)
-      ip_neighbor_cross_region_nva_0 = cidrhost(module.landing-untrusted-vpc.subnet_ips["${local._regions_cross[v.0]}/landing-untrusted-default-${local.region_shortnames[local._regions_cross[v.0]]}"], 101)
-      ip_neighbor_cross_region_nva_1 = cidrhost(module.landing-untrusted-vpc.subnet_ips["${local._regions_cross[v.0]}/landing-untrusted-default-${local.region_shortnames[local._regions_cross[v.0]]}"], 102)
-      # The Cloud router IPs (x.y.w.z) in the untrusted
-      # and in the trusted VPCs, where the NVA connects to
-      ip_neighbor_trusted_0   = cidrhost(module.landing-trusted-vpc.subnet_ips["${var.regions[v.0]}/landing-trusted-default-${local.region_shortnames[var.regions[v.0]]}"], 201)
-      ip_neighbor_trusted_1   = cidrhost(module.landing-trusted-vpc.subnet_ips["${var.regions[v.0]}/landing-trusted-default-${local.region_shortnames[var.regions[v.0]]}"], 202)
-      ip_neighbor_untrusted_0 = cidrhost(module.landing-untrusted-vpc.subnet_ips["${var.regions[v.0]}/landing-untrusted-default-${local.region_shortnames[var.regions[v.0]]}"], 201)
-      ip_neighbor_untrusted_1 = cidrhost(module.landing-untrusted-vpc.subnet_ips["${var.regions[v.0]}/landing-untrusted-default-${local.region_shortnames[var.regions[v.0]]}"], 202)
+      cost_primary                  = v.0 == "primary" ? "100" : "10100"
+      cost_secondary                = v.0 == "primary" ? "10100" : "100"
+      gcp_dev_primary               = var.gcp_ranges.gcp_dev_primary
+      gcp_dev_secondary             = var.gcp_ranges.gcp_dev_secondary
+      gcp_landing_landing_primary   = var.gcp_ranges.gcp_landing_primary
+      gcp_landing_landing_secondary = var.gcp_ranges.gcp_landing_secondary
+      gcp_landing_dmz_primary       = var.gcp_ranges.gcp_dmz_primary
+      gcp_landing_dmz_secondary     = var.gcp_ranges.gcp_dmz_secondary
+      gcp_prod_primary              = var.gcp_ranges.gcp_prod_primary
+      gcp_prod_secondary            = var.gcp_ranges.gcp_prod_secondary
+      # The IPs of cross-region NVA VMs in the DMZ VPC (x.y.w.z)
+      ip_neighbor_cross_region_nva_0 = cidrhost(
+        module.dmz-vpc.subnet_ips["${local._regions_cross[v.0]}/dmz-default"], 101
+      )
+      ip_neighbor_cross_region_nva_1 = cidrhost(
+        module.dmz-vpc.subnet_ips["${local._regions_cross[v.0]}/dmz-default"], 102
+      )
+      # The Cloud router IPs (x.y.w.z) in the DMZ
+      # and in the landing VPCs, where the NVA connects to
+      ip_neighbor_landing_0 = cidrhost(
+        module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"], 201
+      )
+      ip_neighbor_landing_1 = cidrhost(
+        module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"], 202
+      )
+      ip_neighbor_dmz_0 = cidrhost(
+        module.dmz-vpc.subnet_ips["${var.regions[v.0]}/dmz-default"], 201
+      )
+      ip_neighbor_dmz_1 = cidrhost(
+        module.dmz-vpc.subnet_ips["${var.regions[v.0]}/dmz-default"], 202
+      )
       # The IPs to assign to the NVA NICs
-      # in the trusted and in the untrusted VPCs.
-      ip_trusted   = cidrhost(module.landing-trusted-vpc.subnet_ips["${var.regions[v.0]}/landing-trusted-default-${local.region_shortnames[var.regions[v.0]]}"], 101 + index(var.zones, v.1))
-      ip_untrusted = cidrhost(module.landing-untrusted-vpc.subnet_ips["${var.regions[v.0]}/landing-untrusted-default-${local.region_shortnames[var.regions[v.0]]}"], 101 + index(var.zones, v.1))
+      # in the landing and in the DMZ VPCs.
+      ip_landing = cidrhost(
+        module.landing-vpc.subnet_ips["${var.regions[v.0]}/landing-default"],
+        101 + index(var.zones, v.1)
+      )
+      ip_dmz = cidrhost(
+        module.dmz-vpc.subnet_ips["${var.regions[v.0]}/dmz-default"],
+        101 + index(var.zones, v.1)
+      )
       # Either primary or secondary
       name = v.0
       # The name of the region where the NVA lives.
@@ -89,17 +107,17 @@ locals {
   routing_config = [
     {
       enable_masquerading = true
-      name                = "untrusted"
+      name                = "dmz"
       routes = [
-        var.gcp_ranges.gcp_landing_untrusted_primary,
-        var.gcp_ranges.gcp_landing_untrusted_secondary
+        var.gcp_ranges.gcp_dmz_primary,
+        var.gcp_ranges.gcp_dmz_secondary
       ]
     },
     {
-      name = "trusted"
+      name = "landing"
       routes = [
-        var.gcp_ranges.gcp_landing_trusted_primary,
-        var.gcp_ranges.gcp_landing_trusted_secondary
+        var.gcp_ranges.gcp_landing_primary,
+        var.gcp_ranges.gcp_landing_secondary
       ]
     }
   ]
@@ -116,23 +134,25 @@ module "nva-bgp-cloud-config" {
   }
 }
 
-resource "google_compute_address" "nva_static_ip_trusted" {
+# TODO: use address module
+
+resource "google_compute_address" "nva_static_ip_landing" {
   for_each     = local.nva_configs
-  name         = "nva-ip-trusted-${each.value.shortname}-${each.value.zone}"
+  name         = "nva-ip-landing-${each.value.shortname}-${each.value.zone}"
   project      = module.landing-project.project_id
-  subnetwork   = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${each.value.shortname}"]
+  subnetwork   = module.landing-vpc.subnet_self_links["${each.value.region}/landing-default"]
   address_type = "INTERNAL"
-  address      = each.value.ip_trusted
+  address      = each.value.ip_landing
   region       = each.value.region
 }
 
-resource "google_compute_address" "nva_static_ip_untrusted" {
+resource "google_compute_address" "nva_static_ip_dmz" {
   for_each     = local.nva_configs
-  name         = "nva-ip-untrusted-${each.value.shortname}-${each.value.zone}"
+  name         = "nva-ip-dmz-${each.value.shortname}-${each.value.zone}"
   project      = module.landing-project.project_id
-  subnetwork   = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${each.value.shortname}"]
+  subnetwork   = module.dmz-vpc.subnet_self_links["${each.value.region}/dmz-default"]
   address_type = "INTERNAL"
-  address      = each.value.ip_untrusted
+  address      = each.value.ip_dmz
   region       = each.value.region
 }
 
@@ -148,19 +168,19 @@ module "nva" {
 
   network_interfaces = [
     {
-      network    = module.landing-untrusted-vpc.self_link
-      subnetwork = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${each.value.shortname}"]
+      network    = module.dmz-vpc.self_link
+      subnetwork = module.dmz-vpc.subnet_self_links["${each.value.region}/dmz-default"]
       nat        = false
       addresses = {
-        internal = google_compute_address.nva_static_ip_untrusted[each.key].address
+        internal = google_compute_address.nva_static_ip_dmz[each.key].address
       }
     },
     {
-      network    = module.landing-trusted-vpc.self_link
-      subnetwork = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${each.value.shortname}"]
+      network    = module.landing-vpc.self_link
+      subnetwork = module.landing-vpc.subnet_self_links["${each.value.region}/landing-default"]
       nat        = false
       addresses = {
-        internal = google_compute_address.nva_static_ip_trusted[each.key].address
+        internal = google_compute_address.nva_static_ip_landing[each.key].address
       }
     }
   ]

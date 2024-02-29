@@ -22,8 +22,8 @@ locals {
   regions = distinct(concat(
     values(var.regions),
     values(module.dev-spoke-vpc.subnet_regions),
-    values(module.landing-trusted-vpc.subnet_regions),
-    values(module.landing-untrusted-vpc.subnet_regions),
+    values(module.landing-vpc.subnet_regions),
+    values(module.dmz-vpc.subnet_regions),
     values(module.prod-spoke-vpc.subnet_regions),
   ))
   service_accounts = {
