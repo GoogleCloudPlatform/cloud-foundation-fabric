@@ -73,6 +73,15 @@ variable "subnet" {
   }
 }
 
+variable "subnet_psc" {
+  default = {
+    name      = "subnet_name"
+    region    = "subnet_region"
+    cidr      = "subnet_cidr"
+    self_link = "subnet_self_link"
+  }
+}
+
 variable "subnet1" {
   default = {
     name      = "subnet_name"
