@@ -33,11 +33,6 @@ module "dev-dns-private-zone" {
   }
 }
 
-moved {
-  from = module.dev-onprem-example-dns-forwarding
-  to   = module.dev-dns-fwd-onprem-example
-}
-
 module "dev-dns-fwd-onprem-example" {
   source     = "../../../modules/dns"
   count      = length(var.dns.dev_resolvers) > 0 ? 1 : 0
@@ -50,11 +45,6 @@ module "dev-dns-fwd-onprem-example" {
       forwarders      = { for ip in var.dns.dev_resolvers : ip => null }
     }
   }
-}
-
-moved {
-  from = module.dev-reverse-10-dns-forwarding
-  to   = module.dev-dns-fwd-onprem-rev-10
 }
 
 module "dev-dns-fwd-onprem-rev-10" {

@@ -4,7 +4,7 @@
 # You can retain `---` (start of the document) to indicate an empty document.
 
 ingress:
-  allow-hc-nva-ssh-untrusted:
+  allow-hc-nva-ssh-dmz:
     description: "Allow traffic from Google healthchecks to NVA appliances"
     source_ranges:
       - healthchecks

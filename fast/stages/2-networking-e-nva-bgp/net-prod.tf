@@ -99,5 +99,5 @@ module "peering-prod" {
   source        = "../../../modules/net-vpc-peering"
   prefix        = "prod-peering-0"
   local_network = module.prod-spoke-vpc.self_link
-  peer_network  = module.landing-trusted-vpc.self_link
+  peer_network  = module.landing-vpc.self_link
 }

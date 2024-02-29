@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-resource "google_network_connectivity_hub" "hub_trusted" {
-  name        = "prod-hub-trusted"
-  description = "Prod hub trusted"
+resource "google_network_connectivity_hub" "hub_landing" {
+  name        = "prod-hub-landing"
+  description = "Prod hub landing (trusted)"
   project     = module.landing-project.project_id
 }
 
-resource "google_network_connectivity_hub" "hub_untrusted" {
-  name        = "prod-hub-untrusted"
-  description = "Prod hub untrusted"
+resource "google_network_connectivity_hub" "hub_dmz" {
+  name        = "prod-hub-dmz"
+  description = "Prod hub DMZ (untrusted)"
   project     = module.landing-project.project_id
 }
 
-module "spokes-trusted" {
+module "spokes-landing" {
   for_each   = var.regions
   source     = "../../../modules/ncc-spoke-ra"
-  name       = "prod-spoke-trusted-${local.region_shortnames[each.value]}"
+  name       = "prod-spoke-landing-${local.region_shortnames[each.value]}"
   project_id = module.landing-project.project_id
   region     = each.value
 
   hub = {
     create = false,
-    id     = google_network_connectivity_hub.hub_trusted.id
+    id     = google_network_connectivity_hub.hub_landing.id
   }
 
   router_appliances = [
@@ -47,9 +47,13 @@ module "spokes-trusted" {
   ]
 
   router_config = {
-    asn           = var.ncc_asn.trusted
-    ip_interface0 = cidrhost(module.landing-trusted-vpc.subnet_ips["${each.value}/landing-trusted-default-${local.region_shortnames[each.value]}"], 201)
-    ip_interface1 = cidrhost(module.landing-trusted-vpc.subnet_ips["${each.value}/landing-trusted-default-${local.region_shortnames[each.value]}"], 202)
+    asn = var.ncc_asn.landing
+    ip_interface0 = cidrhost(
+      module.landing-vpc.subnet_ips["${each.value}/landing-default"], 201
+    )
+    ip_interface1 = cidrhost(
+      module.landing-vpc.subnet_ips["${each.value}/landing-default"], 202
+    )
     peer_asn = (
       each.key == "primary"
       ? var.ncc_asn.nva_primary
@@ -60,32 +64,32 @@ module "spokes-trusted" {
     custom_advertise = {
       all_subnets = false
       ip_ranges = {
-        "${var.gcp_ranges.gcp_landing_trusted_primary}"   = "GCP landing trusted primary."
-        "${var.gcp_ranges.gcp_landing_trusted_secondary}" = "GCP landing trusted secondary."
-        "${var.gcp_ranges.gcp_dev_primary}"               = "GCP dev primary.",
-        "${var.gcp_ranges.gcp_dev_secondary}"             = "GCP dev secondary.",
-        "${var.gcp_ranges.gcp_prod_primary}"              = "GCP prod primary.",
-        "${var.gcp_ranges.gcp_prod_secondary}"            = "GCP prod secondary.",
+        "${var.gcp_ranges.gcp_landing_primary}"   = "GCP landing primary."
+        "${var.gcp_ranges.gcp_landing_secondary}" = "GCP landing secondary."
+        "${var.gcp_ranges.gcp_dev_primary}"       = "GCP dev primary.",
+        "${var.gcp_ranges.gcp_dev_secondary}"     = "GCP dev secondary.",
+        "${var.gcp_ranges.gcp_prod_primary}"      = "GCP prod primary.",
+        "${var.gcp_ranges.gcp_prod_secondary}"    = "GCP prod secondary.",
       }
     }
   }
 
   vpc_config = {
-    network_name     = module.landing-trusted-vpc.self_link
-    subnet_self_link = module.landing-trusted-vpc.subnet_self_links["${each.value}/landing-trusted-default-${local.region_shortnames[each.value]}"]
+    network_name     = module.landing-vpc.self_link
+    subnet_self_link = module.landing-vpc.subnet_self_links["${each.value}/landing-default"]
   }
 }
 
-module "spokes-untrusted" {
+module "spokes-dmz" {
   for_each   = var.regions
   source     = "../../../modules/ncc-spoke-ra"
-  name       = "prod-spoke-untrusted-${local.region_shortnames[each.value]}"
+  name       = "prod-spoke-dmz-${local.region_shortnames[each.value]}"
   project_id = module.landing-project.project_id
   region     = each.value
 
   hub = {
     create = false,
-    id     = google_network_connectivity_hub.hub_untrusted.id
+    id     = google_network_connectivity_hub.hub_dmz.id
   }
 
   router_appliances = [
@@ -97,9 +101,13 @@ module "spokes-untrusted" {
   ]
 
   router_config = {
-    asn           = var.ncc_asn.untrusted
-    ip_interface0 = cidrhost(module.landing-untrusted-vpc.subnet_ips["${each.value}/landing-untrusted-default-${local.region_shortnames[each.value]}"], 201)
-    ip_interface1 = cidrhost(module.landing-untrusted-vpc.subnet_ips["${each.value}/landing-untrusted-default-${local.region_shortnames[each.value]}"], 202)
+    asn = var.ncc_asn.dmz
+    ip_interface0 = cidrhost(
+      module.dmz-vpc.subnet_ips["${each.value}/dmz-default"], 201
+    )
+    ip_interface1 = cidrhost(
+      module.dmz-vpc.subnet_ips["${each.value}/dmz-default"], 202
+    )
     peer_asn = (
       each.key == "primary"
       ? var.ncc_asn.nva_primary
@@ -114,7 +122,7 @@ module "spokes-untrusted" {
   }
 
   vpc_config = {
-    network_name     = module.landing-untrusted-vpc.self_link
-    subnet_self_link = module.landing-untrusted-vpc.subnet_self_links["${each.value}/landing-untrusted-default-${local.region_shortnames[each.value]}"]
+    network_name     = module.dmz-vpc.self_link
+    subnet_self_link = module.dmz-vpc.subnet_self_links["${each.value}/dmz-default"]
   }
 }
