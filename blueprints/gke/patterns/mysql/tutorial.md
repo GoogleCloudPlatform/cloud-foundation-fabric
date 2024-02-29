@@ -10,6 +10,8 @@ During this guide you will deploy a new GKE cluster, MySQL database and you will
 
 **Prerequisites**: A GCP Project with billing enabled
 
+**Estimated cost**: $10/day
+
 Click the **Start** button to move to the next step.
 
 
