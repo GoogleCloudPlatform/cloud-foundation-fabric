@@ -26,11 +26,14 @@ Click the **Start** button to move to the next step.
 2. Open <walkthrough-editor-open-file filePath="autopilot-cluster/terraform.tfvars">autopilot-cluster/terraform.tfvars</walkthrough-editor-open-file> file.
 
 3. Paste the following content into the file and adapt for your needs if necessary
-   ```tfvars
+   ```hcl
    project_id     = "<walkthrough-project-id/>"
-   cluster_name   = "cluster-00"
+   cluster_name   = "gke-patterns-cluster"
    cluster_create = {
      deletion_protection = false
+     labels = {
+       pattern = "mysql"
+     }
    }
    region = "europe-west4"
    vpc_create = {
