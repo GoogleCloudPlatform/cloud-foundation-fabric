@@ -268,7 +268,7 @@ module "ilb" {
       nat_subnets          = [var.subnet_psc_1.self_link]
       automatic_connection = true
     }
-    vip-2 = {
+    vip-two = {
       nat_subnets          = [var.subnet_psc_2.self_link]
       automatic_connection = true
     }
