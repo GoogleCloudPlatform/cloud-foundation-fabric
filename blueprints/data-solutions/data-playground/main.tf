@@ -74,7 +74,8 @@ module "project" {
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "storage.googleapis.com",
-    "storage-component.googleapis.com"
+    "storage-component.googleapis.com",
+    "dataproc.googleapis.com"
   ]
 
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
@@ -189,6 +190,9 @@ module "service-account-notebook" {
       "roles/bigquery.user",
       "roles/dialogflow.client",
       "roles/storage.admin",
+      "roles/serviceusage.serviceUsageConsumer",
+      "roles/aiplatform.user",
+      "roles/viewer"
     ]
   }
 }
@@ -203,17 +207,27 @@ resource "google_workbench_instance" "playground" {
     service_accounts {
       email = module.service-account-notebook.email
     }
+
+
     vm_image {
       project = "cloud-notebooks-managed"
-      name    = "workbench-instances-v20230822-debian-11-py310"
+      name    = "workbench-instances-v20240214"
     }
+
     network_interfaces {
       network = local.vpc
       subnet  = local.subnet
     }
+
     metadata = {
       idle-timeout-seconds = "10800"
       report-event-health  = "true"
+    }
+
+    shielded_instance_config {
+      enable_secure_boot          = true
+      enable_vtpm                 = true
+      enable_integrity_monitoring = true
     }
 
     boot_disk {
