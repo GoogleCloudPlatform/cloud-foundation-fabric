@@ -71,7 +71,10 @@ resource "google_compute_region_backend_service" "default" {
       balancing_mode = "CONNECTION"
       description    = backend.value.description
       failover       = backend.value.failover
-      group          = backend.key
+      group = try(
+        google_compute_instance_group.default[backend.key].id,
+        backend.key
+      )
     }
   }
 
