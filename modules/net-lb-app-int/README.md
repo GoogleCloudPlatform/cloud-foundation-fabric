@@ -530,7 +530,7 @@ module "ilb-l7" {
     subnetwork = var.subnet.self_link
   }
   service_attachment = {
-    nat_subnets          = [var.subnet_psc.self_link]
+    nat_subnets          = [var.subnet_psc_1.self_link]
     automatic_connection = true
   }
 }
