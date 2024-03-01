@@ -2,20 +2,10 @@
 
 This module allows managing a GCE Internal Load Balancer and integrates the forwarding rule, regional backend, and optional health check resources. It's designed to be a simple match for the [`compute-vm`](../compute-vm) module, which can be used to manage instance templates and instance groups.
 
-## Issues
-
-There are some corner cases where Terraform raises a cycle error on apply, for example when using the entire ILB module as a value in `for_each` counts used to create static routes in the VPC module. These are easily fixed by using forwarding rule ids instead of modules as values in the `for_each` loop.
-
-<!--
-One other issue is a `Provider produced inconsistent final plan` error which is sometimes raised when switching template version. This seems to be related to this [open provider issue](https://github.com/terraform-providers/terraform-provider-google/issues/3937), but it's relatively harmless since the resource is updated, and subsequent applies raise no errors.
--->
+<!-- BEGIN TOC -->
+<!-- END TOC -->
 
 ## Examples
-
-- [Referencing existing MIGs](#referencing-existing-migs)
-- [Externally managed instances](#externally-managed-instances)
-- [Passing multiple protocols through the load balancers](#passing-multiple-protocols-through-the-load-balancers)
-- [End to end example](#end-to-end-example)
 
 ### Referencing existing MIGs
 
@@ -154,7 +144,6 @@ The example adds two forwarding rules:
 - the first one, called `ilb-test-vip-one` exposes an IPv4 address, it listens on all ports, and allows connections from any region.
 - the second one, called `ilb-test-vip-two` exposes an IPv4 address, it listens on port 80 and allows connections from the same region only.
 
-
 ```hcl
 module "ilb" {
   source        = "./fabric/modules/net-lb-int"
@@ -229,6 +218,54 @@ module "ilb" {
 # tftest modules=1 resources=5
 ```
 
+### PSC service attachments
+
+The optional `service_attachments` variable allows optional configuration of one service attachment for each of the forwarding rules.
+
+```hcl
+module "ilb" {
+  source        = "./fabric/modules/net-lb-int"
+  project_id    = var.project_id
+  region        = "europe-west1"
+  name          = "ilb-test"
+  service_label = "ilb-test"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+  forwarding_rules_config = {
+    vip-one = {}
+    vip-two = {
+      global_access = false
+      ports         = [80]
+    }
+  }
+  group_configs = {
+    my-group = {
+      zone = "europe-west1-b"
+      instances = [
+        "instance-1-self-link",
+        "instance-2-self-link"
+      ]
+    }
+  }
+  backends = [{
+    group = module.ilb.groups.my-group.self_link
+  }]
+  service_attachments = {
+    vip-one = {
+      nat_subnets          = [var.subnet_psc_1.self_link]
+      automatic_connection = true
+    }
+    vip-2 = {
+      nat_subnets          = [var.subnet_psc_2.self_link]
+      automatic_connection = true
+    }
+  }
+}
+# tftest modules=1 resources=7
+```
+
 ### End to end example
 
 This example spins up a simple HTTP server and combines four modules:
@@ -298,6 +335,15 @@ module "ilb" {
 }
 # tftest modules=3 resources=7 e2e
 ```
+
+## Issues
+
+There are some corner cases where Terraform raises a cycle error on apply, for example when using the entire ILB module as a value in `for_each` counts used to create static routes in the VPC module. These are easily fixed by using forwarding rule ids instead of modules as values in the `for_each` loop.
+
+<!--
+One other issue is a `Provider produced inconsistent final plan` error which is sometimes raised when switching template version. This seems to be related to this [open provider issue](https://github.com/terraform-providers/terraform-provider-google/issues/3937), but it's relatively harmless since the resource is updated, and subsequent applies raise no errors.
+-->
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
