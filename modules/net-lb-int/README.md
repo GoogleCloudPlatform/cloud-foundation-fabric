@@ -3,6 +3,17 @@
 This module allows managing a GCE Internal Load Balancer and integrates the forwarding rule, regional backend, and optional health check resources. It's designed to be a simple match for the [`compute-vm`](../compute-vm) module, which can be used to manage instance templates and instance groups.
 
 <!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Referencing existing MIGs](#referencing-existing-migs)
+  - [Externally managed instances](#externally-managed-instances)
+  - [Passing multiple protocols through the load balancers](#passing-multiple-protocols-through-the-load-balancers)
+  - [Mutiple forwarding rules](#mutiple-forwarding-rules)
+  - [Dual stack (IPv4 and IPv6)](#dual-stack-ipv4-and-ipv6)
+  - [PSC service attachments](#psc-service-attachments)
+  - [End to end example](#end-to-end-example)
+- [Issues](#issues)
+- [Variables](#variables)
+- [Outputs](#outputs)
 <!-- END TOC -->
 
 ## Examples
