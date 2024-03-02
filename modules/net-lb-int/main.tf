@@ -152,8 +152,8 @@ resource "google_compute_service_attachment" "default" {
     for_each = each.value.consumer_accept_lists
     iterator = accept
     content {
-      project_id_or_num = each.key
-      connection_limit  = each.value
+      project_id_or_num = accept.key
+      connection_limit  = accept.value
     }
   }
 }
