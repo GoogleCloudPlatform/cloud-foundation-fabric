@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.nlb.google_compute_forwarding_rule.forwarding_rules[""]:
+  module.nlb.google_compute_forwarding_rule.default[""]:
     all_ports: null
     allow_global_access: null
     allow_psc_global_access: null
@@ -79,7 +79,7 @@ values:
     unhealthy_threshold: 2
 
 counts:
-  google_compute_forwarding_rule: 1  
+  google_compute_forwarding_rule: 1
   google_compute_region_backend_service: 1
   google_compute_region_health_check: 1
   modules: 3

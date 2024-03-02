@@ -24,7 +24,12 @@ locals {
   )
 }
 
-resource "google_compute_forwarding_rule" "forwarding_rules" {
+moved {
+  from = google_compute_forwarding_rule.forwarding_rules
+  to   = google_compute_forwarding_rule.default
+}
+
+resource "google_compute_forwarding_rule" "default" {
   for_each = var.forwarding_rules_config
   provider = google-beta
   project  = var.project_id
