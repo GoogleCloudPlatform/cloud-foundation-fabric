@@ -231,7 +231,7 @@ module "ilb" {
 
 ### PSC service attachments
 
-The optional `service_attachments` variable allows optional configuration of one service attachment for each of the forwarding rules.
+The optional `service_attachments` variable allows [publishing Private Service Connect services](https://cloud.google.com/vpc/docs/configure-private-service-connect-producer) by configuring  up to one service attachment for each of the forwarding rules.
 
 ```hcl
 module "ilb" {
