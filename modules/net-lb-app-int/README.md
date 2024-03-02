@@ -532,6 +532,7 @@ module "ilb-l7" {
   service_attachment = {
     nat_subnets          = [var.subnet_psc_1.self_link]
     automatic_connection = true
+    consumer_accept_lists = { (var.project_id) = 10 }  # map of `project_id` => `connection_limit`
   }
 }
 # tftest modules=1 resources=6
