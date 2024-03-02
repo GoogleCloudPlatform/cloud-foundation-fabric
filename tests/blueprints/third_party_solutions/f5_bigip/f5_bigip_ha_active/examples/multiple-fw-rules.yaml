@@ -123,7 +123,7 @@ values:
     project: my-project
     region: europe-west1
     subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
-  module.f5-lb.module.passthrough-ilb[0].google_compute_forwarding_rule.forwarding_rules["int-ipv4"]:
+  module.f5-lb.module.passthrough-ilb[0].google_compute_forwarding_rule.default["int-ipv4"]:
     all_ports: true
     allow_global_access: true
     ip_protocol: L3_DEFAULT
@@ -135,7 +135,7 @@ values:
     project: my-project
     region: europe-west1
     subnetwork: projects/my-project/regions/europe-west1/subnetworks/dataplane
-  module.f5-lb.module.passthrough-ilb[0].google_compute_forwarding_rule.forwarding_rules["int-ipv6"]:
+  module.f5-lb.module.passthrough-ilb[0].google_compute_forwarding_rule.default["int-ipv6"]:
     all_ports: true
     allow_global_access: true
     ip_protocol: L3_DEFAULT
@@ -171,7 +171,7 @@ values:
     project: my-project
     protocol: UNSPECIFIED
     region: europe-west1
-  module.f5-lb.module.passthrough-nlb[0].google_compute_forwarding_rule.forwarding_rules["ext-ipv4"]:
+  module.f5-lb.module.passthrough-nlb[0].google_compute_forwarding_rule.default["ext-ipv4"]:
     all_ports: true
     allow_global_access: null
     ip_protocol: L3_DEFAULT
@@ -180,7 +180,7 @@ values:
     name: test-nlb-ext-ipv4
     project: my-project
     region: europe-west1
-  module.f5-lb.module.passthrough-nlb[0].google_compute_forwarding_rule.forwarding_rules["ext-ipv6"]:
+  module.f5-lb.module.passthrough-nlb[0].google_compute_forwarding_rule.default["ext-ipv6"]:
     all_ports: true
     allow_global_access: null
     ip_protocol: L3_DEFAULT

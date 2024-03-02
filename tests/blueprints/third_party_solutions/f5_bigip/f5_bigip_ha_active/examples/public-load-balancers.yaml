@@ -97,7 +97,7 @@ values:
     network: projects/my-project/global/networks/dataplane
     project: my-project
     zone: europe-west1-b
-  module.f5-lb.module.passthrough-nlb[0].google_compute_forwarding_rule.forwarding_rules["ext-ipv4"]:
+  module.f5-lb.module.passthrough-nlb[0].google_compute_forwarding_rule.default["ext-ipv4"]:
     all_ports: true
     allow_global_access: null
     allow_psc_global_access: null
