@@ -510,7 +510,7 @@ module "ilb-l7" {
 
 ### PSC service attachment
 
-The optional `service_attachment` variable allows configuring a service attachment for the load balancer forwarding rule.
+The optional `service_attachment` variable allows [publishing Private Service Connect service](https://cloud.google.com/vpc/docs/configure-private-service-connect-producer) by configuring service attachment for the forwarding rule.
 
 ```hcl
 module "ilb-l7" {
