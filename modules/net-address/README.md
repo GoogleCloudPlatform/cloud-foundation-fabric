@@ -159,7 +159,6 @@ module "addresses" {
       subnet_self_link = (
         "projects/net-host/regions/europe-west8/subnetworks/gce"
       )
-      automatic_connection  = true
       producer_accept_lists = [var.project_id]
     }
   }

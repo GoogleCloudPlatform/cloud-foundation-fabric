@@ -14,7 +14,7 @@
 
 values:
   module.addresses.google_compute_network_attachment.default["gce-0"]:
-    connection_preference: ACCEPT_AUTOMATIC
+    connection_preference: ACCEPT_MANUAL
     description: Terraform-managed.
     name: gce-0
     producer_accept_lists:

@@ -331,13 +331,13 @@ module "vpc" {
   network_attachments = {
     prod-ew1 = {
       subnet = "europe-west1/production"
+      producer_accept_lists = [
+        "my-project-1"
+      ]
     }
     prod-ew2 = {
       subnet               = "europe-west2/production"
       automatic_connection = true
-      producer_accept_lists = [
-        "my-project-1"
-      ]
     }
   }
   subnets = [
