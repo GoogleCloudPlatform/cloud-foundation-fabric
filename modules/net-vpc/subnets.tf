@@ -252,13 +252,12 @@ resource "google_compute_subnetwork_iam_member" "bindings" {
   }
 }
 
-
 resource "google_compute_network_attachment" "default" {
   provider    = google-beta
   for_each    = var.network_attachments
   project     = var.project_id
-  name        = each.key
   region      = google_compute_subnetwork.subnetwork[each.value.subnet].region
+  name        = each.key
   description = each.value.description
   connection_preference = (
     each.value.automatic_connection ? "ACCEPT_AUTOMATIC" : "ACCEPT_MANUAL"
