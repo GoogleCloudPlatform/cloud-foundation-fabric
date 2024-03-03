@@ -251,3 +251,21 @@ resource "google_compute_subnetwork_iam_member" "bindings" {
     }
   }
 }
+
+
+resource "google_compute_network_attachment" "default" {
+  provider    = google-beta
+  for_each    = var.network_attachments
+  project     = var.project_id
+  name        = each.key
+  region      = google_compute_subnetwork.subnetwork[each.value.subnet].region
+  description = each.value.description
+  connection_preference = (
+    each.value.automatic_connection ? "ACCEPT_AUTOMATIC" : "ACCEPT_MANUAL"
+  )
+  subnetworks = [
+    google_compute_subnetwork.subnetwork[each.value.subnet].self_link
+  ]
+  producer_accept_lists = each.value.producer_accept_lists
+  producer_reject_lists = each.value.producer_reject_lists
+}
