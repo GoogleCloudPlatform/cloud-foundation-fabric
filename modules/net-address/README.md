@@ -148,7 +148,7 @@ module "addresses" {
 
 ### PSC Network Attachments
 
-Network attachments can be created from Shared VPC service projects.
+The project where the network attachment is created must be either the VPC project, or a Shared VPC service project of the host owning the VPC.
 
 ```hcl
 module "addresses" {
