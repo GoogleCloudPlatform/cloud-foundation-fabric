@@ -39,7 +39,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
-- [[#2115](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2115)] Align resource names in FAST networking stages ([ludoo](https://github.com/ludoo)) <!-- 2024-02-29 06:45:19+00:00 -->
+- [[#2115](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2115)] **incompatible change:** Align resource names in FAST networking stages ([ludoo](https://github.com/ludoo)) <!-- 2024-02-29 06:45:19+00:00 -->
 - [[#2112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2112)] Add support for billing budgets to project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-02-27 18:13:49+00:00 -->
 - [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
 - [[#2105](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2105)] **incompatible change:** Enable shielded nodes by default on GKE mt blueprint and FAST stage ([ludoo](https://github.com/ludoo)) <!-- 2024-02-22 07:35:27+00:00 -->
@@ -65,6 +65,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2122](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2122)] Define service attachment interface for lb modules and implement in internal LBs ([ludoo](https://github.com/ludoo)) <!-- 2024-03-02 18:36:30+00:00 -->
+- [[#2121](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2121)] **incompatible change:** enabling dataform service agent upon activating the API ([marcjwo](https://github.com/marcjwo)) <!-- 2024-02-29 16:27:32+00:00 -->
 - [[#2118](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2118)] Add https security to cloud-functions-v1 module ([mibelbahri](https://github.com/mibelbahri)) <!-- 2024-02-28 20:20:56+00:00 -->
 - [[#2112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2112)] Add support for billing budgets to project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-02-27 18:13:49+00:00 -->
 - [[#2111](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2111)] Fix pathexpand in firewall policy module ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 15:52:41+00:00 -->
