@@ -213,19 +213,20 @@ module "project" {
 
 This table lists all affected services and roles that you need to grant to service identities
 
-| service | service identity | role |
-|---|---|---|
-| apigee.googleapis.com | apigee | roles/apigee.serviceAgent |
-| artifactregistry.googleapis.com | artifactregistry | roles/artifactregistry.serviceAgent |
-| cloudasset.googleapis.com | cloudasset | roles/cloudasset.serviceAgent |
-| cloudbuild.googleapis.com | cloudbuild | roles/cloudbuild.builds.builder |
-| dataplex.googleapis.com | dataplex | roles/dataplex.serviceAgent |
-| dlp.googleapis.com | dlp | roles/dlp.serviceAgent |
-| gkehub.googleapis.com | fleet | roles/gkehub.serviceAgent |
-| meshconfig.googleapis.com | servicemesh | roles/anthosservicemesh.serviceAgent |
+| service                            | service identity     | role                                   |
+|------------------------------------|----------------------|----------------------------------------|
+| apigee.googleapis.com              | apigee               | roles/apigee.serviceAgent              |
+| artifactregistry.googleapis.com    | artifactregistry     | roles/artifactregistry.serviceAgent    |
+| cloudasset.googleapis.com          | cloudasset           | roles/cloudasset.serviceAgent          |
+| cloudbuild.googleapis.com          | cloudbuild           | roles/cloudbuild.builds.builder        |
+| dataform.googleapis.com            | dataform             | roles/dataform.serviceAgent            |
+| dataplex.googleapis.com            | dataplex             | roles/dataplex.serviceAgent            |
+| dlp.googleapis.com                 | dlp                  | roles/dlp.serviceAgent                 |
+| gkehub.googleapis.com              | fleet                | roles/gkehub.serviceAgent              |
+| meshconfig.googleapis.com          | servicemesh          | roles/anthosservicemesh.serviceAgent   |
 | multiclusteringress.googleapis.com | multicluster-ingress | roles/multiclusteringress.serviceAgent |
-| pubsub.googleapis.com | pubsub | roles/pubsub.serviceAgent |
-| sqladmin.googleapis.com | sqladmin | roles/cloudsql.serviceAgent |
+| pubsub.googleapis.com              | pubsub               | roles/pubsub.serviceAgent              |
+| sqladmin.googleapis.com            | sqladmin             | roles/cloudsql.serviceAgent            |
 
 ## Shared VPC
 

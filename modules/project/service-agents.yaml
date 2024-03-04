@@ -146,7 +146,7 @@
   service_agent: "service-%s@dataflow-service-producer-prod.iam.gserviceaccount.com"
 - name: "dataform"
   service_agent: "service-%s@gcp-sa-dataform.iam.gserviceaccount.com"
-  jit: true
+  jit: true  # roles/dataform.serviceAgent
 - name: "datafusion"
   service_agent: "service-%s@gcp-sa-datafusion.iam.gserviceaccount.com"
 - name: "datalabeling"
