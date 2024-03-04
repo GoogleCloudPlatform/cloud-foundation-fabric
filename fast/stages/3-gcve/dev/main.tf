@@ -17,15 +17,17 @@
 # tfdoc:file:description GKE multitenant for development environment.
 
 module "gcve-pc" {
-  source             = "../../../../blueprints/gcve/single-region-pc"
-  billing_account_id = var.billing_account.id
-  folder_id          = var.folder_ids.gcve-prod
-  project_id         = "gcve-0"
-  group_iam          = var.group_iam
-  iam                = var.iam
-  labels             = merge(var.labels, { environment = "prod" })
-  prefix             = "${var.prefix}-dev"
-  project_services   = var.project_services
+  source              = "../../../../blueprints/gcve/single-region-pc"
+  billing_account_id  = var.billing_account.id
+  folder_id           = var.folder_ids.gcve-prod
+  project_id          = "gcve-0"
+  groups_gcve         = var.groups_gcve
+  group_iam           = var.group_iam
+  iam                 = var.iam
+  labels              = merge(var.labels, { environment = "dev" })
+  organization_domain = var.organization.domain
+  prefix              = "${var.prefix}-dev"
+  project_services    = var.project_services
 
   vmw_network_peerings = {
     prod-landing = {
@@ -46,14 +48,5 @@ module "gcve-pc" {
     }
   }
 
-  vmw_private_cloud_config = {
-    cidr = "172.26.16.0/22"
-    zone = "europe-west8-a"
-    management_cluster_config = {
-      name         = "mgmt-cluster"
-      node_count   = 1
-      node_type_id = "standard-72"
-    }
-
-  }
+  vmw_private_cloud_config = var.private_cloud_config
 }

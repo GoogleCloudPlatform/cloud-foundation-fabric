@@ -43,20 +43,21 @@ variable "folder_ids" {
   })
 }
 
+variable "groups_gcve" {
+  description = "GCVE groups."
+  type        = map(string)
+  default = {
+    gcp-gcve-admin   = "gcp-gcve-admin-prd"
+    gcp-gcve-viewers = "gcp-gcve-viewers-prd"
+  }
+}
+
 variable "group_iam" {
   description = "Project-level authoritative IAM bindings for groups in {GROUP_EMAIL => [ROLES]} format. Use group emails as keys, list of roles as values."
   type        = map(list(string))
   default     = {}
   nullable    = false
 }
-
-# variable "host_project_ids" {
-#   # tfdoc:variable:source 2-networking
-#   description = "Host project for the shared VPC."
-#   type = object({
-#     dev-spoke-0 = string
-#   })
-# }
 
 variable "iam" {
   description = "Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format."
@@ -69,6 +70,16 @@ variable "labels" {
   description = "Project-level labels."
   type        = map(string)
   default     = {}
+}
+
+variable "organization" {
+  # tfdoc:variable:source 00-globals
+  description = "Organization details."
+  type = object({
+    domain      = string
+    id          = number
+    customer_id = string
+  })
 }
 
 variable "outputs_location" {
@@ -88,21 +99,13 @@ variable "prefix" {
   }
 }
 
+
 variable "project_services" {
   description = "Additional project services to enable."
   type        = list(string)
   default     = []
   nullable    = false
 }
-
-# variable "subnet_self_links" {
-#   # tfdoc:variable:source 2-networking
-#   description = "Shared VPC subnet self links."
-#   type = object({
-#     dev-spoke-0 = map(string)
-#   })
-#   default = null
-# }
 
 variable "vpc_self_links" {
   # tfdoc:variable:source 2-networking
@@ -111,4 +114,26 @@ variable "vpc_self_links" {
     prod-spoke-0 = string
     prod-landing = string
   })
+}
+
+variable "private_cloud_config" {
+  description = "The VMware private cloud configurations. The key is the unique private cloud name suffix."
+  type = object({
+    cidr = string
+    zone = string
+    # The key is the unique additional cluster name suffix
+    additional_cluster_configs = optional(map(object({
+      custom_core_count = optional(number)
+      node_count        = optional(number, 3)
+      node_type_id      = optional(string, "standard-72")
+    })), {})
+    management_cluster_config = optional(object({
+      custom_core_count = optional(number)
+      name              = optional(string, "mgmt-cluster")
+      node_count        = optional(number, 3)
+      node_type_id      = optional(string, "standard-72")
+    }), {})
+    description = optional(string, "Managed by Terraform.")
+  })
+  nullable = false
 }
