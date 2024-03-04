@@ -237,6 +237,13 @@ variable "name" {
   type        = string
 }
 
+variable "network_attached_interfaces" {
+  description = "Network interfaces using network attachments."
+  type        = list(string)
+  nullable    = false
+  default     = []
+}
+
 variable "network_interfaces" {
   description = "Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed."
   type = list(object({

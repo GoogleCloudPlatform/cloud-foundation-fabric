@@ -55,6 +55,14 @@ output "network" {
   ]
 }
 
+output "network_attachment_ids" {
+  description = "IDs of network attachments."
+  value = {
+    for k, v in google_compute_network_attachment.default :
+    k => v.id
+  }
+}
+
 output "project_id" {
   description = "Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured)."
   value       = var.project_id

@@ -97,6 +97,19 @@ variable "name" {
   type        = string
 }
 
+variable "network_attachments" {
+  description = "PSC network attachments, names as keys."
+  type = map(object({
+    subnet                = string
+    automatic_connection  = optional(bool, false)
+    description           = optional(string, "Terraform-managed.")
+    producer_accept_lists = optional(list(string))
+    producer_reject_lists = optional(list(string))
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "peering_config" {
   description = "VPC peering configuration."
   type = object({
