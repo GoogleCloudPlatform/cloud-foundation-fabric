@@ -21,7 +21,6 @@ output "projects" {
 
 output "service_accounts" {
   description = "Service account emails."
-  # TODO: group by project
   value = {
     for k, v in module.service-accounts : k => v.email
   }

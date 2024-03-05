@@ -67,14 +67,17 @@ module "projects" {
 module "service-accounts" {
   source = "../iam-service-account"
   for_each = {
-    for k in local.service_accounts : "${k.project}-${k.name}" => k
+    for k in local.service_accounts : "${k.project}/${k.name}" => k
   }
   project_id   = module.projects[each.value.project].project_id
   name         = each.value.name
   display_name = each.value.display_name
-  iam_project_roles = each.value.iam_project_roles == null ? {} : {
-    (module.projects[each.value.project].project_id) = each.value.iam_project_roles
-  }
+  iam_project_roles = merge(
+    each.value.iam_project_roles,
+    each.value.iam_self_roles == null ? {} : {
+      (module.projects[each.value.project].project_id) = each.value.iam_self_roles
+    }
+  )
 }
 
 module "billing-account" {

@@ -38,8 +38,8 @@ variable "data_defaults" {
     tag_bindings = optional(map(string), {})
     # non-project resources
     service_accounts = optional(map(object({
-      display_name      = optional(string, "Terraform-managed.")
-      iam_project_roles = optional(list(string))
+      display_name   = optional(string, "Terraform-managed.")
+      iam_self_roles = optional(list(string))
     })), {})
   })
   nullable = false
@@ -58,8 +58,8 @@ variable "data_merges" {
     tag_bindings               = optional(map(string), {})
     # non-project resources
     service_accounts = optional(map(object({
-      display_name      = optional(string, "Terraform-managed.")
-      iam_project_roles = optional(list(string))
+      display_name   = optional(string, "Terraform-managed.")
+      iam_self_roles = optional(list(string))
     })), {})
   })
   nullable = false
@@ -80,8 +80,8 @@ variable "data_overrides" {
     services                   = optional(list(string))
     # non-project resources
     service_accounts = optional(map(object({
-      display_name      = optional(string, "Terraform-managed.")
-      iam_project_roles = optional(list(string))
+      display_name   = optional(string, "Terraform-managed.")
+      iam_self_roles = optional(list(string))
     })))
   })
   nullable = false
