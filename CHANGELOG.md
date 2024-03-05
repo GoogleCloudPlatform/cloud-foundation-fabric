@@ -65,6 +65,9 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2129](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2129)] Remove ignore_changes as terraform-provider-google#16804 is closed ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-05 07:11:07+00:00 -->
+- [[#2125](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2125)] Add support for PSC network attachments and interfaces in modules ([ludoo](https://github.com/ludoo)) <!-- 2024-03-04 09:12:11+00:00 -->
+- [[#2124](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2124)] Update docs about role automatically granted to dataform SA ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-04 06:47:26+00:00 -->
 - [[#2122](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2122)] Define service attachment interface for lb modules and implement in internal LBs ([ludoo](https://github.com/ludoo)) <!-- 2024-03-02 18:36:30+00:00 -->
 - [[#2121](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2121)] **incompatible change:** enabling dataform service agent upon activating the API ([marcjwo](https://github.com/marcjwo)) <!-- 2024-02-29 16:27:32+00:00 -->
 - [[#2118](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2118)] Add https security to cloud-functions-v1 module ([mibelbahri](https://github.com/mibelbahri)) <!-- 2024-02-28 20:20:56+00:00 -->
