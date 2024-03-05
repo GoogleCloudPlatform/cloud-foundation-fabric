@@ -183,12 +183,6 @@ resource "google_compute_subnetwork" "proxy_only" {
   )
   purpose = each.value.global ? "GLOBAL_MANAGED_PROXY" : "REGIONAL_MANAGED_PROXY"
   role    = each.value.active ? "ACTIVE" : "BACKUP"
-
-  lifecycle {
-    # Until https://github.com/hashicorp/terraform-provider-google/issues/16804 is fixed
-    # ignore permadiff in ipv6_access_type for proxy_only subnets
-    ignore_changes = [ipv6_access_type]
-  }
 }
 
 resource "google_compute_subnetwork" "psc" {
