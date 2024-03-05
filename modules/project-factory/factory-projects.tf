@@ -103,20 +103,31 @@ locals {
         var.data_defaults.tag_bindings
       )
       # non-project resources
-      service_accounts = coalesce(
-        var.data_overrides.service_accounts,
-        try(v.service_accounts, null),
-        var.data_defaults.service_accounts
-      )
+      service_accounts = try(v.service_accounts, {})
     })
   }
   service_accounts = flatten([
     for k, v in local.projects : [
       for name, opts in v.service_accounts : {
-        project           = k
-        name              = name
-        display_name      = try(opts.display_name, "Terraform-managed.")
-        iam_project_roles = try(opts.iam_project_roles, null)
+        project = k
+        name    = name
+        display_name = coalesce(
+          try(var.data_overrides.service_accounts.display_name, null),
+          try(opts.display_name, null),
+          try(var.data_defaults.service_accounts.display_name, null),
+          "Terraform-managed."
+        )
+        iam_billing_roles      = try(opts.iam_billing_roles, {})
+        iam_organization_roles = try(opts.iam_organization_roles, {})
+        iam_sa_roles           = try(opts.iam_sa_roles, {})
+        iam_project_roles      = try(opts.iam_project_roles, {})
+        iam_self_roles = distinct(concat(
+          try(var.data_overrides.service_accounts.iam_self_roles, []),
+          try(opts.iam_self_roles, []),
+          try(var.data_defaults.service_accounts.iam_self_roles, []),
+        ))
+        iam_storage_roles = try(opts.iam_storage_roles, {})
+        opts              = opts
       }
     ]
   ])
