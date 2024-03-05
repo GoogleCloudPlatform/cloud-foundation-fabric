@@ -146,6 +146,7 @@
   service_agent: "service-%s@dataflow-service-producer-prod.iam.gserviceaccount.com"
 - name: "dataform"
   service_agent: "service-%s@gcp-sa-dataform.iam.gserviceaccount.com"
+  jit: true  # roles/dataform.serviceAgent
 - name: "datafusion"
   service_agent: "service-%s@gcp-sa-datafusion.iam.gserviceaccount.com"
 - name: "datalabeling"
@@ -374,7 +375,6 @@
   service_agent: "service-%s@gcp-sa-workloadmanager.iam.gserviceaccount.com"
 - name: "workstations"
   service_agent: "service-%s@gcp-sa-workstations.iam.gserviceaccount.com"
-
 
   # "accessapproval.googleapis.com.
   #   For the project: service-p%s@gcp-sa-accessapproval

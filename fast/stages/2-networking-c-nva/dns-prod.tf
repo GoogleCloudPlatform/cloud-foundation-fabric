@@ -18,14 +18,14 @@
 
 # GCP-specific environment zone
 
-module "prod-dns-private-zone" {
+module "prod-dns-priv-example" {
   source     = "../../../modules/dns"
   project_id = module.prod-spoke-project.project_id
   name       = "prod-gcp-example-com"
   zone_config = {
     domain = "prod.gcp.example.com."
     private = {
-      client_networks = [module.landing-trusted-vpc.self_link, module.landing-untrusted-vpc.self_link]
+      client_networks = [module.landing-vpc.self_link, module.dmz-vpc.self_link]
     }
   }
   recordsets = {
@@ -35,11 +35,6 @@ module "prod-dns-private-zone" {
 
 # root zone peering to landing to centralize configuration; remove if unneeded
 
-moved {
-  from = module.prod-landing-root-dns-peering
-  to   = module.prod-dns-peer-landing-root
-}
-
 module "prod-dns-peer-landing-root" {
   source     = "../../../modules/dns"
   project_id = module.prod-spoke-project.project_id
@@ -48,14 +43,9 @@ module "prod-dns-peer-landing-root" {
     domain = "."
     peering = {
       client_networks = [module.prod-spoke-vpc.self_link]
-      peer_network    = module.landing-trusted-vpc.self_link
+      peer_network    = module.landing-vpc.self_link
     }
   }
-}
-
-moved {
-  from = module.prod-reverse-10-dns-peering
-  to   = module.prod-dns-peer-landing-rev-10
 }
 
 module "prod-dns-peer-landing-rev-10" {
@@ -66,7 +56,7 @@ module "prod-dns-peer-landing-rev-10" {
     domain = "10.in-addr.arpa."
     peering = {
       client_networks = [module.prod-spoke-vpc.self_link]
-      peer_network    = module.landing-trusted-vpc.self_link
+      peer_network    = module.landing-vpc.self_link
     }
   }
 }

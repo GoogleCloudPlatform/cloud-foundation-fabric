@@ -80,20 +80,20 @@ In case of a regional failure, the corresponding dynamic routes are withdrawn an
 
 The "landing zone" is divided into two VPC networks:
 
-- the trusted VPC: the connectivity hub towards other trusted networks
-- the untrusted VPC: the connectivity hub towards any other untrusted network
+- the landing VPC: the connectivity hub towards other trusted networks
+- the DMZ VPC: the connectivity hub towards any other untrusted network
 
 ### NCC, NVAs and BGP sessions
 
 The VPCs connect through two sets of sample NVA machines: one per region, each containing two instances. The appliances run [Container-Optimized OS](https://cloud.google.com/container-optimized-os/docs) and a container with [FRRouting](https://frrouting.org/).
 
-We levarage NCC-RA to allow the NVAs to establish BGP sessions with Cloud Routers in the untrusted and in the trusted VPCs. This allows Cloud Routers to advertise routes to the NVAs, and the NVAs to announce routes to the Cloud Router, so it can program them in the VPC.
+We leverage NCC-RA to allow the NVAs to establish BGP sessions with Cloud Routers in the untrusted and in the trusted VPCs. This allows Cloud Routers to advertise routes to the NVAs, and the NVAs to announce routes to the Cloud Router, so it can program them in the VPC.
 
 Specifically, each NVA establishes two BGP sessions (for redundancy) with the the Cloud Router deployed in the VPC and in the subnet where the interface of that VM is attached to.
 
-**Cloud Routers in the untrusted VPC advertise the default route (0.0.0.0/0) to the NVAs**. The NVAs advertise the route to the Cloud Routers in the trusted VPC. These dynamic routes are then imported through VPC peerings in the spokes.
+**Cloud Routers in the DMZ VPC advertise the default route (0.0.0.0/0) to the NVAs**. The NVAs advertise the route to the Cloud Routers in the landing. These dynamic routes are then imported through VPC peerings in the spokes.
 
-**Cloud Routers in the trusted hub adverts to the NVAs** all the subnets of the trusted VPCs. This includes the regional subnets and the cross-regional subnets. The NVAs manipulate the route costs (MED) before advertising them to the Cloud Routers in the untrusted VPC. This is done to guarantee symmetric traffic paths (more [here](https://medium.com/google-cloud/gcp-routing-adventures-vol-2-enterprise-multi-regional-deployments-in-google-cloud-3968e9591d59)).
+**Cloud Routers in the landing adverts to the NVAs** all the subnets of the trusted VPCs. This includes the regional subnets and the cross-regional subnets. The NVAs manipulate the route costs (MED) before advertising them to the Cloud Routers in the DMZ VPC. This is done to guarantee symmetric traffic paths (more [here](https://medium.com/google-cloud/gcp-routing-adventures-vol-2-enterprise-multi-regional-deployments-in-google-cloud-3968e9591d59)).
 
 NVAs establish **extra BGP sessions with both cross-regional NVAs**. In this case, the NVAs advertise the regional trusted routes only. This allows cross-spoke (environment) traffic to remain also symmetric (more [here](https://medium.com/google-cloud/gcp-routing-adventures-vol-2-enterprise-multi-regional-deployments-in-google-cloud-3968e9591d59)). We set these routes to be exchanged at a lower cost than the one set for the other routes.
 
@@ -101,8 +101,8 @@ Following the majority of real-life deployments, **we assume appliances to be st
 
 By default, the design assumes that:
 
-- on-premise networks (and related resources) are considered trusted. As such, the VPNs connecting with on-premises are terminated in GCP, in the trusted VPC
-- the public Internet is considered untrusted. As such [Cloud NAT](https://cloud.google.com/nat/docs/overview) is deployed in the untrusted landing VPC only. Also, the default route is set to carry traffic from the trusted VPCs, through the NVAs, to the untrusted VPC.
+- on-premise networks (and related resources) are considered trusted. As such, the VPNs connecting with on-premises are terminated in GCP, in the landing
+- the public Internet is considered untrusted. As such [Cloud NAT](https://cloud.google.com/nat/docs/overview) is deployed in the DMZ VPC only. Also, the default route is set to carry traffic from the trusted VPCs, through the NVAs, to the DMZ.
 - cross-spoke (environment) traffic and traffic from any untrusted network to any trusted network (and vice versa) pass through the NVAs.
 - any traffic from a trusted network to an untrusted network (e.g. Internet) is natted by the NVAs. Users can configure further exclusions.
 
@@ -133,7 +133,7 @@ This is an options summary:
 - [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (used here to connect the trusted landing VPC with the spokes, also used by [02-networking-vpn](../2-networking-b-vpn/))
   - Pros: no additional costs, full bandwidth with no configurations, no extra latency
   - Cons: no transitivity (e.g. to GKE masters, Cloud SQL, etc.), no selective exchange of routes, several quotas and limits shared between VPCs in a peering group
-- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (used here to connect the trusted landing and untrusted VPCs)
+- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (used here to connect the trusted landing and DMZ)
   - Pros: provides additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
 - [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies)
@@ -154,10 +154,10 @@ This is a summary of the subnets allocated by default in this setup:
 
 | name | description | CIDR |
 |---|---|---|
-| landing-trusted-default-ew1 | Trusted landing subnet - europe-west1 | 10.128.64.0/24 |
-| landing-trusted-default-ew4 | Trusted landing subnet - europe-west4 | 10.128.96.0/24 |
-| landing-untrusted-default-ew1 | Untrusted landing subnet - europe-west1 | 10.128.0.0/24 |
-| landing-untrusted-default-ew4 | Untrusted landing subnet - europe-west4 | 10.128.32.0/24 |
+| landing-default-ew1 | Trusted landing subnet - europe-west1 | 10.128.64.0/24 |
+| landing-default-ew4 | Trusted landing subnet - europe-west4 | 10.128.96.0/24 |
+| dmz-default-ew1 | Untrusted landing subnet - europe-west1 | 10.128.0.0/24 |
+| dmz-default-ew4 | Untrusted landing subnet - europe-west4 | 10.128.32.0/24 |
 | dev-default-ew1 | Dev spoke subnet - europe-west1 | 10.68.0.0/24 |
 | dev-default-ew1 | Free (PSA) - europe-west1 | 10.68.253.0/24 |
 | dev-default-ew1 | Free (PSA) - europe-west1 | 10.68.254.0/24 |
@@ -183,10 +183,10 @@ In this setup:
 
 - routes between multiple subnets within the same VPC are automatically exchanged by GCP
 - the spokes and the trusted landing VPC exchange dynamic routes through VPC peerings
-- on-premises is connected to the trusted landing VPC and it dynamically exchanges BGP routes with GCP (with the trusted VPC) using HA VPN
-- the NVAs exchange dynamic routes using BGP with Cloud Routers in the untrusted VPC, Cloud Routers in the trusted VPC and cross-regional NVAs. This allows VMs in different environments and different regions to communicate.
+- on-premises is connected to the trusted landing VPC and it dynamically exchanges BGP routes with GCP (with the landing) using HA VPN
+- the NVAs exchange dynamic routes using BGP with Cloud Routers in the DMZ, Cloud Routers in the landing and cross-regional NVAs. This allows VMs in different environments and different regions to communicate.
 
-The Cloud Routers (connected to the VPN gateways in the trusted VPC) are configured to exclude the default advertisement of VPC ranges and they only advertise their respective aggregate ranges, via custom advertisements. This greatly simplifies the routing configuration and avoids quota or limit issues, by keeping the number of routes small, instead of making it proportional to the subnets and to the secondary ranges in the VPCs.
+The Cloud Routers (connected to the VPN gateways in the landing) are configured to exclude the default advertisement of VPC ranges and they only advertise their respective aggregate ranges, via custom advertisements. This greatly simplifies the routing configuration and avoids quota or limit issues, by keeping the number of routes small, instead of making it proportional to the subnets and to the secondary ranges in the VPCs.
 
 ### Internet egress
 
@@ -253,14 +253,14 @@ Each VPC network ([`net-vpc`](../../../modules/net-vpc)) manages a separate rout
 
 NCC/Cloud Router BGP settings are defined in `ncc.tf`.
 NVA BGP settings are defined in the [bpg-config.tftpl template file](./data/bgp-config.tftpl).
-The variable `ncc_asn` allows to change the Autonomous System Number (ASN) assigned to the untrusted VPC Cloud Routers, to the trusted VPC Cloud Routers and to the NVAs.
+The variable `ncc_asn` allows to change the Autonomous System Number (ASN) assigned to the DMZ Cloud Routers, to the landing VPC Cloud Routers and to the NVAs.
 
 BGP sessions for trusted landing to on-premises are configured through the variable `vpn_onprem_configs`.
 
 ### Firewall
 
 **VPC firewall rules** ([`net-vpc-firewall`](../../../modules/net-vpc-firewall)) are defined per-vpc on each `vpc-*.tf` file and leverage a resource factory to massively create rules.
-To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](../../../modules/net-vpc-firewall#rules-factory)" section of the module documentation. Sample firewall rules are shipped in [data/firewall-rules/landing-untrusted](./data/firewall-rules/landing-untrusted) and in [data/firewall-rules/landing-trusted](./data/firewall-rules/landing-trusted), and can be easily customized.
+To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](../../../modules/net-vpc-firewall#rules-factory)" section of the module documentation. Sample firewall rules are shipped in [data/firewall-rules/landing-untrusted](./data/firewall-rules/dmz) and in [data/firewall-rules/landing-trusted](./data/firewall-rules/landing), and can be easily customized.
 
 **Hierarchical firewall policies** ([`folder`](../../../modules/folder)) are defined in `main.tf` and managed through a policy factory implemented by the `net-firewall-policy` module, which is then applied to the `Networking` folder containing all the core networking infrastructure. Policies are defined in the `rules_file` file, to define a new one simply use the [firewall policy module documentation](../../../modules/net-firewall-policy/README.md#factory)". Sample hierarchical firewall rules are shipped in [data/hierarchical-ingress-rules.yaml](./data/hierarchical-ingress-rules.yaml) and can be easily customised.
 
@@ -493,8 +493,8 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [enable_cloud_nat](variables.tf#L82) | Deploy Cloud NAT. | <code>bool</code> |  | <code>false</code> |  |
 | [essential_contacts](variables.tf#L89) | Email used for essential contacts, unset if null. | <code>string</code> |  | <code>null</code> |  |
 | [factories_config](variables.tf#L95) | Configuration for network resource factories. | <code title="object&#40;&#123;&#10;  data_dir              &#61; optional&#40;string, &#34;data&#34;&#41;&#10;  dns_policy_rules_file &#61; optional&#40;string, &#34;data&#47;dns-policy-rules.yaml&#34;&#41;&#10;  firewall_policy_name  &#61; optional&#40;string, &#34;net-default&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  data_dir &#61; &#34;data&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [gcp_ranges](variables.tf#L126) | GCP address ranges in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp_dev_primary                 &#61; &#34;10.68.0.0&#47;16&#34;&#10;  gcp_dev_secondary               &#61; &#34;10.84.0.0&#47;16&#34;&#10;  gcp_landing_trusted_primary     &#61; &#34;10.64.0.0&#47;17&#34;&#10;  gcp_landing_trusted_secondary   &#61; &#34;10.80.0.0&#47;17&#34;&#10;  gcp_landing_untrusted_primary   &#61; &#34;10.64.127.0&#47;17&#34;&#10;  gcp_landing_untrusted_secondary &#61; &#34;10.80.127.0&#47;17&#34;&#10;  gcp_prod_primary                &#61; &#34;10.72.0.0&#47;16&#34;&#10;  gcp_prod_secondary              &#61; &#34;10.88.0.0&#47;16&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [ncc_asn](variables.tf#L141) | The NCC Cloud Routers ASN configuration. | <code>map&#40;number&#41;</code> |  | <code title="&#123;&#10;  nva_primary   &#61; 64513&#10;  nva_secondary &#61; 64514&#10;  trusted       &#61; 64515&#10;  untrusted     &#61; 64512&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [gcp_ranges](variables.tf#L126) | GCP address ranges in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp_dev_primary       &#61; &#34;10.68.0.0&#47;16&#34;&#10;  gcp_dev_secondary     &#61; &#34;10.84.0.0&#47;16&#34;&#10;  gcp_landing_primary   &#61; &#34;10.64.0.0&#47;17&#34;&#10;  gcp_landing_secondary &#61; &#34;10.80.0.0&#47;17&#34;&#10;  gcp_dmz_primary       &#61; &#34;10.64.127.0&#47;17&#34;&#10;  gcp_dmz_secondary     &#61; &#34;10.80.127.0&#47;17&#34;&#10;  gcp_prod_primary      &#61; &#34;10.72.0.0&#47;16&#34;&#10;  gcp_prod_secondary    &#61; &#34;10.88.0.0&#47;16&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [ncc_asn](variables.tf#L141) | The NCC Cloud Routers ASN configuration. | <code>map&#40;number&#41;</code> |  | <code title="&#123;&#10;  nva_primary   &#61; 64513&#10;  nva_secondary &#61; 64514&#10;  landing       &#61; 64515&#10;  dmz           &#61; 64512&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [onprem_cidr](variables.tf#L152) | Onprem addresses in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  main &#61; &#34;10.0.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [outputs_location](variables.tf#L170) | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
 | [psa_ranges](variables.tf#L187) | IP ranges used for Private Service Access (e.g. CloudSQL). Ranges is in name => range format. | <code title="object&#40;&#123;&#10;  dev &#61; object&#40;&#123;&#10;    ranges         &#61; map&#40;string&#41;&#10;    export_routes  &#61; optional&#40;bool, false&#41;&#10;    import_routes  &#61; optional&#40;bool, false&#41;&#10;    peered_domains &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#10;  prod &#61; object&#40;&#123;&#10;    ranges         &#61; map&#40;string&#41;&#10;    export_routes  &#61; optional&#40;bool, false&#41;&#10;    import_routes  &#61; optional&#40;bool, false&#41;&#10;    peered_domains &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |

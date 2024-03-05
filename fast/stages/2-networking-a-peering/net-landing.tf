@@ -74,11 +74,6 @@ module "landing-firewall" {
   }
 }
 
-moved {
-  from = module.landing-nat-ew1
-  to   = module.landing-nat-primary
-}
-
 module "landing-nat-primary" {
   source         = "../../../modules/net-cloudnat"
   count          = var.enable_cloud_nat ? 1 : 0

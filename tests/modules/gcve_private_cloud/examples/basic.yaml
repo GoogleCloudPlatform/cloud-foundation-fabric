@@ -42,7 +42,6 @@ values:
     network_config:
     - management_cidr: 192.168.0.0/24
     project: gcve-test-project
-    type: STANDARD
 
 counts:
   google_vmwareengine_network: 1
