@@ -78,7 +78,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone       = var.region
+  zone       = "${var.region}-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -100,7 +100,7 @@ module "nginx-template" {
 module "nginx-mig" {
   source            = "./fabric/modules/compute-mig"
   project_id        = var.project_id
-  location          = var.region
+  location          = "${var.region}-b"
   name              = "mig-test"
   target_size       = 3
   instance_template = module.nginx-template.template.self_link
@@ -324,7 +324,7 @@ module "nginx-mig" {
     data-1 = false
   }
 }
-# tftest modules=2 resources=2 fixtures=fixtures/attached-disks.tf inventory=mig-config.yaml e2e
+# tftest modules=2 resources=3 fixtures=fixtures/attached-disks.tf inventory=mig-config.yaml e2e
 ```
 
 ### Stateful MIGs - Instance Config
@@ -387,7 +387,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest modules=2 resources=3 fixtures=fixtures/attached-disks.tf  inventory=stateful.yaml e2e
+# tftest modules=2 resources=4 fixtures=fixtures/attached-disks.tf  inventory=stateful.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
