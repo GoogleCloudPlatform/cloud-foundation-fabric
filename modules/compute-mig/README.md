@@ -305,7 +305,7 @@ module "nginx-template" {
     source_type = "attach"
     name        = "data-1"
     size        = 10
-    source      = "test-data-1"
+    source      = google_compute_disk.test-disk.name
   }]
   create_template = true
   metadata = {
@@ -356,7 +356,7 @@ module "nginx-template" {
     source_type = "attach"
     name        = "data-1"
     size        = 10
-    source      = "test-data-1"
+    source      = google_compute_disk.test-disk.name
   }]
   create_template = true
   metadata = {
