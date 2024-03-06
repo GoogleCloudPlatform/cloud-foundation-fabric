@@ -1,5 +1,5 @@
 /** TO MOD
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ resource "google_sql_database_instance" "primary" {
   settings {
     tier                        = var.tier
     edition                     = var.edition
-    deletion_protection_enabled = var.deletion_protection_enabled
+    deletion_protection_enabled = var.gcp_deletion_protection
     disk_autoresize             = var.disk_size == null
     disk_autoresize_limit       = var.disk_autoresize_limit
     disk_size                   = var.disk_size
@@ -152,7 +152,7 @@ resource "google_sql_database_instance" "primary" {
       }
     }
   }
-  deletion_protection = var.deletion_protection
+  deletion_protection = var.terraform_deletion_protection
 }
 
 resource "google_sql_database_instance" "replicas" {
@@ -167,7 +167,7 @@ resource "google_sql_database_instance" "replicas" {
 
   settings {
     tier                        = var.tier
-    deletion_protection_enabled = var.deletion_protection_enabled
+    deletion_protection_enabled = var.gcp_deletion_protection
     disk_autoresize             = var.disk_size == null
     disk_size                   = var.disk_size
     disk_type                   = var.disk_type
@@ -205,7 +205,7 @@ resource "google_sql_database_instance" "replicas" {
       }
     }
   }
-  deletion_protection = var.deletion_protection
+  deletion_protection = var.terraform_deletion_protection
 }
 
 resource "google_sql_database" "databases" {
