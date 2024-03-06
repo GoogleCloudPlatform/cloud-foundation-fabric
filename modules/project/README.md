@@ -1096,8 +1096,8 @@ module "bucket" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [custom_role_id](outputs.tf#L22) | Map of custom role IDs created in the project. |  |
-| [custom_roles](outputs.tf#L17) | Map of custom roles resources created in the project. |  |
+| [custom_role_id](outputs.tf#L17) | Map of custom role IDs created in the project. |  |
+| [custom_roles](outputs.tf#L27) | Map of custom roles resources created in the project. |  |
 | [id](outputs.tf#L32) | Project id. |  |
 | [name](outputs.tf#L51) | Project name. |  |
 | [number](outputs.tf#L63) | Project number. |  |
