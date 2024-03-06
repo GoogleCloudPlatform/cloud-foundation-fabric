@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,5 +71,6 @@ module "cloudsql" {
       password = var.cloudsql_password
     }
   }
-  deletion_protection = false
+  terraform_deletion_protection = false
+  gcp_deletion_protection       = false
 }
