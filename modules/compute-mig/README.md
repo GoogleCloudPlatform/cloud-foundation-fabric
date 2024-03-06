@@ -17,6 +17,7 @@ Stateful disks can be created directly, as shown in the last example below.
   - [Stateful MIGs - Instance Config](#stateful-migs-instance-config)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Fixtures](#fixtures)
 <!-- END TOC -->
 
 ## Examples
@@ -34,7 +35,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -55,13 +56,13 @@ module "nginx-template" {
 
 module "nginx-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "my-project"
-  location          = "europe-west1-b"
+  project_id        = var.project_id
+  location          = "${var.region}-b"
   name              = "mig-test"
   target_size       = 2
   instance_template = module.nginx-template.template.self_link
 }
-# tftest modules=2 resources=2 inventory=simple.yaml
+# tftest modules=2 resources=2 inventory=simple.yaml e2e
 ```
 
 ### Multiple Versions
@@ -77,7 +78,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -98,8 +99,8 @@ module "nginx-template" {
 
 module "nginx-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "my-project"
-  location          = "europe-west1-b"
+  project_id        = var.project_id
+  location          = "${var.region}-b"
   name              = "mig-test"
   target_size       = 3
   instance_template = module.nginx-template.template.self_link
@@ -112,7 +113,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest modules=2 resources=2
+# tftest modules=2 resources=2 inventory=multiple.yaml e2e
 ```
 
 ### Health Check and Autohealing Policies
@@ -128,7 +129,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link,
@@ -149,8 +150,8 @@ module "nginx-template" {
 
 module "nginx-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "my-project"
-  location          = "europe-west1-b"
+  project_id        = var.project_id
+  location          = "${var.region}-b"
   name              = "mig-test"
   target_size       = 3
   instance_template = module.nginx-template.template.self_link
@@ -164,7 +165,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest modules=2 resources=3 inventory=health-check.yaml
+# tftest modules=2 resources=3 inventory=health-check.yaml e2e
 ```
 
 ### Autoscaling
@@ -180,7 +181,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -201,8 +202,8 @@ module "nginx-template" {
 
 module "nginx-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "my-project"
-  location          = "europe-west1-b"
+  project_id        = var.project_id
+  location          = "${var.region}-b"
   name              = "mig-test"
   target_size       = 3
   instance_template = module.nginx-template.template.self_link
@@ -217,7 +218,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest modules=2 resources=3 inventory=autoscaling.yaml
+# tftest modules=2 resources=3 inventory=autoscaling.yaml e2e
 ```
 
 ### Update Policy
@@ -231,7 +232,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone       = "europe-west1-b"
+  zone       = "${var.region}-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -252,8 +253,8 @@ module "nginx-template" {
 
 module "nginx-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "my-project"
-  location          = "europe-west1-b"
+  project_id        = var.project_id
+  location          = "${var.region}-b"
   name              = "mig-test"
   target_size       = 3
   instance_template = module.nginx-template.template.self_link
@@ -266,7 +267,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest modules=2 resources=2
+# tftest modules=2 resources=2 inventory=policy.yaml e2e
 ```
 
 ### Stateful MIGs - MIG Config
@@ -286,9 +287,9 @@ module "cos-nginx" {
 
 module "nginx-template" {
   source        = "./fabric/modules/compute-vm"
-  project_id    = "my-prj"
+  project_id    = var.project_id
   name          = "nginx-template"
-  zone          = "europe-west8-b"
+  zone          = "${var.region}-b"
   tags          = ["http-server", "ssh"]
   instance_type = "e2-small"
   network_interfaces = [{
@@ -304,7 +305,7 @@ module "nginx-template" {
     source_type = "attach"
     name        = "data-1"
     size        = 10
-    source      = "test-data-1"
+    source      = google_compute_disk.test-disk.name
   }]
   create_template = true
   metadata = {
@@ -314,8 +315,8 @@ module "nginx-template" {
 
 module "nginx-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "my-prj"
-  location          = "europe-west8-b"
+  project_id        = var.project_id
+  location          = "${var.region}-b"
   name              = "mig-test-2"
   target_size       = 1
   instance_template = module.nginx-template.template.self_link
@@ -323,7 +324,7 @@ module "nginx-mig" {
     data-1 = false
   }
 }
-# tftest modules=2 resources=2
+# tftest modules=2 resources=3 fixtures=fixtures/attached-disks.tf inventory=mig-config.yaml e2e
 ```
 
 ### Stateful MIGs - Instance Config
@@ -337,9 +338,9 @@ module "cos-nginx" {
 
 module "nginx-template" {
   source        = "./fabric/modules/compute-vm"
-  project_id    = "my-prj"
+  project_id    = var.project_id
   name          = "nginx-template"
-  zone          = "europe-west8-b"
+  zone          = "${var.region}-b"
   tags          = ["http-server", "ssh"]
   instance_type = "e2-small"
   network_interfaces = [{
@@ -355,7 +356,7 @@ module "nginx-template" {
     source_type = "attach"
     name        = "data-1"
     size        = 10
-    source      = "test-data-1"
+    source      = google_compute_disk.test-disk.name
   }]
   create_template = true
   metadata = {
@@ -365,8 +366,8 @@ module "nginx-template" {
 
 module "nginx-mig" {
   source            = "./fabric/modules/compute-mig"
-  project_id        = "my-prj"
-  location          = "europe-west8-b"
+  project_id        = var.project_id
+  location          = "${var.region}-b"
   name              = "mig-test"
   instance_template = module.nginx-template.template.self_link
   stateful_config = {
@@ -376,7 +377,7 @@ module "nginx-mig" {
       preserved_state = {
         disks = {
           data-1 = {
-            source = "projects/my-prj/zones/europe-west8-b/disks/test-data-1"
+            source = google_compute_disk.test-disk.id
           }
         }
         metadata = {
@@ -386,7 +387,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest modules=2 resources=3 inventory=stateful.yaml
+# tftest modules=2 resources=4 fixtures=fixtures/attached-disks.tf  inventory=stateful.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -421,4 +422,8 @@ module "nginx-mig" {
 | [group_manager](outputs.tf#L26) | Instance group resource. |  |
 | [health_check](outputs.tf#L35) | Auto-created health-check resource. |  |
 | [id](outputs.tf#L44) | Fully qualified group manager id. |  |
+
+## Fixtures
+
+- [attached-disks.tf](../../tests/fixtures/attached-disks.tf)
 <!-- END TFDOC -->
