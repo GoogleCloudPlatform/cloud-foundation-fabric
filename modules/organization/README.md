@@ -24,6 +24,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
 - [Custom Roles](#custom-roles)
+  - [Custom Roles Factory](#custom-roles-factory)
 - [Tags](#tags)
 - [Files](#files)
 - [Variables](#variables)
@@ -387,6 +388,8 @@ module "org" {
 }
 # tftest modules=1 resources=2 inventory=roles.yaml e2e serial
 ```
+
+### Custom Roles Factory
 
 Custom roles can also be specified via a factory in a similar way to organization policies and policy constraints. Each file is mapped to a custom role, where
 
