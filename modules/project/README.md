@@ -20,6 +20,8 @@ This module implements the creation and management of one GCP project including 
 - [Cloud KMS Encryption Keys](#cloud-kms-encryption-keys)
 - [Attaching Tags](#attaching-tags)
 - [Project-scoped Tags](#project-scoped-tags)
+- [Custom Roles](#custom-roles)
+  - [Custom Roles Factory](#custom-roles-factory)
 - [Outputs](#outputs)
   - [Managing project related configuration without creating it](#managing-project-related-configuration-without-creating-it)
 - [Files](#files)
@@ -738,6 +740,63 @@ module "project" {
 # tftest modules=1 resources=8
 ```
 
+## Custom Roles
+
+Custom roles can be defined via the `custom_roles` variable, and referenced via the `custom_role_id` output (this also provides explicit dependency on the custom role):
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project"
+  custom_roles = {
+    "myRole" = [
+      "compute.instances.list",
+    ]
+  }
+  iam = {
+    (module.project.custom_role_id.myRole) = ["group:${var.group_email}"]
+  }
+}
+# tftest modules=1 resources=3
+```
+
+### Custom Roles Factory
+
+Custom roles can also be specified via a factory in a similar way to organization policies and policy constraints. Each file is mapped to a custom role, where
+
+- the role name defaults to the file name but can be overridden via a `name` attribute in the yaml
+- role permissions are defined in an `includedPermissions` map
+
+Custom roles defined via the variable are merged with those coming from the factory, and override them in case of duplicate names.
+
+```hcl
+module "project" {
+  source = "./fabric/modules/project"
+  name   = "project"
+  factories_config = {
+    custom_roles = "data/custom_roles"
+  }
+}
+# tftest modules=1 resources=3 files=custom-role-1,custom-role-2
+```
+
+```yaml
+# tftest-file id=custom-role-1 path=data/custom_roles/test_1.yaml
+
+includedPermissions:
+ - compute.globalOperations.get
+```
+
+```yaml
+# tftest-file id=custom-role-2 path=data/custom_roles/test_2.yaml
+
+name: projectViewer
+includedPermissions:
+  - resourcemanager.projects.get
+  - resourcemanager.projects.getIamPolicy
+  - resourcemanager.projects.list
+```
+
 ## Outputs
 
 Most of this module's outputs depend on its resources, to allow Terraform to compute all dependencies required for the project to be correctly configured. This allows you to reference outputs like `project_id` in other modules or resources without having to worry about setting `depends_on` blocks manually.
@@ -1037,14 +1096,15 @@ module "bucket" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [custom_role_ids](outputs.tf#L17) | Map of custom role IDs created in the project. |  |
-| [id](outputs.tf#L27) | Project id. |  |
-| [name](outputs.tf#L46) | Project name. |  |
-| [number](outputs.tf#L58) | Project number. |  |
-| [project_id](outputs.tf#L77) | Project id. |  |
-| [service_accounts](outputs.tf#L96) | Product robot service accounts in project. |  |
-| [services](outputs.tf#L112) | Service APIs to enabled in the project. |  |
-| [sink_writer_identities](outputs.tf#L121) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L128) | Tag key resources. |  |
-| [tag_values](outputs.tf#L137) | Tag value resources. |  |
+| [custom_role_id](outputs.tf#L22) | Map of custom role IDs created in the project. |  |
+| [custom_roles](outputs.tf#L17) | Map of custom roles resources created in the project. |  |
+| [id](outputs.tf#L32) | Project id. |  |
+| [name](outputs.tf#L51) | Project name. |  |
+| [number](outputs.tf#L63) | Project number. |  |
+| [project_id](outputs.tf#L82) | Project id. |  |
+| [service_accounts](outputs.tf#L101) | Product robot service accounts in project. |  |
+| [services](outputs.tf#L117) | Service APIs to enabled in the project. |  |
+| [sink_writer_identities](outputs.tf#L126) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L133) | Tag key resources. |  |
+| [tag_values](outputs.tf#L142) | Tag value resources. |  |
 <!-- END TFDOC -->

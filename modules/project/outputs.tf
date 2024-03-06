@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-output "custom_role_ids" {
+output "custom_roles" {
+  description = "Map of custom roles resources created in the project."
+  value       = google_project_iam_custom_role.roles
+}
+
+output "custom_role_id" {
   description = "Map of custom role IDs created in the project."
   value = {
     for k, v in google_project_iam_custom_role.roles :
