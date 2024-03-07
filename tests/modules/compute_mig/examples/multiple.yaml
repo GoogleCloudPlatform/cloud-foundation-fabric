@@ -26,39 +26,22 @@ values:
     stateful_external_ip: []
     stateful_internal_ip: []
     target_pools: null
+    target_size: 3
     timeouts: null
     version:
     - name: default
       target_size: []
+    - name: canary
+      target_size:
+      - fixed: 1
+        percent: null
     wait_for_instances: false
     wait_for_instances_status: STABLE
     zone: europe-west8-b
-  module.nginx-mig.google_compute_per_instance_config.default["instance-1"]:
-    instance_group_manager: mig-test
-    minimal_action: NONE
-    most_disruptive_allowed_action: REPLACE
-    name: instance-1
-    preserved_state:
-    - disk:
-      - delete_rule: NEVER
-        device_name: data-1
-        mode: READ_WRITE
-      external_ip: []
-      internal_ip: []
-      metadata:
-        foo: bar
-    project: project-id
-    remove_instance_on_destroy: false
-    remove_instance_state_on_destroy: false
-    timeouts: null
-    zone: europe-west8-b
-
 
 counts:
-  google_compute_disk: 1
   google_compute_instance_group_manager: 1
   google_compute_instance_template: 1
-  google_compute_per_instance_config: 1
   modules: 2
-  resources: 4
+  resources: 2
 

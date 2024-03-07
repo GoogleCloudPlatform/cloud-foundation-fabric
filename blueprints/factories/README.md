@@ -41,39 +41,36 @@ The second factory type is implemented as a standalone module that internally re
 ### Module-level factory interfaces
 
 - **BigQuery Analicts Hub rules**
-  - `analytics-hub`
+  - [`analytics-hub`](../../modules/analytics-hub/README.md#factory)
 - **billing budgets**
-  - `billing-account`
+  - [`billing-account`](../../modules/billing-account/README.md#budget-factory)
 - **Data Catalog tags**
-  - `data-catalog-tag`
+  - [`data-catalog-tag`](../../modules/data-catalog-tag/README.md#factory)
 - **Data Catalog tag templates**
-  - `data-catalog-tag-template`
+  - [`data-catalog-tag-template`](../../modules/data-catalog-tag-template/README.md#factory)
 - **Dataplex Datascan rules**
-  - `dataplex-datascan`
-- **firewall policy rules**
-  - `net-firewall-policy`
-- **hierarchical firewall policies**
-  - `folder`
-  - `project`
+  - [`dataplex-datascan`](../../modules/dataplex-datascan/README.md)
+- **firewall policy**
+  - [`net-firewall-policy`](../../modules/net-firewall-policy/README.md#factory)
 - **IAM custom roles**
-  - `organization`
-  - `project`
+  - [`organization`](../../modules/organization/README.md#custom-roles-factory)
+  - [`project`](../../modules/project/README.md#custom-roles-factory)
 - **organization policies**
-  - `organization`
-  - `folder`
-  - `project`
+  - [`organization`](../../modules/organization/README.md#organization-policy-factory)
+  - [`folder`](../../modules/folder/README.md#organization-policy-factory)
+  - [`project`](../../modules/project/README.md#organization-policy-factory)
 - **organization policy custom constraints**
-  - `organization`
+  - [`organization`](../../modules/organization/README.md#organization-policy-custom-constraints-factory)
 - **DNS response policy rules**
-  - `dns-response-policy`
+  - [`dns-response-policy`](../../modules/dns-response-policy/README.md#define-policy-rules-via-a-factory-file)
 - **VPC firewall rules**
-  - `net-vpc-firewall`
+  - [`net-vpc-firewall`](../../modules/net-vpc-firewall/README.md#rules-factory)
 - **VPC subnets**
-  - `net-vpc`
+  - [`net-vpc`](../../modules/net-vpc/README.md#subnet-factory)
 - **VPC-SC access levels and policies**
-  - `vpc-sc`
+  - [`vpc-sc`](../../modules/vpc-sc/README.md#factories)
 
 ### Standalone factories
 
 - **projects**
-  - `project-factory`
+  - [`project-factory`](../../modules/project-factory/)
