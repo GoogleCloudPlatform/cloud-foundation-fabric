@@ -10,7 +10,7 @@
 This repository provides **end-to-end blueprints** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
 
 - organization-wide [landing zone blueprint](fast/) used to bootstrap real-world cloud foundations
-- reference [blueprints](./blueprints/) used to deep dive on network patterns or product features
+- reference [blueprints](./blueprints/) used to deep dive into network patterns or product features
 - a comprehensive source of lean [modules](./modules/) that lend themselves well to changes
 
 The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [contributing guide](./CONTRIBUTING.md), and a comparison against similar toolkits [here](./FABRIC-AND-CFT.md).
@@ -21,7 +21,7 @@ Setting up a production-ready GCP organization is often a time-consuming process
 
 ## Modules
 
-The suite of modules in this repository are designed for rapid composition and reuse, and to be reasonably simple and readable so that they can be forked and changed where use of third party code and sources is not allowed.
+The suite of modules in this repository is designed for rapid composition and reuse, and to be reasonably simple and readable so that they can be forked and changed where the use of third-party code and sources is not allowed.
 
 All modules share a similar interface where each module tries to stay close to the underlying provider resources, support IAM together with resource creation and modification, offer the option of creating multiple resources where it makes sense (eg not for projects), and be completely free of side-effects (eg no external commands).
 
@@ -42,4 +42,4 @@ For more information and usage examples see each module's README file.
 
 ## End-to-end blueprints
 
-The [blueprints](./blueprints/) in this repository are split in several main sections: **[networking blueprints](./blueprints/networking/)** that implement core patterns or features, **[data solutions blueprints](./blueprints/data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations blueprints](./blueprints/cloud-operations/)** that leverage specific products to meet specific operational needs and **[factories](./blueprints/factories/)** that implement resource factories for the repetitive creation of specific resources, and finally **[GKE](./blueprints/gke)**, **[serverless](./blueprints/serverless)**, and **[third-party solutions](./blueprints/third-party-solutions/)** design blueprints.
+The [blueprints](./blueprints/) in this repository are split into several main sections: **[networking blueprints](./blueprints/networking/)** that implement core patterns or features, **[data solutions blueprints](./blueprints/data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations blueprints](./blueprints/cloud-operations/)** that leverage specific products to meet specific operational needs, and **[factories](./blueprints/factories/)** that implement resource factories for the repetitive creation of specific resources, and finally **[GKE](./blueprints/gke)**, **[serverless](./blueprints/serverless)**, and **[third-party solutions](./blueprints/third-party-solutions/)** design blueprints.
