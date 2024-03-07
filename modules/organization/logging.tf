@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,13 @@ locals {
       name => sink if sink.iam && sink.type == type
     }
   }
+}
+
+resource "google_logging_organization_settings" "default" {
+  count                = var.logging_settings != null ? 1 : 0
+  organization         = local.organization_id_numeric
+  disable_default_sink = var.logging_settings.disable_default_sink
+  storage_location     = var.logging_settings.storage_location
 }
 
 resource "google_organization_iam_audit_config" "default" {

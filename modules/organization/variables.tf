@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,16 @@ variable "logging_exclusions" {
   type        = map(string)
   default     = {}
   nullable    = false
+}
+
+variable "logging_settings" {
+  description = "Default settings for logging resources."
+  type = object({
+    # TODO: add support for CMEK
+    disable_default_sink = optional(bool)
+    storage_location     = optional(string)
+  })
+  default = null
 }
 
 variable "logging_sinks" {
