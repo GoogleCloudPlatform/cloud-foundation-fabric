@@ -60,8 +60,8 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   local_file: 7
-  modules: 15
-  resources: 182
+  modules: 16
+  resources: 183
 
 outputs:
   custom_roles:
