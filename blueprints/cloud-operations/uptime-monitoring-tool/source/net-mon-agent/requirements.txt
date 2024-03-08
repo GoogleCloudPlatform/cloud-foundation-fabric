@@ -1,0 +1,4 @@
+google-api-core
+google-cloud-monitoring
+requests
+click
