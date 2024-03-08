@@ -16,12 +16,8 @@
 
 # tfdoc:file:description Cloud Dataproc resource definition.
 
-locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-}
-
 resource "google_dataproc_cluster" "cluster" {
-  name                          = "${local.prefix}${var.name}"
+  name                          = var.name
   project                       = var.project_id
   region                        = var.region
   graceful_decommission_timeout = var.dataproc_config.graceful_decommission_timeout
