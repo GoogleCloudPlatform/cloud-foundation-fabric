@@ -131,6 +131,11 @@ import {
 }
 
 module "organization-logging" {
+  # Preconfigure organization-wide logging settings to ensure project
+  # log buckets (_Default, _Required) are created in the locations
+  # specified by `var.locations.logging`. This separate
+  # organization-block prevents circular dependencies with later
+  # project creation.
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
   logging_settings = {
