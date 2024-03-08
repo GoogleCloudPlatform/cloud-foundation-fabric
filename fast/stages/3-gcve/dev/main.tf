@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description GKE multitenant for development environment.
+# tfdoc:file:description GCVE private cloud for development environment.
 
 module "gcve-pc" {
   source              = "../../../../blueprints/gcve/single-region-pc"
@@ -30,16 +30,8 @@ module "gcve-pc" {
   project_services    = var.project_services
 
   vmw_network_peerings = {
-    prod-landing = {
-      peer_network                        = var.vpc_self_links.prod-landing
-      export_custom_routes                = false
-      export_custom_routes_with_public_ip = false
-      import_custom_routes                = false
-      import_custom_routes_with_public_ip = false
-      peer_to_vmware_engine_network       = false
-    }
-    prod-spoke = {
-      peer_network                        = var.vpc_self_links.prod-spoke-0
+    dev-spoke = {
+      peer_network                        = var.vpc_self_links.dev-spoke-0
       export_custom_routes                = false
       export_custom_routes_with_public_ip = false
       import_custom_routes                = false

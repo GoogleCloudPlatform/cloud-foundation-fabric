@@ -45,11 +45,15 @@ variable "folder_ids" {
 
 variable "groups_gcve" {
   description = "GCVE groups."
-  type        = map(string)
+  type = object({
+    gcp-gcve-admin   = string
+    gcp-gcve-viewers = string
+  })
   default = {
-    gcp-gcve-admin   = "gcp-gcve-admin-prd"
-    gcp-gcve-viewers = "gcp-gcve-viewers-prd"
+    gcp-gcve-admin   = "gcp-gcve-admin"
+    gcp-gcve-viewers = "gcp-gcve-viewers"
   }
+  nullable = false
 }
 
 variable "group_iam" {

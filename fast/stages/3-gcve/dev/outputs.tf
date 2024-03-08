@@ -30,11 +30,10 @@
 
 locals {
   tfvars = {
-    clusters = module.gke-multitenant.cluster_ids
     project_ids = {
       gcve-dev = module.gcve-pc.project_id
     }
-    vmw_engine_network_config   = module.gke-multitenant.vmw_engine_network_config
+    vmw_engine_network_config   = module.gcve-pc.vmw_engine_network_config
     vmw_engine_network_peerings = module.gcve-pc.vmw_engine_network_peerings
     vmw_engine_private_clouds   = module.gcve-pc.vmw_engine_private_clouds
   }

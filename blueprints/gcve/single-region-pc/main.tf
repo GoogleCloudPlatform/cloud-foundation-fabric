@@ -16,15 +16,6 @@
 
 # tfdoc:file:description Project.
 
-locals {
-  groups = {
-    for k, v in var.groups_gcve : k => "${v}@${var.organization_domain}"
-  }
-  groups_iam = {
-    for k, v in local.groups : k => "group:${v}"
-  }
-}
-
 module "gcve-project-0" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
@@ -32,8 +23,11 @@ module "gcve-project-0" {
   parent          = var.folder_id
   prefix          = var.prefix
   group_iam = merge(var.group_iam, {
-    "roles/gkehub.serviceAgent" = [ ##
-      local.groups_iam.gcp-gcve-admins
+    "roles/vmwareengine.vmwareengineAdmin" = [
+      "group:${var.groups_gcve.gcp-gcve-admin}@${var.organization_domain}"
+    ],
+    "roles/vmwareengine.vmwareengineViewer" = [
+      "group:${var.groups_gcve.gcp-gcve-viewers}@${var.organization_domain}"
     ] }
   )
   labels = var.labels

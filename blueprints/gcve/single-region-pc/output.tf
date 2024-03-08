@@ -16,7 +16,7 @@
 
 output "project_id" {
   description = "GKE project id."
-  value       = module.gke-project-0.project_id
+  value       = module.gcve-project-0.project_id
 }
 
 output "vmw_engine_network_config" {
