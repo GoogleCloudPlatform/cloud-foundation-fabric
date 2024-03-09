@@ -83,7 +83,7 @@ module "processing-dp-cluster" {
     module.dataproc-service-account, # ensure all grants are done before creating the cluster
   ]
 }
-# tftest modules=3 resources=7
+# tftest modules=3 resources=7 e2e
 ```
 
 ### Cluster configuration on GCE with CMEK encryption
@@ -137,7 +137,7 @@ module "processing-dp-cluster" {
     module.dataproc-service-account, # ensure all grants are done before creating the cluster
   ]
 }
-# tftest modules=3 resources=8
+# tftest modules=3 resources=8 e2e
 ```
 
 ### Cluster configuration on GKE

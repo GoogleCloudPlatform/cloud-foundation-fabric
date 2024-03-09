@@ -78,11 +78,12 @@ resource "google_compute_network" "network" {
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
-  ip_cidr_range = "10.0.16.0/24"
-  name          = "e2e-test-1"
-  network       = google_compute_network.network.name
-  project       = google_project.project.project_id
-  region        = var.region
+  ip_cidr_range            = "10.0.16.0/24"
+  name                     = "e2e-test-1"
+  network                  = google_compute_network.network.name
+  project                  = google_project.project.project_id
+  private_ip_google_access = true
+  region                   = var.region
   secondary_ip_range {
     range_name    = "pods"
     ip_cidr_range = "100.68.0.0/16"
