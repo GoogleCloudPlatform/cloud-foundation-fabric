@@ -118,7 +118,7 @@ resource "google_compute_router_peer" "default" {
   }
 
   dynamic "md5_authentication_key" {
-    for_each = each.value.bgp_peer.md5_authentication_key != null ? toset([each.value.bgp_peer.md5_authentication_key]) : []
+    for_each = each.value.bgp_peer.md5_authentication_key != null ? [each.value.bgp_peer.md5_authentication_key] : []
     content {
       name = md5_authentication_key.value.name
       key  = md5_authentication_key.value.key

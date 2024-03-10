@@ -118,7 +118,7 @@ resource "google_compute_router_peer" "bgp_peer" {
     }
   }
   dynamic "bfd" {
-    for_each = each.value.bgp_peer.bfd != null ? toset([each.value.bgp_peer.bfd]) : []
+    for_each = each.value.bgp_peer.bfd != null ? [each.value.bgp_peer.bfd] : []
     content {
       session_initialization_mode = bfd.value.session_initialization_mode
       min_receive_interval        = bfd.value.min_receive_interval

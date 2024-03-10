@@ -144,7 +144,7 @@ resource "google_compute_router_peer" "default" {
   }
 
   dynamic "md5_authentication_key" {
-    for_each = var.router_config.md5_authentication_key != null ? toset([var.router_config.md5_authentication_key]) : []
+    for_each = var.router_config.md5_authentication_key != null ? [var.router_config.md5_authentication_key] : []
     content {
       name = md5_authentication_key.value.name
       key  = md5_authentication_key.value.key
