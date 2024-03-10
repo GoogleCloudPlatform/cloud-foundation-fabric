@@ -82,6 +82,10 @@ variable "tunnels" {
         all_peer_vpc_subnets = bool
         ip_ranges            = map(string)
       }))
+      md5_authentication_key = optional(object({
+        name = string
+        key  = string
+      }))
       ipv6 = optional(object({
         nexthop_address      = optional(string)
         peer_nexthop_address = optional(string)

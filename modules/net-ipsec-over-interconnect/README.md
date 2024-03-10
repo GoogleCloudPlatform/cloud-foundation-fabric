@@ -64,6 +64,7 @@ module "vpngw-a" {
       bgp_peer = {
         address = "169.254.1.2"
         asn     = 64514
+        # MD5 Authentication is optional
         md5_authentication_key = {
           name = "foo"
           key  = "bar"

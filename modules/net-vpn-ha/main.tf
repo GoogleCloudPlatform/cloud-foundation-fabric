@@ -117,6 +117,13 @@ resource "google_compute_router_peer" "bgp_peer" {
       description = range.value
     }
   }
+  dynamic "md5_authentication_key" {
+    for_each = each.value.bgp_peer.md5_authentication_key != null ? toset([each.value.bgp_peer.md5_authentication_key]) : []
+    content {
+      name = md5_authentication_key.value.name
+      key  = md5_authentication_key.value.key
+    }
+  }
   enable_ipv6               = try(each.value.bgp_peer.ipv6, null) == null ? false : true
   interface                 = google_compute_router_interface.router_interface[each.key].name
   ipv6_nexthop_address      = try(each.value.bgp_peer.ipv6.nexthop_address, null)
