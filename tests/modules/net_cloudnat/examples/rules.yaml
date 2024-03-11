@@ -17,22 +17,22 @@ values:
     address_type: EXTERNAL
     name: a1
     project: project-id
-    region: europe-west1
+    region: europe-west8
   module.addresses.google_compute_address.external["a2"]:
     address_type: EXTERNAL
     name: a2
     project: project-id
-    region: europe-west1
+    region: europe-west8
   module.addresses.google_compute_address.external["a3"]:
     address_type: EXTERNAL
     name: a3
     project: project-id
-    region: europe-west1
+    region: europe-west8
   module.nat.google_compute_router.router[0]:
     name: nat-nat
     network: "projects/xxx/global/networks/aaa"
     project: project-id
-    region: europe-west1
+    region: europe-west8
   module.nat.google_compute_router_nat.nat:
     enable_dynamic_port_allocation: false
     enable_endpoint_independent_mapping: false
@@ -40,7 +40,7 @@ values:
     name: nat
     nat_ip_allocate_option: MANUAL_ONLY
     project: project-id
-    region: europe-west1
+    region: europe-west8
     router: nat-nat
     rules:
     - action:
