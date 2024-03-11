@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ module "branch-teams-team-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-teams-team-sa[each.key].iam_email]
     "roles/compute.xpnAdmin"               = [module.branch-teams-team-sa[each.key].iam_email]
   }
-  group_iam = each.value.group_iam == null ? {} : each.value.group_iam
+  iam_by_principals = each.value.iam_by_principals
 }
 
 module "branch-teams-team-sa" {
@@ -88,11 +88,7 @@ module "branch-teams-team-sa" {
   display_name = "Terraform team ${each.key} service account."
   prefix       = var.prefix
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = (
-      each.value.impersonation_groups == null
-      ? []
-      : [for g in each.value.impersonation_groups : "group:${g}"]
-    )
+    "roles/iam.serviceAccountTokenCreator" = each.value.impersonation_principals
   }
 }
 
@@ -118,8 +114,6 @@ module "branch-teams-team-dev-folder" {
   parent   = module.branch-teams-team-folder[each.key].id
   # naming: environment descriptive name
   name = "Development"
-  # environment-wide human permissions on the whole teams environment
-  group_iam = {}
   iam = {
     (local.custom_roles.service_project_network_admin) = (
       local.branch_optional_sa_lists.pf-dev
@@ -143,8 +137,6 @@ module "branch-teams-team-prod-folder" {
   parent   = module.branch-teams-team-folder[each.key].id
   # naming: environment descriptive name
   name = "Production"
-  # environment-wide human permissions on the whole teams environment
-  group_iam = {}
   iam = {
     (local.custom_roles.service_project_network_admin) = (
       local.branch_optional_sa_lists.pf-prod

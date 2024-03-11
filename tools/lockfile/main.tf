@@ -15,7 +15,7 @@
 data "archive_file" "bundle" {}
 resource "azuread_user" "default" {}
 resource "azurerm_resource_group" "default" {}
-resource "github_branch" "default" {}
+resource "github_branch" "default" { provider = github }
 resource "google_service_account" "sa1" {}
 resource "google_service_account" "sa2" { provider = google-beta }
 resource "local_file" "default" {}

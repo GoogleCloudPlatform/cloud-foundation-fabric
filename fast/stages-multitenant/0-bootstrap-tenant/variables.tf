@@ -30,8 +30,8 @@ variable "automation" {
       issuer           = string
       issuer_uri       = string
       name             = string
-      principal_tpl    = string
-      principalset_tpl = string
+      principal_branch = string
+      principal_repo   = string
     }))
   })
 }
@@ -130,23 +130,17 @@ variable "federated_identity_providers" {
   nullable = false
 }
 
-variable "group_iam" {
-  description = "Tenant-level custom group IAM settings in group => [roles] format."
-  type        = map(list(string))
-  default     = {}
-}
-
 variable "groups" {
   # tfdoc:variable:source 0-bootstrap
   # https://cloud.google.com/docs/enterprise/setup-checklist
-  description = "Group names or emails to grant organization-level permissions. If just the name is provided, the default organization domain is assumed."
+  description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
   type = object({
-    gcp-devops          = optional(string)
-    gcp-network-admins  = optional(string)
-    gcp-security-admins = optional(string)
+    gcp-devops          = optional(string, "gcp-devops")
+    gcp-network-admins  = optional(string, "gcp-network-admins")
+    gcp-security-admins = optional(string, "gcp-security-admins")
   })
-  default  = {}
   nullable = false
+  default  = {}
 }
 
 variable "iam" {
@@ -168,6 +162,13 @@ variable "iam_bindings_additive" {
   }))
   nullable = false
   default  = {}
+}
+
+variable "iam_by_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "locations" {

@@ -27,11 +27,10 @@ module "branch-dp-folder" {
 }
 
 module "branch-dp-dev-folder" {
-  source    = "../../../modules/folder"
-  count     = var.fast_features.data_platform ? 1 : 0
-  parent    = module.branch-dp-folder.0.id
-  name      = "Development"
-  group_iam = {}
+  source = "../../../modules/folder"
+  count  = var.fast_features.data_platform ? 1 : 0
+  parent = module.branch-dp-folder.0.id
+  name   = "Development"
   iam = {
     (local.custom_roles.service_project_network_admin) = [
       local.automation_sas_iam.dp-dev
@@ -48,11 +47,10 @@ module "branch-dp-dev-folder" {
 }
 
 module "branch-dp-prod-folder" {
-  source    = "../../../modules/folder"
-  count     = var.fast_features.data_platform ? 1 : 0
-  parent    = module.branch-dp-folder.0.id
-  name      = "Production"
-  group_iam = {}
+  source = "../../../modules/folder"
+  count  = var.fast_features.data_platform ? 1 : 0
+  parent = module.branch-dp-folder.0.id
+  name   = "Production"
   iam = {
     (local.custom_roles.service_project_network_admin) = [
       local.automation_sas_iam.dp-prod

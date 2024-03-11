@@ -1,5 +1,5 @@
 /** TO MOD
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ resource "google_sql_database_instance" "primary" {
   settings {
     tier                        = var.tier
     edition                     = var.edition
-    deletion_protection_enabled = var.deletion_protection_enabled
+    deletion_protection_enabled = var.gcp_deletion_protection
     disk_autoresize             = var.disk_size == null
     disk_autoresize_limit       = var.disk_autoresize_limit
     disk_size                   = var.disk_size
@@ -66,12 +66,14 @@ resource "google_sql_database_instance" "primary" {
     activation_policy           = var.activation_policy
     collation                   = var.collation
     connector_enforcement       = var.connector_enforcement
+    time_zone                   = var.time_zone
 
     ip_configuration {
       ipv4_enabled       = var.network_config.connectivity.public_ipv4
       private_network    = try(var.network_config.connectivity.psa_config.private_network, null)
       allocated_ip_range = try(var.network_config.connectivity.psa_config.allocated_ip_ranges.primary, null)
-      require_ssl        = var.network_config.require_ssl
+      require_ssl        = var.ssl.require_ssl
+      ssl_mode           = var.ssl.ssl_mode
       dynamic "authorized_networks" {
         for_each = var.network_config.authorized_networks != null ? var.network_config.authorized_networks : {}
         iterator = network
@@ -121,6 +123,15 @@ resource "google_sql_database_instance" "primary" {
       }
     }
 
+    dynamic "deny_maintenance_period" {
+      for_each = var.maintenance_config.deny_maintenance_period != null ? [1] : []
+      content {
+        start_date = var.maintenance_config.deny_maintenance_period.start_date
+        end_date   = var.maintenance_config.deny_maintenance_period.end_date
+        time       = var.maintenance_config.deny_maintenance_period.start_time
+      }
+    }
+
     dynamic "insights_config" {
       for_each = var.insights_config != null ? [1] : []
       content {
@@ -131,8 +142,17 @@ resource "google_sql_database_instance" "primary" {
         query_plans_per_minute  = var.insights_config.query_plans_per_minute
       }
     }
+
+    dynamic "maintenance_window" {
+      for_each = var.maintenance_config.maintenance_window != null ? [""] : []
+      content {
+        day          = var.maintenance_config.maintenance_window.day
+        hour         = var.maintenance_config.maintenance_window.hour
+        update_track = var.maintenance_config.maintenance_window.update_track
+      }
+    }
   }
-  deletion_protection = var.deletion_protection
+  deletion_protection = var.terraform_deletion_protection
 }
 
 resource "google_sql_database_instance" "replicas" {
@@ -147,7 +167,7 @@ resource "google_sql_database_instance" "replicas" {
 
   settings {
     tier                        = var.tier
-    deletion_protection_enabled = var.deletion_protection_enabled
+    deletion_protection_enabled = var.gcp_deletion_protection
     disk_autoresize             = var.disk_size == null
     disk_size                   = var.disk_size
     disk_type                   = var.disk_type
@@ -185,7 +205,7 @@ resource "google_sql_database_instance" "replicas" {
       }
     }
   }
-  deletion_protection = var.deletion_protection
+  deletion_protection = var.terraform_deletion_protection
 }
 
 resource "google_sql_database" "databases" {
@@ -205,7 +225,6 @@ resource "random_password" "passwords" {
   special = true
 }
 
-
 resource "google_sql_user" "users" {
   for_each = local.users
   project  = var.project_id
@@ -216,8 +235,13 @@ resource "google_sql_user" "users" {
   type     = each.value.type
 }
 
-resource "google_sql_ssl_cert" "postgres_client_certificates" {
-  for_each    = var.postgres_client_certificates != null ? toset(var.postgres_client_certificates) : toset([])
+moved {
+  from = google_sql_ssl_cert.postgres_client_certificates
+  to   = google_sql_ssl_cert.client_certificates
+}
+
+resource "google_sql_ssl_cert" "client_certificates" {
+  for_each    = var.ssl.client_certificates != null ? toset(var.ssl.client_certificates) : toset([])
   provider    = google-beta
   project     = var.project_id
   instance    = google_sql_database_instance.primary.name

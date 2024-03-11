@@ -29,12 +29,16 @@ locals {
           local.cicd_providers[v["identity_provider"]].name, ""
         )
         outputs_bucket = module.automation-tf-output-gcs.name
-        service_account = try(
-          module.automation-tf-cicd-sa[k].email, ""
-        )
-        stage_name        = k
-        tf_providers_file = local.cicd_workflow_providers[k]
-        tf_var_files      = local.cicd_workflow_var_files[k]
+        service_accounts = {
+          apply = try(module.automation-tf-cicd-sa[k].email, "")
+          plan  = try(module.automation-tf-cicd-r-sa[k].email, "")
+        }
+        stage_name = k
+        tf_providers_files = {
+          apply = local.cicd_workflow_providers[k]
+          plan  = local.cicd_workflow_providers["${k}_r"]
+        }
+        tf_var_files = local.cicd_workflow_var_files[k]
       }
     )
   }
@@ -45,11 +49,23 @@ locals {
       name          = "bootstrap"
       sa            = module.automation-tf-bootstrap-sa.email
     })
+    "0-bootstrap-r" = templatefile(local._tpl_providers, {
+      backend_extra = null
+      bucket        = module.automation-tf-bootstrap-gcs.name
+      name          = "bootstrap"
+      sa            = module.automation-tf-bootstrap-r-sa.email
+    })
     "1-resman" = templatefile(local._tpl_providers, {
       backend_extra = null
       bucket        = module.automation-tf-resman-gcs.name
       name          = "resman"
       sa            = module.automation-tf-resman-sa.email
+    })
+    "1-resman-r" = templatefile(local._tpl_providers, {
+      backend_extra = null
+      bucket        = module.automation-tf-resman-gcs.name
+      name          = "resman"
+      sa            = module.automation-tf-resman-r-sa.email
     })
     "0-bootstrap-tenant" = templatefile(local._tpl_providers, {
       backend_extra = join("\n", [
@@ -71,6 +87,12 @@ locals {
       outputs_bucket               = module.automation-tf-output-gcs.name
       project_id                   = module.automation-project.project_id
       project_number               = module.automation-project.number
+      service_accounts = {
+        bootstrap   = module.automation-tf-bootstrap-sa.email
+        bootstrap-r = module.automation-tf-bootstrap-r-sa.email
+        resman      = module.automation-tf-resman-sa.email
+        resman-r    = module.automation-tf-resman-r-sa.email
+      }
     }
     custom_roles = module.organization.custom_role_id
     logging = {
@@ -92,8 +114,8 @@ locals {
   tfvars_globals = {
     billing_account = var.billing_account
     fast_features   = var.fast_features
-    groups          = var.groups
-    locations       = var.locations
+    groups          = local.principals
+    locations       = local.locations
     organization    = var.organization
     prefix          = var.prefix
   }
@@ -126,16 +148,6 @@ output "custom_roles" {
   value       = module.organization.custom_role_id
 }
 
-output "federated_identity" {
-  description = "Workload Identity Federation pool and providers."
-  value = {
-    pool = try(
-      google_iam_workload_identity_pool.default.0.name, null
-    )
-    providers = local.cicd_providers
-  }
-}
-
 output "outputs_bucket" {
   description = "GCS bucket where generated output files are stored."
   value       = module.automation-tf-output-gcs.name
@@ -166,9 +178,37 @@ output "service_accounts" {
   }
 }
 
+# output "test" {
+#   value = {
+#     checklist               = local.checklist
+#     iam_roles_authoritative = local.iam_roles_authoritative
+#     iam_roles_additive      = local.iam_roles_additive
+#     test                    = local.checklist
+#   }
+# }
+
 # ready to use variable values for subsequent stages
 output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
   value       = local.tfvars
+}
+
+output "workforce_identity_pool" {
+  description = "Workforce Identity Federation pool."
+  value = {
+    pool = try(
+      google_iam_workforce_pool.default.0.name, null
+    )
+  }
+}
+
+output "workload_identity_pool" {
+  description = "Workload Identity Federation pool and providers."
+  value = {
+    pool = try(
+      google_iam_workload_identity_pool.default.0.name, null
+    )
+    providers = local.cicd_providers
+  }
 }

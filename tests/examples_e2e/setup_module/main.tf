@@ -82,6 +82,37 @@ resource "google_compute_subnetwork" "subnetwork" {
   region        = var.region
 }
 
+resource "google_compute_subnetwork" "proxy_only_global" {
+  project       = google_project.project.project_id
+  network       = google_compute_network.network.name
+  name          = "proxy-global"
+  region        = var.region
+  ip_cidr_range = "10.0.17.0/24"
+  purpose       = "GLOBAL_MANAGED_PROXY"
+  role          = "ACTIVE"
+  lifecycle {
+    # Until https://github.com/hashicorp/terraform-provider-google/issues/16804 is fixed
+    # ignore permadiff in ipv6_access_type for proxy_only subnets
+    ignore_changes = [ipv6_access_type]
+  }
+}
+
+resource "google_compute_subnetwork" "proxy_only_regional" {
+  project       = google_project.project.project_id
+  network       = google_compute_network.network.name
+  name          = "proxy-regional"
+  region        = var.region
+  ip_cidr_range = "10.0.18.0/24"
+  purpose       = "REGIONAL_MANAGED_PROXY"
+  role          = "ACTIVE"
+
+  lifecycle {
+    # Until https://github.com/hashicorp/terraform-provider-google/issues/16804 is fixed
+    # ignore permadiff in ipv6_access_type for proxy_only subnets
+    ignore_changes = [ipv6_access_type]
+  }
+}
+
 resource "google_service_account" "service_account" {
   account_id = "e2e-service-account"
   project    = google_project.project.project_id
@@ -120,6 +151,7 @@ resource "local_file" "terraform_tfvars" {
     kms_key_id         = google_kms_crypto_key.key.id
     organization_id    = var.organization_id
     project_id         = google_project.project.project_id
+    project_number     = google_project.project.number
     region             = var.region
     service_account = {
       id        = google_service_account.service_account.id

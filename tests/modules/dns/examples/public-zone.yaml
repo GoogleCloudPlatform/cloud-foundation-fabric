@@ -14,14 +14,14 @@
 
 values:
   module.public-dns.google_dns_managed_zone.dns_managed_zone[0]:
-    dns_name: example.com.
-    name: example
-    project: myproject
+    dns_name: test.example.
+    name: test-example
+    project: project-id
     visibility: public
   module.public-dns.google_dns_record_set.dns_record_set["A myhost"]:
-    managed_zone: example
-    name: myhost.example.com.
-    project: myproject
+    managed_zone: test-example
+    name: myhost.test.example.
+    project: project-id
     routing_policy: []
     rrdatas:
     - 127.0.0.1

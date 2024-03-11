@@ -45,50 +45,6 @@ variable "folder_create" {
   default     = true
 }
 
-variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
 variable "id" {
   description = "Folder ID in case you use folder_create=false."
   type        = string
@@ -120,12 +76,12 @@ variable "logging_exclusions" {
 variable "logging_sinks" {
   description = "Logging sinks to create for the folder."
   type = map(object({
-    bq_partitioned_table = optional(bool)
+    bq_partitioned_table = optional(bool, false)
     description          = optional(string)
     destination          = string
     disabled             = optional(bool, false)
     exclusions           = optional(map(string), {})
-    filter               = string
+    filter               = optional(string)
     iam                  = optional(bool, true)
     include_children     = optional(bool, true)
     type                 = string
@@ -135,9 +91,9 @@ variable "logging_sinks" {
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+      contains(["bigquery", "logging", "project", "pubsub", "storage"], v.type)
     ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+    error_message = "Type must be one of 'bigquery', 'logging', 'project', 'pubsub', 'storage'."
   }
   validation {
     condition = alltrue([

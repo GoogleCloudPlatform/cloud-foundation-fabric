@@ -18,12 +18,6 @@ They are meant to be used as minimal but complete starting points to create actu
 
 <br clear="left">
 
-### Decentralized firewall management
-
-<a href="./decentralized-firewall/" title="Decentralized firewall management"><img src="./decentralized-firewall/diagram.png" align="left" width="280px"></a> This [blueprint](./decentralized-firewall/) shows how a decentralized firewall management can be organized using the [firewall factory](../factories/net-vpc-firewall-yaml/).
-
-<br clear="left">
-
 ### GLB and multi-regional daisy-chaining through hybrid NEGs
 
 <a href="./glb-hybrid-neg-internal/" title="XGLB and multi-regional daisy-chaining through hybrid NEGs"><img src="./glb-hybrid-neg-internal/diagram.png" align="left" width="280px"></a> This [blueprint](./glb-hybrid-neg-internal/) shows the experimental use of hybrid NEGs behind external Global Load Balancers (GLBs) to connect to GCP instances living in spoke VPCs and behind Network Virtual Appliances (NVAs).
@@ -73,13 +67,13 @@ The emulated on-premises environment can be used to test access to different ser
 
 <br clear="left">
 
--->
-
 ### Network filtering with Squid
 
 <a href="./filtering-proxy/" title="Network filtering with Squid"><img src="./filtering-proxy/squid.png" align="left" width="280px"></a> This [blueprint](./filtering-proxy/) how to deploy a filtering HTTP proxy to restrict Internet access, in a simplified setup using a VPC with two subnets and a Cloud DNS zone, and an optional MIG for scaling.
 
 <br clear="left">
+
+-->
 
 ### Shared VPC with GKE and per-subnet support
 
@@ -94,5 +88,11 @@ It is meant to be used as a starting point for most Shared VPC configurations, a
 <a href="./psc-glb-and-armor/" title="Shared VPC with GKE"><img src="./psc-glb-and-armor/diagram.png" align="left" width="280px"></a> This [blueprint](./psc-glb-and-armor/) shows how to configure an external Google Cloud Load Balancer, with a simple Cloud Armor rule to protect against DDOS attacks, to provide an external endpoint to an application provided by another team via Private Service Connect (PSC).
 
 It is meant to be used as a starting point for users that want to explore PSC to reduce some of the complexity in their network setup.
+
+<br clear="left">
+
+### VPC Connectivity Lab
+
+<a href="./vpc-connectivity-lab/" title="VPC Connectivity Lab"><img src="./vpc-connectivity-lab/diagram.png" align="left" width="280px"></a> This [blueprint](./vpc-connectivity-lab/) creates a networking playground showing a number of different VPC connectivity options (peering, HA VPN, NVA), along with PBR routing.
 
 <br clear="left">

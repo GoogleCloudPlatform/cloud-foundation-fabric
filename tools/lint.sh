@@ -32,10 +32,12 @@ echo -- FAST Names --
 python3 tools/check_names.py --prefix-length=10 --failed-only fast/stages
 
 echo -- Python formatting --
-yapf --style="{based_on_style: google, indent_width: 2, SPLIT_BEFORE_NAMED_ASSIGNS: false}" -p -d \
+yapf --style="{based_on_style: google, indent_width: 2, SPLIT_BEFORE_NAMED_ASSIGNS: false}" -p -d -r \
      tools/*.py \
-     blueprints/cloud-operations/network-dashboard/src/*py \
-     blueprints/cloud-operations/network-dashboard/src/plugins/*py
+     blueprints
 
 echo -- Blueprint metadata --
 python3 tools/validate_metadata.py -v blueprints --verbose --failed-only
+
+echo -- Version checks --
+find . -type f -name 'versions.tf' -exec diff -ub default-versions.tf {} \;

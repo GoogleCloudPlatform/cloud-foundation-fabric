@@ -56,7 +56,9 @@ def _prepare_root_module(path):
     with tempfile.TemporaryDirectory(dir=path.parent) as tmp_path:
       tmp_path = Path(tmp_path)
 
-      shutil.copytree(path, tmp_path, dirs_exist_ok=True,
+      # Running tests in a copy made with symlinks=True makes them run
+      # ~20% slower than when run in a copy made with symlinks=False.
+      shutil.copytree(path, tmp_path, dirs_exist_ok=True, symlinks=False,
                       ignore=ignore_patterns)
       lockfile = _REPO_ROOT / 'tools' / 'lockfile' / '.terraform.lock.hcl'
       if lockfile.exists():
@@ -125,12 +127,10 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
     q = collections.deque([plan.root_module])
     while q:
       e = q.popleft()
-
       if 'type' in e:
         counts[e['type']] += 1
       if 'values' in e:
         values[e['address']] = e['values']
-
       for x in e.get('resources', []):
         counts['resources'] += 1
         q.append(x)
@@ -196,32 +196,44 @@ def plan_validator(module_path, inventory_paths, basedir, tf_var_files=None,
     # - put the values coming from user's inventory the right
     #   side of any comparison operators.
     # - include a descriptive error message to the assert
+    # print(yaml.dump({'values': summary.values}))
+    # print(yaml.dump({'counts': summary.counts}))
 
     if 'values' in inventory:
       validate_plan_object(inventory['values'], summary.values, relative_path,
                            "")
 
     if 'counts' in inventory:
-      expected_counts = inventory['counts']
-      for type_, expected_count in expected_counts.items():
-        assert type_ in summary.counts, \
-            f'{relative_path}: module does not create any resources of type `{type_}`'
-        plan_count = summary.counts[type_]
-        assert plan_count == expected_count, \
-            f'{relative_path}: count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
+      try:
+        expected_counts = inventory['counts']
+        for type_, expected_count in expected_counts.items():
+          assert type_ in summary.counts, \
+              f'{relative_path}: module does not create any resources of type `{type_}`'
+          plan_count = summary.counts[type_]
+          assert plan_count == expected_count, \
+              f'{relative_path}: count of {type_} resources failed. Got {plan_count}, expected {expected_count}'
+      except AssertionError:
+        print(yaml.dump({'counts': summary.counts}))
+        raise
 
     if 'outputs' in inventory:
-      expected_outputs = inventory['outputs']
-      for output_name, expected_output in expected_outputs.items():
-        assert output_name in summary.outputs, \
-            f'{relative_path}: module does not output `{output_name}`'
-        output = summary.outputs[output_name]
-        # assert 'value' in output, \
-        #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
-        plan_output = output.get('value', '__missing__')
-        assert plan_output == expected_output, \
-            f'{relative_path}: output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
-
+      _buffer = None
+      try:
+        expected_outputs = inventory['outputs']
+        for output_name, expected_output in expected_outputs.items():
+          assert output_name in summary.outputs, \
+              f'{relative_path}: module does not output `{output_name}`'
+          output = summary.outputs[output_name]
+          # assert 'value' in output, \
+          #   f'output `{output_name}` does not have a value (is it sensitive or dynamic?)'
+          plan_output = output.get('value', '__missing__')
+          _buffer = {output_name: plan_output}
+          assert plan_output == expected_output, \
+              f'{relative_path}: output {output_name} failed. Got `{plan_output}`, expected `{expected_output}`'
+      except AssertionError:
+        if _buffer:
+          print(yaml.dump(_buffer))
+        raise
   return summary
 
 
@@ -242,7 +254,7 @@ def validate_plan_object(expected_value, plan_value, relative_path,
   if isinstance(expected_value, dict) and isinstance(plan_value, dict):
     for k, v in expected_value.items():
       assert k in plan_value, \
-        f'{relative_path}: {k} is not a valid address in the plan'
+        f'{relative_path}: {relative_address}.{k} is not a valid address in the plan'
       validate_plan_object(v, plan_value[k], relative_path,
                            f'{relative_address}.{k}')
 
@@ -282,8 +294,19 @@ def plan_validator_fixture(request):
 
 
 def get_tfvars_for_e2e():
-  _variables = ["billing_account", "group_email", "organization_id", "parent", "prefix", "region"]
-  tf_vars = {k: os.environ.get(f"TFTEST_E2E_{k}") for k in _variables}
+  _variables = [
+      'billing_account', 'group_email', 'organization_id', 'parent', 'prefix',
+      'region'
+  ]
+  missing_vars = set([f'TFTEST_E2E_{k}' for k in _variables]) - set(
+      os.environ.keys())
+  if missing_vars:
+    raise RuntimeError(
+        f'Missing environment variables: {missing_vars} required to run E2E tests. '
+        f'Consult CONTRIBUTING.md to understand how to set them up. '
+        f'If you want to skip E2E tests add -k "not examples_e2e" to your pytest call'
+    )
+  tf_vars = {k: os.environ.get(f'TFTEST_E2E_{k}') for k in _variables}
   return tf_vars
 
 
@@ -308,7 +331,10 @@ def e2e_validator(module_path, extra_files, tf_var_files, basedir=None):
     prefix = get_tfvars_for_e2e()["prefix"]
     # to allow different tests to create projects (or other globally unique resources) with the same name
     # bump prefix forward on each test execution
-    tf_vars = {"prefix": f'{prefix}-{int(time.time())}{os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:]}'}
+    tf_vars = {
+        "prefix":
+            f'{prefix}-{int(time.time())}{os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:]}'
+    }
     try:
       apply = tf.apply(tf_var_file=tf_var_files, tf_vars=tf_vars)
       plan = tf.plan(output=True, tf_var_file=tf_var_files, tf_vars=tf_vars)
@@ -382,7 +408,9 @@ def e2e_tfvars_path():
       tf = tftest.TerraformTest(test_path, binary=binary)
       tf_vars_file = None
       tf_vars = get_tfvars_for_e2e()
-      tf_vars['suffix'] = os.environ.get("PYTEST_XDIST_WORKER", "0")[-2:]  # take at most 2 last chars for suffix
+      tf_vars['suffix'] = os.environ.get(
+          "PYTEST_XDIST_WORKER",
+          "0")[-2:]  # take at most 2 last chars for suffix
       tf_vars['timestamp'] = str(int(time.time()))
 
       if 'TFTEST_E2E_SETUP_TFVARS_PATH' in os.environ:

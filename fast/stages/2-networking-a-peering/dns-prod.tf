@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,6 @@
 
 # GCP-specific environment zone
 
-moved {
-  from = module.prod-dns-private-zone
-  to   = module.prod-dns-priv-example
-}
-
 module "prod-dns-priv-example" {
   source     = "../../../modules/dns"
   project_id = module.prod-spoke-project.project_id
@@ -40,11 +35,6 @@ module "prod-dns-priv-example" {
 
 # root zone peering to landing to centralize configuration; remove if unneeded
 
-moved {
-  from = module.prod-landing-root-dns-peering
-  to   = module.prod-dns-peer-landing-root
-}
-
 module "prod-dns-peer-landing-root" {
   source     = "../../../modules/dns"
   project_id = module.prod-spoke-project.project_id
@@ -56,11 +46,6 @@ module "prod-dns-peer-landing-root" {
       peer_network    = module.landing-vpc.self_link
     }
   }
-}
-
-moved {
-  from = module.prod-reverse-10-dns-peering
-  to   = module.prod-dns-peer-landing-rev-10
 }
 
 module "prod-dns-peer-landing-rev-10" {

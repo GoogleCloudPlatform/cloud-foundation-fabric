@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,11 +70,26 @@ variable "custom_roles" {
 }
 
 variable "dns" {
-  description = "Onprem DNS resolvers."
-  type        = map(list(string))
-  default = {
-    onprem = ["10.0.200.3"]
-  }
+  description = "DNS configuration."
+  type = object({
+    enable_logging = optional(bool, true)
+    resolvers      = optional(list(string), [])
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "enable_cloud_nat" {
+  description = "Deploy Cloud NAT."
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
+variable "essential_contacts" {
+  description = "Email used for essential contacts, unset if null."
+  type        = string
+  default     = null
 }
 
 variable "factories_config" {
@@ -112,14 +127,14 @@ variable "gcp_ranges" {
   description = "GCP address ranges in name => range format."
   type        = map(string)
   default = {
-    gcp_dev_primary                 = "10.68.0.0/16"
-    gcp_dev_secondary               = "10.84.0.0/16"
-    gcp_landing_trusted_primary     = "10.64.0.0/17"
-    gcp_landing_trusted_secondary   = "10.80.0.0/17"
-    gcp_landing_untrusted_primary   = "10.64.127.0/17"
-    gcp_landing_untrusted_secondary = "10.80.127.0/17"
-    gcp_prod_primary                = "10.72.0.0/16"
-    gcp_prod_secondary              = "10.88.0.0/16"
+    gcp_dev_primary       = "10.68.0.0/16"
+    gcp_dev_secondary     = "10.84.0.0/16"
+    gcp_landing_primary   = "10.64.0.0/17"
+    gcp_landing_secondary = "10.80.0.0/17"
+    gcp_dmz_primary       = "10.64.127.0/17"
+    gcp_dmz_secondary     = "10.80.127.0/17"
+    gcp_prod_primary      = "10.72.0.0/16"
+    gcp_prod_secondary    = "10.88.0.0/16"
   }
 }
 
@@ -129,8 +144,8 @@ variable "ncc_asn" {
   default = {
     nva_primary   = 64513
     nva_secondary = 64514
-    trusted       = 64515
-    untrusted     = 64512
+    landing       = 64515
+    dmz           = 64512
   }
 }
 

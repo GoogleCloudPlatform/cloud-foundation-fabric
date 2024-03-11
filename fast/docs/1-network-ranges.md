@@ -16,6 +16,7 @@ This was not an issue when there were only a few networking stages, but as FAST 
 ## Decision
 
 We adopted an IP plan based on regions and environments with the following key points:
+
 - Large ranges for the 3 environments we have out of the box (landing, dev, prod)
 - Support for 2 regions
 - Leave enough space to easily grow either the number of environments or regions
@@ -31,9 +32,10 @@ The following table summarizes the agreed IP plan:
 | Region 2, secondary ranges | 100.80.0.0/12 |                                                      100.80.0.0/14 | 100.84.0.0/16 | 100.88.0.0/14 |
 
 To allocate additional secondary ranges for GKE clusters:
+
 - For the pods range, use the next available /16 in the secondary range of its region/environment pair.
 - For the service range, use the next available /24 in the last /16 of its region/environment pair.
 
 ## Consequences
 
-Default subnets for networking stages were updated to reflect to new ranges.
+Default subnets for networking stages were updated to reflect the new ranges.

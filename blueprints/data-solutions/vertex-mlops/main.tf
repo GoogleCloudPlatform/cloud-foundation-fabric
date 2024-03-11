@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 
 locals {
-  group_iam = merge(
+  iam_principals = merge(
     var.groups.gcp-ml-viewer == null ? {} : {
-      (var.groups.gcp-ml-viewer) = [
+      "group:${var.groups.gcp-ml-viewer}" = [
         "roles/aiplatform.viewer",
         "roles/artifactregistry.reader",
         "roles/dataflow.viewer",
@@ -27,7 +27,7 @@ locals {
       ]
     },
     var.groups.gcp-ml-ds == null ? {} : {
-      (var.groups.gcp-ml-ds) = [
+      "group:${var.groups.gcp-ml-ds}" = [
         "roles/aiplatform.admin",
         "roles/artifactregistry.admin",
         "roles/bigquery.dataEditor",
@@ -47,7 +47,7 @@ locals {
       ]
     },
     var.groups.gcp-ml-eng == null ? {} : {
-      (var.groups.gcp-ml-eng) = [
+      "group:${var.groups.gcp-ml-eng}" = [
         "roles/aiplatform.admin",
         "roles/artifactregistry.admin",
         "roles/bigquery.dataEditor",
@@ -189,13 +189,13 @@ module "cloudnat" {
 }
 
 module "project" {
-  source          = "../../../modules/project"
-  name            = var.project_config.project_id
-  parent          = var.project_config.parent
-  billing_account = var.project_config.billing_account_id
-  project_create  = var.project_config.billing_account_id != null
-  prefix          = var.prefix
-  group_iam       = local.group_iam
+  source            = "../../../modules/project"
+  name              = var.project_config.project_id
+  parent            = var.project_config.parent
+  billing_account   = var.project_config.billing_account_id
+  project_create    = var.project_config.billing_account_id != null
+  prefix            = var.prefix
+  iam_by_principals = local.iam_principals
   iam = {
     "roles/aiplatform.user" = [
       module.service-account-mlops.iam_email,

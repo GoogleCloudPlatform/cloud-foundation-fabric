@@ -201,12 +201,14 @@ resource "google_container_node_pool" "nodepool" {
         cpu_manager_policy   = var.node_config.kubelet_config.cpu_manager_policy
         cpu_cfs_quota        = var.node_config.kubelet_config.cpu_cfs_quota
         cpu_cfs_quota_period = var.node_config.kubelet_config.cpu_cfs_quota_period
+        pod_pids_limit       = var.node_config.kubelet_config.pod_pids_limit
       }
     }
     dynamic "linux_node_config" {
-      for_each = var.node_config.linux_node_config_sysctls != null ? [""] : []
+      for_each = var.node_config.linux_node_config != null ? [""] : []
       content {
-        sysctls = var.node_config.linux_node_config_sysctls
+        sysctls     = var.node_config.linux_node_config.sysctls
+        cgroup_mode = try(var.node_config.linux_node_config.cgroup_mode, "CGROUP_MODE_UNSPECIFIED")
       }
     }
     dynamic "reservation_affinity" {

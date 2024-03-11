@@ -31,10 +31,10 @@ locals {
     vpc_self_links       = local.vpc_self_links
   }
   vpc_self_links = {
-    prod-landing-trusted   = module.landing-trusted-vpc.self_link
-    prod-landing-untrusted = module.landing-untrusted-vpc.self_link
-    dev-spoke-0            = module.dev-spoke-vpc.self_link
-    prod-spoke-0           = module.prod-spoke-vpc.self_link
+    prod-landing = module.landing-vpc.self_link
+    prod-dmz     = module.dmz-vpc.self_link
+    dev-spoke-0  = module.dev-spoke-vpc.self_link
+    prod-spoke-0 = module.prod-spoke-vpc.self_link
   }
 }
 

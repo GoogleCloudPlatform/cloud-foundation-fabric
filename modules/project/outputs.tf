@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output "custom_role_ids" {
+output "custom_role_id" {
   description = "Map of custom role IDs created in the project."
   value = {
     for k, v in google_project_iam_custom_role.roles :
@@ -22,6 +22,11 @@ output "custom_role_ids" {
     # keys (useful for folder/organization/project-level iam bindings)
     (k) => "projects/${local.prefix}${var.name}/roles/${local.custom_roles[k].name}"
   }
+}
+
+output "custom_roles" {
+  description = "Map of custom roles resources created in the project."
+  value       = google_project_iam_custom_role.roles
 }
 
 output "id" {
@@ -122,5 +127,22 @@ output "sink_writer_identities" {
   description = "Writer identities created for each sink."
   value = {
     for name, sink in google_logging_project_sink.sink : name => sink.writer_identity
+  }
+}
+
+output "tag_keys" {
+  description = "Tag key resources."
+  value = {
+    for k, v in google_tags_tag_key.default : k => v if(
+      v.purpose == null || v.purpose == ""
+    )
+  }
+}
+
+output "tag_values" {
+  description = "Tag value resources."
+  value = {
+    for k, v in google_tags_tag_value.default :
+    k => v if !local.tag_values[k].tag_network
   }
 }

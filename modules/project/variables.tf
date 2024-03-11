@@ -76,50 +76,6 @@ variable "factories_config" {
   default  = {}
 }
 
-variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam" {
-  description = "Authoritative IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
 variable "labels" {
   description = "Resource labels."
   type        = map(string)
@@ -158,12 +114,12 @@ variable "logging_exclusions" {
 variable "logging_sinks" {
   description = "Logging sinks to create for this project."
   type = map(object({
-    bq_partitioned_table = optional(bool)
+    bq_partitioned_table = optional(bool, false)
     description          = optional(string)
     destination          = string
     disabled             = optional(bool, false)
     exclusions           = optional(map(string), {})
-    filter               = string
+    filter               = optional(string)
     iam                  = optional(bool, true)
     type                 = string
     unique_writer        = optional(bool, true)
@@ -173,9 +129,9 @@ variable "logging_sinks" {
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+      contains(["bigquery", "logging", "project", "pubsub", "storage"], v.type)
     ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+    error_message = "Type must be one of 'bigquery', 'logging', 'project', 'pubsub', 'storage'."
   }
   validation {
     condition = alltrue([
@@ -303,9 +259,11 @@ variable "shared_vpc_service_config" {
   # the list of valid service identities is in service-agents.yaml
   type = object({
     host_project                = string
+    network_users               = optional(list(string), [])
     service_identity_iam        = optional(map(list(string)), {})
     service_identity_subnet_iam = optional(map(list(string)), {})
     service_iam_grants          = optional(list(string), [])
+    network_subnet_users        = optional(map(list(string)), {})
   })
   default = {
     host_project = null
@@ -314,10 +272,13 @@ variable "shared_vpc_service_config" {
   validation {
     condition = var.shared_vpc_service_config.host_project != null || (
       var.shared_vpc_service_config.host_project == null &&
+      length(var.shared_vpc_service_config.network_users) == 0 &&
       length(var.shared_vpc_service_config.service_iam_grants) == 0 &&
-      length(var.shared_vpc_service_config.service_iam_grants) == 0
+      length(var.shared_vpc_service_config.service_identity_iam) == 0 &&
+      length(var.shared_vpc_service_config.service_identity_subnet_iam) == 0 &&
+      length(var.shared_vpc_service_config.network_subnet_users) == 0
     )
-    error_message = "You need to provide host_project when providing service_identity_iam or service_iam_grants"
+    error_message = "You need to provide host_project when providing Shared VPC host and subnet IAM permissions."
   }
 }
 
@@ -325,10 +286,4 @@ variable "skip_delete" {
   description = "Allows the underlying resources to be destroyed without destroying the project itself."
   type        = bool
   default     = false
-}
-
-variable "tag_bindings" {
-  description = "Tag bindings for this project, in key => tag value id format."
-  type        = map(string)
-  default     = null
 }

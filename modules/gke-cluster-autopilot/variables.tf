@@ -64,6 +64,7 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
+    beta_apis            = optional(list(string))
     binary_authorization = optional(bool, false)
     cost_management      = optional(bool, false)
     dns = optional(object({
@@ -86,7 +87,8 @@ variable "enable_features" {
       enable_network_egress_metering       = optional(bool)
       enable_resource_consumption_metering = optional(bool)
     }))
-    tpu = optional(bool, false)
+    service_external_ips = optional(bool, true)
+    tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
       topic_id = optional(string)
     }))

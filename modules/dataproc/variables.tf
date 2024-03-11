@@ -149,8 +149,8 @@ variable "dataproc_config" {
       kubernetes_cluster_config = object({
         kubernetes_namespace = optional(string)
         kubernetes_software_config = object({
-          component_version = list(map(string))
-          properties        = optional(list(map(string)))
+          component_version = map(string)
+          properties        = optional(map(string))
         })
 
         gke_cluster_config = object({
@@ -180,50 +180,6 @@ variable "dataproc_config" {
     }))
   })
   default = {}
-}
-
-variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
 }
 
 variable "labels" {

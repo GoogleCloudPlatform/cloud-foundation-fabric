@@ -18,18 +18,33 @@ import yaml
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
-COUNT_TEST_RE = re.compile(r'# tftest +modules=(?P<modules>\d+) +resources=(?P<resources>\d+)' +
-                           r'(?: +files=(?P<files>[\w@,_-]+))?' +
-                           r'(?: +inventory=(?P<inventory>[\w\-.]+))?')
+COUNT_TEST_RE = re.compile(
+    r'# tftest +modules=(?P<modules>\d+) +resources=(?P<resources>\d+)' +
+    r'(?: +files=(?P<files>[\w@,_-]+))?' +
+    r'(?: +fixtures=(?P<fixtures>[\w@,_/.-]+))?' +
+    r'(?: +inventory=(?P<inventory>[\w\-.]+))?')
 
 
-def prepare_files(example, test_path, line):
-  if line is not None:
-    requested_files = line.split(',')
+def prepare_files(example, test_path, files, fixtures):
+  if files is not None:
+    requested_files = files.split(',')
     for f in requested_files:
       destination = test_path / example.files[f].path
       destination.parent.mkdir(parents=True, exist_ok=True)
       destination.write_text(example.files[f].content)
+
+  if fixtures is not None:
+    requested_fixtures = fixtures.split(',')
+    for f in requested_fixtures:
+      if f.startswith('fixtures/'):
+        # fixture is specified referencing a global fixture in (tests/fixtures/)
+        source = BASE_PATH.parent / f
+        destination = test_path / source.name
+        destination.symlink_to(source)
+      else:
+        # fixture is specified using an inline tftest-fixture tag
+        destination = test_path / f'{f}.tf'
+        destination.write_text(example.fixtures[f])
 
 
 def test_example(plan_validator, tmp_path, example):
@@ -42,26 +57,27 @@ def test_example(plan_validator, tmp_path, example):
     if assets_path.exists():
       (tmp_path / 'assets').symlink_to(assets_path)
 
-    expected_modules = int(match.group("modules"))
-    expected_resources = int(match.group("resources"))
+    expected_modules = int(match.group('modules'))
+    expected_resources = int(match.group('resources'))
 
-    prepare_files(example, tmp_path, match.group("files"))
+    prepare_files(example, tmp_path, match.group('files'),
+                  match.group('fixtures'))
 
     inventory = []
-    if match.group("inventory") is not None:
+    if match.group('inventory') is not None:
       python_test_path = str(example.module).replace('-', '_')
       inventory = BASE_PATH.parent / python_test_path / 'examples'
-      inventory = inventory / match.group("inventory")
+      inventory = inventory / match.group('inventory')
 
     # TODO: force plan_validator to never copy files (we're already
     # running from a temp dir)
     summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
                              tf_var_files=[])
 
-    print("\n")
-    print(yaml.dump({"values": summary.values}))
-    print(yaml.dump({"counts": summary.counts}))
-    print(yaml.dump({"outputs": summary.outputs}))
+    print('\n')
+    print(yaml.dump({'values': summary.values}))
+    print(yaml.dump({'counts': summary.counts}))
+    print(yaml.dump({'outputs': summary.outputs}))
 
     counts = summary.counts
     num_modules, num_resources = counts['modules'], counts['resources']

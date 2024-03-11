@@ -43,10 +43,17 @@ import glob
 import os
 import re
 import string
+import sys
 import urllib.parse
 
 import click
 import marko
+
+# manipulate path to import COUNT_TEST_RE from tests/examples/test_plan.py
+REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(os.path.join(REPO_ROOT, 'tests'))
+
+from examples.test_plan import COUNT_TEST_RE
 
 __version__ = '2.1.0'
 
@@ -227,6 +234,25 @@ def parse_variables(basepath, exclude_files=None):
                      file=shortname, line=item['line'], nullable=nullable)
 
 
+def parse_fixtures(basepath, readme):
+  'Return a list of file paths of all the unique fixtures used in the module.'
+  doc = marko.parse(readme)
+  used_fixtures = set()
+  for child in doc.children:
+    if isinstance(child, marko.block.FencedCode):
+      if child.lang == 'hcl':
+        code = child.children[0].children
+        if match := COUNT_TEST_RE.search(code):
+          if fixtures := match.group('fixtures'):
+            for fixture in fixtures.split(','):
+              fixture_full = os.path.join(REPO_ROOT, 'tests', fixture)
+              if not os.path.exists(fixture_full):
+                raise SystemExit(f'Unknown fixture: {fixture}')
+              fixture_relative = os.path.relpath(fixture_full, basepath)
+              used_fixtures.add(fixture_relative)
+  yield from sorted(used_fixtures)
+
+
 # formatting functions
 
 
@@ -235,7 +261,7 @@ def _escape(s):
   return ''.join(c if c in UNESCAPED else ('&#%s;' % ord(c)) for c in s)
 
 
-def format_tfref(outputs, variables, files, show_extra=False):
+def format_tfref(outputs, variables, files, fixtures, show_extra=False):
   'Return formatted document.'
   buffer = []
   if files:
@@ -247,6 +273,9 @@ def format_tfref(outputs, variables, files, show_extra=False):
   if outputs:
     buffer += ['', '## Outputs', '']
     buffer += list(format_tfref_outputs(outputs, show_extra))
+  if fixtures:
+    buffer += ['', '## Fixtures', '']
+    buffer += list(format_tfref_fixtures(fixtures))
   return '\n'.join(buffer).strip()
 
 
@@ -323,6 +352,12 @@ def format_tfref_variables(items, show_extra=True):
     yield format
 
 
+def format_tfref_fixtures(items):
+  'Format fixtures table.'
+  for x in items:
+    yield f"- [{os.path.basename(x)}]({x})"
+
+
 def create_toc(readme):
   'Create a Markdown table of contents a for README.'
   doc = marko.parse(readme)
@@ -331,8 +366,8 @@ def create_toc(readme):
   for h in headings[1:]:
     title = h.children[0].children
     slug = title.lower().strip()
-    slug = re.sub('[^\w\s-]', '', slug)
-    slug = re.sub('[-\s]+', '-', slug)
+    slug = re.sub(r'[^\w\s-]', '', slug)
+    slug = re.sub(r'[-\s]+', '-', slug)
     link = f'- [{title}](#{slug})'
     indent = '  ' * (h.level - 2)
     lines.append(f'{indent}{link}')
@@ -384,9 +419,11 @@ def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
     mod_files = list(parse_files(module_path, exclude_files)) if files else []
     mod_variables = list(parse_variables(module_path, exclude_files))
     mod_outputs = list(parse_outputs(module_path, exclude_files))
+    mod_fixtures = list(parse_fixtures(module_path, readme))
   except (IOError, OSError) as e:
     raise SystemExit(e)
-  doc = format_tfref(mod_outputs, mod_variables, mod_files, show_extra)
+  doc = format_tfref(mod_outputs, mod_variables, mod_files, mod_fixtures,
+                     show_extra)
   return Document(doc, mod_files, mod_variables, mod_outputs)
 
 

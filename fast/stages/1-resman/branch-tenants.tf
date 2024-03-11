@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
 
 # tfdoc:file:description Lightweight tenant resources.
 
+# TODO(ludo): add support for CI/CD
+
 locals {
   tenant_iam = {
     for k, v in var.tenants : k => [
-      "group:${v.admin_group_email}",
+      v.admin_principal,
       module.tenant-self-iac-sa[k].iam_email
     ]
   }
@@ -43,8 +45,8 @@ module "tenant-top-folder" {
   for_each = var.tenants
   parent   = module.tenant-tenants-folder.id
   name     = each.value.descriptive_name
-  group_iam = {
-    (each.value.admin_group_email) = ["roles/browser"]
+  iam_by_principals = {
+    (each.value.admin_principal) = ["roles/browser"]
   }
 }
 
@@ -167,11 +169,19 @@ module "tenant-self-iac-project" {
   name   = "${each.key}-iac-core-0"
   parent = module.tenant-self-folder[each.key].id
   prefix = var.prefix
-  group_iam = {
-    (each.value.admin_group_email) = [
+  iam_by_principals = {
+    (each.value.admin_principal) = [
       "roles/iam.serviceAccountAdmin",
       "roles/iam.serviceAccountTokenCreator",
       "roles/iam.workloadIdentityPoolAdmin"
+    ]
+  }
+  iam = {
+    (var.custom_roles.storage_viewer) = [
+      "serviceAccount:${var.automation.service_accounts.resman-r}"
+    ]
+    "roles/viewer" = [
+      "serviceAccount:${var.automation.service_accounts.resman-r}"
     ]
   }
   services = [

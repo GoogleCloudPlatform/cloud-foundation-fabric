@@ -22,8 +22,10 @@ variable "external_addresses" {
     ipv6 = optional(object({
       endpoint_type = string
     }))
-    labels = optional(map(string), {})
-    name   = optional(string)
+    labels     = optional(map(string), {})
+    name       = optional(string)
+    subnetwork = optional(string) # for IPv6
+    tier       = optional(string)
   }))
   default = {}
   validation {
@@ -56,7 +58,6 @@ variable "internal_addresses" {
     labels      = optional(map(string))
     name        = optional(string)
     purpose     = optional(string)
-    tier        = optional(string)
   }))
   default = {}
 }
@@ -79,6 +80,19 @@ variable "ipsec_interconnect_addresses" {
 #   type        = map(map(string))
 #   default     = {}
 # }
+
+variable "network_attachments" {
+  description = "PSC network attachments, names as keys."
+  type = map(object({
+    subnet_self_link      = string
+    automatic_connection  = optional(bool, false)
+    description           = optional(string, "Terraform-managed.")
+    producer_accept_lists = optional(list(string))
+    producer_reject_lists = optional(list(string))
+  }))
+  nullable = false
+  default  = {}
+}
 
 variable "project_id" {
   description = "Project where the addresses will be created."

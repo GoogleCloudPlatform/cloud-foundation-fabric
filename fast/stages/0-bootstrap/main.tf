@@ -16,17 +16,22 @@
 
 locals {
   gcs_storage_class = (
-    length(split("-", var.locations.gcs)) < 2
+    length(split("-", local.locations.gcs)) < 2
     ? "MULTI_REGIONAL"
     : "REGIONAL"
   )
-  groups = {
-    for k, v in var.groups :
-    k => can(regex(".*@.*", v)) ? v : "${v}@${var.organization.domain}"
+  principals = {
+    for k, v in var.groups : k => (
+      can(regex("^[a-zA-Z]+:", v))
+      ? v
+      : "group:${v}@${var.organization.domain}"
+    )
   }
-  groups_iam = {
-    for k, v in local.groups :
-    k => "group:${v}"
+  locations = {
+    bq      = var.locations.bq
+    gcs     = var.locations.gcs
+    logging = coalesce(try(local.checklist.location, null), var.locations.logging)
+    pubsub  = var.locations.pubsub
   }
   # naming: environment used in most resource names
   prefix = join("-", compact([var.prefix, "prod"]))

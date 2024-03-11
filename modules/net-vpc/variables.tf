@@ -97,6 +97,19 @@ variable "name" {
   type        = string
 }
 
+variable "network_attachments" {
+  description = "PSC network attachments, names as keys."
+  type = map(object({
+    subnet                = string
+    automatic_connection  = optional(bool, false)
+    description           = optional(string, "Terraform-managed.")
+    producer_accept_lists = optional(list(string))
+    producer_reject_lists = optional(list(string))
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "peering_config" {
   description = "VPC peering configuration."
   type = object({
@@ -106,6 +119,54 @@ variable "peering_config" {
     import_routes      = optional(bool)
   })
   default = null
+}
+
+variable "policy_based_routes" {
+  description = "Policy based routes, keyed by name."
+  type = map(object({
+    description         = optional(string, "Terraform-managed.")
+    labels              = optional(map(string))
+    priority            = optional(number)
+    next_hop_ilb_ip     = optional(string)
+    use_default_routing = optional(bool, false)
+    filter = optional(object({
+      ip_protocol = optional(string)
+      dest_range  = optional(string)
+      src_range   = optional(string)
+    }), {})
+    target = optional(object({
+      interconnect_attachment = optional(string)
+      tags                    = optional(list(string))
+    }), {})
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for r in var.policy_based_routes :
+      contains(["TCP", "UDP", "ALL", null], r.filter.ip_protocol)
+      if r.filter.ip_protocol != null
+    ])
+    error_message = "Unsupported protocol for route."
+  }
+  validation {
+    condition = alltrue([
+      for r in var.policy_based_routes :
+      (
+        (r.use_default_routing == true ? 1 : 0)
+        +
+        (r.next_hop_ilb_ip != null ? 1 : 0)
+      ) == 1
+    ])
+    error_message = "Either set `use_default_routing = true` or specify an internal passthrough LB IP."
+  }
+  validation {
+    condition = alltrue([
+      for r in var.policy_based_routes :
+      r.target.tags == null || r.target.interconnect_attachment == null
+    ])
+    error_message = "Either use virtual machine tags or a vlan attachment region as a target."
+  }
 }
 
 variable "project_id" {

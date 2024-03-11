@@ -1,0 +1,106 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: mysql.oracle.com/v2
+kind: InnoDBCluster
+metadata:
+  name: mycluster
+spec:
+  secretName: mysql-secret
+  tlsUseSelfSigned: true
+  instances: ${mysql_config.db_replicas}
+  version: ${mysql_config.version}
+  router:
+    instances: ${mysql_config.router_replicas}
+    version: ${mysql_config.version}
+    podSpec:
+      containers:
+        - name: router
+          resources:
+            limits:
+              cpu: "${mysql_config.router_cpu}"
+              memory: "${mysql_config.router_memory}"
+            requests:
+              cpu: "${mysql_config.router_cpu}"
+              memory: "${mysql_config.router_memory}"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  component: mysqlrouter
+                  mysql.oracle.com/cluster: mycluster
+                  tier: mysql
+              topologyKey: kubernetes.io/hostname
+
+#                matchExpressions:
+#                  - key: component
+#                    operator: In
+#                    values:
+#                      - mysqlrouter
+#                  - key: mysql.oracle.com/cluster
+#                    operator: In
+#                    values:
+#                      - mycluster
+#                  - key: tier
+#                    operator: In
+#                    values:
+#                      - mysql
+      topologySpreadConstraints:
+        - maxSkew: 1
+          minDomains: ${min(3, mysql_config.router_replicas)} # ensure that at least three different zones are in use
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              component: mysqlrouter
+              mysql.oracle.com/cluster: mycluster
+              tier: mysql
+  datadirVolumeClaimTemplate:
+    accessModes:
+      - ReadWriteOnce
+    storageClassName: fast-storageclass
+    resources:
+      requests:
+        storage: ${mysql_config.db_database_size}
+  # imageRepository: ${registry_path}  # can we proxy to: container-registry.oracle.com/mysql ?
+  podSpec:
+    containers:
+      - name: mysql
+        resources:
+          limits:
+            cpu: "${mysql_config.db_cpu}"
+            memory: "${mysql_config.db_memory}"
+          requests:
+            cpu: "${mysql_config.db_cpu}"
+            memory: "${mysql_config.db_memory}"
+    topologySpreadConstraints:
+      - maxSkew: 1
+        minDomains: ${min(3, mysql_config.db_replicas)} # ensure that at least three different zones are in use
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            component: mysqld
+            mysql.oracle.com/cluster: mycluster
+            tier: mysql
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                component: mysqld
+                mysql.oracle.com/cluster: mycluster
+                tier: mysql
+            topologyKey: kubernetes.io/hostname

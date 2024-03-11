@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,20 +76,6 @@ variable "databases" {
   default     = null
 }
 
-variable "deletion_protection" {
-  description = "Prevent terraform from deleting instances."
-  type        = bool
-  default     = true
-  nullable    = false
-}
-
-variable "deletion_protection_enabled" {
-  description = "Set Google's deletion protection attribute which applies across all surfaces (UI, API, & Terraform)."
-  type        = bool
-  default     = true
-  nullable    = false
-}
-
 variable "disk_autoresize_limit" {
   description = "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit."
   type        = number
@@ -126,6 +112,13 @@ variable "flags" {
   default     = null
 }
 
+variable "gcp_deletion_protection" {
+  description = "Set Google's deletion protection attribute which applies across all surfaces (UI, API, & Terraform)."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "insights_config" {
   description = "Query Insights configuration. Defaults to null which disables Query Insights."
   type = object({
@@ -143,6 +136,39 @@ variable "labels" {
   default     = null
 }
 
+variable "maintenance_config" {
+  description = "Set maintenance window configuration and maintenance deny period (up to 90 days). Date format: 'yyyy-mm-dd'."
+  type = object({
+    maintenance_window = optional(object({
+      day          = number
+      hour         = number
+      update_track = optional(string, null)
+    }), null)
+    deny_maintenance_period = optional(object({
+      start_date = string
+      end_date   = string
+      start_time = optional(string, "00:00:00")
+    }), null)
+  })
+  default = {}
+  validation {
+    condition = (
+      try(var.maintenance_config.maintenance_window, null) == null ? true : (
+        # Maintenance window day validation below
+        var.maintenance_config.maintenance_window.day >= 1 &&
+        var.maintenance_config.maintenance_window.day <= 7 &&
+        # Maintenance window hour validation below
+        var.maintenance_config.maintenance_window.hour >= 0 &&
+        var.maintenance_config.maintenance_window.hour <= 23 &&
+        # Maintenance window update_track validation below
+        try(var.maintenance_config.maintenance_window.update_track, null) == null ? true :
+        contains(["canary", "stable"], var.maintenance_config.maintenance_window.update_track)
+      )
+    )
+    error_message = "Maintenance window day must be between 1 and 7, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable' or 'canary'."
+  }
+}
+
 variable "name" {
   description = "Name of primary instance."
   type        = string
@@ -152,7 +178,6 @@ variable "network_config" {
   description = "Network configuration for the instance. Only one between private_network and psc_config can be used."
   type = object({
     authorized_networks = optional(map(string))
-    require_ssl         = optional(bool)
     connectivity = object({
       public_ipv4 = optional(bool, false)
       psa_config = optional(object({
@@ -171,11 +196,6 @@ variable "network_config" {
   }
 }
 
-variable "postgres_client_certificates" {
-  description = "Map of cert keys connect to the application(s) using public IP."
-  type        = list(string)
-  default     = null
-}
 
 variable "prefix" {
   description = "Optional prefix used to generate instance names."
@@ -212,13 +232,42 @@ variable "root_password" {
   default     = null
 }
 
+variable "ssl" {
+  description = "Setting to enable SSL, set config and certificates."
+  type = object({
+    client_certificates = optional(list(string))
+    require_ssl         = optional(bool)
+    # More details @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#ssl_mode
+    ssl_mode = optional(string)
+  })
+  default  = {}
+  nullable = false
+  validation {
+    condition     = var.ssl.ssl_mode == null || var.ssl.ssl_mode == "ALLOW_UNENCRYPTED_AND_ENCRYPTED" || var.ssl.ssl_mode == "ENCRYPTED_ONLY" || var.ssl.ssl_mode == "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
+    error_message = "The variable ssl_mode can be ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY for all, or TRUSTED_CLIENT_CERTIFICATE_REQUIRED for PostgreSQL or MySQL."
+  }
+}
+
+variable "terraform_deletion_protection" {
+  description = "Prevent terraform from deleting instances."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "tier" {
   description = "The machine type to use for the instances."
   type        = string
 }
 
+variable "time_zone" {
+  description = "The time_zone to be used by the database engine (supported only for SQL Server), in SQL Server timezone format."
+  type        = string
+  default     = null
+}
+
 variable "users" {
-  description = "Map of users to create in the primary instance (and replicated to other replicas). For MySQL, anything afterr the first `@` (if persent) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'BUILT_IN', 'CLOUD_IAM_USER' or 'CLOUD_IAM_SERVICE_ACCOUNT'."
+  description = "Map of users to create in the primary instance (and replicated to other replicas). For MySQL, anything after the first `@` (if present) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'BUILT_IN', 'CLOUD_IAM_USER' or 'CLOUD_IAM_SERVICE_ACCOUNT'."
   type = map(object({
     password = optional(string)
     type     = optional(string)

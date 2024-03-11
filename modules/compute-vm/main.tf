@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -267,6 +267,13 @@ resource "google_compute_instance" "default" {
     }
   }
 
+  dynamic "network_interface" {
+    for_each = var.network_attached_interfaces
+    content {
+      network_attachment = network_interface.value
+    }
+  }
+
   scheduling {
     automatic_restart           = !var.options.spot
     instance_termination_action = local.termination_action
@@ -334,25 +341,27 @@ resource "google_compute_instance_iam_binding" "default" {
 }
 
 resource "google_compute_instance_template" "default" {
-  provider         = google-beta
-  count            = var.create_template ? 1 : 0
-  project          = var.project_id
-  region           = local.region
-  name_prefix      = "${var.name}-"
-  description      = var.description
-  tags             = var.tags
-  machine_type     = var.instance_type
-  min_cpu_platform = var.min_cpu_platform
-  can_ip_forward   = var.can_ip_forward
-  metadata         = var.metadata
-  labels           = var.labels
+  provider              = google-beta
+  count                 = var.create_template ? 1 : 0
+  project               = var.project_id
+  region                = local.region
+  name_prefix           = "${var.name}-"
+  description           = var.description
+  tags                  = var.tags
+  machine_type          = var.instance_type
+  min_cpu_platform      = var.min_cpu_platform
+  can_ip_forward        = var.can_ip_forward
+  metadata              = var.metadata
+  labels                = var.labels
+  resource_manager_tags = local.tags_combined
 
   disk {
-    auto_delete  = var.boot_disk.auto_delete
-    boot         = true
-    disk_size_gb = var.boot_disk.initialize_params.size
-    disk_type    = var.boot_disk.initialize_params.type
-    source_image = var.boot_disk.initialize_params.image
+    auto_delete           = var.boot_disk.auto_delete
+    boot                  = true
+    disk_size_gb          = var.boot_disk.initialize_params.size
+    disk_type             = var.boot_disk.initialize_params.type
+    resource_manager_tags = var.tag_bindings
+    source_image          = var.boot_disk.initialize_params.image
   }
 
   dynamic "confidential_instance_config" {
@@ -386,7 +395,8 @@ resource "google_compute_instance_template" "default" {
       disk_name = (
         config.value.source_type != "attach" ? config.value.name : null
       )
-      type = "PERSISTENT"
+      resource_manager_tags = var.tag_bindings
+      type                  = "PERSISTENT"
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []
         content {
@@ -419,6 +429,13 @@ resource "google_compute_instance_template" "default" {
           ip_cidr_range         = config_alias.value
         }
       }
+    }
+  }
+
+  dynamic "network_interface" {
+    for_each = var.network_attached_interfaces
+    content {
+      network_attachment = network_interface.value
     }
   }
 

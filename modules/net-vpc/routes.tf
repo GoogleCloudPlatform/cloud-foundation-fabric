@@ -108,3 +108,32 @@ resource "google_compute_route" "vpn_tunnel" {
   tags                = each.value.tags
   next_hop_vpn_tunnel = each.value.next_hop
 }
+
+resource "google_network_connectivity_policy_based_route" "default" {
+  for_each              = var.policy_based_routes
+  project               = var.project_id
+  network               = local.network.id
+  name                  = "${var.name}-${each.key}"
+  description           = each.value.description
+  priority              = each.value.priority
+  next_hop_other_routes = each.value.use_default_routing ? "DEFAULT_ROUTING" : null
+  next_hop_ilb_ip       = each.value.use_default_routing ? null : each.value.next_hop_ilb_ip
+  filter {
+    protocol_version = "IPV4"
+    ip_protocol      = each.value.filter.ip_protocol
+    dest_range       = each.value.filter.dest_range
+    src_range        = each.value.filter.src_range
+  }
+  dynamic "virtual_machine" {
+    for_each = each.value.target.tags != null ? [""] : []
+    content {
+      tags = each.value.target.tags
+    }
+  }
+  dynamic "interconnect_attachment" {
+    for_each = each.value.target.interconnect_attachment != null ? [""] : []
+    content {
+      region = each.value.target.interconnect_attachment
+    }
+  }
+}

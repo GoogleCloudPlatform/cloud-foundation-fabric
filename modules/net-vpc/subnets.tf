@@ -18,9 +18,10 @@
 
 locals {
   _factory_data = {
-    for f in try(fileset(var.factories_config.subnets_folder, "**/*.yaml"), []) :
-    trimsuffix(basename(f), ".yaml") => yamldecode(file("${var.factories_config.subnets_folder}/${f}"))
+    for f in try(fileset(local._factory_path, "**/*.yaml"), []) :
+    trimsuffix(basename(f), ".yaml") => yamldecode(file("${local._factory_path}/${f}"))
   }
+  _factory_path = try(pathexpand(var.factories_config.subnets_folder), null)
   _factory_subnets = {
     for k, v in local._factory_data :
     "${v.region}/${try(v.name, k)}" => {
@@ -243,4 +244,21 @@ resource "google_compute_subnetwork_iam_member" "bindings" {
       description = each.value.condition.description
     }
   }
+}
+
+resource "google_compute_network_attachment" "default" {
+  provider    = google-beta
+  for_each    = var.network_attachments
+  project     = var.project_id
+  region      = google_compute_subnetwork.subnetwork[each.value.subnet].region
+  name        = each.key
+  description = each.value.description
+  connection_preference = (
+    each.value.automatic_connection ? "ACCEPT_AUTOMATIC" : "ACCEPT_MANUAL"
+  )
+  subnetworks = [
+    google_compute_subnetwork.subnetwork[each.value.subnet].self_link
+  ]
+  producer_accept_lists = each.value.producer_accept_lists
+  producer_reject_lists = each.value.producer_reject_lists
 }

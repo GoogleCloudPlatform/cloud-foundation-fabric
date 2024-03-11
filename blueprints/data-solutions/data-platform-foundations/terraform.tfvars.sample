@@ -1,6 +1,0 @@
-prefix              	= "dat-plat"
-project_config = {
-    parent              = "folders/1111111111"
-    billing_account_id  = "1111111-2222222-33333333"
-}
-organization_domain 	= "domain.com"

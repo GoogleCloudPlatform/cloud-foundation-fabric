@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 # tfdoc:file:description Team stage resources.
 
 # TODO(ludo): add support for CI/CD
-
-############### top-level Teams branch and automation resources ###############
 
 module "branch-teams-folder" {
   source = "../../../modules/folder"
@@ -68,7 +66,6 @@ module "branch-teams-gcs" {
   }
 }
 
-################## per-team folders and automation resources ##################
 
 module "branch-teams-team-folder" {
   source   = "../../../modules/folder"
@@ -82,7 +79,7 @@ module "branch-teams-team-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-teams-team-sa[each.key].iam_email]
     "roles/compute.xpnAdmin"               = [module.branch-teams-team-sa[each.key].iam_email]
   }
-  group_iam = each.value.group_iam == null ? {} : each.value.group_iam
+  iam_by_principals = each.value.iam_by_principals == null ? {} : each.value.iam_by_principals
 }
 
 # TODO: move into team's own IaC project
@@ -98,9 +95,9 @@ module "branch-teams-team-sa" {
     "roles/iam.serviceAccountTokenCreator" = concat(
       compact([try(module.branch-teams-team-sa-cicd[each.key].iam_email, null)]),
       (
-        each.value.impersonation_groups == null
+        each.value.impersonation_principals == null
         ? []
-        : [for g in each.value.impersonation_groups : "group:${g}"]
+        : [for g in each.value.impersonation_principals : g]
       )
     )
   }
@@ -129,7 +126,7 @@ module "branch-teams-team-dev-folder" {
   # naming: environment descriptive name
   name = "Development"
   # environment-wide human permissions on the whole teams environment
-  group_iam = {}
+  iam_by_principals = {}
   iam = {
     (local.custom_roles.service_project_network_admin) = (
       local.branch_optional_sa_lists.pf-dev
@@ -139,6 +136,8 @@ module "branch-teams-team-dev-folder" {
     "roles/logging.admin"                  = local.branch_optional_sa_lists.pf-dev
     "roles/resourcemanager.folderAdmin"    = local.branch_optional_sa_lists.pf-dev
     "roles/resourcemanager.projectCreator" = local.branch_optional_sa_lists.pf-dev
+    "roles/resourcemanager.folderViewer"   = local.branch_optional_r_sa_lists.pf-dev
+    "roles/viewer"                         = local.branch_optional_r_sa_lists.pf-dev
   }
   tag_bindings = {
     environment = try(
@@ -154,7 +153,7 @@ module "branch-teams-team-prod-folder" {
   # naming: environment descriptive name
   name = "Production"
   # environment-wide human permissions on the whole teams environment
-  group_iam = {}
+  iam_by_principals = {}
   iam = {
     (local.custom_roles.service_project_network_admin) = (
       local.branch_optional_sa_lists.pf-prod
@@ -164,6 +163,8 @@ module "branch-teams-team-prod-folder" {
     "roles/logging.admin"                  = local.branch_optional_sa_lists.pf-prod
     "roles/resourcemanager.folderAdmin"    = local.branch_optional_sa_lists.pf-prod
     "roles/resourcemanager.projectCreator" = local.branch_optional_sa_lists.pf-prod
+    "roles/resourcemanager.folderViewer"   = local.branch_optional_r_sa_lists.pf-prod
+    "roles/viewer"                         = local.branch_optional_r_sa_lists.pf-prod
   }
   tag_bindings = {
     environment = try(

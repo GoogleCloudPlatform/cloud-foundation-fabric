@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,31 +12,64 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.organization.google_organization_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
+    condition: []
+    members:
+    - group:gcp-network-admins@fast.example.com
+    - group:gcp-security-admins@fast.example.com
+    - group:gcp-support@example.com
+    org_id: '123456789012'
+    role: roles/cloudsupport.techSupportEditor
+  module.organization.google_organization_iam_binding.authoritative["roles/logging.viewer"]:
+    condition: []
+    members:
+    - group:gcp-support@example.com
+    - serviceAccount:fast-prod-bootstrap-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:fast-prod-resman-0r@fast-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/logging.viewer
+  module.organization.google_organization_iam_binding.authoritative["roles/monitoring.viewer"]:
+    condition: []
+    members:
+    - group:gcp-support@example.com
+    org_id: '123456789012'
+    role: roles/monitoring.viewer
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3
+  google_essential_contacts_contact: 3
   google_logging_organization_sink: 3
-  google_organization_iam_binding: 20
-  google_organization_iam_custom_role: 3
-  google_organization_iam_member: 13
+  google_logging_project_bucket_config: 3
+  google_org_policy_policy: 20
+  google_organization_iam_binding: 27
+  google_organization_iam_custom_role: 6
+  google_organization_iam_member: 22
   google_project: 3
-  google_project_iam_binding: 10
-  google_project_iam_member: 5
+  google_project_iam_binding: 19
+  google_project_iam_member: 6
   google_project_service: 29
   google_project_service_identity: 3
-  google_service_account: 2
-  google_service_account_iam_binding: 1
+  google_service_account: 4
+  google_service_account_iam_binding: 2
   google_storage_bucket: 3
-  google_storage_bucket_iam_binding: 1
-  google_storage_bucket_iam_member: 2
-  google_storage_bucket_object: 5
+  google_storage_bucket_iam_binding: 2
+  google_storage_bucket_iam_member: 4
+  google_storage_bucket_object: 7
   google_storage_project_service_account: 3
-  local_file: 5
+  google_tags_tag_key: 1
+  google_tags_tag_value: 1
+  local_file: 7
+  modules: 15
+  resources: 182
 
 outputs:
   custom_roles:
+    organization_admin_viewer: organizations/123456789012/roles/organizationAdminViewer
     organization_iam_admin: organizations/123456789012/roles/organizationIamAdmin
     service_project_network_admin: organizations/123456789012/roles/serviceProjectNetworkAdmin
+    storage_viewer: organizations/123456789012/roles/storageViewer
+    tag_viewer: organizations/123456789012/roles/tagViewer
     tenant_network_admin: organizations/123456789012/roles/tenantNetworkAdmin
   outputs_bucket: fast-prod-iac-core-outputs-0
   project_ids:

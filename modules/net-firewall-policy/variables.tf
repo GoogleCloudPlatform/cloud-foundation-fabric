@@ -35,6 +35,7 @@ variable "egress_rules" {
     description             = optional(string)
     disabled                = optional(bool, false)
     enable_logging          = optional(bool)
+    target_resources        = optional(list(string))
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
     match = object({
@@ -62,6 +63,17 @@ variable "egress_rules" {
   }
 }
 
+variable "factories_config" {
+  description = "Paths to folders for the optional factories."
+  type = object({
+    cidr_file_path          = optional(string)
+    egress_rules_file_path  = optional(string)
+    ingress_rules_file_path = optional(string)
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "ingress_rules" {
   description = "List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next'."
   type = map(object({
@@ -70,6 +82,7 @@ variable "ingress_rules" {
     description             = optional(string)
     disabled                = optional(bool, false)
     enable_logging          = optional(bool)
+    target_resources        = optional(list(string))
     target_service_accounts = optional(list(string))
     target_tags             = optional(list(string))
     match = object({
@@ -113,15 +126,4 @@ variable "region" {
   description = "Policy region. Leave null for hierarchical policy, set to 'global' for a global network policy."
   type        = string
   default     = null
-}
-
-variable "rules_factory_config" {
-  description = "Configuration for the optional rules factory."
-  type = object({
-    cidr_file_path          = optional(string)
-    egress_rules_file_path  = optional(string)
-    ingress_rules_file_path = optional(string)
-  })
-  nullable = false
-  default  = {}
 }

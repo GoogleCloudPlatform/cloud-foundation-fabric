@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,23 @@ module "branch-network-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Networking"
-  group_iam = local.groups.gcp-network-admins == null ? {} : {
-    (local.groups.gcp-network-admins) = [
-      # add any needed roles for resources/services not managed via Terraform,
-      # or replace editor with ~viewer if no broad resource management needed
-      # e.g.
-      #   "roles/compute.networkAdmin",
-      #   "roles/dns.admin",
-      #   "roles/compute.securityAdmin",
+  iam_by_principals = {
+    (local.principals.gcp-network-admins) = [
+      # owner and viewer roles are broad and might grant unwanted access
+      # replace them with more selective custom roles for production deployments
       "roles/editor",
     ]
   }
   iam = {
+    # read-write (apply) automation service account
     "roles/logging.admin"                  = [module.branch-network-sa.iam_email]
     "roles/owner"                          = [module.branch-network-sa.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-network-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
     "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
+    # read-only (plan) automation service account
+    "roles/viewer"                       = [module.branch-network-r-sa.iam_email]
+    "roles/resourcemanager.folderViewer" = [module.branch-network-r-sa.iam_email]
   }
   tag_bindings = {
     context = try(
@@ -50,10 +50,17 @@ module "branch-network-prod-folder" {
   parent = module.branch-network-folder.id
   name   = "Production"
   iam = {
+    # read-write (apply) automation service accounts
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.dp-prod,
       local.branch_optional_sa_lists.gke-prod,
       local.branch_optional_sa_lists.pf-prod,
+    )
+    # read-only (plan) automation service accounts
+    "roles/compute.networkViewer" = concat(
+      local.branch_optional_r_sa_lists.dp-prod,
+      local.branch_optional_r_sa_lists.gke-prod,
+      local.branch_optional_r_sa_lists.pf-prod,
     )
   }
   tag_bindings = {
@@ -69,10 +76,17 @@ module "branch-network-dev-folder" {
   parent = module.branch-network-folder.id
   name   = "Development"
   iam = {
+    # read-write (apply) automation service accounts
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.dp-dev,
       local.branch_optional_sa_lists.gke-dev,
       local.branch_optional_sa_lists.pf-dev,
+    )
+    # read-only (plan) automation service accounts
+    "roles/compute.networkViewer" = concat(
+      local.branch_optional_r_sa_lists.dp-prod,
+      local.branch_optional_r_sa_lists.gke-prod,
+      local.branch_optional_r_sa_lists.pf-prod,
     )
   }
   tag_bindings = {
@@ -83,7 +97,7 @@ module "branch-network-dev-folder" {
   }
 }
 
-# automation service account and bucket
+# automation service account
 
 module "branch-network-sa" {
   source       = "../../../modules/iam-service-account"
@@ -104,6 +118,29 @@ module "branch-network-sa" {
   }
 }
 
+# automation read-only service account
+
+module "branch-network-r-sa" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = var.automation.project_id
+  name         = "prod-resman-net-0r"
+  display_name = "Terraform resman networking service account (read-only)."
+  prefix       = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-network-r-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_project_roles = {
+    (var.automation.project_id) = ["roles/serviceusage.serviceUsageConsumer"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = [var.custom_roles["storage_viewer"]]
+  }
+}
+
+# automation bucket
+
 module "branch-network-gcs" {
   source        = "../../../modules/gcs"
   project_id    = var.automation.project_id
@@ -113,6 +150,7 @@ module "branch-network-gcs" {
   storage_class = local.gcs_storage_class
   versioning    = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-network-sa.iam_email]
+    "roles/storage.objectAdmin"  = [module.branch-network-sa.iam_email]
+    "roles/storage.objectViewer" = [module.branch-network-r-sa.iam_email]
   }
 }

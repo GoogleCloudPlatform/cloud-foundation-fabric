@@ -28,17 +28,43 @@ compute.vmExternalIpAccess:
   rules:
     - deny:
         all: true
+
+# only allow GCP images by default
+compute.trustedImageProjects:
+  rules:
+  - allow:
+      values:
+        - "is:projects/centos-cloud"
+        - "is:projects/cos-cloud"
+        - "is:projects/debian-cloud"
+        - "is:projects/fedora-cloud"
+        - "is:projects/fedora-coreos-cloud"
+        - "is:projects/opensuse-cloud"
+        - "is:projects/rhel-cloud"
+        - "is:projects/rhel-sap-cloud"
+        - "is:projects/rocky-linux-cloud"
+        - "is:projects/suse-cloud"
+        - "is:projects/suse-sap-cloud"
+        - "is:projects/ubuntu-os-cloud"
+        - "is:projects/ubuntu-os-pro-cloud"
+        - "is:projects/windows-cloud"
+        - "is:projects/windows-sql-cloud"
+        - "is:projects/confidential-vm-images"
+        - "is:projects/backupdr-images"
+        - "is:projects/deeplearning-platform-release"
+        - "is:projects/serverless-vpc-access-images"
+
 # compute.disableInternetNetworkEndpointGroup:
 #   rules:
 #   - enforce: true
 
-# compute.disableNestedVirtualization:
-#   rules:
-#   - enforce: true
+compute.disableNestedVirtualization:
+  rules:
+  - enforce: true
 
-# compute.disableSerialPortAccess:
-#   rules:
-#   - enforce: true
+compute.disableSerialPortAccess:
+  rules:
+  - enforce: true
 
 # compute.restrictCloudNATUsage:
 #   rules:

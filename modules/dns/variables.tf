@@ -43,7 +43,16 @@ variable "recordsets" {
     records = optional(list(string))
     geo_routing = optional(list(object({
       location = string
-      records  = list(string)
+      records  = optional(list(string))
+      health_checked_targets = optional(list(object({
+        load_balancer_type = string
+        ip_address         = string
+        port               = string
+        ip_protocol        = string
+        network_url        = string
+        project            = string
+        region             = optional(string)
+      })))
     })))
     wrr_routing = optional(list(object({
       weight  = number

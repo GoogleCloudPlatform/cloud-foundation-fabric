@@ -118,56 +118,11 @@ variable "budgets" {
   }
 }
 
-variable "factory_config" {
-  # TODO: align all other factory variable names
+variable "factories_config" {
   description = "Path to folder containing budget alerts data files."
   type = object({
     budgets_data_path = optional(string, "data/billing-budgets")
   })
-  nullable = false
-  default  = {}
-}
-
-variable "group_iam" {
-  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
   nullable = false
   default  = {}
 }
@@ -178,11 +133,11 @@ variable "id" {
 }
 
 variable "logging_sinks" {
-  description = "Logging sinks to create for the organization."
+  description = "Logging sinks to create for the billing account."
   type = map(object({
     destination          = string
     type                 = string
-    bq_partitioned_table = optional(bool)
+    bq_partitioned_table = optional(bool, false)
     description          = optional(string)
     disabled             = optional(bool, false)
     exclusions = optional(map(object({
@@ -197,9 +152,9 @@ variable "logging_sinks" {
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+      contains(["bigquery", "logging", "project", "pubsub", "storage"], v.type)
     ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+    error_message = "Type must be one of 'bigquery', 'logging', 'project', 'pubsub', 'storage'."
   }
   validation {
     condition = alltrue([

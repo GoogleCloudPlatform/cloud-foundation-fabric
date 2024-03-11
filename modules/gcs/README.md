@@ -53,7 +53,7 @@ module "bucket" {
   location       = "EU"
 }
 
-# tftest skip e2e
+# tftest modules=3 skip e2e
 ```
 
 ### Example with retention policy and logging

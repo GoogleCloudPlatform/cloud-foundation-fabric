@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 # Set up CloudSQL
 module "cloudsql" {
-  source              = "../../../modules/cloudsql-instance"
-  project_id          = module.project.project_id
-  name                = "${var.prefix}-mysql"
-  database_version    = local.cloudsql_conf.database_version
-  deletion_protection = var.deletion_protection
-  databases           = [local.cloudsql_conf.db]
+  source                        = "../../../modules/cloudsql-instance"
+  project_id                    = module.project.project_id
+  name                          = "${var.prefix}-mysql"
+  database_version              = local.cloudsql_conf.database_version
+  terraform_deletion_protection = var.deletion_protection
+  gcp_deletion_protection       = var.deletion_protection
+  databases                     = [local.cloudsql_conf.db]
   network_config = {
     connectivity = {
       psa_config = {
@@ -35,6 +36,7 @@ module "cloudsql" {
   users = {
     "${local.cloudsql_conf.user}" = {
       password = var.cloudsql_password
+      type     = "BUILT_IN"
     }
   }
 }

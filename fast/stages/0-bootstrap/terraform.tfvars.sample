@@ -4,6 +4,14 @@ billing_account = {
   id = "012345-67890A-BCDEF0"
 }
 
+# locations for GCS, BigQuery, and logging buckets created here
+locations = {
+  bq      = "EU"
+  gcs     = "EU"
+  logging = "global"
+  pubsub  = []
+}
+
 # use `gcloud organizations list`
 organization = {
   domain      = "example.org"
@@ -15,4 +23,3 @@ outputs_location = "~/fast-config"
 
 # use something unique and no longer than 9 characters
 prefix = "abcd"
-

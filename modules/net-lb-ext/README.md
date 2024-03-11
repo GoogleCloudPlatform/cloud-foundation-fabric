@@ -13,42 +13,13 @@ This module allows managing a GCE Network Load Balancer and integrates the forwa
 This example shows how to reference existing Managed Infrastructure Groups (MIGs).
 
 ```hcl
-module "instance_template" {
-  source          = "./fabric/modules/compute-vm"
-  project_id      = var.project_id
-  zone            = "${var.region}-b"
-  name            = "vm-test"
-  create_template = true
-  service_account = {
-    auto_create = true
-  }
-  network_interfaces = [
-    {
-      network    = var.vpc.self_link
-      subnetwork = var.subnet.self_link
-    }
-  ]
-  tags = [
-    "http-server"
-  ]
-}
-
-module "mig" {
-  source            = "./fabric/modules/compute-mig"
-  project_id        = var.project_id
-  location          = var.region
-  name              = "mig-test"
-  target_size       = 1
-  instance_template = module.instance_template.template.self_link
-}
-
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
   region     = var.region
   name       = "nlb-test"
   backends = [{
-    group = module.mig.group_manager.instance_group
+    group = module.compute-mig.group_manager.instance_group
   }]
   health_check_config = {
     http = {
@@ -56,7 +27,7 @@ module "nlb" {
     }
   }
 }
-# tftest modules=3 resources=6 inventory=migs.yaml e2e
+# tftest modules=3 resources=5 fixtures=fixtures/compute-mig.tf inventory=migs.yaml e2e
 ```
 
 ### Externally managed instances
@@ -64,18 +35,6 @@ module "nlb" {
 This examples shows how to create an NLB by combining externally managed instances (in a custom module or even outside of the current root module) in an unmanaged group. When using internally managed groups, remember to run `terraform apply` each time group instances change.
 
 ```hcl
-module "instance" {
-  source     = "./fabric/modules/compute-vm"
-  for_each   = toset(["b", "c"])
-  name       = "instance-${each.key}"
-  project_id = var.project_id
-  zone       = "${var.region}-b"
-  network_interfaces = [{
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
-  }]
-}
-
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
@@ -85,7 +44,7 @@ module "nlb" {
     my-group = {
       zone = "${var.region}-b"
       instances = [
-        for z in ["b", "c"] : module.instance[z].id
+        module.compute-vm-group-b.id,
       ]
     }
   }
@@ -98,10 +57,10 @@ module "nlb" {
     }
   }
 }
-# tftest modules=3 resources=6 inventory=ext_migs.yaml e2e
+# tftest modules=3 resources=8 fixtures=fixtures/compute-vm-group-bc.tf inventory=ext_migs.yaml e2e
 ```
 
-### Mutiple forwarding rules
+### Multiple forwarding rules
 
 You can add more forwarding rules to your load balancer and override some forwarding rules defaults, including the global access policy, the IP protocol, the IP version and ports.
 
@@ -111,18 +70,6 @@ The example adds two forwarding rules:
 - the second one, called `nlb-test-vip-two` exposes an IPv4 address, it listens on port 80 and allows connections from the same region only.
 
 ```hcl
-module "instance" {
-  source     = "./fabric/modules/compute-vm"
-  for_each   = toset(["b", "c"])
-  name       = "instance-${each.key}"
-  project_id = var.project_id
-  zone       = "${var.region}-b"
-  network_interfaces = [{
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
-  }]
-}
-
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
@@ -141,12 +88,12 @@ module "nlb" {
     my-group = {
       zone = "${var.region}-b"
       instances = [
-        for z in ["b", "c"] : module.instance[z].id
+        module.compute-vm-group-b.id,
       ]
     }
   }
 }
-# tftest modules=3 resources=7 inventory=fwd_rules.yaml e2e
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=fwd_rules.yaml e2e
 ```
 
 ### Dual stack (IPv4 and IPv6)
@@ -155,18 +102,6 @@ Your load balancer can use a combination of either or both IPv4 and IPv6 forward
 In this example we set the load balancer to work as dual stack, meaning it exposes both an IPv4 and an IPv6 address.
 
 ```hcl
-module "instance" {
-  source     = "./fabric/modules/compute-vm"
-  for_each   = toset(["b", "c"])
-  name       = "instance-${each.key}"
-  project_id = var.project_id
-  zone       = "${var.region}-b"
-  network_interfaces = [{
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
-  }]
-}
-
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
   project_id = var.project_id
@@ -187,12 +122,12 @@ module "nlb" {
     my-group = {
       zone = "${var.region}-b"
       instances = [
-        for z in ["b", "c"] : module.instance[z].id
+        module.compute-vm-group-b.id,
       ]
     }
   }
 }
-# tftest modules=3 resources=7 inventory=dual_stack.yaml e2e
+# tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=dual_stack.yaml e2e
 ```
 
 ### End to end example
@@ -290,7 +225,12 @@ module "nlb" {
 | [group_self_links](outputs.tf#L53) | Optional unmanaged instance group self links. |  |
 | [groups](outputs.tf#L60) | Optional unmanaged instance group resources. |  |
 | [health_check](outputs.tf#L65) | Auto-created health-check resource. |  |
-| [health_check_self_id](outputs.tf#L70) | Auto-created health-check self id. |  |
+| [health_check_id](outputs.tf#L70) | Auto-created health-check id. |  |
 | [health_check_self_link](outputs.tf#L75) | Auto-created health-check self link. |  |
 | [id](outputs.tf#L80) | Fully qualified forwarding rule ids. |  |
+
+## Fixtures
+
+- [compute-mig.tf](../../tests/fixtures/compute-mig.tf)
+- [compute-vm-group-bc.tf](../../tests/fixtures/compute-vm-group-bc.tf)
 <!-- END TFDOC -->
