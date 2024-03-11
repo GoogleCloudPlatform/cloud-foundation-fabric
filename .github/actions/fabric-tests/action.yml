@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,13 +28,13 @@ runs:
         echo '{"type": "service_account", "project_id": "test-only"}' \
           | tee -a $GOOGLE_APPLICATION_CREDENTIALS
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.PYTHON_VERSION }}
         cache: 'pip'
         cache-dependency-path: 'tests/requirements.txt'
     - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v2
+      uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ inputs.TERRAFORM_VERSION }}
         terraform_wrapper: false
@@ -47,12 +47,12 @@ runs:
           | tee -a /home/runner/.terraformrc
         mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
     - name: Download lockfile
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: lockfile
         path: tools/lockfile
     - name: Download Terraform provider cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{ env.TF_PLUGIN_CACHE_DIR }}
         key: ${{ runner.os }}-terraform-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
