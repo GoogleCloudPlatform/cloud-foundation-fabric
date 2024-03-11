@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2133](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2133)] Updated diagram to better reflect code naming. ([bswenka](https://github.com/bswenka)) <!-- 2024-03-06 19:23:37+00:00 -->
+- [[#2135](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2135)] Rename `modules/cloudsql-instance` deletion protection variables ([juliocc](https://github.com/juliocc)) <!-- 2024-03-06 10:44:55+00:00 -->
 - [[#2119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2119)] Fix phpipam blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-29 08:33:07+00:00 -->
 - [[#2110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2110)] Gitlab blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-27 17:36:46+00:00 -->
 - [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
@@ -27,6 +29,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#2134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2134)] **incompatible change:** Add links to factories doc ([ludoo](https://github.com/ludoo)) <!-- 2024-03-06 07:25:43+00:00 -->
 - [[#2120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2120)] Implement GKE patterns naming conventions ([juliocc](https://github.com/juliocc)) <!-- 2024-02-29 06:57:22+00:00 -->
 - [[#2110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2110)] Gitlab blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-27 17:36:46+00:00 -->
 - [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
@@ -65,6 +68,9 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2135](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2135)] Rename `modules/cloudsql-instance` deletion protection variables ([juliocc](https://github.com/juliocc)) <!-- 2024-03-06 10:44:55+00:00 -->
+- [[#2134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2134)] **incompatible change:** Add links to factories doc ([ludoo](https://github.com/ludoo)) <!-- 2024-03-06 07:25:43+00:00 -->
+- [[#2130](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2130)] **incompatible change:** Add support for service account IAM variables to pf ([ludoo](https://github.com/ludoo)) <!-- 2024-03-05 12:13:02+00:00 -->
 - [[#2129](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2129)] Remove ignore_changes as terraform-provider-google#16804 is closed ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-05 07:11:07+00:00 -->
 - [[#2125](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2125)] Add support for PSC network attachments and interfaces in modules ([ludoo](https://github.com/ludoo)) <!-- 2024-03-04 09:12:11+00:00 -->
 - [[#2124](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2124)] Update docs about role automatically granted to dataform SA ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-04 06:47:26+00:00 -->
@@ -105,6 +111,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2132](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2132)] feat: add e2e test for compute-mig module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-06 20:30:20+00:00 -->
 - [[#2118](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2118)] Add https security to cloud-functions-v1 module ([mibelbahri](https://github.com/mibelbahri)) <!-- 2024-02-28 20:20:56+00:00 -->
 - [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
 - [[#2109](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2109)] Once again fix e2e tests ([wiktorn](https://github.com/wiktorn)) <!-- 2024-02-23 18:21:39+00:00 -->

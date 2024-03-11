@@ -66,7 +66,7 @@ This [blueprint](./onprem-sa-key-management) shows how to manage IAM Service Acc
 
 ## Workload identity federation with Terraform Cloud workflows
 
-<a href="./terraform-cloud-dynamic-credentials" title="Workload identity federation with Terraform Cloud/Enterprise workflows"><img src="./terraform-cloud-dynamic-credentials/diagram.png" align="left" width="280px"></a> This [blueprint](./terraform-cloud-dynamic-credentials) shows how to configure [Wokload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation) between [Terraform Cloud/Enterprise](https://developer.hashicorp.com/terraform/enterprise) instance and Google Cloud.
+<a href="./terraform-cloud-dynamic-credentials" title="Workload identity federation with Terraform Cloud/Enterprise workflows"><img src="./terraform-cloud-dynamic-credentials/diagram.png" align="left" width="280px"></a> This [blueprint](./terraform-cloud-dynamic-credentials) shows how to configure [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation) between [Terraform Cloud/Enterprise](https://developer.hashicorp.com/terraform/enterprise) instance and Google Cloud.
 
 <br clear="left">
 
@@ -78,7 +78,7 @@ This [blueprint](./onprem-sa-key-management) shows how to manage IAM Service Acc
 
 ## Migrate for Compute Engine (v5)
 
-<a href="./vm-migration" title="Packer image builder"><img src="./vm-migration/host-target-projects/diagram.png" align="left" width="280px"></a> This set of [blueprints](./vm-migration) shows how to deploy Migrate for Compute Engine (v5) on top of existing Cloud Foundations on different scenarios. An blueprint on how to deploy the M4CE connector on VMWare ESXi is also part of the blueprints.
+<a href="./vm-migration" title="Packer image builder"><img src="./vm-migration/host-target-projects/diagram.png" align="left" width="280px"></a> This set of [blueprints](./vm-migration) shows how to deploy Migrate for Compute Engine (v5) on top of existing Cloud Foundations on different scenarios. A blueprint on how to deploy the M4CE connector on VMWare ESXi is also part of the blueprints.
 
 <br clear="left">
 

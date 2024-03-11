@@ -81,7 +81,6 @@ module "processing-dp-historyserver" {
   source     = "../../../modules/dataproc"
   project_id = module.processing-project.project_id
   name       = "history-server"
-  prefix     = var.prefix
   region     = var.region
   dataproc_config = {
     cluster_config = {
