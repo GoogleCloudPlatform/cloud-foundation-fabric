@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "folders" {
+  description = "Folder ids."
+  value       = local.folders
+}
+
 output "projects" {
   description = "Project module outputs."
   value       = module.projects
@@ -24,4 +29,8 @@ output "service_accounts" {
   value = {
     for k, v in module.service-accounts : k => v.email
   }
+}
+
+output "tmp" {
+  value = local._folders
 }
