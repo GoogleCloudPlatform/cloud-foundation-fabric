@@ -26,6 +26,12 @@ variable "group_email" {
   default = "organization-admins@example.org"
 }
 
+variable "keyring" {
+  default = {
+    name = "keyring"
+  }
+}
+
 variable "kms_key" {
   default = {
     id = "kms_key_self_link"

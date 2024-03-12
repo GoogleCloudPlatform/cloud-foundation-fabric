@@ -66,9 +66,9 @@ module "kms" {
   iam = {
     "roles/cloudkms.admin" = ["group:${var.group_email}"]
   }
-  keyring        = { location = var.region, name = "test-1" }
+  keyring        = { location = var.region, name = var.keyring.name }
   keyring_create = false
-  keys           = { key-d = {}, key-e = {}, key-f = {} }
+  keys           = { key-a = {}, key-b = {}, key-c = {} }
 }
 # tftest skip (uses data sources) e2e
 ```
