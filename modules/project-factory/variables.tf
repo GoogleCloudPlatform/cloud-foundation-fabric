@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,10 @@ variable "data_overrides" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
+    hierarchy = optional(object({
+      folders_data_path = string
+      parent_ids        = optional(map(string), {})
+    }))
     projects_data_path = string
     budgets = optional(object({
       billing_account       = string
