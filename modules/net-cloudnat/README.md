@@ -14,12 +14,12 @@ Simple Cloud NAT management, with optional router creation.
 ```hcl
 module "nat" {
   source         = "./fabric/modules/net-cloudnat"
-  project_id     = "my-project"
-  region         = "europe-west1"
+  project_id     = var.project_id
+  region         = var.region
   name           = "default"
-  router_network = "my-vpc"
+  router_network = var.vpc.self_link
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 e2e
 ```
 
 ## Reserved IPs and custom rules
@@ -27,20 +27,20 @@ module "nat" {
 ```hcl
 module "addresses" {
   source     = "./fabric/modules/net-address"
-  project_id = "my-project"
+  project_id = var.project_id
   external_addresses = {
-    a1 = { region = "europe-west1" }
-    a2 = { region = "europe-west1" }
-    a3 = { region = "europe-west1" }
+    a1 = { region = var.region }
+    a2 = { region = var.region }
+    a3 = { region = var.region }
   }
 }
 
 module "nat" {
   source         = "./fabric/modules/net-cloudnat"
-  project_id     = "my-project"
-  region         = "europe-west1"
+  project_id     = var.project_id
+  region         = var.region
   name           = "nat"
-  router_network = "my-vpc"
+  router_network = var.vpc.self_link
   addresses = [
     module.addresses.external_addresses["a1"].self_link,
     module.addresses.external_addresses["a3"].self_link
@@ -60,8 +60,9 @@ module "nat" {
     }
   ]
 }
-# tftest modules=2 resources=5 inventory=rules.yaml
+# tftest modules=2 resources=5 inventory=rules.yaml e2e
 ```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
