@@ -17,16 +17,18 @@
 # tfdoc:file:description Organization tag and conditional IAM grant.
 
 locals {
-  iam_tenant_condition = "resource.matchTag('${local.tag_keys.tenant}', '${var.tenant_config.short_name}')"
-  tag_keys = {
-    for k, v in var.tag_names : k => "${var.organization.id}/${v}"
-  }
+  iam_tenant_condition = format(
+    "resource.matchTag('%s', '%s')",
+    local.tag_keys.tenant,
+    var.tenant_config.short_name
+  )
 }
 
 module "organization" {
   source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
   iam_bindings_additive = merge(
+    # admin group IAM
     {
       admins_org_viewer = {
         member = local.principals.gcp-admins
@@ -36,18 +38,12 @@ module "organization" {
         member = local.principals.gcp-admins
         role   = "roles/orgpolicy.policyAdmin"
         condition = {
-          title       = "org_policy_tag_${var.tenant_config.short_name}_scoped_admins"
-          description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name}."
-          expression  = local.iam_tenant_condition
-        }
-      }
-      sa_resman_org_policy_admin = {
-        member = module.automation-tf-resman-sa.iam_email
-        role   = "roles/orgpolicy.policyAdmin"
-        condition = {
-          title       = "org_policy_tag_${var.tenant_config.short_name}_scoped_sa_resman"
-          description = "Org policy tag scoped grant for tenant ${var.tenant_config.short_name}."
-          expression  = local.iam_tenant_condition
+          title = "org_policy_tag_${var.tenant_config.short_name}_scoped_admins"
+          description = format(
+            "Org policy tag scoped grant for tenant %s.",
+            var.tenant_config.short_name
+          )
+          expression = local.iam_tenant_condition
         }
       }
     },
@@ -60,36 +56,63 @@ module "organization" {
         member = local.principals.gcp-admins
         role   = "roles/billing.costsManager"
       }
+    },
+    # resman servica account IAM
+    {
+      sa_resman_org_policy_admin = {
+        member = module.automation-tf-resman-sa.iam_email
+        role   = "roles/orgpolicy.policyAdmin"
+        condition = {
+          title = (
+            "org_policy_tag_${var.tenant_config.short_name}_scoped_sa_resman"
+          )
+          description = format(
+            "Org policy tag scoped grant for tenant %s.",
+            var.tenant_config.short_name
+          )
+          expression = local.iam_tenant_condition
+        }
+      }
+    },
+    local.billing_mode != "org" ? {} : {
       sa_resman_billing_admin = {
         member = module.automation-tf-resman-sa.iam_email
         role   = "roles/billing.admin"
       }
-    }
-  )
-  tags = {
-    tenant = {
-      id = var.tag_keys.tenant
-      values = {
-        (var.tenant_config.short_name) = {}
+    },
+    # stage 2/3 service accounts IAM
+    {
+      for k, v in module.automation-tf-resman-sa-stage2-3 :
+      "sa_${k}_org_policy_admin" => {
+        member = v.iam_email
+        role   = "roles/orgpolicy.policyAdmin"
+        condition = {
+          title = "org_policy_tag_${var.tenant_config.short_name}_${k}_scoped"
+          description = format(
+            "Org policy tag scoped grant for tenant %s (%s).",
+            var.tenant_config.short_name,
+            local.branch_sas[k].description
+          )
+          expression = join(" && ", [
+            local.iam_tenant_condition,
+            local.branch_sas[k].condition
+          ])
+        }
       }
     }
-  }
+  )
+  tags = merge(
+    # tenant tag value for this tenant
+    {
+      (var.tag_names.tenant) = {
+        id = var.tag_keys.tenant
+        values = {
+          (var.tenant_config.short_name) = {}
+        }
+      }
+    },
+    {
+      # TODO: tenant-level tag hierarchy
+    }
+  )
 }
-
-# TODO: use tag IAM with id in the organization module
-
-resource "google_tags_tag_value_iam_member" "resman_tag_user" {
-  for_each  = var.tag_values
-  tag_value = each.value
-  role      = "roles/resourcemanager.tagUser"
-  member    = module.automation-tf-resman-sa.iam_email
-}
-
-resource "google_tags_tag_value_iam_member" "admins_tag_viewer" {
-  for_each  = var.tag_values
-  tag_value = each.value
-  role      = "roles/resourcemanager.tagViewer"
-  member    = local.principals.gcp-admins
-}
-
-# tag-based condition for service accounts is in the automation-sa file

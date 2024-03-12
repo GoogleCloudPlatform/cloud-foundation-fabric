@@ -242,7 +242,6 @@ variable "tag_names" {
   type = object({
     context     = optional(string, "context")
     environment = optional(string, "environment")
-    tenant      = optional(string, "tenant")
   })
   default  = {}
   nullable = false
@@ -287,31 +286,4 @@ variable "team_folders" {
     }))
   }))
   default = null
-}
-
-variable "tenants" {
-  description = "Lightweight tenant definitions."
-  type = map(object({
-    admin_principal  = string
-    descriptive_name = string
-    billing_account  = optional(string)
-    organization = optional(object({
-      customer_id = string
-      domain      = string
-      id          = number
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "tenants_config" {
-  description = "Lightweight tenants shared configuration. Roles will be assigned to tenant admin group and service accounts."
-  type = object({
-    core_folder_roles   = optional(list(string), [])
-    tenant_folder_roles = optional(list(string), [])
-    top_folder_roles    = optional(list(string), [])
-  })
-  nullable = false
-  default  = {}
 }

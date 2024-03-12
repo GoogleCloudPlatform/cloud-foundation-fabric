@@ -63,6 +63,11 @@ module "tenant-folder" {
       type                 = attrs.type
     }
   }
+  iam = {
+    (var.custom_roles.tenant_network_admin) = [
+      module.automation-tf-resman-sa-stage2-3["networking"].iam_email
+    ]
+  }
   tag_bindings = {
     tenant = try(
       module.organization.tag_values["${var.tag_names.tenant}/${var.tenant_config.short_name}"].id,

@@ -104,33 +104,3 @@ module "automation-tf-resman-sa-stage2-3" {
     ]
   } : {}
 }
-
-# assign org policy admin with a tag-based condition to stage 2 and 3 SAs
-# TODO: move to new iam_bindings_additive in the organization module
-
-resource "google_organization_iam_member" "org_policy_admin_stage2_3" {
-  for_each = {
-    for k, v in module.automation-tf-resman-sa-stage2-3 : k => v.iam_email
-  }
-  org_id = var.organization.id
-  role   = "roles/orgpolicy.policyAdmin"
-  member = each.value
-  condition {
-    title = "org_policy_tag_${var.tenant_config.short_name}_${each.key}_scoped"
-    description = join("", [
-      "Org policy tag scoped grant for tenant ${var.tenant_config.short_name} ",
-      local.branch_sas[each.key].description
-    ])
-    expression = join(" && ", [
-      local.iam_tenant_condition, local.branch_sas[each.key].condition
-    ])
-  }
-}
-
-# assign custom tenant network admin role to networking SA
-
-resource "google_organization_iam_member" "tenant_network_admin" {
-  org_id = var.organization.id
-  role   = var.custom_roles.tenant_network_admin
-  member = module.automation-tf-resman-sa-stage2-3["networking"].iam_email
-}

@@ -112,30 +112,5 @@ locals {
         }
       }
     },
-    # lightweight tenant roles
-    {
-      for k, v in var.tenants : "oslogin_ext_user-tenant_${k}" => {
-        member = "domain:${v.organization.domain}"
-        role   = "roles/compute.osLoginExternalUser"
-      } if v.organization != null
-    },
-    {
-      for k, v in var.tenants : "org-viewer-tenant_${k}_domain" => {
-        member = "domain:${v.organization.domain}"
-        role   = "roles/resourcemanager.organizationViewer"
-      } if v.organization != null
-    },
-    {
-      for k, v in var.tenants : "org-viewer-tenant_${k}_admin" => {
-        member = v.admin_principal
-        role   = "roles/resourcemanager.organizationViewer"
-      }
-    },
-    local.billing_mode != "org" ? {} : {
-      for k, v in var.tenants : "billing_user-tenant_${k}_billing_admin" => {
-        member = v.admin_principal
-        role   = "roles/billing.user"
-      }
-    },
   )
 }

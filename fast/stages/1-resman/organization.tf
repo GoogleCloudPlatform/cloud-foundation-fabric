@@ -54,7 +54,6 @@ module "organization" {
         sandbox    = {}
         security   = {}
         teams      = {}
-        tenant     = {}
       }
     }
     (var.tag_names.environment) = {
@@ -63,17 +62,6 @@ module "organization" {
       values = {
         development = {}
         production  = {}
-      }
-    }
-    (var.tag_names.tenant) = {
-      description = "Organization tenant."
-      values = {
-        for k, v in var.tenants : k => {
-          description = v.descriptive_name
-          iam = {
-            "roles/resourcemanager.tagViewer" = local.tenant_iam[k]
-          }
-        }
       }
     }
   })
