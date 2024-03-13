@@ -31,11 +31,11 @@ locals {
     for key, data in local._folders : key => merge(data, {
       key        = key
       level      = length(split("/", key))
-      parent_key = replace(key, "/\\/[^\\/]+$/", "")
+      parent_key = dirname(key)
     })
   }
   hierarchy = merge(
-    var.factories_config.hierarchy.parent_ids,
+    try(var.factories_config.hierarchy.parent_ids, {}),
     { for k, v in module.hierarchy-folder-lvl-1 : k => v.id },
     { for k, v in module.hierarchy-folder-lvl-2 : k => v.id },
     { for k, v in module.hierarchy-folder-lvl-3 : k => v.id },
