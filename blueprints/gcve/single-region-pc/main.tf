@@ -32,9 +32,13 @@ module "gcve-project-0" {
   parent          = var.folder_id
   prefix          = var.prefix
   group_iam = merge(var.group_iam, {
-    "roles/gkehub.serviceAgent" = [ ##
-      local.groups_iam.gcp-gcve-admins
-    ] }
+    "roles/vmwareengine.vmwareengineAdmin" = [ ##
+      local.groups_iam.gcp-gcve-admin
+    ]
+    "roles/vmwareengine.vmwareengineViewer" = [ ##
+      local.groups_iam.gcp-gcve-viewers
+    ] 
+    }
   )
   labels = var.labels
   iam    = var.iam

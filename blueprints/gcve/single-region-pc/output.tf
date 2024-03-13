@@ -15,8 +15,8 @@
 # tfdoc:file:description Output variables.
 
 output "project_id" {
-  description = "GKE project id."
-  value       = module.gke-project-0.project_id
+  description = "GCVE project id."
+  value       = module.gcve-project-0.project_id
 }
 
 output "vmw_engine_network_config" {
