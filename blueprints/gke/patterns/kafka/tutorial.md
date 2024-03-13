@@ -78,10 +78,10 @@ vpc_create = {
 
 ## Install the Kafka Strimzi operator and create associated resources
 
-1. Change to the ```patterns/batch``` directory.
+1. Change to the ```patterns/kafka``` directory.
 
     ```bash
-    cd ../redis-cluster
+    cd ../kafka
     ```
 
 2. Create a new file ```terraform.tfvars``` in that directory.
