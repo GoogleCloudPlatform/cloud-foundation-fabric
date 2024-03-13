@@ -17,6 +17,27 @@ The overall architecture is based on the following design decisions:
 - Two Private Clouds can connect by establishing a peering between their rispectively VENs. (Shared VEN are not supported).
 - The internet inbound/oubound connectivity is managed on the user VPC.   
 
+The blueprint manages:
+
+- project creation
+- API/Services enablement
+- IAM role assignment for groups
+- VPC attachment
+- project-level organization policy definitions
+- billing setup (billing account attachment)
+
+### User groups
+
+As per our GCP best practices a GCVE private cloud relies on user groups to assign roles to human identities. These are the specific groups used by the Data Platform and their access patterns, from the [module documentation](../../../../blueprints/data-solutions/data-platform-foundations/#groups):
+
+- *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
+- *Data Analysts*. They perform analysis on datasets, with read access to the data warehouse Curated or Confidential projects depending on their privileges.
+- *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
+
+### Network
+
+A Shared VPC is used here, either from one of the FAST networking stages (e.g. [hub and spoke via VPN](../../2-networking-b-vpn)) or from an external source.
+
 ## Basic usage
 
 The following example shows how to deploy a CGVE private cloud and connect it to a VPC

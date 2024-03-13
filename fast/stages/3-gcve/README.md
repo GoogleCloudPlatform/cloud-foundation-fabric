@@ -1,4 +1,4 @@
-# GCVE
+# GCVE Stage
 
 The GCVE stage builds on top of your foundations to create and set up projects and related resources, used for your GCVE private cloud environments.
 It is organized in folders representing environments (e.g. `dev`, `prod`), each implemented by a stand-alone Terraform setup.
@@ -10,7 +10,13 @@ With this stage and the [GCVE blueprints](./../../../blueprints/gcve/), you can 
 ## TOC
 
 <!-- BEGIN TOC -->
-
+- [TOC](#toc)
+- [Deployment Patterns](#deployment-patterns)
+  - [Single Region](#single-region)
+    - [Hub and Spoke with VPC Peering and individual Private Clouds per environment](#hub-and-spoke-with-vpc-peering-and-individual-private-clouds-per-environment)
+    - [Hub and Spoke with VPC Peering and shared Private Cloud](#hub-and-spoke-with-vpc-peering-and-shared-private-cloud)
+    - [Hub and Spoke with VPN and individual Private Clouds per environment](#hub-and-spoke-with-vpn-and-individual-private-clouds-per-environment)
+    - [Hub and Spoke with VPN and shared Private Cloud](#hub-and-spoke-with-vpn-and-shared-private-cloud)
 <!-- END TOC -->
 
 ## Deployment Patterns
@@ -25,12 +31,15 @@ With this stage and the [GCVE blueprints](./../../../blueprints/gcve/), you can 
   <img src="diagram1.png" alt="Hub and Spoke with VPC Peering and shared Private Cloud">
 </p>
 
-### Hub and Spoke with VPN and individual Private Clouds per environment
+#### Hub and Spoke with VPN and individual Private Clouds per environment
 <p align="center">
   <img src="diagram2.png" alt="Hub and Spoke with VPC Peering and shared Private Cloud">
 </p>
 
-### Hub and Spoke with VPN and shared Private Cloud
+#### Hub and Spoke with VPN and shared Private Cloud
 <p align="center">
   <img src="diagram3.png" alt="Hub and Spoke with VPN and shared Private Cloud">
 </p>
+
+<!-- BEGIN TFDOC -->
+<!-- END TFDOC -->
