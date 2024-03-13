@@ -15,7 +15,7 @@
 # tfdoc:file:description Output variables.
 
 output "project_id" {
-  description = "GKE project id."
+  description = "GCVE project id."
   value       = module.gcve-project-0.project_id
 }
 
