@@ -97,8 +97,9 @@ variable "factories_config" {
     }))
     projects_data_path = optional(string)
     budgets = optional(object({
-      billing_account       = string
-      budgets_data_path     = string
+      billing_account   = string
+      budgets_data_path = string
+      # TODO: allow defining notification channels via YAML files
       notification_channels = optional(map(any), {})
     }))
   })

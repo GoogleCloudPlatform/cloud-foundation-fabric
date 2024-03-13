@@ -35,10 +35,21 @@ locals {
     })
   }
   hierarchy = merge(
+    var.factories_config.hierarchy.parent_ids,
     { for k, v in module.hierarchy-folder-lvl-1 : k => v.id },
     { for k, v in module.hierarchy-folder-lvl-2 : k => v.id },
     { for k, v in module.hierarchy-folder-lvl-3 : k => v.id },
   )
+}
+
+check "hierarchy-data" {
+  assert {
+    condition = (
+      var.factories_config.hierarchy == null ||
+      try(var.factories_config.hierarchy.parent_ids.default, null) != null
+    )
+    error_message = "No default set for hierarchy parent ids."
+  }
 }
 
 module "hierarchy-folder-lvl-1" {
@@ -49,9 +60,10 @@ module "hierarchy-folder-lvl-1" {
     lookup(
       var.factories_config.hierarchy.parent_ids,
       each.value.parent,
+      # use the value as is if it's not in the parents map
       each.value.parent
     ),
-    # use the default value in the initial parents id map
+    # use the default value in the initial parents map
     var.factories_config.hierarchy.parent_ids.default
     # fail if we don't have an explicit parent
   )

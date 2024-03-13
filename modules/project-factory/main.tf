@@ -15,11 +15,13 @@
  */
 
 module "projects" {
-  source              = "../project"
-  for_each            = local.projects
-  billing_account     = each.value.billing_account
-  name                = each.key
-  parent              = try(each.value.parent, null)
+  source          = "../project"
+  for_each        = local.projects
+  billing_account = each.value.billing_account
+  name            = each.key
+  parent = try(
+    lookup(local.hierarchy, each.value.parent, each.value.parent), null
+  )
   prefix              = each.value.prefix
   auto_create_network = try(each.value.auto_create_network, false)
   compute_metadata    = try(each.value.compute_metadata, {})

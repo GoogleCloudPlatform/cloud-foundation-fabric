@@ -30,7 +30,3 @@ output "service_accounts" {
     for k, v in module.service-accounts : k => v.email
   }
 }
-
-output "tmp" {
-  value = local._folders
-}
