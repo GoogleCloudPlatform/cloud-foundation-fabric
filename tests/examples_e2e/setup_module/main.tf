@@ -150,10 +150,13 @@ resource "local_file" "terraform_tfvars" {
     folder_id          = google_folder.folder.folder_id
     group_email        = var.group_email
     kms_key_id         = google_kms_crypto_key.key.id
-    organization_id    = var.organization_id
-    project_id         = google_project.project.project_id
-    project_number     = google_project.project.number
-    region             = var.region
+    keyring = {
+      name = google_kms_key_ring.keyring.name
+    }
+    organization_id = var.organization_id
+    project_id      = google_project.project.project_id
+    project_number  = google_project.project.number
+    region          = var.region
     service_account = {
       id        = google_service_account.service_account.id
       email     = google_service_account.service_account.email
