@@ -63,7 +63,7 @@ Once finished successfully (this should take around 10 minutes) you should see f
 
    created_resources = {
      "cloud_nat" = "projects/wns-gke-cloudshell/regions/europe-west8/routers/default-nat"
-     "cluster" = "projects/wns-gke-cloudshell/locations/europe-west8/clusters/cluster-00"
+     "cluster" = "projects/wns-gke-cloudshell/locations/europe-west8/clusters/gke-patterns-cluster"
      "node_service_account" = "jump-0@<project-id>.gserviceaccount.com"
      "registry" = "europe-west8-docker.pkg.dev/<project-id>/jump-0"
      "router" = "<project-id>/europe-west8/default-nat/default"
@@ -71,12 +71,12 @@ Once finished successfully (this should take around 10 minutes) you should see f
      "vpc_id" = "projects/<project-id>/global/networks/jump-0"
    }
    credentials_config = {
-     "fleet_host" = "https://connectgateway.googleapis.com/v1/projects/<project-number>/locations/global/gkeMemberships/cluster-00"
+     "fleet_host" = "https://connectgateway.googleapis.com/v1/projects/<project-number>/locations/global/gkeMemberships/gke-patterns-cluster"
    }
-   fleet_host = "https://connectgateway.googleapis.com/v1/projects/<project-number>/locations/global/gkeMemberships/cluster-00"
+   fleet_host = "https://connectgateway.googleapis.com/v1/projects/<project-number>/locations/global/gkeMemberships/gke-patterns-cluster"
    get_credentials = {
-     "direct" = "gcloud container clusters get-credentials cluster-00 --project <project-id> --location europe-west8"
-     "fleet" = "gcloud container fleet memberships get-credentials cluster-00 --project <project-id>"
+     "direct" = "gcloud container clusters get-credentials gke-patterns-cluster --project <project-id> --location europe-west8"
+     "fleet" = "gcloud container fleet memberships get-credentials gke-patterns-cluster --project <project-id>"
    }
    region = "europe-west4"
    ```
@@ -125,7 +125,7 @@ which helps to create those references.
 
 5. Get credentials for created cluster
    ```sh
-   gcloud container fleet memberships get-credentials cluster-00 --project <walkthrough-project-id/>
+   gcloud container fleet memberships get-credentials gke-patterns-cluster --project <walkthrough-project-id/>
    ```
 
 ## Deploy

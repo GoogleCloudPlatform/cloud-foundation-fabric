@@ -7,8 +7,8 @@ When using an existing keyring be mindful about applying IAM bindings, as all bi
 <!-- BEGIN TOC -->
 - [Protecting against destroy](#protecting-against-destroy)
 - [Examples](#examples)
-  - [Using an existing keyring](#using-an-existing-keyring)
   - [Keyring creation and crypto key rotation and IAM roles](#keyring-creation-and-crypto-key-rotation-and-iam-roles)
+  - [Using an existing keyring](#using-an-existing-keyring)
   - [Crypto key purpose](#crypto-key-purpose)
   - [Import job](#import-job)
 - [Variables](#variables)
@@ -21,36 +21,20 @@ In this module **no lifecycle blocks are set on resources to prevent destroy**, 
 
 ## Examples
 
-### Using an existing keyring
-
-```hcl
-module "kms" {
-  source     = "./fabric/modules/kms"
-  project_id = "my-project"
-  iam = {
-    "roles/cloudkms.admin" = ["user:user1@example.com"]
-  }
-  keyring        = { location = "europe-west1", name = "test" }
-  keyring_create = false
-  keys           = { key-a = {}, key-b = {}, key-c = {} }
-}
-# tftest skip (uses data sources)
-```
-
 ### Keyring creation and crypto key rotation and IAM roles
 
 ```hcl
 module "kms" {
   source     = "./fabric/modules/kms"
-  project_id = "my-project"
+  project_id = var.project_id
   keyring = {
-    location = "europe-west1"
-    name     = "test"
+    location = var.region
+    name     = "test-1"
   }
   keys = {
     key-a = {
       iam = {
-        "roles/cloudkms.admin" = ["user:user3@example.com"]
+        "roles/cloudkms.admin" = ["group:${var.group_email}"]
       }
     }
     key-b = {
@@ -58,7 +42,7 @@ module "kms" {
       iam_bindings_additive = {
         key-b-iam1 = {
           key    = "key-b"
-          member = "user:am1@example.com"
+          member = "group:${var.group_email}"
           role   = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
         }
       }
@@ -70,7 +54,23 @@ module "kms" {
     }
   }
 }
-# tftest modules=1 resources=6 inventory=basic.yaml
+# tftest modules=1 resources=6 inventory=basic.yaml e2e
+```
+
+### Using an existing keyring
+
+```hcl
+module "kms" {
+  source     = "./fabric/modules/kms"
+  project_id = var.project_id
+  iam = {
+    "roles/cloudkms.admin" = ["group:${var.group_email}"]
+  }
+  keyring        = { location = var.region, name = var.keyring.name }
+  keyring_create = false
+  keys           = { key-a = {}, key-b = {}, key-c = {} }
+}
+# tftest skip (uses data sources) e2e
 ```
 
 ### Crypto key purpose
@@ -78,10 +78,10 @@ module "kms" {
 ```hcl
 module "kms" {
   source     = "./fabric/modules/kms"
-  project_id = "my-project"
+  project_id = var.project_id
   keyring = {
-    location = "europe-west1"
-    name     = "test"
+    location = var.region
+    name     = "test-2"
   }
   keys = {
     key-a = {
@@ -93,7 +93,7 @@ module "kms" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=purpose.yaml
+# tftest modules=1 resources=2 inventory=purpose.yaml e2e
 ```
 
 ### Import job
@@ -101,10 +101,10 @@ module "kms" {
 ```hcl
 module "kms" {
   source     = "./fabric/modules/kms"
-  project_id = "my-project"
+  project_id = var.project_id
   keyring = {
-    location = "europe-west1"
-    name     = "test"
+    location = var.region
+    name     = "test-3"
   }
   import_job = {
     id               = "my-import-job"
@@ -112,7 +112,7 @@ module "kms" {
     protection_level = "SOFTWARE"
   }
 }
-# tftest modules=1 resources=2 inventory=import-job.yaml
+# tftest modules=1 resources=2 inventory=import-job.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
