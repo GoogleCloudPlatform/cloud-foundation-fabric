@@ -16,14 +16,14 @@ A good usage pattern would be when we want all the projects under a specific fol
 ```hcl
 module "my-org" {
   source     = "./fabric/modules/projects-data-source"
-  parent     = "organizations/123456789"
+  parent     = var.organization_id
 }
 
 output "project_numbers" {
   value = module.my-org.project_numbers
 }
 
-# tftest skip (uses data sources)
+# tftest skip (uses data sources) e2e
 ```
 
 ### My dev projects based on parent and label
@@ -31,7 +31,7 @@ output "project_numbers" {
 ```hcl
 module "my-dev" {
   source = "./fabric/modules/projects-data-source"
-  parent = "folders/123456789"
+  parent = var.folder_id
   query = "labels.env:DEV state:ACTIVE"
 }
 
@@ -39,14 +39,14 @@ output "dev-projects" {
   value = module.my-dev.projects
 }
 
-# tftest skip (uses data sources)
+# tftest skip (uses data sources) e2e
 ```
 
 ### Projects under org with folder/project exclusions
 ```hcl
 module "my-filtered" {
   source = "./fabric/modules/projects-data-source"
-  parent     = "organizations/123456789"
+  parent     = var.organization_id
   ignore_projects = [
     "sandbox-*",       # wildcard ignore
     "project-full-id", # specific project id
@@ -70,7 +70,7 @@ output "filtered-projects" {
   value = module.my-filtered.projects
 }
 
-# tftest skip (uses data sources)
+# tftest skip (uses data sources) e2e
 
 ```
 <!-- BEGIN TFDOC -->
