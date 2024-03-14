@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 locals {
+  _hierarchy_projects = (
+    {
+      for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
+      basename(trimsuffix(f, ".yaml")) => merge(
+        { parent = dirname(f) },
+        yamldecode(file("${local._folders_path}/${f}"))
+      )
+      if !endswith(f, "/_config.yaml")
+    }
+  )
   _project_path = try(pathexpand(var.factories_config.projects_data_path), null)
-  _projects = (
+  _projects = merge(
     {
       for f in try(fileset(local._project_path, "**/*.yaml"), []) :
       trimsuffix(f, ".yaml") => yamldecode(file("${local._project_path}/${f}"))
-    }
+    },
+    local._hierarchy_projects
   )
   _project_budgets = flatten([
     for k, v in local._projects : [
