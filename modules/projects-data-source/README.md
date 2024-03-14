@@ -15,8 +15,8 @@ A good usage pattern would be when we want all the projects under a specific fol
 
 ```hcl
 module "my-org" {
-  source     = "./fabric/modules/projects-data-source"
-  parent     = var.organization_id
+  source = "./fabric/modules/projects-data-source"
+  parent = var.organization_id
 }
 
 output "project_numbers" {
@@ -32,7 +32,7 @@ output "project_numbers" {
 module "my-dev" {
   source = "./fabric/modules/projects-data-source"
   parent = var.folder_id
-  query = "labels.env:DEV state:ACTIVE"
+  query  = "labels.env:DEV state:ACTIVE"
 }
 
 output "dev-projects" {
@@ -46,7 +46,7 @@ output "dev-projects" {
 ```hcl
 module "my-filtered" {
   source = "./fabric/modules/projects-data-source"
-  parent     = var.organization_id
+  parent = var.organization_id
   ignore_projects = [
     "sandbox-*",       # wildcard ignore
     "project-full-id", # specific project id
@@ -54,12 +54,12 @@ module "my-filtered" {
   ]
 
   include_projects = [
-    "sandbox-114",  # include specific project which was excluded by wildcard
-    "415216609246"  # include specific project which was excluded by wildcard (by project number)
+    "sandbox-114", # include specific project which was excluded by wildcard
+    "415216609246" # include specific project which was excluded by wildcard (by project number)
   ]
 
-  ignore_folders = [  # subfolders are ingoner as well
-    "343991594985", 
+  ignore_folders = [ # subfolders are ingoner as well
+    "343991594985",
     "437102807785",
     "345245235245"
   ]
@@ -71,7 +71,6 @@ output "filtered-projects" {
 }
 
 # tftest skip (uses data sources) e2e
-
 ```
 <!-- BEGIN TFDOC -->
 
