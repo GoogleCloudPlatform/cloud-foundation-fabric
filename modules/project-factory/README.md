@@ -51,7 +51,7 @@ Refer to the [example](#example) below for actual examples of the YAML definitio
 
 The project factory is configured via the `factories_config.projects_data_path` variable, and project files are also read from the hierarchy describe in the previous section when enabled. The YAML format mirrors the project module, refer to the [example](#example) below for actual examples of the YAML definitions.
 
-### Leveraging project defaults, merges, optionals
+### Factory-wide project defaults, merges, optionals
 
 In addition to the YAML-based project configurations, the factory accepts three additional sets of inputs via Terraform variables:
 
@@ -81,6 +81,51 @@ service_accounts:
 
 Both the `display_name` and `iam_self_roles` attributes are optional.
 
+### Automation project and resources
+
+Project configurations also support defining service accounts and storage buckets to support automation, created in a separate controlling project so as to be outside of the sphere of control of the managed project.
+
+Automation resources are defined via the `automation` attribute in project configurations, which supports:
+
+- a mandatory `project` attribute to define the external controlling project
+- an optional `service_accounts` list where each element will define a service account in the controlling project
+- an optional `buckets` map where each key will define a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
+
+Service accounts and buckets will be prefixed with the project name, and use the key specified in the YAML as a suffix.
+
+```yaml
+# file name: prod-app-example-0
+# prefix via factory defaults: foo
+# project id: foo-prod-app-example-0
+billing_account: 012345-67890A-BCDEF0
+parent: folders/12345678
+services:
+  - compute.googleapis.com
+  - stackdriver.googleapis.com
+iam:
+  roles/owner:
+    - rw
+  roles/viewer:
+    - ro
+automation:
+  project: foo-prod-iac-core-0
+  service_accounts:
+    rw:
+      description: Read/write automation sa for app example 0.
+    ro:
+      description: Read-only automation sa for app example 0.
+  buckets:
+    state:
+      description: Terraform state bucket for app example 0.
+      iam:
+        roles/storage.objectCreator:
+          - rw
+        roles/storage.objectViewer:
+          - rw
+          - ro
+          - "group: devops@example.org"
+```
+
 ## Billing budgets
 
 The billing budgets factory integrates the `[`billing-account`](../billing-account/) module functionality, and adds support for easy referencing budgets in project files.
@@ -102,7 +147,7 @@ billing_budgets:
   - test-100
 ```
 
-The example below shows how to use the billing budgets factory.
+A simple billing budget example is show in the [example](#example) below.
 
 ## Example
 
