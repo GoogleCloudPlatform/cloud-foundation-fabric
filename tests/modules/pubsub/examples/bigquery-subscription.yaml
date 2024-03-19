@@ -17,30 +17,14 @@ values:
     bigquery_config:
     - drop_unknown_fields: true
       table: project-id.my_dataset.my_table
-      use_table_schema: null
       use_topic_schema: true
       write_metadata: false
-    cloud_storage_config: []
-    dead_letter_policy: []
-    enable_exactly_once_delivery: false
-    enable_message_ordering: false
-    filter: null
-    labels: null
-    message_retention_duration: 604800s
     name: test-bigquery
     project: project-id
-    push_config: []
-    retain_acked_messages: false
-    retry_policy: []
-    timeouts: null
     topic: my-topic
   module.pubsub.google_pubsub_topic.default:
-    kms_key_name: null
-    labels: null
-    message_retention_duration: null
     name: my-topic
     project: project-id
-    timeouts: null
 
 counts:
   google_bigquery_dataset: 1
