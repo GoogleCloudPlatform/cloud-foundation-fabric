@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Projects and billing budgets factory resources.
+
 module "projects" {
   source          = "../project"
   for_each        = local.projects
@@ -31,10 +33,35 @@ module "projects" {
   )
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
-  iam                     = try(each.value.iam, {})
-  iam_bindings            = try(each.value.iam_bindings, {})
-  iam_bindings_additive   = try(each.value.iam_bindings_additive, {})
-  iam_by_principals       = try(each.value.iam_by_principals, {})
+  # IAM interpolates automation service accounts
+  iam = {
+    for k, v in lookup(each.value, "iam", {}) : k => [
+      for vv in v : try(
+        module.automation-service-accounts["${each.key}/${vv}"].iam_email,
+        vv
+      )
+    ]
+  }
+  iam_bindings = {
+    for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
+      members = [
+        for vv in v.members : try(
+          module.automation-service-accounts["${each.key}/${vv}"].iam_email,
+          vv
+        )
+      ]
+    })
+  }
+  iam_bindings_additive = {
+    for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
+      member = try(
+        module.automation-service-accounts["${each.key}/${v.member}"].iam_email,
+        v.member
+      )
+    })
+  }
+  # IAM principals would trigger dynamic key errors so we don't interpolate
+  iam_by_principals = try(each.value.iam_by_principals, {})
   labels = merge(
     each.value.labels, var.data_merges.labels
   )

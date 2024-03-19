@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Automation projects locals and resources.
+
 locals {
   automation_buckets = flatten([
-    for k, v in projects : [
+    for k, v in local.projects : [
       for ks, kv in try(v.automation.buckets, {}) : merge(kv, {
         automation_project = v.automation.project
         name               = ks
@@ -26,7 +28,7 @@ locals {
     ]
   ])
   automation_sa = flatten([
-    for k, v in projects : [
+    for k, v in local.projects : [
       for ks, kv in try(v.automation.service_accounts, {}) : merge(kv, {
         automation_project = v.automation.project
         name               = ks
@@ -45,13 +47,13 @@ module "automation-buckets" {
   project_id     = each.value.automation_project
   prefix         = each.value.prefix
   name           = "${each.value.project}-${each.value.name}"
-  description    = lookup(each.value, "description", null)
   encryption_key = lookup(each.value, "encryption_key", null)
   # try interpolating service accounts by key in principals
   iam = {
     for k, v in lookup(each.value, "iam", {}) : k => [
       for vv in v : try(
-        module.automation-service-accounts["${each.value.project}/${vv}"], vv
+        module.automation-service-accounts["${each.value.project}/${vv}"].iam_email,
+        vv
       )
     ]
   }
@@ -59,7 +61,8 @@ module "automation-buckets" {
     for k, v in lookup(each.value, "iam_bindings", {}) : k => merge(v, {
       members = [
         for vv in v.members : try(
-          module.automation-service-accounts["${each.value.project}/${vv}"], vv
+          module.automation-service-accounts["${each.value.project}/${vv}"].iam_email,
+          vv
         )
       ]
     })
@@ -67,7 +70,7 @@ module "automation-buckets" {
   iam_bindings_additive = {
     for k, v in lookup(each.value, "iam_bindings_additive", {}) : k => merge(v, {
       member = try(
-        module.automation-service-accounts["${each.value.project}/${v.member}"],
+        module.automation-service-accounts["${each.value.project}/${v.member}"].iam_email,
         v.member
       )
     })
@@ -91,7 +94,7 @@ module "automation-service-accounts" {
   display_name = lookup(
     each.value,
     "display_name",
-    "Service account ${each.value.key} for ${each.value.project}."
+    "Service account ${each.value.name} for ${each.value.project}."
   )
   iam                    = lookup(each.value, "iam", {})
   iam_bindings           = lookup(each.value, "iam_bindings", {})

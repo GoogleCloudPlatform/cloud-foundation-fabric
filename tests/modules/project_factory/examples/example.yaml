@@ -12,6 +12,107 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.project-factory.module.automation-buckets["prj-app-3/state"].google_storage_bucket.bucket:
+    autoclass:
+    - enabled: false
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: test-pf-prj-app-3-state
+    project: bar-baz-iac-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: MULTI_REGIONAL
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  ? module.project-factory.module.automation-buckets["prj-app-3/state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectCreator"]
+  : bucket: test-pf-prj-app-3-state
+    condition: []
+    members:
+    - serviceAccount:test-pf-prj-app-3-rw@bar-baz-iac-0.iam.gserviceaccount.com
+    role: roles/storage.objectCreator
+  ? module.project-factory.module.automation-buckets["prj-app-3/state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+  : bucket: test-pf-prj-app-3-state
+    condition: []
+    members:
+    - 'group: devops@example.org'
+    - serviceAccount:test-pf-prj-app-3-ro@bar-baz-iac-0.iam.gserviceaccount.com
+    - serviceAccount:test-pf-prj-app-3-rw@bar-baz-iac-0.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.project-factory.module.automation-service-accounts["prj-app-3/ro"].google_service_account.service_account[0]:
+    account_id: test-pf-prj-app-3-ro
+    create_ignore_already_exists: null
+    description: Read-only automation sa for app example 0.
+    disabled: false
+    display_name: Service account ro for prj-app-3.
+    project: bar-baz-iac-0
+    timeouts: null
+  module.project-factory.module.automation-service-accounts["prj-app-3/rw"].google_service_account.service_account[0]:
+    account_id: test-pf-prj-app-3-rw
+    create_ignore_already_exists: null
+    description: Read/write automation sa for app example 0.
+    disabled: false
+    display_name: Service account rw for prj-app-3.
+    project: bar-baz-iac-0
+    timeouts: null
+  module.project-factory.module.hierarchy-folder-lvl-1["bar"].google_folder.folder[0]:
+    display_name: Bar (level 1)
+    parent: folders/4567890
+    timeouts: null
+  module.project-factory.module.hierarchy-folder-lvl-1["foo"].google_folder.folder[0]:
+    display_name: Foo (level 1)
+    parent: folders/12345678
+    timeouts: null
+  module.project-factory.module.hierarchy-folder-lvl-1["foo"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - group:a@example.com
+    role: roles/viewer
+  module.project-factory.module.hierarchy-folder-lvl-2["bar/baz"].google_folder.folder[0]:
+    display_name: Bar Baz (level 2)
+    timeouts: null
+  module.project-factory.module.hierarchy-folder-lvl-2["foo/baz"].google_folder.folder[0]:
+    display_name: Foo Baz (level 2)
+    timeouts: null
+  module.project-factory.module.projects["bar-baz-iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: test-pf-bar-baz-iac-0
+    user_project: null
+  module.project-factory.module.projects["prj-app-3"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    effective_labels:
+      environment: test
+    labels:
+      environment: test
+    name: test-pf-prj-app-3
+    project_id: test-pf-prj-app-3
+    skip_delete: false
+    terraform_labels:
+      environment: test
+    timeouts: null
+  module.project-factory.module.projects["prj-app-3"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:test-pf-prj-app-3-rw@bar-baz-iac-0.iam.gserviceaccount.com
+    project: test-pf-prj-app-3
+    role: roles/owner
+  module.project-factory.module.projects["prj-app-3"].google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:test-pf-prj-app-3-ro@bar-baz-iac-0.iam.gserviceaccount.com
+    project: test-pf-prj-app-3
+    role: roles/viewer
+
 counts:
   google_billing_budget: 1
   google_compute_shared_vpc_service_project: 1
@@ -23,9 +124,12 @@ counts:
   google_monitoring_notification_channel: 1
   google_org_policy_policy: 1
   google_project: 4
+  google_project_iam_binding: 2
   google_project_iam_member: 6
   google_project_service: 14
-  google_service_account: 3
+  google_service_account: 5
+  google_storage_bucket: 1
+  google_storage_bucket_iam_binding: 2
   google_storage_project_service_account: 4
-  modules: 13
-  resources: 48
+  modules: 16
+  resources: 55

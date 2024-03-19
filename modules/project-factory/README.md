@@ -23,10 +23,12 @@ The code is meant to be executed by a high level service accounts with powerful 
 <!-- BEGIN TOC -->
 - [Folder hierarchy](#folder-hierarchy)
 - [Projects](#projects)
-  - [Leveraging project defaults, merges, optionals](#leveraging-project-defaults-merges-optionals)
+  - [Factory-wide project defaults, merges, optionals](#factory-wide-project-defaults-merges-optionals)
   - [Service accounts](#service-accounts)
+  - [Automation project and resources](#automation-project-and-resources)
 - [Billing budgets](#billing-budgets)
 - [Example](#example)
+- [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Tests](#tests)
@@ -91,7 +93,7 @@ Automation resources are defined via the `automation` attribute in project confi
 - an optional `service_accounts` list where each element will define a service account in the controlling project
 - an optional `buckets` map where each key will define a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
 
-Service accounts and buckets will be prefixed with the project name, and use the key specified in the YAML as a suffix.
+Service accounts and buckets will be prefixed with the project name, and use the key specified in the YAML file as a suffix.
 
 ```yaml
 # file name: prod-app-example-0
@@ -110,11 +112,14 @@ iam:
 automation:
   project: foo-prod-iac-core-0
   service_accounts:
+    # sa name: foo-prod-app-example-0-rw
     rw:
       description: Read/write automation sa for app example 0.
+    # sa name: foo-prod-app-example-0-ro
     ro:
       description: Read-only automation sa for app example 0.
   buckets:
+    # bucket name: foo-prod-app-example-0-state
     state:
       description: Terraform state bucket for app example 0.
       iam:
@@ -200,7 +205,7 @@ module "project-factory" {
     projects_data_path = "data/projects"
   }
 }
-# tftest modules=13 resources=48 files=prj-app-1,prj-app-2,prj-app-3,budget-test-100,h-0-0,h-1-0,h-0-1,h-1-1,h-1-1-p0 inventory=example.yaml
+# tftest modules=16 resources=55 files=prj-app-1,prj-app-2,prj-app-3,budget-test-100,h-0-0,h-1-0,h-0-1,h-1-1,h-1-1-p0 inventory=example.yaml
 ```
 
 A simple hierarchy of folders:
@@ -236,7 +241,7 @@ billing_account: 012345-67890A-BCDEF0
 services:
   - container.googleapis.com
   - storage.googleapis.com
-# tftest-file id=h-1-1-p0 path=data/hierarchy/bar/baz/bar-baz-0.yaml
+# tftest-file id=h-1-1-p0 path=data/hierarchy/bar/baz/bar-baz-iac-0.yaml
 ```
 
 More traditional project definitions via the project factory data:
@@ -309,12 +314,36 @@ shared_vpc_service_config:
 # tftest-file id=prj-app-2 path=data/projects/prj-app-2.yaml
 ```
 
+This project uses a reference to a hierarchy folder, and defines a controlling project via the `automation` attributes:
+
 ```yaml
-# project app-3
-parent: folders/12345678
+parent: bar/baz
 services:
 - run.googleapis.com
 - storage.googleapis.com
+iam:
+  "roles/owner":
+    - rw
+  "roles/viewer":
+    - ro
+automation:
+  project: bar-baz-iac-0
+  service_accounts:
+    rw:
+      description: Read/write automation sa for app example 0.
+    ro:
+      description: Read-only automation sa for app example 0.
+  buckets:
+    state:
+      description: Terraform state bucket for app example 0.
+      iam:
+        roles/storage.objectCreator:
+          - rw
+        roles/storage.objectViewer:
+          - rw
+          - ro
+          - "group: devops@example.org"
+
 
 # tftest-file id=prj-app-3 path=data/projects/prj-app-3.yaml
 ```
@@ -342,7 +371,21 @@ update_rules:
 # tftest-file id=budget-test-100 path=data/budgets/test-100.yaml
 ```
 
+<!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
+## Files
+
+| name | description | modules |
+|---|---|---|
+| [automation.tf](./automation.tf) | Automation projects locals and resources. | <code>gcs</code> · <code>iam-service-account</code> |
+| [factory-budgets.tf](./factory-budgets.tf) | Billing budget factory locals. |  |
+| [factory-folders.tf](./factory-folders.tf) | Folder hierarchy factory locals. |  |
+| [factory-projects.tf](./factory-projects.tf) | Projects factory locals. |  |
+| [folders.tf](./folders.tf) | Folder hierarchy factory resources. | <code>folder</code> |
+| [main.tf](./main.tf) | Projects and billing budgets factory resources. | <code>billing-account</code> · <code>iam-service-account</code> · <code>project</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [variables.tf](./variables.tf) | Module variables. |  |
+
 ## Variables
 
 | name | description | type | required | default |
