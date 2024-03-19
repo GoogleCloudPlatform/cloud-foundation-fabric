@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,16 +16,37 @@ values:
   module.pubsub.google_pubsub_subscription.default["test-bigquery"]:
     bigquery_config:
     - drop_unknown_fields: true
-      table: my_project_id:my_dataset.my_table
+      table: project-id.my_dataset.my_table
+      use_table_schema: null
       use_topic_schema: true
       write_metadata: false
+    cloud_storage_config: []
+    dead_letter_policy: []
+    enable_exactly_once_delivery: false
+    enable_message_ordering: false
+    filter: null
+    labels: null
+    message_retention_duration: 604800s
     name: test-bigquery
-    project: my-project
+    project: project-id
+    push_config: []
+    retain_acked_messages: false
+    retry_policy: []
+    timeouts: null
     topic: my-topic
   module.pubsub.google_pubsub_topic.default:
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
     name: my-topic
-    project: my-project
+    project: project-id
+    timeouts: null
 
 counts:
+  google_bigquery_dataset: 1
+  google_bigquery_dataset_iam_binding: 1
+  google_bigquery_table: 1
   google_pubsub_subscription: 1
   google_pubsub_topic: 1
+  modules: 2
+  resources: 5

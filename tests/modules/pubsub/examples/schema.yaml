@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,14 +16,23 @@ values:
   module.topic_with_schema.google_pubsub_schema.default[0]:
     definition: '{"fields":[{"name":"StringField","type":"string"},{"name":"FloatField","type":"float"},{"name":"BooleanField","type":"boolean"}],"name":"Avro","type":"record"}'
     name: my-topic-schema
-    project: my-project
+    project: project-id
+    timeouts: null
     type: AVRO
   module.topic_with_schema.google_pubsub_topic.default:
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
     name: my-topic
-    project: my-project
+    project: project-id
     schema_settings:
     - encoding: JSON
+    timeouts: null
 
 counts:
   google_pubsub_schema: 1
   google_pubsub_topic: 1
+  modules: 1
+  resources: 2
+
+outputs: {}
