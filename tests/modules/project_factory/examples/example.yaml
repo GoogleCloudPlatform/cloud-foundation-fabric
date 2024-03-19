@@ -45,7 +45,7 @@ values:
   : bucket: test-pf-prj-app-3-state
     condition: []
     members:
-    - 'group: devops@example.org'
+    - group:devops@example.org
     - serviceAccount:test-pf-prj-app-3-ro@bar-baz-iac-0.iam.gserviceaccount.com
     - serviceAccount:test-pf-prj-app-3-rw@bar-baz-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectViewer
