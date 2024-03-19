@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Billing budget factory locals.
+
 locals {
   # reimplement the billing account factory here to interpolate projects
   _budget_path = try(pathexpand(var.factories_config.budgets.budgets_data_path), null)
