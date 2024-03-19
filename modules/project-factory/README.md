@@ -128,7 +128,7 @@ automation:
         roles/storage.objectViewer:
           - rw
           - ro
-          - "group: devops@example.org"
+          - group:devops@example.org
 ```
 
 ## Billing budgets
@@ -342,7 +342,7 @@ automation:
         roles/storage.objectViewer:
           - rw
           - ro
-          - "group: devops@example.org"
+          - group:devops@example.org
 
 
 # tftest-file id=prj-app-3 path=data/projects/prj-app-3.yaml
