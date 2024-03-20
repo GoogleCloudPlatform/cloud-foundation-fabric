@@ -187,6 +187,6 @@ module "pubsub" {
 
 ## Fixtures
 
-- [bigquery.tf](../../tests/fixtures/bigquery.tf)
+- [bigquery-dataset.tf](../../tests/fixtures/bigquery-dataset.tf)
 - [gcs.tf](../../tests/fixtures/gcs.tf)
 <!-- END TFDOC -->
