@@ -47,6 +47,7 @@ variable "config_timeouts" {
   type = object({
     icmp            = optional(number, 30)
     tcp_established = optional(number, 1200)
+    tcp_time_wait   = optional(number, 120)
     tcp_transitory  = optional(number, 30)
     udp             = optional(number, 30)
   })
