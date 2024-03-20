@@ -1,33 +1,59 @@
-# Project Factory
+# Project and Folder Factory
 
-This module implements in code the end-to-end project creation process for multiple projects via YAML data configurations.
+This module implements end-to-end creation processes for a folder hierarchy,   projects and billing budgets via YAML data configurations.
 
 It supports
 
+- filesystem-driven folder hierarchy exposing the full configuration options available in the [folder module](../folder/)
 - multiple project creation and management exposing the full configuration options available in the [project module](../project/), including KMS key grants and VPC-SC perimeter membership
 - optional per-project [service account management](#service-accounts) including basic IAM grants
 - optional [billing budgets](#billing-budgets) factory and budget/project associations
+- cross-referencing of hierarchy folders in projects
 - optional per-project IaC configuration (TODO)
 
-The factory is implemented as a thin wrapping layer, so that no "magic" or hidden side effects are implemented in code, and debugging or integration of new features are simple.
+The factory is implemented as a thin data translation layer for the underlying modules, so that no "magic" or hidden side effects are implemented in code, and debugging or integration of new features are simple.
 
 The code is meant to be executed by a high level service accounts with powerful permissions:
 
-- Shared VPC connection if service project attachment is desired
+- forlder admin permissions for the hierarchy
 - project creation on the nodes (folder or org) where projects will be defined
+- Shared VPC connection if service project attachment is desired
+- billing cost manager permissions to manage budgets and monitoring permissions if notifications should also be managed here
 
 <!-- BEGIN TOC -->
-- [Leveraging data defaults, merges, optionals](#leveraging-data-defaults-merges-optionals)
-- [Additional resources](#additional-resources)
+- [Folder hierarchy](#folder-hierarchy)
+- [Projects](#projects)
+  - [Factory-wide project defaults, merges, optionals](#factory-wide-project-defaults-merges-optionals)
   - [Service accounts](#service-accounts)
-  - [Billing budgets](#billing-budgets)
+  - [Automation project and resources](#automation-project-and-resources)
+- [Billing budgets](#billing-budgets)
 - [Example](#example)
+- [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Tests](#tests)
 <!-- END TOC -->
 
-## Leveraging data defaults, merges, optionals
+## Folder hierarchy
+
+The hierarchy supports up to three levels of folders, which are defined via filesystem directories each including a `_config.yaml` files detailing their attributes.
+
+The hierarchy factory is configured via the `factories_config.hierarchy` variable via one mandatory and one optional argument:
+
+- `factories_config.hierarchy.folders_data_path` is required to enable the hierarchy factory, and must be set to the path containing the YAML definitions
+- `factories_config.hierarchy.parent_ids` is an optional map where keys are arbitrary and values are set to resource node ids
+
+Top-level folders in the filesystem hierarchy have no explicit parent, so their parent ids need to be provided in the YAML by either referencing the full id (e.g. `folders/12345678`) or by referencing a key in the `parent_ids` attribute described above. As a shortcut, a `default` key can be defined whose value is used for any top-level folder which does not directly provide a parent id.
+
+Filesystem directories can also contain project definitions in the same YAML format described below. This approach must be used with caution and is best adopted for stable scenarios, as problems in the filesystem hierarchy definitions might result in the project files not being read and the resources being deleted by Terraform.
+
+Refer to the [example](#example) below for actual examples of the YAML definitions.
+
+## Projects
+
+The project factory is configured via the `factories_config.projects_data_path` variable, and project files are also read from the hierarchy describe in the previous section when enabled. The YAML format mirrors the project module, refer to the [example](#example) below for actual examples of the YAML definitions.
+
+### Factory-wide project defaults, merges, optionals
 
 In addition to the YAML-based project configurations, the factory accepts three additional sets of inputs via Terraform variables:
 
@@ -36,8 +62,6 @@ In addition to the YAML-based project configurations, the factory accepts three 
 - the `data_merges` variable allows specifying additional values for map or set based variables, which are merged with the data coming from YAML
 
 Some examples on where to use each of the three sets are [provided below](#example).
-
-## Additional resources
 
 ### Service accounts
 
@@ -59,9 +83,57 @@ service_accounts:
 
 Both the `display_name` and `iam_self_roles` attributes are optional.
 
-### Billing budgets
+### Automation project and resources
 
-The project factory integrates the billing budgets factory exposed by the `[`billing-account`](../billing-account/) module, and adds support for easy referencing budgets in project files.
+Project configurations also support defining service accounts and storage buckets to support automation, created in a separate controlling project so as to be outside of the sphere of control of the managed project.
+
+Automation resources are defined via the `automation` attribute in project configurations, which supports:
+
+- a mandatory `project` attribute to define the external controlling project
+- an optional `service_accounts` list where each element will define a service account in the controlling project
+- an optional `buckets` map where each key will define a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
+
+Service accounts and buckets will be prefixed with the project name, and use the key specified in the YAML file as a suffix.
+
+```yaml
+# file name: prod-app-example-0
+# prefix via factory defaults: foo
+# project id: foo-prod-app-example-0
+billing_account: 012345-67890A-BCDEF0
+parent: folders/12345678
+services:
+  - compute.googleapis.com
+  - stackdriver.googleapis.com
+iam:
+  roles/owner:
+    - rw
+  roles/viewer:
+    - ro
+automation:
+  project: foo-prod-iac-core-0
+  service_accounts:
+    # sa name: foo-prod-app-example-0-rw
+    rw:
+      description: Read/write automation sa for app example 0.
+    # sa name: foo-prod-app-example-0-ro
+    ro:
+      description: Read-only automation sa for app example 0.
+  buckets:
+    # bucket name: foo-prod-app-example-0-state
+    state:
+      description: Terraform state bucket for app example 0.
+      iam:
+        roles/storage.objectCreator:
+          - rw
+        roles/storage.objectViewer:
+          - rw
+          - ro
+          - group:devops@example.org
+```
+
+## Billing budgets
+
+The billing budgets factory integrates the `[`billing-account`](../billing-account/) module functionality, and adds support for easy referencing budgets in project files.
 
 To enable support for billing budgets, set the billing account id, optional notification channels, and the data folder for budgets in the `factories_config.budgets` variable, then create billing budgets using YAML definitions following the format described in the `billing-account` module.
 
@@ -80,9 +152,11 @@ billing_budgets:
   - test-100
 ```
 
-The example below shows how to use the billing budgets factory.
+A simple billing budget example is show in the [example](#example) below.
 
 ## Example
+
+The module invocation using all optional features:
 
 ```hcl
 module "project-factory" {
@@ -122,11 +196,55 @@ module "project-factory" {
         }
       }
     }
+    hierarchy = {
+      folders_data_path = "data/hierarchy"
+      parent_ids = {
+        default = "folders/12345678"
+      }
+    }
     projects_data_path = "data/projects"
   }
 }
-# tftest modules=8 resources=37 files=prj-app-1,prj-app-2,prj-app-3,budget-test-100
+# tftest modules=16 resources=55 files=prj-app-1,prj-app-2,prj-app-3,budget-test-100,h-0-0,h-1-0,h-0-1,h-1-1,h-1-1-p0 inventory=example.yaml
 ```
+
+A simple hierarchy of folders:
+
+```yaml
+name: Foo (level 1)
+iam:
+  roles/viewer:
+    - group:a@example.com
+# tftest-file id=h-0-0 path=data/hierarchy/foo/_config.yaml
+```
+
+```yaml
+name: Bar (level 1)
+parent: folders/4567890
+# tftest-file id=h-1-0 path=data/hierarchy/bar/_config.yaml
+```
+
+```yaml
+name: Foo Baz (level 2)
+# tftest-file id=h-0-1 path=data/hierarchy/foo/baz/_config.yaml
+```
+
+```yaml
+name: Bar Baz (level 2)
+# tftest-file id=h-1-1 path=data/hierarchy/bar/baz/_config.yaml
+```
+
+One project defined within the folder hierarchy:
+
+```yaml
+billing_account: 012345-67890A-BCDEF0
+services:
+  - container.googleapis.com
+  - storage.googleapis.com
+# tftest-file id=h-1-1-p0 path=data/hierarchy/bar/baz/bar-baz-iac-0.yaml
+```
+
+More traditional project definitions via the project factory data:
 
 ```yaml
 # project app-1
@@ -196,15 +314,41 @@ shared_vpc_service_config:
 # tftest-file id=prj-app-2 path=data/projects/prj-app-2.yaml
 ```
 
+This project uses a reference to a hierarchy folder, and defines a controlling project via the `automation` attributes:
+
 ```yaml
-# project app-3
-parent: folders/12345678
+parent: bar/baz
 services:
 - run.googleapis.com
 - storage.googleapis.com
+iam:
+  "roles/owner":
+    - rw
+  "roles/viewer":
+    - ro
+automation:
+  project: bar-baz-iac-0
+  service_accounts:
+    rw:
+      description: Read/write automation sa for app example 0.
+    ro:
+      description: Read-only automation sa for app example 0.
+  buckets:
+    state:
+      description: Terraform state bucket for app example 0.
+      iam:
+        roles/storage.objectCreator:
+          - rw
+        roles/storage.objectViewer:
+          - rw
+          - ro
+          - group:devops@example.org
+
 
 # tftest-file id=prj-app-3 path=data/projects/prj-app-3.yaml
 ```
+
+And a billing budget:
 
 ```yaml
 # billing budget test-100
@@ -226,12 +370,27 @@ update_rules:
     - billing-default
 # tftest-file id=budget-test-100 path=data/budgets/test-100.yaml
 ```
+
+<!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
+## Files
+
+| name | description | modules |
+|---|---|---|
+| [automation.tf](./automation.tf) | Automation projects locals and resources. | <code>gcs</code> · <code>iam-service-account</code> |
+| [factory-budgets.tf](./factory-budgets.tf) | Billing budget factory locals. |  |
+| [factory-folders.tf](./factory-folders.tf) | Folder hierarchy factory locals. |  |
+| [factory-projects.tf](./factory-projects.tf) | Projects factory locals. |  |
+| [folders.tf](./folders.tf) | Folder hierarchy factory resources. | <code>folder</code> |
+| [main.tf](./main.tf) | Projects and billing budgets factory resources. | <code>billing-account</code> · <code>iam-service-account</code> · <code>project</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [variables.tf](./variables.tf) | Module variables. |  |
+
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [factories_config](variables.tf#L91) | Path to folder with YAML resource description data files. | <code title="object&#40;&#123;&#10;  projects_data_path &#61; string&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account       &#61; string&#10;    budgets_data_path     &#61; string&#10;    notification_channels &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [factories_config](variables.tf#L91) | Path to folder with YAML resource description data files. | <code title="object&#40;&#123;&#10;  hierarchy &#61; optional&#40;object&#40;&#123;&#10;    folders_data_path &#61; string&#10;    parent_ids        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  projects_data_path &#61; optional&#40;string&#41;&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account   &#61; string&#10;    budgets_data_path &#61; string&#10;    notification_channels &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [data_defaults](variables.tf#L17) | Optional default values used when corresponding project data from files are missing. | <code title="object&#40;&#123;&#10;  billing_account            &#61; optional&#40;string&#41;&#10;  contacts                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  labels                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metric_scopes              &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  parent                     &#61; optional&#40;string&#41;&#10;  prefix                     &#61; optional&#40;string&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_perimeter_bridges  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_perimeter_standard &#61; optional&#40;string&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  shared_vpc_service_config &#61; optional&#40;object&#40;&#123;&#10;    host_project                &#61; string&#10;    network_users               &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    service_identity_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_identity_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_iam_grants          &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    network_subnet_users        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123; host_project &#61; null &#125;&#41;&#10;  tag_bindings &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_merges](variables.tf#L49) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code title="object&#40;&#123;&#10;  contacts                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  labels                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metric_scopes              &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_perimeter_bridges  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_overrides](variables.tf#L69) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code title="object&#40;&#123;&#10;  billing_account            &#61; optional&#40;string&#41;&#10;  contacts                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  parent                     &#61; optional&#40;string&#41;&#10;  prefix                     &#61; optional&#40;string&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  service_perimeter_bridges  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  service_perimeter_standard &#61; optional&#40;string&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -240,8 +399,9 @@ update_rules:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [projects](outputs.tf#L17) | Project module outputs. |  |
-| [service_accounts](outputs.tf#L22) | Service account emails. |  |
+| [folders](outputs.tf#L17) | Folder ids. |  |
+| [projects](outputs.tf#L22) | Project module outputs. |  |
+| [service_accounts](outputs.tf#L27) | Service account emails. |  |
 <!-- END TFDOC -->
 ## Tests
 
