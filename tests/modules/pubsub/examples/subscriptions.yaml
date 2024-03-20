@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,37 +15,51 @@
 values:
   module.pubsub.google_pubsub_subscription.default["test-pull"]:
     bigquery_config: []
+    cloud_storage_config: []
     dead_letter_policy: []
-    enable_exactly_once_delivery: False
-    enable_message_ordering: False
+    enable_exactly_once_delivery: false
+    enable_message_ordering: false
     filter: null
     labels: null
     message_retention_duration: 604800s
     name: test-pull
-    project: my-project
+    project: project-id
     push_config: []
-    retain_acked_messages: False
+    retain_acked_messages: false
     retry_policy: []
+    timeouts: null
     topic: my-topic
   module.pubsub.google_pubsub_subscription.default["test-pull-override"]:
     bigquery_config: []
+    cloud_storage_config: []
     dead_letter_policy: []
-    enable_exactly_once_delivery: False
-    enable_message_ordering: False
+    effective_labels:
+      test: override
+    enable_exactly_once_delivery: false
+    enable_message_ordering: false
     filter: null
     labels:
       test: override
     message_retention_duration: 604800s
     name: test-pull-override
-    project: my-project
+    project: project-id
     push_config: []
-    retain_acked_messages: True
+    retain_acked_messages: true
     retry_policy: []
+    terraform_labels:
+      test: override
+    timeouts: null
     topic: my-topic
   module.pubsub.google_pubsub_topic.default:
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
     name: my-topic
-    project: my-project
+    project: project-id
+    timeouts: null
 
 counts:
   google_pubsub_subscription: 2
   google_pubsub_topic: 1
+  modules: 1
+  resources: 3
