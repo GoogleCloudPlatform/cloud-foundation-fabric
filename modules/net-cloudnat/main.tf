@@ -48,6 +48,7 @@ resource "google_compute_router_nat" "nat" {
   icmp_idle_timeout_sec               = var.config_timeouts.icmp
   udp_idle_timeout_sec                = var.config_timeouts.udp
   tcp_established_idle_timeout_sec    = var.config_timeouts.tcp_established
+  tcp_time_wait_timeout_sec           = var.config_timeouts.tcp_time_wait
   tcp_transitory_idle_timeout_sec     = var.config_timeouts.tcp_transitory
   enable_endpoint_independent_mapping = var.config_port_allocation.enable_endpoint_independent_mapping
   enable_dynamic_port_allocation      = var.config_port_allocation.enable_dynamic_port_allocation
