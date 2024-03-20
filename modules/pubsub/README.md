@@ -111,7 +111,7 @@ module "pubsub" {
     }
   }
 }
-# tftest modules=2 resources=5 fixtures=fixtures/bigquery.tf inventory=bigquery-subscription.yaml e2e
+# tftest modules=2 resources=5 fixtures=fixtures/bigquery-dataset.tf inventory=bigquery-subscription.yaml e2e
 ```
 
 ### Cloud Storage subscriptions
@@ -126,7 +126,7 @@ module "pubsub" {
   subscriptions = {
     test-cloudstorage = {
       cloud_storage = {
-        bucket          = module.bucket.name
+        bucket          = module.gcs.name
         filename_prefix = var.prefix
         filename_suffix = "test_suffix"
         max_duration    = "100s"

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "bucket" {
+module "gcs" {
   source     = "./fabric/modules/gcs"
   project_id = var.project_id
   prefix     = var.prefix
