@@ -16,7 +16,7 @@ values:
   module.pubsub.google_pubsub_subscription.default["test-bigquery"]:
     bigquery_config:
     - drop_unknown_fields: true
-      table: project-id.my_dataset.my_table
+      table: project-id:my_dataset.my_table
       use_topic_schema: true
       write_metadata: false
     name: test-bigquery

@@ -103,7 +103,7 @@ module "pubsub" {
   subscriptions = {
     test-bigquery = {
       bigquery = {
-        table               = "${var.project_id}.${module.bigquery-dataset.dataset_id}.my_table"
+        table               = "${module.bigquery-dataset.tables["my_table"].project}:${module.bigquery-dataset.tables["my_table"].dataset_id}.${module.bigquery-dataset.tables["my_table"].table_id}"
         use_topic_schema    = true
         write_metadata      = false
         drop_unknown_fields = true
