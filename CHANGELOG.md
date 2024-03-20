@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2141](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2141)] Dataproc module cleanup & fixes ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-11 10:05:33+00:00 -->
+- [[#2131](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2131)] Introduce mandatory OWNERS file for blueprint maintainership ([juliocc](https://github.com/juliocc)) <!-- 2024-03-08 08:40:46+00:00 -->
 - [[#2133](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2133)] Updated diagram to better reflect code naming. ([bswenka](https://github.com/bswenka)) <!-- 2024-03-06 19:23:37+00:00 -->
 - [[#2135](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2135)] Rename `modules/cloudsql-instance` deletion protection variables ([juliocc](https://github.com/juliocc)) <!-- 2024-03-06 10:44:55+00:00 -->
 - [[#2119](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2119)] Fix phpipam blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-29 08:33:07+00:00 -->
@@ -29,6 +31,10 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#2143](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2143)] Update README.md (Fixed typos in /cloud-foundation-fabric/tree/master/blueprints/cloud-operations) ([Tianyou3](https://github.com/Tianyou3)) <!-- 2024-03-10 14:25:12+00:00 -->
+- [[#2131](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2131)] Introduce mandatory OWNERS file for blueprint maintainership ([juliocc](https://github.com/juliocc)) <!-- 2024-03-08 08:40:46+00:00 -->
+- [[#2138](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2138)] Updating README.md file for fixing some typo ([NayeemShaMd](https://github.com/NayeemShaMd)) <!-- 2024-03-07 15:20:51+00:00 -->
+- [[#2136](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2136)] Update FAST state IAM files ([ludoo](https://github.com/ludoo)) <!-- 2024-03-06 23:08:09+00:00 -->
 - [[#2134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2134)] **incompatible change:** Add links to factories doc ([ludoo](https://github.com/ludoo)) <!-- 2024-03-06 07:25:43+00:00 -->
 - [[#2120](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2120)] Implement GKE patterns naming conventions ([juliocc](https://github.com/juliocc)) <!-- 2024-02-29 06:57:22+00:00 -->
 - [[#2110](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2110)] Gitlab blueprint ([simonebruzzechesse](https://github.com/simonebruzzechesse)) <!-- 2024-02-27 17:36:46+00:00 -->
@@ -42,6 +48,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#2139](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2139)] Logging updates ([juliocc](https://github.com/juliocc)) <!-- 2024-03-08 09:07:13+00:00 -->
 - [[#2115](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2115)] **incompatible change:** Align resource names in FAST networking stages ([ludoo](https://github.com/ludoo)) <!-- 2024-02-29 06:45:19+00:00 -->
 - [[#2112](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2112)] Add support for billing budgets to project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-02-27 18:13:49+00:00 -->
 - [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
@@ -68,6 +75,11 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#2162](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2162)] Support automation/controlling projects and resources in project factory ([ludoo](https://github.com/ludoo)) <!-- 2024-03-19 15:50:07+00:00 -->
+- [[#2152](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2152)] Add folder factory to project-factory module ([juliocc](https://github.com/juliocc)) <!-- 2024-03-14 12:03:42+00:00 -->
+- [[#2141](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2141)] Dataproc module cleanup & fixes ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-11 10:05:33+00:00 -->
+- [[#2142](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2142)] Adds bfd and md5 auth support to google_compute_router_peer ([sruffilli](https://github.com/sruffilli)) <!-- 2024-03-10 13:06:49+00:00 -->
+- [[#2139](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2139)] Logging updates ([juliocc](https://github.com/juliocc)) <!-- 2024-03-08 09:07:13+00:00 -->
 - [[#2135](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2135)] Rename `modules/cloudsql-instance` deletion protection variables ([juliocc](https://github.com/juliocc)) <!-- 2024-03-06 10:44:55+00:00 -->
 - [[#2134](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2134)] **incompatible change:** Add links to factories doc ([ludoo](https://github.com/ludoo)) <!-- 2024-03-06 07:25:43+00:00 -->
 - [[#2130](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2130)] **incompatible change:** Add support for service account IAM variables to pf ([ludoo](https://github.com/ludoo)) <!-- 2024-03-05 12:13:02+00:00 -->
@@ -111,6 +123,12 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#2154](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2154)] Projects data source e2e tests ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2024-03-15 22:58:11+00:00 -->
+- [[#2151](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2151)] Kms e2e tests ([dibaskar-google](https://github.com/dibaskar-google)) <!-- 2024-03-13 10:31:21+00:00 -->
+- [[#2149](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2149)] Cloudnat E-2-E Tests ([Lorioux](https://github.com/Lorioux)) <!-- 2024-03-11 15:47:11+00:00 -->
+- [[#2147](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2147)] Add test reports to checks ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-11 09:54:35+00:00 -->
+- [[#2144](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2144)] Update actions to latest versions ([juliocc](https://github.com/juliocc)) <!-- 2024-03-11 08:31:16+00:00 -->
+- [[#2136](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2136)] Update FAST state IAM files ([ludoo](https://github.com/ludoo)) <!-- 2024-03-06 23:08:09+00:00 -->
 - [[#2132](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2132)] feat: add e2e test for compute-mig module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-06 20:30:20+00:00 -->
 - [[#2118](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2118)] Add https security to cloud-functions-v1 module ([mibelbahri](https://github.com/mibelbahri)) <!-- 2024-02-28 20:20:56+00:00 -->
 - [[#1843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/1843)] **incompatible change:** Factories refactor ([ludoo](https://github.com/ludoo)) <!-- 2024-02-26 10:16:52+00:00 -->
