@@ -276,12 +276,10 @@ variable "monitoring_config" {
   description = "Monitoring configuration. Google Cloud Managed Service for Prometheus is enabled by default."
   type = object({
     enable_system_metrics = optional(bool, true)
-
     # Control plane metrics
     enable_api_server_metrics         = optional(bool, false)
     enable_controller_manager_metrics = optional(bool, false)
     enable_scheduler_metrics          = optional(bool, false)
-
     # Kube state metrics
     enable_daemonset_metrics   = optional(bool, false)
     enable_deployment_metrics  = optional(bool, false)
@@ -289,9 +287,13 @@ variable "monitoring_config" {
     enable_pod_metrics         = optional(bool, false)
     enable_statefulset_metrics = optional(bool, false)
     enable_storage_metrics     = optional(bool, false)
-
     # Google Cloud Managed Service for Prometheus
     enable_managed_prometheus = optional(bool, true)
+    advanced_datapath_observability = optional(object({
+      enable_metrics = bool
+      enable_relay   = optional(bool)
+      relay_mode     = optional(string)
+    }))
   })
   default  = {}
   nullable = false
@@ -319,6 +321,28 @@ variable "monitoring_config" {
       var.monitoring_config.enable_storage_metrics,
     ]) ? var.monitoring_config.enable_managed_prometheus : true
     error_message = "Kube state metrics collection requires Google Cloud Managed Service for Prometheus to be enabled."
+  }
+  validation {
+    condition = (
+      try(
+        var.monitoring_config.advanced_datapath_observability.relay_mode,
+        null
+      ) == null
+      ||
+      contains(
+        [
+          "RELAY_MODE_UNSPECIFIED",
+          "DISABLED",
+          "INTERNAL_VPC_LB",
+          "EXTERNAL_LB"
+        ],
+        try(
+          var.monitoring_config.advanced_datapath_observability.relay_mode,
+          ""
+        )
+      )
+    )
+    error_message = "Invalid relay mode value."
   }
 }
 
