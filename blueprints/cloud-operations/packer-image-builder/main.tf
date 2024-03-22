@@ -82,19 +82,19 @@ module "firewall" {
 }
 
 module "nat" {
-  source                = "../../../modules/net-cloudnat"
-  project_id            = module.project.project_id
-  region                = var.region
-  name                  = "default"
-  router_network        = module.vpc.name
-  config_source_subnets = "LIST_OF_SUBNETWORKS"
-  subnetworks = [
-    {
-      self_link            = module.vpc.subnet_self_links["${var.region}/${local.compute_subnet_name}"]
-      config_source_ranges = ["ALL_IP_RANGES"]
-      secondary_ranges     = null
-    }
-  ]
+  source         = "../../../modules/net-cloudnat"
+  project_id     = module.project.project_id
+  region         = var.region
+  name           = "default"
+  router_network = module.vpc.name
+  config_source_subnetworks = {
+    all = false
+    subnetworks = [
+      {
+        self_link = module.vpc.subnet_self_links["${var.region}/${local.compute_subnet_name}"]
+      }
+    ]
+  }
 }
 
 resource "google_service_account_iam_binding" "sa-image-builder-token-creators" {
