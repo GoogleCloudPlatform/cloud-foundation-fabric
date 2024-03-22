@@ -33,6 +33,13 @@ output "version_ids" {
   }
 }
 
+output "version_versions" {
+  description = "Version versions keyed by secret name : version name."
+  value = {
+    for k, v in google_secret_manager_secret_version.default : k => v.version
+  }
+}
+
 output "versions" {
   description = "Secret versions."
   value       = google_secret_manager_secret_version.default

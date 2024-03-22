@@ -7,6 +7,12 @@ billing_account = {
 custom_roles = {
   service_project_network_admin = "organizations/123456789012/roles/foo"
 }
+dns = {
+  resolvers      = ["10.10.10.10"]
+  enable_logging = true
+}
+enable_cloud_nat   = true
+essential_contacts = "gcp-network-admins@fast.example.com"
 folder_ids = {
   networking      = null
   networking-dev  = null

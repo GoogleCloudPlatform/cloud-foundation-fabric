@@ -14,27 +14,27 @@
 
 values:
   module.log-export-logbucket["audit-logs"].google_logging_project_bucket_config.bucket[0]:
-    bucket_id: audit-logs-audit-logs
+    bucket_id: audit-logs
     cmek_settings: []
-    enable_analytics: false
+    enable_analytics: true
     index_configs: []
     location: europe-west1
     locked: null
     project: fast-prod-audit-logs-0
     retention_days: 30
   module.log-export-logbucket["vpc-sc"].google_logging_project_bucket_config.bucket[0]:
-    bucket_id: audit-logs-vpc-sc
+    bucket_id: vpc-sc
     cmek_settings: []
-    enable_analytics: false
+    enable_analytics: true
     index_configs: []
     location: europe-west1
     locked: null
     project: fast-prod-audit-logs-0
     retention_days: 30
   module.log-export-logbucket["workspace-audit-logs"].google_logging_project_bucket_config.bucket[0]:
-    bucket_id: audit-logs-workspace-audit-logs
+    bucket_id: workspace-audit-logs
     cmek_settings: []
-    enable_analytics: false
+    enable_analytics: true
     index_configs: []
     location: europe-west1
     locked: null
@@ -194,7 +194,7 @@ values:
   module.organization.google_organization_iam_binding.bindings["organization_iam_admin_conditional"]:
     condition:
     - description: Automation service account delegated grants.
-      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/accesscontextmanager.policyAdmin','roles/compute.orgFirewallPolicyAdmin','roles/compute.xpnAdmin','roles/orgpolicy.policyAdmin','roles/resourcemanager.organizationViewer','organizations/123456789012/roles/tenantNetworkAdmin','roles/billing.admin','roles/billing.costsManager','roles/billing.user'])
+      expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(['roles/accesscontextmanager.policyAdmin','roles/compute.orgFirewallPolicyAdmin','roles/compute.xpnAdmin','roles/orgpolicy.policyAdmin','roles/orgpolicy.policyViewer','roles/resourcemanager.organizationViewer','organizations/123456789012/roles/tenantNetworkAdmin'])
       title: automation_sa_delegated_grants
     members:
     - serviceAccount:fast-prod-resman-0@fast-prod-iac-core-0.iam.gserviceaccount.com
@@ -362,8 +362,8 @@ counts:
   google_essential_contacts_contact: 3
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
-  google_org_policy_policy: 17
-  google_organization_iam_binding: 25
+  google_org_policy_policy: 20
+  google_organization_iam_binding: 27
   google_organization_iam_custom_role: 6
   google_organization_iam_member: 35
   google_project: 3
@@ -380,5 +380,5 @@ counts:
   google_storage_project_service_account: 3
   google_tags_tag_key: 1
   google_tags_tag_value: 1
-  modules: 16
-  resources: 186
+  modules: 17
+  resources: 192

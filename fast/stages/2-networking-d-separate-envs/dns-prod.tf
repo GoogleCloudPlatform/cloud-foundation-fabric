@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,38 +33,30 @@ module "prod-dns-private-zone" {
   }
 }
 
-moved {
-  from = module.prod-onprem-example-dns-forwarding
-  to   = module.prod-dns-fwd-onprem-example
-}
-
 module "prod-dns-fwd-onprem-example" {
   source     = "../../../modules/dns"
+  count      = length(var.dns.prod_resolvers) > 0 ? 1 : 0
   project_id = module.prod-spoke-project.project_id
   name       = "example-com"
   zone_config = {
     domain = "onprem.example.com."
     forwarding = {
       client_networks = [module.prod-spoke-vpc.self_link]
-      forwarders      = { for ip in var.dns.prod : ip => null }
+      forwarders      = { for ip in var.dns.prod_resolvers : ip => null }
     }
   }
 }
 
-moved {
-  from = module.prod-reverse-10-dns-forwarding
-  to   = module.prod-dns-fwd-onprem-rev-10
-}
-
 module "prod-dns-fwd-onprem-rev-10" {
   source     = "../../../modules/dns"
+  count      = length(var.dns.prod_resolvers) > 0 ? 1 : 0
   project_id = module.prod-spoke-project.project_id
   name       = "root-reverse-10"
   zone_config = {
     domain = "10.in-addr.arpa."
     forwarding = {
       client_networks = [module.prod-spoke-vpc.self_link]
-      forwarders      = { for ip in var.dns.prod : ip => null }
+      forwarders      = { for ip in var.dns.prod_resolvers : ip => null }
     }
   }
 }
@@ -75,8 +67,10 @@ module "prod-dns-policy-googleapis" {
   source     = "../../../modules/dns-response-policy"
   project_id = module.prod-spoke-project.project_id
   name       = "googleapis"
+  factories_config = {
+    rules = var.factories_config.dns_policy_rules_file
+  }
   networks = {
     prod = module.prod-spoke-vpc.self_link
   }
-  rules_file = var.factories_config.dns_policy_rules_file
 }

@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,30 +34,13 @@ jobs:
     name: "Release new version"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: "Validate input"
         run: |
           [[ "${{ github.event.inputs.changelog }}" != "true" ]] && { echo 'You didn''t update the changelog.' ; exit 1; }
           [[ -n "${{ github.event.inputs.version }}" ]] || { echo 'Version not specified!'; exit 1; }
           [[ "${{ github.event.inputs.version }}" != v* ]] && { echo 'Version does not start with v!' ; exit 1; }
-
-      - uses: actions/setup-go@v3
-        with:
-          go-version: "1.16"
-
-      - name: "Update all module names"
-        run: |
-          cd tools/tfeditor
-          go build .
-          ./tfeditor -path ../.. -module-name "google-pso-tool/cloud-foundation-fabric/{{ .Module }}/${{ github.event.inputs.version }}"
-          cd ../..
-
-          git config --global user.name "Release Automation"
-          git config --global user.email "cloud-foundation-fabric@google.com"
-
-          git commit -a -m "Release version ${{ github.event.inputs.version }}"
-          git push origin master
 
       - name: "Tag and release"
         run: |

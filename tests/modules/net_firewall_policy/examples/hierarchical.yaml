@@ -74,7 +74,7 @@ values:
     description: null
     direction: INGRESS
     disabled: false
-    enable_logging: null
+    enable_logging: True
     match:
     - dest_address_groups: null
       dest_fqdns: null
@@ -98,7 +98,7 @@ values:
     description: null
     direction: INGRESS
     disabled: false
-    enable_logging: null
+    enable_logging: True
     match:
     - dest_address_groups: null
       dest_fqdns: null

@@ -69,6 +69,9 @@ module "dev-spoke-vpc" {
   project_id = module.dev-spoke-project.project_id
   name       = "dev-spoke-0"
   mtu        = 1500
+  dns_policy = {
+    logging = var.dns.enable_logging
+  }
   factories_config = {
     subnets_folder = "${var.factories_config.data_dir}/subnets/dev"
   }
@@ -98,5 +101,5 @@ module "peering-dev" {
   source        = "../../../modules/net-vpc-peering"
   prefix        = "dev-peering-0"
   local_network = module.dev-spoke-vpc.self_link
-  peer_network  = module.landing-trusted-vpc.self_link
+  peer_network  = module.landing-vpc.self_link
 }

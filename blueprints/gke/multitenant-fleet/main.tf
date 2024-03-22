@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,35 @@
 
 # tfdoc:file:description Project and usage dataset.
 
+locals {
+  gke_nodes_sa_roles = [
+    "autoscaling.metricsWriter",
+    "logging.logWriter",
+    "monitoring.viewer",
+    "monitoring.metricWriter",
+    "stackdriver.resourceMetadata.writer"
+  ]
+}
+
 module "gke-project-0" {
-  source          = "../../../modules/project"
-  billing_account = var.billing_account_id
-  name            = var.project_id
-  parent          = var.folder_id
-  prefix          = var.prefix
-  group_iam       = var.group_iam
-  labels          = var.labels
+  source            = "../../../modules/project"
+  billing_account   = var.billing_account_id
+  name              = var.project_id
+  parent            = var.folder_id
+  prefix            = var.prefix
+  iam_by_principals = var.iam_by_principals
+  labels            = var.labels
   iam = merge(var.iam, {
     "roles/gkehub.serviceAgent" = [
       "serviceAccount:${module.gke-project-0.service_accounts.robots.fleet}"
     ] }
   )
+  iam_bindings_additive = {
+    for r in local.gke_nodes_sa_roles : "gke-nodes-sa-${r}" => {
+      member = module.gke-nodes-service-account.iam_email
+      role   = "roles/${r}"
+    }
+  }
   services = concat(
     [
       "anthos.googleapis.com",
@@ -70,4 +86,10 @@ module "gke-dataset-resource-usage" {
   project_id    = module.gke-project-0.project_id
   id            = "gke_resource_usage"
   friendly_name = "GKE resource usage."
+}
+
+module "gke-nodes-service-account" {
+  source     = "../../../modules/iam-service-account"
+  project_id = module.gke-project-0.project_id
+  name       = "gke-node-default"
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,17 @@ moved {
 
 module "landing-dns-fwd-onprem-example" {
   source     = "../../../modules/dns"
+  count      = length(var.dns.resolvers) > 0 ? 1 : 0
   project_id = module.landing-project.project_id
   name       = "example-com"
   zone_config = {
     domain = "onprem.example.com."
     forwarding = {
       client_networks = [
-        module.landing-untrusted-vpc.self_link,
-        module.landing-trusted-vpc.self_link
+        module.dmz-vpc.self_link,
+        module.landing-vpc.self_link
       ]
-      forwarders = { for ip in var.dns.onprem : ip => null }
+      forwarders = { for ip in var.dns.resolvers : ip => null }
     }
   }
 }
@@ -46,16 +47,17 @@ moved {
 
 module "landing-dns-fwd-onprem-rev-10" {
   source     = "../../../modules/dns"
+  count      = length(var.dns.resolvers) > 0 ? 1 : 0
   project_id = module.landing-project.project_id
   name       = "root-reverse-10"
   zone_config = {
     domain = "10.in-addr.arpa."
     forwarding = {
       client_networks = [
-        module.landing-untrusted-vpc.self_link,
-        module.landing-trusted-vpc.self_link
+        module.dmz-vpc.self_link,
+        module.landing-vpc.self_link
       ]
-      forwarders = { for ip in var.dns.onprem : ip => null }
+      forwarders = { for ip in var.dns.resolvers : ip => null }
     }
   }
 }
@@ -73,8 +75,8 @@ module "landing-dns-priv-gcp" {
     domain = "gcp.example.com."
     private = {
       client_networks = [
-        module.landing-untrusted-vpc.self_link,
-        module.landing-trusted-vpc.self_link
+        module.dmz-vpc.self_link,
+        module.landing-vpc.self_link
       ]
     }
   }
@@ -89,9 +91,11 @@ module "landing-dns-policy-googleapis" {
   source     = "../../../modules/dns-response-policy"
   project_id = module.landing-project.project_id
   name       = "googleapis"
-  networks = {
-    landing-trusted   = module.landing-trusted-vpc.self_link
-    landing-untrusted = module.landing-untrusted-vpc.self_link
+  factories_config = {
+    rules = var.factories_config.dns_policy_rules_file
   }
-  rules_file = var.factories_config.dns_policy_rules_file
+  networks = {
+    landing = module.landing-vpc.self_link
+    dmz     = module.dmz-vpc.self_link
+  }
 }

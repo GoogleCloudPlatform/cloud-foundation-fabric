@@ -18,12 +18,6 @@ They are meant to be used as minimal but complete starting points to create actu
 
 <br clear="left">
 
-### Decentralized firewall management
-
-<a href="./decentralized-firewall/" title="Decentralized firewall management"><img src="./decentralized-firewall/diagram.png" align="left" width="280px"></a> This [blueprint](./decentralized-firewall/) shows how a decentralized firewall management can be organized using the [firewall factory](../factories/net-vpc-firewall-yaml/).
-
-<br clear="left">
-
 ### GLB and multi-regional daisy-chaining through hybrid NEGs
 
 <a href="./glb-hybrid-neg-internal/" title="XGLB and multi-regional daisy-chaining through hybrid NEGs"><img src="./glb-hybrid-neg-internal/diagram.png" align="left" width="280px"></a> This [blueprint](./glb-hybrid-neg-internal/) shows the experimental use of hybrid NEGs behind external Global Load Balancers (GLBs) to connect to GCP instances living in spoke VPCs and behind Network Virtual Appliances (NVAs).
@@ -33,22 +27,6 @@ They are meant to be used as minimal but complete starting points to create actu
 ## HTTP Load Balancer with Cloud Armor
 
 <a href="./glb-and-armor/" title="HTTP Load Balancer with Cloud Armor"><img src="./glb-and-armor/architecture.png" align="left" width="280px"></a> This [blueprint](./glb-and-armor/) contains all necessary Terraform modules to build a multi-regional infrastructure with horizontally scalable managed instance group backends, HTTP load balancing and Google’s advanced WAF security tool (Cloud Armor) on top to securely deploy an application at global scale.
-
-<br clear="left">
-
-### Hub and Spoke via Dynamic VPN
-
-<a href="./hub-and-spoke-vpn/" title="Hub and spoke via dynamic VPN"><img src="./hub-and-spoke-vpn/diagram.png" align="left" width="280px"></a> This [blueprint](./hub-and-spoke-vpn/) implements a hub and spoke topology via dynamic VPN tunnels, a common design where peering cannot be used due to limitations on the number of spokes or connectivity to managed services.
-
-The blueprint shows how to implement spoke transitivity via BGP advertisements, how to expose hub DNS zones to spokes via DNS peering, and allows easy testing of different VPN and BGP configurations.
-
-<br clear="left">
-
-### Hub and Spoke via Peering
-
-<a href="./hub-and-spoke-peering/" title="Hub and spoke via peering blueprint"><img src="./hub-and-spoke-peering/diagram.png" align="left" width="280px"></a> This [blueprint](./hub-and-spoke-peering/) implements a hub and spoke topology via VPC peering, a common design where a landing zone VPC (hub) is connected to on-premises, and then peered with satellite VPCs (spokes) to further partition the infrastructure.
-
-The sample highlights the lack of transitivity in peering: the absence of connectivity between spokes, and the need create workarounds for private service access to managed services. One such workaround is shown for private GKE, allowing access from hub and all spokes to GKE masters via a dedicated VPN.
 
 <br clear="left">
 

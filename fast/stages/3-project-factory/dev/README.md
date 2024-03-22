@@ -1,7 +1,7 @@
 # Project factory
 
 The Project Factory (or PF) builds on top of your foundations to create and set up projects (and related resources) to be used for your workloads.
-It is organized in folders representing environments (e.g., "dev", "prod"), each implemented by a stand-alone terraform [resource factory](https://medium.com/google-cloud/resource-factories-a-descriptive-approach-to-terraform-581b3ebb59c).
+It is organized in folders representing environments (e.g., "dev", "prod"), each implemented by a stand-alone terraform [process factory](../../../../blueprints/factories/README.md).
 
 ## Design overview and choices
 
@@ -13,7 +13,7 @@ A single factory creates projects in a well-defined context, according to your r
 
 Projects for each environment across different teams are created by dedicated service accounts, as exemplified in the diagram above. While there's no intrinsic limitation regarding where the project factory can create a projects, the IAM bindings for the service account effectively enforce boundaries (e.g., the production service account shouldn't be able to create or have any access to the development projects, and vice versa).
 
-The project factory exposes all the features of the underlying [project module](../../../../modules/project/), including Shared VPC service project attachment, VPC SC perimeter membership, etc.
+The project factory stage lightly wraps the underlying [project-factory module](../../../../modules/project-factory/), including Shared VPC service project attachment, VPC SC perimeter membership, etc.
   
 ## How to run this stage
 
@@ -55,7 +55,7 @@ gcloud alpha storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-security.auto.
 
 If you're not using FAST, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
 
-Besides the values above, the project factory is driven by data files which closely follow the variables exposed by the [project module](../../../../modules/project/), with one file per project. Please refer to the underlying [project factory blueprint](../../../../blueprints/factories/project-factory/) documentation for details on the format.
+Besides the values above, the project factory is driven by YAML data files, with one file per project. Please refer to the underlying [project factory module](../../../../modules/project-factory/) documentation for details on the format.
 
 Once the configuration is complete, run the project factory with:
 
@@ -79,8 +79,8 @@ terraform apply
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account](variables.tf#L19) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id           &#61; string&#10;  is_org_level &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [prefix](variables.tf#L39) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
-| [factory_data_path](variables.tf#L32) | Path to folder containing YAML project data files. | <code>string</code> |  | <code>&#34;data&#47;projects&#34;</code> |  |
+| [factories_config](variables.tf#L32) | Path to folder with YAML resource description data files. | <code title="object&#40;&#123;&#10;  projects_data_path &#61; string&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account       &#61; string&#10;    budgets_data_path     &#61; string&#10;    notification_channels &#61; optional&#40;map&#40;any&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [prefix](variables.tf#L45) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
 
 ## Outputs
 

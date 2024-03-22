@@ -12,9 +12,8 @@ module "data-catalog-tag-template" {
   project_id = "my-project"
   tag_templates = {
     demo_var = {
-      tag_template_id = "my_template"
-      region          = "europe-west1"
-      display_name    = "Demo Tag Template"
+      region       = "europe-west1"
+      display_name = "Demo Tag Template"
       fields = {
         source = {
           display_name = "Source of data asset"
@@ -38,9 +37,8 @@ module "data-catalog-tag-template" {
   project_id = "my-project"
   tag_templates = {
     demo_var = {
-      tag_template_id = "my_template"
-      region          = "europe-west1"
-      display_name    = "Demo Tag Template"
+      region       = "europe-west1"
+      display_name = "Demo Tag Template"
       fields = {
         source = {
           display_name = "Source of data asset"
@@ -66,9 +64,8 @@ module "data-catalog-tag-template" {
   project_id = var.project_id
   tag_templates = {
     demo_var = {
-      tag_template_id = "my_template"
-      region          = "europe-west1"
-      display_name    = "Demo Tag Template"
+      region       = "europe-west1"
+      display_name = "Demo Tag Template"
       fields = {
         source = {
           display_name = "Source of data asset"
@@ -107,9 +104,8 @@ module "data-catalog-tag-template" {
   project_id = var.project_id
   tag_templates = {
     demo_var = {
-      tag_template_id = "my_template"
-      region          = "europe-west1"
-      display_name    = "Demo Tag Template"
+      region       = "europe-west1"
+      display_name = "Demo Tag Template"
       fields = {
         source = {
           display_name = "Source of data asset"
@@ -160,9 +156,8 @@ module "data-catalog-tag-template" {
   project_id = "my-project"
   tag_templates = {
     demo_var = {
-      tag_template_id = "my_template"
-      region          = "europe-west1"
-      display_name    = "Demo Tag Template"
+      region       = "europe-west1"
+      display_name = "Demo Tag Template"
       fields = {
         source = {
           display_name = "Source of data asset"
@@ -187,18 +182,18 @@ module "data-catalog-tag-template" {
 region: europe-west2
 display_name: Demo Tag Template
 fields:
-  - field_id: source
-    display_name: Source of data asset
-    type:
-      primitive_type: STRING
-    is_required: true
-  - field_id: pii_type
-    display_name: PII type
-    type:
-      enum_type:
-        - EMAIL
-        - SOCIAL SECURITY NUMBER
-        - NONE
+  source:
+      display_name: Source of data asset
+      type:
+        primitive_type: STRING
+      is_required: true
+  pii_type:
+      display_name: PII type
+      type:
+        enum_type:
+          - EMAIL
+          - SOCIAL SECURITY NUMBER
+          - NONE
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

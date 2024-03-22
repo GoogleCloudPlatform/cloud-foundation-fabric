@@ -9,14 +9,14 @@ This module allows managing a single Pub/Sub topic, including multiple subscript
 ```hcl
 module "pubsub" {
   source     = "./fabric/modules/pubsub"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-topic"
   iam = {
-    "roles/pubsub.viewer"     = ["group:foo@example.com"]
-    "roles/pubsub.subscriber" = ["user:user1@example.com"]
+    "roles/pubsub.viewer"     = ["group:${var.group_email}"]
+    "roles/pubsub.subscriber" = ["serviceAccount:${var.service_account.email}"]
   }
 }
-# tftest modules=1 resources=3 inventory=simple.yaml
+# tftest modules=1 resources=3  inventory=simple.yaml e2e
 ```
 
 ### Topic with schema
@@ -24,7 +24,7 @@ module "pubsub" {
 ```hcl
 module "topic_with_schema" {
   source     = "./fabric/modules/pubsub"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-topic"
   schema = {
     msg_encoding = "JSON"
@@ -48,7 +48,7 @@ module "topic_with_schema" {
     })
   }
 }
-# tftest modules=1 resources=2 inventory=schema.yaml
+# tftest modules=1 resources=2 inventory=schema.yaml e2e
 ```
 
 ### Subscriptions
@@ -58,7 +58,7 @@ Subscriptions are defined with the `subscriptions` variable, allowing optional c
 ```hcl
 module "pubsub" {
   source     = "./fabric/modules/pubsub"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-topic"
   subscriptions = {
     test-pull = {}
@@ -68,7 +68,7 @@ module "pubsub" {
     }
   }
 }
-# tftest modules=1 resources=3 inventory=subscriptions.yaml
+# tftest modules=1 resources=3 inventory=subscriptions.yaml e2e
 ```
 
 ### Push subscriptions
@@ -78,7 +78,7 @@ Push subscriptions need extra configuration in the `push_configs` variable.
 ```hcl
 module "pubsub" {
   source     = "./fabric/modules/pubsub"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-topic"
   subscriptions = {
     test-push = {
@@ -88,7 +88,7 @@ module "pubsub" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=push-subscription.yaml e2e
 ```
 
 ### BigQuery subscriptions
@@ -98,12 +98,12 @@ BigQuery subscriptions need extra configuration in the `bigquery_subscription_co
 ```hcl
 module "pubsub" {
   source     = "./fabric/modules/pubsub"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-topic"
   subscriptions = {
     test-bigquery = {
       bigquery = {
-        table               = "my_project_id:my_dataset.my_table"
+        table               = "${module.bigquery-dataset.tables["my_table"].project}:${module.bigquery-dataset.tables["my_table"].dataset_id}.${module.bigquery-dataset.tables["my_table"].table_id}"
         use_topic_schema    = true
         write_metadata      = false
         drop_unknown_fields = true
@@ -111,7 +111,7 @@ module "pubsub" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=2 resources=5 fixtures=fixtures/bigquery-dataset.tf inventory=bigquery-subscription.yaml e2e
 ```
 
 ### Cloud Storage subscriptions
@@ -121,13 +121,13 @@ Cloud Storage subscriptions need extra configuration in the `cloud_storage_subsc
 ```hcl
 module "pubsub" {
   source     = "./fabric/modules/pubsub"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-topic"
   subscriptions = {
     test-cloudstorage = {
       cloud_storage = {
-        bucket          = "my-bucket"
-        filename_prefix = "test_prefix"
+        bucket          = module.gcs.name
+        filename_prefix = var.prefix
         filename_suffix = "test_suffix"
         max_duration    = "100s"
         max_bytes       = 1000
@@ -138,24 +138,24 @@ module "pubsub" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=2 resources=4 fixtures=fixtures/gcs.tf inventory=cloud-storage-subscription.yaml e2e
 ```
 ### Subscriptions with IAM
 
 ```hcl
 module "pubsub" {
   source     = "./fabric/modules/pubsub"
-  project_id = "my-project"
+  project_id = var.project_id
   name       = "my-topic"
   subscriptions = {
     test-1 = {
       iam = {
-        "roles/pubsub.subscriber" = ["user:user1@example.com"]
+        "roles/pubsub.subscriber" = ["serviceAccount:${var.service_account.email}"]
       }
     }
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=3 inventory=subscription-iam.yaml e2e
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -184,4 +184,9 @@ module "pubsub" {
 | [subscription_id](outputs.tf#L37) | Subscription ids. |  |
 | [subscriptions](outputs.tf#L48) | Subscription resources. |  |
 | [topic](outputs.tf#L57) | Topic resource. |  |
+
+## Fixtures
+
+- [bigquery-dataset.tf](../../tests/fixtures/bigquery-dataset.tf)
+- [gcs.tf](../../tests/fixtures/gcs.tf)
 <!-- END TFDOC -->

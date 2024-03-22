@@ -32,7 +32,7 @@ output "backend_service_self_link" {
 output "forwarding_rule_addresses" {
   description = "Forwarding rule addresses."
   value = {
-    for k, v in google_compute_forwarding_rule.forwarding_rules
+    for k, v in google_compute_forwarding_rule.default
     : k => v.ip_address
   }
 }
@@ -40,14 +40,14 @@ output "forwarding_rule_addresses" {
 output "forwarding_rule_self_links" {
   description = "Forwarding rule self links."
   value = {
-    for k, v in google_compute_forwarding_rule.forwarding_rules
+    for k, v in google_compute_forwarding_rule.default
     : k => v.self_link
   }
 }
 
 output "forwarding_rules" {
   description = "Forwarding rule resources."
-  value       = google_compute_forwarding_rule.forwarding_rules
+  value       = google_compute_forwarding_rule.default
 }
 
 output "group_self_links" {
@@ -80,7 +80,7 @@ output "health_check_self_link" {
 output "id" {
   description = "Fully qualified forwarding rule ids."
   value = {
-    for k, v in google_compute_forwarding_rule.forwarding_rules
+    for k, v in google_compute_forwarding_rule.default
     : k => v.id
   }
 }

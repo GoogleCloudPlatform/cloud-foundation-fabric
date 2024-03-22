@@ -12,16 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 values:
+  module.pubsub.google_pubsub_subscription.default["test-1"]:
+    bigquery_config: []
+    cloud_storage_config: []
+    dead_letter_policy: []
+    enable_exactly_once_delivery: false
+    enable_message_ordering: false
+    filter: null
+    labels: null
+    message_retention_duration: 604800s
+    name: test-1
+    project: project-id
+    push_config: []
+    retain_acked_messages: false
+    retry_policy: []
+    timeouts: null
+    topic: my-topic
   module.pubsub.google_pubsub_subscription_iam_binding.authoritative["test-1.roles/pubsub.subscriber"]:
     condition: []
     members:
-    - user:user1@example.com
-    project: my-project
+    - serviceAccount:service_account_email
+    project: project-id
     role: roles/pubsub.subscriber
     subscription: test-1
+  module.pubsub.google_pubsub_topic.default:
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
+    name: my-topic
+    project: project-id
+    timeouts: null
 
 counts:
   google_pubsub_subscription: 1
   google_pubsub_subscription_iam_binding: 1
   google_pubsub_topic: 1
+  modules: 1
+  resources: 3

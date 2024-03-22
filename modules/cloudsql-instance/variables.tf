@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,20 +76,6 @@ variable "databases" {
   default     = null
 }
 
-variable "deletion_protection" {
-  description = "Prevent terraform from deleting instances."
-  type        = bool
-  default     = true
-  nullable    = false
-}
-
-variable "deletion_protection_enabled" {
-  description = "Set Google's deletion protection attribute which applies across all surfaces (UI, API, & Terraform)."
-  type        = bool
-  default     = true
-  nullable    = false
-}
-
 variable "disk_autoresize_limit" {
   description = "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit."
   type        = number
@@ -124,6 +110,13 @@ variable "flags" {
   description = "Map FLAG_NAME=>VALUE for database-specific tuning."
   type        = map(string)
   default     = null
+}
+
+variable "gcp_deletion_protection" {
+  description = "Set Google's deletion protection attribute which applies across all surfaces (UI, API, & Terraform)."
+  type        = bool
+  default     = true
+  nullable    = false
 }
 
 variable "insights_config" {
@@ -255,9 +248,22 @@ variable "ssl" {
   }
 }
 
+variable "terraform_deletion_protection" {
+  description = "Prevent terraform from deleting instances."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "tier" {
   description = "The machine type to use for the instances."
   type        = string
+}
+
+variable "time_zone" {
+  description = "The time_zone to be used by the database engine (supported only for SQL Server), in SQL Server timezone format."
+  type        = string
+  default     = null
 }
 
 variable "users" {

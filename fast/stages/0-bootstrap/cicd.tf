@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ locals {
         v.oidc[0].allowed_audiences,
         ["https://iam.googleapis.com/${v.name}"]
       )
-      issuer           = local.identity_providers[k].issuer
+      issuer           = local.workload_identity_providers[k].issuer
       issuer_uri       = try(v.oidc[0].issuer_uri, null)
       name             = v.name
-      principal_branch = local.identity_providers[k].principal_branch
-      principal_repo   = local.identity_providers[k].principal_repo
+      principal_branch = local.workload_identity_providers[k].principal_branch
+      principal_repo   = local.workload_identity_providers[k].principal_repo
     }
   }
   cicd_repositories = {
@@ -40,7 +40,7 @@ locals {
         try(v.type, null) == "sourcerepo"
         ||
         contains(
-          keys(local.identity_providers),
+          keys(local.workload_identity_providers),
           coalesce(try(v.identity_provider, null), ":")
         )
       )
@@ -83,8 +83,8 @@ module "automation-tf-cicd-repo" {
     "roles/source.reader" = concat(
       [module.automation-tf-cicd-sa[each.key].iam_email],
       each.key == "bootstrap"
-      ? module.automation-tf-bootstrap-r-sa.iam_email
-      : module.automation-tf-resman-r-sa.iam_email
+      ? [module.automation-tf-bootstrap-r-sa.iam_email]
+      : [module.automation-tf-resman-r-sa.iam_email]
     )
   }
   triggers = {
@@ -121,12 +121,12 @@ module "automation-tf-cicd-sa" {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
         ? format(
-          local.identity_providers_defs[each.value.type].principal_repo,
+          local.workload_identity_providers_defs[each.value.type].principal_repo,
           google_iam_workload_identity_pool.default.0.name,
           each.value.name
         )
         : format(
-          local.identity_providers_defs[each.value.type].principal_branch,
+          local.workload_identity_providers_defs[each.value.type].principal_branch,
           google_iam_workload_identity_pool.default.0.name,
           each.value.name,
           each.value.branch
@@ -157,7 +157,7 @@ module "automation-tf-cicd-r-sa" {
     : {
       "roles/iam.workloadIdentityUser" = [
         format(
-          local.identity_providers_defs[each.value.type].principal_repo,
+          local.workload_identity_providers_defs[each.value.type].principal_repo,
           google_iam_workload_identity_pool.default.0.name,
           each.value.name
         )

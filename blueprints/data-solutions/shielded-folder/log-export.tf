@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,44 @@
 # tfdoc:file:description Audit log project and sink.
 
 locals {
+  _log_keys = var.enable_features.encryption ? {
+    bq = (
+      var.enable_features.log_sink
+      ? [format(
+        "projects/%s/locations/%s/keyRings/%s/cryptoKeys/bq",
+        module.sec-project.0.project_id,
+        var.log_locations.bq,
+        var.log_locations.bq
+      )]
+      : null
+    )
+    pubsub = (
+      var.enable_features.log_sink
+      ? [format(
+        "projects/%s/locations/%s/keyRings/%s/cryptoKeys/pubsub",
+        module.sec-project.0.project_id,
+        var.log_locations.pubsub,
+        var.log_locations.pubsub
+      )]
+      : null
+    )
+    storage = (
+      var.enable_features.log_sink
+      ? [format(
+        "projects/%s/locations/%s/keyRings/%s/cryptoKeys/storage",
+        module.sec-project.0.project_id,
+        var.log_locations.storage,
+        var.log_locations.storage
+      )]
+      : null
+    )
+  } : {}
   gcs_storage_class = (
     length(split("-", var.log_locations.storage)) < 2
     ? "MULTI_REGIONAL"
     : "REGIONAL"
   )
   log_types = toset([for k, v in var.log_sinks : v.type])
-
-  _log_keys = var.enable_features.encryption ? {
-    bq      = var.enable_features.log_sink ? ["projects/${module.sec-project.0.project_id}/locations/${var.log_locations.bq}/keyRings/${var.log_locations.bq}/cryptoKeys/bq"] : null
-    pubsub  = var.enable_features.log_sink ? ["projects/${module.sec-project.0.project_id}/locations/${var.log_locations.pubsub}/keyRings/${var.log_locations.pubsub}/cryptoKeys/pubsub"] : null
-    storage = var.enable_features.log_sink ? ["projects/${module.sec-project.0.project_id}/locations/${var.log_locations.storage}/keyRings/${var.log_locations.storage}/cryptoKeys/storage"] : null
-  } : {}
-
   log_keys = {
     for service, key in local._log_keys : service => key if key != null
   }
@@ -42,9 +67,11 @@ module "log-export-project" {
   parent          = module.folder.id
   billing_account = var.project_config.billing_account_id
   project_create  = var.project_config.billing_account_id != null
-  prefix          = var.project_config.billing_account_id == null ? null : var.prefix
-  group_iam = {
-    (local.groups.workload-security) = [
+  prefix = (
+    var.project_config.billing_account_id == null ? null : var.prefix
+  )
+  iam_by_principals = {
+    "group:${local.groups.workload-security}" = [
       "roles/editor"
     ]
   }

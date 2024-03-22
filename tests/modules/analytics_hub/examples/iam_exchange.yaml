@@ -1,0 +1,50 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.analytics-hub.google_bigquery_analytics_hub_data_exchange.data_exchange:
+    data_exchange_id: exchange
+    description: null
+    display_name: exchange
+    documentation: null
+    icon: null
+    location: us-central1
+    primary_contact: null
+    project: project-id
+    timeouts: null
+  ? module.analytics-hub.google_bigquery_analytics_hub_data_exchange_iam_binding.exchange_iam_bindings["roles/analyticshub.viewer"]
+  : condition: []
+    data_exchange_id: exchange
+    location: us-central1
+    members:
+    - group:viewer@domain.com
+    - user:user@domain.com
+    project: project-id
+    role: roles/analyticshub.viewer
+  module.analytics-hub.google_bigquery_analytics_hub_data_exchange_iam_member.exchange_iam_members["subscribers"]:
+    condition: []
+    data_exchange_id: exchange
+    location: us-central1
+    member: user:user@domain.com
+    project: project-id
+    role: roles/analyticshub.subscriber
+
+counts:
+  google_bigquery_analytics_hub_data_exchange: 1
+  google_bigquery_analytics_hub_data_exchange_iam_binding: 1
+  google_bigquery_analytics_hub_data_exchange_iam_member: 1
+  modules: 1
+  resources: 3
+
+outputs: {}

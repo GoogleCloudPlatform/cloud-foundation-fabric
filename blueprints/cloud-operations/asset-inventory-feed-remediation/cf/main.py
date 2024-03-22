@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 '''Cloud Function module to do simple instance tag enforcement.
 
 This module is designed to be plugged in a Cloud Function, attached to a PubSub
@@ -48,9 +47,7 @@ import time
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 
-
-_SELF_LINK_RE = re.compile(
-    r'/projects/([^/]+)/zones/([^/]+)/instances/([^/]+)')
+_SELF_LINK_RE = re.compile(r'/projects/([^/]+)/zones/([^/]+)/instances/([^/]+)')
 _TAG_SHARED_PREFIXES = ['shared-', 'gke-cluster-']
 
 
@@ -71,10 +68,8 @@ def _set_tags(project, zone, name, fingerprint, tags):
       if result['status'] == 'DONE':
         break
       time.sleep(1)
-      result = compute.zoneOperations().get(
-          project=project,
-          zone=zone,
-          operation=result['name']).execute()
+      result = compute.zoneOperations().get(project=project, zone=zone,
+                                            operation=result['name']).execute()
   except HttpError as e:
     raise Error('Error setting tags: %s' % e)
 
@@ -151,8 +146,8 @@ def main(event=None, context=None):
   if tags['items'] == valid_tags:
     logging.info('all tags are valid')
     return
-  logging.info('modify tags %s %s %s %s %s', project,
-               zone, name, tags['fingerprint'], valid_tags)
+  logging.info('modify tags %s %s %s %s %s', project, zone, name,
+               tags['fingerprint'], valid_tags)
   try:
     _set_tags(project, zone, name, tags.get('fingerprint'), valid_tags)
   except Error as e:

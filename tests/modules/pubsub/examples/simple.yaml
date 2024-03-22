@@ -14,23 +14,29 @@
 
 values:
   module.pubsub.google_pubsub_topic.default:
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
     name: my-topic
-    project: my-project
+    project: project-id
+    timeouts: null
   module.pubsub.google_pubsub_topic_iam_binding.authoritative["roles/pubsub.subscriber"]:
     condition: []
     members:
-    - user:user1@example.com
-    project: my-project
+    - serviceAccount:service_account_email
+    project: project-id
     role: roles/pubsub.subscriber
     topic: my-topic
   module.pubsub.google_pubsub_topic_iam_binding.authoritative["roles/pubsub.viewer"]:
     condition: []
     members:
-    - group:foo@example.com
-    project: my-project
+    - group:organization-admins@example.org
+    project: project-id
     role: roles/pubsub.viewer
     topic: my-topic
 
 counts:
   google_pubsub_topic: 1
   google_pubsub_topic_iam_binding: 2
+  modules: 1
+  resources: 3
