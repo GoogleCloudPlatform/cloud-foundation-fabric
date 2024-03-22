@@ -39,7 +39,7 @@ variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
   type = object({
-    gcve-prod = string
+    gcve-dev = string
   })
 }
 
@@ -115,7 +115,7 @@ variable "vpc_self_links" {
   # tfdoc:variable:source 2-networking
   description = "Self link for the shared VPC."
   type = object({
-    prod-spoke-0 = string
+    dev-spoke-0  = string
     prod-landing = string
   })
 }

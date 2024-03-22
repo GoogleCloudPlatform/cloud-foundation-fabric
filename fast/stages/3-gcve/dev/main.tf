@@ -19,7 +19,7 @@
 module "gcve-pc" {
   source              = "../../../../blueprints/gcve/single-region-pc"
   billing_account_id  = var.billing_account.id
-  folder_id           = var.folder_ids.gcve-prod
+  folder_id           = var.folder_ids.gcve-dev
   project_id          = "gcve-0"
   groups_gcve         = var.groups_gcve
   group_iam           = var.group_iam
