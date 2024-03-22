@@ -22,7 +22,7 @@ module "dev-spoke-project" {
   name            = "dev-net-spoke-0"
   parent          = var.folder_ids.networking-dev
   prefix          = var.prefix
-  services = [
+  services = concat([
     "container.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
@@ -31,7 +31,13 @@ module "dev-spoke-project" {
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "vpcaccess.googleapis.com"
-  ]
+    ],
+    (
+      var.fast_features.gcve == true
+      ? ["vmwareengine.googleapis.com"]
+      : []
+    )
+  )
   shared_vpc_host_config = {
     enabled = true
   }

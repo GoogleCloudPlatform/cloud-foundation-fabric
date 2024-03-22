@@ -113,6 +113,16 @@ variable "factories_config" {
   }
 }
 
+variable "fast_features" {
+  # tfdoc:variable:source 0-0-bootstrap
+  description = "Selective control for top-level FAST features."
+  type = object({
+    gcve = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."

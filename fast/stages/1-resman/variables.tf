@@ -148,6 +148,7 @@ variable "custom_roles" {
   # tfdoc:variable:source 0-bootstrap
   description = "Custom roles defined at the org level, in key => id format."
   type = object({
+    gcve_network_admin            = string
     service_project_network_admin = string
     storage_viewer                = string
   })

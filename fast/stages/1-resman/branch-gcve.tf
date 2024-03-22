@@ -87,11 +87,7 @@ module "branch-gcve-dev-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
-      (
-        local.groups.gcp-devops == null
-        ? []
-        : ["group:${local.groups.gcp-devops}"]
-      ),
+      [local.principals.gcp-devops],
       compact([
         try(module.branch-gcve-dev-sa-cicd.0.iam_email, null)
       ])
@@ -114,11 +110,7 @@ module "branch-gcve-prod-sa" {
   prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
-      (
-        local.groups.gcp-devops == null
-        ? []
-        : ["group:${local.groups.gcp-devops}"]
-      ),
+      [local.principals.gcp-devops],
       compact([
         try(module.branch-gcve-prod-sa-cicd.0.iam_email, null)
       ])

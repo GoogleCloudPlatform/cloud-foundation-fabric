@@ -64,6 +64,7 @@ module "branch-network-prod-folder" {
       local.branch_optional_r_sa_lists.gcve-prod,
       local.branch_optional_r_sa_lists.pf-prod,
     )
+    (local.custom_roles.gcve_network_admin) = local.branch_optional_sa_lists.gcve-prod
   }
   tag_bindings = {
     environment = try(
@@ -92,6 +93,7 @@ module "branch-network-dev-folder" {
       local.branch_optional_r_sa_lists.gcve-dev,
       local.branch_optional_r_sa_lists.pf-prod,
     )
+    (local.custom_roles.gcve_network_admin) = local.branch_optional_sa_lists.gcve-dev
   }
   tag_bindings = {
     environment = try(
