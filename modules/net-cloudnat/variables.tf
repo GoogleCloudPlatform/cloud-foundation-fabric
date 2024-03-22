@@ -114,9 +114,12 @@ variable "rules" {
 variable "subnetworks" {
   description = "Subnetworks to NAT, only used when config_source_subnets equals LIST_OF_SUBNETWORKS."
   type = list(object({
-    self_link            = string,
-    config_source_ranges = list(string)
-    secondary_ranges     = list(string)
+    self_link     = string
+    all_ip_ranges = optional(bool, true)
+    # secondary ranges are only meaningful when all_ip_ranges is false
+    # in that case we populate config with LIST_OF_SECONDARY_IP_RANGES
+    # only if secondary_ranges is not null
+    secondary_ranges = optional(list(string))
   }))
   default = []
 }

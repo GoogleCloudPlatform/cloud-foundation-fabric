@@ -4,6 +4,7 @@ Simple Cloud NAT management, with optional router creation.
 
 <!-- BEGIN TOC -->
 - [Basic Example](#basic-example)
+- [Subnetwork ranges](#subnetwork-ranges)
 - [Reserved IPs and custom rules](#reserved-ips-and-custom-rules)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -20,6 +21,40 @@ module "nat" {
   router_network = var.vpc.self_link
 }
 # tftest modules=1 resources=2 e2e
+```
+
+## Subnetwork ranges
+
+When specifying subnets the default for IP ranges is to consider all ranges (primary and secondaries).
+
+More control can be obtained via the `all_ip_ranges` subnetwork attribute: when set to `false` only the primary subnet range is considered, unless secondary ranges are specified via the `secondary_ranges` attribute.
+
+```hcl
+module "nat" {
+  source         = "./fabric/modules/net-cloudnat"
+  project_id     = var.project_id
+  region         = var.region
+  name           = "default"
+  router_network = var.vpc.self_link
+  subnetworks = [
+    {
+      # all ip ranges
+      self_link = "projects/foo/regions/europe-west1/subnetworks/net"
+    },
+    {
+      # primary range only
+      self_link     = "projects/foo/regions/europe-west3/subnetworks/net"
+      all_ip_ranges = false
+    },
+    {
+      # both primary and specified secondary ranges
+      self_link        = "projects/foo/regions/europe-west8/subnetworks/net"
+      all_ip_ranges    = false
+      secondary_ranges = ["pods"]
+    }
+  ]
+}
+# tftest modules=1 resources=2
 ```
 
 ## Reserved IPs and custom rules
@@ -45,11 +80,9 @@ module "nat" {
     module.addresses.external_addresses["a1"].self_link,
     module.addresses.external_addresses["a3"].self_link
   ]
-
   config_port_allocation = {
     enable_endpoint_independent_mapping = false
   }
-
   rules = [
     {
       description = "rule1"
@@ -80,7 +113,7 @@ module "nat" {
 | [router_name](variables.tf#L91) | Router name, leave blank if router will be created to use auto generated name. | <code>string</code> |  | <code>null</code> |
 | [router_network](variables.tf#L97) | Name of the VPC used for auto-created router. | <code>string</code> |  | <code>null</code> |
 | [rules](variables.tf#L103) | List of rules associated with this NAT. | <code title="list&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;,&#10;  match       &#61; string&#10;  source_ips  &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnetworks](variables.tf#L114) | Subnetworks to NAT, only used when config_source_subnets equals LIST_OF_SUBNETWORKS. | <code title="list&#40;object&#40;&#123;&#10;  self_link            &#61; string,&#10;  config_source_ranges &#61; list&#40;string&#41;&#10;  secondary_ranges     &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnetworks](variables.tf#L114) | Subnetworks to NAT, only used when config_source_subnets equals LIST_OF_SUBNETWORKS. | <code title="list&#40;object&#40;&#123;&#10;  self_link     &#61; string&#10;  all_ip_ranges &#61; optional&#40;bool, true&#41;&#10;  secondary_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 

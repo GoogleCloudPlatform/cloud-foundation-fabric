@@ -62,10 +62,24 @@ resource "google_compute_router_nat" "nat" {
 
   dynamic "subnetwork" {
     for_each = var.subnetworks
+    iterator = subnet
     content {
-      name                     = subnetwork.value.self_link
-      source_ip_ranges_to_nat  = subnetwork.value.config_source_ranges
-      secondary_ip_range_names = subnetwork.value.secondary_ranges
+      name = subnet.value.self_link
+      source_ip_ranges_to_nat = (
+        subnet.value.all_ip_ranges == true ? ["ALL_IP_RANGES"] : concat(
+          ["PRIMARY_IP_RANGE"],
+          (
+            subnet.value.secondary_ranges == null
+            ? []
+            : ["LIST_OF_SECONDARY_IP_RANGES"]
+          )
+        )
+      )
+      secondary_ip_range_names = (
+        subnet.value.all_ip_ranges == true
+        ? null
+        : subnet.value.secondary_ranges
+      )
     }
   }
 
