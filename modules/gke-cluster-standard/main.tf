@@ -366,7 +366,8 @@ resource "google_container_cluster" "cluster" {
   }
   monitoring_config {
     enable_components = toset(compact([
-      # System metrics is the minimum requirement if any other metrics are enabled. This is checked by input var validation.
+      # System metrics is the minimum requirement if any other metrics are enabled.
+      # This is checked by input var validation.
       var.monitoring_config.enable_system_metrics ? "SYSTEM_COMPONENTS" : null,
       # Control plane metrics
       var.monitoring_config.enable_api_server_metrics ? "APISERVER" : null,
@@ -382,6 +383,24 @@ resource "google_container_cluster" "cluster" {
     ]))
     managed_prometheus {
       enabled = var.monitoring_config.enable_managed_prometheus
+    }
+    dynamic "advanced_datapath_observability_config" {
+      for_each = (
+        var.monitoring_config.advanced_datapath_observability == null
+        ? []
+        : [""]
+      )
+      content {
+        enable_metrics = (
+          var.monitoring_config.advanced_datapath_observability.enable_metrics
+        )
+        enable_relay = (
+          var.monitoring_config.advanced_datapath_observability.enable_relay
+        )
+        relay_mode = (
+          var.monitoring_config.advanced_datapath_observability.relay_mode
+        )
+      }
     }
   }
   # Dataplane V2 has built-in network policies
