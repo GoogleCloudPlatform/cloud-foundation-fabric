@@ -6,6 +6,27 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 <!-- None < 2024-03-20 13:57:56+00:00 -->
 
+### BLUEPRINTS
+
+- [[#2171](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2171)] **incompatible change:** Fix subnet configuration in cloud nat module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 14:59:02+00:00 -->
+- [[#2168](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2168)] Support advanced_datapath_observability in gke cluster standard module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 07:25:43+00:00 -->
+- [[#2169](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2169)] Add stub READMEs for the removed hub and spoke blueprints ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 06:48:46+00:00 -->
+
+### DOCUMENTATION
+
+- [[#2164](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2164)] Updated CONTRIBUTING.md with a guide to cut a new release ([sruffilli](https://github.com/sruffilli)) <!-- 2024-03-20 17:08:27+00:00 -->
+
+### MODULES
+
+- [[#2171](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2171)] **incompatible change:** Fix subnet configuration in cloud nat module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 14:59:02+00:00 -->
+- [[#2170](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2170)] Support optional secondary ranges in net-cloudnat module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 11:10:48+00:00 -->
+- [[#2168](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2168)] Support advanced_datapath_observability in gke cluster standard module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 07:25:43+00:00 -->
+- [[#2166](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2166)] feat(net-cloudnat): add `tcp_time_wait` to `config_timeouts` ([frits-v](https://github.com/frits-v)) <!-- 2024-03-20 21:26:28+00:00 -->
+
+### TOOLS
+
+- [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
+
 ## [30.0.0] - 2024-03-20
 <!-- 2024-03-20 13:57:56+00:00 < 2024-01-24 19:15:39+00:00 -->
 
