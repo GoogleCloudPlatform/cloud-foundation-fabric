@@ -41,10 +41,9 @@ locals {
   nva_locality = {
     for v in setproduct(keys(var.regions), local.nva_zones) :
     join("-", v) => {
-      name      = v.0
-      region    = var.regions[v.0]
-      shortname = local.region_shortnames[var.regions[v.0]]
-      zone      = v.1
+      name   = v.0
+      region = var.regions[v.0]
+      zone   = v.1
     }
   }
   nva_zones = ["b", "c"]
@@ -123,9 +122,8 @@ module "nva-mig" {
 module "ilb-nva-dmz" {
   for_each = {
     for k, v in var.regions : k => {
-      region    = v
-      shortname = local.region_shortnames[v]
-      subnet    = "${v}/dmz-default-${local.region_shortnames[v]}"
+      region = v
+      subnet = "${v}/dmz-default"
     }
   }
   source        = "../../../modules/net-lb-int"
@@ -158,9 +156,8 @@ module "ilb-nva-dmz" {
 module "ilb-nva-landing" {
   for_each = {
     for k, v in var.regions : k => {
-      region    = v
-      shortname = local.region_shortnames[v]
-      subnet    = "${v}/landing-default-${local.region_shortnames[v]}"
+      region = v
+      subnet = "${v}/landing-default"
     }
   }
   source        = "../../../modules/net-lb-int"
