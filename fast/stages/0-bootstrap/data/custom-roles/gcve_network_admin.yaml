@@ -15,5 +15,7 @@
 name: gcveNetworkAdmin
 includedPermissions:
   - vmwareengine.networkPeerings.create
+  - vmwareengine.networkPeerings.delete
   - vmwareengine.networkPeerings.get
   - vmwareengine.networkPeerings.list
+  - vmwareengine.operations.get

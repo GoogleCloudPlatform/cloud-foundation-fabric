@@ -22,6 +22,7 @@ locals {
     vmw_engine_network_config   = module.gcve-pc.vmw_engine_network_config
     vmw_engine_network_peerings = module.gcve-pc.vmw_engine_network_peerings
     vmw_engine_private_clouds   = module.gcve-pc.vmw_engine_private_clouds
+    vmw_private_cloud_network   = module.gcve-pc.vmw_private_cloud_network
   }
 }
 
@@ -39,6 +40,8 @@ resource "google_storage_bucket_object" "tfvars" {
   name    = "tfvars/3-gke-dev.auto.tfvars.json"
   content = jsonencode(local.tfvars)
 }
+
+# outputs
 
 output "project_id" {
   description = "GCVE project id."
@@ -60,4 +63,8 @@ output "vmw_engine_private_clouds" {
   value       = module.gcve-pc.vmw_engine_private_clouds
 }
 
-# generate tfvars file for subsequent stages
+output "vmw_private_cloud_network" {
+  description = "VMware engine network."
+  value       = module.gcve-pc.vmw_private_cloud_network
+}
+

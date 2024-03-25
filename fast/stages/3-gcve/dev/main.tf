@@ -41,7 +41,7 @@ module "gcve-pc" {
   prefix             = "${var.prefix}-dev"
   project_services   = var.project_services
 
-  network_peerings = {
+  ven_peerings = {
     dev-spoke = {
       peer_network                        = local.peer_network.dev-spoke-0
       export_custom_routes                = false
@@ -52,36 +52,16 @@ module "gcve-pc" {
     }
   }
 
+  user_peerings = {
+    dev-ven = {
+      peer_network                        = local.peer_network.dev-spoke-0
+      project_id                          = var.host_project_ids.dev-spoke-0
+      export_custom_routes                = false
+      export_custom_routes_with_public_ip = false
+      import_custom_routes                = false
+      import_custom_routes_with_public_ip = false
+    }
+  }
+
   private_cloud_configs = var.private_cloud_configs
 }
-
-
-
-
-
-
-# resource "google_vmwareengine_network_peering" "vmw_engine_network_peerings" {
-#   provider                            = google-beta
-#   for_each                            = var.vmw_network_peerings
-#   project                             = var.project_id
-#   name                                = "${var.prefix}-${each.key}"
-#   description                         = each.value.description
-#   export_custom_routes                = each.value.export_custom_routes
-#   export_custom_routes_with_public_ip = each.value.export_custom_routes_with_public_ip
-#   import_custom_routes                = each.value.import_custom_routes
-#   import_custom_routes_with_public_ip = each.value.import_custom_routes_with_public_ip
-#   peer_network                        = each.value.peer_network
-#   peer_network_type                   = each.value.peer_to_vmware_engine_network ? "VMWARE_ENGINE_NETWORK" : "STANDARD"
-#   vmware_engine_network               = local.vmw_network.id
-# }
-
-
-# resource "google_vmwareengine_network_peering" "vmw_engine_network_peerings" {
-#   provider              = google-beta
-#   project               = var.host_project_ids.dev-spoke-0
-#   name                  = "test"
-#   description           = "description"
-#   peer_network          = local.peer_network.dev-spoke-0
-#   peer_network_type     = "STANDARD"
-#   vmware_engine_network = module.gcve-pc.vmw_private_cloud_network
-# }
