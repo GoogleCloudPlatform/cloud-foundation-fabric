@@ -59,7 +59,7 @@ values:
     enable_shielded_nodes: false
     enable_tpu: false
     fleet: []
-    initial_node_count: 1
+    initial_node_count: null
     location: europe-west1
     logging_config:
     - enable_components:

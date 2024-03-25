@@ -113,6 +113,23 @@ variable "cluster_autoscaling" {
   }
 }
 
+variable "default_node_pool" {
+  description = "Enable default node-pool."
+  type = object({
+    remove_pool        = optional(bool, true)
+    initial_node_count = optional(number, null)
+  })
+  default = {
+    remove_pool        = true
+    initial_node_count = null
+  }
+
+  validation {
+    condition     = ((var.default_node_pool.remove_pool == true && var.default_node_pool.initial_node_count == null) || (var.default_node_pool.remove_pool == false && var.default_node_pool.initial_node_count != null))
+    error_message = "If `remove_pool` is set to false, `initial_node_count` need be set."
+  }
+}
+
 variable "deletion_protection" {
   description = "Whether or not to allow Terraform to destroy the cluster. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the cluster will fail."
   type        = bool
