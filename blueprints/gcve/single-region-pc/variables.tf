@@ -24,20 +24,13 @@ variable "folder_id" {
   type        = string
 }
 
-variable "groups_gcve" {
+variable "groups" {
   description = "GCVE groups."
   type = object({
-    gcp-gcve-admin   = string
+    gcp-gcve-admins  = string
     gcp-gcve-viewers = string
   })
   nullable = false
-}
-
-variable "group_iam" {
-  description = "Project-level IAM bindings for groups. Use group emails as keys, list of roles as values."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
 }
 
 variable "iam" {
@@ -47,15 +40,17 @@ variable "iam" {
   nullable    = false
 }
 
+variable "iam_by_principals" {
+  description = "Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "labels" {
   description = "Project-level labels."
   type        = map(string)
   default     = {}
-}
-
-variable "organization_domain" {
-  description = "Organization domain."
-  type        = string
 }
 
 variable "prefix" {
@@ -79,7 +74,7 @@ variable "project_services" {
   nullable    = false
 }
 
-variable "vmw_network_peerings" {
+variable "network_peerings" {
   description = "The network peerings towards users' VPCs or other VMware Engine networks. The key is the peering name suffix."
   type = map(object({
     peer_network                        = string
@@ -94,9 +89,9 @@ variable "vmw_network_peerings" {
 }
 
 
-variable "vmw_private_cloud_config" {
+variable "private_cloud_configs" {
   description = "The VMware private cloud configurations. The key is the unique private cloud name suffix."
-  type = object({
+  type = map(object({
     cidr = string
     zone = string
     # The key is the unique additional cluster name suffix
@@ -112,7 +107,7 @@ variable "vmw_private_cloud_config" {
       node_type_id      = optional(string, "standard-72")
     }), {})
     description = optional(string, "Managed by Terraform.")
-  })
+  }))
   nullable = false
 }
 

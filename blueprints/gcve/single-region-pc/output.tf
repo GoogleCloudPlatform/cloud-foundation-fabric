@@ -33,3 +33,8 @@ output "vmw_engine_private_clouds" {
   description = "VMware engine private cloud resources."
   value       = module.gcve-pc.vmw_engine_private_clouds
 }
+
+output "vmw_private_cloud_network" {
+  description = "VMware engine network."
+  value       = module.gcve-pc.vmw_private_cloud_network
+}

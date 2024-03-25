@@ -46,21 +46,23 @@ variable "folder_ids" {
 variable "groups_gcve" {
   description = "GCVE groups."
   type = object({
-    gcp-gcve-admin   = string
+    gcp-gcve-admins  = string
     gcp-gcve-viewers = string
   })
   default = {
-    gcp-gcve-admin   = "gcp-gcve-admin"
+    gcp-gcve-admins  = "gcp-gcve-admins"
     gcp-gcve-viewers = "gcp-gcve-viewers"
   }
   nullable = false
 }
 
-variable "group_iam" {
-  description = "Project-level authoritative IAM bindings for groups in {GROUP_EMAIL => [ROLES]} format. Use group emails as keys, list of roles as values."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
+variable "host_project_ids" {
+  # tfdoc:variable:source 2-networking
+  description = "Host project for the shared VPC."
+  type = object({
+    dev-spoke-0  = string
+    prod-landing = string
+  })
 }
 
 variable "iam" {
@@ -120,9 +122,9 @@ variable "vpc_self_links" {
   })
 }
 
-variable "private_cloud_config" {
+variable "private_cloud_configs" {
   description = "The VMware private cloud configurations. The key is the unique private cloud name suffix."
-  type = object({
+  type = map(object({
     cidr = string
     zone = string
     # The key is the unique additional cluster name suffix
@@ -138,6 +140,6 @@ variable "private_cloud_config" {
       node_type_id      = optional(string, "standard-72")
     }), {})
     description = optional(string, "Managed by Terraform.")
-  })
+  }))
   nullable = false
 }

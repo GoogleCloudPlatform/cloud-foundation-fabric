@@ -22,19 +22,16 @@ module "gcve-project-0" {
   name            = var.project_id
   parent          = var.folder_id
   prefix          = var.prefix
-  group_iam = merge(var.group_iam, {
-    "roles/vmwareengine.vmwareengineAdmin" = [
-      "group:${var.groups_gcve.gcp-gcve-admin}@${var.organization_domain}"
-    ],
-    "roles/vmwareengine.vmwareengineViewer" = [
-      "group:${var.groups_gcve.gcp-gcve-viewers}@${var.organization_domain}"
-    ] }
+  iam_by_principals = merge({
+    (var.groups.gcp-gcve-admins)  = ["roles/vmwareengine.vmwareengineAdmin"]
+    (var.groups.gcp-gcve-viewers) = ["roles/vmwareengine.vmwareengineViewer"]
+    },
+    var.iam_by_principals
   )
-  labels = var.labels
   iam    = var.iam
-  services = concat(
-    [
-      "vmwareengine.googleapis.com",
+  labels = var.labels
+  services = concat([
+    "vmwareengine.googleapis.com",
     ],
     var.project_services
   )
