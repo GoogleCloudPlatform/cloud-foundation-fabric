@@ -196,7 +196,7 @@ module "cloud_run_cmek" {
   project_id     = var.project_id
   name           = "cmek-example"
   region         = var.region
-  encryption_key = "projects/my-project/locations/global/keyRings/my-keyring/cryptoKeys/my-cryptokey"
+  encryption_key = "projects/my-project/locations/location/keyRings/my-keyring/cryptoKeys/my-cryptokey"
 
   containers = {
     example = {
@@ -210,7 +210,7 @@ module "cloud_run_cmek" {
     "roles/run.invoker" = ["allUsers"]
   }
 }
-# tftest modules=1 resources=2 inventory=service-cmek-example.yaml e2e
+# tftest modules=1 resources=1 inventory=service-cmek-example.yaml e2e
 ```
 
 ### Eventarc triggers
