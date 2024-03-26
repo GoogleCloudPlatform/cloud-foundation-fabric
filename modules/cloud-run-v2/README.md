@@ -191,7 +191,7 @@ module "cloud_run" {
 Deploy a Cloud Run service with environment variables encrypted using a Customer-Managed Encryption Key. Ensure you specify the encryption_key with the full resource identifier of your Cloud KMS CryptoKey. This setup adds an extra layer of security by utilizing your own encryption keys.
 
 ```hcl
-module "cloud_run_cmek" {
+module "cloud_run" {
   source         = "./fabric/modules/cloud-run-v2"
   project_id     = module.project-service.project_id
   region         = var.region
