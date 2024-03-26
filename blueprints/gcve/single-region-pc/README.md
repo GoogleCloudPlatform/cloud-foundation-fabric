@@ -1,6 +1,6 @@
 # Single Region GCVE Private Cloud
 
-This blueprint presents an opinionated architecture to handle a simple single region GCVE private cloud. The general idea behind this blueprint is to deploy a single project hosting a GCVE private cloud connected to existing VPCs, the user needs to create before using this blueprint.
+This blueprint presents an opinionated architecture to handle a simple single region VMware Engine private cloud. The general idea behind this blueprint is to deploy a single project hosting a GCVE private cloud connected to existing VPCs the user needs to create before using this blueprint.
 
 Multiple deployments of this blueprints allow the user to create multiple private clouds that are tipically required to provide the physical separation (eg app enviroments).
 
@@ -11,32 +11,36 @@ This blueprint is used as part of the [FAST GCVE stage](../../../fast/stages/3-g
 </p>
 
 The overall architecture is based on the following design decisions:
-
 - Each GCVE Private Cloud resides on a dedicated GCP project.
 - Each GCVE Private Cloud is connected to a dedicated VMware Engine Network (VEN).
-- Two Private Clouds can connect by establishing a peering between their rispectively VENs. (Shared VEN are not supported).
+- Two Private Clouds can connect by establishing a peering between their rispectively VENs (Shared VEN are not supported).
 - The internet inbound/oubound connectivity is managed on the user VPC.   
 
 The blueprint manages:
-
 - project creation
 - API/Services enablement
 - IAM role assignment for groups
-- VPC attachment
+- VMware Egine Private Cloud creation
+- [VMware Engine Network](https://cloud.google.com/vmware-engine/docs/networking/vmware-engine-network#standard_networks) creation
+- VPC attachment (Optional)
 - project-level organization policy definitions
 - billing setup (billing account attachment)
 
 ### User groups
 
-As per our GCP best practices a GCVE private cloud relies on user groups to assign roles to human identities. These are the specific groups used by the Data Platform and their access patterns, from the [module documentation](../../../../blueprints/data-solutions/data-platform-foundations/#groups):
+As per our GCP best practices a GCVE private cloud relies on user groups to assign roles to human identities. These are the specific groups binded to the main GCVE [predefined roles](https://cloud.google.com/vmware-engine/docs/iam#vmware-engine-roles):
+- *VMware Engine Administrators*. They have full access to the VMWare Engine Service.
+- *VMware Engine Viewers*. They have read-only access to VMware Engine Service.
 
-- *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
-- *Data Analysts*. They perform analysis on datasets, with read access to the data warehouse Curated or Confidential projects depending on their privileges.
-- *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
 
 ### Network
 
-A Shared VPC is used here, either from one of the FAST networking stages (e.g. [hub and spoke via VPN](../../2-networking-b-vpn)) or from an external source.
+This blueprints expects the user to provision a VPC upfront, either from one of the FAST networking stages (e.g. [hub and spoke via VPN](../../../fast/stages/2-networking-b-vpn)) or from an external source.
+The blueprint can optionally configure the [VMware Engine Network peering](https://cloud.google.com/vmware-engine/docs/networking/peer-vpc-network) on the peer VPC by granting the following permissions on the project that hosts the VPC:
+- vmwareengine.networkPeerings.create
+- vmwareengine.networkPeerings.get
+- vmwareengine.networkPeerings.list
+- vmwareengine.operations.get
 
 ## Basic usage
 
@@ -44,41 +48,52 @@ The following example shows how to deploy a CGVE private cloud and connect it to
 
 ```hcl
 module "gcve-pc" {
-  source             = "../../../../blueprints/gcve/single-region-pc"
-  billing_account_id = var.billing_account.id
-  folder_id          = var.folder_ids.gcve-prod
-  groups_gcve = {
-    gcp-gcve-admin   = "gcp-gcve-admin"
-    gcp-gcve-viewers = "gcp-gcve-viewers"
+  source             = "./fabric/blueprints/gcve/single-region-pc"
+  billing_account_id = "000000-000000-000000"
+  folder_id          = "folders/000000000000"
+  project_id         = "myprojectid"
+  groups = {
+    gcp-gcve-admins  = "group:gcp-gcve-admins@acme.com"
+    gcp-gcve-viewers = "group:gcp-gcve-viewers@acme.com"
   }
-  labels = {
-    environment = "dev"
-  }
-  organization_domain = var.organization.domain
-  prefix              = "${var.prefix}-dev"
-  project_id          = "gcve-0"
-  vmw_network_peerings = {
-    dev-landing = {
-      peer_network                        = "https://www.googleapis.com/compute/v1/projects/em-dev-net-spoke-0/global/networks/dev-spoke-0"
-      export_custom_routes                = false
-      export_custom_routes_with_public_ip = false
-      import_custom_routes                = false
-      import_custom_routes_with_public_ip = false
-      peer_to_vmware_engine_network       = false
+
+  prefix = "myprefix"
+
+  network_peerings = {
+    dev-spoke-ven = {
+      peer_network                  = "projects/spokeproject/regions/europe-west1/subnetworks/dev-default-ew1"
+      peer_project_id               = "peerprojectid"
+      configure_peer_network        = false
+      peer_to_vmware_engine_network = false
+      custom_routes = {
+        export_to_peer   = false
+        import_from_peer = false
+        export_to_ven    = false
+        import_from_ven  = false
+      }
+      custom_routes_with_public_ip = {
+        export_to_peer   = false
+        import_from_peer = false
+        export_to_ven    = false
+        import_from_ven  = false
+      }
+
     }
   }
 
-  vmw_private_cloud_config = {
-    cidr = "172.26.16.0/22"
-    zone = "europe-west8-a"
-    management_cluster_config = {
-      name         = "mgmt-cluster"
-      node_count   = 1
-      node_type_id = "standard-72"
+  private_cloud_configs = {
+    dev-pc = {
+      cidr = "172.26.16.0/22"
+      zone = "europe-west1-a"
+      management_cluster_config = {
+        name         = "mgmt-cluster"
+        node_count   = 1
+        node_type_id = "standard-72"
+      }
     }
   }
 }
-# tftest modules=7 resources=27
+# tftest modules=3 resources=7
 ```
 
 <!-- TFDOC OPTS files:1 -->
@@ -99,13 +114,12 @@ module "gcve-pc" {
 | [billing_account_id](variables.tf#L17) | Billing account ID. | <code>string</code> | ✓ |  |
 | [folder_id](variables.tf#L22) | Folder used for the GCVE project in folders/nnnnnnnnnnn format. | <code>string</code> | ✓ |  |
 | [groups](variables.tf#L27) | GCVE groups. | <code title="object&#40;&#123;&#10;  gcp-gcve-admins  &#61; string&#10;  gcp-gcve-viewers &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [prefix](variables.tf#L56) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [private_cloud_configs](variables.tf#L105) | The VMware private cloud configurations. The key is the unique private cloud name suffix. | <code title="map&#40;object&#40;&#123;&#10;  cidr &#61; string&#10;  zone &#61; string&#10;  additional_cluster_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    custom_core_count &#61; optional&#40;number&#41;&#10;    node_count        &#61; optional&#40;number, 3&#41;&#10;    node_type_id      &#61; optional&#40;string, &#34;standard-72&#34;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  management_cluster_config &#61; optional&#40;object&#40;&#123;&#10;    custom_core_count &#61; optional&#40;number&#41;&#10;    name              &#61; optional&#40;string, &#34;mgmt-cluster&#34;&#41;&#10;    node_count        &#61; optional&#40;number, 3&#41;&#10;    node_type_id      &#61; optional&#40;string, &#34;standard-72&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  description &#61; optional&#40;string, &#34;Managed by Terraform.&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L65) | ID of the project that will contain the GCVE private cloud. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L80) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [private_cloud_configs](variables.tf#L101) | The VMware private cloud configurations. The key is the unique private cloud name suffix. | <code title="map&#40;object&#40;&#123;&#10;  cidr &#61; string&#10;  zone &#61; string&#10;  additional_cluster_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    custom_core_count &#61; optional&#40;number&#41;&#10;    node_count        &#61; optional&#40;number, 3&#41;&#10;    node_type_id      &#61; optional&#40;string, &#34;standard-72&#34;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  management_cluster_config &#61; optional&#40;object&#40;&#123;&#10;    custom_core_count &#61; optional&#40;number&#41;&#10;    name              &#61; optional&#40;string, &#34;mgmt-cluster&#34;&#41;&#10;    node_count        &#61; optional&#40;number, 3&#41;&#10;    node_type_id      &#61; optional&#40;string, &#34;standard-72&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  description &#61; optional&#40;string, &#34;Managed by Terraform.&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L89) | ID of the project that will contain the GCVE private cloud. | <code>string</code> | ✓ |  |
 | [iam](variables.tf#L36) | Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables.tf#L43) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L50) | Project-level labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_services](variables.tf#L70) | Additional project services to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [user_peerings](variables.tf#L91) | The network peerings from users' VPCs to the VMware Engine networks. The key is the peering name suffix. | <code title="map&#40;object&#40;&#123;&#10;  peer_network                        &#61; string&#10;  project_id                          &#61; string&#10;  description                         &#61; optional&#40;string, &#34;Managed by Terraform.&#34;&#41;&#10;  export_custom_routes                &#61; optional&#40;bool, false&#41;&#10;  export_custom_routes_with_public_ip &#61; optional&#40;bool, false&#41;&#10;  import_custom_routes                &#61; optional&#40;bool, false&#41;&#10;  import_custom_routes_with_public_ip &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ven_peerings](variables.tf#L77) | The network peerings towards users' VPCs or other VMware Engine networks. The key is the peering name suffix. | <code title="map&#40;object&#40;&#123;&#10;  peer_network                        &#61; string&#10;  description                         &#61; optional&#40;string, &#34;Managed by Terraform.&#34;&#41;&#10;  export_custom_routes                &#61; optional&#40;bool, false&#41;&#10;  export_custom_routes_with_public_ip &#61; optional&#40;bool, false&#41;&#10;  import_custom_routes                &#61; optional&#40;bool, false&#41;&#10;  import_custom_routes_with_public_ip &#61; optional&#40;bool, false&#41;&#10;  peer_to_vmware_engine_network       &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [network_peerings](variables.tf#L56) | The network peerings between users' VPCs and the VMware Engine networks. The key is the peering name suffix. | <code title="map&#40;object&#40;&#123;&#10;  configure_peer_network &#61; optional&#40;bool, false&#41;&#10;  custom_routes &#61; object&#40;&#123;&#10;    export_to_peer   &#61; optional&#40;bool, false&#41;&#10;    import_from_peer &#61; optional&#40;bool, false&#41;&#10;    export_to_ven    &#61; optional&#40;bool, false&#41;&#10;    import_from_ven  &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#10;  custom_routes_with_public_ip &#61; object&#40;&#123;&#10;    export_to_peer   &#61; optional&#40;bool, false&#41;&#10;    import_from_peer &#61; optional&#40;bool, false&#41;&#10;    export_to_ven    &#61; optional&#40;bool, false&#41;&#10;    import_from_ven  &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#10;  description                   &#61; optional&#40;string, &#34;Managed by Terraform.&#34;&#41;&#10;  peer_network                  &#61; string&#10;  peer_project_id               &#61; optional&#40;string&#41;&#10;  peer_to_vmware_engine_network &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_services](variables.tf#L94) | Additional project services to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 <!-- END TFDOC -->

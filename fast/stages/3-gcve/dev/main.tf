@@ -41,25 +41,25 @@ module "gcve-pc" {
   prefix             = "${var.prefix}-dev"
   project_services   = var.project_services
 
-  ven_peerings = {
-    dev-spoke = {
-      peer_network                        = local.peer_network.dev-spoke-0
-      export_custom_routes                = false
-      export_custom_routes_with_public_ip = false
-      import_custom_routes                = false
-      import_custom_routes_with_public_ip = false
-      peer_to_vmware_engine_network       = false
-    }
-  }
+  network_peerings = {
+    dev-spoke-ven = {
+      peer_network                  = local.peer_network.dev-spoke-0
+      peer_project_id               = var.host_project_ids.dev-spoke-0
+      configure_peer_network        = true
+      peer_to_vmware_engine_network = false
+      custom_routes = {
+        export_to_peer   = false
+        import_from_peer = false
+        export_to_ven    = false
+        import_from_ven  = false
+      }
+      custom_routes_with_public_ip = {
+        export_to_peer   = false
+        import_from_peer = false
+        export_to_ven    = false
+        import_from_ven  = false
+      }
 
-  user_peerings = {
-    dev-ven = {
-      peer_network                        = local.peer_network.dev-spoke-0
-      project_id                          = var.host_project_ids.dev-spoke-0
-      export_custom_routes                = false
-      export_custom_routes_with_public_ip = false
-      import_custom_routes                = false
-      import_custom_routes_with_public_ip = false
     }
   }
 

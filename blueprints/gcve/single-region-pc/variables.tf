@@ -53,6 +53,30 @@ variable "labels" {
   default     = {}
 }
 
+variable "network_peerings" {
+  description = "The network peerings between users' VPCs and the VMware Engine networks. The key is the peering name suffix."
+  type = map(object({
+    configure_peer_network = optional(bool, false)
+    custom_routes = object({
+      export_to_peer   = optional(bool, false)
+      import_from_peer = optional(bool, false)
+      export_to_ven    = optional(bool, false)
+      import_from_ven  = optional(bool, false)
+    })
+    custom_routes_with_public_ip = object({
+      export_to_peer   = optional(bool, false)
+      import_from_peer = optional(bool, false)
+      export_to_ven    = optional(bool, false)
+      import_from_ven  = optional(bool, false)
+    })
+    description                   = optional(string, "Managed by Terraform.")
+    peer_network                  = string
+    peer_project_id               = optional(string)
+    peer_to_vmware_engine_network = optional(bool, false)
+  }))
+  default = {}
+}
+
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
@@ -72,34 +96,6 @@ variable "project_services" {
   type        = list(string)
   default     = []
   nullable    = false
-}
-
-variable "ven_peerings" {
-  description = "The network peerings towards users' VPCs or other VMware Engine networks. The key is the peering name suffix."
-  type = map(object({
-    peer_network                        = string
-    description                         = optional(string, "Managed by Terraform.")
-    export_custom_routes                = optional(bool, false)
-    export_custom_routes_with_public_ip = optional(bool, false)
-    import_custom_routes                = optional(bool, false)
-    import_custom_routes_with_public_ip = optional(bool, false)
-    peer_to_vmware_engine_network       = optional(bool, false)
-  }))
-  default = {}
-}
-
-variable "user_peerings" {
-  description = "The network peerings from users' VPCs to the VMware Engine networks. The key is the peering name suffix."
-  type = map(object({
-    peer_network                        = string
-    project_id                          = string
-    description                         = optional(string, "Managed by Terraform.")
-    export_custom_routes                = optional(bool, false)
-    export_custom_routes_with_public_ip = optional(bool, false)
-    import_custom_routes                = optional(bool, false)
-    import_custom_routes_with_public_ip = optional(bool, false)
-  }))
-  default = {}
 }
 
 variable "private_cloud_configs" {
