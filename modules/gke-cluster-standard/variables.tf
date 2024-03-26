@@ -123,7 +123,7 @@ variable "default_node_pool" {
   nullable = false
 
   validation {
-    condition     = ((var.default_node_pool.remove_pool == true && var.default_node_pool.initial_node_count == null) || (var.default_node_pool.remove_pool == false && var.default_node_pool.initial_node_count != null))
+    condition     = (var.default_node_pool.remove_pool != (var.default_node_pool.initial_node_count != null))
     error_message = "If `remove_pool` is set to false, `initial_node_count` need be set."
   }
 }
