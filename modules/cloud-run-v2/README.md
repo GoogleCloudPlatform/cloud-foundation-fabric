@@ -8,7 +8,7 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
   - [Mounting secrets as volumes](#mounting-secrets-as-volumes)
   - [Beta features](#beta-features)
   - [VPC Access Connector](#vpc-access-connector)
-  - [Using Customer-Managed Encryption Key (CMEK)](#using-customer-managed-encryption-key-cmek)
+  - [Using Customer-Managed Encryption Key](#using-customer-managed-encryption-key)
   - [Eventarc triggers](#eventarc-triggers)
     - [PubSub](#pubsub)
     - [Audit logs](#audit-logs)
@@ -186,7 +186,7 @@ module "cloud_run" {
 # tftest modules=4 resources=40 fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml e2e
 ```
 
-### Using Customer-Managed Encryption Key (CMEK)
+### Using Customer-Managed Encryption Key
 
 Deploy a Cloud Run service with environment variables encrypted using a Customer-Managed Encryption Key. Ensure you specify the encryption_key with the full resource identifier of your Cloud KMS CryptoKey. This setup adds an extra layer of security by utilizing your own encryption keys.
 
@@ -203,7 +203,7 @@ module "cloud_run" {
     }
   }
 }
-# tftest modules=1 resources=1 inventory=service-cmek-example.yaml e2e
+# tftest modules=2 resources=1 inventory=service-cmek-example.yaml e2e
 ```
 
 ### Eventarc triggers
