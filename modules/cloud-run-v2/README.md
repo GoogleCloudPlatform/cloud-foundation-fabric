@@ -210,6 +210,7 @@ module "cloud_run_cmek" {
     "roles/run.invoker" = ["allUsers"]
   }
 }
+# tftest modules=1 resources=2 inventory=service-cmek-example.yaml e2e
 ```
 
 ### Eventarc triggers
