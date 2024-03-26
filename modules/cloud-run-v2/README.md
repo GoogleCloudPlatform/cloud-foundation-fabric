@@ -203,7 +203,7 @@ module "cloud_run" {
     }
   }
 }
-# tftest modules=1 resources=1 inventory=service-cmek-example.yaml e2e
+# tftest modules=1 resources=1 inventory=service-cmek.yaml e2e
 ```
 
 ### Eventarc triggers
