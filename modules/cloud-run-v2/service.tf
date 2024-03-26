@@ -15,18 +15,18 @@
  */
 
 resource "google_cloud_run_v2_service" "service" {
-  count          = var.create_job ? 0 : 1
-  provider       = google-beta
-  project        = var.project_id
-  location       = var.region
-  name           = "${local.prefix}${var.name}"
-  ingress        = var.ingress
-  labels         = var.labels
-  launch_stage   = var.launch_stage
-  encryption_key = var.encryption_key
+  count        = var.create_job ? 0 : 1
+  provider     = google-beta
+  project      = var.project_id
+  location     = var.region
+  name         = "${local.prefix}${var.name}"
+  ingress      = var.ingress
+  labels       = var.labels
+  launch_stage = var.launch_stage
 
   template {
-    revision = local.revision_name
+    encryption_key = var.encryption_key
+    revision       = local.revision_name
     execution_environment = (
       var.revision.gen2_execution_environment == true
       ? "EXECUTION_ENVIRONMENT_GEN2" : "EXECUTION_ENVIRONMENT_GEN1"
