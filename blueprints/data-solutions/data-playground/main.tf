@@ -74,7 +74,8 @@ module "project" {
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "storage.googleapis.com",
-    "storage-component.googleapis.com"
+    "storage-component.googleapis.com",
+    "dataproc.googleapis.com"
   ]
 
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
@@ -189,43 +190,53 @@ module "service-account-notebook" {
       "roles/bigquery.user",
       "roles/dialogflow.client",
       "roles/storage.admin",
+      "roles/serviceusage.serviceUsageConsumer",
+      "roles/aiplatform.user",
+      "roles/viewer"
     ]
   }
 }
 
-resource "google_notebooks_instance" "playground" {
-  name         = "${var.prefix}-notebook"
-  location     = format("%s-%s", var.region, "b")
-  machine_type = "e2-medium"
-  project      = module.project.project_id
+resource "google_workbench_instance" "playground" {
+  name     = "${var.prefix}-notebook"
+  location = format("%s-%s", var.region, "b")
+  gce_setup {
+    machine_type      = "e2-standard-4"
+    disable_public_ip = true
 
-  container_image {
-    repository = "gcr.io/deeplearning-platform-release/base-cpu"
-    tag        = "latest"
+    service_accounts {
+      email = module.service-account-notebook.email
+    }
+
+
+    vm_image {
+      project = "cloud-notebooks-managed"
+      name    = "workbench-instances-v20240214"
+    }
+
+    network_interfaces {
+      network = local.vpc
+      subnet  = local.subnet
+    }
+
+    metadata = {
+      idle-timeout-seconds = "10800"
+      report-event-health  = "true"
+    }
+
+    shielded_instance_config {
+      enable_secure_boot          = true
+      enable_vtpm                 = true
+      enable_integrity_monitoring = true
+    }
+
+    boot_disk {
+      disk_size_gb    = 150
+      disk_type       = "PD_SSD"
+      disk_encryption = try(local.service_encryption_keys.compute != null, false) ? "CMEK" : null
+      kms_key         = try(local.service_encryption_keys.compute, null)
+    }
   }
-
-  install_gpu_driver = true
-  boot_disk_type     = "PD_SSD"
-  boot_disk_size_gb  = 110
-  disk_encryption    = try(local.service_encryption_keys.compute != null, false) ? "CMEK" : null
-  kms_key            = try(local.service_encryption_keys.compute, null)
-
-  no_public_ip    = true
-  no_proxy_access = false
-
-  network = local.vpc
-  subnet  = local.subnet
-
-  service_account = module.service-account-notebook.email
-
-  # Remove once terraform-provider-google/issues/9164 is fixed
-  lifecycle {
-    ignore_changes = [disk_encryption, kms_key]
-  }
-
-  #TODO Uncomment once terraform-provider-google/issues/9273 is fixed
-  # tags = ["ssh"]
-  depends_on = [
-    google_project_iam_member.shared_vpc,
-  ]
+  disable_proxy_access = false
+  project              = module.project.project_id
 }
