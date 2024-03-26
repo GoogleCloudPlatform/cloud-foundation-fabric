@@ -193,7 +193,7 @@ Deploy a Cloud Run service with environment variables encrypted using a Customer
 ```hcl
 module "cloud_run" {
   source         = "./fabric/modules/cloud-run-v2"
-  project_id     = module.project-service.project_id
+  project_id     = var.project_id
   region         = var.region
   name           = "hello"
   encryption_key = "projects/my-project/locations/location/keyRings/my-keyring/cryptoKeys/my-cryptokey"
@@ -203,7 +203,7 @@ module "cloud_run" {
     }
   }
 }
-# tftest modules=2 resources=1 inventory=service-cmek-example.yaml e2e
+# tftest modules=1 resources=1 inventory=service-cmek-example.yaml e2e
 ```
 
 ### Eventarc triggers
