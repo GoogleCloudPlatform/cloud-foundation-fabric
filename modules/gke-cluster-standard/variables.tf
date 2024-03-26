@@ -117,12 +117,10 @@ variable "default_node_pool" {
   description = "Enable default node-pool."
   type = object({
     remove_pool        = optional(bool, true)
-    initial_node_count = optional(number, null)
+    initial_node_count = optional(number)
   })
-  default = {
-    remove_pool        = true
-    initial_node_count = null
-  }
+  default  = {}
+  nullable = false
 
   validation {
     condition     = ((var.default_node_pool.remove_pool == true && var.default_node_pool.initial_node_count == null) || (var.default_node_pool.remove_pool == false && var.default_node_pool.initial_node_count != null))
