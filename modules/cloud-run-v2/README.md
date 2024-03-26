@@ -193,21 +193,14 @@ Deploy a Cloud Run service with environment variables encrypted using a Customer
 ```hcl
 module "cloud_run_cmek" {
   source         = "./fabric/modules/cloud-run-v2"
-  project_id     = var.project_id
-  name           = "cmek-example"
+  project_id     = module.project-service.project_id
   region         = var.region
+  name           = "hello"
   encryption_key = "projects/my-project/locations/location/keyRings/my-keyring/cryptoKeys/my-cryptokey"
-
   containers = {
-    example = {
+    hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
-      env = {
-        EXAMPLE_VAR = "EncryptedValue"
-      }
     }
-  }
-  iam = {
-    "roles/run.invoker" = ["allUsers"]
   }
 }
 # tftest modules=1 resources=1 inventory=service-cmek-example.yaml e2e
