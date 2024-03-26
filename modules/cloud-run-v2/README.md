@@ -185,6 +185,32 @@ module "cloud_run" {
 # tftest modules=4 resources=40 fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml e2e
 ```
 
+### Using Customer-Managed Encryption Key (CMEK)
+
+Deploy a Cloud Run service with environment variables encrypted using a Customer-Managed Encryption Key. Ensure you specify the encryption_key with the full resource identifier of your Cloud KMS CryptoKey. This setup adds an extra layer of security by utilizing your own encryption keys.
+
+```hcl
+module "cloud_run_cmek" {
+  source        = "./fabric/modules/cloud-run-v2"
+  project_id    = var.project_id
+  name          = "cmek-example"
+  region        = var.region
+  encryption_key = "projects/my-project/locations/global/keyRings/my-keyring/cryptoKeys/my-cryptokey"
+
+  containers = {
+    example = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      env = {
+        EXAMPLE_VAR = "EncryptedValue"
+      }
+    }
+  }
+  iam = {
+    "roles/run.invoker" = ["allUsers"]
+  }
+}
+```
+
 ### Eventarc triggers
 
 #### PubSub

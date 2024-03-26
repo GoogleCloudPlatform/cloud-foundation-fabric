@@ -98,6 +98,17 @@ variable "eventarc_triggers" {
   }
 }
 
+variable "encryption_key" {
+  description = <<EOF
+The full resource name of the Cloud KMS CryptoKey to be used for encrypting the 
+environment variables of the Cloud Run service. The expected format is 
+'projects/*/locations/*/keyRings/*/cryptoKeys/*'. Leave empty to use 
+Google-managed keys.
+EOF
+  type    = string
+  default = null
+}
+
 variable "iam" {
   description = "IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
