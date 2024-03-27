@@ -31,7 +31,7 @@ locals {
 }
 
 module "gcve-pc" {
-  source             = "../../../../blueprints/gcve/single-region-pc"
+  source             = "../../../../blueprints/gcve/pc-minimal"
   billing_account_id = var.billing_account.id
   folder_id          = var.folder_ids.gcve-dev
   project_id         = "gcve-1"
@@ -43,23 +43,26 @@ module "gcve-pc" {
 
   network_peerings = {
     dev-spoke-ven = {
-      peer_network                  = local.peer_network.dev-spoke-0
-      peer_project_id               = var.host_project_ids.dev-spoke-0
-      configure_peer_network        = true
-      peer_to_vmware_engine_network = false
+      peer_network           = local.peer_network.dev-spoke-0
+      peer_project_id        = var.host_project_ids.dev-spoke-0
+      configure_peer_network = true
       custom_routes = {
-        export_to_peer   = false
-        import_from_peer = false
-        export_to_ven    = false
-        import_from_ven  = false
+        export_to_peer   = true
+        import_from_peer = true
+        export_to_ven    = true
+        import_from_ven  = true
       }
-      custom_routes_with_public_ip = {
-        export_to_peer   = false
-        import_from_peer = false
-        export_to_ven    = false
-        import_from_ven  = false
+    }
+    prod-landing-ven = {
+      peer_network           = local.peer_network.prod-landing
+      peer_project_id        = var.host_project_ids.prod-landing
+      configure_peer_network = false
+      custom_routes = {
+        export_to_peer   = true
+        import_from_peer = true
+        export_to_ven    = true
+        import_from_ven  = true
       }
-
     }
   }
 

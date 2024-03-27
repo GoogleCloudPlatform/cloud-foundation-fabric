@@ -105,23 +105,6 @@ variable "prefix" {
   }
 }
 
-
-variable "project_services" {
-  description = "Additional project services to enable."
-  type        = list(string)
-  default     = []
-  nullable    = false
-}
-
-variable "vpc_self_links" {
-  # tfdoc:variable:source 2-networking
-  description = "Self link for the shared VPC."
-  type = object({
-    dev-spoke-0  = string
-    prod-landing = string
-  })
-}
-
 variable "private_cloud_configs" {
   description = "The VMware private cloud configurations. The key is the unique private cloud name suffix."
   type = map(object({
@@ -143,3 +126,21 @@ variable "private_cloud_configs" {
   }))
   nullable = false
 }
+
+variable "project_services" {
+  description = "Additional project services to enable."
+  type        = list(string)
+  default     = []
+  nullable    = false
+}
+
+variable "vpc_self_links" {
+  # tfdoc:variable:source 2-networking
+  description = "Self link for the shared VPC."
+  type = object({
+    dev-spoke-0  = string
+    prod-landing = string
+  })
+}
+
+

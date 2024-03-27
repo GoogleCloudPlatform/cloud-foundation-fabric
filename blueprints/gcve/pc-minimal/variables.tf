@@ -57,24 +57,25 @@ variable "network_peerings" {
   description = "The network peerings between users' VPCs and the VMware Engine networks. The key is the peering name suffix."
   type = map(object({
     configure_peer_network = optional(bool, false)
-    custom_routes = object({
+    custom_routes = optional(object({
       export_to_peer   = optional(bool, false)
       import_from_peer = optional(bool, false)
       export_to_ven    = optional(bool, false)
       import_from_ven  = optional(bool, false)
-    })
-    custom_routes_with_public_ip = object({
+    }), {})
+    custom_routes_with_public_ip = optional(object({
       export_to_peer   = optional(bool, false)
       import_from_peer = optional(bool, false)
       export_to_ven    = optional(bool, false)
       import_from_ven  = optional(bool, false)
-    })
+    }), {})
     description                   = optional(string, "Managed by Terraform.")
     peer_network                  = string
     peer_project_id               = optional(string)
     peer_to_vmware_engine_network = optional(bool, false)
   }))
-  default = {}
+  nullable = false
+  default  = {}
 }
 
 variable "prefix" {
@@ -84,18 +85,6 @@ variable "prefix" {
     condition     = var.prefix != ""
     error_message = "Prefix cannot be empty."
   }
-}
-
-variable "project_id" {
-  description = "ID of the project that will contain the GCVE private cloud."
-  type        = string
-}
-
-variable "project_services" {
-  description = "Additional project services to enable."
-  type        = list(string)
-  default     = []
-  nullable    = false
 }
 
 variable "private_cloud_configs" {
@@ -120,3 +109,14 @@ variable "private_cloud_configs" {
   nullable = false
 }
 
+variable "project_id" {
+  description = "ID of the project that will contain the GCVE private cloud."
+  type        = string
+}
+
+variable "project_services" {
+  description = "Additional project services to enable."
+  type        = list(string)
+  default     = []
+  nullable    = false
+}
