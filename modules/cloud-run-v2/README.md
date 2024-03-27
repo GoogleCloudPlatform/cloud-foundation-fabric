@@ -196,7 +196,7 @@ module "cloud_run" {
   project_id     = var.project_id
   region         = var.region
   name           = "hello"
-  encryption_key = "projects/my-project/locations/location/keyRings/my-keyring/cryptoKeys/my-cryptokey"
+  encryption_key = var.kms_key.id
   containers = {
     hello = {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
