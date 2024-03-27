@@ -17,6 +17,7 @@ name: organizationAdminViewer
 includedPermissions:
   - essentialcontacts.contacts.get
   - essentialcontacts.contacts.list
+  - logging.settings.get
   - orgpolicy.constraints.list
   - orgpolicy.policies.list
   - orgpolicy.policy.get
