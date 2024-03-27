@@ -160,3 +160,33 @@ module "management-firewall" {
     rules_folder  = "${var.factories_config.data_dir}/firewall-rules/management"
   }
 }
+
+# HA VPC
+
+module "ha-vpc" {
+  source     = "../../../modules/net-vpc"
+  project_id = module.landing-project.project_id
+  name       = "prod-ha-0"
+  mtu        = 1500
+  dns_policy = {
+    inbound = true
+    logging = var.dns.enable_logging
+  }
+  create_googleapis_routes = null
+  factories_config = {
+    subnets_folder = "${var.factories_config.data_dir}/subnets/ha"
+  }
+}
+
+module "ha-firewall" {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.ha-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/ha"
+  }
+}
