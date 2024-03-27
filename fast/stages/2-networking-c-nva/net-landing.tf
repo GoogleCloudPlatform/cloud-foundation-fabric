@@ -147,3 +147,16 @@ module "management-vpc" {
     subnets_folder = "${var.factories_config.data_dir}/subnets/management"
   }
 }
+
+module "management-firewall" {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.management-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/management"
+  }
+}
