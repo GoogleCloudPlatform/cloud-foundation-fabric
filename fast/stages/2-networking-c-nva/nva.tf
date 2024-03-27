@@ -76,9 +76,25 @@ module "nva-template" {
       addresses = null
     },
     {
+      network = module.dmz-vpc.self_link
+      subnetwork = try(
+        module.dmz-vpc.subnet_self_links["${each.value.region}/management-default"], null
+      )
+      nat       = false
+      addresses = null
+    },
+    {
       network = module.landing-vpc.self_link
       subnetwork = try(
         module.landing-vpc.subnet_self_links["${each.value.region}/landing-default"], null
+      )
+      nat       = false
+      addresses = null
+    },
+    {
+      network = module.landing-vpc.self_link
+      subnetwork = try(
+        module.landing-vpc.subnet_self_links["${each.value.region}/ha-default"], null
       )
       nat       = false
       addresses = null
