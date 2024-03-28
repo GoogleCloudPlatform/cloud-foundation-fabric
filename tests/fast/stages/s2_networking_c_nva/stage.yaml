@@ -11,10 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 counts:
   google_compute_external_vpn_gateway: 2
-  google_compute_firewall: 9
+  google_compute_firewall: 15
   google_compute_firewall_policy: 1
   google_compute_firewall_policy_association: 1
   google_compute_firewall_policy_rule: 4

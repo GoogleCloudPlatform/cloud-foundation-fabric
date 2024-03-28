@@ -2,7 +2,7 @@
 
 This stage sets up the shared network infrastructure for the whole organization.
 
-It is designed for those who would like to leverage Network Virtual Appliances (NVAs) between landing and dmz areas of the network, for example for Intrusion Prevention System (IPS) purposes.
+It is designed for those who would like to leverage Network Virtual Appliances (NVAs) between landing and dmz areas of the network, for example for Intrusion Prevention System (IPS) purposes. Including in addition network for management and heartbeat.
 
 It adopts the common “hub and spoke” reference design, which is well suited for multiple scenarios, and it offers several advantages versus other designs:
 
@@ -72,6 +72,9 @@ The "landing zone" is divided into two VPC networks:
 
 - the landing VPC: the connectivity hub towards other landing networks
 - the dmz VPC: the connectivity hub towards any other dmz network
+- the management VPC : the needed vpc for management plane of NVA.
+- the heartbeat VPC: the vpc needed to estabilish heartbeat and availability for HA.
+
 
 The VPCs are connected with two sets of sample NVA machines, grouped in regional (multi-zone) [Managed Instance Groups (MIGs)](https://cloud.google.com/compute/docs/instance-groups). The appliances are plain Linux machines, performing simple routing/natting, leveraging some standard Linux features, such as *ip route* or *iptables*. The appliances are suited for demo purposes only and they should be replaced with enterprise-grade solutions before moving to production.
 The traffic destined to the VMs in each MIG is mediated through regional internal load balancers, both in the landing and in the dmz networks.
@@ -133,6 +136,8 @@ This is a summary of the subnets allocated by default in this setup:
 |---|---|---|
 | landing-default-ew1 | landing landing subnet - europe-west1 | 10.128.64.0/24 |
 | landing-default-ew4 | landing landing subnet - europe-west4 | 10.128.96.0/24 |
+| heartbeat-default-ew4 | heartbeat landing subnet - europe-west1 | 10.10.254.0/24 |
+| management-default-ew4 | management landing subnet - europe-west1 | 10.10.253.0/24 |
 | dmz-default-ew1 | dmz landing subnet - europe-west1 | 10.128.0.0/24 |
 | dmz-default-ew4 | dmz landing subnet - europe-west4 | 10.128.32.0/24 |
 | dev-default-ew1 | Dev spoke subnet - europe-west1 | 10.68.0.0/24 |
