@@ -139,7 +139,7 @@ module "management-vpc" {
   name       = "prod-management-0"
   mtu        = 1500
   dns_policy = {
-    inbound = true
+    inbound = false
     logging = var.dns.enable_logging
   }
   create_googleapis_routes = null
@@ -161,32 +161,32 @@ module "management-firewall" {
   }
 }
 
-# HA VPC
+# Heartbeat VPC
 
-module "ha-vpc" {
+module "heartbeat-vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.landing-project.project_id
-  name       = "prod-ha-0"
+  name       = "prod-heartbeat-0"
   mtu        = 1500
   dns_policy = {
-    inbound = true
+    inbound = false
     logging = var.dns.enable_logging
   }
   create_googleapis_routes = null
   factories_config = {
-    subnets_folder = "${var.factories_config.data_dir}/subnets/ha"
+    subnets_folder = "${var.factories_config.data_dir}/subnets/heartbeat"
   }
 }
 
-module "ha-firewall" {
+module "heartbeat-firewall" {
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.landing-project.project_id
-  network    = module.ha-vpc.name
+  network    = module.heartbeat-vpc.name
   default_rules_config = {
     disabled = true
   }
   factories_config = {
     cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
-    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/ha"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/heartbeat"
   }
 }

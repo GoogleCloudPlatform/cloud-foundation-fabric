@@ -27,6 +27,13 @@ locals {
       ]
     },
     {
+      name                = "management"
+      enable_masquerading = true
+      routes = [
+        var.gcp_ranges.gcp_management_primary,
+      ]
+    },
+    {
       name = "landing"
       routes = [
         var.gcp_ranges.gcp_dev_primary,
@@ -35,6 +42,12 @@ locals {
         var.gcp_ranges.gcp_landing_landing_secondary,
         var.gcp_ranges.gcp_prod_primary,
         var.gcp_ranges.gcp_prod_secondary,
+      ]
+    },
+    {
+      name = "heartbeat"
+      routes = [
+        var.gcp_ranges.gcp_heartbeat_primary,
       ]
     },
   ]
@@ -94,7 +107,7 @@ module "nva-template" {
     {
       network = module.landing-vpc.self_link
       subnetwork = try(
-        module.landing-vpc.subnet_self_links["${each.value.region}/ha-default"], null
+        module.landing-vpc.subnet_self_links["${each.value.region}/heartbeat-default"], null
       )
       nat       = false
       addresses = null

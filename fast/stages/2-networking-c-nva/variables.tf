@@ -135,6 +135,8 @@ variable "gcp_ranges" {
     gcp_dmz_secondary             = "10.80.127.0/17"
     gcp_prod_primary              = "10.72.0.0/16"
     gcp_prod_secondary            = "10.88.0.0/16"
+    gcp_management_primary        = "10.10.253.0/24"
+    gcp_heartbeat_primary         = "10.10.254.0/24"
   }
 }
 
