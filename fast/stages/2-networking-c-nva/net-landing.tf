@@ -129,3 +129,64 @@ module "landing-firewall" {
     rules_folder  = "${var.factories_config.data_dir}/firewall-rules/landing"
   }
 }
+
+# Management VPC
+
+
+module "management-vpc" {
+  source     = "../../../modules/net-vpc"
+  project_id = module.landing-project.project_id
+  name       = "prod-management-0"
+  mtu        = 1500
+  dns_policy = {
+    inbound = false
+    logging = var.dns.enable_logging
+  }
+  create_googleapis_routes = null
+  factories_config = {
+    subnets_folder = "${var.factories_config.data_dir}/subnets/management"
+  }
+}
+
+module "management-firewall" {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.management-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/management"
+  }
+}
+
+# Heartbeat VPC
+
+module "heartbeat-vpc" {
+  source     = "../../../modules/net-vpc"
+  project_id = module.landing-project.project_id
+  name       = "prod-heartbeat-0"
+  mtu        = 1500
+  dns_policy = {
+    inbound = false
+    logging = var.dns.enable_logging
+  }
+  create_googleapis_routes = null
+  factories_config = {
+    subnets_folder = "${var.factories_config.data_dir}/subnets/heartbeat"
+  }
+}
+
+module "heartbeat-firewall" {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.heartbeat-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.factories_config.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.factories_config.data_dir}/firewall-rules/heartbeat"
+  }
+}
