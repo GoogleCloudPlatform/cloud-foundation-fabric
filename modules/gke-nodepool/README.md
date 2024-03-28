@@ -77,6 +77,9 @@ module "cluster-1-nodepool-1" {
   location     = "europe-west1-b"
   name         = "nodepool-1"
   labels       = { environment = "dev" }
+  resource_manager_tags = {
+      "tagKeys/12345678901234" = "tagValues/43210987654321"
+  }
   service_account = {
     create       = true
     email        = "nodepool-1" # optional
@@ -159,6 +162,7 @@ module "cluster-1-nodepool-gpu-1" {
 | [sole_tenant_nodegroup](variables.tf#L196) | Sole tenant node group. | <code>string</code> |  | <code>null</code> |
 | [tags](variables.tf#L202) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [taints](variables.tf#L208) | Kubernetes taints applied to all nodes. | <code title="map&#40;object&#40;&#123;&#10;  value  &#61; string&#10;  effect &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [resource_manager_tags](variables.tf#L226) | Resource Manager Secure Tags bindings for the Nodes in the pool, can be used for Firewall rules, in tag key => tag value format.  | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
