@@ -188,7 +188,7 @@ module "cloud_run" {
 
 ### Using Customer-Managed Encryption Key
 
-Deploy a Cloud Run service with environment variables encrypted using a Customer-Managed Encryption Key. Ensure you specify the encryption_key with the full resource identifier of your Cloud KMS CryptoKey. This setup adds an extra layer of security by utilizing your own encryption keys.
+Deploy a Cloud Run service with environment variables encrypted using a Customer-Managed Encryption Key (CMEK). Ensure you specify the encryption_key with the full resource identifier of your Cloud KMS CryptoKey and that Cloud Run Service agent (`service-<PROJECT_NUMBER>@serverless-robot-prod.iam.gserviceaccount.com`) has permission to use the key, for example `roles/cloudkms.cryptoKeyEncrypterDecrypter` IAM role. This setup adds an extra layer of security by utilizing your own encryption keys.
 
 ```hcl
 module "cloud_run" {
@@ -203,7 +203,7 @@ module "cloud_run" {
     }
   }
 }
-# tftest modules=1 resources=1 e2e
+# tftest modules=1 resources=2 fixtures=fixtures/cloud-run-kms-iam-grant.tf e2e
 ```
 
 ### Eventarc triggers
@@ -424,6 +424,7 @@ module "cloud_run" {
 
 ## Fixtures
 
+- [cloud-run-kms-iam-grant.tf](../../tests/fixtures/cloud-run-kms-iam-grant.tf)
 - [iam-service-account.tf](../../tests/fixtures/iam-service-account.tf)
 - [pubsub.tf](../../tests/fixtures/pubsub.tf)
 - [secret-credentials.tf](../../tests/fixtures/secret-credentials.tf)
