@@ -2,7 +2,7 @@
 
 This blueprint presents an opinionated architecture to handle a simple single region VMware Engine private cloud. The general idea behind this blueprint is to deploy a single project hosting a GCVE private cloud connected to existing VPCs the user needs to create before using this blueprint.
 
-Multiple deployments of this blueprints allow the user to create multiple private clouds that are tipically required to provide the physical separation (eg app enviroments).
+Multiple deployments of this blueprints allow the user to create multiple private clouds that are typically required to provide the physical separation (e.g. app enviroments).
 
 This blueprint is used as part of the [FAST GCVE stage](../../../fast/stages/3-gcve/) but it can also be used independently if desired.
 
@@ -11,16 +11,16 @@ This blueprint is used as part of the [FAST GCVE stage](../../../fast/stages/3-g
 </p>
 
 The overall architecture is based on the following design decisions:
-- Each GCVE Private Cloud resides on a dedicated GCP project.
+- Each GCVE Private Cloud resides in a dedicated GCP project.
 - Each GCVE Private Cloud is connected to a dedicated VMware Engine Network (VEN).
-- Two Private Clouds can connect by establishing a peering between their rispectively VENs (Shared VEN are not supported).
-- The internet inbound/oubound connectivity is managed on the user VPC.   
+- Two Private Clouds can connect by establishing a peering between their respective VEN (Shared VENs are not supported).
+- The internet inbound/oubound connectivity is managed in the customer VPC.   
 
 The blueprint manages:
 - project creation
 - API/Services enablement
 - IAM role assignment for groups
-- VMware Egine Private Cloud creation
+- VMware Engine Private Cloud creation
 - [VMware Engine Network](https://cloud.google.com/vmware-engine/docs/networking/vmware-engine-network#standard_networks) creation
 - VPC attachment (Optional)
 - project-level organization policy definitions
@@ -28,9 +28,9 @@ The blueprint manages:
 
 ### User groups
 
-As per our GCP best practices a GCVE private cloud relies on user groups to assign roles to human identities. These are the specific groups binded to the main GCVE [predefined roles](https://cloud.google.com/vmware-engine/docs/iam#vmware-engine-roles):
+Based on our GCP best practices, a GCVE private cloud relies on user groups to assign roles to human identities. These are the specific groups bound to the main GCVE [predefined roles](https://cloud.google.com/vmware-engine/docs/iam#vmware-engine-roles):
 - *VMware Engine Administrators*. They have full access to the VMWare Engine Service.
-- *VMware Engine Viewers*. They have read-only access to VMware Engine Service.
+- *VMware Engine Viewers*. They have read-only access to the VMware Engine Service.
 
 
 ### Network

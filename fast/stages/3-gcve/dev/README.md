@@ -1,6 +1,6 @@
 # GCVE Private Cloud for Dev Application Environment
 
-This module enables the creation and management of a single-region GCVE Private Cloud connected to an existing network infrastructure that needs to be deployed beforehand through the rispective Fabric FAST stage. It's designed to be replicated once for every context, either per environment, regional segregation or with more granularity as needed (e.g. teams or sets of teams sharing similar requirements). 
+This stage provides the Terraform content for the creation and management of a single-region GCVE private cloud which is connected to an existing network. The network infrastructure needs to be deployed before executing this stage by executing the respective Fabric FAST stage (`2-networking-*`). This stage is designed to be replicated once for every GCVE environment, for instance separately for dev and prod, per region or separately for other constraints which make you decide to have separate GCVE environments (e.g. by team or by sets of teams sharing similar requirements). 
 
 ## Design overview and choices
 
@@ -13,7 +13,7 @@ The GCVE stage creates a project and all the expected resources in a well-define
 
 This stage is meant to be executed after the FAST "foundational" stages: bootstrap, resource management, security and networking stages.
 
-It's of course possible to run this stage in isolation, refer to the *[Running in isolation](#running-in-isolation)* section below for details.
+It is also possible to run this stage in isolation. Refer to the *[Running in isolation](#running-in-isolation)* section below for details.
 
 Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
 
