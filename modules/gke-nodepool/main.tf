@@ -146,7 +146,7 @@ resource "google_container_node_pool" "nodepool" {
     spot = (
       var.node_config.spot == true && var.node_config.preemptible != true
     )
-    tags = var.tags
+    tags                  = var.tags
     resource_manager_tags = var.resource_manager_tags
 
     dynamic "ephemeral_storage_config" {
