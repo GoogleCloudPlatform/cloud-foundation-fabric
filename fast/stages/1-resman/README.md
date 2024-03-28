@@ -376,15 +376,15 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L337) | WIF configuration for CI/CD repositories. |  |  |
-| [dataplatform](outputs.tf#L351) | Data for the Data Platform stage. |  |  |
-| [gke_multitenant](outputs.tf#L367) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
-| [networking](outputs.tf#L388) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L397) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L412) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L419) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L433) | Data for the networking stage. |  | <code>02-security</code> |
-| [team_cicd_repositories](outputs.tf#L443) | WIF configuration for Team CI/CD repositories. |  |  |
-| [teams](outputs.tf#L457) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L469) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L339) | WIF configuration for CI/CD repositories. |  |  |
+| [dataplatform](outputs.tf#L353) | Data for the Data Platform stage. |  |  |
+| [gke_multitenant](outputs.tf#L369) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
+| [networking](outputs.tf#L390) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L399) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L414) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L421) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L435) | Data for the networking stage. |  | <code>02-security</code> |
+| [team_cicd_repositories](outputs.tf#L445) | WIF configuration for Team CI/CD repositories. |  |  |
+| [teams](outputs.tf#L459) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L471) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->
