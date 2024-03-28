@@ -224,7 +224,7 @@ variable "taints" {
 
 
 variable "resource_manager_tags" {
-  description = "Resource Manage Secure Tags bindings for the Nodes in the pool, in tag key => tag value format."
+  description = " A map of resource manager tag keys and values to be attached to the nodes for managing Compute Engine firewalls using Network Firewall Policies. Tags must be according to specifications found here. A maximum of 5 tag key-value pairs can be specified. Existing tags will be replaced with new values. Tags must be in one of the following formats ([KEY]=[VALUE]) 1. tagKeys/{tag_key_id}=tagValues/{tag_value_id} 2. {org_id}/{tag_key_name}={tag_value_name} 3. {project_id}/{tag_key_name}={tag_value_name}."
   type        = map(string)
   default     = null
 }
