@@ -113,18 +113,21 @@ variable "cluster_autoscaling" {
   }
 }
 
-variable "default_node_pool" {
-  description = "Enable default node-pool."
+variable "default_nodepool" {
+  description = "Enable default nodepool."
   type = object({
     remove_pool        = optional(bool, true)
-    initial_node_count = optional(number)
+    initial_node_count = optional(number, 1)
   })
   default  = {}
   nullable = false
-
   validation {
-    condition     = (var.default_node_pool.remove_pool != (var.default_node_pool.initial_node_count != null))
-    error_message = "If `remove_pool` is set to false, `initial_node_count` need be set."
+    condition = (
+      var.default_nodepool.remove_pool != true
+      ||
+      var.default_nodepool.initial_node_count != null
+    )
+    error_message = "If `remove_pool` is set to false, `initial_node_count` needs to be set."
   }
 }
 
