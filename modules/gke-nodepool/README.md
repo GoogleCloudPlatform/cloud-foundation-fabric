@@ -162,7 +162,7 @@ module "cluster-1-nodepool-gpu-1" {
 | [sole_tenant_nodegroup](variables.tf#L196) | Sole tenant node group. | <code>string</code> |  | <code>null</code> |
 | [tags](variables.tf#L202) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [taints](variables.tf#L208) | Kubernetes taints applied to all nodes. | <code title="map&#40;object&#40;&#123;&#10;  value  &#61; string&#10;  effect &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [resource_manager_tags](variables.tf#L226) | Resource Manager Secure Tags bindings for the Nodes in the pool, can be used for Firewall rules, in tag key => tag value format.  | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [resource_manager_tags](variables.tf#L226) | A map of resource manager tag keys and values to be attached to the nodes for managing Compute Engine firewalls using Network Firewall Policies. Tags must be according to specifications found here. A maximum of 5 tag key-value pairs can be specified. Existing tags will be replaced with new values. Tags must be in one of the following formats ([KEY]=[VALUE])  &nbsp;  1. tagKeys/{tag_key_id}=tagValues/{tag_value_id} &nbsp; 2. {org_id}/{tag_key_name}={tag_value_name} &nbsp; 3. {project_id}/{tag_key_name}={tag_value_name}.  | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
