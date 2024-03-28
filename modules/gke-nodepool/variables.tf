@@ -221,3 +221,10 @@ variable "taints" {
     error_message = "Invalid taint effect."
   }
 }
+
+
+variable "resource_manager_tags" {
+  description = "Resource Manage Secure Tags bindings for the Nodes in the pool, in tag key => tag value format."
+  type        = map(string)
+  default     = null
+}
