@@ -37,7 +37,7 @@ resource "local_file" "tfvars" {
 
 resource "google_storage_bucket_object" "tfvars" {
   bucket  = var.automation.outputs_bucket
-  name    = "tfvars/3-gke-dev.auto.tfvars.json"
+  name    = "tfvars/3-gcve-dev.auto.tfvars.json"
   content = jsonencode(local.tfvars)
 }
 
