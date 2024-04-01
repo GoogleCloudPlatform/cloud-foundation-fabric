@@ -64,7 +64,7 @@ locals {
   }
   _iam = merge(
     {
-      for r in local.iam_delete_roles : r => []
+      for a in local.iam_delete_roles : a => []
     },
     {
       for b in local._iam_bindings_auth : b.role => b.member...
