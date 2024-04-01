@@ -70,7 +70,7 @@ variable "custom_roles" {
 }
 
 variable "dns" {
-  description = "DNS configuration"
+  description = "DNS configuration........."
   type = object({
     enable_logging = optional(bool, true)
     resolvers      = optional(list(string), [])
