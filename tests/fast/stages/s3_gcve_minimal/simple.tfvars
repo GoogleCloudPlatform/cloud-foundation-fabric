@@ -14,7 +14,7 @@ billing_account = {
 }
 
 folder_ids = {
-  gcve-dev = "folders/00000000000000"
+  gcve-prod = "folders/00000000000000"
 }
 
 groups_gcve = {
@@ -23,8 +23,7 @@ groups_gcve = {
 }
 
 host_project_ids = {
-  dev-spoke-0  = "dev-spoke-0"
-  prod-landing = "prod-landing"
+  prod-spoke-0 = "prod-spoke-0"
 }
 
 organization = {
@@ -48,8 +47,7 @@ private_cloud_configs = {
 }
 
 vpc_self_links = {
-  "dev-spoke-0"  = "https://www.googleapis.com/compute/v1/projects/em-dev-net-spoke-0/global/networks/dev-spoke-0",
-  "prod-landing" = "https://www.googleapis.com/compute/v1/projects/em-prod-net-landing-0/global/networks/prod-landing-0",
+  "prod-spoke-0" = "https://www.googleapis.com/compute/v1/projects/em-prod-net-spoke-0/global/networks/prod-spoke-0",
 }
 
 
