@@ -181,6 +181,7 @@ variable "psa_config" {
     export_routes  = optional(bool, false)
     import_routes  = optional(bool, false)
     peered_domains = optional(list(string), [])
+    service_producer = optional(string, "servicenetworking.googleapis.com")
   })
   default = null
 }
