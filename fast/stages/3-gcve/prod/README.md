@@ -1,6 +1,6 @@
-# GCVE Private Cloud for Dev Application Environment
+# GCVE Private Clouds for Production Environment
 
-This stage provides the Terraform content for the creation and management of multiple GCVE private clouds which are connected to an existing network. The network infrastructure needs to be deployed before executing this stage by executing the respective Fabric FAST stage (`2-networking-*`). This stage can be replicated for complex GCVE designs requiring a separate management of the network infrastructure (VEN) and the users access or for other constraints which make you decide to have indipendent GCVE environments (e.g dev/prod, region or team  serparation). 
+This stage provides the Terraform content for the creation and management of multiple GCVE private clouds which are connected to an existing network. The network infrastructure needs to be deployed before executing this stage by executing the respective Fabric FAST stage (`2-networking-*`). This stage can be replicated for complex GCVE designs requiring a separate management of the network infrastructure (VEN) and the access domain or for other constraints which make you decide to have indipendent GCVE environments (e.g dev/prod, region or team  serparation). 
 
 ## Design overview and choices
 
