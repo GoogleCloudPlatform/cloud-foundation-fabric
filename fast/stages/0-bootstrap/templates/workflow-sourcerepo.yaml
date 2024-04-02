@@ -95,4 +95,4 @@ substitutions:
   _FAST_OUTPUTS_BUCKET: ${outputs_bucket}
   _TF_PROVIDERS_FILE: ${tf_providers_files.apply}
   _TF_VAR_FILES: ${tf_var_files == [] ? "''" : join("\n    ", tf_var_files)}
-  _TF_VERSION: 1.4.4
+  _TF_VERSION: 1.7.6

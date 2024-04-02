@@ -80,6 +80,12 @@ variable "create_job" {
   default     = false
 }
 
+variable "encryption_key" {
+  description = "The full resource name of the Cloud KMS CryptoKey."
+  type        = string
+  default     = null
+}
+
 variable "eventarc_triggers" {
   description = "Event arc triggers for different sources."
   type = object({

@@ -25,7 +25,8 @@ resource "google_cloud_run_v2_service" "service" {
   launch_stage = var.launch_stage
 
   template {
-    revision = local.revision_name
+    encryption_key = var.encryption_key
+    revision       = local.revision_name
     execution_environment = (
       var.revision.gen2_execution_environment == true
       ? "EXECUTION_ENVIRONMENT_GEN2" : "EXECUTION_ENVIRONMENT_GEN1"

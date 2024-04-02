@@ -24,6 +24,7 @@ resource "google_cloud_run_v2_job" "job" {
   launch_stage = var.launch_stage
   template {
     template {
+      encryption_key = var.encryption_key
       dynamic "vpc_access" {
         for_each = local.connector == null ? [] : [""]
         content {

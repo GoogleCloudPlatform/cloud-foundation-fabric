@@ -30,7 +30,7 @@ env:
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   TF_PROVIDERS_FILE: ${tf_providers_files.apply}
   TF_PROVIDERS_FILE_PLAN: ${tf_providers_files.plan}
-  TF_VERSION: 1.6.5
+  TF_VERSION: 1.7.4
 
 jobs:
   fast-pr:
@@ -43,7 +43,7 @@ jobs:
     steps:
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # set up SSH key authentication to the modules repository
 
@@ -100,7 +100,7 @@ jobs:
 
       - id: tf-setup
         name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2.0.3
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: $${{env.TF_VERSION}}
 

@@ -36,10 +36,23 @@ variable "config_port_allocation" {
   }
 }
 
-variable "config_source_subnets" {
-  description = "Subnetwork configuration (ALL_SUBNETWORKS_ALL_IP_RANGES, ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, LIST_OF_SUBNETWORKS)."
-  type        = string
-  default     = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+variable "config_source_subnetworks" {
+  description = "Subnetwork configuration."
+  type = object({
+    all                 = optional(bool, true)
+    primary_ranges_only = optional(bool)
+    subnetworks = optional(list(object({
+      self_link        = string
+      all_ranges       = optional(bool, true)
+      secondary_ranges = optional(list(string))
+    })), [])
+  })
+  nullable = false
+  default  = {}
+}
+
+output "foo" {
+  value = var.config_source_subnetworks.subnetworks
 }
 
 variable "config_timeouts" {
@@ -109,14 +122,4 @@ variable "rules" {
   }))
   default  = []
   nullable = false
-}
-
-variable "subnetworks" {
-  description = "Subnetworks to NAT, only used when config_source_subnets equals LIST_OF_SUBNETWORKS."
-  type = list(object({
-    self_link            = string,
-    config_source_ranges = list(string)
-    secondary_ranges     = list(string)
-  }))
-  default = []
 }
