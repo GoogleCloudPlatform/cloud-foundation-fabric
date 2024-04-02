@@ -175,7 +175,7 @@ variable "project_id" {
 }
 
 variable "psa_config" {
-  description = "The Private Service Access configuration for Service Networking."
+  description = "The Private Service Access configuration."
   type = object({
     ranges           = map(string)
     export_routes    = optional(bool, false)
