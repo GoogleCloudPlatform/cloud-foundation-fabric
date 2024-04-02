@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#2174](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2174)] Bump provider version to 5.18 to fix non-empty plan for google_notebooks_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-25 18:57:14+00:00 -->
 - [[#2171](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2171)] **incompatible change:** Fix subnet configuration in cloud nat module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 14:59:02+00:00 -->
 - [[#2168](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2168)] Support advanced_datapath_observability in gke cluster standard module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 07:25:43+00:00 -->
 - [[#2169](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2169)] Add stub READMEs for the removed hub and spoke blueprints ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 06:48:46+00:00 -->
@@ -16,8 +17,13 @@ All notable changes to this project will be documented in this file.
 
 - [[#2164](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2164)] Updated CONTRIBUTING.md with a guide to cut a new release ([sruffilli](https://github.com/sruffilli)) <!-- 2024-03-20 17:08:27+00:00 -->
 
+### FAST
+
+- [[#2172](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2172)] Fix subnet names in FAST net stage c nva ([ludoo](https://github.com/ludoo)) <!-- 2024-03-24 11:54:29+00:00 -->
+
 ### MODULES
 
+- [[#2174](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2174)] Bump provider version to 5.18 to fix non-empty plan for google_notebooks_instance ([wiktorn](https://github.com/wiktorn)) <!-- 2024-03-25 18:57:14+00:00 -->
 - [[#2171](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2171)] **incompatible change:** Fix subnet configuration in cloud nat module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 14:59:02+00:00 -->
 - [[#2170](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2170)] Support optional secondary ranges in net-cloudnat module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 11:10:48+00:00 -->
 - [[#2168](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2168)] Support advanced_datapath_observability in gke cluster standard module ([ludoo](https://github.com/ludoo)) <!-- 2024-03-22 07:25:43+00:00 -->
