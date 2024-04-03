@@ -100,7 +100,6 @@ The VPC host project, VPC and subnets should already exist.
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [3-gcve-prod-providers.tf](./3-gcve-prod-providers.tf) | None |  |  |
 | [main.tf](./main.tf) | GCVE private cloud for development environment. | <code>pc-minimal</code> |  |
 | [outputs.tf](./outputs.tf) | Output variables. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
