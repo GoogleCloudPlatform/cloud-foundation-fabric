@@ -43,3 +43,5 @@ For more information and usage examples see each module's README file.
 ## End-to-end blueprints
 
 The [blueprints](./blueprints/) in this repository are split into several main sections: **[networking blueprints](./blueprints/networking/)** that implement core patterns or features, **[data solutions blueprints](./blueprints/data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations blueprints](./blueprints/cloud-operations/)** that leverage specific products to meet specific operational needs, and **[factories](./blueprints/factories/)** that implement resource factories for the repetitive creation of specific resources, and finally **[GKE](./blueprints/gke)**, **[serverless](./blueprints/serverless)**, and **[third-party solutions](./blueprints/third-party-solutions/)** design blueprints.
+
+<!-- test labeler -->
