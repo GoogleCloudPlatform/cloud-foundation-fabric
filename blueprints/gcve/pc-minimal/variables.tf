@@ -56,6 +56,7 @@ variable "labels" {
 variable "network_peerings" {
   description = "The network peerings between users' VPCs and the VMware Engine networks. The key is the peering name suffix."
   type = map(object({
+    peer_network           = string
     configure_peer_network = optional(bool, false)
     custom_routes = optional(object({
       export_to_peer   = optional(bool, false)
@@ -70,7 +71,6 @@ variable "network_peerings" {
       import_from_ven  = optional(bool, false)
     }), {})
     description                   = optional(string, "Managed by Terraform.")
-    peer_network                  = string
     peer_project_id               = optional(string)
     peer_to_vmware_engine_network = optional(bool, false)
   }))

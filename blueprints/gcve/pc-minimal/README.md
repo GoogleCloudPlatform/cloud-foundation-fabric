@@ -36,7 +36,7 @@ The blueprint can optionally configure the [VMware Engine Network peering](https
 - vmwareengine.networkPeerings.get
 - vmwareengine.networkPeerings.list
 - vmwareengine.operations.get
-The permissions have to be assigned through the creation of a custom role (least privilege).
+The permissions can be assigned through the predefined role *vmwareengine.vmwareengineAdmin*. Anyway the creation of a dedicated custom roile is strogly recommended to comply with the least privilege principle.
 
 ## Basic usage
 
